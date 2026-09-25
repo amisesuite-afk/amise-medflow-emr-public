@@ -213,7 +213,16 @@
           }
         },
         "pathway": { "$ref": "#/$defs/equalsExpectation", "description": "iOS ConsultPathway raw value (firstVisit, followUp, wardReview, procedure, trauma, burns, wellness)." },
-        "dxVariant": { "$ref": "#/$defs/equalsExpectation", "description": "Web dx-variants.ts variant id detected for the confirmed diagnosis." }
+        "dxVariant": { "$ref": "#/$defs/equalsExpectation", "description": "Web dx-variants.ts variant id detected for the confirmed diagnosis." },
+        "reasoning": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Diagnostic reasoning layer (web.reasoning / ios.reasoning). Lines have sources <platform>.reasoning.<part>: alert, zebra, discriminator, timeout, for, against, missing, doesntfit, longitudinal. Filter with `sources`.",
+          "properties": {
+            "mustInclude": { "type": "array", "items": { "$ref": "#/$defs/textExpectation" } },
+            "mustExclude": { "type": "array", "items": { "$ref": "#/$defs/textExpectation" } }
+          }
+        }
       }
     },
     "guidelineRef": {

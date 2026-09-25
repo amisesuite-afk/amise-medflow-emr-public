@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-closure-gastritis-troponin",
+  "condition": "NSTEMI presenting as epigastric pain, first labelled gastritis",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "62-year-old diabetic man confirmed as gastritis; troponin returns at 480 ng/L.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 62,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Epigastric pain and nausea",
+    "hpi": "Two hours of epigastric discomfort with nausea and sweating, started at rest. Type 2 diabetes, hypertension, smoker. Took antacids with no relief.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Sweaty, pale.",
+      "abdomen": "Soft, mild epigastric tenderness.",
+      "cardiovascular": "Heart sounds normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 60,
+        "heartRate": 98,
+        "systolicBp": 148,
+        "diastolicBp": 90,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      },
+      {
+        "minutesAgo": 5,
+        "heartRate": 104,
+        "systolicBp": 142,
+        "diastolicBp": 88,
+        "respiratoryRate": 20,
+        "temperatureC": 36.8,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "troponin",
+        "name": "hs-Troponin T",
+        "value": 480,
+        "unit": "ng/L",
+        "minutesAgo": 5
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker, 30 pack-years.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Epigastric pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Nausea",
+          "Sweating"
+        ],
+        "socratesAnswers": {
+          "site": "Epigastric",
+          "onset": "Sudden, at rest",
+          "relief": "Antacids did not help"
+        }
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Gastritis",
+      "icd10": "K29.70",
+      "paneDiseaseId": "gastritis",
+      "assessmentText": "Gastritis."
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "alert-favours-acs",
+          "severity": "critical",
+          "match": [
+            "re:doesn't fit the working diagnosis.*(coronary|acs)"
+          ],
+          "sources": [
+            "web.reasoning.alert",
+            "ios.reasoning.alert"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "note": "A raised high-sensitivity troponin with epigastric pain in a diabetic smoker is ACS until proven otherwise (ESC 2023)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-acs-2023",
+      "name": "ESC Guidelines for the management of acute coronary syndromes",
+      "year": 2023,
+      "section": "Atypical presentations; hs-troponin",
+      "citation": "Byrne RA et al. Eur Heart J 2023;44:3720-3826"
+    },
+    {
+      "id": "croskerry-2003",
+      "name": "The importance of cognitive errors in diagnosis and strategies to minimize them",
+      "year": 2003,
+      "section": "Premature closure; cognitive forcing strategies",
+      "citation": "Croskerry P. Acad Med 2003;78:775-780"
+    }
+  ],
+  "rationale": "Epigastric pain labelled gastritis in a diabetic is a recognised trap; the troponin result must trigger the guard.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

@@ -87,6 +87,7 @@ If you cannot tie a number to a guideline, make it `quality`.
 | `management.mustInclude` / `mustExclude` | same | A management output (plans, templates, prompts, recommendations) matches / none does |
 | `pathway` | `equals` | iOS `ConsultPathway` (iOS only by default) |
 | `dxVariant` | `equals` | Web `detectDxVariants` id (web only by default) |
+| `reasoning.mustInclude` / `mustExclude` | `match`, `unless`, `sources` | A diagnostic-reasoning line matches / none does. Sources `<platform>.reasoning.<part>` with part `alert` ("Doesn't fit the working diagnosis"), `zebra`, `discriminator` (best next question / test), `timeout`, `for`, `against`, `missing`, `doesntfit`, `longitudinal`. n/a when a results file has no reasoning output |
 
 Common optional fields: `platforms` (limit to `ios` or `web`), `guidelineRefs` (ids from
 `guideline`), `note`, `knownGap`, `knownGapNote`, `unverified`, `proposedFix`.

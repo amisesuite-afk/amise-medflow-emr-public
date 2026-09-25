@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-closure-renal-colic-news2-rising",
+  "condition": "Leaking AAA first labelled renal colic, NEWS2 rising",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "71-year-old man confirmed as left renal colic; NEWS2 climbs from 1 to 8 over two hours.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Left loin pain",
+    "hpi": "Sudden severe left loin pain radiating to the groin three hours ago. Hypertensive smoker. Felt faint on standing.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Pale, clammy.",
+      "abdomen": "Tender left flank. Vague central fullness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 150,
+        "heartRate": 88,
+        "systolicBp": 138,
+        "diastolicBp": 82,
+        "respiratoryRate": 18,
+        "temperatureC": 36.7,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      },
+      {
+        "minutesAgo": 60,
+        "heartRate": 104,
+        "systolicBp": 112,
+        "diastolicBp": 70,
+        "respiratoryRate": 22,
+        "temperatureC": 36.6,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      },
+      {
+        "minutesAgo": 5,
+        "heartRate": 124,
+        "systolicBp": 88,
+        "diastolicBp": 54,
+        "respiratoryRate": 26,
+        "temperatureC": 36.5,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.1,
+        "unit": "g/dL",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Loin pain",
+        "symptoms": [
+          "Loin pain"
+        ],
+        "socratesAnswers": {
+          "site": "Left loin",
+          "radiation": "To the groin",
+          "onset": "Sudden",
+          "severity": "10/10"
+        }
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Renal colic",
+      "icd10": "N23",
+      "paneDiseaseId": "renal_colic",
+      "assessmentText": "Left renal colic."
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "alert-news2-rising",
+          "severity": "critical",
+          "match": [
+            "re:news2 rising \\(\\d+ → [5-9]"
+          ],
+          "sources": [
+            "web.reasoning.alert",
+            "ios.reasoning.alert"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "rcp-news2-2017",
+            "nice-ng156"
+          ],
+          "note": "A rising NEWS2 (RCP 2017: 5 or more = urgent response) in presumed renal colic over 60 must prompt reconsideration (ruptured AAA mimics renal colic, NICE NG156)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcp-news2-2017",
+      "name": "National Early Warning Score (NEWS) 2",
+      "year": 2017,
+      "section": "Clinical response thresholds",
+      "citation": "Royal College of Physicians, London 2017"
+    },
+    {
+      "id": "nice-ng156",
+      "name": "Abdominal aortic aneurysm: diagnosis and management",
+      "year": 2020,
+      "section": "1.3 Symptomatic AAA",
+      "citation": "NICE NG156"
+    },
+    {
+      "id": "croskerry-2003",
+      "name": "The importance of cognitive errors in diagnosis and strategies to minimize them",
+      "year": 2003,
+      "section": "Premature closure; cognitive forcing strategies",
+      "citation": "Croskerry P. Acad Med 2003;78:775-780"
+    }
+  ],
+  "rationale": "Deterioration after a confident label is the second trigger of the premature-closure guard.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

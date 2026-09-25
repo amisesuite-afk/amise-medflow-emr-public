@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-next-test-epigastric-lipase",
+  "condition": "Epigastric pain to the back: lipase before imaging",
+  "category": "hpb",
+  "permutationOf": null,
+  "summary": "45-year-old man with epigastric pain through to the back after a weekend of heavy drinking; no bloods yet.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Upper abdominal pain",
+    "hpi": "Constant epigastric pain radiating through to the back since last night, with vomiting, after a weekend of heavy drinking.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Uncomfortable.",
+      "abdomen": "Epigastric tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 134,
+        "diastolicBp": 84,
+        "respiratoryRate": 18,
+        "temperatureC": 37.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Drinks 60 units a week.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Vomiting"
+        ],
+        "socratesAnswers": {
+          "site": "Epigastric",
+          "radiation": "Through to the back",
+          "onset": "Last night"
+        }
+      }
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "next-test-lipase",
+          "severity": "quality",
+          "match": [
+            "re:^elevated amylase|^.*(amylase|lipase)[^—]*\\[lab\\]"
+          ],
+          "sources": [
+            "web.reasoning.discriminator",
+            "ios.reasoning.discriminator"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "atlanta-2012"
+          ],
+          "note": "Serum lipase / amylase (> 3 x ULN) is the cheap discriminating test for acute pancreatitis (revised Atlanta; ACG 2024); CT is not needed for the diagnosis."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "no-ct-first",
+          "severity": "quality",
+          "match": [
+            "[advanced]"
+          ],
+          "sources": [
+            "web.reasoning.discriminator",
+            "ios.reasoning.discriminator"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "note": "No can't-miss diagnosis among the leading three: no CT, MRI or endoscopy as the next discriminator."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atlanta-2012",
+      "name": "Classification of acute pancreatitis — revised Atlanta classification",
+      "year": 2013,
+      "section": "Diagnosis",
+      "citation": "Banks PA et al. Gut 2013;62:102-111"
+    }
+  ],
+  "rationale": "The best next discriminator should be the bedside/lab test that separates pancreatitis from peptic disease, not a scan.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

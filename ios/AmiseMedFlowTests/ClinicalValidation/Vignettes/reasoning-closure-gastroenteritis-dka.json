@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-closure-gastroenteritis-dka",
+  "condition": "DKA first labelled gastroenteritis",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "23-year-old woman with type 1 diabetes confirmed as gastroenteritis; blood glucose 27 mmol/L, ketones 5.4, bicarbonate 9.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 23,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Vomiting and abdominal pain",
+    "hpi": "Vomiting since yesterday with central abdominal pain and thirst. Type 1 diabetes on insulin; has been eating little. Breathing deep and fast.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Dry mucous membranes. Deep sighing respiration.",
+      "abdomen": "Diffusely tender, soft."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "systolicBp": 104,
+        "diastolicBp": 64,
+        "respiratoryRate": 28,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 27,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "ketones",
+        "name": "Blood ketones",
+        "value": 5.4,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 9,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 1 diabetes"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "platform": {
+      "web": {
+        "ccTemplate": "Vomiting",
+        "symptoms": [
+          "Vomiting",
+          "Abdominal pain"
+        ]
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Gastroenteritis",
+      "icd10": "A09",
+      "paneDiseaseId": "gastroenteritis",
+      "assessmentText": "Viral gastroenteritis."
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "alert-favours-dka",
+          "severity": "critical",
+          "match": [
+            "re:doesn't fit the working diagnosis.*(ketoacidosis|dka)"
+          ],
+          "sources": [
+            "web.reasoning.alert",
+            "ios.reasoning.alert"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ],
+          "note": "Ketones >= 3 mmol/L with bicarbonate < 15 is DKA (JBDS-IP 2023); gastroenteritis does not explain the acidosis."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "jbds-dka-2023",
+      "name": "The management of diabetic ketoacidosis in adults",
+      "year": 2023,
+      "section": "Diagnostic criteria",
+      "citation": "JBDS-IP 2023"
+    },
+    {
+      "id": "croskerry-2003",
+      "name": "The importance of cognitive errors in diagnosis and strategies to minimize them",
+      "year": 2003,
+      "section": "Premature closure; cognitive forcing strategies",
+      "citation": "Croskerry P. Acad Med 2003;78:775-780"
+    }
+  ],
+  "rationale": "Abdominal pain and vomiting are common in DKA; a gastroenteritis label must not survive the ketone result.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

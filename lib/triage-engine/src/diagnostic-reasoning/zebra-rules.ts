@@ -128,7 +128,8 @@ export const ZEBRA_RULES: ZebraRule[] = [
     explains: 'Gastrointestinal bleeding after aortic graft or aneurysm repair (a herald bleed)',
     all: [
       ['haematemesis', 'hematemesis', 'melaena', 'melena', 'rectal bleeding', 'bleeding per rectum', 'haematochezia',
-        'gi bleed', 'gastrointestinal bleed', 'upper gi bleed', 'coffee ground'],
+        'gi bleed', 'gastrointestinal bleed', 'upper gi bleed', 'coffee ground', 'vomited blood', 'vomiting blood',
+        'black stool', 'tarry stool'],
       ['aortic graft', 'aortic repair', 'aneurysm repair', 'aaa repair', 'evar', 'endovascular aneurysm repair',
         'aortobifemoral', 'aorto-bifemoral', 'aortic stent graft', 'open aortic'],
     ],

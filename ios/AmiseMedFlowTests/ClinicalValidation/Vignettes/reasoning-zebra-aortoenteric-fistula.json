@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-zebra-aortoenteric-fistula",
+  "condition": "Aorto-enteric fistula (herald bleed after aortic graft)",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "70-year-old man with an open AAA repair and aortic graft in 2019 presents with a small haematemesis and melaena.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 70,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Vomited blood",
+    "hpi": "Vomited a cupful of fresh blood this morning and passed black stools; now feels well. Open AAA repair with an aortic graft in 2019. On aspirin.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Pale.",
+      "abdomen": "Healed laparotomy scar. Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 102,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 37.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.4,
+        "unit": "g/dL",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Open AAA repair with aortic graft (2019)"
+    ],
+    "medications": [
+      {
+        "drug": "Aspirin"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "platform": {
+      "web": {
+        "ccTemplate": "GI bleeding",
+        "symptoms": [
+          "Vomiting blood",
+          "Black stool"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "zebra-aef",
+          "severity": "critical",
+          "match": [
+            "aorto-enteric fistula"
+          ],
+          "sources": [
+            "web.reasoning.zebra",
+            "ios.reasoning.zebra"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "esvs-2020"
+          ],
+          "note": "Any GI bleed in a patient with an aortic graft is an aorto-enteric fistula until proven otherwise (ESVS 2020); a herald bleed precedes exsanguination."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-2020",
+      "name": "ESVS 2020 clinical practice guidelines on the management of vascular graft and endograft infections",
+      "year": 2020,
+      "section": "Aorto-enteric fistula",
+      "citation": "Chakfé N et al. Eur J Vasc Endovasc Surg 2020;59:339-384"
+    }
+  ],
+  "rationale": "The zebra check must link a GI bleed with an aortic graft.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

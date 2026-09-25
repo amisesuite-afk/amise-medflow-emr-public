@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-zebra-conn-hypokalaemia",
+  "condition": "Primary aldosteronism (hypertension with hypokalaemia)",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "41-year-old woman with hypertension on three drugs and a potassium of 2.9 mmol/L, seen for an incidental adrenal nodule.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 41,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Adrenal nodule on CT",
+    "hpi": "Hypertension diagnosed at 35, now on amlodipine, ramipril and indapamide with poor control. Muscle cramps. A 14 mm left adrenal nodule was reported on a CT for renal colic.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Well.",
+      "cardiovascular": "BP 168/102."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 168,
+        "diastolicBp": 102,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 2.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 143,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine"
+      },
+      {
+        "drug": "Ramipril"
+      },
+      {
+        "drug": "Indapamide"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": []
+      }
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "zebra-conn",
+          "severity": "quality",
+          "match": [
+            "primary aldosteronism"
+          ],
+          "sources": [
+            "web.reasoning.zebra",
+            "ios.reasoning.zebra"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "es-pa-2016"
+          ],
+          "note": "Hypertension with hypokalaemia (spontaneous or diuretic-induced) is an indication to screen for primary aldosteronism (Endocrine Society 2016)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "es-pa-2016",
+      "name": "The management of primary aldosteronism: case detection, diagnosis, and treatment",
+      "year": 2016,
+      "section": "Case detection",
+      "citation": "Funder JW et al. J Clin Endocrinol Metab 2016;101:1889-1916"
+    }
+  ],
+  "rationale": "The zebra check should offer Conn's syndrome for hypertension with hypokalaemia.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

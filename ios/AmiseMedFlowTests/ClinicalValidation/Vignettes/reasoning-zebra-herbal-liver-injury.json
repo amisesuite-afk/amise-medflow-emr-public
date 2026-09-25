@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-zebra-herbal-liver-injury",
+  "condition": "Herb-induced liver injury (bush tea)",
+  "category": "hpb",
+  "permutationOf": null,
+  "summary": "50-year-old woman with jaundice and ALT 650 U/L; drinks a bush tea daily and takes a herbal slimming supplement.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 50,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Yellow eyes",
+    "hpi": "Two weeks of yellow eyes, dark urine and tiredness. No abdominal pain. Drinks a bush tea every morning and started a herbal slimming supplement two months ago. Rarely drinks alcohol. No travel.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Jaundiced.",
+      "abdomen": "Soft, non-tender. No hepatomegaly."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 80,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 650,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 160,
+        "unit": "U/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "platform": {
+      "web": {
+        "ccTemplate": "Jaundice",
+        "symptoms": [
+          "Jaundice"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "zebra-hili",
+          "severity": "quality",
+          "match": [
+            "herb- or supplement-induced liver injury"
+          ],
+          "sources": [
+            "web.reasoning.zebra",
+            "ios.reasoning.zebra"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "easl-dili-2019"
+          ],
+          "note": "Hepatocellular injury with herbal products or supplements: consider HILI and stop the product (EASL DILI 2019)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "easl-dili-2019",
+      "name": "EASL Clinical Practice Guidelines: drug-induced liver injury",
+      "year": 2019,
+      "section": "Herbal and dietary supplements",
+      "citation": "J Hepatol 2019;70:1222-1261"
+    }
+  ],
+  "rationale": "The zebra check should connect raised transaminases with the recorded herbal products and point to the supplements history.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}
