@@ -401,3 +401,27 @@ export function supplementNoteLine(h: SupplementHistory): string {
   const list = h.entries.map(e => (e.details.trim() ? `${e.name} (${e.details.trim()})` : e.name));
   return `Supplements: ${list.join('; ')}.`;
 }
+
+// ── Stored JSON (patients.pathway_data_json, shared with iOS PathwayData) ─────────────────
+
+/** Parse a stored pathway_data_json string; unknown / broken JSON → {}. */
+export function parsePathwayJson(raw: unknown): Record<string, unknown> {
+  if (typeof raw !== 'string' || !raw.trim()) return {};
+  try {
+    const v = JSON.parse(raw) as unknown;
+    return v && typeof v === 'object' && !Array.isArray(v) ? v as Record<string, unknown> : {};
+  } catch {
+    return {};
+  }
+}
+
+/** The JSON to write: `existing` with only its `supplements` key replaced. */
+export function mergeSupplementsIntoPathwayJson(existing: unknown, history: SupplementHistory): string {
+  const obj = parsePathwayJson(existing);
+  obj.supplements = {
+    status: history.entries.length > 0 ? 'taking' : history.status,
+    entries: history.entries.map(e => ({ id: e.id, catalogueId: e.catalogueId, name: e.name, details: e.details })),
+    askedAt: history.askedAt,
+  };
+  return JSON.stringify(obj);
+}

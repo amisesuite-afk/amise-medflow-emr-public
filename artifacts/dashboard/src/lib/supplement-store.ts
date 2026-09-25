@@ -12,33 +12,15 @@
  * Dates are written with second precision (iOS `.iso8601` decoding rejects milliseconds).
  */
 import { supabase } from './supabase';
-import { normaliseSupplementHistory, type SupplementHistory } from './supplement-catalogue';
+import {
+  mergeSupplementsIntoPathwayJson, normaliseSupplementHistory, parsePathwayJson, type SupplementHistory,
+} from './supplement-catalogue';
+
+export { mergeSupplementsIntoPathwayJson, parsePathwayJson };
 
 export const PATHWAY_DATA_COLUMN = 'pathway_data_json';
 
 export interface SupplementLoadResult { history: SupplementHistory | null; error: string | null }
-
-/** Parse a stored pathway_data_json string; unknown / broken JSON → {}. */
-export function parsePathwayJson(raw: unknown): Record<string, unknown> {
-  if (typeof raw !== 'string' || !raw.trim()) return {};
-  try {
-    const v = JSON.parse(raw) as unknown;
-    return v && typeof v === 'object' && !Array.isArray(v) ? v as Record<string, unknown> : {};
-  } catch {
-    return {};
-  }
-}
-
-/** The JSON to write: `existing` with only its `supplements` key replaced. */
-export function mergeSupplementsIntoPathwayJson(existing: unknown, history: SupplementHistory): string {
-  const obj = parsePathwayJson(existing);
-  obj.supplements = {
-    status: history.entries.length > 0 ? 'taking' : history.status,
-    entries: history.entries.map(e => ({ id: e.id, catalogueId: e.catalogueId, name: e.name, details: e.details })),
-    askedAt: history.askedAt,
-  };
-  return JSON.stringify(obj);
-}
 
 /** The patient's stored history, or null when none is stored (or it cannot be read). */
 export async function loadSupplementHistory(patientId: string): Promise<SupplementLoadResult> {

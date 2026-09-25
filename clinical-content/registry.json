@@ -377,7 +377,47 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer; web and iOS in the same PR (CLAUDE.md).",
-      "notes": "62 web rules, about 64 iOS rules. Limited list: absence of an alert does not mean absence of an interaction."
+      "notes": "103 web rules, about 105 iOS rules (41 of them herbal / supplement rules, same wording on both platforms). Limited list: absence of an alert does not mean absence of an interaction. Recorded herbs / supplements are screened like drugs.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "Herbal / supplement terms (garlic, ginkgo, ginger, turmeric, ginseng, St John's wort, kava, valerian, echinacea, ashwagandha, ephedra), nine classes (DOAC, calcineurin inhibitor, immunosuppressant, triptan, combined oral contraceptive, sulfonylurea, Z-drug hypnotic / barbiturate, general anaesthetic, sympathomimetic), levothyroxine and 41 rules (Ang-Lee JAMA 2001; SPAQI 2025; BNF). Grades conservative, awaiting surgeon review (docs/clinical-validation/changes/supplements-interactions.md)." }
+      ]
+    },
+    {
+      "id": "supplement-catalogue",
+      "title": "Herbs, teas, bush remedies & supplements: catalogue, perioperative alerts and 'ask about' prompts (web and iOS, parity enforced)",
+      "platforms": ["ios", "web", "front-desk", "api"],
+      "kind": "reference-catalogue",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "artifacts/dashboard/src/lib/supplement-catalogue.ts", "type": "regex", "pattern": "SUPPLEMENT_CATALOGUE_VERSION\\s*=\\s*'([^']+)'" },
+      "files": [
+        "artifacts/dashboard/src/lib/supplement-catalogue.ts",
+        "artifacts/dashboard/src/lib/supplement-prompts.ts",
+        "ios/AmiseMedFlow/Services/SupplementCatalogue.swift",
+        "ios/AmiseMedFlow/Services/SupplementAlerts.swift"
+      ],
+      "tests": [
+        "artifacts/dashboard/src/lib/__tests__/supplements.test.ts",
+        "ios/AmiseMedFlowTests/SupplementTests.swift",
+        "artifacts/api-server/src/test/outbound-safety.test.ts"
+      ],
+      "ciChecks": ["lint:interaction-parity", "lint:patient-instructions"],
+      "guidelines": [
+        { "name": "Owner's evidence briefing (Kabiye, 'Ancient Remedy, Modern Market', Sept 2026)", "version": "Sept 2026", "section": "§5 supplements and herbal products; §7 perioperative checklist", "citation": "Each catalogue item names its source" },
+        { "name": "Ang-Lee MK et al. Herbal medicines and perioperative care", "version": "JAMA 2001;286:208-16", "section": "stop times", "citation": "per item" },
+        { "name": "OpenAnesthesia: Herbal supplements and anesthesia (SPAQI recommendations)", "version": "2025", "section": "stop times", "citation": "per item" },
+        { "name": "US DILIN (turmeric), NIDDK LiverTox (ashwagandha), Saper JAMA 2008 (Ayurvedic metals), Nortier NEJM 2000 / Debelle Kidney Int 2008 (aristolochic acid), SmartAge JAMA Netw Open 2022 (spermidine)", "version": "as cited", "section": "harms", "citation": "per item" }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "Engineering only. Patient-facing herbal pre-op paragraph approved by the surgeon on 2026-09-25 (docs/clinical-validation/SURGEON-DECISIONS.md H1); the catalogue, grades and prompt thresholds are not yet clinically reviewed.",
+      "reviewPriority": "P2",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer; web and iOS in the same PR (lint:interaction-parity). Patient-facing wording only on the surgeon's instruction.",
+      "notes": "17 items (11 with interaction rules). Caribbean bush teas are deliberately not items; candidates await sign-off. Stop times are clinician-facing only. Prompt thresholds (ALT/AST >= 120 U/L, Hb < 12/13 g/dL, K < 3.5, Na < 135 mmol/L, lead >= 5 ug/dL) await sign-off.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "First version (docs/clinical-validation/changes/supplements-interactions.md)." }
+      ]
     },
     {
       "id": "web-outpatient-formulary",

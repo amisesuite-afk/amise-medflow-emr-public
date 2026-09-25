@@ -78,6 +78,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   // iOS — medicines, bowel prep
   'ios/AmiseMedFlow/Services/DrugInteractionService.swift',
   'ios/AmiseMedFlow/Services/DrugClasses.swift',
+  'ios/AmiseMedFlow/Services/SupplementCatalogue.swift',
+  'ios/AmiseMedFlow/Services/SupplementAlerts.swift',
   'ios/AmiseMedFlow/Services/SurgicalDrug*.swift',
   'ios/AmiseMedFlow/Services/CustomDrugStore.swift',
   'ios/AmiseMedFlow/Services/DiagnosisDosingGuide.swift',
@@ -124,6 +126,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   // Dashboard
   'artifacts/dashboard/src/lib/drug-interactions.ts',
   'artifacts/dashboard/src/lib/drug-classes.ts',
+  'artifacts/dashboard/src/lib/supplement-catalogue.ts',
+  'artifacts/dashboard/src/lib/supplement-prompts.ts',
   'artifacts/dashboard/src/lib/prescription-formulary.ts',
   'artifacts/dashboard/src/lib/dx-variants.ts',
   'artifacts/dashboard/src/lib/clinical-scales.ts',
