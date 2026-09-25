@@ -1323,19 +1323,9 @@
    ],
    "expected": [
     {
-     "key": "unexplained-finding:back",
-     "kind": "unexplained-finding",
-     "text": "Doesn't fit the working diagnosis: Radiation to back is not explained by Peptic ulcer — favours Acute pancreatitis (LR 16)."
-    },
-    {
-     "key": "unexplained-finding:hypotension",
-     "kind": "unexplained-finding",
-     "text": "Doesn't fit the working diagnosis: Hypotension is not explained by Peptic ulcer — favours Ruptured AAA (LR 6.0)."
-    },
-    {
      "key": "less-likely:panc",
      "kind": "less-likely",
-     "text": "The record now favours Acute pancreatitis (62%) over Peptic ulcer (8%)."
+     "text": "Doesn't fit the working diagnosis: the record favours Acute pancreatitis (62%) over Peptic ulcer (8%) — mainly Radiation to back (LR 16 vs 1.0)."
     },
     {
      "key": "news2-rising:1-5",
@@ -1510,19 +1500,9 @@
      "text": "Doesn't fit the working diagnosis: Relief with antacids argues against Acute pancreatitis (LR 0.30) — favours Peptic ulcer."
     },
     {
-     "key": "contradicting-finding:fever",
-     "kind": "contradicting-finding",
-     "text": "Doesn't fit the working diagnosis: no fever argues against Acute pancreatitis (LR 0.50)."
-    },
-    {
      "key": "contradicting-finding:lipase",
      "kind": "contradicting-finding",
      "text": "Doesn't fit the working diagnosis: no raised lipase, expected in Acute pancreatitis (LR 0.10)."
-    },
-    {
-     "key": "unexplained-finding:hypotension",
-     "kind": "unexplained-finding",
-     "text": "Doesn't fit the working diagnosis: Hypotension is not explained by Acute pancreatitis — favours Ruptured AAA (LR 6.0)."
     }
    ]
   },
@@ -1683,13 +1663,349 @@
    "workingLabel": "Irritable bowel syndrome",
    "news2Series": [
     0,
-    3
+    5
    ],
    "expected": [
     {
-     "key": "news2-rising:0-3",
+     "key": "news2-rising:0-5",
      "kind": "news2-rising",
-     "text": "NEWS2 rising (0 → 3): is Irritable bowel syndrome still the whole story? Consider Ruptured AAA."
+     "text": "NEWS2 rising (0 → 5): is Irritable bowel syndrome still the whole story? Consider Ruptured AAA."
+    }
+   ]
+  },
+  {
+   "name": "news2-below-5",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.62,
+      "cantMiss": false
+     },
+     {
+      "id": "aaa",
+      "label": "Ruptured AAA",
+      "probability": 0.1,
+      "cantMiss": true
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.08,
+      "cantMiss": false
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "workingId": "pud",
+   "workingLabel": "Peptic ulcer",
+   "news2Series": [
+    0,
+    1,
+    4
+   ],
+   "expected": [
+    {
+     "key": "less-likely:panc",
+     "kind": "less-likely",
+     "text": "Doesn't fit the working diagnosis: the record favours Acute pancreatitis (62%) over Peptic ulcer (8%) — mainly Radiation to back (LR 16 vs 1.0)."
+    }
+   ]
+  },
+  {
+   "name": "coexisting-leader-skipped",
+   "input": {
+    "hypotheses": [
+     {
+      "id": "aaa",
+      "label": "Sepsis",
+      "probability": 0.8,
+      "cantMiss": true,
+      "coexists": true
+     },
+     {
+      "id": "panc",
+      "label": "Acute pancreatitis",
+      "probability": 0.1,
+      "cantMiss": false
+     },
+     {
+      "id": "pud",
+      "label": "Peptic ulcer",
+      "probability": 0.05,
+      "cantMiss": false
+     }
+    ],
+    "findings": [
+     {
+      "id": "back",
+      "label": "Radiation to back",
+      "status": "present"
+     },
+     {
+      "id": "antacid",
+      "label": "Relief with antacids",
+      "status": "present"
+     },
+     {
+      "id": "lipase",
+      "label": "Raised lipase",
+      "status": "absent"
+     },
+     {
+      "id": "pulsatile",
+      "label": "Pulsatile mass",
+      "status": "unknown"
+     },
+     {
+      "id": "rash",
+      "label": "Rash",
+      "status": "present"
+     },
+     {
+      "id": "fever",
+      "label": "Fever",
+      "status": "absent"
+     },
+     {
+      "id": "hypotension",
+      "label": "Hypotension",
+      "status": "present"
+     }
+    ],
+    "weights": {
+     "panc": {
+      "back": {
+       "lrPresent": 16.25,
+       "lrAbsent": 0.37,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 0.3,
+       "lrAbsent": 1.2,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 18,
+       "lrAbsent": 0.1,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "fever": {
+       "lrPresent": 2.2,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.2,
+       "lrAbsent": 0.98,
+       "modelled": true,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "pud": {
+      "back": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "antacid": {
+       "lrPresent": 6,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "lipase": {
+       "lrPresent": 1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 1.1,
+       "lrAbsent": 1,
+       "modelled": false,
+       "cardinal": false,
+       "source": "S"
+      }
+     },
+     "aaa": {
+      "back": {
+       "lrPresent": 8,
+       "lrAbsent": 0.4,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "pulsatile": {
+       "lrPresent": 9,
+       "lrAbsent": 0.5,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      },
+      "hypotension": {
+       "lrPresent": 6,
+       "lrAbsent": 0.6,
+       "modelled": true,
+       "cardinal": true,
+       "source": "S"
+      }
+     }
+    }
+   },
+   "workingId": "pud",
+   "workingLabel": "Peptic ulcer",
+   "news2Series": [
+    2,
+    7
+   ],
+   "expected": [
+    {
+     "key": "news2-rising:2-7",
+     "kind": "news2-rising",
+     "text": "NEWS2 rising (2 → 7): is Peptic ulcer still the whole story?"
     }
    ]
   },

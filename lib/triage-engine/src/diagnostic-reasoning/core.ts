@@ -19,8 +19,8 @@
  *    test best separates the leading diagnoses, cheapest first; CT / MRI / endoscopy only when a
  *    can't-miss diagnosis is among them.
  *  - prematureClosureAlerts(): "Doesn't fit the working diagnosis" when a recorded finding
- *    contradicts the confirmed diagnosis or favours another one, when the record now favours
- *    another diagnosis strongly, or when NEWS2 is rising.
+ *    strongly contradicts the confirmed diagnosis, when the record as a whole now favours another
+ *    diagnosis strongly (naming the finding that drives it), or when NEWS2 is rising to 5 or more.
  *  - diagnosticTimeOut(): a gentle checklist when the case is complex.
  *
  * Everything is a suggestion for the clinician; nothing is added to the record by this module.
@@ -40,17 +40,17 @@ export const REASONING_THRESHOLDS = {
   /** A hypothesis with no supporting finding of LR ≥ this is shown as "low evidence". */
   lowEvidenceLr: 2,
   /** Premature-closure alert: a finding against the working diagnosis with LR ≤ this. */
-  strongContradictionLr: 0.5,
-  /** Premature-closure alert: an unexplained finding favouring another diagnosis with LR ≥ this. */
-  strongFavourLr: 3,
+  strongContradictionLr: 0.33,
+  /** Premature-closure alert: the finding that drives the leader has an LR ratio ≥ this (leader / working). */
+  strongFavourLr: 10,
   /** Premature-closure alert: the leader is at least this many times more probable… */
-  lessLikelyRatio: 3,
+  lessLikelyRatio: 5,
   /** …and at least this probable. */
-  lessLikelyMinLeader: 0.2,
+  lessLikelyMinLeader: 0.5,
   /** NEWS2 rise (latest minus the lowest earlier reading) that raises an alert… */
   news2RiseMin: 2,
-  /** …when the latest NEWS2 is at least this. */
-  news2AlertMin: 3,
+  /** …when the latest NEWS2 is at least this (RCP NEWS2: 5 = urgent ward-based response). */
+  news2AlertMin: 5,
   /** Diagnostic time-out: this many recorded findings unexplained by the leading diagnoses. */
   unexplainedTimeOut: 3,
   /** Expected information gain (nats) below which a probe is not offered. */
@@ -90,6 +90,12 @@ export interface ReasoningHypothesis {
   probability: number;
   /** A time-critical diagnosis that must not be missed. */
   cantMiss: boolean;
+  /**
+   * A syndrome or state that accompanies other diagnoses rather than competing with them
+   * (sepsis, acute kidney injury, electrolyte disorders): never offered as the alternative that
+   * "doesn't fit" alerts point to.
+   */
+  coexists?: boolean;
 }
 
 export interface ReasoningInput {
@@ -383,7 +389,7 @@ export function discriminatorWhy(kind: ProbeKind, lines: PostTestLine[]): string
 
 // ── Premature closure ─────────────────────────────────────────────────────────
 
-export type ClosureKind = 'contradicting-finding' | 'unexplained-finding' | 'less-likely' | 'news2-rising';
+export type ClosureKind = 'contradicting-finding' | 'less-likely' | 'news2-rising';
 
 export interface ClosureAlert {
   /** Stable key for dismissal. */
@@ -409,8 +415,10 @@ export function prematureClosureAlerts(
   const working = workingId ? input.hypotheses.find(h => h.id === workingId) ?? null : null;
   if (working) {
     const ex = explain(input, working.id);
+    // Only findings the working diagnosis models itself (not derived defaults such as onset).
+    const own = (id: string) => weightOf(input, working.id, id).modelled;
     for (const e of ex.against) {
-      if (e.lr > T.strongContradictionLr) continue;
+      if (e.lr > T.strongContradictionLr || !own(e.findingId)) continue;
       const finding = e.status === 'absent' ? `no ${lowerFirst(e.label)}` : e.label;
       out.push({
         key: `contradicting-finding:${e.findingId}`, kind: 'contradicting-finding', finding, favours: e.favours, lr: e.lr,
@@ -419,24 +427,31 @@ export function prematureClosureAlerts(
       });
     }
     for (const e of ex.missing) {
-      if (!e.documented || e.lr > T.strongContradictionLr) continue;
+      if (!e.documented || e.lr > T.strongContradictionLr || !own(e.findingId)) continue;
       out.push({
         key: `contradicting-finding:${e.findingId}`, kind: 'contradicting-finding', finding: `no ${lowerFirst(e.label)}`, favours: null, lr: e.lr,
         text: `Doesn't fit the working diagnosis: no ${lowerFirst(e.label)}, expected in ${working.label} (LR ${formatLr(e.lr)}).`,
       });
     }
-    for (const e of ex.doesntFit) {
-      if (e.favours === null || e.favoursLr === null || e.favoursLr < T.strongFavourLr) continue;
-      out.push({
-        key: `unexplained-finding:${e.findingId}`, kind: 'unexplained-finding', finding: e.label, favours: e.favours, lr: e.favoursLr,
-        text: `Doesn't fit the working diagnosis: ${e.label} is not explained by ${working.label} — favours ${e.favours} (LR ${formatLr(e.favoursLr)}).`,
-      });
-    }
-    const leader = input.hypotheses.find(h => h.id !== working.id) ?? null;
+    // The record as a whole favours another diagnosis strongly; name the finding that drives it
+    // (the largest likelihood-ratio ratio leader / working among the present findings). A finding
+    // that merely belongs to a second condition does not alert on its own: it stays in the
+    // "doesn't fit" list.
+    const leader = input.hypotheses.find(h => h.id !== working.id && !h.coexists) ?? null;
     if (leader && leader.probability >= T.lessLikelyMinLeader && leader.probability >= T.lessLikelyRatio * working.probability) {
-      out.push({
-        key: `less-likely:${leader.id}`, kind: 'less-likely', finding: null, favours: leader.label, lr: null,
-        text: `The record now favours ${leader.label} (${fmtPct(leader.probability)}) over ${working.label} (${fmtPct(working.probability)}).`,
+      let driver: { id: string; label: string; lrLeader: number; lrWorking: number } | null = null;
+      for (const f of input.findings) {
+        if (f.status !== 'present') continue;
+        const lrLeader = weightOf(input, leader.id, f.id).lrPresent;
+        const lrWorking = weightOf(input, working.id, f.id).lrPresent;
+        if (lrLeader / lrWorking < T.strongFavourLr) continue;
+        if (driver === null || lrLeader / lrWorking > driver.lrLeader / driver.lrWorking) driver = { id: f.id, label: f.label, lrLeader, lrWorking };
+      }
+      if (driver) out.push({
+        key: `less-likely:${leader.id}`, kind: 'less-likely', finding: driver ? driver.label : null, favours: leader.label,
+        lr: driver ? driver.lrLeader : null,
+        text: `Doesn't fit the working diagnosis: the record favours ${leader.label} (${fmtPct(leader.probability)}) over ${working.label} (${fmtPct(working.probability)})`
+          + (driver ? ` — mainly ${driver.label} (LR ${formatLr(driver.lrLeader)} vs ${formatLr(driver.lrWorking)}).` : '.'),
       });
     }
   }
@@ -444,7 +459,7 @@ export function prematureClosureAlerts(
     const last = news2Series[news2Series.length - 1];
     const lowest = Math.min(...news2Series.slice(0, -1));
     if (last - lowest >= T.news2RiseMin && last >= T.news2AlertMin) {
-      const alt = input.hypotheses.find(h => h.cantMiss && h.id !== workingId) ?? null;
+      const alt = input.hypotheses.find(h => h.cantMiss && !h.coexists && h.id !== workingId) ?? null;
       out.push({
         key: `news2-rising:${lowest}-${last}`, kind: 'news2-rising', finding: `NEWS2 ${lowest} → ${last}`, favours: alt ? alt.label : null, lr: null,
         text: `NEWS2 rising (${lowest} → ${last}): is ${working ? working.label : workingLabel} still the whole story?`

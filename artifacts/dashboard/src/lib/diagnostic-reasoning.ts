@@ -39,6 +39,8 @@ export const REASONING_TOP_K = 3;
 /** A feature is cardinal for a disease when P(feature | disease) ≥ this and its LR+ ≥ 2. */
 export const CARDINAL_MIN_SENSITIVITY = 0.6;
 export const CARDINAL_MIN_LR = 2;
+/** Findings more common than this in the background population do not count towards the time-out. */
+export const TIME_OUT_MAX_BASE_RATE = 0.05;
 
 /**
  * PANE diseases that are time-critical ("can't miss"): the only ones for which a CT, MRI,
@@ -55,6 +57,14 @@ export const CANT_MISS_DISEASE_IDS: ReadonlySet<string> = new Set([
   'variceal_bleed', 'perforated_peptic_ulcer', 'food_bolus', 'infected_obstructed_kidney', 'testicular_torsion',
   'aortic_aneurysm', 'aortoenteric_fistula', 'mesenteric_ischaemia', 'acute_limb_ischaemia', 'pulmonary_embolism',
   'incarcerated_hernia', 'electrical_burn', 'thermal_burn_major',
+]);
+
+/**
+ * Syndromes and states that accompany other diagnoses rather than compete with them: never the
+ * alternative a "doesn't fit" alert points to (registered in `diagnostic-reasoning-rules`).
+ */
+export const COEXISTING_DISEASE_IDS: ReadonlySet<string> = new Set([
+  'sepsis', 'aki', 'hyperkalaemia', 'hypercalcaemia', 'hyponatraemia', 'hypoglycaemia',
 ]);
 
 /** Guideline sources of each PANE module (the module header comments), for the evidence lines. */
@@ -100,7 +110,9 @@ export function paneWeight(d: DiseaseNode, featureId: string): FindingWeight {
   return {
     lrPresent,
     lrAbsent: (1 - p) / (1 - b),
-    modelled: own || Math.abs(p - b) > 1e-9,
+    // Listed in the disease node itself (derived umbrella / onset values are used for the LR but
+    // do not count as the disease "expecting" the finding).
+    modelled: own,
     cardinal: own && p >= CARDINAL_MIN_SENSITIVITY && lrPresent >= CARDINAL_MIN_LR,
     source: paneSource(d.id),
   };
@@ -197,6 +209,7 @@ function featureLabel(id: string): string {
 export function buildReasoningInput(state: PaneState, nodes: DiseaseNode[]): ReasoningInput {
   const hypotheses: ReasoningHypothesis[] = nodes.map(d => ({
     id: d.id, label: d.label, probability: state.posteriors[d.id] ?? 0, cantMiss: CANT_MISS_DISEASE_IDS.has(d.id),
+    coexists: COEXISTING_DISEASE_IDS.has(d.id),
   }));
   const findings: ReasoningFinding[] = [];
   const seen = new Set<string>();
@@ -327,7 +340,13 @@ export function buildDiagnosticReasoning(req: ReasoningRequest): DiagnosticReaso
   const visits = req.longitudinal?.visits ?? [];
   const history = sameComplaintHistory(visits, req.currentComplaint ?? '');
   const timeOut = diagnosticTimeOut({
-    unexplainedFindings: unexplainedFindings(input, nodes.map(d => d.id)),
+    // Specific symptoms, signs and results only: history items (risk factors, medicines) are
+    // context, and common non-specific findings (background rate above 5 %: "severe pain", "pain
+    // worse on movement") do not make a case complex.
+    unexplainedFindings: unexplainedFindings(
+      { ...input, findings: input.findings.filter(f => FEATURE_BY_ID.get(f.id)?.category !== 'history' && baseRate(f.id) <= TIME_OUT_MAX_BASE_RATE) },
+      nodes.map(d => d.id),
+    ),
     priorVisitsSameComplaint: history.count,
     priorDiagnosesSameComplaint: history.diagnoses,
   });

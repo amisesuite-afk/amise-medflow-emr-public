@@ -61,7 +61,7 @@ describe('diagnostic reasoning — web adapter (PANE)', () => {
     const r = run(state, { working: { diseaseId: 'peptic_ulcer', icdCode: 'K27.9', label: 'Peptic ulcer disease' } });
     expect(r.workingId).toBe('peptic_ulcer');
     const texts = r.closureAlerts.map(a => a.text).join('\n');
-    expect(texts).toMatch(/Elevated amylase \/ lipase is not explained by Peptic Ulcer Disease — favours Acute Pancreatitis/);
+    expect(texts).toMatch(/Doesn't fit the working diagnosis: the record favours Acute Pancreatitis \(>99%\) over Peptic Ulcer Disease \(<1%\) — mainly Elevated amylase \/ lipase/);
     expect(r.explanations.map(e => e.hypothesisId)).toContain('peptic_ulcer');
   });
 
