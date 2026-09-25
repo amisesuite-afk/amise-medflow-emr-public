@@ -110,7 +110,7 @@ pnpm run test:e2e                              # Playwright walkthrough — requ
 |---|---|
 | `VITE_SUPABASE_URL` | Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` | Supabase anon JWT key (`eyJ…`, ~200+ chars) — **not** the opaque `sb_publishable_…` format |
-| `VITE_SENTRY_DSN` | Sentry DSN for dashboard error monitoring (optional) |
+| `VITE_SENTRY_DSN` | Sentry DSN for dashboard error monitoring (optional). Init options are PHI-safe (`src/lib/sentry.ts` + `src/lib/sentry-scrub.ts`: no default PII, no replay, no request/user/extra, no console or DOM breadcrumbs, tracing off) — don't add `replayIntegration`, `setUser` with an email, or raise `tracesSampleRate` without a compliance review |
 
 ### Backend
 
@@ -151,7 +151,7 @@ pnpm run test:e2e                              # Playwright walkthrough — requ
 | `OPENAI_API_KEY` | OpenAI API key — enables Whisper transcription of uploaded cell phone recordings (optional) |
 | `TWILIO_TRANSCRIPTION` | `true` to enable Twilio's own transcription on voicemail recordings (English only, less accurate than Whisper) |
 | `SMS_PROVIDER` | `dry_run` (default) / `twilio` / `digicel` |
-| `SENTRY_DSN` | Sentry DSN for API error monitoring (optional) |
+| `SENTRY_DSN` | Sentry DSN for API error monitoring (optional). Init options are PHI-safe (`src/lib/sentry.ts` + `src/lib/sentry-scrub.ts`, the same code as the dashboard scrubber apart from the header comment — a dashboard test fails if they drift): no default PII, no RequestData, no console/HTTP breadcrumbs, no local variables, tracing off |
 | `PORTAL_URL` | Front-desk portal URL for CORS and WhatsApp links |
 | `DASHBOARD_URL` | Dashboard URL for CORS |
 | `CLAUDE_MODEL` | Override Claude model (default `claude-haiku-4-5-20251001`) |
