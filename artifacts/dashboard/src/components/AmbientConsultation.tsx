@@ -1286,15 +1286,13 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', gap: compact ? 0 : 12,
-      // In compact mode (tab strip is also showing) the phase nav sticks to the
-      // top of the scroll pane so it stays visible when the user scrolls into
-      // the section content. The tab strip (.consult-tabstrip) then sticks just
-      // below it at top: 44px.
-      ...(compact ? { position: 'sticky', top: 0, zIndex: 11, background: 'var(--bg)' } : {}),
     }}>
 
-      {/* ── Phase breadcrumb ── */}
-      <div className="phase-nav">
+      {/* ── Phase breadcrumb ── only on the full ambient canvas. In compact mode the tab strip or
+          the pathway bar is showing, and the phase is a group label inside that bar (UX review M6:
+          three stacked navigation layers became one). Every phase target (HPI, Exam, Assessment,
+          Plan) is a step in that bar, so nothing becomes unreachable. */}
+      {!compact && <div className="phase-nav">
         {phases.map((p, i) => {
           const done = i < phaseIdx;
           const active = i === phaseIdx;
@@ -1318,7 +1316,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             </button>
           );
         })}
-      </div>
+      </div>}
       {/* ── Full canvas: hidden when compact (tab strip is also showing) ── */}
       {!compact && <>
 

@@ -86,7 +86,6 @@ import CriticalResultAlert from '@/components/CriticalResultAlert';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import VisitContinuityPanel from '@/components/VisitContinuityPanel';
 import RecordLoadNotice from '@/components/RecordLoadNotice';
-import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import OpenTasksBanner from '@/components/OpenTasksBanner';
@@ -102,6 +101,8 @@ import PatientNotifyModal from '@/components/PatientNotifyModal';
 import ConsultationNav from '@/components/ConsultationNav';
 import AmbientConsultation from '@/components/AmbientConsultation';
 import EncounterSignOffDialog from '@/components/EncounterSignOffDialog';
+import ConsultToolDrawer from '@/components/ConsultToolDrawer';
+import { availableTools, type ConsultToolId } from '@/lib/consult-steps';
 import { getMatrix } from '@/lib/cc-matrices';
 import { VISIT_TYPE_TABS } from '@/lib/visit-type-tabs';
 import { currentComplaintText } from '@/lib/visit-continuity-web';
@@ -207,6 +208,9 @@ export default function HomePage() {
   const [guidedMode, setGuidedMode] = useState(false);
   const [ambientMode, setAmbientMode] = useState(false);
   const [notifyOpen, setNotifyOpen] = useState(false);
+  // Scores / Vitals / Prescriptions / Notes / Tasks opened over the current step (Tools menu).
+  const [consultTool, setConsultTool] = useState<ConsultToolId | null>(null);
+  const closeConsultTool = useCallback(() => setConsultTool(null), []);
   const [notifyStatus, setNotifyStatus] = useState<{ ok: boolean; msg: string } | null>(null);
   const prevPatientIdRef = useRef<string | null>(null);
 
@@ -394,8 +398,10 @@ export default function HomePage() {
 
     // Default: CC matrix or encounter-type bucket
     const matrix  = activeCcKey ? getMatrix(activeCcKey) : null;
+    // A chief-complaint pathway keeps Scores (UX review top-10 #10: it used to disappear once a
+    // complaint was chosen; ClinicalWorkflowBar shows it after Assessment).
     const allowed = matrix
-      ? new Set<Section>(matrix.sections)
+      ? new Set<Section>([...matrix.sections, 'scales'])
       : ENCOUNTER_TAB_SETS[encounterType];
     const all: { id: Section; label: string }[] = [
       { id: 'brief', label: 'Brief' },
@@ -430,6 +436,7 @@ export default function HomePage() {
         { id: 'radiology' as Section, label: 'Radiology' },
         { id: 'attachments' as Section, label: 'Attach' },
       ] : []),
+      { id: 'scales', label: 'Scores' },
       { id: 'progress', label: 'Notes' },
       { id: 'monitoring', label: 'Monitor' },
       { id: 'tasks', label: 'Tasks' },
@@ -558,6 +565,9 @@ export default function HomePage() {
     if (topSection !== 'consultation') return;
     if (swipeRef.current) swipeRef.current.scrollTop = 0;
   }, [activeSection, topSection]);
+
+  // A tool panel belongs to the patient and the consultation it was opened in.
+  useEffect(() => { setConsultTool(null); }, [patientId, topSection]);
 
   // Reset to new consultation when patient or CC changes
   useEffect(() => { setHeaderVisitMode('new'); }, [patientId, activeCcKey]);
@@ -746,10 +756,11 @@ export default function HomePage() {
           guidedMode={guidedMode}
           setGuidedMode={setGuidedMode}
           headerVisitMode={headerVisitMode}
+          tools={availableTools(authLoading || hasRole(userRole, 'doctor'))}
+          onOpenTool={setConsultTool}
         />
-
-        {/* Algorithm workflow guide — always visible when CC is active */}
-        {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ClinicalWorkflowBar />}
+        {/* The chief-complaint pathway bar (ClinicalWorkflowBar) is rendered by ConsultationNav:
+            one block with the actions in its header, instead of a separate row (UX review M6). */}
 
         {/* Visit-type gate — physician fail-safe. Front desk is meant to capture visit
             type during check-in/triage; if that was skipped for any reason, the clinical
@@ -919,6 +930,11 @@ export default function HomePage() {
       </main>
 
       {!consultAmbient && <FloatingActions />}
+
+      {/* Consultation tool panel — over the current step, never changes it */}
+      {topSection === 'consultation' && (
+        <ConsultToolDrawer tool={consultTool} onClose={closeConsultTool} />
+      )}
 
       {/* AI slide-in panel — triggered from header button */}
       {hasRole(userRole, 'doctor') && showAiPanel && (

@@ -459,6 +459,32 @@ const MOCK_ENCOUNTER = {
     }
   }
 
+  // ── Tools menu: Scores over the current step (UX review top-10 #10) ───────────
+  // Opened in a side panel; closing it returns to the same step (the step is never changed).
+  {
+    const stepBefore = ((await page.locator('button[role="tab"][aria-selected="true"]').first().textContent().catch(() => '')) ?? '').trim();
+    const tools = page.locator('[data-testid="consult-tools"]').first();
+    if (await tools.count()) {
+      await tools.click(); await page.waitForTimeout(300);
+      await page.locator('[data-testid="consult-tool-scales"]').click({ timeout: 3000 }).catch(() => {});
+      await page.waitForTimeout(800);
+      const drawer = page.locator('[data-testid="consult-tool-drawer"]');
+      if (await drawer.count()) {
+        pass('Tools → Scores opens over the current step');
+        await shot(page, '11-tools-scores');
+        await page.locator('[data-testid="consult-tool-close"]').click();
+        await page.waitForTimeout(400);
+        const stepAfter = ((await page.locator('button[role="tab"][aria-selected="true"]').first().textContent().catch(() => '')) ?? '').trim();
+        if (!(await drawer.count()) && stepAfter === stepBefore) pass(`Closing the tool returns to the same step (${stepAfter || 'unchanged'})`);
+        else fail('Tools close', `Drawer still open or step changed ("${stepBefore}" → "${stepAfter}")`);
+      } else {
+        fail('Tools → Scores', 'No tool panel opened');
+      }
+    } else {
+      fail('Tools menu', 'Not found in the consultation navigation');
+    }
+  }
+
   // ── Auto-save indicator ───────────────────────────────────────────────────────
   await page.waitForTimeout(1000);
   const localStorageHasEnc = await page.evaluate(() => !!localStorage.getItem('amise-enc-v1'));

@@ -1,7 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppContext, type Section } from '@/context/AppContext';
 import { type SectionCompletion } from '@/components/NavSidebar';
 import VoiceDictation from '@/components/VoiceDictation';
+import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
+import ConsultToolsMenu from '@/components/ConsultToolsMenu';
+import { getMatrix } from '@/lib/cc-matrices';
+import { neighbours, workflowSteps, type ConsultTool, type ConsultToolId } from '@/lib/consult-steps';
 
 interface ConsultationNavProps {
   consultTabs: { id: Section; label: string }[];
@@ -13,6 +17,9 @@ interface ConsultationNavProps {
   guidedMode: boolean;
   setGuidedMode: React.Dispatch<React.SetStateAction<boolean>>;
   headerVisitMode: 'new' | 'followup';
+  /** Tools this user may open over the current step (Scores, Vitals, Prescriptions, Notes, Tasks). */
+  tools: readonly ConsultTool[];
+  onOpenTool: (tool: ConsultToolId) => void;
 }
 
 const SECTION_ICONS: Partial<Record<Section, string>> = {
@@ -28,13 +35,17 @@ const SECTION_ICONS: Partial<Record<Section, string>> = {
 };
 
 /** Consultation section navigation — three mutually-exclusive UI modes sharing
- * the same prev/next tab logic: an algorithm-guided CC workflow (no tab menu),
- * a one-step-at-a-time guided mode with progress dots, or the full scrollable
- * tab strip. Also owns the shared voice-dictation trigger/panel and the tab
- * strip's scroll-into-view / arrow-visibility behaviour. */
+ * the same prev/next tab logic: an algorithm-guided CC workflow (the pathway bar), a
+ * one-step-at-a-time guided mode with progress dots, or the full scrollable tab strip. Also owns
+ * the shared voice-dictation trigger/panel, the Tools menu (every mode) and the tab strip's
+ * scroll-into-view / arrow-visibility behaviour.
+ *
+ * CC workflow (UX review M6): the action row (Back / Dictate / Ambient / Next / Summary) is the
+ * pathway bar's header now, not a separate layer, and Back / Next follow the bar's own order. */
 export default function ConsultationNav({
   consultTabs, sectionCompletion, completeEncounter, completing,
   ambientMode, setAmbientMode, guidedMode, setGuidedMode, headerVisitMode,
+  tools, onOpenTool,
 }: ConsultationNavProps) {
   const { topSection, activeSection, setActiveSection, activeCcKey, setTopSection, visitType: ctxVisitType } = useAppContext();
   const [voiceOpen, setVoiceOpen] = useState(false);
@@ -78,7 +89,22 @@ export default function ConsultationNav({
     return () => { strip.removeEventListener('scroll', sync); ro.disconnect(); };
   }, [consultTabs]);
 
+  // CC pathway: the bar's steps (matrix order, Scores after Assessment, role-allowed), so Back /
+  // Next walk exactly the pills shown.
+  const allowedIds = useMemo(() => new Set(consultTabs.map(t => t.id)), [consultTabs]);
+  const ccSteps = useMemo(() => {
+    const matrix = activeCcKey ? getMatrix(activeCcKey) : undefined;
+    if (!matrix) return consultTabs;
+    const byId = new Map(consultTabs.map(t => [t.id, t] as const));
+    return workflowSteps(matrix.sections)
+      .filter(s => allowedIds.has(s))
+      .map(s => byId.get(s)!)
+      .filter(Boolean);
+  }, [activeCcKey, consultTabs, allowedIds]);
+
   if (topSection !== 'consultation' || ambientMode) return null;
+
+  const toolsMenu = <ConsultToolsMenu tools={tools} activeSection={activeSection} onOpen={onOpenTool} />;
 
   const curIdx = Math.max(0, consultTabs.findIndex(t => t.id === activeSection));
   const total = consultTabs.length;
@@ -87,46 +113,51 @@ export default function ConsultationNav({
 
   let nav: React.ReactNode;
 
-  // ── Algorithm-guided mode: CC drives the workflow; no tab menu ──────────
+  // ── Algorithm-guided mode: CC drives the workflow; the pathway bar is the navigation ──
   if (activeCcKey) {
+    const { prev: ccPrev, next: ccNext } = neighbours(ccSteps, activeSection);
     nav = (
-      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0 6px', alignItems: 'center', gap: 8 }}>
-        {prevTab ? (
-          <button type="button" onClick={() => setActiveSection(prevTab.id)}
-            style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)' }}>
-            ← {SECTION_ICONS[prevTab.id] ?? ''} {prevTab.label}
+      <ClinicalWorkflowBar
+        allowed={allowedIds}
+        leading={ccPrev ? (
+          <button type="button" onClick={() => setActiveSection(ccPrev.id)} className="wf-action"
+            aria-label={`Back: ${ccPrev.label}`}
+            style={{ border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)', fontWeight: 600 }}>
+            ← {ccPrev.label}
           </button>
-        ) : <span />}
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        ) : null}
+        actions={<>
+          {toolsMenu}
           <button
             type="button"
             onClick={() => setVoiceOpen(v => !v)}
             title="Voice dictation — dictate into SOAP sections"
+            className="wf-action"
             style={{
-              padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
-              cursor: 'pointer', border: 'none', whiteSpace: 'nowrap',
+              border: 'none',
               background: voiceOpen ? '#0d9488' : '#f0fdf4',
               color: voiceOpen ? '#fff' : '#0d9488',
             }}
           >
             🎙 Dictate
           </button>
-          <button type="button" onClick={() => setAmbientMode(true)}
-            style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
+          <button type="button" onClick={() => setAmbientMode(true)} className="wf-action"
+            style={{ border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
             🎙 Ambient
           </button>
-          {nextTab && (
-            <button type="button" onClick={() => setActiveSection(nextTab.id)}
-              style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#0d9488', color: '#fff' }}>
-              {SECTION_ICONS[nextTab.id] ?? ''} {nextTab.label} →
+          {ccNext && (
+            <button type="button" onClick={() => setActiveSection(ccNext.id)} className="wf-action"
+              style={{ border: 'none', background: '#0d9488', color: '#fff' }}>
+              {SECTION_ICONS[ccNext.id] ?? ''} {ccNext.label} →
             </button>
           )}
-          <button type="button" onClick={() => setTopSection('finaldoc')}
-            style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
+          <button type="button" onClick={() => setTopSection('finaldoc')} className="wf-action"
+            title="Open encounter summary, export, and sign-off"
+            style={{ border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
             📋 Summary
           </button>
-        </div>
-      </div>
+        </>}
+      />
     );
   } else if (guidedMode) {
     nav = (
@@ -139,6 +170,7 @@ export default function ConsultationNav({
           <span style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', flex: 1 }}>
             {SECTION_ICONS[consultTabs[curIdx]?.id as Section] ?? ''} {consultTabs[curIdx]?.label ?? ''}
           </span>
+          {toolsMenu}
           {/* Voice dictation toggle */}
           <button
             type="button"
@@ -253,6 +285,7 @@ export default function ConsultationNav({
             </button>
           ) : <span />}
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            {toolsMenu}
             <button
               type="button"
               onClick={() => setVoiceOpen(v => !v)}
