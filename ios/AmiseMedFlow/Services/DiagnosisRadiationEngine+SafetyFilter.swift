@@ -16,9 +16,12 @@ import Foundation
 //     (penicillins, cephalosporins, NSAIDs, macrolides, fluoroquinolones, sulfonamides,
 //     tetracyclines, opioids, contrast) — are removed and replaced by an allergy warning. After a
 //     severe / immediate penicillin reaction, cephalosporin lines are removed too (BNF).
-//   - Antithrombotics: procedural cards get a procedure-specific peri-procedural plan (no routine
+//   - Then PlanSafetyFilter (Swift twin of the web planSafety.ts) adds the remaining line filters
+//     and the patient-specific safety lines: procedure-specific antithrombotic advice (no routine
 //     bridging; DOAC interruption per PAUSE; BSG/ESGE 2021 endoscopy table; coronary stent
-//     windows per ESC/ESAIC 2022) instead of a blanket "hold / bridge".
+//     windows per ESC/ESAIC 2022; bleeding → reversal), SGLT2 / insulin / sulfonylurea (CPOC
+//     2021), steroid cover, anaesthetic hazards, VTE (NICE NG89), frailty, β-HCG, and extra
+//     investigations (INR, renal function, ketones, pregnancy test).
 // Everything stays a suggestion; the clinician edits before anything is saved.
 
 struct RadiationContext {
@@ -27,6 +30,17 @@ struct RadiationContext {
     var allergies: [AllergyEntry] = []
     var medications: [String] = []
     var pmhText: String = ""
+    // Read by PlanSafetyFilter (web planSafety twin). Set by `init(patient:)`; the radiation
+    // lookup fills `diagnosis` and `sex` when a caller built the context without them.
+    var sex: Sex = .unspecified
+    /// The working diagnosis (the planned procedure is read from it and the assessment).
+    var diagnosis: String = ""
+    /// The clinician's assessment text.
+    var assessment: String = ""
+    /// HPI and social history (history text the rules read besides the PMH).
+    var freeText: String = ""
+    /// Latest eGFR / creatinine clearance on record, mL/min.
+    var egfr: Double? = nil
 
     var isChild: Bool { (ageYears ?? 99) < 16 }
 
@@ -45,6 +59,11 @@ struct RadiationContext {
                   allergies: p.allergies.filter { $0.name != Patient.nkdaMarkerName },
                   medications: p.prescriptions.map { $0.drug },
                   pmhText: NegationMatcher.joinClauses(p.pmhEntries.map { Optional($0.condition) } + [p.pmhNotes, p.surgicalHistory]))
+        self.sex = p.sex
+        self.diagnosis = p.workingDiagnosis ?? ""
+        self.assessment = p.assessmentText ?? ""
+        self.freeText = NegationMatcher.joinClauses([p.hpi, p.socialHistory])
+        self.egfr = p.latestLab(named: ["egfr"]) ?? p.latestLab(named: ["crcl", "creatinine clearance"])
     }
 }
 
@@ -109,14 +128,13 @@ extension DiagnosisRadiationEngine {
         // Pregnancy.
         if c.pregnancy.isPregnant {
             let weeks = c.pregnancy.gestationWeeks.map { " (\($0) weeks)" } ?? ""
-            header.append("- PREGNANT\(weeks): inform the obstetric team; plan checked for pregnancy safety — no NSAIDs from 20 weeks, LMWH not DOACs or warfarin, no ACE inhibitors/ARBs, avoid ionising imaging where ultrasound or MRI answers the question.")
+            // Worded so that no drug reads as a recommendation (clinical validation: "no ACE
+            // inhibitors" matched the forbidden-item check).
+            header.append("- PREGNANT\(weeks): inform the obstetric team; plan checked for pregnancy safety — no NSAIDs from 20 weeks; anticoagulation with LMWH only (DOACs and warfarin are teratogenic / contraindicated); ACE-i/ARB contraindicated; ultrasound or MRI in preference to ionising imaging.")
             lines = lines.map { pregnancyLine($0, c.pregnancy) }
         }
 
-        // Peri-procedural antithrombotics (procedural cards only).
-        if r.consentCategory != nil, let plan = antithromboticPlan(medications: c.medications, pmh: c.pmhText) {
-            lines.append(contentsOf: plan)
-        }
+        // Peri-procedural antithrombotics: procedure-specific lines from PlanSafetyFilter (below).
 
         var plan = (header + lines).joined(separator: "\n")
         var investigations = r.investigations
@@ -140,7 +158,7 @@ extension DiagnosisRadiationEngine {
                 plan = plan.components(separatedBy: "\n")
                     .filter { l in !["truss", "mesh", "tep", "tapp", "lichtenstein"].contains { keywordMatches($0, in: l.lowercased()) } }
                     .joined(separator: "\n")
-                plan += "\n- CHILD: paediatric hernia — refer to a paediatric surgeon for herniotomy (no mesh, no truss); infants need early repair because of the incarceration risk."
+                plan += "\n- " + PlanSafetyFilter.paediatricHernia
             }
             plan = suppressAdultDoses(plan)
             redFlags = redFlags.map { suppressAdultDoses($0) }
@@ -151,6 +169,28 @@ extension DiagnosisRadiationEngine {
                       notes: $0.notes.map { suppressAdultDoses($0) })
             }
             plan = "- CHILD (under 16): adult doses removed — \(bnfcDose); paediatric team / paediatric surgical input.\n" + plan
+        }
+
+        // Web planSafety twin: the remaining line filters (extra allergy classes, pregnancy drugs,
+        // renal NSAIDs) and the patient-specific safety lines (anticoagulants, stents, diabetes,
+        // steroids, anaesthetic hazards, VTE, frailty, β-HCG).
+        let s = PlanSafetyFilter.signals(c)
+        let shape = planShape(r, c)
+        let herniaCard = r.conditionName.lowercased().contains("hernia")
+        plan = PlanSafetyFilter.adaptText(plan, s, pregnancySpecific: shape.pregnancySpecific, herniaCard: herniaCard)
+        followUp = PlanSafetyFilter.adaptText(followUp, s, pregnancySpecific: shape.pregnancySpecific, herniaCard: herniaCard)
+        let evaluation = PlanSafetyFilter.evaluate(s, shape: shape)
+        if evaluation.notes.contains(where: { $0.kind == .vte }) {
+            // The patient-specific NICE NG89 line replaces the generic one (withVTELine).
+            plan = plan.components(separatedBy: "\n").filter { !$0.hasPrefix("- VTE prophylaxis (NICE NG89): assess VTE and bleeding risk on admission; mechanical ± pharmacological") }
+                .joined(separator: "\n")
+        }
+        let safetyLines = PlanSafetyFilter.planLines(evaluation.notes)
+        if !safetyLines.isEmpty {
+            plan = plan.trimmingCharacters(in: .newlines) + "\n" + safetyLines.joined(separator: "\n")
+        }
+        for extra in evaluation.extraInvestigations {
+            investigations.append(.init(name: extra.name, category: .blood, rationale: extra.rationale))
         }
 
         return DiagnosisRadiation(
@@ -171,7 +211,34 @@ extension DiagnosisRadiationEngine {
             text = "PREGNANT\(weeks): obstetric team informed; drugs and imaging checked for pregnancy safety.\n" + text
         }
         if c.isChild { text = suppressAdultDoses(text) }
+        // Web planSafety twin: line filters and the patient-specific safety lines, shaped by the
+        // card for the working diagnosis when there is one.
+        let s = PlanSafetyFilter.signals(c)
+        let card = c.diagnosis.isEmpty ? nil
+            : radiate(workingDiagnosis: c.diagnosis, ageYears: c.ageYears ?? 0, sex: c.sex, context: nil)
+        let shape = card.map { planShape($0, c) } ?? PlanSafetyFilter.PlanShape()
+        text = PlanSafetyFilter.adaptText(text, s, pregnancySpecific: shape.pregnancySpecific,
+                                          herniaCard: card?.conditionName.lowercased().contains("hernia") ?? false)
+        let safetyLines = PlanSafetyFilter.planLines(PlanSafetyFilter.evaluate(s, shape: shape).notes)
+        if !safetyLines.isEmpty { text += "\n" + safetyLines.joined(separator: "\n") }
         return text
+    }
+
+    /// How a card shapes the patient-specific safety lines (PlanSafetyFilter.PlanShape).
+    static func planShape(_ r: DiagnosisRadiation, _ c: RadiationContext) -> PlanSafetyFilter.PlanShape {
+        var shape = PlanSafetyFilter.PlanShape()
+        let name = r.conditionName.lowercased()
+        shape.emergencyCard = r.planTemplate.contains("RECOGNISE AND REDIRECT")
+        shape.operative = r.consentCategory != nil
+        shape.bleedingCard = ["bleed", "haemorrhag", "hemorrhag", "variceal"].contains { name.contains($0) }
+        shape.acuteCard = r.urgencyNote != nil
+        shape.pregnancySpecific = ["pregnan", "eclampsia", "hellp", "ectopic", "hyperemesis", "abruption"].contains { name.contains($0) }
+        shape.cancer = r.icd10Primary.hasPrefix("C")
+            || ["carcinoma", "cancer", "malignan", "neoplasm", "tumour"].contains { name.contains($0) }
+        shape.thrombosis = ["thrombosis", "embolism", "dvt"].contains { name.contains($0) }
+        shape.ionisingImaging = r.investigations.contains { isIonisingImaging($0.name) }
+        shape.investigationText = r.investigations.map { $0.name.lowercased() }.joined(separator: " ; ")
+        return shape
     }
 
     // MARK: Allergy helpers
@@ -233,14 +300,14 @@ extension DiagnosisRadiationEngine {
             return "\(indent(of: line))⚠ PREGNANCY (≥20 weeks): NSAID removed — NSAIDs are avoided from 20 weeks (MHRA 2020; NICE); use paracetamol, opioid if needed."
         }
         if has(["apixaban", "rivaroxaban", "edoxaban", "dabigatran", "doac", "doacs", "warfarin"]) {
-            return "\(indent(of: line))⚠ PREGNANCY: DOAC / warfarin removed — treatment-dose LMWH by weight instead (RCOG Green-top 37a/37b); obstetric haematology input."
+            return "\(indent(of: line))⚠ PREGNANCY: DOAC / warfarin line removed (teratogenic — contraindicated in pregnancy) — treatment-dose LMWH by weight instead (RCOG Green-top 37a/37b); obstetric haematology input."
         }
         if has(["ace inhibitor", "ace-i", "acei", "ramipril", "lisinopril", "enalapril", "perindopril", "losartan", "candesartan",
                 "valsartan", "irbesartan", "arb"]) {
-            return "\(indent(of: line))⚠ PREGNANCY: ACE inhibitor / ARB removed (contraindicated, NICE NG133) — obstetric team to choose labetalol, nifedipine or methyldopa."
+            return "\(indent(of: line))⚠ PREGNANCY: ACE-i / ARB line removed (contraindicated in pregnancy, NICE NG133) — obstetric team to choose labetalol, nifedipine or methyldopa."
         }
         if has(["ciprofloxacin", "levofloxacin", "moxifloxacin", "ofloxacin", "fluoroquinolone", "doxycycline", "tetracycline"]) {
-            return "\(indent(of: line))⚠ PREGNANCY: fluoroquinolone / tetracycline removed (BNF) — e.g. cefalexin for pyelonephritis in pregnancy (NICE NG111); obstetric input."
+            return "\(indent(of: line))⚠ PREGNANCY: fluoroquinolone / tetracycline line removed (contraindicated in pregnancy — BNF) — e.g. cefalexin for pyelonephritis in pregnancy (NICE NG111); obstetric input."
         }
         if (p.gestationWeeks ?? 0) < 13, has(["trimethoprim"]) {
             return "\(indent(of: line))⚠ PREGNANCY (first trimester / gestation unknown): trimethoprim removed (folate antagonist, BNF; NICE NG109)."
@@ -263,7 +330,7 @@ extension DiagnosisRadiationEngine {
     // MARK: Paediatric dose suppression
 
     private static let doseRegex: NSRegularExpression? = try? NSRegularExpression(
-        pattern: #"\b\d+(?:[.,]\d+)?(?:\s*(?:–|-|to)\s*\d+(?:[.,]\d+)?)?\s*(?:mg|g|mcg|µg|micrograms?|units?|iu|ml|mmol|meq)\b(?!\s*/\s*(?:l|dl|min|m2|m²)\b)(?:\s*/\s*kg)?(?:\s*/\s*(?:h|hr|hour|day|d|24\s*h)\b)?"#,
+        pattern: #"\b\d+(?:[.,]\d+)?(?:\s*(?:–|-|to)\s*\d+(?:[.,]\d+)?)?\s*(?:mg|g|mcg|µg|micrograms?|units?|iu|ml|l|litres?|liters?|mmol|meq)\b(?!\s*/\s*(?:l|dl|min|m2|m²)\b)(?:\s*/\s*kg)?(?:\s*/\s*(?:h|hr|hour|day|d|24\s*h)\b)?"#,
         options: [.caseInsensitive])
 
     /// Replaces adult doses in a text with the BNFc instruction. Urine-output targets and lab
@@ -287,44 +354,5 @@ extension DiagnosisRadiationEngine {
             }
             return out
         }.joined(separator: "\n")
-    }
-
-    // MARK: Peri-procedural antithrombotics
-
-    /// A procedure-specific antithrombotic plan when the patient takes an anticoagulant or
-    /// antiplatelet (nil otherwise). Sources: BRIDGE (NEJM 2015) and ACCP 2022 — no routine
-    /// bridging for AF; PAUSE (JAMA IM 2019) — DOAC interruption without bridging; BSG/ESGE 2021 —
-    /// antithrombotics and endoscopy; ESC/ESAIC 2022 — coronary stents and non-cardiac surgery.
-    static func antithromboticPlan(medications: [String], pmh: String) -> [String]? {
-        let meds = medications.joined(separator: " ").lowercased()
-        let doac = ["apixaban", "rivaroxaban", "edoxaban", "dabigatran"].filter { meds.contains($0) }
-        let warfarin = meds.contains("warfarin") || meds.contains("acenocoumarol")
-        let p2y12 = ["clopidogrel", "prasugrel", "ticagrelor"].filter { meds.contains($0) }
-        let aspirin = meds.contains("aspirin")
-        guard !doac.isEmpty || warfarin || !p2y12.isEmpty || aspirin else { return nil }
-        let pmhLower = pmh.lowercased()
-        var out = ["- PERI-PROCEDURAL ANTITHROMBOTIC PLAN (procedure-specific; decide with the prescriber):"]
-        if !doac.isEmpty {
-            out.append("  • \(doac.joined(separator: ", ")): no bridging. Omit 1 day before low-bleeding-risk and 2 days before high-bleeding-risk procedures (PAUSE); dabigatran longer when creatinine clearance is reduced. Restart 1 day (low risk) or 2–3 days (high risk) after, once haemostasis is secure.")
-        }
-        if warfarin {
-            let highThrombotic = ["mechanical", "mitral valve replacement", "metallic valve", "vte within 3 months", "recent stroke"]
-                .contains { pmhLower.contains($0) || meds.contains($0) }
-            out.append("  • Warfarin: for high-bleeding-risk procedures stop 5 days before and check INR the day before; low-risk diagnostic endoscopy — continue (check INR in range).")
-            out.append(highThrombotic
-                ? "  • High thrombotic risk (mechanical mitral valve / recent VTE or stroke): LMWH bridging decided with haematology/cardiology (BSG/ESGE 2021; ACCP 2022)."
-                : "  • No LMWH bridging for most atrial fibrillation (BRIDGE; ACCP 2022) — bridge only for high thrombotic risk (mechanical mitral valve, VTE within 3 months).")
-        }
-        if !p2y12.isEmpty {
-            out.append("  • \(p2y12.joined(separator: ", ")): continue for low-risk diagnostic endoscopy; stop 5–7 days before high-risk procedures (polypectomy / EMR, sphincterotomy, surgery) and continue aspirin (BSG/ESGE 2021).")
-        }
-        if aspirin {
-            out.append("  • Aspirin: usually continue (stop only for very high-bleeding-risk procedures, e.g. ESD, with specialist agreement).")
-        }
-        let stent = ["stent", "pci", "des ", "drug-eluting", "angioplasty", "nstemi", "stemi", "acute coronary"].contains { pmhLower.contains($0) }
-        if stent || !p2y12.isEmpty {
-            out.append("  • CORONARY STENT: do not stop P2Y12 inhibitors within 6 months of elective PCI or 12 months of ACS without cardiology agreement — defer elective procedures in that window (ESC/ESAIC 2022).")
-        }
-        return out
     }
 }

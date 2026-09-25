@@ -82,7 +82,9 @@ final class RadiationSafetyAndScoresTests: XCTestCase {
         let plan = card("Right inguinal hernia in an infant (reducible)", age: 0)?.planTemplate.lowercased() ?? ""
         XCTAssertFalse(plan.contains("truss if patient unfit"), plan)
         XCTAssertFalse(plan.contains("(tep/tapp)"), plan)
-        XCTAssertTrue(plan.contains("herniotomy (no mesh, no truss)"))
+        XCTAssertTrue(plan.contains("open herniotomy (no mesh)"), plan)
+        // "truss" must not appear at all: the vignette check forbids any mention (A22).
+        XCTAssertFalse(plan.contains("truss"), plan)
     }
 
     func testPregnancyReplacesDOACsWithLMWHAndRemovesNSAIDs() {
@@ -112,7 +114,7 @@ final class RadiationSafetyAndScoresTests: XCTestCase {
     func testAntithromboticPlanIsProcedureSpecificWithoutRoutineBridging() {
         let plan = card("Colonic polyp 25 mm — planned endoscopic mucosal resection", meds: ["Clopidogrel", "Apixaban"],
                         pmh: "Drug-eluting stent 2 months ago")?.planTemplate ?? ""
-        XCTAssertTrue(plan.contains("no bridging"), plan)
+        XCTAssertTrue(plan.lowercased().contains("no bridging"), plan)
         XCTAssertTrue(plan.contains("ESC/ESAIC 2022"))
         XCTAssertTrue(plan.contains("BSG/ESGE 2021"))
     }

@@ -384,7 +384,11 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             vitalsAlerts:   cpAlerts,
             labs:           psv.labs
         )
+        // Patient safety filter (PlanSafetyFilter, web planSafety twin): allergy, pregnancy, renal
+        // and under-16 dose filters on every published action line.
+        let safety = PlanSafetyFilter.signals(RadiationContext(patient: patient))
         let dec = BayesianDecisionEngine.decide(hypotheses: seeded, context: context)
+            .map { PlanSafetyFilter.adaptDecision($0, safety) }
         psv.decisions = dec
         decisions = dec
 
@@ -396,7 +400,7 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         informationItems = voiItems
 
         // ── Stage 7: AutoFunction ──────────────────────────────────────────
-        let actions = AutoFunctionEngine.generate(from: psv)
+        let actions = AutoFunctionEngine.generate(from: psv).map { PlanSafetyFilter.adaptAction($0, safety) }
         autoActions = actions
 
         stateVector = psv

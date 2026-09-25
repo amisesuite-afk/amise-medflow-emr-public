@@ -177,7 +177,11 @@ enum DiagnosisRadiationEngine {
             )
         }
         base = withVTELine(base)
-        if let context { base = applySafety(base, context) }
+        if var ctx = context {
+            if ctx.diagnosis.isEmpty { ctx.diagnosis = dx }
+            if ctx.sex == .unspecified { ctx.sex = sex }
+            base = applySafety(base, ctx)
+        }
         return base
     }
 
