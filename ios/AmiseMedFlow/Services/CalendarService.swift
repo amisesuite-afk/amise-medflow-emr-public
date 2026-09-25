@@ -213,6 +213,24 @@ enum CalendarError: LocalizedError {
     }
 }
 
+// MARK: - Stable list rows
+
+/// A calendar event with a stable list id (`ListPerf.calendarEntryID`, as in ScheduleView).
+/// `eventIdentifier` can be nil, and two such events used the same (nil) id in a ForEach.
+struct CalendarEventRow: Identifiable {
+    let id: String
+    let event: EKEvent
+
+    static func rows(_ events: [EKEvent]) -> [CalendarEventRow] {
+        events.enumerated().map { ordinal, event in
+            CalendarEventRow(
+                id: ListPerf.calendarEntryID(eventIdentifier: event.eventIdentifier, title: event.title,
+                                             start: event.startDate ?? .distantPast, ordinal: ordinal),
+                event: event)
+        }
+    }
+}
+
 // MARK: - EKEvent helpers used by ScheduleView
 
 extension EKEvent {

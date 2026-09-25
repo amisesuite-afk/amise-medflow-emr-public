@@ -285,7 +285,8 @@ extension TodayDashboardView {
                 }
                 .padding(.vertical, 4)
             }
-            ForEach(todayCalEvents, id: \.eventIdentifier) { event in
+            ForEach(CalendarEventRow.rows(todayCalEvents)) { row in
+                let event = row.event
                 Button {
                     let parsed = CalendarEventParser.parse(title: event.title ?? "", calLabel: event.calEntryLabel)
                     calEventActionPatient = allPatients.first {
