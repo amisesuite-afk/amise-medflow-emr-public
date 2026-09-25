@@ -178,14 +178,9 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute pancreatitis (0.35), Peptic ulcer, GORD — even with pulsatile mass and instability answered; the aortic_aneurysm prior is 0.01 and epigastric pain radiating to the back favours pancreatitis. The management panel therefore shows the pancreatitis protocol. Symptom inference ranks ruptured AAA #1.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Give pulsatile_mass and haemodynamic_instability much stronger likelihood ratios for aortic_aneurysm (and none for pancreatitis), or add a hard rule: pulsatile mass + shock → AAA to the top."
+          ]
         }
       ]
     },

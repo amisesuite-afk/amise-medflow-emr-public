@@ -201,14 +201,9 @@
           "guidelineRefs": [
             "iwgdf-2023-infection"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Inguinal/femoral hernia, GORD, Acute cholecystitis — PANE has no diabetic-foot or osteomyelitis disease. Symptom inference and triage rank diabetic foot #1.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          ]
         }
       ]
     },

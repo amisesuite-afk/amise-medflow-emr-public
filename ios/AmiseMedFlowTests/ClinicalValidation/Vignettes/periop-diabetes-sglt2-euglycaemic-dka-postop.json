@@ -255,14 +255,9 @@
             "jbds-dka-2023"
           ],
           "note": "Euglycaemic DKA: the glucose is normal, so a glucose-driven rule will not find it.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: acute cholecystitis (the gallbladder was removed 2 days ago), post-operative ileus, bowel obstruction. PANE has no DKA node, and no rule reads the ketone, pH or bicarbonate results.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a hard safety rule: ketones ≥3 mmol/L or pH <7.3/bicarbonate <15 → DKA alarm regardless of glucose, with an SGLT2i-specific 'euglycaemic DKA' message; add metabolic mimics to PANE or a separate 'non-surgical causes' list."
+          ]
         },
         {
           "id": "mnm-bile-leak-or-collection",
@@ -275,14 +270,9 @@
             "surgical site"
           ],
           "note": "Day 2 after cholecystectomy with abdominal pain: bile leak remains in the differential.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No post-cholecystectomy complication node (bile leak) in PANE; cholecystitis ranks first after cholecystectomy because nothing reads the surgical history.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "PANE: suppress gallbladder diagnoses after cholecystectomy; add bile leak / post-operative collection nodes."
+          ]
         }
       ]
     },

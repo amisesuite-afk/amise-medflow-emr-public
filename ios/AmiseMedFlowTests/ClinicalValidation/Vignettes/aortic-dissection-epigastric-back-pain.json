@@ -190,11 +190,6 @@
           "guidelineRefs": [
             "esc-aortic-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: pancreatitis, inguinal hernia, cholecystitis (epigastric pain + radiation to back = pancreatitis pattern); no dissection node. Symptom inference ranks ruptured AAA #1 and does not list dissection in the top 5.",
-          "proposedFix": "Add a dissection rule/prompt: abrupt/tearing pain to back + BP/pulse differential or hypertension → \"Acute aortic syndrome: CT angiography; avoid antithrombotics\" (ESC 2014).",
           "unverified": [
             "ios"
           ]

@@ -242,13 +242,9 @@
           "guidelineRefs": [
             "ascrs-volvulus-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE has no volvulus disease node, so it can never appear in the PANE top 3 (bowel obstruction, adhesive SBO, inguinal/femoral hernia). Symptom inference ranks sigmoid volvulus #2."
+          ]
         }
       ]
     },

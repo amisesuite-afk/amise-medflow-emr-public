@@ -143,11 +143,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE ranks skin abscess, hernia and appendicitis: the \"Posterior midline\" site chip is not mapped to a PANE feature and there is no pilonidal CC hint for a presentation template. Symptom inference ranks pilonidal #1."
+          ]
         }
       ]
     },

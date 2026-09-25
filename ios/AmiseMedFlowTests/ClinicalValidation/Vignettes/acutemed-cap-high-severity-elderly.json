@@ -170,12 +170,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Diverticulitis | 3. Acute Cholangitis; also in web.symptomInference#2, web.passive#1. PANE has no pneumonia node.",
-          "proposedFix": "lib/pane-engine: add a community-acquired pneumonia node (productive cough, fever, pleuritic pain, focal crackles/bronchial breathing, hypoxia) with a protocol (CURB65/CRB65 severity, CXR, amoxicillin for low severity, blood cultures + IV co-amoxiclav/clarithromycin for high severity) and map J18/J15."
+          ]
         },
         {
           "id": "mnm-sepsis",
@@ -191,12 +186,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Diverticulitis | 3. Acute Cholangitis; also in web.symptomInference#3, web.passive#3. PANE has no sepsis node.",
-          "proposedFix": "lib/pane-engine: add sepsis (source-agnostic) as a must-not-miss node driven by physiology, or show a sepsis banner above the PANE list when NEWS2 >=5 with a suspected infection."
+          ]
         }
       ]
     },
@@ -326,7 +316,12 @@
           ],
           "unverified": [
             "ios"
-          ]
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web 2026-09-25: passed before pane model 1.0.0 only because the wrong PANE top 3 (cholecystitis) seeded that protocol's tests; PANE now ranks pneumonia and sepsis, which has no management protocol yet, so nothing seeds blood cultures.",
+          "proposedFix": "Protocols for the PANE nodes pneumonia and sepsis (BTS CAP / NICE NG51: blood cultures before antibiotics), or a sepsis prompt that adds blood cultures as an investigation."
         },
         {
           "id": "inv-cxr",

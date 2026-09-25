@@ -309,14 +309,9 @@
             "acog-co723-2017"
           ],
           "note": "US (and MRI/MRCP if needed) preferred; CT is not contraindicated but should not be the unqualified default.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "\"CT abdomen/pelvis with IV contrast (appendicitis)\" seeded for a pregnant patient. HpiTab.seedInvestigationsFromPane seeds every stat/urgent investigation of the top-3 PANE protocols, including CT from unrelated protocols, with no pregnancy check.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "HpiTab.seedInvestigationsFromPane: skip ionising imaging when pregnant (offer US/MRI) and keep each protocol investigation's conditional."
+          ]
         }
       ]
     },

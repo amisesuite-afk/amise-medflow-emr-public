@@ -218,14 +218,9 @@
             "wses-sis-ssti-2018"
           ],
           "note": "Crepitus, dishwater discharge and pain out of proportion must lift NSTI above simple SSI.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute cholecystitis, Acute cholangitis, GORD. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the wound CC template adds wound_erythema/wound_discharge but SSI is not in the top 3 either. Symptom inference ranks \"post-operative complication\" #1 and has no NSTI.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal."
+          ]
         }
       ],
       "mustNotMiss": [
@@ -239,10 +234,6 @@
             "leak"
           ],
           "note": "Deep organ-space infection is the other post-laparotomy source.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 omits anastomotic leak and collections (see dx-nsti-top3).",
           "unverified": [
             "ios"
           ]

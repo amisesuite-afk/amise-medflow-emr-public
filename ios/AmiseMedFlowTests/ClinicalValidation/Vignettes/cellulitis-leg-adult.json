@@ -225,14 +225,9 @@
           "guidelineRefs": [
             "nice-ng141"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+          ]
         }
       ]
     },

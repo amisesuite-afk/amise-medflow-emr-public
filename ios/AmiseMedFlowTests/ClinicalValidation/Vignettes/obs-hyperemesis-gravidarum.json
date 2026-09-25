@@ -220,11 +220,6 @@
             "hyperemesis",
             "pregnan"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no hyperemesis gravidarum disease node (pane-engine has 130 diseases, none for hyperemesis gravidarum); top 3: acute cholecystitis, peptic ulcer, appendicitis. Symptom inference lists gastroenteritis, pyloric stenosis and gastric carcinoma.",
-          "proposedFix": "Add hyperemesis gravidarum (O21) as a PANE node or a pregnancy + vomiting rule.",
           "unverified": [
             "ios"
           ]

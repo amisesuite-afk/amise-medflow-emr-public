@@ -168,12 +168,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE applied no feature: the \"Incisional / ventral hernia\" template has no CC hint and the site chip \"Incisional\" matches no SITE_RULES pattern; the priors alone rank cholecystitis first.",
-          "proposedFix": "Add CC hints for the ventral/incisional templates (umbilical_swelling / previous_surgery) and a SITE_RULES entry for \"incisional\"/\"scar\" → hernia features."
+          ]
         }
       ]
     },

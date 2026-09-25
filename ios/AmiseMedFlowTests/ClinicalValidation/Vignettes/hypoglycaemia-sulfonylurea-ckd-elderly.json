@@ -152,14 +152,9 @@
           "guidelineRefs": [
             "jbds-hypo-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, GORD, cholecystitis. Symptom inference ranks hypoglycaemia #1.",
-          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+          ]
         },
         {
           "id": "mnm-hypoglycaemia-symptom-engine",

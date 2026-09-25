@@ -231,11 +231,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 is appendicitis/cholangitis/cholecystitis for a distended toxic colitis; no toxic megacolon/perforation disease and the UC prior is not reached from \"Acute abdominal pain\"."
+          ]
         }
       ]
     },

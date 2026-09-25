@@ -175,11 +175,6 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: appendicitis, peptic ulcer, pancreatitis — no haematemesis/vomiting_effortless features reach PANE (see UGIB gap).",
-          "proposedFix": "socrates-to-features.ts: add ASSOC/CC rules haematemesis|vomiting blood|coffee.?ground → haematemesis and melaena|black|tarry → melaena; also seed PANE from SmartSymptomPicker chips (HpiTab.reseedPane), not only the SOCRATES answers.",
           "unverified": [
             "ios"
           ]

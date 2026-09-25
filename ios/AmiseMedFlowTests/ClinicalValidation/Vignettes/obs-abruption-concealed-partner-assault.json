@@ -185,11 +185,6 @@
           "match": [
             "abruption"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no placental abruption node; top 3: acute cholecystitis, blunt abdominal trauma, splenic laceration (all < 0.20). O45.8X3 maps to no protocol.",
-          "proposedFix": "Add a trauma-in-pregnancy / abruption protocol triggered by pregnancy status + trauma mechanism (O45, O9A.2 prefixes).",
           "unverified": [
             "ios"
           ]

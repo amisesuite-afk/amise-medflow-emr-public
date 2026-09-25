@@ -180,14 +180,9 @@
             "esc-acs-2023"
           ],
           "note": "Epigastric pain + diaphoresis + bradycardia/hypotension in a diabetic smoker: inferior MI must be on the displayed differential.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE has no cardiac (ACS/MI) disease node, so it can never appear in the PANE top 3 (GORD, cholecystitis, peptic ulcer).",
-          "proposedFix": "Add a cardiac mimic node to PANE for epigastric pain with diaphoresis/bradycardia/hypotension in patients with vascular risk factors."
+          ]
         },
         {
           "id": "mnm-acs-symptom-engine",

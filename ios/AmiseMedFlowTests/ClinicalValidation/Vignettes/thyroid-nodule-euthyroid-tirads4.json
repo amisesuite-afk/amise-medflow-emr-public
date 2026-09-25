@@ -148,12 +148,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = cholecystitis, GORD, PUD after neck_lump (thyroid_nodule_benign prior 0.03, thyroid_carcinoma 0.01). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
-          "proposedFix": "Model P(feature | not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin)."
+          ]
         }
       ]
     },
@@ -207,12 +202,7 @@
           "note": "As an investigation order. The recommendation itself is checked under management (mgmt-us-fna-recommended).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "US and FNA appear only as plan text of the \"Thyroid Nodule → USS + FNAC\" prompt (addToPlan), not as investigation orders; E04.1 (the correct code for a single non-toxic nodule) maps to no protocol (the benign-nodule protocol is keyed on D34).",
-          "proposedFix": "Add E04.1/E04.2 to the thyroid_nodule_benign protocol prefixes and make the prompt add US/FNA as investigations."
+          ]
         },
         {
           "id": "inv-fna",
@@ -228,11 +218,7 @@
           "note": "As an investigation order. ACR TI-RADS: TR4 nodules ≥1.5 cm meet the FNA threshold.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "As above (plan text only)."
+          ]
         }
       ],
       "mustExclude": [
@@ -279,12 +265,7 @@
           "platforms": [
             "web"
           ],
-          "note": "Orders seeded from the PANE top 3 should belong to the neck presentation, not to abdominal diagnoses.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The wrong PANE top 3 seeds blood cultures, MRCP, erect CXR, OGD and group & save for a thyroid nodule.",
-          "proposedFix": "Model P(feature | not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin)."
+          "note": "Orders seeded from the PANE top 3 should belong to the neck presentation, not to abdominal diagnoses."
         }
       ]
     },

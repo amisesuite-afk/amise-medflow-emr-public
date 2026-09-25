@@ -179,14 +179,9 @@
           "guidelineRefs": [
             "esvs-ali-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute cholecystitis, GORD, Acute diverticulitis — PANE has no ALI disease. Symptom inference ranks ALI #1.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+          ]
         }
       ]
     },

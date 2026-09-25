@@ -218,12 +218,7 @@
           "platforms": [
             "web"
           ],
-          "note": "Orders seeded from the PANE top 3 should belong to the breast presentation, not to abdominal diagnoses.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 starts with cholecystitis, so amylase/lipase, blood cultures and MRCP are seeded into orders for a breast lump.",
-          "proposedFix": "Model P(feature | not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin)."
+          "note": "Orders seeded from the PANE top 3 should belong to the breast presentation, not to abdominal diagnoses."
         }
       ]
     },

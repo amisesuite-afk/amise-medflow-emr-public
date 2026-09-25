@@ -221,14 +221,9 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a Fournier's gangrene disease (or map it to necrotising_fasciitis with scrotal/perineal features) and stop mapping a 'Groin' pain site to groin_swelling."
+          ]
         }
       ],
       "mustRankTopK": [
@@ -244,10 +239,6 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.",
           "unverified": [
             "ios"
           ]

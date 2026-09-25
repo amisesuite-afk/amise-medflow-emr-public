@@ -222,12 +222,7 @@
           "note": "SBO without previous surgery: an external hernia (femoral in elderly women) must be on the differential.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = cholecystitis, appendicitis, bowel obstruction (from the abdominal-pain template). No hernia: groin findings are only in exam text/chips, which PANE does not read. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
-          "proposedFix": "Feed exam chips (\"Hernia present\") and exam text into PANE features; in SBO with no previous surgery, surface external hernias (femoral/obturator) as must-not-miss."
+          ]
         },
         {
           "id": "mnm-bowel-obstruction",

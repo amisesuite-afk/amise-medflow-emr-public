@@ -141,12 +141,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = inguinal hernia, appendicitis, epididymo-orchitis: testicular_torsion (prior 0.01) is outranked although testicular_pain/scrotal_swelling are applied; vomiting and \"sudden\" onset are not mapped to features. The safety prompt and the ICD plan (N44.00 → testicular_torsion) are correct.",
-          "proposedFix": "Model P(feature | not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin)."
+          ]
         }
       ],
       "mustRankTopK": [
@@ -163,11 +158,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "As above: torsion not in the PANE top 3; epididymo-orchitis ranks above it."
+          ]
         }
       ]
     },

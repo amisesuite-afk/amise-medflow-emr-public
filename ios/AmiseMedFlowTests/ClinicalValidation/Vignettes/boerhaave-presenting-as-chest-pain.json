@@ -200,11 +200,6 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: inguinal hernia, cholecystitis, pancreatitis; no oesophageal features reach PANE. Symptom inference ranks STEMI/ACS first and has no perforation entry.",
-          "proposedFix": "As boerhaave-classic-mackler dx gap; add an oesophageal-perforation entry to symptom inference (vomiting then chest pain, odynophagia, crepitus).",
           "unverified": [
             "ios"
           ]

@@ -156,14 +156,9 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: GORD, Inguinal/femoral hernia, Acute cholecystitis — socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the burn features are answered but the thermal_burn_major prior is low and there is no burn CC template or chip.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal. Add a \"Burn\" CC template and symptom chip."
+          ]
         }
       ]
     },
@@ -209,14 +204,9 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+          ]
         }
       ]
     },

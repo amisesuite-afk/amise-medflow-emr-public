@@ -221,14 +221,9 @@
             "esvs-aaa-2024"
           ],
           "note": "Flank pain + collapse + pulsatile mass in a 74-year-old smoker: ruptured AAA first, not renal colic.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: inguinal/femoral hernia, renal colic, cholecystitis — even with the PANE answer pulsatile_mass = yes. Symptom inference ranks ruptured AAA #1.",
-          "proposedFix": "Raise the pulsatile_mass and haemodynamic_instability likelihoods for aortic_aneurysm in PANE and add an age/sex prior; add CC_HINTS for collapse + flank/back pain."
+          ]
         }
       ],
       "mustNotMiss": [

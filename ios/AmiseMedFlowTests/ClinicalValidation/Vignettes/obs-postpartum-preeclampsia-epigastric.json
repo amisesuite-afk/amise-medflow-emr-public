@@ -187,11 +187,6 @@
             "eclampsia",
             "hellp"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no pre-eclampsia disease node (pane-engine has 130 diseases, none for pre-eclampsia); top 3: GORD (0.22 — the relief answer \"Antacids did not help\" still sets antacid_relief), peptic ulcer, cholecystitis. Symptom inference ranks hypertensive emergency #1 (secondary view).",
-          "proposedFix": "Pre-eclampsia rule including postpartum ≤ 6 weeks (see obs-hellp-ruq-pain-34wk); make the SOCRATES relief-answer parser negation-aware.",
           "unverified": [
             "ios"
           ]

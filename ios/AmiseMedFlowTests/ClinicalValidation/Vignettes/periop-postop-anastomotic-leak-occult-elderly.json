@@ -209,14 +209,9 @@
             "isrec-2010"
           ],
           "note": "Older patients on beta-blockers or steroids may not mount fever or tachycardia; new AF, delirium and rising CRP after bowel surgery are leak signs.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: post-operative ileus, bowel obstruction, acute cholecystitis. With postop_fever=false and no guarding, the anastomotic_leak node (fever 0.8, guarding 0.65) falls out; no feature for new AF, delirium or rising CRP. The CT is still suggested (protocol and prompts).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add leak features that do not depend on fever (new arrhythmia, delirium, rising CRP after day 3, ileus after day 3) and a day-4+ post-colectomy rule: 'anastomotic leak until proven otherwise' when CRP is rising."
+          ]
         }
       ]
     },

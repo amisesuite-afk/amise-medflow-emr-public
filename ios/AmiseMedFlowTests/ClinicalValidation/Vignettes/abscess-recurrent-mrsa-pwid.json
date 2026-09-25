@@ -246,14 +246,9 @@
           "guidelineRefs": [
             "idsa-ssti-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE's top diagnosis (appendicitis, 0.21) drives the management panel instead.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+          ]
         },
         {
           "id": "inv-bbv",

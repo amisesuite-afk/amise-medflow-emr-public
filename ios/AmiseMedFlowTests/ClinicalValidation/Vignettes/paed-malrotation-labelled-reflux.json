@@ -114,11 +114,6 @@
             "malrotation",
             "volvulus"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no malrotation/midgut volvulus disease node (pane-engine has 130 diseases, none for malrotation/midgut volvulus); top 3: GORD (the relief answer \"Gaviscon — no help\" still sets antacid_relief), inguinal hernia, cholecystitis. Symptom inference ranks malrotation #1 (secondary view).",
-          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. Bilious-vomiting hard rule; negation-aware relief parsing.",
           "unverified": [
             "ios"
           ]

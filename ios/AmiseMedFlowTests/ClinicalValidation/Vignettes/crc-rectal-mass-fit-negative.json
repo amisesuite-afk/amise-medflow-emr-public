@@ -183,12 +183,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 is inguinal hernia/GORD/cholecystitis: the \"Change in bowel habit\" template has no CC_HINTS entry, the \"Rectum\" site chip does not match the \\brectal\\b rule, and a DRE mass is not a PANE feature. Symptom inference ranks rectal prolapse, IBD, haemorrhoids.",
-          "proposedFix": "Add CC_HINTS for \"Change in bowel habit\" (change_bowel_habit) and \"Rectal bleeding\" (pr_bleeding), map the \"Rectum\"/\"Anal canal\" site chips, and add a rectal-mass feature fed by the examination."
+          ]
         }
       ]
     },

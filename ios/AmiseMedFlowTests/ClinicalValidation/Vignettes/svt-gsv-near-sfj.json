@@ -141,14 +141,9 @@
           "guidelineRefs": [
             "esvs-venous-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no superficial vein thrombosis disease; top 3: Varicose veins, Acute cholecystitis, GORD. Symptom inference has no SVT either.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add superficial vein thrombosis (with SFJ/SPJ proximity) to PANE/symptom inference and a protocol (duplex; fondaparinux 45 days if ≥5 cm; therapeutic anticoagulation within 3 cm of the SFJ) with ICD I80.0x."
+          ]
         }
       ]
     },

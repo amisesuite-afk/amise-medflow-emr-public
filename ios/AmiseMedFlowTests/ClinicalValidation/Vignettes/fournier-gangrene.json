@@ -228,12 +228,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE’s necrotising_fasciitis disease is not reached from perineal presentations (the only anorectal features are anal_pain/perianal_swelling; the CC template is generic; crepitus/erythema answers do not outweigh the anorectal priors); symptom inference does rank Fournier’s first, but it is a secondary view.",
-          "proposedFix": "Add Fournier’s gangrene as a PANE disease (or map perineal site + crepitus/necrosis/pain-out-of-proportion + SIRS to necrotising_fasciitis) and give N49.3/perineal NSTI the necrotising_fasciitis protocol; add a safety prompt for \"perianal/perineal infection + pain out of proportion or spreading to scrotum/perineum + SIRS\" → emergency surgical exploration."
+          ]
         }
       ]
     },

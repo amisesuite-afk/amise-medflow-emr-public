@@ -192,14 +192,9 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE features loin_pain, dysuria, fever, rigors, nausea_vomiting are applied, yet PANE ranks cholecystitis (0.15), appendicitis (0.11), cholangitis; UTI is not in the top 3 and there is no pyelonephritis node. Symptom inference ranks pyelonephritis #1.",
-          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+          ]
         }
       ]
     },

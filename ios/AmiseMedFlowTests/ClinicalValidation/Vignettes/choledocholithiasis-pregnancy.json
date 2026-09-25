@@ -272,14 +272,9 @@
           "guidelineRefs": [
             "acog-co723-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "\"CT KUB (non-contrast)\" seeded from the renal colic protocol (PANE #3) at 26 weeks. HpiTab.seedInvestigationsFromPane seeds every stat/urgent investigation of the top-3 PANE protocols, including CT from unrelated protocols, with no pregnancy check.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "HpiTab.seedInvestigationsFromPane: no ionising imaging when pregnant."
+          ]
         }
       ]
     },

@@ -174,12 +174,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Traumatic Pneumothorax | 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2. PANE (lib/pane-engine, 131 diseases) has no acute coronary syndrome node.",
-          "proposedFix": "lib/pane-engine: add an acute coronary syndrome node (chest pain / pressure, radiation to arm or jaw, diaphoresis, dyspnoea; age, diabetes and smoking modifiers) or a must-not-miss cross-check, and map I20-I24 in getProtocolByIcd."
+          ]
         },
         {
           "id": "mnm-pe-or-dissection",
@@ -197,12 +192,7 @@
           "note": "Pregnancy chest pain: PE and aortic dissection are the other must-not-miss causes.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Traumatic Pneumothorax | 3. GORD / Reflux Oesophagitis. PANE has PE but no aortic dissection node.",
-          "proposedFix": "PANE: add aortic dissection; let chest-pain SOCRATES answers reach pleuritic/chest features."
+          ]
         }
       ]
     },

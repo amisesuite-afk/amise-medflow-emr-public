@@ -152,11 +152,6 @@
           "match": [
             "pylor"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no pyloric stenosis disease node (pane-engine has 130 diseases, none for pyloric stenosis); top 3: inguinal/femoral hernia, acute cholecystitis, appendicitis. Q40.0 maps to no protocol. Symptom inference ranks hypertrophic pyloric stenosis #1 (secondary view, its investigations are not surfaced).",
-          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral.",
           "unverified": [
             "ios"
           ]

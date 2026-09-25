@@ -170,14 +170,9 @@
           "guidelineRefs": [
             "eau-paed-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: appendicitis, inguinal/femoral hernia, cholecystitis; the SOCRATES site text 'right testicle (scrotal)' adds testicular features but not enough. Symptom inference ranks torsion #1.",
-          "proposedFix": "Read the genital examination and the scrotal chip into PANE (testicular_pain, absent_cremasteric)."
+          ]
         }
       ]
     },

@@ -209,11 +209,6 @@
             "esvs-graft-2020"
           ],
           "note": "Any bleed after aortic graft surgery is an aorto-enteric fistula until proven otherwise.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: pancreatitis, inguinal hernia, cholecystitis; no aorto-enteric fistula node anywhere. The passive ranking lists \"ruptured abdominal aortic aneurysm\" #1 from exam text.",
-          "proposedFix": "Add a rule/prompt: GI bleeding + aortic graft/AAA repair in surgical history → \"Aorto-enteric fistula until proven otherwise: CT angiography, vascular surgery\" (ESVS 2020).",
           "unverified": [
             "ios"
           ]

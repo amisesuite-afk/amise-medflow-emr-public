@@ -242,14 +242,9 @@
             "ada-hhc-2024"
           ],
           "note": "DKA must be on the displayed differential of abdominal pain in a type 1 diabetic with glucose 29.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE has no DKA disease node, so it can never appear in the PANE top 3 (appendicitis, peptic ulcer, pancreatitis). Symptom inference ranks DKA #1.",
-          "proposedFix": "Add a DKA node (or a medical-mimic layer) to PANE driven by glucose/ketones/pH, or surface the symptom-inference DKA result when glucose > 20."
+          ]
         },
         {
           "id": "mnm-dka-symptom-engine",

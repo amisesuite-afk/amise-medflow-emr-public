@@ -225,14 +225,9 @@
           "guidelineRefs": [
             "wses-hernia-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: bowel obstruction, adhesive SBO, post-operative ileus. The SOCRATES site text 'Right groin lump' maps to groin_swelling but the obstruction features dominate; hernia appears only in the triage surgical match list. The 'hernia' symptom-branch details are not read by PANE.",
-          "proposedFix": "Let PANE read the hernia symptom branch ('Irreducible', 'Femoral') and exam chip 'Hernia present' as hernia_irreducible/groin_swelling evidence."
+          ]
         }
       ]
     },

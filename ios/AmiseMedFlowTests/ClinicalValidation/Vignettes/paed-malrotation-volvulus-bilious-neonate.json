@@ -130,11 +130,6 @@
             "malrotation",
             "volvulus"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no malrotation/midgut volvulus disease node (pane-engine has 130 diseases, none for malrotation/midgut volvulus); top 3: acute cholecystitis, appendicitis, peptic ulcer. Q43.3 maps to no protocol. Symptom inference ranks malrotation #1 (secondary view). No rule treats bilious vomiting in an infant as an emergency.",
-          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral. Add a hard rule: bilious (green) vomiting in a child < 1 year → emergency, upper GI contrast, immediate paediatric surgery.",
           "unverified": [
             "ios"
           ]

@@ -228,14 +228,9 @@
             "esvs-2024-aaa"
           ],
           "note": "Epigastric/back pain with collapse and hypotension in an elderly smoker is a ruptured AAA until proven otherwise; amylase can be mildly raised.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE ranks acute pancreatitis first; aortic_aneurysm has a post-modifier prior of 0.0024 for a 74-year-old male smoker and stays out of the top 3 even with the PANE answers pulsatile_mass and haemodynamic_instability = true. Symptom inference ranks ruptured AAA #1 (secondary view).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "lib/pane-engine: age/sex/smoking prior modifiers for aortic_aneurysm and a much stronger pulsatile_mass/haemodynamic_instability likelihood ratio; or a hard safety rule (age ≥60 + epigastric/back pain + SBP <90 or collapse → \"Exclude ruptured AAA: bedside US/CTA, vascular surgeon\")."
+          ]
         }
       ]
     },

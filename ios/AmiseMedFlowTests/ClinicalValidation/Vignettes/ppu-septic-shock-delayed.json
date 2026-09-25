@@ -221,14 +221,9 @@
           "guidelineRefs": [
             "wses-ppu-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alcohol history). PANE has no perforation node and no feature for rigidity/free gas; symptom inference ranks perforated peptic ulcer #2.",
-          "proposedFix": "Add a perforated-viscus node to PANE with rigidity/board-like abdomen, sudden onset and imaging free gas as features (the 'Perforated viscus' CC template exists but has no CC_HINTS entry)."
+          ]
         }
       ]
     },

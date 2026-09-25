@@ -252,11 +252,6 @@
             "eclampsia",
             "hellp"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no pre-eclampsia/HELLP disease node (pane-engine has 130 diseases, none for pre-eclampsia/HELLP); top 3: acute cholecystitis (0.32), peptic ulcer, appendicitis. Symptom inference has no pre-eclampsia either (its #4 is hypertensive emergency). Nothing combines pregnancy + BP ≥ 160/110 + RUQ pain + low platelets; O14.23 maps to no protocol.",
-          "proposedFix": "Add a pre-eclampsia/HELLP rule for pregnancy ≥ 20 weeks or postpartum ≤ 6 weeks with BP ≥ 140/90 (≥ 160/110 severe) plus headache, visual disturbance, epigastric/RUQ pain, proteinuria, platelets < 100 or raised transaminases → obstetric emergency (NICE NG133 / ACOG PB 222).",
           "unverified": [
             "ios"
           ]

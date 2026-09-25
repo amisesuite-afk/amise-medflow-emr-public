@@ -201,13 +201,9 @@
           "guidelineRefs": [
             "wses-diverticulitis-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: cholecystitis, inguinal/femoral hernia, appendicitis (features lif_pain, nausea_vomiting, fever) — the same likelihood problem as the base case."
+          ]
         }
       ]
     },

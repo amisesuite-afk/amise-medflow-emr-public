@@ -207,11 +207,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: inguinal hernia, cholecystitis, GORD. The vomiting_effortless feature (GOO 0.90) is never set: no SOCRATES rule maps projectile vomiting or vomiting of undigested food.",
-          "proposedFix": "socrates-to-features.ts: map \"projectile|undigested|succussion\" → vomiting_effortless; feed symptomDetails (vomiting: Projectile) to PANE.",
           "unverified": [
             "ios"
           ]
@@ -231,10 +226,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no malignancy in the top 3; symptom inference ranks gastric carcinoma #1.",
           "unverified": [
             "ios"
           ]

@@ -202,11 +202,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: GORD, inguinal hernia, hiatus hernia. PANE never gets dysphagia_progressive: the \"Dysphagia\" CC template has no CC hint and the iOS dysphagia chip set has no \"Dysphagia\" association to scan, so only weight_loss/regurgitation/heartburn reach it; the male hernia prior modifier does the rest. Symptom inference ranks oesophageal/gastric carcinoma #1.",
-          "proposedFix": "socrates-to-features.ts: CC hint /dysphag|swallow/ → dysphagia_progressive; pane-engine: age ≥55 modifier for oesophageal/gastric carcinoma.",
           "unverified": [
             "ios"
           ]

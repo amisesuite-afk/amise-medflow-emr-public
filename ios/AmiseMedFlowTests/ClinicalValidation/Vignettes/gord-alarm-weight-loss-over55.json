@@ -169,11 +169,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: GORD, hiatus hernia, peptic ulcer (the \"GORD / heartburn\" template hint pushes GORD; weight loss does not lift a carcinoma into the top 3). Symptom inference lists gastric carcinoma #3.",
-          "proposedFix": "pane-engine modifiers: age ≥55 multiplier for oesophageal/gastric carcinoma; weight_loss + age ≥55 should surface a malignancy.",
           "unverified": [
             "ios"
           ]

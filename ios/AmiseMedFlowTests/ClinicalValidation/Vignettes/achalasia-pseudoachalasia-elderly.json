@@ -165,11 +165,6 @@
             "achalasia-2020",
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifier; no dysphagia feature). Symptom inference ranks occult malignancy and oesophageal/gastric carcinoma #1–2.",
-          "proposedFix": "socrates-to-features.ts: CC hint /dysphag|swallow/ → dysphagia_progressive.",
           "unverified": [
             "ios"
           ]

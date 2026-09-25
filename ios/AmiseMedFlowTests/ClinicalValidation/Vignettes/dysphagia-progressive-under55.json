@@ -183,11 +183,6 @@
             "nice-ng12"
           ],
           "note": "Cancer is less likely at 38 but NG12 still requires exclusion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: GORD, cholecystitis, peptic ulcer — PANE never gets dysphagia_progressive (no CC hint for \"Dysphagia\", and the dysphagia chip set has no \"Dysphagia\" association to scan). Symptom inference ranks oesophageal/gastric carcinoma #2.",
-          "proposedFix": "socrates-to-features.ts: CC hint /dysphag|swallow/ → dysphagia_progressive (and dysphagia).",
           "unverified": [
             "ios"
           ]

@@ -159,12 +159,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = cholecystitis, surgical site infection, GORD: the \"Post-op wound concern\" template hints wound_erythema/wound_discharge (infection features), and no neck-swelling feature exists. The T81.0 plan itself is correct (bedside wound opening).",
-          "proposedFix": "Map \"wound swelling\"/\"neck swelling\" after surgery to wound_seroma (haematoma) rather than infection features."
+          ]
         }
       ]
     },

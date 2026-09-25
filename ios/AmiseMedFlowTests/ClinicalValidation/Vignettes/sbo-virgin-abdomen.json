@@ -250,13 +250,9 @@
             "hernia"
           ],
           "note": "Occult femoral/obturator hernia is a classic cause in thin elderly women.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3 has no hernia (no groin feature because no lump was found)."
+          ]
         }
       ]
     },

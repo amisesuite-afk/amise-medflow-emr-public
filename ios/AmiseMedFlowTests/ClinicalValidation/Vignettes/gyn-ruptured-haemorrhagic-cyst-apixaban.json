@@ -216,11 +216,6 @@
             "haemorrhagic cyst"
           ],
           "k": 3,
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: ovarian torsion (0.195), acute cholecystitis (0.164 — 'shoulder tip' radiation maps to ruq_pain), ectopic pregnancy. The ovarian_cyst node has no haemoperitoneum/shock feature. Symptom inference ranks 'Ovarian torsion / ovarian cyst' #2.",
-          "proposedFix": "Give ovarian_cyst (haemorrhagic/ruptured) a haemoperitoneum/free-fluid and anticoagulant-use likelihood, and stop mapping shoulder-tip radiation to ruq_pain.",
           "unverified": [
             "ios"
           ]

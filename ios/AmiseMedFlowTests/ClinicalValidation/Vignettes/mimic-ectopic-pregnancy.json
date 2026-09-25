@@ -184,14 +184,9 @@
           "guidelineRefs": [
             "nice-ng126"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis. The template's 'lmp' answer ('7 weeks ago — missed period') is not mapped to missed_period, and amenorrhoea/spotting are not SOCRATES-extracted. Symptom inference ranks ectopic #1.",
-          "proposedFix": "Map the CC template's 'lmp' answer (missed/late period, weeks since LMP) and 'spotting' to missed_period/abnormal_uterine_bleeding PANE features."
+          ]
         }
       ]
     },

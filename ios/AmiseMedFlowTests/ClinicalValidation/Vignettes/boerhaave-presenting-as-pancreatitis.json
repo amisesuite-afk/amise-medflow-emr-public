@@ -202,11 +202,6 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: pancreatitis, cholecystitis, GORD; symptom inference: alcoholic/gallstone pancreatitis, peptic ulcer, perforated ulcer. Oesophageal perforation is absent from every list.",
-          "proposedFix": "As boerhaave-classic-mackler dx gap.",
           "unverified": [
             "ios"
           ]

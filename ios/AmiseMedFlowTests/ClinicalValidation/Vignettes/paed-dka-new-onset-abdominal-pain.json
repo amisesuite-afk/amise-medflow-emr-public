@@ -214,11 +214,6 @@
             "dka",
             "diabet"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no DKA disease node (pane-engine has 130 diseases, none for DKA); top 3: acute cholecystitis, appendicitis, peptic ulcer. The BGL 27 prompt does raise \"DKA / HHS — exclude\" and symptom inference ranks DKA #1 (secondary views).",
-          "proposedFix": "Add a DKA rule/node: glucose > 11 with ketones ≥ 3 or pH < 7.3 → DKA as the leading diagnosis, suppressing surgical operative prompts.",
           "unverified": [
             "ios"
           ]

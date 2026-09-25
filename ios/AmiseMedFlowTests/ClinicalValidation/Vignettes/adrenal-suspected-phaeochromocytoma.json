@@ -139,12 +139,7 @@
           "note": "Classic paroxysms with an enhancing heterogeneous adrenal mass.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and applied no feature; the symptom engine ranks phaeochromocytoma #1 from the chips.",
-          "proposedFix": "Add phaeochromocytoma to PANE with paroxysmal headache/palpitations/sweating features (the existing hypertension_symptom feature)."
+          ]
         }
       ]
     },

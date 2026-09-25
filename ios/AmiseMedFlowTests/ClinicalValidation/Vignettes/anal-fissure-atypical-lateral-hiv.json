@@ -156,12 +156,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Anal cancer is not a PANE disease (no disease, no ulcer feature used); symptom inference ranks anal SCC only #5.",
-          "proposedFix": "Add anal squamous cell carcinoma to PANE (features: anal mass/ulcer, bleeding, HIV/HPV/CIN history, inguinal nodes) and a C21 protocol."
+          ]
         },
         {
           "id": "mnm-sti-crohn",

@@ -138,12 +138,7 @@
           "note": "Bloody single-duct discharge: papilloma is commonest but DCIS/carcinoma must be excluded.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE applied no feature: the \"Nipple discharge\" template has no CC hint and ASSOC_RULES has no nipple-discharge pattern, so the priors alone give cholecystitis, GORD, PUD.",
-          "proposedFix": "Add a CC hint for \"Nipple discharge\" (nipple_discharge) and an ASSOC_RULES/SITE_RULES pattern for nipple discharge / bloody discharge."
+          ]
         }
       ]
     },

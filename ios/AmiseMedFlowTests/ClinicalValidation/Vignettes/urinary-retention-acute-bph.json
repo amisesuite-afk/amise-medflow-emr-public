@@ -167,14 +167,9 @@
             "eau-luts-2024",
             "nice-cg97"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE applies only suprapubic_pain; top 3 inguinal hernia, GORD, cholecystitis. The \"urinary retention\" chip does not reach PANE (urinary_retention_symptoms is never set by socrates-to-features). The R33 protocol is still used from the ICD.",
-          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+          ]
         }
       ]
     },

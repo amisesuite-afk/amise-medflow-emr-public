@@ -218,12 +218,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Diverticulitis | 3. Colorectal Cancer; also in web.symptomInference#1, web.passive#1. PANE has no gastroenteritis node.",
-          "proposedFix": "Add a gastroenteritis node, or use the \"Nausea / vomiting\" template to lower surgical priors when diarrhoea is present."
+          ]
         }
       ]
     },

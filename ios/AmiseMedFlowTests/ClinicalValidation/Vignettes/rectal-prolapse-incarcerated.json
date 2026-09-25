@@ -175,11 +175,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE ranks haemorrhoids/fissure: the \"rectal prolapse\" chip is not a PANE input and there is no prolapse CC hint for a presentation template; triage surgical matching and symptom inference do find it."
+          ]
         }
       ]
     },

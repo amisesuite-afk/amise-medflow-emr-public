@@ -132,12 +132,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Appendicitis | 3. GORD / Reflux Oesophagitis; also in web.symptomInference#3, web.passive#3. PANE has a pulmonary_embolism node, but the CC template carries no chest/respiratory hint and surgical priors dominate.",
-          "proposedFix": "socrates-to-features: map the \"shortness of breath\" / \"pleuritic chest pain\" chips to dyspnoea_pe / pleuritic_chest_pain even without a PE-named CC template; reduce the appendicitis/cholecystitis prior uplift in pregnancy without abdominal features."
+          ]
         }
       ]
     },

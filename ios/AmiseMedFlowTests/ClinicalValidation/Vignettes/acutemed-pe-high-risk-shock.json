@@ -166,12 +166,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia | 2. Deep Vein Thrombosis | 3. Acute Cholecystitis; also in web.symptomInference#2, web.passive#1. PANE has a pulmonary_embolism node, but the CC template carries no chest/respiratory hint and surgical priors dominate.",
-          "proposedFix": "Calibrate PANE for PE when haemodynamic_instability + dyspnoea_pe + DVT signs are present (DVT is #2, PE absent); map I26.0x in getProtocolByIcd."
+          ]
         }
       ]
     },
@@ -277,12 +272,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no UFH. Same cause as mgmt-thrombolysis: I26.09 unmapped, so the PE protocol (UFH 80 units/kg bolus) is not shown.",
-          "proposedFix": "Map I26.0x to the pulmonary_embolism protocol."
+          ]
         },
         {
           "id": "mgmt-critical-care",

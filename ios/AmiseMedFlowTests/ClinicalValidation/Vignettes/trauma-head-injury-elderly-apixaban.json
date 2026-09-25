@@ -213,10 +213,6 @@
           "guidelineRefs": [
             "atls-10-geriatric"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No falls/syncope work-up (ECG, lying-standing BP) is suggested for an older adult with repeated falls on anticoagulation.",
           "unverified": [
             "ios"
           ]

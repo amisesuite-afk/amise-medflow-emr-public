@@ -216,14 +216,9 @@
             "nice-cg188"
           ],
           "note": "The index diagnosis. Quality: labelling biliary colic as cholecystitis over-treats but does not miss a dangerous condition.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no biliary colic / symptomatic cholelithiasis node: ranks Acute Cholecystitis (0.73) first for a pain-free outpatient with normal WBC/CRP.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "lib/pane-engine vademecum hepatobiliary.ts: add a \"biliary_colic\" (symptomatic cholelithiasis, K80.20) disease with episodic post-prandial RUQ pain, us_gallstones, absent fever/elevated WBC, and a protocol (elective lap chole, NICE CG188)."
+          ]
         }
       ]
     },

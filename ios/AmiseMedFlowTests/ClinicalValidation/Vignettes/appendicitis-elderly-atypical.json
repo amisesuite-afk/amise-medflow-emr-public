@@ -140,7 +140,7 @@
           "match": ["mesenteric isch", "mesenteric ischem", "acute mesenteric"],
           "guidelineRefs": ["esvs-2017"],
           "note": "Abdominal pain in a 78-year-old with atrial fibrillation: acute mesenteric ischaemia must be considered (ESVS 2017). Anticoagulation lowers but does not remove the risk.",
-          "knownGap": ["ios", "web"],
+          "knownGap": ["ios"],
           "knownGapNote": "PANE top 3 (cholecystitis, appendicitis, appendix mass) omits it; symptom inference ranks it #3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis."
         },
         {

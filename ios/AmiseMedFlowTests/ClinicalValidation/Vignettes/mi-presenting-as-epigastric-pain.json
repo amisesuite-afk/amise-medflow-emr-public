@@ -169,11 +169,6 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no cardiac disease; top 3 cholecystitis, peptic ulcer, GORD.",
-          "proposedFix": "Add an ACS \"must-not-miss\" node or a cross-check prompt for epigastric pain + diaphoresis + cardiovascular risk (diabetes, age, smoking).",
           "unverified": [
             "ios"
           ]

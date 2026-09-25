@@ -166,14 +166,9 @@
             "eau-luts-2024",
             "nice-cg97"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3 inguinal hernia, GORD, diverticulitis: the urinary chips (incontinence, poor stream, incomplete emptying) are not mapped to PANE features (\"Other / general surgical\" CC, no SOCRATES). Symptom inference ranks BPH #1.",
-          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+          ]
         }
       ]
     },

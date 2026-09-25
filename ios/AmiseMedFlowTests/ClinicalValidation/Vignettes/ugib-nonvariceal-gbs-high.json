@@ -224,11 +224,6 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: GORD, inguinal hernia, gastritis. PANE never receives haematemesis/melaena: socrates-to-features has no answer rule for melaena, haematemesis, \"vomiting blood\" or coffee-ground vomit, and the \"Upper GI bleed\" CC hint sets only nausea_vomiting. With only epigastric_pain + nausea_vomiting, the male ×5 (×1.8 at ≥50) inguinal-hernia prior modifier or the cholecystitis/GORD priors win. Symptom inference and triageSurgical rank the bleed #1.",
-          "proposedFix": "socrates-to-features.ts: add ASSOC/CC rules haematemesis|vomiting blood|coffee.?ground → haematemesis and melaena|black|tarry → melaena; also seed PANE from SmartSymptomPicker chips (HpiTab.reseedPane), not only the SOCRATES answers.",
           "unverified": [
             "ios"
           ]

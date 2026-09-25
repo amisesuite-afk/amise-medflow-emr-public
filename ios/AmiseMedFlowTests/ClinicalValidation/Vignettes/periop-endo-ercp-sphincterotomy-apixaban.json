@@ -183,14 +183,9 @@
           "guidelineRefs": [
             "asge-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: inguinal hernia, cholecystitis, GORD. The 'Obstructive jaundice' CC template adds no features, the SOCRATES answers carry no jaundice words, and paneAnswers only set us_gallstones.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Seed PANE jaundice/dark_urine features from the jaundice symptom chip and bilirubin result (the HPB cluster's PANE priors issue also applies: inguinal hernia prior 0.15)."
+          ]
         }
       ]
     },

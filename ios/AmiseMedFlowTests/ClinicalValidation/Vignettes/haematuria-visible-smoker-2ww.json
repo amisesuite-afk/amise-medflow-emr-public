@@ -135,14 +135,9 @@
             "nice-ng12",
             "eau-nmibc-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3 inguinal hernia, cholecystitis, GORD: the haematuria chip is not mapped to a PANE feature without SOCRATES text. Symptom inference ranks bladder cancer #1.",
-          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+          ]
         }
       ]
     },

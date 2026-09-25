@@ -232,12 +232,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only \"Acute gastroenteritis\".",
-          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result."
+          ]
         }
       ]
     },

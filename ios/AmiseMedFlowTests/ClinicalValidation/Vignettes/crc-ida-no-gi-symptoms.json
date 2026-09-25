@@ -174,12 +174,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no anaemia/IDA feature and reads no labs; with fatigue/breathlessness only, the top 3 is the default cholecystitis/GORD/diverticulitis. Symptom inference ranks heart failure, anaemia, COPD.",
-          "proposedFix": "Add an IDA rule reading Hb + MCV/ferritin (lab results): man or post-menopausal woman → bidirectional endoscopy + coeliac serology (BSG 2021), and age ≥ 60 → suspected colorectal cancer pathway (NG12)."
+          ]
         }
       ]
     },

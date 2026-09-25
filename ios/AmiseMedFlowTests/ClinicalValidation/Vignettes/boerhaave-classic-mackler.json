@@ -217,11 +217,6 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: pancreatitis, inguinal hernia, cholecystitis. Subcutaneous emphysema, chest_pain_oesophageal and vomiting_effortless never reach PANE (no SOCRATES rules; radiation \"Back\" gives radiation_to_back → pancreatitis). Symptom inference ranks STEMI/ACS first.",
-          "proposedFix": "socrates-to-features.ts: site \"Retrosternal\"/\"Chest\" → chest_pain_oesophageal; \"surgical emphysema|crepitus\" (exam chip) → subcutaneous_emphysema; seed PANE from exam chips.",
           "unverified": [
             "ios"
           ]

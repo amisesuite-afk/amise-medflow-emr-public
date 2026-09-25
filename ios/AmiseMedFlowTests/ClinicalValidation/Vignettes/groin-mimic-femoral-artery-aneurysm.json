@@ -159,12 +159,7 @@
           "note": "Pulsatile expansile groin mass with AAA: femoral aneurysm must be on the differential.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = inguinal hernia, GORD, cholecystitis. PANE has only \"Aortic Aneurysm\" and no pulsatile-mass feature; the symptom engine ranks AAA #1 from the \"pulsatile mass\" chip. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
-          "proposedFix": "Add a femoral/peripheral aneurysm disease and a \"pulsatile / expansile mass\" feature to PANE, mapped from the SOCRATES \"Pulsatile\" character chip."
+          ]
         }
       ]
     },

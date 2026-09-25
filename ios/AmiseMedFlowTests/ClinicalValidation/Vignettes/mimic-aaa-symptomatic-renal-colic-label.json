@@ -203,14 +203,9 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: renal colic, inguinal/femoral hernia, cholecystitis (pulsatile_mass answered yes). Symptom inference ranks AAA #1.",
-          "proposedFix": "Age/sex prior and pulsatile-mass weighting for aortic_aneurysm; a prompt for 'loin pain + known AAA'."
+          ]
         }
       ]
     },

@@ -178,14 +178,9 @@
           "guidelineRefs": [
             "rcr-rcpch-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding investigations are suggested.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add RCR/RCPCH investigations to the safeguarding prompt."
+          ]
         },
         {
           "id": "inv-clotting",
@@ -197,14 +192,9 @@
           "guidelineRefs": [
             "nice-cg89"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding investigations are suggested.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add RCR/RCPCH investigations to the safeguarding prompt."
+          ]
         }
       ]
     },

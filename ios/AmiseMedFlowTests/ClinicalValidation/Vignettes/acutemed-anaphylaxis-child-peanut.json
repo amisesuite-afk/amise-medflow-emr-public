@@ -147,12 +147,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. GORD / Reflux Oesophagitis | 3. Peptic Ulcer Disease. PANE has no anaphylaxis node.",
-          "proposedFix": "Add an anaphylaxis rule/prompt (acute urticaria/angioedema + airway, breathing or circulation compromise, especially after a drug or food) -> emergency with \"IM adrenaline (1 mg/mL): 500 micrograms adult / 300 micrograms 6-12 y / 150 micrograms <6 y, repeat after 5 min; call 999; lie flat; oxygen; IV fluid\"; and a PANE/triage node so it can appear in the differential."
+          ]
         }
       ]
     },

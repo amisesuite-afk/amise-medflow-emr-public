@@ -180,14 +180,9 @@
             "fernando-2019"
           ],
           "note": "A LRINEC of 0 must not remove NSTI from the list when the clinical picture fits.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute cholecystitis, Cellulitis, Skin abscess. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #2.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal."
+          ]
         }
       ]
     },

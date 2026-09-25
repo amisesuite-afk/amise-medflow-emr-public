@@ -186,11 +186,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: cholecystitis, peptic ulcer, GORD — weight_loss/anorexia do not outweigh the cholecystitis prior (×2 female, ×1.6 age 30–70). Symptom inference, passive ranking and triageSurgical all rank gastric carcinoma #1.",
-          "proposedFix": "pane-engine modifiers: age ≥55 multiplier for gastric/oesophageal carcinoma (as colorectal has); consider weight_loss likelihoods.",
           "unverified": [
             "ios"
           ]

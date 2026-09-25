@@ -199,11 +199,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no infective colitis/gastroenteritis disease; top 3 is appendicitis/cholecystitis/cholangitis. Symptom inference ranks gastroenteritis #1."
+          ]
         }
       ],
       "mustNotMiss": [

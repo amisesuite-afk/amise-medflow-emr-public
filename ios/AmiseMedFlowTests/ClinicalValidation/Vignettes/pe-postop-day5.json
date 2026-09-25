@@ -196,10 +196,6 @@
             "sepsis"
           ],
           "note": "Post-operative tachycardia and hypoxia: leak and chest infection are the alternatives.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute cholecystitis, Pulmonary embolism, GORD. Note: without the PANE answers \"no trauma\" and \"no chest-wall tenderness\", PANE ranked traumatic pneumothorax, rib fractures and haemothorax above PE in a post-operative ward patient.",
           "unverified": [
             "ios"
           ]

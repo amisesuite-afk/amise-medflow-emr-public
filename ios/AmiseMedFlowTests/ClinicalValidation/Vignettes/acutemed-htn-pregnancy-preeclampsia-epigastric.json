@@ -195,12 +195,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Pancreatitis | 3. Peptic Ulcer Disease. PANE has no hypertensive-disorder-of-pregnancy node (obstetric nodes: ectopic pregnancy only).",
-          "proposedFix": "Pregnancy branch in the hypertension prompt: BP >=160/110 at >=20 weeks -> suspected severe pre-eclampsia, same-day obstetric admission, labetalol/nifedipine/methyldopa (no ACE inhibitors, ARBs or amlodipine first-line); suppress cholecystectomy/appendicectomy cascades; add pre-eclampsia/HELLP to the differential."
+          ]
         }
       ]
     },

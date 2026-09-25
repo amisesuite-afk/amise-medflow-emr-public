@@ -179,14 +179,9 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Same PANE features as the base case; PANE ranks cholecystitis (0.22), appendicitis, cholangitis. Symptom inference ranks pyelonephritis #1.",
-          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+          ]
         }
       ]
     },

@@ -130,7 +130,7 @@
           "id": "mnm-septic-shock",
           "severity": "quality",
           "match": ["sepsis", "septic"],
-          "knownGap": ["ios", "web"],
+          "knownGap": ["ios"],
           "knownGapNote": "PANE has no sepsis node; symptom inference ranks sepsis #2. iOS: fallback mode: the built-in jaundice list (5 candidates) does not contain this diagnosis."
         }
       ]

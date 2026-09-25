@@ -122,12 +122,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia | 2. Acute Cholecystitis | 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#2. PANE has no atrial fibrillation (or any arrhythmia) node.",
-          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+          ]
         }
       ],
       "mustNotMiss": [

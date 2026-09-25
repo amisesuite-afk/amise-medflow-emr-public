@@ -212,12 +212,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Acute mesenteric ischaemia is not a PANE disease (top 3: appendicitis, hernia, cholecystitis); symptom inference ranks it #1. Same gap as the appendicitis seed vignettes.",
-          "proposedFix": "Add acute mesenteric ischaemia to PANE (AF/embolic source, pain out of proportion, lactate) and a CTA-first protocol (ESVS 2017)."
+          ]
         }
       ]
     },

@@ -157,11 +157,6 @@
           "guidelineRefs": [
             "achalasia-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: cholecystitis, appendicitis, hiatus hernia — only weight_loss and regurgitation reach PANE (no dysphagia feature, see dysphagia gap).",
-          "proposedFix": "socrates-to-features.ts: CC hint /dysphag|swallow/ → dysphagia_progressive.",
           "unverified": [
             "ios"
           ]

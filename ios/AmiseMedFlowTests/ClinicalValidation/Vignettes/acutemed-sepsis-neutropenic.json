@@ -152,12 +152,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Cholangitis | 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1. PANE has no sepsis or febrile-neutropenia node.",
-          "proposedFix": "lib/pane-engine: add sepsis (source-agnostic) as a must-not-miss node driven by physiology, or show a sepsis banner above the PANE list when NEWS2 >=5 with a suspected infection."
+          ]
         }
       ]
     },

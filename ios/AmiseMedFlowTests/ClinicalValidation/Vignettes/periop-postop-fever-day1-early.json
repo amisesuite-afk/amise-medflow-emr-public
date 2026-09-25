@@ -178,14 +178,9 @@
           "guidelineRefs": [
             "ogrady-fever-2008"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 after laparoscopic cholecystectomy: acute cholecystitis, acute cholangitis, liver abscess. Nothing reads the surgical history, so the removed gallbladder ranks first; no atelectasis/pneumonia node.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "PANE: condition on surgical history (no gallbladder diagnoses after cholecystectomy, no appendicitis after appendicectomy) and add early post-operative causes."
+          ]
         }
       ]
     },

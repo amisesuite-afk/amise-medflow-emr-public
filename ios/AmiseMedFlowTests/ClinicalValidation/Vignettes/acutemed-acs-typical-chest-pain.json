@@ -167,12 +167,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia | 2. Acute Cholecystitis | 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1. PANE (lib/pane-engine, 131 diseases) has no acute coronary syndrome node.",
-          "proposedFix": "lib/pane-engine: add an acute coronary syndrome node (chest pain / pressure, radiation to arm or jaw, diaphoresis, dyspnoea; age, diabetes and smoking modifiers) or a must-not-miss cross-check, and map I20-I24 in getProtocolByIcd."
+          ]
         }
       ],
       "mustNotMiss": [

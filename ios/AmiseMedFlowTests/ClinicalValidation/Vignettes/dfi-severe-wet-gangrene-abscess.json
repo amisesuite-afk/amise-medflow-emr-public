@@ -234,14 +234,9 @@
           "guidelineRefs": [
             "iwgdf-2023-infection"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute cholangitis, Acute cholecystitis, Acute diverticulitis (fever/rigors). Triage surgical matches rank diabetic foot #1; symptom inference #4.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          ]
         },
         {
           "id": "mnm-nsti",
@@ -255,10 +250,6 @@
             "iwgdf-2023-infection"
           ],
           "note": "Soft-tissue gas and crepitus.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 omits NSTI/gas gangrene despite crepitus and soft-tissue gas.",
           "unverified": [
             "ios"
           ]

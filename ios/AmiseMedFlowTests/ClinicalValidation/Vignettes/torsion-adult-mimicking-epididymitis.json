@@ -152,14 +152,9 @@
             "eau-paed-2024",
             "iusti-eo-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE applies testicular_pain, scrotal_swelling, radiation_to_groin and nausea_vomiting, but ranks appendicitis (0.11), inguinal hernia, cholecystitis; torsion (prior 0.01) is not in the top 3. The torsion prompt, protocol and emergency level are all correct.",
-          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+          ]
         },
         {
           "id": "dx-torsion-first",
@@ -176,14 +171,9 @@
             "iusti-eo-2016"
           ],
           "note": "Sudden onset, horizontal lie, absent cremasteric reflex and a clear urine should put torsion above epididymo-orchitis.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: As dx-torsion-top3.",
-          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+          ]
         }
       ]
     },

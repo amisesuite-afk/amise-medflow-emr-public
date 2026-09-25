@@ -183,13 +183,9 @@
           "guidelineRefs": [
             "nice-ng126"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis despite a positive pregnancy test and haemoperitoneum."
+          ]
         }
       ]
     },

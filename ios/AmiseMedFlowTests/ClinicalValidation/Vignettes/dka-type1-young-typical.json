@@ -237,14 +237,9 @@
             "ada-hhc-2024"
           ],
           "note": "DKA must appear on the primary differential (glucose 27.8, ketones 4.9, pH 7.14).",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, appendicitis, peptic ulcer. Symptom inference ranks DKA/HHS #1.",
-          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+          ]
         },
         {
           "id": "mnm-dka-symptom-engine",

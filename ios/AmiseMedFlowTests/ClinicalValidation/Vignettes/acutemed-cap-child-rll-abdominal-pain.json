@@ -181,12 +181,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis | 2. Acute Cholangitis | 3. Acute Appendicitis. PANE has no pneumonia node.",
-          "proposedFix": "lib/pane-engine: add a community-acquired pneumonia node (productive cough, fever, pleuritic pain, focal crackles/bronchial breathing, hypoxia) with a protocol (CURB65/CRB65 severity, CXR, amoxicillin for low severity, blood cultures + IV co-amoxiclav/clarithromycin for high severity) and map J18/J15."
+          ]
         }
       ]
     },

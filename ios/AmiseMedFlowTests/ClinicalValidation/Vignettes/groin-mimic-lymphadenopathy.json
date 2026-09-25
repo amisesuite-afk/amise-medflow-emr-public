@@ -146,12 +146,7 @@
           "note": "Non-reducible groin lumps without a cough impulse plus B symptoms: lymphadenopathy/lymphoma must be on the list.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = inguinal hernia, cholecystitis, GORD. PANE has no lymphadenopathy feature from the groin site and its only node disease is \"Cervical Lymphadenopathy\"; the symptom engine ranks lymphoma #1. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
-          "proposedFix": "Model P(feature | not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin)."
+          ]
         }
       ]
     },
@@ -204,12 +199,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No groin ultrasound or node biopsy is proposed; the confirmed ICD R59.1 has no protocol (R59.9 → cervical lymphadenopathy only).",
-          "proposedFix": "Map R59.x to a generic lymphadenopathy protocol (USS, FBC/LDH, core/excision biopsy, NG12 referral) regardless of site."
+          ]
         },
         {
           "id": "inv-ldh",
@@ -223,11 +213,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No LDH (same cause as above)."
+          ]
         }
       ]
     },

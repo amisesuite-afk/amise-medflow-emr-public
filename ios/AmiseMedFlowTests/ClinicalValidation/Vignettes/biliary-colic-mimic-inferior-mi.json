@@ -239,14 +239,9 @@
             "esc-2023-acs"
           ],
           "note": "Epigastric pain with diaphoresis, bradycardia and hypotension in a diabetic smoker is ACS until an ECG says otherwise.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no ACS/MI node (top 3: inguinal hernia, cholecystitis, GORD); symptom inference top 5 has no cardiac diagnosis either.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "lib/pane-engine: add an \"acute_coronary_syndrome\" mimic node (epigastric pain, diaphoresis, age, diabetes, smoking modifiers) or a hard safety rule in clinical-inference.ts: epigastric/upper abdominal pain + (diaphoresis or HR <60/>100 or SBP <100) + age ≥40/diabetes → \"Exclude ACS: ECG within 10 min + troponin\"."
+          ]
         }
       ]
     },

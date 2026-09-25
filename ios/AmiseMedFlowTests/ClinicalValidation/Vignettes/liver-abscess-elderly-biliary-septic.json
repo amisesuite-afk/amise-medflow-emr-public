@@ -224,14 +224,9 @@
             "sepsis",
             "septic"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no sepsis node (top 3: cholangitis, inguinal hernia, diverticulitis).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "PANE or a CDS rule: surface sepsis/septic shock when qSOFA ≥2 or vasopressors are documented."
+          ]
         }
       ]
     },

@@ -215,14 +215,9 @@
           "guidelineRefs": [
             "nice-ng139"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: acute cholecystitis, acute cholangitis, inguinal hernia — no pneumonia node (symptom inference ranks pneumonia first). The escalation expectation passes only through 'Emergency laparotomy consent … ICU post-operatively' (negated peritonism) and the hypoxia prompt's 'ITU review'.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add hospital-acquired pneumonia to the post-operative differential (PANE node or post-op checklist)."
+          ]
         }
       ]
     },

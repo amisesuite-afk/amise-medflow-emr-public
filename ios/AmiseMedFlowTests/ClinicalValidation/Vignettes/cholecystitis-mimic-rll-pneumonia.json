@@ -237,14 +237,9 @@
             "nice-cg191"
           ],
           "note": "Pleuritic RUQ pain, productive cough, hypoxia and right basal signs with a normal gallbladder.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no pneumonia node (top 3: liver abscess, appendicitis, inguinal hernia). Symptom inference ranks community-acquired pneumonia #1 but it is a secondary view.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "lib/pane-engine: add a \"pneumonia\" mimic node (cough, pleuritic pain, dyspnoea, hypoxia, basal crackles) or surface the symptom-inference #1 when it is not in the PANE top 3."
+          ]
         }
       ]
     },

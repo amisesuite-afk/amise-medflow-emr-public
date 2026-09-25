@@ -179,14 +179,9 @@
           "guidelineRefs": [
             "nice-cg103"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: acute cholecystitis, acute diverticulitis, GORD — no retention, pneumonia or sepsis node for a confused post-operative patient (symptom inference does list a relevant cause).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add delirium precipitants (retention, pneumonia, UTI, drugs) as a non-PANE checklist when confusion is recorded after surgery."
+          ]
         }
       ]
     },

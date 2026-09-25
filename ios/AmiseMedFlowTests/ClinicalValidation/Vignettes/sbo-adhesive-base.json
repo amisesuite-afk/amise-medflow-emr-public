@@ -405,13 +405,9 @@
             "re:\\bkcl\\b"
           ],
           "note": "K 3.3 mmol/L with ongoing losses.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No potassium replacement despite K 3.3: getProtocolByIcd('K56.50') returns the generic bowel_obstruction protocol (prefix K56), not adhesion_obstruction, whose medications include KCl."
+          ]
         }
       ],
       "mustExclude": [

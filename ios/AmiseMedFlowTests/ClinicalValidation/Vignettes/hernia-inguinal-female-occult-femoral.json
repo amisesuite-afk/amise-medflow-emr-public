@@ -140,12 +140,7 @@
           "note": "HerniaSurge: femoral hernias are relatively common in women with groin hernias and are frequently misdiagnosed as inguinal.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = cholecystitis, GORD, PUD. The female modifier cuts inguinal_hernia to x0.3 and cholecystitis is x2 in women; femoral_hernia (prior 0.02) never reaches the list. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
-          "proposedFix": "Model P(feature | not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin)."
+          ]
         }
       ]
     },
@@ -219,11 +214,7 @@
           "platforms": [
             "web"
           ],
-          "note": "Orders seeded from the PANE top 3 should belong to the groin presentation.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "HpiTab.seedInvestigationsFromPane seeds the stat/urgent tests of the (wrong) PANE top 3: blood cultures, MRCP, erect CXR, OGD for a groin lump."
+          "note": "Orders seeded from the PANE top 3 should belong to the groin presentation."
         }
       ]
     }

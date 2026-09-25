@@ -221,11 +221,6 @@
             "bsg-eoe-2022"
           ],
           "note": "EoE is a histological diagnosis; a normal-looking oesophagus without biopsies misses it.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol for K20.0 and nothing else asks for biopsies.",
-          "proposedFix": "Add a K20 (EoE) protocol; add \"biopsies (≥6, two levels)\" to every dysphagia OGD line.",
           "unverified": [
             "ios"
           ]

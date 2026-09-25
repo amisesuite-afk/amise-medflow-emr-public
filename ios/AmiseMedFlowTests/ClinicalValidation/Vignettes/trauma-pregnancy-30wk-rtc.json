@@ -164,14 +164,9 @@
           "guidelineRefs": [
             "atls-10-pregnancy"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no placental abruption; top 3: Acute cholecystitis, Blunt abdominal trauma, Splenic laceration. Symptom inference ranks ectopic pregnancy #1 at 30 weeks.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes."
+          ]
         }
       ]
     },

@@ -159,12 +159,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Anal cancer is not a PANE disease (top 3: haemorrhoids, fissure, colorectal cancer); symptom inference ranks anal SCC #2 but PANE is the primary differential.",
-          "proposedFix": "Add anal squamous cell carcinoma to PANE and a C21 protocol (EUA + biopsy, MRI pelvis, CT, HIV test, chemoradiotherapy — ASCRS 2018); NG12 anal-mass/ulcer prompt."
+          ]
         }
       ]
     },

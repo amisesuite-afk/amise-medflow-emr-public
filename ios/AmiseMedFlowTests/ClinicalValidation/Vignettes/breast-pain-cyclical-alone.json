@@ -125,11 +125,7 @@
           "k": 3,
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE applied no feature (template \"Other / general surgical\"); priors give cholecystitis, GORD, PUD. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature."
+          ]
         }
       ]
     },

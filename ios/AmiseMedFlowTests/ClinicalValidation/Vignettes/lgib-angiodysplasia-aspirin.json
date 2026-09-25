@@ -239,11 +239,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Angiodysplasia is not a PANE disease; only the iOS ClinicalPathwayEngine GI-haemorrhage list names it."
+          ]
         }
       ]
     },

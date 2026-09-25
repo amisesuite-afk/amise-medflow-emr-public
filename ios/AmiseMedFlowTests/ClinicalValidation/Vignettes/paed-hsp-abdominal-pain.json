@@ -187,11 +187,6 @@
             "iga vasculitis",
             "vasculitis"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no IgA vasculitis (HSP) disease node (pane-engine has 130 diseases, none for IgA vasculitis (HSP)); top 3: appendicitis, inguinal hernia, cholecystitis. Symptom inference ranks Henoch-Schönlein purpura #1 (secondary view).",
-          "proposedFix": "Add IgA vasculitis (D69.0) as a PANE node/protocol: ultrasound for severe pain (intussusception), urinalysis/BP follow-up, no surgery.",
           "unverified": [
             "ios"
           ]

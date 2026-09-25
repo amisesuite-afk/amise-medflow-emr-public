@@ -186,12 +186,7 @@
           "note": "Rapid growth over weeks with stridor in an older patient (Hashimoto's): anaplastic carcinoma and thyroid lymphoma are the diagnoses to name.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no anaplastic thyroid carcinoma or thyroid lymphoma disease; top 3 = cholecystitis, colorectal cancer, GORD. The thyroid_carcinoma protocol is papillary-oriented.",
-          "proposedFix": "Add anaplastic carcinoma and primary thyroid lymphoma to PANE and a rapid-growth feature; add an ATC/lymphoma branch to the thyroid carcinoma protocol."
+          ]
         },
         {
           "id": "mnm-thyroid-malignancy",
@@ -203,11 +198,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Thyroid carcinoma not in the PANE top 3 (see above)."
+          ]
         }
       ]
     },

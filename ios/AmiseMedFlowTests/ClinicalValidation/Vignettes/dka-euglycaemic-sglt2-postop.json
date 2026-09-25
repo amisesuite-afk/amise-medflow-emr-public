@@ -271,14 +271,9 @@
             "cpoc-diabetes-2022"
           ],
           "note": "Glucose is only 10.2: an engine that keys DKA on glucose will miss it.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference does not rank DKA in its top 5 either (glucose 10.2 is below its trigger).",
-          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+          ]
         }
       ]
     },

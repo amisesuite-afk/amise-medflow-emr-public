@@ -233,14 +233,9 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute cholangitis, Acute cholecystitis, Acute appendicitis — even with crepitus, erythema, instability and raised WBC answered in PANE. NSTI prior is 0.003; fever/rigors favour biliary diseases and socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #1.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal. Review the necrotising_fasciitis prior and give crepitus_soft_tissue a stronger likelihood ratio."
+          ]
         }
       ]
     },

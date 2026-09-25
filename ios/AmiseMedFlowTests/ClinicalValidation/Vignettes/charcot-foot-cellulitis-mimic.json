@@ -185,14 +185,9 @@
             "iwgdf-2023-charcot"
           ],
           "note": "A hot swollen neuropathic foot with intact skin is Charcot until proven otherwise; missing it leads to collapse and deformity.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine has Charcot neuro-osteoarthropathy (PANE, symptom inference, triage). Symptom inference ranks cellulitis, gout, Fournier's.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add active Charcot neuro-osteoarthropathy to PANE and symptom inference (warm swollen neuropathic foot, intact skin, temperature difference) and to the diabetic-foot protocol set."
+          ]
         }
       ]
     },

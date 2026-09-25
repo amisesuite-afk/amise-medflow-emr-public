@@ -168,14 +168,9 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: GORD, Inguinal/femoral hernia, Acute appendicitis — socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. The plan is correct only because ICD T75.4XXA maps to the electrical-burn protocol.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal."
+          ]
         }
       ]
     },

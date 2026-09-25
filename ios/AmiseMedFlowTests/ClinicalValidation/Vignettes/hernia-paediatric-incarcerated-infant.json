@@ -142,12 +142,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = cholecystitis, appendicitis, PUD for a 7-month-old girl (female inguinal x0.3; no age modifier removes adult biliary disease in infants). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.",
-          "proposedFix": "Add age modifiers (infants/children) to PANE priors, e.g. suppress cholecystitis/GORD/PUD under 12 and boost paediatric inguinal hernia."
+          ]
         }
       ]
     },

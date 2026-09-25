@@ -252,11 +252,7 @@
           "note": "Infection (C. difficile, enteric pathogens) is excluded in every flare.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no infective colitis or C. difficile disease (see uc-flare-cdiff); symptom inference ranks IBD, not infection, and gastroenteritis only #4 in the passive view."
+          ]
         }
       ]
     },

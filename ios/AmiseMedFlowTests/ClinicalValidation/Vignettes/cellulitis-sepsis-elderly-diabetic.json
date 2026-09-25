@@ -224,14 +224,9 @@
           "guidelineRefs": [
             "idsa-ssti-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis (fever/rigors dominate; the 'leg' site adds leg_swelling). The management panel therefore shows the cholangitis protocol. Symptom inference ranks cellulitis #3.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Weight skin features (erythema_surrounding, skin_ulceration) against systemic fever in PANE; do not let fever/rigors alone select a biliary disease without RUQ or jaundice features."
+          ]
         }
       ],
       "mustNotMiss": [
@@ -247,10 +242,6 @@
             "wses-sis-ssti-2018"
           ],
           "note": "IDSA: severe cellulitis with systemic toxicity must be assessed for necrotising infection.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis. Symptom inference ranks NSTI #4.",
           "unverified": [
             "ios"
           ]

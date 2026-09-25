@@ -239,11 +239,7 @@
           "platforms": [
             "web"
           ],
-          "note": "The commonest paediatric mimic; secondary engine checked because PANE has no mesenteric adenitis node.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: Symptom inference has a mesenteric adenitis entry but ranks it outside the top 5 (appendicitis ×2, pancreatitis, gastroenteritis, cholecystitis)."
+          "note": "The commonest paediatric mimic; secondary engine checked because PANE has no mesenteric adenitis node."
         }
       ]
     },

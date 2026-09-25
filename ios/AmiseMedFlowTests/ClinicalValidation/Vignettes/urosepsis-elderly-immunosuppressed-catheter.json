@@ -167,14 +167,9 @@
           "guidelineRefs": [
             "nice-ng51"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3 inguinal hernia, GORD, cholecystitis (no features; no sepsis or urosepsis node). Symptom inference ranks sepsis #1.",
-          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+          ]
         }
       ]
     },

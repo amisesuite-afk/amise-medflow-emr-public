@@ -179,12 +179,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 is cholecystitis/GORD/PUD (the \"Acute abdominal pain\" template with a suprapubic site gives no colorectal features); the FIT result is not a PANE input. Symptom inference ranks colorectal carcinoma #3.",
-          "proposedFix": "Add a FIT rule (lab \"FIT\"/\"faecal immunochemical\"): value ≥ 10 µg Hb/g → suspected colorectal cancer pathway prompt (colonoscopy/CTC), independent of symptoms (NICE DG56; BSG/ACPGBI 2022). Record < 10 as \"does not exclude\" when there is a mass, IDA or ongoing concern."
+          ]
         }
       ]
     },

@@ -145,12 +145,7 @@
           "note": "Unilateral hard eccentric subareolar mass with nipple retraction in a man ≥50.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = inguinal hernia (male x5 prior), gynaecomastia, cholecystitis: every breast disease except gynaecomastia is multiplied by 0.05 in men, so male breast cancer cannot rank.",
-          "proposedFix": "Keep a male-appropriate prior for invasive carcinoma (rare but not x0.05 below a hernia) and add \"unilateral, hard, eccentric, nipple retraction\" features that favour carcinoma over gynaecomastia."
+          ]
         }
       ]
     },

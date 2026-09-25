@@ -167,14 +167,9 @@
             "esvs-aaa-2024"
           ],
           "note": "New \"renal colic\" over 60 without a stone history: AAA must be on the list.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Renal colic (0.78), Inguinal/femoral hernia, Acute cholecystitis. Symptom inference ranks symptomatic AAA #3.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an age ≥60 / no previous stones modifier that keeps aortic aneurysm in the PANE differential for loin pain, and a clinical prompt \"first renal colic over 60 — exclude AAA (bedside USS)\"."
+          ]
         }
       ]
     },

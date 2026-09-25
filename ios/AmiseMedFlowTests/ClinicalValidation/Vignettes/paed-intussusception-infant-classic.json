@@ -144,11 +144,6 @@
           "match": [
             "intussus"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no intussusception disease node (pane-engine has 130 diseases, none for intussusception); top 3: inguinal/femoral hernia, acute cholecystitis, bowel obstruction. K56.1 maps to the adult bowel_obstruction protocol. Symptom inference ranks intussusception #2 (secondary view).",
-          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral.",
           "unverified": [
             "ios"
           ]

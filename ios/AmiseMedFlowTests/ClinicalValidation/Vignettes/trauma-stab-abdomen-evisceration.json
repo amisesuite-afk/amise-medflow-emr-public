@@ -140,10 +140,6 @@
           "guidelineRefs": [
             "atls-10-abdomen"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: Inguinal/femoral hernia, Acute appendicitis, GORD; the SOCRATES mapper has no trauma features and PANE needs mechanism answers.",
           "unverified": [
             "ios"
           ]

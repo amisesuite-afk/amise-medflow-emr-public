@@ -192,13 +192,9 @@
           "guidelineRefs": [
             "wses-diverticulitis-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: PANE top 3: cholecystitis (0.13), inguinal/femoral hernia, appendicitis, with lif_pain, nausea_vomiting and fever all extracted — LIF pain does not bring diverticulitis into the top 3. Symptom inference ranks diverticulitis #2."
+          ]
         }
       ]
     },

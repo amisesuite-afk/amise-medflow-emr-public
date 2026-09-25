@@ -224,12 +224,7 @@
           "note": "Obstruction in a thin elderly woman with a virgin abdomen and medial thigh pain: obturator hernia must be on the list.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 = cholecystitis, appendicitis, bowel obstruction (periumbilical site maps to rlq_pain). obturator_hernia (prior 0.005) has no discriminating feature (no medial-thigh / Howship-Romberg feature, no \"virgin abdomen\" feature), and no web engine names it.",
-          "proposedFix": "Add Howship-Romberg / medial thigh pain and \"no previous abdominal surgery\" features; list obturator/femoral hernia as must-not-miss for SBO in thin elderly women."
+          ]
         },
         {
           "id": "mnm-hernia-any",
@@ -239,11 +234,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "As above: no hernia of any type in the PANE top 3."
+          ]
         }
       ],
       "mustRankTopK": [

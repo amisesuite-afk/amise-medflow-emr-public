@@ -167,12 +167,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Inguinal / Femoral Hernia | 2. GORD / Reflux Oesophagitis | 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1. PANE has no heart failure node.",
-          "proposedFix": "lib/pane-engine: add an acute heart failure node (orthopnoea, PND, bilateral crackles, raised JVP, oedema) with a protocol (oxygen if SpO2 <90%, IV loop diuretic, NIV, NT-proBNP, ECG/troponin for ACS precipitant, echo) and map I50/J81."
+          ]
         }
       ],
       "mustNotMiss": [
