@@ -61,6 +61,25 @@ struct TodayPatientRow: View {
         }
     }
 
+    /// Accessibility text sizes put the NEWS2 / POD badge under the name so the name and subtitle
+    /// can wrap instead of truncating; default sizes keep the one-line row.
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    private var isAccessibilitySize: Bool { dynamicTypeSize.isAccessibilitySize }
+
+    /// One VoiceOver element: name, allergy flags (icon-only on screen), subtitle, NEWS2 / POD.
+    private func accessibilitySummary(_ news2: News2Snapshot?) -> String {
+        var parts: [String?] = [patient.fullName]
+        if patient.hasCriticalAllergy { parts.append("Critical allergy") }
+        if patient.hasPenicillinAllergy { parts.append("Penicillin allergy") }
+        parts.append(A11yLabel.spoken(subtitleText))
+        if style == .ward, let v = news2 {
+            parts.append(A11yLabel.news2(score: v.score, risk: v.risk, incomplete: !v.isComplete))
+        } else if style == .ward, let days = patient.postOpDays {
+            parts.append(A11yLabel.postOpDay(days))
+        }
+        return A11yLabel.joined(parts)
+    }
+
     // Rows are built lazily; a patient deleted meanwhile must not be read (SwiftData crash).
     var body: some View {
         if patient.isLive { liveBody }
@@ -68,51 +87,61 @@ struct TodayPatientRow: View {
 
     @ViewBuilder
     private var liveBody: some View {
+        let news2 = latestNEWS2
         HStack(spacing: 10) {
             // Accent stripe
             RoundedRectangle(cornerRadius: 2)
                 .fill(accentColor)
-                .frame(width: 3, height: 36)
+                .frame(width: 3, height: isAccessibilitySize ? nil : 36)
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Text(patient.fullName)
-                        .font(.system(size: 14, weight: .semibold))
+                        .scaledFont(size: 14, weight: .semibold)
                         .foregroundStyle(.primary)
                     if patient.hasCriticalAllergy {
                         Image(systemName: "exclamationmark.shield.fill")
-                            .font(.system(size: 10))
+                            .scaledFont(size: 10)
                             .foregroundStyle(.red)
                     }
                     if patient.hasPenicillinAllergy {
                         Image(systemName: "pills.fill")
-                            .font(.system(size: 10))
+                            .scaledFont(size: 10)
                             .foregroundStyle(.orange)
                     }
                 }
                 Text(subtitleText)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    .lineLimit(isAccessibilitySize ? 3 : 1)
+                if isAccessibilitySize { trailingBadge(news2) }
             }
 
             Spacer()
 
-            // NEWS2 badge (ward only) or post-op day
-            if style == .ward, let v = latestNEWS2 {
-                NEWS2Badge(score: v.score, risk: v.risk, incomplete: !v.isComplete)
-            } else if style == .ward, let days = patient.postOpDays {
-                Text("POD \(days)")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 5).padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.1), in: Capsule())
-            }
+            if !isAccessibilitySize { trailingBadge(news2) }
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
+                .scaledFont(size: 11, weight: .semibold)
                 .foregroundStyle(.tertiary)
         }
         .padding(.vertical, 2)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(accessibilitySummary(news2)))
+    }
+
+    /// NEWS2 badge (ward only) or post-op day.
+    @ViewBuilder
+    private func trailingBadge(_ news2: News2Snapshot?) -> some View {
+        if style == .ward, let v = news2 {
+            NEWS2Badge(score: v.score, risk: v.risk, incomplete: !v.isComplete)
+        } else if style == .ward, let days = patient.postOpDays {
+            Text("POD \(days)")
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 5).padding(.vertical, 2)
+                .background(Color.secondary.opacity(0.1), in: Capsule())
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        }
     }
 }

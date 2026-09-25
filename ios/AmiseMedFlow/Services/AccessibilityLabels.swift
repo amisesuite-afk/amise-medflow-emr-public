@@ -56,6 +56,12 @@ enum A11yLabel {
         .joined(separator: ", ")
     }
 
+    /// On-screen summary text made speakable: the " · " separators become pauses (", ") so
+    /// VoiceOver does not read "dot" between facts.
+    static func spoken(_ displayText: String) -> String {
+        displayText.replacingOccurrences(of: " · ", with: ", ")
+    }
+
     /// "Post-op day 3".
     static func postOpDay(_ days: Int) -> String { "Post-op day \(days)" }
 

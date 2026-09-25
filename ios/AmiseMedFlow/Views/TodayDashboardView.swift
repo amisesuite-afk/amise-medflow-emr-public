@@ -23,6 +23,8 @@ struct TodayDashboardView: View {
     @State private var showPreConsultSheet = false
     @State private var showStorageBlocked = false
     @State var showCalEventDialog = false
+    /// Accessibility text sizes stack row details vertically (TodayDashboardView+Sections).
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     let cal = Calendar.current
 
@@ -124,7 +126,9 @@ struct TodayDashboardView: View {
                         } label: {
                             Image(systemName: "calendar.badge.plus")
                         }
+                        .accessibilityLabel("Add patients from calendar")
                         Button { showAdd = true } label: { Image(systemName: "plus") }
+                            .accessibilityLabel("Add patient")
                     }
                 }
             }
@@ -192,12 +196,13 @@ struct TodayDashboardView: View {
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: "calendar.badge.plus")
-                        .font(.system(size: 20))
+                        .scaledFont(size: 20)
                         .foregroundStyle(AMColor.accent)
                         .frame(width: 32)
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(unimportedCalEventCount) patient\(unimportedCalEventCount == 1 ? "" : "s") in Google Calendar not yet added")
-                            .font(.system(size: 14, weight: .semibold))
+                            .scaledFont(size: 14, weight: .semibold)
                             .foregroundStyle(.primary)
                         Text("Tap to review and add today's appointments")
                             .font(.caption)
@@ -205,10 +210,12 @@ struct TodayDashboardView: View {
                     }
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .scaledFont(size: 12, weight: .semibold)
                         .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)
                 }
                 .padding(.vertical, 6)
+                .accessibilityElement(children: .combine)
             }
             .buttonStyle(.plain)
             .listRowBackground(AMColor.accentLt.opacity(0.2))
@@ -254,20 +261,25 @@ struct TodayDashboardView: View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
                 Text("\(count)")
-                    .font(.system(size: 20, weight: .bold).monospacedDigit())
+                    .scaledFont(size: 20, weight: .bold, monospacedDigit: true)
             }
             .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 10, weight: .medium))
+                .scaledFont(size: 10, weight: .medium)
                 .foregroundStyle(.secondary)
         }
+        // Tiles sit in a horizontal scroll strip, so they can grow; beyond accessibility3 the
+        // count alone would fill the screen.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility3)
         .frame(minWidth: 64)
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
         .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(color.opacity(0.18), lineWidth: 1))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("\(label): \(count)"))
     }
 
     // MARK: - Row style helper for search results

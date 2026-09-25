@@ -21,14 +21,14 @@ extension TodayDashboardView {
                             .frame(width: 8, height: 8)
                         VStack(alignment: .leading, spacing: 3) {
                             Text(patient.fullName)
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundStyle(.primary)
-                            HStack(spacing: 6) {
+                            detailLayout {
                                 if let cc = patient.chiefComplaint, !cc.isEmpty {
                                     Text(cc)
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
-                                        .lineLimit(1)
+                                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                                 }
                                 if let vt = patient.visitType {
                                     Text(vt.shortLabel)
@@ -47,19 +47,20 @@ extension TodayDashboardView {
                                 .foregroundStyle(.secondary)
                         }
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
+                            .scaledFont(size: 11, weight: .semibold)
                             .foregroundStyle(.tertiary)
                     }
                     .padding(.vertical, 2)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(Text(waitingAccessibilityLabel(patient)))
                 .listRowBackground(Color.orange.opacity(0.05))
             }
         } header: {
             HStack {
                 Label("Ready for Doctor", systemImage: "person.fill.checkmark")
                     .foregroundStyle(.orange)
-                    .font(.system(size: 11, weight: .heavy))
+                    .scaledFont(size: 11, weight: .heavy)
                     .textCase(nil)
                 Spacer()
                 Text("\(readyForDoctorPatients.count)")
@@ -68,6 +69,8 @@ extension TodayDashboardView {
                     .padding(.horizontal, 6).padding(.vertical, 2)
                     .background(Color.orange.opacity(0.15), in: Capsule())
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 
@@ -81,10 +84,10 @@ extension TodayDashboardView {
                     HStack(spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.red)
-                            .font(.system(size: 14))
+                            .scaledFont(size: 14)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(patient.fullName)
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundStyle(.primary)
                             if let v = board.latestNEWS2[patient.id] {
                                 Text("NEWS2 \(v.score) · \(v.risk) risk\(v.isComplete ? "" : " · incomplete")")
@@ -103,18 +106,19 @@ extension TodayDashboardView {
                                 .foregroundStyle(.secondary)
                         }
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
+                            .scaledFont(size: 11, weight: .semibold)
                             .foregroundStyle(.tertiary)
                     }
                     .padding(.vertical, 2)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(Text(alertAccessibilityLabel(patient, board: board)))
                 .listRowBackground(Color.red.opacity(0.06))
             }
         } header: {
             Label("Alerts — High acuity", systemImage: "exclamationmark.triangle.fill")
                 .foregroundStyle(.red)
-                .font(.system(size: 11, weight: .heavy))
+                .scaledFont(size: 11, weight: .heavy)
                 .textCase(nil)
         }
     }
@@ -129,10 +133,10 @@ extension TodayDashboardView {
                     HStack(spacing: 10) {
                         Image(systemName: "flask.fill")
                             .foregroundStyle(.teal)
-                            .font(.system(size: 13))
+                            .scaledFont(size: 13)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(patient.fullName)
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundStyle(.primary)
                             Text(board.resultsSummary[patient.id] ?? "")
                                 .font(.caption)
@@ -140,18 +144,20 @@ extension TodayDashboardView {
                         }
                         Spacer()
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
+                            .scaledFont(size: 11, weight: .semibold)
                             .foregroundStyle(.tertiary)
                     }
                     .padding(.vertical, 2)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(Text(A11yLabel.joined([
+                    patient.fullName, "New results", board.resultsSummary[patient.id]])))
                 .listRowBackground(Color.teal.opacity(0.05))
             }
         } header: {
             Label("Results Available", systemImage: "flask.fill")
                 .foregroundStyle(.teal)
-                .font(.system(size: 11, weight: .heavy))
+                .scaledFont(size: 11, weight: .heavy)
                 .textCase(nil)
         }
     }
@@ -171,7 +177,7 @@ extension TodayDashboardView {
             HStack {
                 Label("Ward Round", systemImage: "bed.double.fill")
                     .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
                 Spacer()
                 Text("\(wardPatients.count)")
                     .font(.caption2.monospacedDigit())
@@ -179,6 +185,8 @@ extension TodayDashboardView {
                     .padding(.horizontal, 6).padding(.vertical, 2)
                     .background(Color.secondary.opacity(0.12), in: Capsule())
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 
@@ -197,12 +205,14 @@ extension TodayDashboardView {
             HStack {
                 Label("Theatre", systemImage: "scalpel")
                     .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
                 Spacer()
                 Text("\(theatreToday.count) \(theatreToday.count == 1 ? "case" : "cases")")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 
@@ -221,12 +231,14 @@ extension TodayDashboardView {
             HStack {
                 Label("Endoscopy", systemImage: "eye.circle")
                     .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
                 Spacer()
                 Text("\(endoscopyToday.count) \(endoscopyToday.count == 1 ? "case" : "cases")")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 
@@ -245,7 +257,7 @@ extension TodayDashboardView {
             HStack {
                 Label("Clinic", systemImage: "stethoscope")
                     .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
                 Spacer()
                 Text("\(clinicToday.count)")
                     .font(.caption2.monospacedDigit())
@@ -253,6 +265,8 @@ extension TodayDashboardView {
                     .padding(.horizontal, 6).padding(.vertical, 2)
                     .background(Color.secondary.opacity(0.12), in: Capsule())
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 
@@ -287,9 +301,9 @@ extension TodayDashboardView {
                             .frame(width: 3, height: 32)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(event.title ?? "Untitled")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundStyle(.primary)
-                                .lineLimit(1)
+                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                             HStack(spacing: 6) {
                                 if let start = event.startDate {
                                     Text(start.formatted(date: .omitted, time: .shortened))
@@ -312,18 +326,20 @@ extension TodayDashboardView {
                             .padding(.horizontal, 6).padding(.vertical, 2)
                             .background(event.calEntryColor.opacity(0.12), in: Capsule())
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
+                            .scaledFont(size: 11, weight: .semibold)
                             .foregroundStyle(.tertiary)
                     }
                     .padding(.vertical, 2)
+                    .accessibilityElement(children: .combine)
                 }
                 .buttonStyle(.plain)
+                .accessibilityHint("Shows appointment actions")
             }
         } header: {
             HStack {
                 Label("Calendar", systemImage: "calendar")
                     .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
                 Spacer()
                 Text("\(todayCalEvents.count)")
                     .font(.caption2.monospacedDigit())
@@ -331,16 +347,56 @@ extension TodayDashboardView {
                     .padding(.horizontal, 6).padding(.vertical, 2)
                     .background(Color.secondary.opacity(0.12), in: Capsule())
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 
+    // MARK: - Accessibility labels
+
+    /// Detail line of a waiting row: side by side, or stacked at accessibility text sizes.
+    var detailLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 2))
+            : AnyLayout(HStackLayout(spacing: 6))
+    }
+
+    func waitingAccessibilityLabel(_ patient: Patient) -> String {
+        A11yLabel.joined([
+            patient.fullName,
+            "Ready for doctor",
+            patient.chiefComplaint,
+            patient.visitType?.rawValue,
+            patient.checkInTime.map { "Checked in \($0.formatted(date: .omitted, time: .shortened))" },
+        ])
+    }
+
+    func alertAccessibilityLabel(_ patient: Patient, board: TodayBoard) -> String {
+        var severity: String?
+        if let v = board.latestNEWS2[patient.id] {
+            severity = A11yLabel.news2(score: v.score, risk: v.risk, incomplete: !v.isComplete)
+        } else if patient.setting == .emergency {
+            severity = "Emergency admission"
+        }
+        var location: String?
+        if let ward = patient.ward, let bed = patient.bedNumber { location = "\(ward), bed \(bed)" }
+        return A11yLabel.joined(["Alert", patient.fullName, severity, location])
+    }
+
     // MARK: - Empty state
+
+    var emptyStateButtonsLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 12))
+    }
 
     func emptyState(unimportedCalEventCount: Int) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "calendar.badge.checkmark")
                 .font(.system(size: 56))
                 .foregroundStyle(AMColor.accent)
+                .accessibilityHidden(true)
             Text("Nothing scheduled today")
                 .font(.headline)
             Text("Ward patients and today's theatre, endoscopy, and clinic lists will appear here.")
@@ -348,7 +404,8 @@ extension TodayDashboardView {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            HStack(spacing: 12) {
+            // Side by side, or stacked when the text is too large for one row.
+            emptyStateButtonsLayout {
                 if unimportedCalEventCount > 0 {
                     Button {
                         showCalendarImport = true
@@ -358,6 +415,7 @@ extension TodayDashboardView {
                             .padding(.horizontal, 20).padding(.vertical, 10)
                             .background(AMColor.accent, in: Capsule())
                             .foregroundStyle(.white)
+                            .minimumTouchTarget()
                     }
                     .buttonStyle(.plain)
                 }
@@ -369,6 +427,7 @@ extension TodayDashboardView {
                         .padding(.horizontal, 20).padding(.vertical, 10)
                         .background(Color(.secondarySystemBackground), in: Capsule())
                         .foregroundStyle(.primary)
+                        .minimumTouchTarget()
                 }
                 .buttonStyle(.plain)
             }

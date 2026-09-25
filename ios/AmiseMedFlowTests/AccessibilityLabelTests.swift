@@ -77,6 +77,11 @@ final class AccessibilityLabelTests: XCTestCase {
         XCTAssertEqual(A11yLabel.joined([]), "")
     }
 
+    func testSpokenReplacesDotSeparators() {
+        XCTAssertEqual(A11yLabel.spoken("Ward 3 · Bed 4 · Appendicitis"), "Ward 3, Bed 4, Appendicitis")
+        XCTAssertEqual(A11yLabel.spoken("No separators"), "No separators")
+    }
+
     func testSmallFormatters() {
         XCTAssertEqual(A11yLabel.postOpDay(3), "Post-op day 3")
         XCTAssertEqual(A11yLabel.count(1, singular: "point", plural: "points"), "1 point")
