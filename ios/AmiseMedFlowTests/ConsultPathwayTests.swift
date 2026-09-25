@@ -300,11 +300,110 @@ final class ScreeningEngineTests: XCTestCase {
         XCTAssertTrue(ids(age: 38, sex: .female) { $0.priorGestationalDiabetes = true }.contains("dm"))
         XCTAssertFalse(ids(age: 30, sex: .female, bmi: 27).contains("dm"))       // overweight alone
         XCTAssertTrue(ids(age: 30, sex: .female, bmi: 27) { $0.familyHxDiabetes = true }.contains("dm"))
+    }
+
+    // MARK: - Parity with lib/triage-engine/src/screening/preventive.ts (same rows and wording as
+    // artifacts/dashboard/src/lib/__tests__/preventive-screening.test.ts)
+
+    private func interval(_ configure: (inout WellnessScreening) -> Void) -> String {
         var w = WellnessScreening()
-        w.priorPolyps = true; w.polypCount = 2; w.largestPolypMm = 6
-        XCTAssertEqual(ScreeningEngine.polypSurveillanceInterval(w), "next colonoscopy in 7–10 years")
-        w.largestPolypMm = 12
-        XCTAssertEqual(ScreeningEngine.polypSurveillanceInterval(w), "next colonoscopy in 3 years")
+        w.priorPolyps = true
+        configure(&w)
+        return ScreeningEngine.polypSurveillanceInterval(w).interval
+    }
+
+    func testPolypIntervalsFollowUSMSTF2020() {
+        XCTAssertEqual(interval { $0.polypHistology = .adenoma; $0.polypCount = 2; $0.largestPolypMm = 6 },
+                       "Next colonoscopy in 7–10 years — no early surveillance colonoscopy needed")
+        XCTAssertEqual(interval { $0.polypHistology = .adenoma; $0.polypCount = 3; $0.largestPolypMm = 6 }, "Next colonoscopy in 3–5 years")
+        XCTAssertEqual(interval { $0.polypHistology = .adenoma; $0.polypCount = 6; $0.largestPolypMm = 6 }, "Next colonoscopy in 3 years")
+        XCTAssertEqual(interval { $0.polypHistology = .adenoma; $0.polypCount = 12 },
+                       "Colonoscopy in 1 year; refer for genetic assessment (> 10 adenomas)")
+        XCTAssertEqual(interval { $0.polypHistology = .adenoma; $0.polypCount = 1; $0.largestPolypMm = 12 }, "Next colonoscopy in 3 years")
+        XCTAssertEqual(interval { $0.polypAdvancedHistology = true }, "Next colonoscopy in 3 years")   // older records
+        XCTAssertEqual(interval { $0.polypHistology = .sessileSerrated; $0.polypCount = 2; $0.largestPolypMm = 8 }, "Next colonoscopy in 5–10 years")
+        XCTAssertEqual(interval { $0.polypHistology = .traditionalSerrated }, "Next colonoscopy in 3 years")
+        XCTAssertEqual(interval { $0.polypHistology = .hyperplastic; $0.largestPolypMm = 5 },
+                       "Return to routine screening: next colonoscopy in 10 years")
+        XCTAssertEqual(interval { $0.piecemealEMR20mm = true },
+                       "Site-check colonoscopy at 6 months, then 1 year after that, then 3 years later")
+        XCTAssertTrue(interval { $0.polypCount = 2 }.hasPrefix("Surveillance interval per the colonoscopy and histology report"))
+    }
+
+    func testColorectalFamilyHistoryAges() {
+        // Under 40: plan from 40 (no test offered yet). 76–85: individualised, not the family item.
+        XCTAssertTrue(ids(age: 35, sex: .male) { $0.familyHxColorectal = true }.contains("crc-fh"))
+        let old = ids(age: 80, sex: .male) { $0.familyHxColorectal = true }
+        XCTAssertTrue(old.contains("crc-76-85"))
+        XCTAssertFalse(old.contains("crc-fh"))
+        XCTAssertFalse(ids(age: 86, sex: .male) { $0.familyHxColorectal = true }.contains("crc-76-85"))
+        XCTAssertTrue(ids(age: 55, sex: .female) { $0.priorPolyps = true; $0.familyHxLynchFeatures = true }.contains("crc-lynch-fh"))
+        XCTAssertFalse(ids(age: 17, sex: .female) { $0.lynchCarrier = true }.contains("crc-lynch"))
+    }
+
+    func testNormalColonoscopyWithinTenYearsIsUpToDate() {
+        let items = ScreeningEngine.items(age: 55, sex: .male, bmi: nil, w: {
+            var w = WellnessScreening(); w.lastNormalColonoscopyYearsAgo = 4; return w }())
+        let crc = items.first { $0.id == "crc" }
+        XCTAssertTrue(crc?.title.contains("up to date") ?? false)
+        XCTAssertNil(crc?.ixName)
+    }
+
+    func testBreastFamilyHistoryFrom25AndBRCAFrom18() {
+        XCTAssertTrue(ids(age: 26, sex: .female) { $0.familyHxBreastOvarian = true }.contains("breast-fh"))
+        XCTAssertTrue(ids(age: 45, sex: .female) { $0.familyHxBreastOvarian = true }.isSuperset(of: ["breast-fh", "breast"]))
+        let brca = ids(age: 45, sex: .female) { $0.brcaCarrier = true }
+        XCTAssertTrue(brca.contains("breast-brca"))
+        XCTAssertFalse(brca.contains("breast"))
+        let young = ScreeningEngine.items(age: 22, sex: .female, bmi: nil, w: {
+            var w = WellnessScreening(); w.brcaCarrier = true; return w }())
+        XCTAssertNil(young.first { $0.id == "breast-brca" }?.ixName)   // MRI from 25
+    }
+
+    func testPSAHasNoAutomaticTestAndStartsAt45WithBRCA() {
+        let psa = ScreeningEngine.items(age: 60, sex: .male, bmi: nil, w: WellnessScreening()).first { $0.id == "psa" }
+        XCTAssertNotNil(psa)
+        XCTAssertNil(psa?.ixName)
+        XCTAssertTrue(ids(age: 46, sex: .male) { $0.brcaCarrier = true }.contains("psa"))
+        XCTAssertFalse(ids(age: 70, sex: .male) { $0.familyHxProstate = true }.contains("psa"))
+    }
+
+    func testBPConfirmationOnlyBelowTheUrgencyRange() {
+        func bp(_ s: Int, _ d: Int) -> ScreeningItem? {
+            ScreeningEngine.items(age: 50, sex: .male, bmi: nil, w: WellnessScreening(), clinicBP: (s, d)).first { $0.id == "bp" }
+        }
+        XCTAssertTrue(bp(150, 95)?.detail.contains("ABPM") ?? false)
+        XCTAssertFalse(bp(185, 95)?.detail.contains("ABPM") ?? true)   // ≥180: hypertensive-urgency alerts
+        XCTAssertFalse(bp(128, 82)?.detail.contains("ABPM") ?? true)
+    }
+
+    func testNewFieldsRoundTripAndOldJSONStillDecodes() throws {
+        var w = WellnessScreening()
+        w.lynchCarrier = true; w.brcaCarrier = true; w.totalHysterectomy = true; w.familyHxGastricCancer = true
+        w.lastNormalColonoscopyYearsAgo = 3; w.polypCount = 4; w.largestPolypMm = 8
+        w.polypHistology = .sessileSerrated; w.statuses["crc"] = .declined
+        var data = PathwayData()
+        data.wellness = w
+        let encoder = JSONEncoder(); encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
+        let back = try decoder.decode(PathwayData.self, from: encoder.encode(data)).wellness
+        XCTAssertTrue(back.lynchCarrier && back.brcaCarrier && back.totalHysterectomy && back.familyHxGastricCancer)
+        XCTAssertEqual(back.lastNormalColonoscopyYearsAgo, 3)
+        XCTAssertEqual(back.polypCount, 4)
+        XCTAssertEqual(back.largestPolypMm, 8)
+        XCTAssertEqual(back.polypHistology, .sessileSerrated)
+        XCTAssertEqual(back.statuses["crc"], .declined)
+
+        // JSON written before these fields existed (and an unknown histology value) decodes to defaults.
+        let old = #"{"wellness":{"smoking":"Former","packYears":30,"priorPolyps":true,"polypHistology":"Villous?","statuses":{"crc":"Added"}}}"#
+        let legacy = try decoder.decode(PathwayData.self, from: Data(old.utf8)).wellness
+        XCTAssertEqual(legacy.smoking, .former)
+        XCTAssertEqual(legacy.packYears, 30)
+        XCTAssertTrue(legacy.priorPolyps)
+        XCTAssertFalse(legacy.lynchCarrier)
+        XCTAssertNil(legacy.lastNormalColonoscopyYearsAgo)
+        XCTAssertEqual(legacy.polypHistology, .notRecorded)
+        XCTAssertEqual(legacy.statuses["crc"], .suggested)
     }
 
     func testAAAOnlyForMenWhoEverSmoked() {

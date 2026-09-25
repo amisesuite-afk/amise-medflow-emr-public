@@ -76,13 +76,19 @@ struct WellnessScreeningView: View {
             if data.familyHxColorectal {
                 Toggle("Relative under 60, or 2 or more relatives", isOn: binding(\.familyHxColorectalHighRisk))
             }
-            Toggle("Family history suggesting Lynch syndrome", isOn: binding(\.familyHxLynchFeatures))
+            Toggle("Family: bowel cancer under 50 or several Lynch cancers", isOn: binding(\.familyHxLynchFeatures))
             Toggle("Lynch syndrome carrier", isOn: binding(\.lynchCarrier))
             Toggle("Previous colon polyps", isOn: binding(\.priorPolyps))
             if data.priorPolyps {
-                Toggle("Villous / high-grade dysplasia / TSA", isOn: binding(\.polypAdvancedHistology))
+                Picker("Polyp histology", selection: binding(\.polypHistology)) {
+                    ForEach(WellnessScreening.PolypHistology.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                }
+                optionalNumberRow("Number of polyps", binding(\.polypCount), unit: "")
+                optionalNumberRow("Largest polyp", binding(\.largestPolypMm), unit: "mm")
+                Toggle("Villous / high-grade dysplasia (serrated: any dysplasia)", isOn: binding(\.polypAdvancedHistology))
                 Toggle("Piecemeal EMR of a lesion ≥20 mm", isOn: binding(\.piecemealEMR20mm))
             }
+            optionalNumberRow("Last normal colonoscopy", binding(\.lastNormalColonoscopyYearsAgo), unit: "years ago")
             Toggle("Family history: gastric cancer", isOn: binding(\.familyHxGastricCancer))
             if patient.sex == .female {
                 Toggle("Family history: breast / ovarian cancer", isOn: binding(\.familyHxBreastOvarian))
@@ -105,6 +111,19 @@ struct WellnessScreeningView: View {
         }
     }
 
+    /// A whole number that may be left blank (nil = not recorded).
+    private func optionalNumberRow(_ label: String, _ value: Binding<Int?>, unit: String) -> some View {
+        HStack {
+            Text(label)
+            Spacer()
+            TextField("—", value: value, format: .number)
+                .keyboardType(.numberPad)
+                .multilineTextAlignment(.trailing)
+                .frame(width: 70)
+            if !unit.isEmpty { Text(unit).foregroundStyle(.secondary) }
+        }
+    }
+
     // MARK: - Screening list
 
     private var dueSection: some View {
@@ -115,7 +134,7 @@ struct WellnessScreeningView: View {
         } header: {
             Text("Screening & prevention (\(items.count))")
         } footer: {
-            Text("Based on USPSTF recommendations adapted to common Caribbean practice. Adjust to local guidelines and individual risk. Suggestions only — nothing is ordered until you order it in Investigations.")
+            Text("USPSTF with ACG / US MSTF (colonoscopy), NCCN / ACR (high-risk breast), ADA 2024 (diabetes) and NICE NG136 (blood pressure), as on the web. Adjust to individual risk. Suggestions only — nothing is ordered until you order it in Investigations.")
         }
     }
 
