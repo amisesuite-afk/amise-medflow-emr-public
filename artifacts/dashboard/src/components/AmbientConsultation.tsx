@@ -13,7 +13,9 @@ import { getAIProviderConfig, segmentSoapWithOllama, type SegmentedSoap } from '
 import { localSegmentSoap } from '@/lib/local-soap-segmenter';
 import { getApiOrigin } from '@/lib/api-origin';
 import { getMatrix } from '@/lib/cc-matrices';
-import { DISEASES, getDiseaseSpecialty, initPaneState, updatePosterior, topDiagnoses, applyModifiers, getProtocol } from '@workspace/pane-engine';
+import { DISEASES, getDiseaseSpecialty, initPaneState, updatePosterior, topDiagnoses, applyModifiers } from '@workspace/pane-engine';
+import { investigationsWithCaveats, patientProtocol, seedInvestigations } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import { extractFeaturesFromTranscript, detectPathognomonic, type PathognomicMatch } from '@/lib/transcript-dx-mapper';
 import { computeReminders } from '@/lib/safety-engine';
 import type { RadiologyRequest } from '@/pages/tabs/RadiologyTab';
@@ -593,6 +595,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     medicationsText, setMedicationsText,
     triageResult,
   } = ctx;
+  // The patient on record: every protocol shown or inserted here goes through the pane-engine
+  // plan-safety filter (plan-builder.ts patientProtocol — allergy, pregnancy, under 16, branches).
+  const planPatient = usePlanPatientContext();
 
   // ── Phase & drawer state ───────────────────────────────────────────────────
   const [consultPhase, setConsultPhase] = useState<ConsultPhase>('history');
@@ -888,7 +893,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       const observed = extractFeaturesFromTranscript(fullText);
       if (!observed.length) return;
       const ageN = ctx.age ? parseInt(ctx.age, 10) : null;
-      const modDiseases = applyModifiers(DISEASES, ageN, ctx.sex);
+      const modDiseases = applyModifiers(DISEASES, ageN, ctx.sex, undefined, { pregnancyPossible: ctx.pregnancyPossible });
       let state = ctx.paneState ?? initPaneState(modDiseases);
       for (const { featureId, observed: obs } of observed) state = updatePosterior(state, modDiseases, featureId, obs);
       const top = topDiagnoses(state, modDiseases, 8);
@@ -1009,7 +1014,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     // is never written into the assessment (UX review C4). Suggestions stay listed on screen.
     const dxForAssess = workingDxId;
     const dxLabelForAssess = dxForAssess ? (DISEASES.find(d => d.id === dxForAssess)?.label ?? dxForAssess) : null;
-    const protoForAssess = dxForAssess ? getProtocol(dxForAssess) : null;
+    const protoForAssess = dxForAssess ? patientProtocol(dxForAssess, null, planPatient) : null;
     const rfForAssess = protoForAssess?.redFlags.map(r => `  ⚠ ${r}`).join('\n') ?? '';
     const top3 = suggestedDx.slice(0, 3);
 
@@ -1043,21 +1048,26 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   }
 
   function buildProtocolPlan(dxId: string, isAutoSuggested: boolean): string {
-    const proto = getProtocol(dxId);
+    // Adapted to the patient on record: a drug withheld for allergy / pregnancy / age never appears
+    // as a medicine (its replacement line does), a child's doses are "calculate per BNFc", imaging
+    // carries its pregnancy / child caveat, and the patient-specific safety lines come first.
+    const proto = patientProtocol(dxId, null, planPatient);
     if (!proto) return '';
     const IMAGING_KW = ['uss', 'ct ', 'mri', 'mrcp', 'pet', 'cxr', 'x-ray', 'xr ', 'ultrasound', 'scan', 'echo', 'angio', 'radiograph', 'chest x', 'ercp'];
     const isImaging  = (label: string) => IMAGING_KW.some(k => label.toLowerCase().includes(k));
 
     // Sex-based investigation filtering (e.g. βhCG not applicable for confirmed males)
     const isMale = ctx.sex === 'male';
-    const invxFiltered = proto.investigations.filter(i =>
+    const invxFiltered = investigationsWithCaveats(proto).filter(i =>
       !(isMale && /β.*hcg|b.*hcg|beta.*hcg/i.test(i.label)),
     );
 
     const labInvx    = invxFiltered.filter(i => !isImaging(i.label));
     const imagingInvx= invxFiltered.filter(i =>  isImaging(i.label));
-    const labLines   = labInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
-    const imgLines   = imagingInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
+    const invLine    = (i: (typeof invxFiltered)[number]) => `   [${i.urgency.toUpperCase()}] ${i.label}${i.caveat ? ` — ⚠ ${i.caveat}` : ''}`;
+    const labLines   = labInvx.map(invLine).join('\n');
+    const imgLines   = imagingInvx.map(invLine).join('\n');
+    const safetyLines = proto.safetyNotes.map(n => `   ${n.severity === 'critical' ? '⚠ ' : '• '}${n.text}`).join('\n');
     const immediate  = proto.management.filter(m => m.phase === 'immediate').map(m => `   • ${m.step}`).join('\n');
     const surgical   = proto.management.filter(m => m.phase === 'surgical').map(m => `   • ${m.step}`).join('\n');
     const conserv    = proto.management.filter(m => m.phase === 'conservative').map(m => `   • ${m.step}`).join('\n');
@@ -1113,22 +1123,18 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       severityPrompt = `Alvarado score: ${scoreStr}\n${cats.map(c => `   ${c}`).join('\n')}`;
     }
 
-    // Allergy flagging for protocol medications
-    const allergenList = ctx.allergies.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-    const isAllergic = (drugName: string) => allergenList.some(a => {
-      const d = drugName.toLowerCase();
-      return d.includes(a) || a.includes(d.split(' ')[0]);
-    });
-
-    // Structured medications — replaces ambiguous prose in management steps
+    // Structured medications — replaces ambiguous prose in management steps. The allergy
+    // cross-check (class-aware), pregnancy and under-16 filters already ran (patientProtocol): a
+    // withheld medicine is listed only as "withheld", with the reason and the alternative.
     let medsBlock = '';
-    if (proto.medications && proto.medications.length > 0) {
-      const medLines = proto.medications.map(m => {
+    const withheldMeds = proto.withheld.filter(w => w.from === 'medication');
+    if ((proto.medications && proto.medications.length > 0) || withheldMeds.length > 0) {
+      const medLines = (proto.medications ?? []).map(m => {
         const header = `${m.drugName}  ${m.dose}  ${m.route}  ${m.frequency}${m.duration ? `  × ${m.duration}` : ''}`;
         const altNote = m.alternativeTo ? `  [alternative to ${m.alternativeTo}]` : '';
-        const allergyFlag = isAllergic(m.drugName) ? '  ⚠ ALLERGY — verify before prescribing' : '';
-        return `   • ${header}${altNote}${allergyFlag}\n     → ${m.indication}`;
+        return `   • ${header}${altNote}\n     → ${m.indication}`;
       });
+      for (const w of withheldMeds) medLines.push(`   ⚠ WITHHELD — ${w.item}: ${w.reason}`);
       medsBlock = medLines.join('\n');
     }
 
@@ -1139,6 +1145,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     let out = `Management Plan — ${dxLabel}${isAutoSuggested ? '  ⚠ AI suggestion — confirm diagnosis before proceeding' : ''}\n`;
     out += `ICD-10: ${icd10}\n`;
     if (severityPrompt) out += `\n━━━ SEVERITY ASSESSMENT (complete before management) ━━━\n${severityPrompt}\n`;
+    if (safetyLines) out += `\n━━━ PATIENT-SPECIFIC SAFETY CHECKS (review before acting) ━━━\n${safetyLines}\n`;
     out += S('Investigations (Labs)', labLines || '   —');
     out += S('Imaging', imgLines || '   —');
     out += S('Referral', `   ${proto.referral ?? ''}`);
@@ -1408,9 +1415,11 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               {(() => {
                 const top1 = ctx.paneTop[0];
                 if (!top1 || top1.probability < 0.3) return null;
-                const proto = getProtocol(top1.disease.id);
-                if (!proto) return null;
-                const statInvx = proto.investigations.filter(i => i.urgency === 'stat' || i.urgency === 'urgent').slice(0, 3);
+                // The leading differential is only being considered: its tests go through the same
+                // seeding filter as the Labs step (plan-builder.ts seedInvestigations) — adapted to
+                // the patient, and no stat test until the diagnosis is confirmed.
+                const seed = seedInvestigations({ diseaseId: top1.disease.id, icdCode: null, source: 'pane' }, planPatient);
+                const statInvx = seed.items.slice(0, 3);
                 if (!statInvx.length) return null;
                 return (
                   <div style={{ marginTop: 2, fontSize: 11, color: 'var(--ink)' }}>
@@ -1420,7 +1429,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     {statInvx.map(i => (
                       <div key={i.label} style={{ display: 'flex', gap: 5, marginBottom: 2 }}>
                         <span style={{ color: i.urgency === 'stat' ? '#dc2626' : '#d97706', fontWeight: 700 }}>{i.urgency.toUpperCase()}</span>
-                        <span>{i.label}</span>
+                        <span>{i.label}{i.caveat && <span style={{ color: '#b45309' }}> — ⚠ {i.caveat}</span>}</span>
                       </div>
                     ))}
                   </div>
@@ -1715,7 +1724,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           {/* ── Unified Diagnosis Picker ── */}
           {(() => {
             const activeDx = workingDxId ? DISEASES.find(d => d.id === workingDxId) : null;
-            const activeProto = workingDxId ? getProtocol(workingDxId) : null;
+            const activeProto = workingDxId ? patientProtocol(workingDxId, null, planPatient) : null;
             const isSearching = dxSearch.length > 0;
             const searchHits = isSearching
               ? DISEASES.filter(d => d.label.toLowerCase().includes(dxSearch.toLowerCase()) || d.icd10.toLowerCase().includes(dxSearch.toLowerCase())).slice(0, 8)
@@ -1818,8 +1827,10 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 {activeProto && (() => {
                   const IMAGING_KW = ['uss', 'ct ', 'mri', 'mrcp', 'pet', 'cxr', 'x-ray', 'xr ', 'ultrasound', 'scan', 'echo', 'angio', 'radiograph', 'chest x', 'ercp'];
                   const isImaging = (label: string) => IMAGING_KW.some(k => label.toLowerCase().includes(k));
-                  const labs    = activeProto.investigations.filter(i => !isImaging(i.label));
-                  const imaging = activeProto.investigations.filter(i =>  isImaging(i.label));
+                  const protoInvx = investigationsWithCaveats(activeProto);
+                  const labs    = protoInvx.filter(i => !isImaging(i.label));
+                  const imaging = protoInvx.filter(i =>  isImaging(i.label));
+                  const withheldMeds = activeProto.withheld.filter(w => w.from === 'medication');
                   const immediate = activeProto.management.filter(m => m.phase === 'immediate');
                   const labelStyle: React.CSSProperties = {
                     fontSize: 9, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase',
@@ -1828,6 +1839,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   const urgencyColor = (u: string) => u === 'stat' ? '#ef4444' : u === 'urgent' ? '#d97706' : 'var(--muted)';
                   return (
                     <div style={{ borderTop: '1px solid var(--line)', padding: '8px 14px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+                      {activeProto.safetyNotes.length > 0 && (
+                        <div data-testid="ambient-protocol-safety" style={{ fontSize: 11, lineHeight: 1.6, marginBottom: 4 }}>
+                          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--coral)' }}>For this patient</div>
+                          {activeProto.safetyNotes.map((n, i) => (
+                            <div key={i} style={{ color: n.severity === 'critical' ? 'var(--coral)' : 'var(--ink)' }}>{n.severity === 'critical' ? '⚠ ' : '• '}{n.text}</div>
+                          ))}
+                        </div>
+                      )}
                       {activeProto.keyPoints.length > 0 && (
                         <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6 }}>
                           {activeProto.keyPoints.map((k, i) => <div key={i}>• {k}</div>)}
@@ -1835,7 +1854,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                       )}
                       {activeProto.redFlags.length > 0 && (
                         <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.6, marginTop: 4 }}>
-                          {activeProto.redFlags.map((r, i) => <div key={i}>⚠ {r}</div>)}
+                          {activeProto.redFlags.filter(r => !activeProto.safetyNotes.some(n => n.text === r)).map((r, i) => <div key={i}>⚠ {r}</div>)}
                         </div>
                       )}
 

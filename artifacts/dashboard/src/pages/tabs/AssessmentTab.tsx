@@ -7,6 +7,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
 import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
+import { planProtocolFor } from '@/lib/plan-builder';
 import SmartTextarea from '@/components/SmartTextarea';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
@@ -15,7 +16,6 @@ import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
 import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
-import { getProtocol } from '@workspace/pane-engine';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -256,7 +256,8 @@ function DiagnosisPicker() {
     if (!icdCodes.length) return null;
     const leader = paneTop[0];
     if (!leader || leader.probability < 0.4) return null;
-    const protocol = getProtocol(leader.disease.id);
+    // Label and ICD prefixes only (no clinical content shown), via the shared resolver.
+    const protocol = planProtocolFor(leader.disease.id, null);
     if (!protocol?.icd10Prefixes.length) return null;
     const currentCode = splitLabel(icdCodes[0]).code.trim();
     const stillMatches = protocol.icd10Prefixes.some(prefix => currentCode.startsWith(prefix));

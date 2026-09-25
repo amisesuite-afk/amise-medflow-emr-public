@@ -9,7 +9,8 @@ interface Props {
   /**
    * The patient on record. When given, the protocol is adapted to it (allergy cross-check,
    * pregnancy and under-16 filters, conditional branches) and the patient-specific safety lines
-   * are shown first. Omit it for reference views with no patient (Dictionary).
+   * are shown first. Omit it only for a reference view with no patient open (the Dictionary
+   * passes it whenever a patient is open).
    */
   patient?: PlanPatientContext | null;
 }

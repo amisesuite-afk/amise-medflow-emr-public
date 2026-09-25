@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import SuggestedInvestigationsPanel from '@/components/SuggestedInvestigationsPanel';
 import { useAppContext } from '@/context/AppContext';
-import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
+import { confirmedPlanSource } from '@/lib/diagnosis-suggestion';
+import { investigationsWithCaveats, patientProtocol } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { getActivePathways } from '@/lib/clinical-pathways';
 import { getApiOrigin } from '@/lib/api-origin';
@@ -289,24 +291,22 @@ export default function InvestigationsTab() {
     radiologyRequests, setRadiologyRequests,
     symptoms, symptomDetails, sex,
     patientName, age, dob, hpiNotes, mrNumber,
-    workingDiagnosis, icdCodes, paneTop, paneConverged, patientId,
+    workingDiagnosis, icdCodes, patientId,
   } = useAppContext();
   const [importedRefresh, setImportedRefresh] = useState(0);
 
-  // Derive protocol from working diagnosis or ICD code (mirrors PlanTab logic)
-  const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
-    ? paneTop[0].disease.id
-    : null;
-  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? workingDiagnosis?.icdCode ?? null;
+  // The protocol for the CONFIRMED diagnosis (locked working diagnosis or recorded ICD-10 code —
+  // confirmedPlanSource, as PlanTab), resolved with resolveProtocol and adapted to the patient on
+  // record (plan-builder.ts patientProtocol): conditional branches resolved, pregnancy / child /
+  // contrast caveats on imaging, "pregnancy test — result required" before a procedure.
+  const { diseaseId: activeDiseaseId, icdCode: activeIcdCode } = confirmedPlanSource(workingDiagnosis, icdCodes);
+  const planPatient = usePlanPatientContext();
   const protocol = useMemo(
-    () => activeDiseaseId
-      ? getProtocol(activeDiseaseId)
-      : activeIcdCode
-        ? getProtocolByIcd(activeIcdCode)
-        : null,
-    [activeDiseaseId, activeIcdCode],
+    () => patientProtocol(activeDiseaseId, activeIcdCode, planPatient),
+    [activeDiseaseId, activeIcdCode, planPatient],
   );
-  const protocolInvestigations = protocol?.investigations ?? [];
+  // Orderable label (the protocol's wording) and the patient-specific caveat kept apart.
+  const protocolInvestigations = useMemo(() => (protocol ? investigationsWithCaveats(protocol) : []), [protocol]);
   const { showToast } = useToast();
 
   // One-time migration: move any imaging items that ended up in orderedInvestigations
@@ -578,6 +578,9 @@ export default function InvestigationsTab() {
                               {inv.conditional}
                             </span>
                           )}
+                          {!alreadyDone && inv.caveat && (
+                            <span style={{ fontSize: 10, color: '#fcd34d', paddingLeft: 10 }}>⚠ {inv.caveat}</span>
+                          )}
                         </div>
                       );
                     })}
@@ -627,6 +630,9 @@ export default function InvestigationsTab() {
                     {alreadyDone ? '✓ ' : isImg ? '→ ' : '+ '}{inv.label}
                     {!alreadyDone && (
                       <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 4 }}>({inv.urgency})</span>
+                    )}
+                    {!alreadyDone && inv.caveat && (
+                      <span style={{ fontSize: 10, color: '#fcd34d', marginLeft: 4 }}>⚠ {inv.caveat}</span>
                     )}
                   </button>
                 );
@@ -1061,6 +1067,7 @@ export default function InvestigationsTab() {
                   }}
                 >
                   + {inv.label}
+                  {inv.caveat && <span style={{ fontSize: 10.5, color: '#b45309', marginLeft: 4 }}>⚠ {inv.caveat}</span>}
                 </button>
               ))}
             </div>
