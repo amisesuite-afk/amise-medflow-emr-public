@@ -359,6 +359,11 @@ extension ConsultationView {
                 }
             }
 
+            // Diagnostic reasoning: for / against / doesn't fit, best next discriminator,
+            // "Doesn't fit the working diagnosis", zebra check, longitudinal patterns (engine-derived;
+            // nothing is added to the record without a tap).
+            DiagnosticReasoningSection(patient: patient, results: bayesianDx)
+
             // ── AutoFunction Action Panel ──────────────────────────────────
             let visibleActions = pipeline.filteredAutoActions(for: patient.visitType)
             if !visibleActions.isEmpty {

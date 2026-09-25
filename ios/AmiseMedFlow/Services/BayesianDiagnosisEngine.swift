@@ -30,6 +30,11 @@ enum BayesianDiagnosisEngine {
         /// Clinical urgency tier: 0=routine 1=urgent 2=emergency 3=critical
         /// Drives the safety-net boost and urgency badge in the differential UI.
         let urgency: Int
+        /// Every feature that fired for this candidate (positive and negative), with its weight and
+        /// citation: the diagnostic-reasoning layer's evidence (DiagnosticReasoningAdapter.swift).
+        var firedFeatures: [FiredFeature] = []
+        /// The candidate's own feature list (for its cardinal findings that did not fire).
+        var candidateFeatures: [Candidate.Feature] = []
 
         enum Confidence {
             case certain  // logGap ≥ 25 — statistically overwhelming
@@ -4212,6 +4217,8 @@ enum BayesianDiagnosisEngine {
             /// Masking contexts under which a negative feature is not counted
             /// (BayesianDiagnosisEngine+Context.swift); nil for the built-in lists.
             var maskedBy: [String]? = nil
+            /// Source of the weight (DiagnosticDatabase.json feature citation); nil for the built-in lists.
+            var citation: String? = nil
         }
     }
 }

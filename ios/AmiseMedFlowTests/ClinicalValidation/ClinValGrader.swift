@@ -119,6 +119,7 @@ enum ClinValGrader {
         case "alarms": return alarms
         case "redFlags": return out.redFlags + alarms
         case "investigations": return out.investigations
+        case "reasoning": return out.reasoning ?? []
         default: return out.management
         }
     }
@@ -127,6 +128,9 @@ enum ClinValGrader {
         if let sources = e.sources, !sources.isEmpty, !sources.contains(where: { $0.hasPrefix("ios.") }) {
             return Verdict(status: "na", detail: "sources \(sources.joined(separator: ", ")) are not ios sources")
         }
+        if kind == "reasoning" && out.reasoning == nil {
+            return Verdict(status: "na", detail: "no diagnostic-reasoning output on ios")
+        }
         let items = textItems(kind, out).filter { sourceAllowed($0.source, e.sources) }
         let hits = items.filter { counts($0.text, match: e.match ?? [], unless: e.unless) }
         let label: String
@@ -134,6 +138,7 @@ enum ClinValGrader {
         case "alarms": label = "alarm"
         case "redFlags": label = "red flag"
         case "investigations": label = "investigation"
+        case "reasoning": label = "reasoning line"
         default: label = "management item"
         }
         if include {
@@ -251,6 +256,8 @@ enum ClinValGrader {
                 } else {
                     v = Verdict(status: "na", detail: "no consultation pathway on ios")
                 }
+            case "reasoningInclude": v = gradeText(e, include: true, kind: "reasoning", out)
+            case "reasoningExclude": v = gradeText(e, include: false, kind: "reasoning", out)
             case "dxVariant":
                 v = Verdict(status: "na", detail: "no dx-variant engine on ios")
             default:

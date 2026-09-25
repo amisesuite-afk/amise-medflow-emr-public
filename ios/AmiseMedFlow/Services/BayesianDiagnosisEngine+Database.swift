@@ -43,7 +43,7 @@ extension BayesianDiagnosisEngine {
                       features: features.map { f in
                           Candidate.Feature(key: f.key, value: f.value,
                                             logLR: f.logLR, evidenceLabel: f.evidenceLabel,
-                                            maskedBy: f.maskedBy)
+                                            maskedBy: f.maskedBy, citation: f.citation)
                       },
                       applicability: applicability)
         }

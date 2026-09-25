@@ -85,7 +85,9 @@ extension BayesianDiagnosisEngine {
                 rawLogPosterior: s.logPosterior,
                 logGap: gap,
                 pathognomicFindings: s.pathognomicFindings,
-                urgency: s.candidate.urgency
+                urgency: s.candidate.urgency,
+                firedFeatures: s.fired,
+                candidateFeatures: s.candidate.features
             )
         }
     }

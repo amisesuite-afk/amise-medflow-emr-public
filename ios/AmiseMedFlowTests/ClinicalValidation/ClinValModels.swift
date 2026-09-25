@@ -253,6 +253,8 @@ struct ClinValExpected: Decodable {
     let management: IncludeExclude?
     let pathway: ClinValExpectation?
     let dxVariant: ClinValExpectation?
+    /// Diagnostic reasoning lines (ios.reasoning.*), graded like the text expectations.
+    let reasoning: IncludeExclude?
 
     /// Every expectation as (kind, expectation), in report order (same order as grade.ts).
     var all: [(String, ClinValExpectation)] {
@@ -271,6 +273,8 @@ struct ClinValExpected: Decodable {
         for x in management?.mustExclude ?? [] { out.append(("managementExclude", x)) }
         if let x = pathway { out.append(("pathway", x)) }
         if let x = dxVariant { out.append(("dxVariant", x)) }
+        for x in reasoning?.mustInclude ?? [] { out.append(("reasoningInclude", x)) }
+        for x in reasoning?.mustExclude ?? [] { out.append(("reasoningExclude", x)) }
         return out
     }
 }
@@ -333,6 +337,8 @@ struct ClinValOutputs: Encodable {
     var investigations: [ClinValSourcedText] = []
     var management: [ClinValSourcedText] = []
     var pathway: ClinValPathway?
+    /// Diagnostic reasoning lines, source "ios.reasoning.<part>" (nil = not produced → n/a).
+    var reasoning: [ClinValSourcedText]? = nil
     var engineInfo: [String: String] = [:]
     var notes: [String] = []
 }

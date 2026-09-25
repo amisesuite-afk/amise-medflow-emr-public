@@ -80,6 +80,8 @@ extension BayesianDiagnosisEngine {
         /// report or an evidence chip (not only the history): infer() adds such a curated
         /// candidate even when the complaint's route did not bring it in.
         var reportEvidence = false
+        /// Every feature that fired, with its effective weight (diagnostic-reasoning evidence).
+        var fired: [FiredFeature] = []
     }
 
     static func score(
@@ -165,6 +167,7 @@ extension BayesianDiagnosisEngine {
             var evidenceSources: [String: [String]] = [:]
             var pathognomicFindings: [String] = []
             var reportEvidence = false
+            var fired: [FiredFeature] = []
 
             // Pre-pass: collect DAG node IDs for features that have already fired,
             // so downstream correlated features receive CPT-based discounting.
@@ -777,6 +780,11 @@ extension BayesianDiagnosisEngine {
                         effectiveLR = f.logLR
                     }
                     logP += effectiveLR
+                    // Diagnostic reasoning: record the evidence (read-only; the weight is unchanged).
+                    fired.append(FiredFeature(
+                        key: f.key, value: f.value, logLR: effectiveLR, baseLogLR: f.logLR,
+                        label: f.evidenceLabel, sourceKey: sourceKey, citation: f.citation,
+                        documentedAbsent: f.key == "notFinding" && Self.anyAlternativeDocumentedAbsent(f.value, in: findingText)))
                     if effectiveLR > 0 && !f.evidenceLabel.isEmpty {
                         evidence.append(f.evidenceLabel)
                         // Suppress demographics from the evidence panel (age/sex are context, not findings)
@@ -793,7 +801,7 @@ extension BayesianDiagnosisEngine {
 
             return ScoredCandidate(candidate: c, logPosterior: logP, evidence: evidence,
                                    evidenceSources: evidenceSources, pathognomicFindings: pathognomicFindings,
-                                   reportEvidence: reportEvidence)
+                                   reportEvidence: reportEvidence, fired: fired)
         }
     }
 

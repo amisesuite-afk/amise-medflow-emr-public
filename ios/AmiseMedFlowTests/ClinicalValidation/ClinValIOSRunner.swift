@@ -336,6 +336,12 @@ enum ClinValIOSRunner {
             p.assessmentText = dx.assessmentText
         }
 
+        // 5a. Diagnosis tab "Diagnostic reasoning" card (DiagnosticReasoningAdapter) over the same
+        // differential and the confirmed working diagnosis; same line formats as web.reasoning.
+        let reasoning = DiagnosticReasoningAdapter.report(results: bayes, patient: p, now: now)
+        out.reasoning = DiagnosticReasoningAdapter.harnessLines(reasoning, prefix: "ios.reasoning")
+            .map { ClinValSourcedText(source: $0.source, text: $0.text) }
+
         // 5b. ConsultationView.onChange(workingDiagnosis) → runPathway: the triage level is the
         // highest of CC keywords, vitals/NEWS2, BP, labs, ECG, text alarms, recognition rules and
         // the confirmed diagnosis (ClinicalAcuityEngine). The triage card shows its red flags and alerts.
