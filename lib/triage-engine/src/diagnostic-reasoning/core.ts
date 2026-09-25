@@ -103,6 +103,8 @@ export interface ReasoningInput {
 export interface EvidenceLine {
   findingId: string;
   label: string;
+  /** The finding's recorded status. */
+  status: FindingStatus;
   /** LR of the finding's recorded status for this hypothesis (LR− for absent / not recorded). */
   lr: number;
   source: string;
@@ -163,7 +165,7 @@ export function explain(input: ReasoningInput, hypothesisId: string): Explanatio
     const line = (lr: number, documented: boolean): EvidenceLine => {
       const fav = f.status === 'present' ? favouredBy(input, f.id, hypothesisId) : null;
       return {
-        findingId: f.id, label: f.label, lr, source: w.source, documented,
+        findingId: f.id, label: f.label, status: f.status, lr, source: w.source, documented,
         favours: fav ? fav.label : null, favoursLr: fav ? fav.lr : null,
       };
     };
@@ -409,7 +411,7 @@ export function prematureClosureAlerts(
     const ex = explain(input, working.id);
     for (const e of ex.against) {
       if (e.lr > T.strongContradictionLr) continue;
-      const finding = input.findings.find(f => f.id === e.findingId)?.status === 'absent' ? `no ${lowerFirst(e.label)}` : e.label;
+      const finding = e.status === 'absent' ? `no ${lowerFirst(e.label)}` : e.label;
       out.push({
         key: `contradicting-finding:${e.findingId}`, kind: 'contradicting-finding', finding, favours: e.favours, lr: e.lr,
         text: `Doesn't fit the working diagnosis: ${finding} argues against ${working.label} (LR ${formatLr(e.lr)})`

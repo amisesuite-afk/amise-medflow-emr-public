@@ -5,6 +5,7 @@ import { diagnosisSuggestion, confirmDiagnosisSuggestion, isConfirmedDiagnosis }
 import { managementPanelSource } from '@/lib/management-panel-source';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
+import DiagnosticReasoningPanel from '@/components/DiagnosticReasoningPanel';
 import { ManagementPanel } from '@/components/ManagementPanel';
 import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import { planProtocolFor } from '@/lib/plan-builder';
@@ -931,6 +932,10 @@ export default function AssessmentTab() {
           setDifferentials(line);
         }}
       />
+
+      {/* ── Diagnostic reasoning: for / against / doesn't fit, best next discriminator, premature-closure
+          guard, zebra check, longitudinal patterns (engine-derived; adds nothing without a tap) ── */}
+      <DiagnosticReasoningPanel />
 
       {/* ── Management Panel (auto-populated on convergence or ICD selection) ── */}
       <ManagementPanel diseaseId={activeDiseaseId} icdCode={activeIcdCode} patient={planPatient} />
