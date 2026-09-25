@@ -196,8 +196,7 @@
           ],
           "note": "Gynaecological causes (ovarian cyst/torsion, ectopic) must be on the list for a young woman with RIF pain.",
           "knownGap": [
-            "web",
-            "ios"
+            "web"
           ],
           "knownGapNote": "Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Appendicitis | 2. Acute Gastroenteritis | 3. Acute Diverticulitis | 4. Acute Pancreatitis | 5. Perforated Peptic Ulcer"
         }

@@ -188,11 +188,7 @@
         "guidelineRefs": [
           "nice-ng12",
           "nice-dg56"
-        ],
-        "knownGap": [
-          "ios"
-        ],
-        "knownGapNote": "ios-last-criticals (2026-09-25): expected to pass on the next iOS CI run (triage 1.1.0 reads the NG12 card (not simulated; expected priority)); flag kept until CI confirms. Before: iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ p"
+        ]
       },
       "redFlags": [
         {

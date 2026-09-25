@@ -223,11 +223,7 @@
           "k": 3,
           "guidelineRefs": [
             "idsa-ssti-2014"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "ios-last-criticals (2026-09-25): expected to pass on the next iOS CI run (simulated rank 2 of 3, margin 3 log units); flag kept until CI confirms. Before: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Acute Heart Failure / Pulmonary Oedema | 3. Community-Acquired Pneumonia | 4. Acute Kidney Injury | 5. Delirium (Acute Confusional State); also in ios.ccEarly#3"
+          ]
         }
       ],
       "mustNotMiss": [
@@ -242,11 +238,7 @@
             "idsa-ssti-2014",
             "wses-sis-ssti-2018"
           ],
-          "note": "IDSA: severe cellulitis with systemic toxicity must be assessed for necrotising infection.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "ios-last-criticals (2026-09-25): expected to pass on the next iOS CI run (simulated rank 3 of 5, margin 3 log units); flag kept until CI confirms. Before: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Sepsis | 2. Acute Heart Failure / Pulmonary Oedema | 3. Community-Acquired Pneumonia | 4. Acute Kidney Injury | 5. Delirium (Acute Confusional State)"
+          "note": "IDSA: severe cellulitis with systemic toxicity must be assessed for necrotising infection."
         }
       ]
     },

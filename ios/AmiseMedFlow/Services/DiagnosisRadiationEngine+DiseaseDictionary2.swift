@@ -205,7 +205,7 @@ extension DiagnosisRadiationEngine {
             ],
             consentCategory: nil,
             urgencyNote: "Haemodynamically unstable PE → ICU + thrombolysis ± surgical embolectomy. Do not delay anticoagulation.",
-            redFlags: ["SBP <90 + HR >100 → massive PE → thrombolysis", "Cardiac arrest → CPR + thrombolysis in cardiac arrest protocol"],
+            redFlags: ["SBP <90 mmHg → massive PE → thrombolysis unless contraindicated (major surgery, trauma or bleeding in the previous 3 weeks: surgical embolectomy or catheter-directed therapy) (ESC 2019)", "Cardiac arrest → CPR + thrombolysis in cardiac arrest protocol"],
             followUp: "Review 4–6 weeks. Duration decision at 3 months. ECHO if RV dysfunction at index admission.",
             guidelineReference: "ESC 2019; NICE NG158; ACCP 2021",
             scoringCriteria: .init(

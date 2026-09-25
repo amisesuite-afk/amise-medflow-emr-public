@@ -259,8 +259,8 @@ extension ManagementEngine {
         immediateActions: [
             "Oxygen: high-flow if SpO₂ <92% — target SpO₂ 94–98%",
             "IV access + baseline obs",
-            "Assess haemodynamic status: if SBP <90 or HR >100 → massive PE",
-            "If massive PE: emergency thrombolysis (alteplase 100 mg IV over 2 h) or surgical embolectomy",
+            "Assess haemodynamic status: SBP <90 mmHg (or a drop >40 mmHg) → massive (high-risk) PE; tachycardia alone is not high-risk (ESC 2019)",
+            "Massive PE (haemodynamic instability): systemic thrombolysis (alteplase 100 mg IV over 2 hours) is life-saving — contraindicated after major surgery, trauma or bleeding in the previous 3 weeks (surgical embolectomy or catheter-directed therapy instead) (ESC 2019)",
             "If sub-massive: anticoagulate and monitor closely",
             "Analgesia for pleuritic pain",
         ],

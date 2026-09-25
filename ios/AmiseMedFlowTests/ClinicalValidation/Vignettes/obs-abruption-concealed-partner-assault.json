@@ -223,11 +223,7 @@
             "safeguard",
             "abuse",
             "violence"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "ios-last-criticals (2026-09-25): expected to pass on the next iOS CI run (triage 1.1.0 partner-violence pattern (not simulated; expected \"Domestic abuse disclosed in pregnancy\")); flag kept until CI confirms. Before: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)"
+          ]
         }
       ]
     },

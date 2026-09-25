@@ -194,11 +194,7 @@
           "guidelineRefs": [
             "anaemia-consensus-2017"
           ],
-          "proposedFix": "See periop-preop-rcri-high-risk-hemicolectomy/inv-iron-studies.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "proposedFix": "See periop-preop-rcri-high-risk-hemicolectomy/inv-iron-studies."
         }
       ]
     },

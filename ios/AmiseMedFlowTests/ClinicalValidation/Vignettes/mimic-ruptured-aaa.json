@@ -371,11 +371,7 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "note": "ESVS: restrictive (permissive hypotensive) resuscitation before aortic control.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...road-spectrum; narrow when cultures return); iv crystalloid 30 ml/kg over 3 h if lactate ≥4 or hypotension; vasopressors (noradrenaline) if map <65 ...\""
+          "note": "ESVS: restrictive (permissive hypotensive) resuscitation before aortic control."
         }
       ]
     },
