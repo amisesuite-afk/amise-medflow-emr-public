@@ -274,7 +274,8 @@ enum ClinValIOSRunner {
             latestSpO2: latestVitals?.spo2,
             latestRR: latestVitals?.respiratoryRate,
             news2Score: latestVitals.flatMap { $0.hasAnyValue ? $0.news2Score : nil },
-            specialtyHint: hint
+            specialtyHint: hint,
+            hpi: p.hpi
         )
         out.differentials["ios.bayes"] = dxItems(bayes)
         if let top = bayes.first {

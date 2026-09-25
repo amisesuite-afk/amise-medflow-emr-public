@@ -249,7 +249,8 @@ extension ConsultationView {
             latestSpO2: latestVitals?.spo2,
             latestRR: latestVitals?.respiratoryRate,
             news2Score: latestVitals.flatMap { $0.hasAnyValue ? $0.news2Score : nil },
-            specialtyHint: selectedSpecialtyHint
+            specialtyHint: selectedSpecialtyHint,
+            hpi: patient.hpi
         )
 
         // Update alarm list (keep dismissed state across refreshes)
