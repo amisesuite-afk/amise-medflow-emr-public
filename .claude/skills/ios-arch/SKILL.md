@@ -234,6 +234,23 @@ View extensions: `.amCard()` (card background + border + shadow),
 | `MRNGenerator` | Auto-generates MRN on patient creation |
 | `SyncStatusBar` | Toolbar widget: cloud + antenna + drive icons → popover with all three tier statuses |
 
+## Diagnostic reasoning (Diagnosis step)
+
+`DiagnosticReasoningSection` (`Views/Consultation/DiagnosticReasoningCard.swift`) sits under the
+suggested differentials: for / against / missing / doesn't fit, best next discriminator,
+"Doesn't fit the working diagnosis" alerts (dismissible), diagnostic time-out, zebra check,
+longitudinal patterns. Deterministic; adds to the record only on a tap (assessment line or a
+Suggested investigation).
+- Core `DiagnosticReasoningCore.swift` (`enum DiagnosticReasoning`), `ZebraCheck.swift` +
+  `Resources/ZebraRules.json`, `LongitudinalPatterns.swift` are twins of
+  `lib/triage-engine/src/diagnostic-reasoning/*`: same vectors
+  (`AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json`, `DiagnosticReasoningTests.swift`),
+  and `scripts/src/diagnostic-reasoning-parity.test.ts` pins the zebra JSON, thresholds, cost terms
+  and checklist to the TypeScript. Change both platforms together.
+- `DiagnosticReasoningAdapter.swift` reads `DiagnosisResult.firedFeatures` / `candidateFeatures`
+  (filled by `score()` / `topResults`; they record evidence and never change a weight).
+- Clinval: the iOS runner emits `ios.reasoning`; `expected.reasoning` is graded by `ClinValGrader`.
+
 ## Ward round flow
 
 `WardRoundView` → tap patient → `WardRoundProgressSheet` (lightweight, SOAP

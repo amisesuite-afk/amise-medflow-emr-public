@@ -114,6 +114,13 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/triage-engine/src/report-import/catalog.ts',
   'lib/triage-engine/src/lifestyle-practices.ts',
   'lib/triage-engine/src/lifestyle-questions.ts',
+  // Diagnostic reasoning layer (web + iOS twins)
+  'lib/triage-engine/src/diagnostic-reasoning/*.ts',
+  'artifacts/dashboard/src/lib/diagnostic-reasoning.ts',
+  'ios/AmiseMedFlow/Resources/ZebraRules.json',
+  'ios/AmiseMedFlow/Services/ZebraCheck.swift',
+  'ios/AmiseMedFlow/Services/DiagnosticReasoning*.swift',
+  'ios/AmiseMedFlow/Services/LongitudinalPatterns.swift',
   // Pane engine
   'lib/pane-engine/src/vademecum/*.ts',
   'lib/pane-engine/src/vademecum/specialties/*.ts',

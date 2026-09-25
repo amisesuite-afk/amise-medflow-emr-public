@@ -77,6 +77,7 @@
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Scoring.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+TopResults.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Routing.swift",
+        "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Reasoning.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Context.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+FeatureDAG.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Catalogue.swift",
@@ -1515,6 +1516,109 @@
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Seed: any repository committer. At runtime ANY authenticated user can edit rows (RLS 'staff access' FOR ALL); edits are not versioned.",
       "notes": "The live table can drift from the seed without trace."
+    },
+    {
+      "id": "diagnostic-reasoning-zebras",
+      "title": "Diagnostic reasoning — zebra check (rare but real conditions for unusual combinations of findings)",
+      "platforms": [
+        "web",
+        "ios"
+      ],
+      "kind": "diagnostic-rules",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts", "type": "regex", "pattern": "ZEBRA_RULES_VERSION\\s*=\\s*'([^']+)'" },
+      "files": [
+        "lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts",
+        "lib/triage-engine/src/diagnostic-reasoning/zebras.ts",
+        "ios/AmiseMedFlow/Resources/ZebraRules.json",
+        "ios/AmiseMedFlow/Services/ZebraCheck.swift"
+      ],
+      "tests": [
+        "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-core.test.ts",
+        "ios/AmiseMedFlowTests/DiagnosticReasoningTests.swift",
+        "scripts/src/diagnostic-reasoning-parity.test.ts"
+      ],
+      "ciChecks": [
+        "scripts vitest (diagnostic-reasoning-parity: ZebraRules.json must equal zebra-rules.ts)",
+        "dashboard vitest (shared vectors)",
+        "clinval:web (reasoning-zebra-* vignettes)"
+      ],
+      "guidelines": [
+        { "name": "AGREE consensus (EoE)", "version": "2018", "section": "Diagnostic criteria", "citation": "Dellon ES et al. Gastroenterology 2018;155:1022-1033" },
+        { "name": "Management of adult lead exposure", "version": "2007", "section": "Clinical features", "citation": "Kosnett MJ et al. Environ Health Perspect 2007;115:463-471; ATSDR 2020" },
+        { "name": "Fifth International Workshop on primary hyperparathyroidism", "version": "2022", "section": "Evaluation", "citation": "Bilezikian JP et al. J Bone Miner Res 2022;37:2293-2314; NICE NG132" },
+        { "name": "Endocrine Society primary aldosteronism", "version": "2016", "section": "Case detection", "citation": "Funder JW et al. J Clin Endocrinol Metab 2016;101:1889-1916" },
+        { "name": "Endocrine Society phaeochromocytoma / paraganglioma", "version": "2014", "section": "Who should be tested", "citation": "Lenders JWM et al. J Clin Endocrinol Metab 2014;99:1915-1942" },
+        { "name": "ACG acute pancreatitis; ICDC autoimmune pancreatitis; European guidelines on pancreatic cystic neoplasms", "version": "2024; 2011; 2018", "section": "Aetiology", "citation": "Tenner S et al. Am J Gastroenterol 2024; Shimosegawa T et al. Pancreas 2011; Gut 2018;67:789-804" },
+        { "name": "ESVS vascular graft and endograft infections", "version": "2020", "section": "Aorto-enteric fistula", "citation": "Chakfé N et al. Eur J Vasc Endovasc Surg 2020;59:339-384" },
+        { "name": "EASL drug-induced liver injury", "version": "2019", "section": "Herbal and dietary supplements", "citation": "J Hepatol 2019;70:1222-1261; LiverTox" },
+        { "name": "Acute porphyrias", "version": "2017", "section": "Presentation", "citation": "Stein PE et al. Br J Haematol 2017;176:527-538; Balwani M et al. Hepatology 2017" },
+        { "name": "Endocrine Society primary adrenal insufficiency", "version": "2016", "section": "Diagnosis", "citation": "Bornstein SR et al. J Clin Endocrinol Metab 2016;101:364-389" },
+        { "name": "WAO/EAACI hereditary angioedema", "version": "2021", "section": "Diagnosis", "citation": "Maurer M et al. Allergy 2022;77:1961-1990" },
+        { "name": "ENETS neuroendocrine guidelines", "version": "2012; 2016", "section": "Carcinoid syndrome; gastrinoma", "citation": "Pavel M et al. Neuroendocrinology 2016; Jensen RT et al. Neuroendocrinology 2012" },
+        { "name": "EASL vascular diseases of the liver", "version": "2016", "section": "Budd-Chiari syndrome", "citation": "J Hepatol 2016;64:179-202" }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Written 2026-09-25 (diagnostic-reasoning branch); every rule, term list and citation awaits the surgeon's sign-off (docs/clinical-validation/changes/diagnostic-reasoning.md).",
+      "reviewPriority": "P2",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer (no CODEOWNERS). Web live on deploy; iOS with an app release (bundled JSON).",
+      "notes": "16 rules. Shown as suggestions ('rare but real — the combination recorded fits') with the matched terms and citation; 'Add to differential' only on a tap. Matching is negation-aware at word starts; numeric results add words (anaemia, hypercalcaemia, hypokalaemia, eosinophilia, raised transaminases, raised bilirubin, hypertriglyceridaemia).",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "First version: EoE, lead poisoning, primary hyperparathyroidism, Conn's, phaeochromocytoma, hypertriglyceridaemia / autoimmune pancreatitis / IPMN (recurrent pancreatitis without gallstones or alcohol), aorto-enteric fistula, herb-induced liver injury (links to the supplements history), acute intermittent porphyria, Addison's disease, hereditary angioedema, carcinoid syndrome, Zollinger-Ellison syndrome, Budd-Chiari syndrome." }
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning-rules",
+      "title": "Diagnostic reasoning — for/against thresholds, best-next-discriminator cost tiers, premature-closure guard, diagnostic time-out, longitudinal patterns",
+      "platforms": [
+        "web",
+        "ios"
+      ],
+      "kind": "decision-support-rules",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/triage-engine/src/diagnostic-reasoning/core.ts", "type": "regex", "pattern": "DIAGNOSTIC_REASONING_VERSION\\s*=\\s*'([^']+)'" },
+      "files": [
+        "lib/triage-engine/src/diagnostic-reasoning/core.ts",
+        "lib/triage-engine/src/diagnostic-reasoning/longitudinal.ts",
+        "lib/triage-engine/src/diagnostic-reasoning/index.ts",
+        "artifacts/dashboard/src/lib/diagnostic-reasoning.ts",
+        "ios/AmiseMedFlow/Services/DiagnosticReasoningCore.swift",
+        "ios/AmiseMedFlow/Services/DiagnosticReasoningAdapter.swift",
+        "ios/AmiseMedFlow/Services/LongitudinalPatterns.swift"
+      ],
+      "tests": [
+        "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-core.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning.test.ts",
+        "ios/AmiseMedFlowTests/DiagnosticReasoningTests.swift",
+        "scripts/src/diagnostic-reasoning-parity.test.ts"
+      ],
+      "ciChecks": [
+        "dashboard vitest and iOS unit tests on the same vectors (ios/AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json)",
+        "scripts vitest (diagnostic-reasoning-parity: thresholds, cost terms, checklist)",
+        "clinval:web (reasoning-* vignettes)"
+      ],
+      "guidelines": [
+        { "name": "Cognitive errors and premature closure", "version": "2003", "section": "Cognitive forcing strategies", "citation": "Croskerry P. Acad Med 2003;78:775-780" },
+        { "name": "Checklists to reduce diagnostic errors", "version": "2011", "section": "General diagnostic checklist", "citation": "Ely JW, Graber ML, Croskerry P. Acad Med 2011;86:307-313" },
+        { "name": "Cognitive interventions to reduce diagnostic error", "version": "2012", "section": "Diagnostic time-out", "citation": "Graber ML et al. BMJ Qual Saf 2012;21:535-557" },
+        { "name": "National Early Warning Score 2", "version": "2017", "section": "Clinical response (5 or more: urgent)", "citation": "Royal College of Physicians, London" },
+        { "name": "KDIGO acute kidney injury", "version": "2012", "section": "Definition (creatinine rise 26.5 µmol/L or 1.5 x baseline)", "citation": "Kidney Int Suppl 2012;2:1-138" },
+        { "name": "NICE NG12 suspected cancer; MUST", "version": "2015 (2021); 2003", "section": "Unexplained weight loss (> 5 % in 3-6 months)", "citation": "NICE NG12; BAPEN MUST" }
+      ],
+      "citationStatus": "file-header",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Thresholds tuned on the 397 clinval vignettes to limit alert fatigue (alerts 77/397, time-outs 103/397 with correct confirmed diagnoses); no clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer (no CODEOWNERS). Web live on deploy; iOS with an app release.",
+      "notes": "Deterministic; reads the engines' own evidence (PANE feature likelihoods / DiagnosticDatabase logLR and citations); adds nothing to the record without a tap. Web can't-miss and coexisting disease lists, the PANE module sources and the time-out filters are in artifacts/dashboard/src/lib/diagnostic-reasoning.ts; iOS uses the database urgency (>= 2) and a 5 % background rate for P(finding | diagnosis) in the information gain.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "First version: for / against / missing / doesn't fit (LR >= 1.5 / <= 0.67; cardinal = P >= 0.6 and LR >= 2 on web, logLR >= 8 on iOS), best next discriminator (information gain, cost tiers ask/bedside 1, lab 0.85, imaging 0.6, advanced 0.35 and only with a can't-miss diagnosis), premature-closure alerts (contradicting finding LR <= 0.33; leader >= 50 % and 5x the working diagnosis with a driving finding of LR ratio >= 10; NEWS2 rise >= 2 to >= 5), diagnostic time-out (>= 3 unexplained specific findings; repeat visit for the same complaint without a firm diagnosis), longitudinal patterns (3+ visits, KDIGO creatinine rise, Hb fall >= 20 g/L, weight loss >= 5 % in 6 months)." }
+      ]
     }
   ],
   "excluded": [
