@@ -12,6 +12,7 @@ import {
   selectVitalsWithNews2Fallback, isMissingColumnError, PATIENT_NEWS2_SCALE2_COLUMN,
 } from './vitals-news2-fields';
 import { buildDocumentInsert, describeDocumentSaveError } from './document-types';
+import { lifestyleQuestionnaireLine } from '@workspace/triage-engine/lifestyle-questions';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -1152,6 +1153,9 @@ export async function getQuestionnaireIntake(
     for (const r of rows) {
       const val = r.answer_display || r.answer_value;
       if (!val || val.toLowerCase() === 'no' || val.toLowerCase() === 'none') continue;
+      // Religious fasting / complementary treatments: a short social-history line, never a symptom.
+      const lifestyleLine = lifestyleQuestionnaireLine(r.question_key, val);
+      if (lifestyleLine !== undefined) { if (lifestyleLine) socialHabits.push(lifestyleLine); continue; }
       switch (r.question_key) {
         case 'chief_complaint': break;
         case 'current_medications': medications.push(val); break;
@@ -2338,7 +2342,7 @@ export function logPaneSession(input: PaneSessionLog): void {
   });
 }
 
-function logClinicalSave(action: string, tableName: string, recordId: string, summary?: Record<string, unknown>): void {
+export function logClinicalSave(action: string, tableName: string, recordId: string, summary?: Record<string, unknown>): void {
   void writeAuditLog({
     action,
     resourceType: tableName,

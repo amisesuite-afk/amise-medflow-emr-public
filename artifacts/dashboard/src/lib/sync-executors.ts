@@ -23,6 +23,8 @@ import {
   savePmhNotes, syncInvestigationOrders, updateEncounterType,
   saveInpatientDetails, saveClinicalScores,
 } from './db';
+import { saveLifestyleHistory } from './lifestyle-history-db';
+import { parseLifestyleHistory } from '@workspace/triage-engine/lifestyle-practices';
 
 function payloadOf<T>(entry: OutboxEntry): T {
   return entry.payload as unknown as T;
@@ -146,4 +148,13 @@ registerExecutor('clinical_scores', async (entry) => {
     extractedLabs: Record<string, number | null>;
   }>(entry);
   await saveClinicalScores(p.encounterId, p.clinicalScores, p.extractedLabs);
+});
+
+// Lifestyle history (patients.pathway_data_json → lifestyle). A missing column resolves with
+// available: false and no error, so the entry drains instead of retrying forever; the edit is
+// still in the encounter cache (lifestyle-history-db.ts).
+registerExecutor('lifestyle_history', async (entry) => {
+  const p = payloadOf<{ patientId: string; lifestyle: unknown }>(entry);
+  const { error } = await saveLifestyleHistory(p.patientId, parseLifestyleHistory(p.lifestyle));
+  if (error) throw new Error(error);
 });
