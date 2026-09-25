@@ -2,7 +2,7 @@ import XCTest
 import SwiftData
 @testable import AmiseMedFlow
 
-/// Consultation patient identity (UX review M1).
+/// Consultation patient identity and allergy banner (UX review M1–M2).
 @MainActor
 final class ConsultationHeaderTests: XCTestCase {
 
@@ -54,5 +54,26 @@ final class ConsultationHeaderTests: XCTestCase {
                        "Consultation for Avery Sample, 46y · Female")
         XCTAssertEqual(ConsultationHeader.accessibilityText(title: "Avery Sample", subtitle: ""),
                        "Consultation for Avery Sample")
+    }
+
+    // MARK: - M2: allergy banner
+
+    func testNKDAIsANeutralLineNotAnAlert() {
+        let p = patient()
+        p.allergies = [Patient.nkdaMarkerEntry()]
+        XCTAssertEqual(p.consultationAllergyBanner, .noKnownAllergies)
+        XCTAssertEqual(ConsultationHeader.noKnownAllergiesText, "No known drug allergies")
+    }
+
+    func testEmptyAllergiesAreNotRecordedNotNKDA() {
+        XCTAssertEqual(patient().consultationAllergyBanner, .notRecorded)
+    }
+
+    func testRealAllergiesRaiseTheAlertWithoutTheNKDAMarker() {
+        let p = patient()
+        p.allergies = [Patient.nkdaMarkerEntry(),
+                       AllergyEntry(name: "Penicillin", severity: "Severe", reaction: "Anaphylaxis")]
+        XCTAssertEqual(p.consultationAllergyBanner, .alert(["Penicillin"]))
+        XCTAssertEqual(ConsultationHeader.allergyBanner(recorded: ["Latex"], hasNKDAMarker: false), .alert(["Latex"]))
     }
 }

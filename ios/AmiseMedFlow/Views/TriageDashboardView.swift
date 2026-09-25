@@ -107,7 +107,7 @@ struct TriageDashboardView: View {
                                 if patient.hasCriticalAllergy {
                                     Image(systemName: "exclamationmark.shield.fill")
                                         .font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
-                                } else if !patient.allergies.isEmpty {
+                                } else if !patient.recordedAllergies.isEmpty {   // NKDA is not an allergy (UX M2)
                                     Image(systemName: "exclamationmark.shield")
                                         .font(.system(size: 10)).foregroundStyle(.orange)
                                 }
@@ -147,7 +147,7 @@ struct TriageDashboardView: View {
                                 if patient.hasCriticalAllergy {
                                     Image(systemName: "exclamationmark.shield.fill")
                                         .font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
-                                } else if !patient.allergies.isEmpty {
+                                } else if !patient.recordedAllergies.isEmpty {   // NKDA is not an allergy (UX M2)
                                     Image(systemName: "exclamationmark.shield")
                                         .font(.system(size: 10)).foregroundStyle(.orange)
                                 }
@@ -268,7 +268,7 @@ struct TriagePatientRow: View {
                         if patient.hasCriticalAllergy {
                             Image(systemName: "exclamationmark.shield.fill")
                                 .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
-                        } else if !patient.allergies.isEmpty {
+                        } else if !patient.recordedAllergies.isEmpty {   // NKDA is not an allergy (UX M2)
                             Image(systemName: "exclamationmark.shield")
                                 .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
                         }
@@ -295,7 +295,7 @@ struct TriagePatientRow: View {
                         if patient.hasCriticalAllergy {
                             Image(systemName: "exclamationmark.shield.fill")
                                 .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
-                        } else if !patient.allergies.isEmpty {
+                        } else if !patient.recordedAllergies.isEmpty {   // NKDA is not an allergy (UX M2)
                             Image(systemName: "exclamationmark.shield")
                                 .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
                         }

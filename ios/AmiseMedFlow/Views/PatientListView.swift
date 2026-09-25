@@ -213,7 +213,8 @@ struct PatientRow: View {
             patient.postOpDays.map(A11yLabel.postOpDay),
         ]
         if patient.hasCriticalAllergy { parts.append("Critical allergy") }
-        else if !patient.allergies.isEmpty { parts.append("Allergy recorded") }
+        else if !patient.recordedAllergies.isEmpty { parts.append("Allergy recorded") }
+        else if patient.hasExplicitNKDA { parts.append("No known drug allergies") }
         if patient.hasAnticoagulation { parts.append("On anticoagulation") }
         if f.hasCriticalLabs { parts.append("Critical labs") }
         else if f.hasPendingLabs { parts.append("Pending labs") }

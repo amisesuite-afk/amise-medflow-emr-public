@@ -131,10 +131,12 @@ struct PreOpChecklistView: View {
             save()
 
             // Auto-seed known allergy from patient record
-            if !data.si_knownAllergy && !patient.allergies.isEmpty {
+            // Real allergies only: an NKDA patient must not be ticked "known allergy" with
+            // "NKDA (Mild)" as the detail (UX review M2).
+            if !data.si_knownAllergy && !patient.recordedAllergies.isEmpty {
                 data.si_knownAllergy = true
                 if data.si_allergyDetails.isEmpty {
-                    data.si_allergyDetails = patient.allergies
+                    data.si_allergyDetails = patient.recordedAllergies
                         .map { "\($0.name) (\($0.severity))" }
                         .joined(separator: ", ")
                 }

@@ -146,7 +146,8 @@ struct ConsultationView: View {
             // Whose record this is — on every step (UX review M1). The iPad record view shows
             // the same identity in its own header above the embedded consultation.
             if !embeddedInNav { patientIdentityHeader }
-            if !patient.allergies.isEmpty { allergyBanner }
+            // Red alert only for real allergies; NKDA neutral; empty = not recorded (UX review M2).
+            allergyStatusBanner
             // Clinical alarm banner — fires from free text parsing
             let activeAlarms = clinicalAlarms.filter { !dismissedAlarmIds.contains($0.id) }
             if !activeAlarms.isEmpty { clinicalAlarmBanner(activeAlarms) }

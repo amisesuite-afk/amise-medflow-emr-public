@@ -69,7 +69,9 @@ final class UXWalkthroughTests: XCTestCase {
 
             try ux.waitFor(ux.element("consult.step.risk"), "Consultation step bar")
             ux.note("Allergy banner visible in the consultation: "
-                    + (ux.element("consult.allergyBanner").exists ? "yes" : "NO"))
+                    + (ux.element("consult.allergyBanner").exists ? "yes (real allergy)"
+                       : ux.element("consult.allergyNKDA").exists ? "no — neutral NKDA line"
+                       : ux.element("consult.allergyNotRecorded").exists ? "no — allergies not recorded" : "NO"))
             // Patient identity on the consultation (UX review M1): header on iPhone and the iPad
             // full-screen consultation; inside the iPad record the record header shows it.
             ux.note("Patient identity header in the consultation: "

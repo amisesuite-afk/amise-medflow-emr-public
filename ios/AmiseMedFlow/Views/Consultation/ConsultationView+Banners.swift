@@ -134,14 +134,45 @@ extension ConsultationView {
 
     var identityHeaderBg: Color { Color(.secondarySystemBackground) }
 
-    // MARK: - Allergy banner
+    // MARK: - Allergy banner (UX review M2)
+
+    /// Red "ALLERGY ALERT" only for real allergies (never the NKDA marker); NKDA is a neutral
+    /// "No known drug allergies" line; nothing recorded is an amber "Allergies not recorded" line.
+    @ViewBuilder
+    var allergyStatusBanner: some View {
+        switch patient.consultationAllergyBanner {
+        case .alert:
+            allergyBanner
+        case .noKnownAllergies:
+            allergyInfoLine(text: ConsultationHeader.noKnownAllergiesText,
+                            systemImage: "checkmark.shield",
+                            tint: .secondary,
+                            identifier: "consult.allergyNKDA")
+        case .notRecorded:
+            allergyInfoLine(text: ConsultationHeader.allergiesNotRecordedText,
+                            systemImage: "questionmark.diamond",
+                            tint: .orange,
+                            identifier: "consult.allergyNotRecorded")
+        }
+    }
+
+    func allergyInfoLine(text: String, systemImage: String, tint: Color, identifier: String) -> some View {
+        Label(text, systemImage: systemImage)
+            .scaledFont(size: 12, weight: .semibold)
+            .foregroundStyle(tint)
+            .padding(.horizontal, 16).padding(.vertical, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityIdentifier(identifier)
+    }
 
     var allergyBanner: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        // Real allergies only: the explicit NKDA marker is never listed as an allergen.
+        let allergies = patient.recordedAllergies
+        return VStack(alignment: .leading, spacing: 4) {
             Label("ALLERGY ALERT", systemImage: "exclamationmark.triangle.fill")
                 .font(.caption.weight(.bold))
                 .foregroundStyle(.white)
-            ForEach(patient.allergies) { a in
+            ForEach(allergies) { a in
                 HStack(alignment: .firstTextBaseline, spacing: 5) {
                     Circle().fill(Color(white: 1, opacity: 0.7)).frame(width: 5, height: 5)
                     Text("\(a.name)  [\(a.severity)]  — \(a.reaction)")
@@ -154,7 +185,7 @@ extension ConsultationView {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background { allergyBannerBg }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Allergy alert: " + patient.allergies
+        .accessibilityLabel(Text("Allergy alert: " + allergies
             .map { A11yLabel.joined([$0.name, $0.severity, $0.reaction]) }
             .joined(separator: "; ")))
         .accessibilityIdentifier("consult.allergyBanner")
