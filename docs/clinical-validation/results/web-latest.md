@@ -1,8 +1,8 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-25T14:21:50.412Z.
+Generated 2026-09-25T14:22:20.408Z.
 
-- Harness clinval-web/1; 131 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
+- Harness clinval-web/1; 170 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 131 | 957 | 593 | 344 | 20 | 157 | 0 | 341 | 3 | 0 |
+| web | 170 | 1280 | 797 | 446 | 37 | 201 | 0 | 443 | 3 | 0 |
 
 ## Blocking failures
 
@@ -22,6 +22,14 @@ None.
 
 - `achalasia-pseudoachalasia-elderly` / **mnm-malignancy** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifier; no dysphagia feature). Symptom inference ranks occult malignancy and oesophageal/gastric carcinoma #1–2.]
 - `adrenal-suspected-phaeochromocytoma` / **mnm-phaeochromocytoma** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and applied no feature; the symptom engine ranks phaeochromocytoma #1 from the chips.]
+- `ami-embolic-af` / **mnm-mesenteric-ischaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never appear in the PANE top 3 (cholecystitis, appendicitis, GORD). Symptom inference ranks it #2.]
+- `ami-embolic-af` / **alarm-mesenteric** (web, FAIL (known gap)): no alarm matched among 7 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: No prompt or triage rule for 'pain out of proportion', AF + abdominal pain, or mesenteric ischaemia.]
+- `ami-embolic-af` / **inv-cta** (web, FAIL (known gap)): no investigation matched among 36 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: K55.0 maps to the ischaemic colitis protocol: 'CT abdomen/pelvis with IV contrast' (portal venous), not CT angiography.]
+- `ami-embolic-af` / **mgmt-revascularisation** (web, FAIL (known gap)): no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Ischaemic colitis protocol has no revascularisation or vascular-surgery step.]
+- `ami-infarction-septic-shock` / **mnm-mesenteric** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never appear in the PANE top 3 (inguinal/femoral hernia, cholecystitis, cholangitis).]
+- `ami-infarction-septic-shock` / **mgmt-revascularisation** (web, FAIL (known gap)): no management item matched among 62 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No revascularisation step; only laparotomy/resection templates.]
+- `ami-venous-thrombosis-ocp` / **mnm-mesenteric** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction; also in web.symptomInference#4, web.passive#3 [known gap: Web: PANE has no mesenteric ischaemia / venous thrombosis disease node, so it can never appear in the PANE top 3 (cholecystitis, appendicitis, bowel obstruction).]
+- `ami-venous-thrombosis-ocp` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 20); the only reasons are 'Pregnancy mentioned' (from 'pregnancy test negative') and pain score. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain for five days' gives 'routine'.]
 - `anal-cancer-red-flags` / **mnm-anal-cancer** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Haemorrhoids \| 2. Anal Fissure \| 3. Colorectal Cancer; also in web.symptomInference#2, web.passive#1 [known gap: Anal cancer is not a PANE disease (top 3: haemorrhoids, fissure, colorectal cancer); symptom inference ranks anal SCC #2 but PANE is the primary differential.]
 - `anal-cancer-red-flags` / **inv-biopsy** (web, FAIL (known gap)): no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: No output asks for EUA/biopsy of the anal lesion: C21.0 has no protocol; the plan shown is the haemorrhoids protocol (PANE top) and colonoscopy + biopsy from colorectal_cancer seeding.]
 - `anal-fissure-atypical-lateral-hiv` / **mnm-anal-cancer** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Anal Fissure \| 2. Haemorrhoids \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#5, web.passive#5 [known gap: Anal cancer is not a PANE disease (no disease, no ulcer feature used); symptom inference ranks anal SCC only #5.]
@@ -34,6 +42,7 @@ None.
 - `aortoenteric-fistula-herald-bleed` / **inv-ct-angiography** (web, FAIL (known gap)): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol (no ICD/PANE match) and the GI-bleed prompt only offers OGD/colonoscopy.]
 - `aortoenteric-fistula-herald-bleed` / **mgmt-vascular-surgery** (web, FAIL (known gap)): no management item matched among 9 (web.clinicalPrompts) [known gap: No output mentions vascular surgery.]
 - `appendicitis-elderly-atypical` / **mnm-mesenteric-ischaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Appendix Mass / Late Appendicitis; also in web.symptomInference#3, web.passive#4 [known gap: PANE top 3 (cholecystitis, appendicitis, appendix mass) omits it; symptom inference ranks it #3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
+- `appendicitis-paediatric-9y` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+7 more) [known gap: Web: Protocol steps, protocol medications and the appendicectomy prompt carry adult fixed doses (co-amoxiclav 1.2 g TDS, paracetamol 1 g, ibuprofen 400 mg TDS, pip-tazo 4.5 g) with no weight or age adjustment for a 30 kg child.]
 - `appendicitis-pregnant-t2` / **inv-mri-after-inconclusive-us** (web, FAIL (known gap)): no investigation matched among 42 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
 - `appendicitis-pregnant-t2` / **mgmt-no-nsaid-after-20-weeks** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... convert to oral when tolerating po. • paracetamol 1g qds + ibuprofen 400mg tds (regular). • morphine 5mg prn if pain > 5/10. • regular diet as toler..." [known gap: Web appendicectomy operative-plan prompt orders 'Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular)' for a 22-week pregnant patient.]
 - `boerhaave-classic-mackler` / **dx-perforation-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis. Subcutaneous emphysema, chest_pain_oesophageal and vomiting_effortless never reach PANE (no SOCRATES rules; radiation "Back" gives radiation_to_back → pancreatitis). Symptom inference ranks STEMI/ACS first.]
@@ -55,6 +64,7 @@ None.
 - `breast-nipple-discharge-bloody-single-duct` / **flag-2ww** (web, FAIL (known gap)): no red flag matched among 7 (web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: screenForCancer only counts nipple discharge together with a lump; NICE NG12 (≥50, unilateral nipple discharge) is not implemented. Triage score 0, routine.]
 - `breast-nipple-discharge-bloody-single-duct` / **inv-mammogram** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: N64.52 maps to no protocol and PANE did not reach duct_ectasia, so no imaging is proposed.]
 - `breast-nipple-discharge-bloody-single-duct` / **inv-uss** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: As above: no retroareolar ultrasound proposed.]
+- `caecal-volvulus` / **mgmt-resection** (web, FAIL (known gap)): no management item matched among 44 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowel-obstruction steps.]
 - `cdiff-fulminant-colitis` / **mnm-cdiff** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Diverticulitis \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis".]
 - `cdiff-fulminant-colitis` / **mgmt-vancomycin-metronidazole** (web, FAIL (known gap)): no management item matched among 39 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". The only vancomycin is IV vancomycin in the septic-shock prompt, which does not treat CDI.]
 - `cdiff-fulminant-colitis` / **mgmt-surgical-consult** (web, FAIL (known gap)): no management item matched among 39 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).]
@@ -76,6 +86,10 @@ None.
 - `crohns-ileocaecal-abscess` / **mgmt-drainage** (web, FAIL (known gap)): no management item matched among 59 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The crohns_disease protocol says "Abscess or fistula — urgent imaging and intervention" (red flag) but no step for percutaneous drainage; the management panel shows the appendicitis protocol because PANE ranks appendicitis first (0.71).]
 - `crohns-ileocaecal-abscess` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergency surgical indication" and adds the full "LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN" whenever examAbdomen contains "guarding" or "rebound" — including negated text ("no guarding") and localised guarding from other causes.]
 - `crohns-ileocaecal-abscess` / **mgmt-no-steroids** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "budesonide 9 mg po (oral) od (once daily) - ileal disease flare - less systemic side effec..." (+1 more) [known gap: The crohns_disease protocol medications (prednisolone, budesonide, IV hydrocortisone "flare induction") are offered unconditionally, including for a septic abscess.]
+- `diverticulitis-abscess-drainage` / **mgmt-drainage-in-documented-plan** (web, FAIL (known gap)): no management item matched among 13 (web.plan) [known gap: Web: Assessment says 'modified Hinchey Ib'; the uncomplicated variant lists 'hinchey ib' (in the modified Hinchey scale Ib is a pericolic abscess) and is checked first, so the documented plan is the outpatient oral co-amoxiclav plan with no drainage.]
+- `diverticulitis-purulent-peritonitis` / **dx-diverticulitis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, appendicitis (features lif_pain, nausea_vomiting, fever) — the same likelihood problem as the base case.]
+- `diverticulitis-purulent-peritonitis` / **mgmt-emergency-surgery-in-documented-plan** (web, FAIL (known gap)): no management item matched among 14 (web.plan) [known gap: Web: 'hinchey iii' contains the abscess keyword 'hinchey i', and the abscess variant is checked before the peritonitis variant, so the documented plan (immediate/conservative/follow-up phases) has no emergency operation — only 'interval sigmoid colectomy 6–8 weeks'.]
+- `diverticulitis-uncomplicated-outpatient` / **dx-diverticulitis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis (0.13), inguinal/femoral hernia, appendicitis, with lif_pain, nausea_vomiting and fever all extracted — LIF pain does not bring diverticulitis into the top 3. Symptom inference ranks diverticulitis #2.]
 - `dysphagia-progressive-over55` / **dx-oesophageal-cancer-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Hiatus Hernia; also in web.symptomInference#1, web.passive#2 [known gap: PANE top 3: GORD, inguinal hernia, hiatus hernia. PANE never gets dysphagia_progressive: the "Dysphagia" CC template has no CC hint and the iOS dysphagia chip set has no "Dysphagia" association to scan, so only weight_loss/regurgitation/heartburn reach it; the male hernia prior modifier does the rest. Symptom inference ranks oesophageal/gastric carcinoma #1.]
 - `eoe-young-atopic-recurrent-bolus` / **inv-oesophageal-biopsies** (web, FAIL (known gap)): no investigation matched among 10 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K20.0 and nothing else asks for biopsies.]
 - `fistula-in-ano-complex-anterior-female` / **mgmt-seton-or-sparing** (web, FAIL (known gap)): no management item matched among 23 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61.]
@@ -122,6 +136,7 @@ None.
 - `ischaemic-colitis-left` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergency surgical indication" and adds the full "LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN" whenever examAbdomen contains "guarding" or "rebound" — including negated text ("no guarding") and localised guarding from other causes.]
 - `ischaemic-colitis-right-af-ami` / **mnm-ami** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#2 [known gap: Acute mesenteric ischaemia is not a PANE disease (top 3: appendicitis, hernia, cholecystitis); symptom inference ranks it #1. Same gap as the appendicitis seed vignettes.]
 - `ischaemic-colitis-right-af-ami` / **inv-cta** (web, FAIL (known gap)): no investigation matched among 41 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: K55.0 maps to the ischaemic_colitis protocol, whose imaging is "CT abdomen/pelvis with IV contrast"; nothing asks for CT angiography when the ischaemia is right-sided or embolic.]
+- `lbo-cancer-impending-caecal-perforation` / **mgmt-no-stent-with-impending-perforation** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated').]
 - `lgib-angiodysplasia-aspirin` / **mgmt-no-heparin** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "heparin weight-based per local protocol iv (intravenous) continuous infusion - mesenter..." [known gap: ICD K55.21 (angiodysplasia of colon with haemorrhage) matches the ischaemic_colitis protocol (prefix K55), whose medications include a therapeutic heparin infusion (for mesenteric venous thrombosis) — offered to a bleeding patient.]
 - `lgib-diverticular-apixaban` / **mgmt-hold-doac** (web, FAIL (known gap)): no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The only DOAC text is the generic peri-operative bridging prompt ("hold DOAC 48–72 h pre-op"); nothing says to interrupt the DOAC at presentation of a bleed.]
 - `lgib-unstable-cta-first` / **inv-cta-first** (web, FAIL (known gap)): no investigation matched among 28 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No output recommends CT angiography for unstable haematochezia: the plan is the UGIB protocol (OGD) and the GI-bleed prompt offers "urgent OGD / colonoscopy". The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan.]
@@ -132,11 +147,40 @@ None.
 - `mi-presenting-as-epigastric-pain` / **alarm-cardiac** (web, FAIL (known gap)): no alarm matched among 3 (web.clinicalPrompts.safety) [known gap: Safety prompts fired are "Appendicitis — emergency surgical indication" (from "Acute abdominal pain" CC) and "Acute abdominal presentation"; nothing cardiac.]
 - `mi-presenting-as-epigastric-pain` / **inv-ecg** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No ECG in any output.]
 - `mi-presenting-as-epigastric-pain` / **inv-troponin** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No troponin in any output.]
+- `mimic-aaa-symptomatic-renal-colic-label` / **mnm-aaa** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: renal colic, inguinal/femoral hernia, cholecystitis (pulsatile_mass answered yes). Symptom inference ranks AAA #1.]
+- `mimic-aaa-symptomatic-renal-colic-label` / **inv-cta** (web, FAIL (known gap)): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: ICD I71.4 has no protocol (only 'I71.9' is mapped), so no CT angiography is suggested.]
+- `mimic-aaa-symptomatic-renal-colic-label` / **mgmt-vascular-referral** (web, FAIL (known gap)): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No vascular referral: no protocol for I71.4.]
+- `mimic-dka-abdominal-pain` / **mnm-dka** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Peptic Ulcer Disease \| 3. Acute Pancreatitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no DKA disease node, so it can never appear in the PANE top 3 (appendicitis, peptic ulcer, pancreatitis). Symptom inference ranks DKA #1.]
+- `mimic-dka-abdominal-pain` / **mgmt-no-laparotomy-for-dka-pain** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Web: 'no rigidity, no rebound' triggers the peritonism prompt ('Emergency laparotomy consent — source control') and 'guarding' triggers the appendicectomy template in DKA.]
+- `mimic-ectopic-pregnancy` / **dx-ectopic-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Choledocholithiasis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis. The template's 'lmp' answer ('7 weeks ago — missed period') is not mapped to missed_period, and amenorrhoea/spotting are not SOCRATES-extracted. Symptom inference ranks ectopic #1.]
+- `mimic-ectopic-pregnancy` / **mgmt-no-assumed-negative-hcg** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known gap: Web: Guarding triggers the appendicectomy operative-plan prompt, which states 'β-HCG confirmed negative' before any test has been done.]
+- `mimic-ectopic-ruptured-shock` / **dx-ectopic-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Choledocholithiasis; also in web.symptomInference#2 [known gap: Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis despite a positive pregnancy test and haemoperitoneum.]
+- `mimic-ectopic-ruptured-shock` / **mgmt-no-medical-management-when-ruptured** (web, FAIL (known gap)): forbidden management item present in web.plan: "investigation: renal function, lfts (methotrexate suitability) (urgent)" (+1 more) [known gap: Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability tests and the methotrexate/expectant steps appear for a shocked patient (no ectopic dx-variant group).]
+- `mimic-inferior-mi-ecg-confirmed` / **mnm-acs** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no cardiac (ACS/MI) disease node, so it can never appear in the PANE top 3 (cholecystitis, peptic ulcer, GORD).]
+- `mimic-inferior-mi-ecg-confirmed` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=30); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 30); the resulted ECG (ST elevation) and troponin 412 are not triage inputs, and HR 48/SBP 92 are inside the vital thresholds. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Upper abdominal discomfort and nausea' gives 'routine'.]
+- `mimic-inferior-mi-ecg-confirmed` / **alarm-stemi** (web, FAIL (known gap)): no alarm matched among 4 (web.clinicalPrompts.safety) [known gap: Web: No prompt reads ECG results or troponin; the only safety prompt is bradycardia.]
+- `mimic-inferior-mi-ecg-confirmed` / **mgmt-reperfusion** (web, FAIL (known gap)): no management item matched among 16 (web.clinicalPrompts) [known gap: Web: No reperfusion/PCI action; ICD I21.19 has no protocol.]
+- `mimic-inferior-mi` / **mnm-acs** (web, FAIL (known gap)): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Acute Cholecystitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no cardiac (ACS/MI) disease node, so it can never appear in the PANE top 3 (GORD, cholecystitis, peptic ulcer).]
+- `mimic-inferior-mi` / **inv-ecg** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No ECG suggested; the bradycardia prompt needs HR <50 (HR 52 here).]
+- `mimic-inferior-mi` / **inv-troponin** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No troponin suggested.]
+- `mimic-ruptured-aaa` / **dx-aaa-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Renal Colic / Urolithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: inguinal/femoral hernia, renal colic, cholecystitis — even with the PANE answer pulsatile_mass = yes. Symptom inference ranks ruptured AAA #1.]
+- `mimic-ruptured-aaa` / **alarm-aaa** (web, FAIL (known gap)): no alarm matched among 8 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Alarms are 'Hypotension', 'Tachycardia' and the generic 'SBP 84 → Shock Protocol'; none names the aneurysm.]
+- `mimic-ruptured-aaa` / **mgmt-vascular-repair** (web, FAIL (known gap)): no management item matched among 22 (web.clinicalPrompts) [known gap: Web: No protocol reaches the plan: ICD I71.3 does not start with the aortic protocol's only prefix 'I71.9', and PANE does not select aortic_aneurysm. Only prompts remain (no vascular surgery).]
+- `mimic-testicular-torsion` / **dx-torsion-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: appendicitis, inguinal/femoral hernia, cholecystitis; the SOCRATES site text 'right testicle (scrotal)' adds testicular features but not enough. Symptom inference ranks torsion #1.]
+- `mimic-testicular-torsion` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.]
 - `parathyroid-hypercalcaemic-crisis` / **mnm-hypercalcaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#3 [known gap: PANE applied no feature ("Nausea / vomiting" template, SOCRATES empty); calcium is a lab value. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - `parathyroid-hypercalcaemic-crisis` / **mgmt-no-thyroidectomy-template** (web, FAIL (known gap)): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.]
 - `parathyroid-primary-hpt-surgical-indications` / **mgmt-no-thyroidectomy-template** (web, FAIL (known gap)): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: detectDxVariants falls back to lower.includes("thyroid") for the Thyroid group: "parathyroidectomy"/"hyperparathyroidism" contain "thyroid", and "parathyroidectomy" contains the thyroid_total keyword "thyroidectomy", so the documented plan opens with "Total Thyroidectomy … levothyroxine replacement (lifelong)".]
 - `perianal-abscess-hiv` / **level-same-day** (web, FAIL (known gap)): web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ urgent [known gap: Web adaptiveTriage has no perianal abscess/anorectal sepsis rule: the level depends on the pain score and incidental words (the base abscess reaches "emergency" only via the negated "no weight loss" plus pain 8/10; with pain 6/10 it is routine).]
 - `perianal-abscess-hiv` / **flag-hiv** (web, FAIL (known gap)): no red flag matched among 5 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety) [known gap: HIV/immunosuppression in the comorbidity list is not surfaced by triage, prompts or the perianal_abscess protocol (whose IV antibiotic line mentions "immunocompromised" only as an indication).]
+- `ppu-elderly-steroids-masked` / **alarm-sepsis** (web, FAIL (known gap)): no alarm matched among 11 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Sepsis prompts need temperature ≥38 °C with HR >100 (or SBP <90 for the shock prompt); an afebrile patient with qSOFA 3, lactate 3.1 and AKI raises no sepsis alarm.]
+- `ppu-perforated-peptic-ulcer` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal\|belly\|stomach)? pain' because of the word 'upper'; HR 112 is below the >120 vital flag; rigidity/free air are not read by triage. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe upper abdominal pain' gives 'routine'.]
+- `ppu-septic-shock-delayed` / **dx-perforation-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Pancreatitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alcohol history). PANE has no perforation node and no feature for rigidity/free gas; symptom inference ranks perforated peptic ulcer #2.]
+- `sbo-strangulated-femoral-hernia` / **dx-hernia-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Post-operative Ileus; also in web.triageSurgical#1 [known gap: Web: PANE top 3: bowel obstruction, adhesive SBO, post-operative ileus. The SOCRATES site text 'Right groin lump' maps to groin_swelling but the obstruction features dominate; hernia appears only in the triage surgical match list. The 'hernia' symptom-branch details are not read by PANE.]
+- `sbo-strangulation` / **mgmt-emergency-surgery-in-documented-plan** (web, FAIL (known gap)): no management item matched among 14 (web.plan) [known gap: Web: detectDxVariants picks 'sbo_adhesional' (keyword 'small bowel obstruction' is checked before 'strangulation'), whose allowed phases exclude 'surgical'; the documented plan has no operation.]
+- `sbo-strangulation` / **mgmt-no-nom-trial-with-strangulation** (web, FAIL (known gap)): forbidden management item present in web.plan: "small bowel obstruction - non-operative trial (drip and suck)" (+1 more) [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.]
+- `sigmoid-volvulus-base` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=27); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 27: age ≥70, vomiting). 'Massive distension' and 'no flatus or stool' are not red-flag phrases ('unable to pass gas/stool' is).]
+- `sigmoid-volvulus-base` / **mgmt-endoscopic-decompression** (web, FAIL (known gap)): no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a heading ('Sigmoid/Caecal Volvulus — Management:') followed by bowel-obstruction steps. Decompression appears only in the dx-variant urgency note.]
 - `thyroid-bethesda-1-nondiagnostic` / **mgmt-no-thyroidectomy-plan** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here after a non-diagnostic FNA.]
 - `thyroid-bethesda-2-benign` / **mgmt-no-thyroidectomy-plan** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here for benign cytology (rationale text: "Bethesda class III–VI or clinical thyroid malignancy").]
 - `thyroid-bethesda-6-papillary-cn1b` / **mgmt-no-hemithyroidectomy-prefix** (web, FAIL (known gap)): forbidden management item present in web.plan: "hemithyroidectomy (ipsilateral lobe + isthmus). intraoperative recurrent laryngeal nerve neuromonitoring." [known gap: Consequence of the variant bug: the plan opens with "Hemithyroidectomy (ipsilateral lobe + isthmus)" above the protocol's total-thyroidectomy steps.]
@@ -348,6 +392,152 @@ Guidelines:
 - note: PANE features applied: (none)
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from ICD)
 - note: PlanTab protocol: adrenal_incidentaloma (from ICD)
+
+</details>
+
+### Acute mesenteric ischaemia
+
+#### `ami-embolic-af` — Embolic, AF off anticoagulation, normal lactate (base case)
+
+76-year-old woman with AF (warfarin stopped), sudden severe central pain 4 h, vomiting and loose stool, soft abdomen — pain out of proportion; WBC 18.2, lactate 1.6 (normal).
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-mesenteric-ischaemia | mustNotMiss | critical | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | Add an acute mesenteric ischaemia disease node to PANE (features: sudden onset, pain out of proportion, AF/embolic source, vomiting/diarrhoea, age) and a CC_HINTS entry. |
+| level-emergency | emergencyLevel | critical | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
+| alarm-mesenteric | mustAlarm | critical | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | Add a prompt: abdominal pain + AF (or other embolic source) + soft abdomen/severe pain → 'Exclude acute mesenteric ischaemia — CT angiography now; normal lactate does not exclude'. |
+| inv-cta | investigationInclude | critical | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | Map K55.0 to a dedicated acute mesenteric ischaemia protocol (CTA, heparin, vascular surgery, revascularisation) instead of ischaemic colitis. |
+| mgmt-heparin | managementInclude | critical | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
+| mgmt-revascularisation | managementInclude | critical | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | As above: AMI protocol with revascularisation and damage-control steps. |
+| mnm-mesenteric-ischaemia-symptom-engine | mustNotMiss | quality | PASS |  |  |
+| inv-lactate | investigationInclude | quality | PASS | WSES updated guidelines 2022 |  |
+| mgmt-antibiotics | managementInclude | quality | PASS | WSES updated guidelines 2022 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mnm-mesenteric-ischaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never appear in the PANE top 3 (cholecystitis, appendicitis, GORD). Symptom inference ranks it #2.]
+- **alarm-mesenteric** (web): no alarm matched among 7 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: No prompt or triage rule for 'pain out of proportion', AF + abdominal pain, or mesenteric ischaemia.]
+- **inv-cta** (web): no investigation matched among 36 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: K55.0 maps to the ischaemic colitis protocol: 'CT abdomen/pelvis with IV contrast' (portal venous), not CT angiography.]
+- **mgmt-revascularisation** (web): no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Ischaemic colitis protocol has no revascularisation or vascular-surgery step.]
+
+Guidelines:
+
+- **esvs-2017** — ESVS clinical practice guidelines — diseases of the mesenteric arteries and veins (2017), Acute mesenteric ischaemia: suspicion (pain out of proportion, AF), lactate not sensitive/specific enough to exclude, immediate CT angiography, heparin, revascularisation, resection of non-viable bowel; mesenteric venous thrombosis: anticoagulation. Björck M, Koelemay M, Acosta S, et al. Management of the diseases of mesenteric arteries and veins: clinical practice guidelines of the European Society of Vascular Surgery (ESVS). Eur J Vasc Endovasc Surg. 2017;53:460–510. *(statement wording/numbering not yet verified against the source)*
+- **wses-ami-2022** — WSES updated guidelines — acute mesenteric ischaemia (2022), High index of suspicion; normal lactate does not exclude AMI; CT angiography without delay; systemic anticoagulation; revascularisation; damage control / second look; antibiotics. Bala M, Catena F, Kashuk J, et al. Acute mesenteric ischemia: updated guidelines of the World Society of Emergency Surgery. World J Emerg Surg. 2022;17:54. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Appendicitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Acute appendicitis (paediatric); 4. Adhesive small bowel obstruction; 5. Acute appendicitis
+- differential web.passive: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Acute appendicitis (paediatric); 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=99)
+- alarms: Emergency now [web.triage.emergency]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs, web:gad7
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: rlq_pain, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from ICD)
+- note: PlanTab protocol: ischaemic_colitis (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+#### `ami-infarction-septic-shock` — Late: transmural infarction with septic shock
+
+71-year-old man with un-anticoagulated AF and PAD, 30 h after sudden pain: peritonitis, PR blood, T 38.4 °C, HR 134, BP 84/52, lactate 6.8; CTA: SMA occlusion with pneumatosis and portal venous gas.
+
+Permutation of `ami-embolic-af`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-mesenteric | mustNotMiss | critical | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
+| level-emergency | emergencyLevel | critical | PASS | WSES updated guidelines 2022; Surviving Sepsis Campaign 2021 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-shock | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-emergency-laparotomy | managementInclude | critical | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
+| mgmt-revascularisation | managementInclude | critical | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | As above: AMI protocol with revascularisation before/with resection. |
+| mgmt-heparin | managementInclude | quality | PASS | ESVS clinical practice guidelines 2017 |  |
+| mgmt-second-look | managementInclude | quality | PASS | WSES updated guidelines 2022 |  |
+| mgmt-icu | managementInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+
+Failure details:
+
+- **mnm-mesenteric** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never appear in the PANE top 3 (inguinal/femoral hernia, cholecystitis, cholangitis).]
+- **mgmt-revascularisation** (web): no management item matched among 62 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No revascularisation step; only laparotomy/resection templates.]
+
+Guidelines:
+
+- **esvs-2017** — ESVS clinical practice guidelines — diseases of the mesenteric arteries and veins (2017), Acute mesenteric ischaemia: suspicion (pain out of proportion, AF), lactate not sensitive/specific enough to exclude, immediate CT angiography, heparin, revascularisation, resection of non-viable bowel; mesenteric venous thrombosis: anticoagulation. Björck M, Koelemay M, Acosta S, et al. Management of the diseases of mesenteric arteries and veins: clinical practice guidelines of the European Society of Vascular Surgery (ESVS). Eur J Vasc Endovasc Surg. 2017;53:460–510. *(statement wording/numbering not yet verified against the source)*
+- **wses-ami-2022** — WSES updated guidelines — acute mesenteric ischaemia (2022), High index of suspicion; normal lactate does not exclude AMI; CT angiography without delay; systemic anticoagulation; revascularisation; damage control / second look; antibiotics. Bala M, Catena F, Kashuk J, et al. Acute mesenteric ischemia: updated guidelines of the World Society of Emergency Surgery. World J Emerg Surg. 2022;17:54. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Cholecystitis; 3. Acute Cholangitis
+- differential web.symptomInference: 1. Intussusception; 2. Large bowel obstruction; 3. Adhesive small bowel obstruction; 4. Lower GI bleed / colorectal; 5. Sigmoid volvulus
+- differential web.passive: 1. Intussusception; 2. Adhesive small bowel obstruction; 3. Large bowel obstruction; 4. Malrotation / midgut volvulus; 5. Sigmoid volvulus
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=356)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Fever 38.4°C + HR 134 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 26.3 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 210 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, cha2ds2-vasc, qsofa, news2, rockall, caprini, has-bled, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nausea_vomiting, fever
+- note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from ICD)
+- note: PlanTab protocol: ischaemic_colitis (from ICD)
+- note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Bowel Obstruction (Small / Large) (12), Acute Abdomen (7)
+
+</details>
+
+#### `ami-venous-thrombosis-ocp` — Mesenteric venous thrombosis, young woman on the combined pill
+
+36-year-old smoker on the combined oral contraceptive, 5 days of progressive central pain, nausea, loose stools; CT: SMV thrombosis with jejunal wall thickening, no infarction.
+
+Permutation of `ami-embolic-af`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-mesenteric | mustNotMiss | critical | FAIL (known gap) | ESVS clinical practice guidelines 2017 |  |
+| level-at-least-urgent | emergencyLevel | critical | FAIL (known gap) | ESVS clinical practice guidelines 2017 | Let triage read resulted imaging (thrombosis, ischaemia) and D-dimer; do not treat 'pregnancy test negative' as a pregnancy mention (negation). |
+| inv-pregnancy-test | investigationInclude | critical | PASS | NICE NG126 2019 |  |
+| mgmt-anticoagulation | managementInclude | critical | PASS | ESVS clinical practice guidelines 2017 |  |
+| inv-thrombophilia | investigationInclude | quality | FAIL (known gap) | ESVS clinical practice guidelines 2017 |  |
+| mgmt-stop-cocp | managementInclude | quality | FAIL (known gap) | ESVS clinical practice guidelines 2017 |  |
+| mgmt-no-laparotomy-without-peritonitis | managementExclude | quality | FAIL (known gap) | ESVS clinical practice guidelines 2017 |  |
+
+Failure details:
+
+- **mnm-mesenteric** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction; also in web.symptomInference#4, web.passive#3 [known gap: Web: PANE has no mesenteric ischaemia / venous thrombosis disease node, so it can never appear in the PANE top 3 (cholecystitis, appendicitis, bowel obstruction).]
+- **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 20); the only reasons are 'Pregnancy mentioned' (from 'pregnancy test negative') and pain score. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain for five days' gives 'routine'.]
+- **inv-thrombophilia** (web): no investigation matched among 34 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: No thrombophilia work-up.]
+- **mgmt-stop-cocp** (web): no management item matched among 38 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No prompt to stop the oestrogen-containing pill.]
+- **mgmt-no-laparotomy-without-peritonitis** (web): forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Web: 'no guarding or peritonism' triggers the peritonism prompt ('Emergency laparotomy consent') in a patient to be treated with anticoagulation.]
+
+Guidelines:
+
+- **esvs-2017** — ESVS clinical practice guidelines — diseases of the mesenteric arteries and veins (2017), Acute mesenteric ischaemia: suspicion (pain out of proportion, AF), lactate not sensitive/specific enough to exclude, immediate CT angiography, heparin, revascularisation, resection of non-viable bowel; mesenteric venous thrombosis: anticoagulation. Björck M, Koelemay M, Acosta S, et al. Management of the diseases of mesenteric arteries and veins: clinical practice guidelines of the European Society of Vascular Surgery (ESVS). Eur J Vasc Endovasc Surg. 2017;53:460–510. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng126** — NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management (2019), Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D. National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Appendicitis; 3. Bowel Obstruction
+- differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute appendicitis (paediatric); 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Acute appendicitis
+- differential web.passive: 1. Acute gastroenteritis; 2. Acute appendicitis (paediatric); 3. Acute mesenteric ischaemia; 4. Chronic pancreatitis; 5. Inflammatory bowel disease (Crohn's / UC)
+- differential web.triageSurgical: (empty)
+- emergency level: priority (acuity=review, action=priority_24_48h, score=20)
+- alarms: Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: rlq_pain, colicky_pain, nausea_vomiting, anorexia, fatty_food_trigger
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: ischaemic_colitis (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
 
@@ -675,6 +865,100 @@ Guidelines:
 
 </details>
 
+#### `appendicitis-antibiotics-first-coda` — Woman, CT-confirmed uncomplicated, no appendicolith (antibiotics-first candidate)
+
+28-year-old woman, 20 h migratory RIF pain, urine hCG negative, US non-diagnostic, CT uncomplicated appendicitis without appendicolith; she asks to avoid surgery.
+
+Permutation of `appendicitis-adult-typical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| score-air-calculator | scoreValue | critical | n/a | Appendicitis Inflammatory Response (AIR) score 2008 |  |
+| inv-pregnancy-test | investigationInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| mnm-gynaecological | mustNotMiss | quality | FAIL (known gap) |  |  |
+| inv-ultrasound-first | investigationInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-lap-appendicectomy-offered | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-antibiotics-first-option | managementInclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; CODA trial 2020 | Add a 'conservative' step to the appendicitis protocol: antibiotics-first for CT-confirmed uncomplicated appendicitis without appendicolith after shared decision (WSES 2020, CODA), with the recurrence figure. |
+| variant-uncomplicated | dxVariant | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+
+Failure details:
+
+- **mnm-gynaecological** (web): not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Acute appendicitis (paediatric) \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Typhoid fever [known gap: Web: Symptom inference top 5: appendicitis ×2, alcoholic pancreatitis, gastroenteritis, typhoid; no gynaecological cause for a 28-year-old woman.]
+- **mgmt-antibiotics-first-option** (web): no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendicitis; the protocol's only non-operative step is for an appendix mass.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **coda-2020** — CODA trial — antibiotics versus appendectomy for acute appendicitis (2020), Non-inferiority of antibiotics-first for health status at 30 days; ~3 in 10 had appendicectomy by 90 days; appendicolith associated with more appendicectomies and complications. CODA Collaborative. A randomized trial comparing antibiotics with appendectomy for appendicitis. N Engl J Med. 2020;383:1907–19. *(statement wording/numbering not yet verified against the source)*
+- **air-2008** — Appendicitis Inflammatory Response (AIR) score (2008), Items and weights; 0–4 low, 5–8 intermediate, 9–12 high probability. Andersson M, Andersson RE. The appendicitis inflammatory response score: a tool for the diagnosis of acute appendicitis that outperforms the Alvarado score. World J Surg. 2008;32:1843–9. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Acute Cholecystitis; 3. Appendix Mass / Late Appendicitis
+- differential web.symptomInference: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute alcoholic pancreatitis; 4. Acute gastroenteritis; 5. Typhoid fever
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=60)
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: (none)
+- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- note: PANE features applied: rlq_pain, nausea_vomiting, anorexia
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: appendicitis (from ICD)
+- note: no web calculator for score form 'air'
+- note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+#### `appendicitis-appendicolith` — Appendicolith on CT (antibiotics-first caution)
+
+34-year-old man, 30 h migratory RIF pain, rebound, WBC 14.1; CT shows appendicitis with a 7 mm appendicolith. He asks about antibiotics instead of surgery.
+
+Permutation of `appendicitis-adult-typical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-lap-appendicectomy | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-appendicolith-caution | managementInclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; CODA trial 2020 |  |
+| mgmt-no-antibiotics-first-despite-appendicolith | managementExclude | quality | PASS | CODA trial 2020; WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-routine-postop-antibiotics | managementExclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 |  |
+| variant-uncomplicated | dxVariant | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+
+Failure details:
+
+- **mgmt-appendicolith-caution** (web): no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure.]
+- **mgmt-no-routine-postop-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo 4.5g tds + metronidazole 500mg tds × 5 ..." [known gap: Web: Appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **coda-2020** — CODA trial — antibiotics versus appendectomy for acute appendicitis (2020), Non-inferiority of antibiotics-first for health status at 30 days; ~3 in 10 had appendicectomy by 90 days; appendicolith associated with more appendicectomies and complications. CODA Collaborative. A randomized trial comparing antibiotics with appendectomy for appendicitis. N Engl J Med. 2020;383:1907–19. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Acute Cholecystitis; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute alcoholic pancreatitis; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
+- differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
+- differential web.triageSurgical: 1. Acute appendicitis, uncomplicated
+- emergency level: urgent (acuity=priority, action=same_day_call, score=23)
+- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: (none)
+- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- note: PANE features applied: rlq_pain, nausea_vomiting, anorexia
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: appendicitis (from ICD)
+- note: matchPathways: Acute Appendicitis (10), Acute Abdomen (5)
+
+</details>
+
 #### `appendicitis-elderly-atypical` — Elderly, atypical (AF on apixaban)
 
 78-year-old woman with 3 days of vague lower abdominal pain settling in the RIF, anorexia, no fever, WBC 9.8 but CRP 145. Scores are equivocal/low although appendicitis is present; AF raises mesenteric ischaemia as a must-not-miss.
@@ -731,6 +1015,201 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from ICD)
 - note: PlanTab protocol: appendicitis (from ICD)
 - note: no web calculator for score form 'air'
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (19), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19)
+
+</details>
+
+#### `appendicitis-generalised-peritonitis-sepsis` — Perforated, generalised peritonitis with sepsis
+
+31-year-old man, 3 days of RIF pain now generalised, T 39.1 °C, HR 126, BP 92/58, RR 24, lactate 3.4; CT shows perforated appendicitis with free fluid throughout.
+
+Permutation of `appendicitis-adult-typical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-emergency | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020; Surviving Sepsis Campaign 2021 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-emergency-source-control | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020; Surviving Sepsis Campaign 2021 |  |
+| score-qsofa-calculator | scoreValue | quality | n/a | Third international consensus definitions for sepsis and septic shock (Sepsis-3) 2016 |  |
+| inv-lactate | investigationInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-fluids | managementInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-postop-antibiotics-short-course | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+| variant-generalised-peritonitis | dxVariant | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 | Same as the abscess fix: specific-first ordering; uncomplicated as fallback. |
+
+Failure details:
+
+- **variant-generalised-peritonitis** (web): detected appendicitis_uncomplicated in group Acute Appendicitis; expected appendicitis_generalised_peritonitis [known gap: Web: Same first-match problem: 'appendicitis' in the uncomplicated variant wins over 'generalised peritonitis'; the plan header says 'ideally within 12 h' instead of the emergency note.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+- **sepsis-3** — Third international consensus definitions for sepsis and septic shock (Sepsis-3) (2016), qSOFA: RR ≥22, altered mentation, SBP ≤100. Singer M, Deutschman CS, Seymour CW, et al. JAMA. 2016;315:801–10. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Acute Cholecystitis; 3. Appendix Mass / Late Appendicitis
+- differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Acute appendicitis; 3. Malaria; 4. Typhoid fever; 5. Acute alcoholic pancreatitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Malaria; 3. Acute gastroenteritis; 4. Typhoid fever; 5. Pyelonephritis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=105)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 39.1°C + HR 126 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
+- score values: (none)
+- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- note: PANE features applied: rlq_pain, nausea_vomiting, fever, anorexia, rigors
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: appendicitis (from ICD)
+- note: no web calculator for score form 'qsofa'
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+#### `appendicitis-immunosuppressed-transplant` — Immunosuppressed (renal transplant, steroids), diabetic
+
+52-year-old renal transplant recipient on tacrolimus, mycophenolate and prednisolone, 2 days of mild RIF/flank ache, T 37.4 °C, WBC 10.2, CRP 96; CT shows perforated retrocaecal appendicitis with a 2 cm collection.
+
+Permutation of `appendicitis-adult-typical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| inv-ct | investigationInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| flag-immunosuppression | redFlags | quality | FAIL (known gap) |  |  |
+| mgmt-surgery | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) |  |  |
+
+Failure details:
+
+- **flag-immunosuppression** (web): no red flag matched among 24 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Web: Triage scores 'Higher-risk comorbidity present' but no red flag, prompt or protocol text names immunosuppression or steroids as masking the signs.]
+- **mgmt-steroid-cover** (web): no management item matched among 59 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No peri-operative steroid-cover prompt for a patient on long-term prednisolone.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Inguinal / Femoral Hernia; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Hepatocellular carcinoma (HCC); 4. Diverticulitis; 5. Acute cholecystitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Typhoid fever; 5. Acute alcoholic pancreatitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=52)
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, web:wagner, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- note: PANE features applied: rlq_pain, loin_pain, anorexia
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from ICD)
+- note: PlanTab protocol: appendicitis (from ICD)
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+#### `appendicitis-paediatric-9y` — Child (9 years), ultrasound-confirmed
+
+9-year-old boy, 30 h migratory RIF pain, vomiting, fever 38.2 °C, RIF peritonism, WBC 15.9, CRP 38; ultrasound shows an 8 mm non-compressible appendix. Uncomplicated appendicitis in a child.
+
+Permutation of `appendicitis-adult-typical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| score-alvarado-calculator | scoreValue | critical | PASS | Alvarado score (MANTRELS) 1986 |  |
+| mgmt-lap-appendicectomy | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg with adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg. |
+| mnm-mesenteric-adenitis | mustNotMiss | quality | FAIL (known gap) |  |  |
+| score-rec-pas | scoreRecommended | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; Pediatric Appendicitis Score (PAS) 2002 |  |
+| inv-ultrasound | investigationInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-unqualified-ct-child | managementExclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 | Keep the investigation 'conditional' text in PlanTab.buildPlanText and add a paediatric qualifier (US first; CT only if US non-diagnostic). |
+| mgmt-no-routine-postop-antibiotics | managementExclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+| variant-uncomplicated | dxVariant | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+
+Failure details:
+
+- **mnm-mesenteric-adenitis** (web): not in top 5 of web.symptomInference: 1. Acute appendicitis (paediatric) \| 2. Acute appendicitis \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Acute cholecystitis [known gap: Web: Symptom inference has a mesenteric adenitis entry but ranks it outside the top 5 (appendicitis ×2, pancreatitis, gastroenteritis, cholecystitis).]
+- **score-rec-pas** (web): pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old.]
+- **mgmt-no-unqualified-ct-child** (web): forbidden management item present in web.plan: "investigation: ct abdomen/pelvis with iv contrast (urgent)" (+2 more) [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads 'Investigation: CT abdomen/pelvis with IV contrast (urgent)' for a child whose ultrasound already confirmed appendicitis; the prompt strip adds 'CT abdomen/pelvis — appendix calibre'.]
+- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+7 more) [known gap: Web: Protocol steps, protocol medications and the appendicectomy prompt carry adult fixed doses (co-amoxiclav 1.2 g TDS, paracetamol 1 g, ibuprofen 400 mg TDS, pip-tazo 4.5 g) with no weight or age adjustment for a 30 kg child.]
+- **mgmt-no-routine-postop-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo 4.5g tds + metronidazole 500mg tds × 5 ..." [known gap: Web: Appendicectomy operative-plan prompt prescribes IV then oral co-amoxiclav for 5 days after simple appendicitis.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **alvarado-1986** — Alvarado score (MANTRELS) (1986), Items and weights; ≤4 unlikely, 5–6 possible, 7–8 probable, 9–10 very probable. Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15:557–64. *(statement wording/numbering not yet verified against the source)*
+- **pas-2002** — Pediatric Appendicitis Score (PAS) (2002), Items and weights for children. Samuel M. Pediatric appendicitis score. J Pediatr Surg. 2002;37:877–81. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Acute Cholecystitis; 3. Appendix Mass / Late Appendicitis
+- differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Acute appendicitis; 3. Acute alcoholic pancreatitis; 4. Acute gastroenteritis; 5. Acute cholecystitis
+- differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=63)
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.9 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.2°C + HR 118 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
+- score values: alvarado/calculator@web.scaleCalculator.alvarado=10
+- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- note: PANE features applied: rlq_pain, nausea_vomiting, fever, anorexia
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: appendicitis (from ICD)
+
+</details>
+
+#### `appendicitis-perforated-abscess` — Complicated: perforated with 5.5 cm abscess
+
+46-year-old man, 6 days of RIF pain with a tender mass, fever 38.3 °C, WBC 16, CRP 210; CT shows perforated appendicitis with a 5.5 cm pericaecal abscess. Haemodynamically stable.
+
+Permutation of `appendicitis-adult-typical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| inv-ct | investigationInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-percutaneous-drainage | managementInclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 | When the confirmed ICD is K35.3x or the assessment names an abscess/phlegmon, use the appendix_mass protocol for the Plan tab instead of the converged PANE disease. |
+| mgmt-interval-colon-evaluation | managementInclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 |  |
+| variant-abscess | dxVariant | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 | Order the appendicitis variants from most to least specific (generalised peritonitis, abscess, phlegmon, localised peritonitis, uncomplicated) and remove the bare 'appendicitis' keyword from the uncomplicated variant (make it the fallback when no other variant matches). |
+
+Failure details:
+
+- **mgmt-percutaneous-drainage** (web): no management item matched among 58 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: PANE converges on 'Acute Appendicitis' (≥0.85), so PlanTab uses the appendicitis protocol, which has no drainage step; the appendix_mass protocol (with drainage) is used only if PANE picks it.]
+- **mgmt-interval-colon-evaluation** (web): no management item matched among 58 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Appendicitis protocol has no interval colonoscopy/CT; only the appendix_mass protocol does.]
+- **variant-abscess** (web): detected appendicitis_uncomplicated in group Acute Appendicitis; expected appendicitis_abscess [known gap: Web: detectDxVariants: 'appendicitis_uncomplicated' is checked first and its keyword list contains the bare word 'appendicitis', so any assessment mentioning appendicitis (here 'perforated appendicitis with a 5.5 cm pericaecal abscess') selects the uncomplicated variant.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Acute Cholecystitis; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Wilms tumour / nephroblastoma; 4. Hepatocellular carcinoma (HCC); 5. Acute cholecystitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Wilms tumour / nephroblastoma; 3. Typhoid fever; 4. UTI (paediatric); 5. Hepatocellular carcinoma (HCC)
+- differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=153)
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- note: PANE features applied: rlq_pain, fever, anorexia, rigors
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: appendicitis (from ICD)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (19), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19)
 
 </details>
@@ -792,6 +1271,106 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
 - note: PlanTab protocol: appendicitis (from ICD)
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+#### `appendicitis-score-intermediate-band` — Intermediate score band (Alvarado 6, AIR 5): imaging needed
+
+38-year-old man, 30 h migratory RIF pain with nausea, afebrile, RIF tenderness without guarding, WBC 11.8, CRP 32. Intermediate probability.
+
+Permutation of `appendicitis-adult-typical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| score-alvarado-calculator | scoreValue | critical | PASS | Alvarado score (MANTRELS) 1986 |  |
+| score-air-calculator | scoreValue | critical | n/a | Appendicitis Inflammatory Response (AIR) score 2008 |  |
+| inv-imaging | investigationInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| score-rec-air | scoreRecommended | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; Appendicitis Inflammatory Response (AIR) score 2008 |  |
+| score-rec-aas | scoreRecommended | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; Adult Appendicitis Score (AAS) 2014 |  |
+| mgmt-no-direct-theatre-before-imaging | managementExclude | quality | PASS |  |  |
+
+Failure details:
+
+- **score-rec-air** (web): air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.]
+- **score-rec-aas** (web): aas not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Neither platform implements the Adult Appendicitis Score.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **alvarado-1986** — Alvarado score (MANTRELS) (1986), Items and weights; ≤4 unlikely, 5–6 possible, 7–8 probable, 9–10 very probable. Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15:557–64. *(statement wording/numbering not yet verified against the source)*
+- **air-2008** — Appendicitis Inflammatory Response (AIR) score (2008), Items and weights; 0–4 low, 5–8 intermediate, 9–12 high probability. Andersson M, Andersson RE. The appendicitis inflammatory response score: a tool for the diagnosis of acute appendicitis that outperforms the Alvarado score. World J Surg. 2008;32:1843–9. *(statement wording/numbering not yet verified against the source)*
+- **aas-2014** — Adult Appendicitis Score (AAS) (2014), Items and weights; <11 low, 11–15 intermediate, ≥16 high probability. Sammalkorpi HE, Mentula P, Leppäniemi A. A new adult appendicitis score improves diagnostic accuracy of acute appendicitis — a prospective study. BMC Gastroenterol. 2014;14:114. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Acute Cholecystitis; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Acute mesenteric ischaemia
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: alvarado/calculator@web.scaleCalculator.alvarado=6
+- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- note: PANE features applied: rlq_pain, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from ICD)
+- note: PlanTab protocol: appendicitis (from ICD)
+- note: no web calculator for score form 'air'
+- note: matchPathways: Acute Appendicitis (5), IBD — Surgical Complications (Crohn's / UC) (5)
+
+</details>
+
+#### `appendicitis-score-low-band` — Low-risk score band (Alvarado 3, AIR 1), woman
+
+22-year-old woman, 12 h dull RIF pain, no migration, no anorexia, afebrile, mild RIF tenderness without peritonism, WBC 8.9, CRP 6. Low probability of appendicitis.
+
+Permutation of `appendicitis-adult-typical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| score-alvarado-calculator | scoreValue | critical | PASS | Alvarado score (MANTRELS) 1986 |  |
+| score-air-calculator | scoreValue | critical | n/a | Appendicitis Inflammatory Response (AIR) score 2008 |  |
+| inv-pregnancy-test | investigationInclude | critical | PASS | WSES Jerusalem guidelines 2020; NICE NG126 2019 |  |
+| mnm-gynaecological | mustNotMiss | quality | FAIL (known gap) |  |  |
+| level-not-emergency | emergencyLevel | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 | Add negation handling to scanRedFlags (skip matches preceded within a few words by 'no', 'denies', 'without', 'negative'). |
+| score-rec-air | scoreRecommended | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; Appendicitis Inflammatory Response (AIR) score 2008 |  |
+| mgmt-observe-or-safety-net | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-appendicectomy-at-low-risk | managementExclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 | Negation-aware exam() matching in computeClinicalPrompts; gate the operative template on a confirmed appendicitis diagnosis, not on exam substrings. |
+
+Failure details:
+
+- **mnm-gynaecological** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain.]
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≤ urgent [known gap: Web: adaptiveTriage returns emergency_now because the HPI negative 'No vaginal bleeding' matches the 'GI or other bleeding' red flag (no negation handling).]
+- **score-rec-air** (web): air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.]
+- **mgmt-no-appendicectomy-at-low-risk** (web): forbidden management item present in web.clinicalPrompts: "• emergency laparoscopic appendicectomy - consent obtained, theatre booked." [known gap: Web: The appendicitis prompt fires on the substrings 'guarding'/'rebound' in 'No guarding, no rebound' and adds 'Emergency laparoscopic appendicectomy — consent obtained, theatre booked' for an AIR 1 patient.]
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration. Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **alvarado-1986** — Alvarado score (MANTRELS) (1986), Items and weights; ≤4 unlikely, 5–6 possible, 7–8 probable, 9–10 very probable. Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15:557–64. *(statement wording/numbering not yet verified against the source)*
+- **air-2008** — Appendicitis Inflammatory Response (AIR) score (2008), Items and weights; 0–4 low, 5–8 intermediate, 9–12 high probability. Andersson M, Andersson RE. The appendicitis inflammatory response score: a tool for the diagnosis of acute appendicitis that outperforms the Alvarado score. World J Surg. 2008;32:1843–9. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng126** — NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management (2019), Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D. National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Acute Cholecystitis; 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=67)
+- alarms: Emergency now [web.triage.emergency]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: alvarado/calculator@web.scaleCalculator.alvarado=3
+- dx variant: (none) (no group)
+- note: PANE features applied: rlq_pain, suprapubic_pain, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: no web calculator for score form 'air'
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
 
@@ -1471,6 +2050,50 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
 - note: PlanTab protocol: (none) (from ICD)
 - note: matchPathways: Breast Lump / Breast Disease (15)
+
+</details>
+
+### Caecal volvulus
+
+#### `caecal-volvulus` — Caecal volvulus (surgery, not endoscopy), woman of reproductive age
+
+44-year-old woman, 24 h colicky pain, distension and vomiting; CT: caecum 11 cm in the left upper quadrant with a whirl sign, no ischaemia.
+
+Permutation of `sigmoid-volvulus-base`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | PASS | ASCRS clinical practice guidelines 2021 |  |
+| inv-pregnancy-test | investigationInclude | critical | PASS | NICE NG126 2019 |  |
+| mgmt-resection | managementInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2021 | Separate caecal-volvulus variant with right hemicolectomy/ileocaecal resection (ASCRS 2021). |
+| mgmt-no-endoscopic-reduction-caecal | managementExclude | quality | PASS | ASCRS clinical practice guidelines 2021 |  |
+| variant-lbo-volvulus | dxVariant | quality | PASS | ASCRS clinical practice guidelines 2021 |  |
+
+Failure details:
+
+- **mgmt-resection** (web): no management item matched among 44 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowel-obstruction steps.]
+
+Guidelines:
+
+- **ascrs-volvulus-2021** — ASCRS clinical practice guidelines — colonic volvulus and acute colonic pseudo-obstruction (2021), Sigmoid volvulus: endoscopic detorsion without peritonitis/ischaemia, then sigmoid colectomy during the same admission; emergency resection for gangrene/perforation; caecal volvulus: operative management, endoscopic reduction not recommended. Alavi K, Poylin V, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of colonic volvulus and acute colonic pseudo-obstruction. Dis Colon Rectum. 2021;64:1046–57. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng126** — NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management (2019), Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D. National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Hirschsprung's disease; 5. Acute appendicitis
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=35)
+- alarms: Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: (none)
+- dx variant: lbo_volvulus (Bowel Obstruction)
+- note: PANE features applied: colicky_pain, nausea_vomiting, abdominal_distension, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from PANE top)
+- note: PlanTab protocol: bowel_obstruction (from ICD)
+- note: matchPathways: Bowel Obstruction (Small / Large) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
 
@@ -2392,6 +3015,245 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from PANE top)
 - note: PlanTab protocol: crohns_disease (from ICD)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (15), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10)
+
+</details>
+
+### Acute diverticulitis
+
+#### `diverticulitis-uncomplicated-outpatient` — Uncomplicated, immunocompetent, outpatient (base case)
+
+54-year-old man, 2 days of LIF pain, T 37.8 °C, tolerating oral intake, WBC 12.4, CRP 88; CT: uncomplicated sigmoid diverticulitis. Colonoscopy 3 years ago.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-diverticulitis-top3 | mustRankTopK | critical | FAIL (known gap) | WSES guidelines 2020 |  |
+| level-same-day-not-emergency | emergencyLevel | quality | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| inv-ct | investigationInclude | quality | PASS | WSES guidelines 2020 |  |
+| mgmt-selective-antibiotics | managementInclude | quality | FAIL (known gap) | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 | Update the uncomplicated step to WSES 2020 / AGA 2021: antibiotics selectively; observation without antibiotics in immunocompetent patients without systemic features. |
+| mgmt-no-routine-antibiotics | managementExclude | quality | FAIL (known gap) | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+| variant-uncomplicated | dxVariant | quality | FAIL (known gap) | WSES guidelines 2020 |  |
+
+Failure details:
+
+- **dx-diverticulitis-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis (0.13), inguinal/femoral hernia, appendicitis, with lif_pain, nausea_vomiting and fever all extracted — LIF pain does not bring diverticulitis into the top 3. Symptom inference ranks diverticulitis #2.]
+- **mgmt-selective-antibiotics** (web): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5–7 days.]
+- **mgmt-no-routine-antibiotics** (web): forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+1 more) [known gap: Web: '[conservative] Uncomplicated: oral co-amoxiclav 625 mg TDS for 5–7 days' in the documented plan.]
+- **variant-uncomplicated** (web): detected (none) in group Diverticulitis; expected diverticulitis_uncomplicated [known gap: Web: Keyword 'uncomplicated diverticulitis' is not a substring of 'Uncomplicated acute sigmoid diverticulitis'; no variant is selected.]
+
+Guidelines:
+
+- **wses-diverticulitis-2020** — WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update) (2020), CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery. Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **aga-2021** — AGA clinical practice update — medical management of colonic diverticulitis (2021), Antibiotics used selectively rather than routinely in immunocompetent patients with mild uncomplicated diverticulitis; CT when diagnosis uncertain; colonoscopy after complicated diverticulitis or if not recently done. Peery AF, Shaukat A, Strate LL. AGA clinical practice update on medical management of colonic diverticulitis: expert review. Gastroenterology. 2021;160:906–11.e1. *(statement wording/numbering not yet verified against the source)*
+- **ascrs-diverticulitis-2020** — ASCRS clinical practice guidelines — left-sided colonic diverticulitis (2020), Selective antibiotics for uncomplicated disease; percutaneous drainage for large abscess; urgent colectomy for diffuse peritonitis; immunocompromised patients; colonoscopy after complicated disease. Hall J, Hardiman K, Lee S, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the treatment of left-sided colonic diverticulitis. Dis Colon Rectum. 2020;63:728–47. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Inguinal / Femoral Hernia; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Diverticulitis; 3. Acute cholecystitis; 4. Acute gastroenteritis; 5. Acute alcoholic pancreatitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Mesenteric adenitis; 5. Perforated peptic ulcer
+- differential web.triageSurgical: 1. Diverticulitis of colon
+- emergency level: urgent (acuity=priority, action=same_day_call, score=33)
+- alarms: Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (Diverticulitis)
+- note: PANE features applied: lif_pain, nausea_vomiting, fever
+- note: AssessmentTab ManagementPanel protocol: diverticulitis (from ICD)
+- note: PlanTab protocol: diverticulitis (from ICD)
+- note: matchPathways: Diverticular Disease / Diverticulitis (17), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+#### `diverticulitis-abscess-drainage` — Complicated: 6 cm pericolic abscess (modified Hinchey Ib)
+
+63-year-old man, 5 days of LIF pain with fever 38.3 °C, tender LIF mass, WBC 17.8, CRP 212; CT: 6 × 5 cm pericolic abscess, no free gas.
+
+Permutation of `diverticulitis-uncomplicated-outpatient`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-diverticulitis-top3 | mustRankTopK | critical | PASS | WSES guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-iv-antibiotics | managementInclude | critical | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-drainage | managementInclude | critical | PASS | WSES guidelines 2020; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-drainage-in-documented-plan | managementInclude | critical | FAIL (known gap) | WSES guidelines 2020 | Use the modified Hinchey scale in dx-variants: move 'hinchey ib' to the abscess variant, use word-boundary matching (so 'hinchey i' does not match 'hinchey ii/iii/iv') and check peritonitis → abscess → uncomplicated. |
+| inv-blood-cultures | investigationInclude | quality | PASS |  |  |
+| inv-colonoscopy-after | investigationInclude | quality | PASS | WSES guidelines 2020; AGA clinical practice update 2021 |  |
+| variant-abscess | dxVariant | quality | FAIL (known gap) | WSES guidelines 2020; Modified Hinchey classification 1999 |  |
+
+Failure details:
+
+- **mgmt-drainage-in-documented-plan** (web): no management item matched among 13 (web.plan) [known gap: Web: Assessment says 'modified Hinchey Ib'; the uncomplicated variant lists 'hinchey ib' (in the modified Hinchey scale Ib is a pericolic abscess) and is checked first, so the documented plan is the outpatient oral co-amoxiclav plan with no drainage.]
+- **variant-abscess** (web): detected diverticulitis_uncomplicated in group Diverticulitis; expected diverticulitis_abscess [known gap: Web: 'hinchey ib' is a keyword of diverticulitis_uncomplicated.]
+
+Guidelines:
+
+- **wses-diverticulitis-2020** — WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update) (2020), CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery. Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **aga-2021** — AGA clinical practice update — medical management of colonic diverticulitis (2021), Antibiotics used selectively rather than routinely in immunocompetent patients with mild uncomplicated diverticulitis; CT when diagnosis uncertain; colonoscopy after complicated diverticulitis or if not recently done. Peery AF, Shaukat A, Strate LL. AGA clinical practice update on medical management of colonic diverticulitis: expert review. Gastroenterology. 2021;160:906–11.e1. *(statement wording/numbering not yet verified against the source)*
+- **ascrs-diverticulitis-2020** — ASCRS clinical practice guidelines — left-sided colonic diverticulitis (2020), Selective antibiotics for uncomplicated disease; percutaneous drainage for large abscess; urgent colectomy for diffuse peritonitis; immunocompromised patients; colonoscopy after complicated disease. Hall J, Hardiman K, Lee S, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the treatment of left-sided colonic diverticulitis. Dis Colon Rectum. 2020;63:728–47. *(statement wording/numbering not yet verified against the source)*
+- **hinchey-mod-1999** — Modified Hinchey classification (1999), 0 mild; Ia confined pericolic inflammation/phlegmon; Ib pericolic or mesocolic abscess; II pelvic/distant abscess; III generalised purulent peritonitis; IV faecal peritonitis. Wasvary H, Turfah F, Kadro O, Beauregard W. Same hospitalization resection for acute diverticulitis. Am Surg. 1999;65:632–5. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Diverticulitis; 2. Inguinal / Femoral Hernia; 3. Acute Cholangitis
+- differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Diverticulitis; 3. Acute cholecystitis; 4. Typhoid fever; 5. Acute alcoholic pancreatitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Typhoid fever; 3. UTI (paediatric); 4. Acute alcoholic pancreatitis; 5. Mesenteric adenitis
+- differential web.triageSurgical: 1. Diverticulitis of colon
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=55)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.3°C + HR 102 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: diverticulitis_uncomplicated (Diverticulitis)
+- note: PANE features applied: lif_pain, fever, anorexia, rigors
+- note: AssessmentTab ManagementPanel protocol: diverticulitis (from ICD)
+- note: PlanTab protocol: diverticulitis (from ICD)
+- note: matchPathways: Diverticular Disease / Diverticulitis (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
+
+</details>
+
+#### `diverticulitis-faecal-peritonitis-shock` — Hinchey IV with septic shock (elderly, diabetic)
+
+71-year-old diabetic woman found collapsed, T 38.9 °C, HR 132, BP 78/44 on noradrenaline, lactate 6.1, WBC 2.8; CT: faecal peritonitis from a perforated sigmoid.
+
+Permutation of `diverticulitis-uncomplicated-outpatient`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2020 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-shock | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-hartmanns-or-damage-control | managementInclude | critical | PASS | WSES guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-icu | managementInclude | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-no-primary-anastomosis-in-shock | managementExclude | quality | PASS | WSES guidelines 2020 |  |
+| variant-peritonitis | dxVariant | quality | FAIL (known gap) | WSES guidelines 2020; Modified Hinchey classification 1999 |  |
+
+Failure details:
+
+- **variant-peritonitis** (web): detected diverticulitis_abscess in group Diverticulitis; expected diverticulitis_peritonitis [known gap: Web: Substring 'hinchey i' ⊂ 'hinchey iv' selects diverticulitis_abscess.]
+
+Guidelines:
+
+- **wses-diverticulitis-2020** — WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update) (2020), CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery. Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **hinchey-mod-1999** — Modified Hinchey classification (1999), 0 mild; Ia confined pericolic inflammation/phlegmon; Ib pericolic or mesocolic abscess; II pelvic/distant abscess; III generalised purulent peritonitis; IV faecal peritonitis. Wasvary H, Turfah F, Kadro O, Beauregard W. Same hospitalization resection for acute diverticulitis. Am Surg. 1999;65:632–5. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Cholangitis; 3. Acute Diverticulitis
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Sepsis / systemic infection; 5. Acute mesenteric ischaemia
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=225)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; Fever 38.9°C + HR 132 bpm + SBP 78 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 262 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; BGL 16.8 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, gcs, web:wagner, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: diverticulitis_abscess (Diverticulitis)
+- note: PANE features applied: nausea_vomiting, fever
+- note: AssessmentTab ManagementPanel protocol: diverticulitis (from ICD)
+- note: PlanTab protocol: diverticulitis (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+#### `diverticulitis-immunosuppressed` — Immunosuppressed (renal transplant, steroids), mild symptoms
+
+67-year-old renal transplant recipient on tacrolimus, mycophenolate and prednisolone, 2 days of mild LIF discomfort, T 37.5 °C, WBC 9.8, CRP 74; CT: pericolic gas bubbles, no abscess.
+
+Permutation of `diverticulitis-uncomplicated-outpatient`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-diverticulitis-top3 | mustRankTopK | critical | PASS | WSES guidelines 2020 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-no-antibiotic-free-outpatient | managementExclude | critical | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| flag-immunosuppression | redFlags | quality | FAIL (known gap) | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-admit-iv | managementInclude | quality | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-no-oral-outpatient-plan | managementExclude | quality | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+
+Failure details:
+
+- **flag-immunosuppression** (web): no red flag matched among 21 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: Web: Triage counts 'Higher-risk comorbidity' but no red flag or prompt names immunosuppression as a reason not to treat as an outpatient.]
+
+Guidelines:
+
+- **wses-diverticulitis-2020** — WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update) (2020), CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery. Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **aga-2021** — AGA clinical practice update — medical management of colonic diverticulitis (2021), Antibiotics used selectively rather than routinely in immunocompetent patients with mild uncomplicated diverticulitis; CT when diagnosis uncertain; colonoscopy after complicated diverticulitis or if not recently done. Peery AF, Shaukat A, Strate LL. AGA clinical practice update on medical management of colonic diverticulitis: expert review. Gastroenterology. 2021;160:906–11.e1. *(statement wording/numbering not yet verified against the source)*
+- **ascrs-diverticulitis-2020** — ASCRS clinical practice guidelines — left-sided colonic diverticulitis (2020), Selective antibiotics for uncomplicated disease; percutaneous drainage for large abscess; urgent colectomy for diffuse peritonitis; immunocompromised patients; colonoscopy after complicated disease. Hall J, Hardiman K, Lee S, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the treatment of left-sided colonic diverticulitis. Dis Colon Rectum. 2020;63:728–47. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Diverticulitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Diverticulitis; 2. Acute cholecystitis; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Acute mesenteric ischaemia; 5. Primary hyperparathyroidism / hypercalcaemia
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Inflammatory bowel disease (Crohn's / UC); 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Sickle cell crisis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=44)
+- alarms: Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 138 μmol/L — elevated [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs, web:phq9
+- score values: (none)
+- dx variant: (none) (Diverticulitis)
+- note: PANE features applied: lif_pain
+- note: AssessmentTab ManagementPanel protocol: diverticulitis (from ICD)
+- note: PlanTab protocol: diverticulitis (from ICD)
+
+</details>
+
+#### `diverticulitis-purulent-peritonitis` — Perforated, purulent peritonitis (Hinchey III)
+
+59-year-old man, sudden generalised peritonitis after 3 days of LIF pain, T 38.7 °C, HR 116, BP 118/70; CT: free gas and generalised fluid, no faecal contamination.
+
+Permutation of `diverticulitis-uncomplicated-outpatient`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-diverticulitis-top3 | mustRankTopK | critical | FAIL (known gap) | WSES guidelines 2020 |  |
+| level-emergency | emergencyLevel | critical | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-perforation | mustAlarm | critical | PASS | WSES guidelines 2020 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS | WSES guidelines 2020 |  |
+| mgmt-emergency-surgery-in-documented-plan | managementInclude | critical | FAIL (known gap) | WSES guidelines 2020 | Word-boundary Hinchey matching and specific-first variant order (peritonitis before abscess). |
+| mgmt-antibiotics | managementInclude | critical | PASS | WSES guidelines 2020 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-primary-anastomosis-option | managementInclude | quality | PASS | WSES guidelines 2020 |  |
+| variant-peritonitis | dxVariant | quality | FAIL (known gap) | WSES guidelines 2020; Modified Hinchey classification 1999 |  |
+
+Failure details:
+
+- **dx-diverticulitis-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, appendicitis (features lif_pain, nausea_vomiting, fever) — the same likelihood problem as the base case.]
+- **mgmt-emergency-surgery-in-documented-plan** (web): no management item matched among 14 (web.plan) [known gap: Web: 'hinchey iii' contains the abscess keyword 'hinchey i', and the abscess variant is checked before the peritonitis variant, so the documented plan (immediate/conservative/follow-up phases) has no emergency operation — only 'interval sigmoid colectomy 6–8 weeks'.]
+- **variant-peritonitis** (web): detected diverticulitis_abscess in group Diverticulitis; expected diverticulitis_peritonitis [known gap: Web: Substring 'hinchey i' ⊂ 'hinchey iii' selects diverticulitis_abscess.]
+
+Guidelines:
+
+- **wses-diverticulitis-2020** — WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update) (2020), CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery. Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **aga-2021** — AGA clinical practice update — medical management of colonic diverticulitis (2021), Antibiotics used selectively rather than routinely in immunocompetent patients with mild uncomplicated diverticulitis; CT when diagnosis uncertain; colonoscopy after complicated diverticulitis or if not recently done. Peery AF, Shaukat A, Strate LL. AGA clinical practice update on medical management of colonic diverticulitis: expert review. Gastroenterology. 2021;160:906–11.e1. *(statement wording/numbering not yet verified against the source)*
+- **ascrs-diverticulitis-2020** — ASCRS clinical practice guidelines — left-sided colonic diverticulitis (2020), Selective antibiotics for uncomplicated disease; percutaneous drainage for large abscess; urgent colectomy for diffuse peritonitis; immunocompromised patients; colonoscopy after complicated disease. Hall J, Hardiman K, Lee S, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the treatment of left-sided colonic diverticulitis. Dis Colon Rectum. 2020;63:728–47. *(statement wording/numbering not yet verified against the source)*
+- **hinchey-mod-1999** — Modified Hinchey classification (1999), 0 mild; Ia confined pericolic inflammation/phlegmon; Ib pericolic or mesocolic abscess; II pelvic/distant abscess; III generalised purulent peritonitis; IV faecal peritonitis. Wasvary H, Turfah F, Kadro O, Beauregard W. Same hospitalization resection for acute diverticulitis. Am Surg. 1999;65:632–5. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Inguinal / Femoral Hernia; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Diverticulitis; 3. Acute cholecystitis; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
+- differential web.triageSurgical: 1. Diverticulitis of colon
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=75)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.7°C + HR 116 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, asa, stop-bang
+- score values: (none)
+- dx variant: diverticulitis_abscess (Diverticulitis)
+- note: PANE features applied: lif_pain, nausea_vomiting, fever
+- note: AssessmentTab ManagementPanel protocol: diverticulitis (from ICD)
+- note: PlanTab protocol: diverticulitis (from ICD)
+- note: matchPathways: Diverticular Disease / Diverticulitis (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
 
@@ -4103,6 +4965,132 @@ Guidelines:
 
 </details>
 
+### Large bowel obstruction
+
+#### `lbo-obstructing-sigmoid-cancer` — Obstructing sigmoid cancer, no perforation (base case)
+
+72-year-old man, 6 weeks of change in bowel habit with blood and weight loss, then 4 days of absolute constipation and distension; CT: obstructing sigmoid tumour, caecum 10 cm, no perforation.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-colorectal-or-obstruction-top3 | mustRankTopK | critical | PASS | WSES guidelines 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES guidelines 2018 |  |
+| inv-ct | investigationInclude | critical | PASS | WSES guidelines 2018 |  |
+| mgmt-decompression-or-resection | managementInclude | critical | PASS | WSES guidelines 2018 |  |
+| inv-staging-chest | investigationInclude | quality | PASS | WSES guidelines 2018 |  |
+| inv-cea | investigationInclude | quality | PASS |  |  |
+| mgmt-primary-anastomosis-option | managementInclude | quality | PASS | WSES guidelines 2018 |  |
+| mgmt-mdt | managementInclude | quality | PASS | WSES guidelines 2018 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+| variant-lbo-malignant | dxVariant | quality | PASS | WSES guidelines 2018 |  |
+
+Guidelines:
+
+- **wses-lbo-2018** — WSES guidelines — colon and rectal cancer emergencies: obstruction and perforation (2017) (2018), CT for diagnosis; left-sided obstruction (Hartmann's vs resection with primary anastomosis ± stoma; SEMS as a bridge in selected patients); right-sided obstruction (right colectomy with primary anastomosis); caecal distension and perforation (emergency surgery, no stent). Pisano M, Zorcolo L, Merli C, et al. 2017 WSES guidelines on colon and rectal cancer emergencies: obstruction and perforation. World J Emerg Surg. 2018;13:36. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Colorectal Cancer
+- differential web.symptomInference: 1. Large bowel obstruction; 2. Adhesive small bowel obstruction; 3. Lower GI bleed / colorectal; 4. Sigmoid volvulus; 5. Colorectal carcinoma
+- differential web.passive: 1. Large bowel obstruction; 2. Adhesive small bowel obstruction; 3. Sigmoid volvulus; 4. Intussusception; 5. Inflammatory bowel disease (Crohn's / UC)
+- differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=192)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; GI haemorrhage [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Rectal mass on PR examination [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Rectal bleeding, age ≥ 50 [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Hepatic lesion on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, web:wagner, news2, rockall, caprini, asa, rcri, cfs, ecog
+- score values: (none)
+- dx variant: lbo_malignant (Bowel Obstruction)
+- note: PANE features applied: lif_pain, colicky_pain, nausea_vomiting, pr_bleeding, abdominal_distension, change_bowel_habit, weight_loss, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from ICD)
+- note: PlanTab protocol: colorectal_cancer (from ICD)
+- note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), Cancer Screening (Age/Sex Appropriate) (7), IBD — Surgical Complications (Crohn's / UC) (7)
+
+</details>
+
+#### `lbo-cancer-impending-caecal-perforation` — Impending caecal perforation (closed loop, 13.5 cm, pneumatosis), sepsis
+
+79-year-old woman with heart failure, 5 days of LBO from sigmoid cancer, now RIF peritonism, T 38.2 °C, HR 122, BP 96/58, lactate 3.6; CT: competent ileocaecal valve, caecum 13.5 cm with pneumatosis.
+
+Permutation of `lbo-obstructing-sigmoid-cancer`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | WSES guidelines 2018 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS | WSES guidelines 2018 |  |
+| mgmt-no-stent-with-impending-perforation | managementExclude | critical | FAIL (known gap) | WSES guidelines 2018 | State the stent contraindications in the prompt and the lbo_malignant prefix (perforation, peritonitis, caecal ischaemia/pneumatosis, closed loop ≥12 cm with tenderness) and suppress the stent option when they are present. |
+| variant-lbo-malignant | dxVariant | quality | FAIL (known gap) | WSES guidelines 2018 |  |
+
+Failure details:
+
+- **mgmt-no-stent-with-impending-perforation** (web): forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated').]
+- **variant-lbo-malignant** (web): detected sbo_strangulation in group Bowel Obstruction; expected lbo_malignant [known gap: Web: The word 'closed-loop' selects sbo_strangulation (a small-bowel variant) before lbo_malignant.]
+
+Guidelines:
+
+- **wses-lbo-2018** — WSES guidelines — colon and rectal cancer emergencies: obstruction and perforation (2017) (2018), CT for diagnosis; left-sided obstruction (Hartmann's vs resection with primary anastomosis ± stoma; SEMS as a bridge in selected patients); right-sided obstruction (right colectomy with primary anastomosis); caecal distension and perforation (emergency surgery, no stent). Pisano M, Zorcolo L, Merli C, et al. 2017 WSES guidelines on colon and rectal cancer emergencies: obstruction and perforation. World J Emerg Surg. 2018;13:36. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Cholangitis; 3. Bowel Obstruction
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute cholecystitis; 5. Acute appendicitis
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Malaria; 5. Hirschsprung's disease
+- differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=194)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 18.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 156 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.2°C + HR 122 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri, cfs, ecog
+- score values: (none)
+- dx variant: sbo_strangulation (Bowel Obstruction)
+- note: PANE features applied: rlq_pain, nausea_vomiting, fever, abdominal_distension, rigors, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from ICD)
+- note: PlanTab protocol: colorectal_cancer (from ICD)
+- note: matchPathways: Diverticular Disease / Diverticulitis (14), IBD — Surgical Complications (Crohn's / UC) (14), Bowel Obstruction (Small / Large) (12)
+
+</details>
+
+#### `lbo-right-colon-cancer` — Right-sided (hepatic flexure) obstructing cancer
+
+68-year-old woman with iron-deficiency anaemia, 3 days of obstruction; CT: obstructing hepatic flexure tumour, no perforation.
+
+Permutation of `lbo-obstructing-sigmoid-cancer`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES guidelines 2018 |  |
+| mgmt-right-hemicolectomy | managementInclude | quality | FAIL (known gap) | WSES guidelines 2018 | Split lbo_malignant into left- and right-sided variants; right-sided = right colectomy with primary anastomosis. |
+| mgmt-no-left-sided-plan-for-right-lesion | managementExclude | quality | FAIL (known gap) | WSES guidelines 2018 |  |
+| variant-lbo-malignant | dxVariant | quality | PASS | WSES guidelines 2018 |  |
+
+Failure details:
+
+- **mgmt-right-hemicolectomy** (web): no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Plan offers the left-sided LBO options only (SEMS, Hartmann's, colostomy); no right colectomy with primary anastomosis.]
+- **mgmt-no-left-sided-plan-for-right-lesion** (web): forbidden management item present in web.plan: "options: (1) sems bridge to elective resection, (2) emergency hartmann's, (3) defunctioning colostomy." (+3 more) [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctioning colostomy') is applied to a hepatic-flexure tumour.]
+
+Guidelines:
+
+- **wses-lbo-2018** — WSES guidelines — colon and rectal cancer emergencies: obstruction and perforation (2017) (2018), CT for diagnosis; left-sided obstruction (Hartmann's vs resection with primary anastomosis ± stoma; SEMS as a bridge in selected patients); right-sided obstruction (right colectomy with primary anastomosis); caecal distension and perforation (emergency surgery, no stent). Pisano M, Zorcolo L, Merli C, et al. 2017 WSES guidelines on colon and rectal cancer emergencies: obstruction and perforation. World J Emerg Surg. 2018;13:36. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Hirschsprung's disease; 5. Acute appendicitis
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=30)
+- alarms: Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2, stop-bang, cfs, ecog, web:phq9
+- score values: (none)
+- dx variant: lbo_malignant (Bowel Obstruction)
+- note: PANE features applied: colicky_pain, nausea_vomiting, abdominal_distension, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from PANE top)
+- note: PlanTab protocol: colorectal_cancer (from ICD)
+- note: matchPathways: Bowel Obstruction (Small / Large) (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Acute Abdomen (7)
+
+</details>
+
 ### Colonic angiodysplasia with iron-deficiency anaemia
 
 #### `lgib-angiodysplasia-aspirin` — Recurrent occult/overt bleeding, aortic stenosis, aspirin
@@ -4479,6 +5467,369 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
 - note: PlanTab protocol: (none) (from ICD)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
+
+</details>
+
+### Symptomatic abdominal aortic aneurysm (GI emergency mimic)
+
+#### `mimic-aaa-symptomatic-renal-colic-label` — Stable symptomatic AAA presenting as 'renal colic'
+
+69-year-old smoker with a known 5.4 cm AAA (missed surveillance), 12 h right loin pain to the groin, microscopic haematuria, tender pulsatile mass; haemodynamically stable.
+
+Permutation of `mimic-ruptured-aaa`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-aaa | mustNotMiss | critical | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Age/sex prior and pulsatile-mass weighting for aortic_aneurysm; a prompt for 'loin pain + known AAA'. |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ESVS clinical practice guidelines 2024 |  |
+| inv-cta | investigationInclude | critical | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Same ICD prefix fix (I71). |
+| mgmt-vascular-referral | managementInclude | critical | FAIL (known gap) | ESVS clinical practice guidelines 2024 |  |
+| mgmt-no-renal-colic-nsaid | managementExclude | quality | PASS | ESVS clinical practice guidelines 2024 |  |
+
+Failure details:
+
+- **mnm-aaa** (web): not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: renal colic, inguinal/femoral hernia, cholecystitis (pulsatile_mass answered yes). Symptom inference ranks AAA #1.]
+- **inv-cta** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: ICD I71.4 has no protocol (only 'I71.9' is mapped), so no CT angiography is suggested.]
+- **mgmt-vascular-referral** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No vascular referral: no protocol for I71.4.]
+
+Guidelines:
+
+- **esvs-aaa-2024** — ESVS clinical practice guidelines — abdominal aorto-iliac artery aneurysms (2024) (2024), Ruptured AAA: immediate transfer to vascular surgery, permissive hypotension, CT angiography only if haemodynamically stable enough; symptomatic intact AAA: urgent CTA and repair. Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 clinical practice guidelines on the management of abdominal aorto-iliac artery aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Renal Colic / Urolithiasis; 2. Inguinal / Femoral Hernia; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Renal colic / urolithiasis; 3. Renal cell carcinoma; 4. Bladder transitional cell carcinoma; 5. Prostate adenocarcinoma
+- differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Renal colic / urolithiasis; 3. Renal cell carcinoma; 4. Pyelonephritis; 5. Acute kidney injury
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=82)
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: ranson, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: loin_pain, radiation_to_groin, haematuria
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+
+</details>
+
+### Diabetic ketoacidosis (GI emergency mimic)
+
+#### `mimic-dka-abdominal-pain` — Type 1 diabetic, severe DKA with abdominal pain and guarding
+
+19-year-old with type 1 diabetes, missed insulin, 1 day of diffuse abdominal pain and vomiting, Kussmaul breathing, glucose 29.4, ketones 5.6, pH 7.08, WBC 19.8, amylase 210, voluntary guarding.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-dka | mustNotMiss | critical | FAIL (known gap) | Hyperglycaemic crises in adults with diabetes 2024 | Add a DKA node (or a medical-mimic layer) to PANE driven by glucose/ketones/pH, or surface the symptom-inference DKA result when glucose > 20. |
+| level-emergency | emergencyLevel | critical | PASS | Hyperglycaemic crises in adults with diabetes 2024 |  |
+| alarm-dka | mustAlarm | critical | PASS | Hyperglycaemic crises in adults with diabetes 2024 |  |
+| inv-ketones-gas | investigationInclude | critical | PASS | Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-insulin | managementInclude | critical | PASS | Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-no-laparotomy-for-dka-pain | managementExclude | critical | FAIL (known gap) | Hyperglycaemic crises in adults with diabetes 2024 | Negation-aware exam matching, and suppress operative templates while a DKA prompt is active (reassess the abdomen after correction). |
+| mnm-dka-symptom-engine | mustNotMiss | quality | PASS |  |  |
+| mgmt-fluids | managementInclude | quality | PASS | Hyperglycaemic crises in adults with diabetes 2024 |  |
+| mgmt-potassium | managementInclude | quality | FAIL (known gap) | Hyperglycaemic crises in adults with diabetes 2024 |  |
+
+Failure details:
+
+- **mnm-dka** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Peptic Ulcer Disease \| 3. Acute Pancreatitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no DKA disease node, so it can never appear in the PANE top 3 (appendicitis, peptic ulcer, pancreatitis). Symptom inference ranks DKA #1.]
+- **mgmt-potassium** (web): no management item matched among 32 (web.clinicalPrompts) [known gap: Web: The hyperglycaemia prompt mentions monitoring K+ only as part of the insulin line; no potassium replacement plan.]
+- **mgmt-no-laparotomy-for-dka-pain** (web): forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Web: 'no rigidity, no rebound' triggers the peritonism prompt ('Emergency laparotomy consent — source control') and 'guarding' triggers the appendicectomy template in DKA.]
+
+Guidelines:
+
+- **ada-hhc-2024** — Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS) (2024), DKA diagnosis (glucose, ketones, pH/bicarbonate); abdominal pain common and resolves with treatment; IV fluids, fixed-rate insulin, potassium; search for precipitant. Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Peptic Ulcer Disease; 3. Acute Pancreatitis
+- differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Gallstone pancreatitis; 3. Peptic ulcer disease; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
+- differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=156)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; BGL 29.4 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 148 μmol/L — elevated [web.clinicalPrompts.safety]; HR 124 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Potassium 5.6 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, qsofa, gcs, web:wagner, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Ectopic pregnancy (GI emergency mimic)
+
+#### `mimic-ectopic-pregnancy` — RIF pain labelled appendicitis, pregnancy status unknown (base case)
+
+27-year-old woman, 20 h RIF pain referred as '?appendicitis', LMP 7 weeks ago, spotting, right shoulder-tip pain, pre-syncope, HR 112, BP 102/64; no pregnancy test yet.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-ectopic-top3 | mustRankTopK | critical | FAIL (known gap) | NICE NG126 2019 | Map the CC template's 'lmp' answer (missed/late period, weeks since LMP) and 'spotting' to missed_period/abnormal_uterine_bleeding PANE features. |
+| level-emergency | emergencyLevel | critical | PASS | NICE NG126 2019 |  |
+| inv-pregnancy-test | investigationInclude | critical | PASS | NICE NG126 2019 |  |
+| inv-transvaginal-us | investigationInclude | critical | PASS | NICE NG126 2019 |  |
+| mgmt-gynaecology | managementInclude | critical | PASS | NICE NG126 2019 |  |
+| mgmt-no-assumed-negative-hcg | managementExclude | critical | FAIL (known gap) | NICE NG126 2019 | Replace 'β-HCG confirmed negative' in the template with 'β-HCG result: [ ]' and block the operative template until a negative result is recorded. |
+| mgmt-no-appendicectomy-booked | managementExclude | quality | PASS | NICE NG126 2019 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-ectopic-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Choledocholithiasis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis. The template's 'lmp' answer ('7 weeks ago — missed period') is not mapped to missed_period, and amenorrhoea/spotting are not SOCRATES-extracted. Symptom inference ranks ectopic #1.]
+- **mgmt-no-assumed-negative-hcg** (web): forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known gap: Web: Guarding triggers the appendicectomy operative-plan prompt, which states 'β-HCG confirmed negative' before any test has been done.]
+
+Guidelines:
+
+- **nice-ng126** — NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management (2019), Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D. National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Appendicitis; 3. Choledocholithiasis
+- differential web.symptomInference: 1. Ectopic pregnancy; 2. Acute appendicitis; 3. Acute cholecystitis; 4. Vasovagal / reflex syncope; 5. Acute appendicitis (paediatric)
+- differential web.passive: 1. Ectopic pregnancy; 2. Vasovagal / reflex syncope; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Peptic ulcer disease
+- differential web.triageSurgical: 1. Acute appendicitis, uncomplicated
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=85)
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: rlq_pain, suprapubic_pain, ruq_pain, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: ectopic_pregnancy (from ICD)
+- note: matchPathways: Acute Abdomen (12), Acute Appendicitis (12), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+#### `mimic-ectopic-ruptured-shock` — Ruptured, haemorrhagic shock (positive hCG)
+
+31-year-old woman ~6 weeks pregnant (positive home test), sudden lower abdominal pain and collapse, HR 134, BP 78/40; FAST: haemoperitoneum.
+
+Permutation of `mimic-ectopic-pregnancy`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-ectopic-top3 | mustRankTopK | critical | FAIL (known gap) | NICE NG126 2019 |  |
+| level-emergency | emergencyLevel | critical | PASS | NICE NG126 2019 |  |
+| alarm-shock | mustAlarm | critical | PASS | NICE NG126 2019 |  |
+| alarm-ectopic | mustAlarm | critical | PASS | NICE NG126 2019 |  |
+| inv-crossmatch | investigationInclude | critical | PASS | NICE NG126 2019 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS | NICE NG126 2019 |  |
+| mgmt-no-medical-management-when-ruptured | managementExclude | critical | FAIL (known gap) | NICE NG126 2019 | Add ectopic dx-variants (ruptured/unstable → immediate + surgical; unruptured stable → conservative options). |
+
+Failure details:
+
+- **dx-ectopic-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Choledocholithiasis; also in web.symptomInference#2 [known gap: Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis despite a positive pregnancy test and haemoperitoneum.]
+- **mgmt-no-medical-management-when-ruptured** (web): forbidden management item present in web.plan: "investigation: renal function, lfts (methotrexate suitability) (urgent)" (+1 more) [known gap: Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability tests and the methotrexate/expectant steps appear for a shocked patient (no ectopic dx-variant group).]
+
+Guidelines:
+
+- **nice-ng126** — NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management (2019), Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D. National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Appendicitis; 3. Choledocholithiasis
+- differential web.symptomInference: 1. Vasovagal / reflex syncope; 2. Ectopic pregnancy; 3. Acute cholecystitis; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Acute appendicitis (paediatric)
+- differential web.passive: 1. Vasovagal / reflex syncope; 2. Symptomatic / ruptured abdominal aortic aneurysm; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Peptic ulcer disease
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=199)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 134 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: ranson, qsofa, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: ectopic_pregnancy (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Inferior myocardial infarction (GI emergency mimic)
+
+#### `mimic-inferior-mi` — Epigastric 'indigestion', no ECG yet (base case)
+
+63-year-old diabetic smoker, 2 h epigastric 'indigestion' with sweating and vomiting, HR 52, BP 98/60, soft non-tender abdomen; no ECG recorded yet.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-acs | mustNotMiss | critical | FAIL (known gap) | ESC guidelines 2023 | Add a cardiac mimic node to PANE for epigastric pain with diaphoresis/bradycardia/hypotension in patients with vascular risk factors. |
+| level-emergency | emergencyLevel | critical | PASS | ESC guidelines 2023 |  |
+| inv-ecg | investigationInclude | critical | FAIL (known gap) | ESC guidelines 2023 | Prompt: epigastric/upper abdominal pain + (age ≥50 or diabetes) + diaphoresis or HR <60 or SBP <100 → 12-lead ECG within 10 min and troponin. |
+| inv-troponin | investigationInclude | critical | FAIL (known gap) | ESC guidelines 2023 |  |
+| mnm-acs-symptom-engine | mustNotMiss | quality | FAIL (known gap) |  |  |
+| mgmt-cardiology-or-ems | managementInclude | quality | FAIL (known gap) | ESC guidelines 2023 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mnm-acs** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Acute Cholecystitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no cardiac (ACS/MI) disease node, so it can never appear in the PANE top 3 (GORD, cholecystitis, peptic ulcer).]
+- **mnm-acs-symptom-engine** (web): not in top 5 of web.symptomInference: 1. Acute alcoholic pancreatitis \| 2. Gallstone pancreatitis \| 3. Perforated peptic ulcer \| 4. Acute gastroenteritis \| 5. Gastric carcinoma [known gap: Web: Symptom inference top 5 has no ACS/STEMI (pancreatitis ×2, perforated ulcer, gastroenteritis, gastric carcinoma): epigastric pain, sweating and vomiting do not weight the cardiac entries.]
+- **inv-ecg** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No ECG suggested; the bradycardia prompt needs HR <50 (HR 52 here).]
+- **inv-troponin** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No troponin suggested.]
+- **mgmt-cardiology-or-ems** (web): no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No cardiology/PCI/emergency-services action.]
+
+Guidelines:
+
+- **esc-acs-2023** — ESC guidelines — acute coronary syndromes (2023) (2023), 12-lead ECG within 10 minutes of first medical contact; hs-troponin; inferior STEMI (right-sided leads); primary PCI. Byrne RA, Rossello X, Coughlan JJ, et al. 2023 ESC guidelines for the management of acute coronary syndromes. Eur Heart J. 2023;44:3720–826. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Acute Cholecystitis; 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Acute alcoholic pancreatitis; 2. Gallstone pancreatitis; 3. Perforated peptic ulcer; 4. Acute gastroenteritis; 5. Gastric carcinoma
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Malaria; 5. Chronic pancreatitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=88)
+- alarms: Emergency now [web.triage.emergency]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: qsofa, ranson, web:wagner, news2, caprini, web:gerdq, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, nausea_vomiting, fever, antacid_relief
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Chest Pain — Emergency Redirect (5)
+
+</details>
+
+#### `mimic-inferior-mi-ecg-confirmed` — Elderly diabetic woman, ECG shows inferior STEMI
+
+71-year-old diabetic woman with CKD, 6 h upper abdominal discomfort and nausea, HR 48, BP 92/58; ECG: ST elevation II, III, aVF; troponin 412.
+
+Permutation of `mimic-inferior-mi`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-acs | mustNotMiss | critical | FAIL (known gap) | ESC guidelines 2023 |  |
+| level-emergency | emergencyLevel | critical | FAIL (known gap) | ESC guidelines 2023 | Feed resulted ECG/troponin into triage and prompts ('ST elevation', troponin above the 99th centile → emergency, STEMI pathway). |
+| alarm-stemi | mustAlarm | critical | FAIL (known gap) | ESC guidelines 2023 | Same: an ECG/troponin rule in computeClinicalPrompts. |
+| mgmt-reperfusion | managementInclude | critical | FAIL (known gap) | ESC guidelines 2023 | Add an I21 protocol (primary PCI, antiplatelets, cardiology) for the plan tab. |
+| mgmt-no-gi-endoscopy | managementExclude | quality | PASS | ESC guidelines 2023 |  |
+
+Failure details:
+
+- **mnm-acs** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no cardiac (ACS/MI) disease node, so it can never appear in the PANE top 3 (cholecystitis, peptic ulcer, GORD).]
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=30); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 30); the resulted ECG (ST elevation) and troponin 412 are not triage inputs, and HR 48/SBP 92 are inside the vital thresholds. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Upper abdominal discomfort and nausea' gives 'routine'.]
+- **alarm-stemi** (web): no alarm matched among 4 (web.clinicalPrompts.safety) [known gap: Web: No prompt reads ECG results or troponin; the only safety prompt is bradycardia.]
+- **mgmt-reperfusion** (web): no management item matched among 16 (web.clinicalPrompts) [known gap: Web: No reperfusion/PCI action; ICD I21.19 has no protocol.]
+
+Guidelines:
+
+- **esc-acs-2023** — ESC guidelines — acute coronary syndromes (2023) (2023), 12-lead ECG within 10 minutes of first medical contact; hs-troponin; inferior STEMI (right-sided leads); primary PCI. Byrne RA, Rossello X, Coughlan JJ, et al. 2023 ESC guidelines for the management of acute coronary syndromes. Eur Heart J. 2023;44:3720–826. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Peptic Ulcer Disease; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Gastric carcinoma; 2. Acute alcoholic pancreatitis; 3. Perforated peptic ulcer; 4. Chronic pancreatitis; 5. GORD / acid reflux / oesophagitis
+- differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Chronic pancreatitis; 4. GORD / acid reflux / oesophagitis; 5. Gastric carcinoma
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=30)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 168 μmol/L — elevated [web.clinicalPrompts.safety]; HR 48 bpm — bradycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, web:wagner, news2, caprini, web:gerdq, asa, rcri, stop-bang, cfs, web:phq9
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
+
+</details>
+
+### Ruptured abdominal aortic aneurysm (GI emergency mimic)
+
+#### `mimic-ruptured-aaa` — Flank pain labelled renal colic, shocked (base case)
+
+74-year-old smoker, sudden left flank/back pain to the groin, collapse, HR 122, BP 84/50, pulsatile expansile mass, microscopic haematuria; POCUS aorta 7.1 cm. Referred as '?renal colic'.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-aaa-top3 | mustRankTopK | critical | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Raise the pulsatile_mass and haemodynamic_instability likelihoods for aortic_aneurysm in PANE and add an age/sex prior; add CC_HINTS for collapse + flank/back pain. |
+| level-emergency | emergencyLevel | critical | PASS | ESVS clinical practice guidelines 2024 |  |
+| alarm-shock | mustAlarm | critical | PASS | ESVS clinical practice guidelines 2024 |  |
+| alarm-aaa | mustAlarm | critical | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Add a prompt: pulsatile/expansile mass or known AAA + pain + hypotension → 'Suspected ruptured AAA — vascular surgery now, permissive hypotension'. |
+| mgmt-vascular-repair | managementInclude | critical | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Map the whole I71 family (I71.3, I71.4, I71.9) to the aortic protocol (getProtocolByIcd prefix 'I71'). |
+| mgmt-no-nsaid-renal-colic | managementExclude | critical | PASS | ESVS clinical practice guidelines 2024 |  |
+| mnm-aaa-symptom-engine | mustNotMiss | quality | PASS |  |  |
+| inv-crossmatch | investigationInclude | quality | PASS | ESVS clinical practice guidelines 2024 |  |
+| mgmt-permissive-hypotension | managementInclude | quality | FAIL (known gap) | ESVS clinical practice guidelines 2024 |  |
+| mgmt-no-large-fluid-bolus | managementExclude | quality | FAIL (known gap) | ESVS clinical practice guidelines 2024 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-aaa-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Renal Colic / Urolithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: inguinal/femoral hernia, renal colic, cholecystitis — even with the PANE answer pulsatile_mass = yes. Symptom inference ranks ruptured AAA #1.]
+- **alarm-aaa** (web): no alarm matched among 8 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Alarms are 'Hypotension', 'Tachycardia' and the generic 'SBP 84 → Shock Protocol'; none names the aneurysm.]
+- **mgmt-vascular-repair** (web): no management item matched among 22 (web.clinicalPrompts) [known gap: Web: No protocol reaches the plan: ICD I71.3 does not start with the aortic protocol's only prefix 'I71.9', and PANE does not select aortic_aneurysm. Only prompts remain (no vascular surgery).]
+- **mgmt-permissive-hypotension** (web): no management item matched among 22 (web.clinicalPrompts) [known gap: Web: No permissive hypotension (the aortic protocol has it, but is not reached).]
+- **mgmt-no-large-fluid-bolus** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." [known gap: Web: Shock prompt: 'Hartmann's 1L bolus — reassess BP and HR at 15 min' for a ruptured AAA.]
+
+Guidelines:
+
+- **esvs-aaa-2024** — ESVS clinical practice guidelines — abdominal aorto-iliac artery aneurysms (2024) (2024), Ruptured AAA: immediate transfer to vascular surgery, permissive hypotension, CT angiography only if haemodynamically stable enough; symptomatic intact AAA: urgent CTA and repair. Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 clinical practice guidelines on the management of abdominal aorto-iliac artery aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Renal Colic / Urolithiasis; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Aortic dissection; 3. Vasovagal / reflex syncope; 4. Renal colic / urolithiasis; 5. Pyelonephritis
+- differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Vasovagal / reflex syncope; 3. Aortic dissection; 4. Renal colic / urolithiasis; 5. Pyelonephritis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=157)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; SBP 84 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, ranson, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: loin_pain, radiation_to_back, radiation_to_groin, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+
+</details>
+
+### Testicular torsion (GI emergency mimic)
+
+#### `mimic-testicular-torsion` — Adolescent with lower abdominal pain and vomiting
+
+14-year-old boy, sudden right lower abdominal pain and vomiting for 6 h; on examination a high-riding, horizontal, exquisitely tender right testis with absent cremasteric reflex.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-torsion-top3 | mustRankTopK | critical | FAIL (known gap) | EAU guidelines on paediatric urology 2024 | Read the genital examination and the scrotal chip into PANE (testicular_pain, absent_cremasteric). |
+| level-emergency | emergencyLevel | critical | FAIL (known gap) | EAU guidelines on paediatric urology 2024 | Add a triage red flag: male + sudden testicular/scrotal pain (or scrotal-swelling chip) → emergency. |
+| alarm-torsion | mustAlarm | critical | PASS | EAU guidelines on paediatric urology 2024 |  |
+| mgmt-scrotal-exploration | managementInclude | critical | PASS | EAU guidelines on paediatric urology 2024 |  |
+| mgmt-no-doppler-delay | managementExclude | quality | PASS | EAU guidelines on paediatric urology 2024 |  |
+
+Failure details:
+
+- **dx-torsion-top3** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: appendicitis, inguinal/femoral hernia, cholecystitis; the SOCRATES site text 'right testicle (scrotal)' adds testicular features but not enough. Symptom inference ranks torsion #1.]
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.]
+
+Guidelines:
+
+- **eau-paed-2024** — EAU guidelines on paediatric urology — acute scrotum / testicular torsion (2024), Torsion is a clinical diagnosis; urgent surgical exploration; Doppler only if it does not delay surgery. Radmayr C, Bogaert G, Burgu B, et al. EAU guidelines on paediatric urology. EAU Guidelines Office, Arnhem, 2024. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Inguinal / Femoral Hernia; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Testicular torsion / epididymo-orchitis; 2. Acute appendicitis; 3. Acute appendicitis (paediatric); 4. Inguinal hernia (paediatric); 5. Varicocele
+- differential web.passive: 1. Testicular torsion / epididymo-orchitis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=35)
+- alarms: Testicular / scrotal signs [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: rlq_pain, testicular_pain, scrotal_swelling, radiation_to_groin, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: testicular_torsion (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
 
@@ -4877,6 +6228,163 @@ Guidelines:
 
 </details>
 
+### Perforated peptic ulcer
+
+#### `ppu-perforated-peptic-ulcer` — NSAID-related perforation, generalised peritonitis (base case)
+
+47-year-old smoker on regular ibuprofen, sudden severe epigastric pain now generalised, board-like rigidity, HR 112; erect CXR free air.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-perforation-top3 | mustRankTopK | critical | PASS | WSES guidelines 2020 |  |
+| level-emergency | emergencyLevel | critical | FAIL (known gap) | WSES guidelines 2020 | Broaden the 'Acute abdominal pain' red flag to allow a site word ('severe upper/lower/central abdominal pain') and add 'sudden severe', 'rigid', 'board-like' and imaging 'free air' as emergency triggers. |
+| alarm-perforation | mustAlarm | critical | PASS | WSES guidelines 2020 |  |
+| mgmt-surgical-repair | managementInclude | critical | PASS | WSES guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | WSES guidelines 2020 |  |
+| flag-nsaid | redFlags | quality | PASS | WSES guidelines 2020 |  |
+| score-rec-boey | scoreRecommended | quality | FAIL (known gap) | WSES guidelines 2020; Boey score (perforated peptic ulcer) 1987 |  |
+| inv-group-and-save | investigationInclude | quality | PASS |  |  |
+| inv-h-pylori | investigationInclude | quality | PASS | WSES guidelines 2020 |  |
+| inv-no-urgent-ogd-in-perforation | investigationExclude | quality | FAIL (known gap) | WSES guidelines 2020 | Add a perforated-ulcer variant (K25–K28 .1/.2/.5/.6) to a peptic-ulcer group separate from 'Upper GI Bleed'; defer OGD to follow-up. |
+| mgmt-ppi | managementInclude | quality | PASS | WSES guidelines 2020 |  |
+| mgmt-stop-nsaid | managementInclude | quality | PASS | WSES guidelines 2020 |  |
+| mgmt-h-pylori-eradication | managementInclude | quality | PASS | WSES guidelines 2020 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal\|belly\|stomach)? pain' because of the word 'upper'; HR 112 is below the >120 vital flag; rigidity/free air are not read by triage. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe upper abdominal pain' gives 'routine'.]
+- **score-rec-boey** (web): boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform.]
+- **inv-no-urgent-ogd-in-perforation** (web): forbidden investigation present in web.plan.investigations: "upper gi endoscopy (ogd)" [known gap: Web: K27.5 maps to the peptic_ulcer protocol and its 'Upper GI endoscopy (OGD) (urgent)' investigation is shown for a free perforation; ICD K25–K28 also routes the dx-variant group to 'Upper GI Bleed'.]
+
+Guidelines:
+
+- **wses-ppu-2020** — WSES guidelines — perforated and bleeding peptic ulcer (2020), CT/erect CXR for free air; early source control (laparoscopic or open repair / omental patch); broad-spectrum antibiotics; resuscitation; H. pylori testing and eradication; risk scores (Boey, PULP). Tarasconi A, Coccolini F, Biffl WL, et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg. 2020;15:3. *(statement wording/numbering not yet verified against the source)*
+- **boey-1987** — Boey score (perforated peptic ulcer) (1987), Major medical illness, pre-operative shock (SBP <100 mmHg), perforation >24 h: 0–3. Boey J, Choi SK, Poon A, Alagaratnam TT. Risk stratification in perforated duodenal ulcers. A prospective validation of predictive factors. Ann Surg. 1987;205:22–6. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Peptic Ulcer Disease; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Acute appendicitis (paediatric); 5. Gallstone pancreatitis
+- differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute appendicitis (paediatric); 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=35)
+- alarms: Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, qsofa, news2, web:gerdq
+- score values: (none)
+- dx variant: (none) (Upper GI Bleed)
+- note: PANE features applied: epigastric_pain, ruq_pain, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from ICD)
+- note: PlanTab protocol: peptic_ulcer (from ICD)
+- note: no web calculator for score form 'qsofa'
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (17), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+#### `ppu-elderly-steroids-masked` — Elderly on steroids + NSAIDs: signs masked, afebrile sepsis
+
+81-year-old woman on prednisolone and naproxen, 26 h vague abdominal discomfort, new confusion, afebrile, HR 106, BP 96/58, RR 22, WBC 6.1, lactate 3.1, AKI; soft abdomen; CT pneumoperitoneum from a duodenal perforation.
+
+Permutation of `ppu-perforated-peptic-ulcer`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-perforation-top3 | mustRankTopK | critical | PASS | WSES guidelines 2020 |  |
+| level-emergency | emergencyLevel | critical | PASS | WSES guidelines 2020; Surviving Sepsis Campaign 2021 |  |
+| alarm-perforation | mustAlarm | critical | PASS | WSES guidelines 2020 |  |
+| alarm-sepsis | mustAlarm | critical | FAIL (known gap) | Surviving Sepsis Campaign 2021; Third international consensus definitions for sepsis and septic shock (Sepsis-3) 2016 | Add a qSOFA/lactate sepsis rule that does not require fever (RR ≥22, SBP ≤100, altered mentation, lactate ≥2) and treat steroid use/age ≥75 as masking factors. |
+| mgmt-surgical-repair | managementInclude | critical | PASS | WSES guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | WSES guidelines 2020; Surviving Sepsis Campaign 2021 |  |
+| flag-steroids-masking | redFlags | quality | FAIL (known gap) |  |  |
+| score-rec-qsofa | scoreRecommended | quality | PASS | Third international consensus definitions for sepsis and septic shock (Sepsis-3) 2016 |  |
+| score-qsofa-calculator | scoreValue | quality | n/a | Third international consensus definitions for sepsis and septic shock (Sepsis-3) 2016 |  |
+| score-qsofa-autofill | scoreValue | quality | n/a | Third international consensus definitions for sepsis and septic shock (Sepsis-3) 2016 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) |  |  |
+| mgmt-stop-nsaid | managementInclude | quality | PASS | WSES guidelines 2020 |  |
+
+Failure details:
+
+- **alarm-sepsis** (web): no alarm matched among 11 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Sepsis prompts need temperature ≥38 °C with HR >100 (or SBP <90 for the shock prompt); an afebrile patient with qSOFA 3, lactate 3.1 and AKI raises no sepsis alarm.]
+- **flag-steroids-masking** (web): no red flag matched among 33 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: Web: No flag that long-term steroids mask peritonism and fever.]
+- **mgmt-steroid-cover** (web): no management item matched among 70 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No steroid-cover prompt.]
+
+Guidelines:
+
+- **wses-ppu-2020** — WSES guidelines — perforated and bleeding peptic ulcer (2020), CT/erect CXR for free air; early source control (laparoscopic or open repair / omental patch); broad-spectrum antibiotics; resuscitation; H. pylori testing and eradication; risk scores (Boey, PULP). Tarasconi A, Coccolini F, Biffl WL, et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg. 2020;15:3. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+- **sepsis-3** — Third international consensus definitions for sepsis and septic shock (Sepsis-3) (2016), qSOFA: RR ≥22, altered mentation, SBP ≤100. Singer M, Deutschman CS, Seymour CW, et al. JAMA. 2016;315:801–10. *(statement wording/numbering not yet verified against the source)*
+- **boey-1987** — Boey score (perforated peptic ulcer) (1987), Major medical illness, pre-operative shock (SBP <100 mmHg), perforation >24 h: 0–3. Boey J, Choi SK, Poon A, Alagaratnam TT. Risk stratification in perforated duodenal ulcers. A prospective validation of predictive factors. Ann Surg. 1987;205:22–6. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Peptic Ulcer Disease; 2. GORD / Reflux Oesophagitis; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Peptic ulcer disease; 2. Gallstone pancreatitis; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Pancreatic adenocarcinoma
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. DKA / hyperglycaemic hyperosmolar state; 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Typhoid fever
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=94)
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 186 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, qsofa, gcs, news2, asa, cfs
+- score values: (none)
+- dx variant: (none) (Upper GI Bleed)
+- note: PANE features applied: epigastric_pain
+- note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from ICD)
+- note: PlanTab protocol: peptic_ulcer (from ICD)
+- note: no web calculator for score form 'qsofa'
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
+
+</details>
+
+#### `ppu-septic-shock-delayed` — Delayed presentation with septic shock
+
+58-year-old heavy drinker, 2 days of generalised peritonitis, T 38.8 °C, HR 128, BP 82/50, RR 28, confused, lactate 5.6, AKI; CT pneumoperitoneum.
+
+Permutation of `ppu-perforated-peptic-ulcer`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-perforation-top3 | mustRankTopK | critical | FAIL (known gap) | WSES guidelines 2020 | Add a perforated-viscus node to PANE with rigidity/board-like abdomen, sudden onset and imaging free gas as features (the 'Perforated viscus' CC template exists but has no CC_HINTS entry). |
+| level-emergency | emergencyLevel | critical | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2020 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-shock | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-perforation | mustAlarm | critical | PASS | WSES guidelines 2020 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2020 |  |
+| mgmt-fluids-vasopressor | managementInclude | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-source-control | managementInclude | critical | PASS | WSES guidelines 2020 |  |
+| inv-lactate | investigationInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-icu | managementInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+
+Failure details:
+
+- **dx-perforation-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Pancreatitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alcohol history). PANE has no perforation node and no feature for rigidity/free gas; symptom inference ranks perforated peptic ulcer #2.]
+
+Guidelines:
+
+- **wses-ppu-2020** — WSES guidelines — perforated and bleeding peptic ulcer (2020), CT/erect CXR for free air; early source control (laparoscopic or open repair / omental patch); broad-spectrum antibiotics; resuscitation; H. pylori testing and eradication; risk scores (Boey, PULP). Tarasconi A, Coccolini F, Biffl WL, et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg. 2020;15:3. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Inguinal / Femoral Hernia; 3. Acute Pancreatitis
+- differential web.symptomInference: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Gallstone pancreatitis
+- differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=235)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Fever 38.8°C + HR 128 bpm + SBP 82 mmHg — septic shock [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 244 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 92% — hypoxia [web.clinicalPrompts.safety]; Thyroid malignancy / Bethesda suspicious cytology [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, child-pugh, qsofa, bisap, gcs, news2, web:gerdq, web:audit
+- score values: (none)
+- dx variant: (none) (Upper GI Bleed)
+- note: PANE features applied: epigastric_pain, nausea_vomiting, fever
+- note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from ICD)
+- note: PlanTab protocol: peptic_ulcer (from ICD)
+- note: matchPathways: Acute Abdomen (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Appendicitis (7)
+
+</details>
+
 ### Haemorrhoidal outlet bleeding in a young adult
 
 #### `rectal-bleeding-young-haemorrhoidal` — Clinic, 24-year-old, no red flags
@@ -4960,6 +6468,376 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: rectal_prolapse (from ICD)
 - note: PlanTab protocol: rectal_prolapse (from ICD)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
+
+</details>
+
+### Small bowel obstruction
+
+#### `sbo-adhesive-base` — Adhesive SBO, no strangulation (base case)
+
+58-year-old woman after open hysterectomy/appendicectomy, 36 h colicky pain, bilious vomiting, distension, no flatus; CT: single transition point, no strangulation features. Stable.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-obstruction-top3 | mustRankTopK | critical | PASS | WSES Bologna guidelines 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Bologna guidelines 2018 |  |
+| inv-ct | investigationInclude | critical | PASS | WSES Bologna guidelines 2018 |  |
+| no-false-peritonism-alarm | mustNotAlarm | quality | FAIL (known gap) |  | Negation-aware exam() matching ('no peritonism', 'no guarding', 'no rigidity'). |
+| inv-lactate | investigationInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
+| inv-electrolytes | investigationInclude | quality | PASS |  |  |
+| mgmt-ngt | managementInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-iv-fluids | managementInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-water-soluble-contrast | managementInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-surgery-if-nom-fails | managementInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-potassium | managementInclude | quality | FAIL (known gap) |  |  |
+| mgmt-no-unrelated-operative-template | managementExclude | quality | FAIL (known gap) |  |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+| variant-sbo-adhesional | dxVariant | quality | PASS | WSES Bologna guidelines 2018 |  |
+
+Failure details:
+
+- **no-false-peritonism-alarm** (web): forbidden alarm present in web.clinicalPrompts.safety: "generalised peritonism (guarding / rigidity) - peritonism → perforated viscus / peritonitis" [known gap: Web: computeClinicalPrompts fires 'Generalised peritonism → Perforated viscus' on the substring 'peritonism' in 'no peritonism'.]
+- **mgmt-potassium** (web): no management item matched among 58 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.3: getProtocolByIcd('K56.50') returns the generic bowel_obstruction protocol (prefix K56), not adhesion_obstruction, whose medications include KCl.]
+- **mgmt-no-unrelated-operative-template** (web): forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." (+1 more) [known gap: Web: Negated exam text ('No guarding, no rebound, no peritonism') triggers both the peritonism prompt ('Emergency laparotomy consent') and the appendicectomy operative-plan prompt.]
+
+Guidelines:
+
+- **wses-sbo-2018** — WSES Bologna guidelines — adhesive small bowel obstruction (2017 update) (2018), CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Post-operative Ileus
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Hirschsprung's disease; 5. Acute gastroenteritis
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Acute gastroenteritis
+- differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=98)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pelvic free fluid on imaging — female patient [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: sbo_adhesional (Bowel Obstruction)
+- note: PANE features applied: rlq_pain, colicky_pain, nausea_vomiting, abdominal_distension, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from PANE top)
+- note: PlanTab protocol: bowel_obstruction (from ICD)
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19), Diverticular Disease / Diverticulitis (14)
+
+</details>
+
+#### `sbo-gastrografin-failed` — Failed Gastrografin challenge (contrast not in colon at 24 h), day 3
+
+71-year-old woman on day 3 of NOM for adhesive SBO; contrast has not reached the colon at 24 h, NG output 1.6 L/day, no flatus, no strangulation signs.
+
+Permutation of `sbo-adhesive-base`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-surgery | managementInclude | critical | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-surgery-in-documented-plan | managementInclude | quality | FAIL (known gap) | WSES Bologna guidelines 2018 | Add a 'failed NOM' variant (contrast not in colon at 24 h, no resolution by 72 h) with immediate + surgical phases. |
+| mgmt-no-repeat-contrast-challenge | managementExclude | quality | FAIL (known gap) | WSES Bologna guidelines 2018 |  |
+| mgmt-no-appendicectomy-template | managementExclude | quality | FAIL (known gap) |  |  |
+| pathway-ward-review | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mgmt-surgery-in-documented-plan** (web): no management item matched among 14 (web.plan) [known gap: Web: sbo_adhesional variant (no 'surgical' phase) is selected; the failed contrast challenge is not a variant trigger, so the documented plan stays conservative.]
+- **mgmt-no-repeat-contrast-challenge** (web): forbidden management item present in web.plan: "...ve] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h." [known gap: Web: Plan text still contains 'water-soluble contrast study at 24 h' after a failed challenge.]
+- **mgmt-no-appendicectomy-template** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: 'no guarding or rebound' in the exam triggers the appendicectomy operative-plan prompt in an SBO patient.]
+
+Guidelines:
+
+- **wses-sbo-2018** — WSES Bologna guidelines — adhesive small bowel obstruction (2017 update) (2018), CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Post-operative Ileus
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Hirschsprung's disease; 5. Acute appendicitis
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
+- differential web.triageSurgical: 1. Intestinal obstruction; 2. Colon cancer
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=103)
+- alarms: Emergency now [web.triage.emergency]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, web:wagner, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: sbo_adhesional (Bowel Obstruction)
+- note: PANE features applied: rlq_pain, colicky_pain, nausea_vomiting, abdominal_distension, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from PANE top)
+- note: PlanTab protocol: bowel_obstruction (from ICD)
+- note: matchPathways: Bowel Obstruction (Small / Large) (15), IBD — Surgical Complications (Crohn's / UC) (10), Acute Abdomen (5)
+
+</details>
+
+#### `sbo-malignant-carcinomatosis` — Malignant (peritoneal carcinomatosis), palliative goals
+
+61-year-old woman with stage IV ovarian cancer and carcinomatosis, 4 days of vomiting and distension; CT: multiple transition points, ascites. Goals: comfort and home.
+
+Permutation of `sbo-adhesive-base`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-obstruction-top3 | mustRankTopK | critical | PASS | WSES Bologna guidelines 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | MASCC guidelines 2021 |  |
+| mgmt-palliative-mdt | managementInclude | quality | FAIL (known gap) | MASCC guidelines 2021 | Add a malignant-SBO variant (carcinomatosis, multiple transition points) with palliative/oncology MDT and MASCC medical management. |
+| mgmt-medical-mbo | managementInclude | quality | FAIL (known gap) | MASCC guidelines 2021 |  |
+| mgmt-no-routine-laparotomy | managementExclude | quality | FAIL (known gap) | MASCC guidelines 2021 |  |
+
+Failure details:
+
+- **mgmt-palliative-mdt** (web): no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel-obstruction protocol.]
+- **mgmt-medical-mbo** (web): no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option.]
+- **mgmt-no-routine-laparotomy** (web): forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Web: 'no peritonism' in the exam triggers the peritonism prompt: 'Emergency laparotomy consent — source control' for a palliative patient.]
+
+Guidelines:
+
+- **wses-sbo-2018** — WSES Bologna guidelines — adhesive small bowel obstruction (2017 update) (2018), CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+- **mascc-mbo-2021** — MASCC guidelines — malignant bowel obstruction (2021), Individualised, palliative-focused decision-making; medical management (antisecretory, antiemetic); venting gastrostomy; selective surgery. Davis M, Hui D, Davies A, et al. Medical management of malignant bowel obstruction in patients with advanced cancer: 2021 MASCC guideline update. Support Care Cancer. 2021;29:8089–96. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Bowel Obstruction; 3. Small Bowel Obstruction — Adhesions
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Malrotation / midgut volvulus; 5. Occult malignancy / systemic disease
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Malrotation / midgut volvulus; 3. Sigmoid volvulus; 4. Large bowel obstruction; 5. Wilms tumour / nephroblastoma
+- differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=97)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, wells-dvt, ranson, news2, caprini, must, ecog
+- score values: (none)
+- dx variant: sbo_adhesional (Bowel Obstruction)
+- note: PANE features applied: colicky_pain, nausea_vomiting, abdominal_distension, weight_loss
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from ICD)
+- note: PlanTab protocol: bowel_obstruction (from ICD)
+- note: matchPathways: Bowel Obstruction (Small / Large) (5)
+
+</details>
+
+#### `sbo-strangulated-femoral-hernia` — Hernia cause: strangulated femoral hernia (elderly, anticoagulated)
+
+83-year-old woman on apixaban, 2 days of SBO and a tense, tender, irreducible right femoral lump with erythema; T 37.9 °C, HR 112, lactate 2.9; CT: incarcerated femoral hernia with a poorly enhancing loop.
+
+Permutation of `sbo-adhesive-base`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-hernia-top3 | mustRankTopK | critical | FAIL (known gap) | WSES guidelines 2017 | Let PANE read the hernia symptom branch ('Irreducible', 'Femoral') and exam chip 'Hernia present' as hernia_irreducible/groin_swelling evidence. |
+| level-emergency | emergencyLevel | critical | PASS | WSES guidelines 2017 |  |
+| mgmt-emergency-repair | managementInclude | critical | PASS | WSES guidelines 2017 |  |
+| mgmt-no-manual-reduction | managementExclude | critical | PASS | WSES guidelines 2017 |  |
+| mgmt-anticoagulant-plan | managementInclude | quality | PASS |  |  |
+| variant-hernia-strangulated | dxVariant | quality | PASS | WSES guidelines 2017 |  |
+
+Failure details:
+
+- **dx-hernia-top3** (web): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Post-operative Ileus; also in web.triageSurgical#1 [known gap: Web: PANE top 3: bowel obstruction, adhesive SBO, post-operative ileus. The SOCRATES site text 'Right groin lump' maps to groin_swelling but the obstruction features dominate; hernia appears only in the triage surgical match list. The 'hernia' symptom-branch details are not read by PANE.]
+
+Guidelines:
+
+- **wses-sbo-2018** — WSES Bologna guidelines — adhesive small bowel obstruction (2017 update) (2018), CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+- **wses-hernia-2017** — WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update) (2017), Strangulation signs; emergency repair; manual reduction not attempted when strangulation is suspected. Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Post-operative Ileus
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
+- differential web.triageSurgical: 1. Inguinal hernia
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=71)
+- alarms: Emergency now [web.triage.emergency]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 131 μmol/L — elevated [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, cha2ds2-vasc, news2, has-bled, cfs
+- score values: (none)
+- dx variant: hernia_strangulated (Hernia)
+- note: PANE features applied: groin_swelling, colicky_pain, nausea_vomiting, abdominal_distension, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from PANE top)
+- note: PlanTab protocol: femoral_hernia (from ICD)
+- note: matchPathways: Bowel Obstruction (Small / Large) (12), Hernia (Inguinal / Umbilical / Incisional / Femoral) (12), Acute Abdomen (7)
+
+</details>
+
+#### `sbo-strangulation` — Strangulation (fever, tachycardia, peritonism, lactate, CT signs)
+
+67-year-old man, previous laparotomy, pain now constant, T 38.4 °C, HR 118, localised peritonism, WBC 19.4, lactate 4.1; CT: closed loop with reduced wall enhancement.
+
+Permutation of `sbo-adhesive-base`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-obstruction-top3 | mustRankTopK | critical | PASS | WSES Bologna guidelines 2018 |  |
+| level-emergency | emergencyLevel | critical | PASS | WSES Bologna guidelines 2018 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-strangulation | mustAlarm | critical | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-emergency-surgery-in-documented-plan | managementInclude | critical | FAIL (known gap) | WSES Bologna guidelines 2018 | Same ordering fix; the strangulation variant's surgical phase then carries the operation into the documented plan. |
+| mgmt-no-nom-trial-with-strangulation | managementExclude | critical | FAIL (known gap) | WSES Bologna guidelines 2018 | Check sbo_strangulation before sbo_adhesional (specific-first) and drop the conservative phase whenever strangulation words, lactate > 2 with peritonism, or closed-loop appear. |
+| inv-lactate | investigationInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
+| inv-group-and-save | investigationInclude | quality | PASS |  |  |
+| mgmt-antibiotics | managementInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
+| variant-sbo-strangulation | dxVariant | quality | FAIL (known gap) | WSES Bologna guidelines 2018 |  |
+
+Failure details:
+
+- **mgmt-emergency-surgery-in-documented-plan** (web): no management item matched among 14 (web.plan) [known gap: Web: detectDxVariants picks 'sbo_adhesional' (keyword 'small bowel obstruction' is checked before 'strangulation'), whose allowed phases exclude 'surgical'; the documented plan has no operation.]
+- **mgmt-no-nom-trial-with-strangulation** (web): forbidden management item present in web.plan: "small bowel obstruction - non-operative trial (drip and suck)" (+1 more) [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.]
+- **variant-sbo-strangulation** (web): detected sbo_adhesional in group Bowel Obstruction; expected sbo_strangulation [known gap: Web: First-match order: sbo_adhesional ('small bowel obstruction', 'adhesion') is tested before sbo_strangulation.]
+
+Guidelines:
+
+- **wses-sbo-2018** — WSES Bologna guidelines — adhesive small bowel obstruction (2017 update) (2018), CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Small Bowel Obstruction — Adhesions; 2. Bowel Obstruction; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute appendicitis; 5. Hirschsprung's disease
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Malaria; 5. Hirschsprung's disease
+- differential web.triageSurgical: 1. Intestinal obstruction
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=132)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 142 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 118 bpm [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: sbo_adhesional (Bowel Obstruction)
+- note: PANE features applied: rlq_pain, colicky_pain, nausea_vomiting, fever, rigors, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from ICD)
+- note: PlanTab protocol: bowel_obstruction (from ICD)
+- note: matchPathways: Bowel Obstruction (Small / Large) (22), Acute Abdomen (12), IBD — Surgical Complications (Crohn's / UC) (12)
+
+</details>
+
+#### `sbo-virgin-abdomen` — Virgin abdomen, CT mass lesion (elderly, weight loss)
+
+74-year-old woman with no previous surgery, 2 days of SBO, 3 kg weight loss, no hernia palpable; CT: transition point at a short-segment ileal lesion.
+
+Permutation of `sbo-adhesive-base`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-obstruction-top3 | mustRankTopK | critical | PASS | WSES Bologna guidelines 2018 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | WSES Bologna guidelines 2018 |  |
+| inv-ct | investigationInclude | critical | PASS | WSES Bologna guidelines 2018 |  |
+| mnm-neoplasm | mustNotMiss | quality | FAIL (known gap) |  |  |
+| mnm-hernia | mustNotMiss | quality | FAIL (known gap) |  |  |
+| mgmt-surgical-exploration | managementInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-no-adhesion-label-in-plan | managementExclude | quality | FAIL (known gap) | WSES Bologna guidelines 2018 |  |
+
+Failure details:
+
+- **mnm-neoplasm** (web): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Acute Cholecystitis \| 3. Acute Appendicitis [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neoplasm node (colorectal cancer only), and the trigger answer 'After meals' is read as fatty_food_trigger, which lifts cholecystitis.]
+- **mnm-hernia** (web): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Acute Cholecystitis \| 3. Acute Appendicitis [known gap: Web: PANE top 3 has no hernia (no groin feature because no lump was found).]
+- **mgmt-no-adhesion-label-in-plan** (web): forbidden management item present in web.plan: "[conservative] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h..." [known gap: Web: Variant 'sbo_adhesional' is chosen from the words 'small bowel obstruction' even though the assessment says 'virgin abdomen … adhesions unlikely'; the plan keeps the adhesive-SBO conservative step.]
+
+Guidelines:
+
+- **wses-sbo-2018** — WSES Bologna guidelines — adhesive small bowel obstruction (2017 update) (2018), CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Bowel Obstruction; 2. Acute Cholecystitis; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Hirschsprung's disease; 5. Acute appendicitis
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
+- differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=90)
+- alarms: Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Incarcerated / strangulated hernia [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Thyroid malignancy / Bethesda suspicious cytology [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2, cfs
+- score values: (none)
+- dx variant: sbo_adhesional (Bowel Obstruction)
+- note: PANE features applied: rlq_pain, colicky_pain, nausea_vomiting, abdominal_distension, weight_loss, absolute_constipation, fatty_food_trigger
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from ICD)
+- note: PlanTab protocol: bowel_obstruction (from ICD)
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
+
+</details>
+
+### Sigmoid volvulus
+
+#### `sigmoid-volvulus-base` — Sigmoid volvulus, viable (base case)
+
+81-year-old nursing-home resident with Parkinson's and chronic constipation, 2 days of massive distension; AXR coffee-bean sign, CT whirl without ischaemia.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-obstruction-top3 | mustRankTopK | critical | PASS | ASCRS clinical practice guidelines 2021 |  |
+| level-at-least-urgent | emergencyLevel | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2021 | Add obstruction red-flag phrases to RULES ('no flatus', 'not passed wind', 'massive/increasing distension') and a volvulus term. |
+| mgmt-endoscopic-decompression | managementInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 | Give lbo_volvulus a real plan prefix: sigmoid — endoscopic detorsion + flatus tube if no peritonitis/ischaemia, then sigmoid colectomy in the same admission; caecal — right hemicolectomy; gangrene/peritonitis — Hartmann's. Split into sigmoid and caecal variants. |
+| mnm-volvulus | mustNotMiss | quality | FAIL (known gap) | ASCRS clinical practice guidelines 2021 |  |
+| mgmt-same-admission-resection | managementInclude | quality | FAIL (known gap) | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
+| mgmt-potassium | managementInclude | quality | FAIL (known gap) |  |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+| variant-lbo-volvulus | dxVariant | quality | PASS | ASCRS clinical practice guidelines 2021 |  |
+
+Failure details:
+
+- **mnm-volvulus** (web): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#2, web.passive#3 [known gap: Web: PANE has no volvulus disease node, so it can never appear in the PANE top 3 (bowel obstruction, adhesive SBO, inguinal/femoral hernia). Symptom inference ranks sigmoid volvulus #2.]
+- **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=27); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 27: age ≥70, vomiting). 'Massive distension' and 'no flatus or stool' are not red-flag phrases ('unable to pass gas/stool' is).]
+- **mgmt-endoscopic-decompression** (web): no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a heading ('Sigmoid/Caecal Volvulus — Management:') followed by bowel-obstruction steps. Decompression appears only in the dx-variant urgency note.]
+- **mgmt-same-admission-resection** (web): no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No sigmoid colectomy after decompression.]
+- **mgmt-potassium** (web): no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.2.]
+
+Guidelines:
+
+- **ascrs-volvulus-2021** — ASCRS clinical practice guidelines — colonic volvulus and acute colonic pseudo-obstruction (2021), Sigmoid volvulus: endoscopic detorsion without peritonitis/ischaemia, then sigmoid colectomy during the same admission; emergency resection for gangrene/perforation; caecal volvulus: operative management, endoscopic reduction not recommended. Alavi K, Poylin V, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of colonic volvulus and acute colonic pseudo-obstruction. Dis Colon Rectum. 2021;64:1046–57. *(statement wording/numbering not yet verified against the source)*
+- **wses-volvulus-2023** — WSES consensus guidelines — sigmoid volvulus management (2023), Endoscopic decompression when no peritonitis/ischaemia; emergency surgery (Hartmann's) for gangrene, perforation or failed decompression; elective sigmoidectomy after decompression. Tian BWCA, Vigutto G, Tan E, et al. WSES consensus guidelines on sigmoid volvulus management. World J Emerg Surg. 2023;18:34. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Hirschsprung's disease; 5. Diverticulitis
+- differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
+- differential web.triageSurgical: (empty)
+- emergency level: priority (acuity=review, action=priority_24_48h, score=27)
+- alarms: Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2, cfs
+- score values: (none)
+- dx variant: lbo_volvulus (Bowel Obstruction)
+- note: PANE features applied: lif_pain, colicky_pain, nausea_vomiting, abdominal_distension, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from PANE top)
+- note: PlanTab protocol: bowel_obstruction (from ICD)
+- note: matchPathways: Bowel Obstruction (Small / Large) (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+#### `sigmoid-volvulus-gangrenous` — Gangrene and peritonitis, septic shock
+
+76-year-old man with recurrent sigmoid volvulus, now peritonism, T 38.6 °C, HR 124, BP 88/54, drowsy, lactate 5.2; CT: non-enhancing sigmoid wall, pneumatosis, free gas.
+
+Permutation of `sigmoid-volvulus-base`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | WSES consensus guidelines 2023; Surviving Sepsis Campaign 2021 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| alarm-shock | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-emergency-resection | managementInclude | critical | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-no-endoscopic-detorsion-with-gangrene | managementExclude | critical | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-icu | managementInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
+| variant-lbo-volvulus | dxVariant | quality | PASS | ASCRS clinical practice guidelines 2021 |  |
+
+Guidelines:
+
+- **ascrs-volvulus-2021** — ASCRS clinical practice guidelines — colonic volvulus and acute colonic pseudo-obstruction (2021), Sigmoid volvulus: endoscopic detorsion without peritonitis/ischaemia, then sigmoid colectomy during the same admission; emergency resection for gangrene/perforation; caecal volvulus: operative management, endoscopic reduction not recommended. Alavi K, Poylin V, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of colonic volvulus and acute colonic pseudo-obstruction. Dis Colon Rectum. 2021;64:1046–57. *(statement wording/numbering not yet verified against the source)*
+- **wses-volvulus-2023** — WSES consensus guidelines — sigmoid volvulus management (2023), Endoscopic decompression when no peritonitis/ischaemia; emergency surgery (Hartmann's) for gangrene, perforation or failed decompression; elective sigmoidectomy after decompression. Tian BWCA, Vigutto G, Tan E, et al. WSES consensus guidelines on sigmoid volvulus management. World J Emerg Surg. 2023;18:34. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021 (2021), Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Cholangitis; 3. Bowel Obstruction
+- differential web.symptomInference: 1. Sigmoid volvulus; 2. Sepsis / systemic infection; 3. Adhesive small bowel obstruction; 4. Large bowel obstruction; 5. Diverticulitis
+- differential web.passive: 1. Sepsis / systemic infection; 2. Sigmoid volvulus; 3. Adhesive small bowel obstruction; 4. Large bowel obstruction; 5. Typhoid fever
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=192)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Pneumoperitoneum on imaging [web.clinicalPrompts.safety]; Fever 38.6°C + HR 124 bpm + SBP 88 mmHg — septic shock [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 188 μmol/L — elevated [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, gcs, news2, cfs
+- score values: (none)
+- dx variant: lbo_volvulus (Bowel Obstruction)
+- note: PANE features applied: fever, abdominal_distension, rigors, absolute_constipation
+- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from ICD)
+- note: PlanTab protocol: bowel_obstruction (from ICD)
+- note: matchPathways: Bowel Obstruction (Small / Large) (17), Diverticular Disease / Diverticulitis (12), Acute Abdomen (7)
 
 </details>
 
@@ -6330,6 +8208,17 @@ Guidelines:
 | `achalasia-pseudoachalasia-elderly` | mnm-malignancy | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifi |
 | `achalasia-young` | dx-achalasia-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Hiatus Hernia [known gap: PANE top 3: cholecystitis, appendicitis, hiatus hernia — only weight_loss and regurgitation reach PANE (no dysphagia feature, see dysp |
 | `adrenal-suspected-phaeochromocytoma` | mnm-phaeochromocytoma | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and a |
+| `ami-embolic-af` | mnm-mesenteric-ischaemia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never  |
+| `ami-embolic-af` | alarm-mesenteric | web | critical | known gap | no alarm matched among 7 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: No prompt or triage rule for 'pain out of proportion', AF + abdominal pain, or mesenteric ischaemia.] |
+| `ami-embolic-af` | inv-cta | web | critical | known gap | no investigation matched among 36 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: K55.0 maps to the ischaemic colitis protocol: 'CT abdomen/pelvis with IV contrast' (portal venous), not CT angiography.] |
+| `ami-embolic-af` | mgmt-revascularisation | web | critical | known gap | no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Ischaemic colitis protocol has no revascularisation or vascular-surgery step. |
+| `ami-infarction-septic-shock` | mnm-mesenteric | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never appear in the PANE top 3 (inguinal/femoral hernia |
+| `ami-infarction-septic-shock` | mgmt-revascularisation | web | critical | known gap | no management item matched among 62 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No revascularisation step; only laparotomy/resection templates.] |
+| `ami-venous-thrombosis-ocp` | mnm-mesenteric | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction; also in web.symptomInference#4, web.passive#3 [known gap: Web: PANE has no mesenteric ischaemia / venous thrombosis disease node, so it can n |
+| `ami-venous-thrombosis-ocp` | level-at-least-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=20); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 20); the only reasons are 'Pregnancy mentioned' (from 'pregnancy test negative') and pain sc |
+| `ami-venous-thrombosis-ocp` | inv-thrombophilia | web | quality | known gap | no investigation matched among 34 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: No thrombophilia work-up.] |
+| `ami-venous-thrombosis-ocp` | mgmt-stop-cocp | web | quality | known gap | no management item matched among 38 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No prompt to stop the oestrogen-containing pill.] |
+| `ami-venous-thrombosis-ocp` | mgmt-no-laparotomy-without-peritonitis | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Web: 'no guarding or peritonism' triggers the peritonism prompt ('Emergency laparotomy consent')  |
 | `anal-cancer-red-flags` | mnm-anal-cancer | web | critical | known gap | not in top 3 of web.pane: 1. Haemorrhoids \| 2. Anal Fissure \| 3. Colorectal Cancer; also in web.symptomInference#2, web.passive#1 [known gap: Anal cancer is not a PANE disease (top 3: haemorrhoids, fissure, colorectal cancer); symptom inf |
 | `anal-cancer-red-flags` | inv-biopsy | web | critical | known gap | no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: No output asks for EUA/biopsy of the anal lesion: C21.0 has no protocol; the plan shown is the haemorrhoids protocol (PANE top) and colonoscopy + biopsy fr |
 | `anal-cancer-red-flags` | inv-hiv-test | web | quality | known gap | no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: No HIV test is suggested for anal cancer.] |
@@ -6350,9 +8239,24 @@ Guidelines:
 | `aortoenteric-fistula-herald-bleed` | mgmt-vascular-surgery | web | critical | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: No output mentions vascular surgery.] |
 | `appendicitis-adult-typical` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web CDS has no AIR rule (and no AIR calculator); Alvarado only.] |
 | `appendicitis-adult-typical` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo  |
+| `appendicitis-antibiotics-first-coda` | mnm-gynaecological | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Acute appendicitis (paediatric) \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Typhoid fever [known gap: Web: Symptom inference top 5: appendicitis ×2,  |
+| `appendicitis-antibiotics-first-coda` | mgmt-antibiotics-first-option | web | quality | known gap | no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendici |
+| `appendicitis-appendicolith` | mgmt-appendicolith-caution | web | quality | known gap | no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it |
+| `appendicitis-appendicolith` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo  |
 | `appendicitis-elderly-atypical` | mnm-mesenteric-ischaemia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Appendix Mass / Late Appendicitis; also in web.symptomInference#3, web.passive#4 [known gap: PANE top 3 (cholecystitis, appendicitis, appendix mass) omits it; s |
 | `appendicitis-elderly-atypical` | mnm-caecal-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Appendix Mass / Late Appendicitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagn |
 | `appendicitis-elderly-atypical` | mnm-diverticulitis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Appendix Mass / Late Appendicitis [known gap: Not in PANE top 3.] |
+| `appendicitis-generalised-peritonitis-sepsis` | variant-generalised-peritonitis | web | quality | known gap | detected appendicitis_uncomplicated in group Acute Appendicitis; expected appendicitis_generalised_peritonitis [known gap: Web: Same first-match problem: 'appendicitis' in the uncomplicated variant wins over 'generalised peritonitis'; the p |
+| `appendicitis-immunosuppressed-transplant` | flag-immunosuppression | web | quality | known gap | no red flag matched among 24 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Web: Tria |
+| `appendicitis-immunosuppressed-transplant` | mgmt-steroid-cover | web | quality | known gap | no management item matched among 59 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No peri-operative steroid-cover prompt for a patient on long-term prednisolon |
+| `appendicitis-paediatric-9y` | mnm-mesenteric-adenitis | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute appendicitis (paediatric) \| 2. Acute appendicitis \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Acute cholecystitis [known gap: Web: Symptom inference has a mesenteric a |
+| `appendicitis-paediatric-9y` | score-rec-pas | web | quality | known gap | pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old.] |
+| `appendicitis-paediatric-9y` | mgmt-no-unqualified-ct-child | web | quality | known gap | forbidden management item present in web.plan: "investigation: ct abdomen/pelvis with iv contrast (urgent)" (+2 more) [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads ' |
+| `appendicitis-paediatric-9y` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+7 more) [known gap: Web: Protocol steps, protocol medications and the appendicectomy  |
+| `appendicitis-paediatric-9y` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo  |
+| `appendicitis-perforated-abscess` | mgmt-percutaneous-drainage | web | quality | known gap | no management item matched among 58 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: PANE converges on 'Acute Appendicitis' (≥0.85), so PlanTab uses the appendici |
+| `appendicitis-perforated-abscess` | mgmt-interval-colon-evaluation | web | quality | known gap | no management item matched among 58 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Appendicitis protocol has no interval colonoscopy/CT; only the appendix_mass  |
+| `appendicitis-perforated-abscess` | variant-abscess | web | quality | known gap | detected appendicitis_uncomplicated in group Acute Appendicitis; expected appendicitis_abscess [known gap: Web: detectDxVariants: 'appendicitis_uncomplicated' is checked first and its keyword list contains the bare word 'appendicitis', so a |
 | `appendicitis-pregnant-t2` | mnm-obstetric-cause | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Appendix Mass / Late Appendicitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidat |
 | `appendicitis-pregnant-t2` | mnm-pyelonephritis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Appendix Mass / Late Appendicitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagn |
 | `appendicitis-pregnant-t2` | inv-mri-after-inconclusive-us | web | critical | known gap | no investigation matched among 42 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging of |
@@ -6360,6 +8264,12 @@ Guidelines:
 | `appendicitis-pregnant-t2` | mgmt-obstetric-involvement | web | quality | known gap | no management item matched among 55 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No obstetric review or fetal monitoring in the web plan or prompts.] |
 | `appendicitis-pregnant-t2` | mgmt-no-nsaid-after-20-weeks | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... convert to oral when tolerating po. • paracetamol 1g qds + ibuprofen 400mg tds (regular). • morphine 5mg prn if pain > 5/10. • regular diet as toler..." [known gap: Web appendic |
 | `appendicitis-pregnant-t2` | mgmt-no-bhcg-negative-assumption | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known ga |
+| `appendicitis-score-intermediate-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.] |
+| `appendicitis-score-intermediate-band` | score-rec-aas | web | quality | known gap | aas not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Neither platform implements the Adult Appendicitis Score.] |
+| `appendicitis-score-low-band` | mnm-gynaecological | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman wit |
+| `appendicitis-score-low-band` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≤ urgent [known gap: Web: adaptiveTriage returns emergency_now because the HPI negative 'No vaginal bleeding' matches the 'GI or other bleeding' red flag (no ne |
+| `appendicitis-score-low-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.] |
+| `appendicitis-score-low-band` | mgmt-no-appendicectomy-at-low-risk | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparoscopic appendicectomy - consent obtained, theatre booked." [known gap: Web: The appendicitis prompt fires on the substrings 'guarding'/'rebound' in 'No guarding, n |
 | `boerhaave-classic-mackler` | dx-perforation-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis. Subcutaneous emphysema, chest_pain_oesophageal and vomiting_effo |
 | `boerhaave-classic-mackler` | mgmt-antifungal | web | quality | known gap | no management item matched among 50 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: oesophageal_perforation protocol has no antifungal.] |
 | `boerhaave-presenting-as-chest-pain` | mnm-perforation | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis [known gap: PANE top 3: inguinal hernia, cholecystitis, pancreatitis; no oesophageal features reach PANE. Symptom inference ranks STEM |
@@ -6395,6 +8305,7 @@ Guidelines:
 | `breast-pain-cyclical-alone` | dx-benign-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE applied no feature (template "Other / general surgical"); priors gi |
 | `breast-pain-cyclical-alone` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "friend had breast cancer" matches the "Possible malignancy" red flag.] |
 | `breast-pain-cyclical-alone` | mgmt-reassurance | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: N64.4 (mastodynia) maps to no protocol; no mastalgia guidance.] |
+| `caecal-volvulus` | mgmt-resection | web | critical | known gap | no management item matched among 44 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowe |
 | `caustic-ingestion-alkali` | inv-airway-assessment | web | quality | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No caustic-ingestion protocol or prompt; nothing mentions airway assessment.] |
 | `caustic-ingestion-alkali` | mgmt-psychiatric-assessment | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Only the triage reason "Mental health crisis"; no plan line.] |
 | `caustic-ingestion-alkali` | mgmt-nil-by-mouth | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No plan output at all for T54.3.] |
@@ -6449,6 +8360,17 @@ Guidelines:
 | `crohns-ileocaecal-abscess` | mgmt-drainage | web | critical | known gap | no management item matched among 59 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The crohns_disease protocol says "Abscess or fistula — urgent imaging and interven |
 | `crohns-ileocaecal-abscess` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergenc |
 | `crohns-ileocaecal-abscess` | mgmt-no-steroids | web | critical | known gap | forbidden management item present in web.protocol.medications: "budesonide 9 mg po (oral) od (once daily) - ileal disease flare - less systemic side effec..." (+1 more) [known gap: The crohns_disease protocol medications (prednisolone, bude |
+| `diverticulitis-abscess-drainage` | mgmt-drainage-in-documented-plan | web | critical | known gap | no management item matched among 13 (web.plan) [known gap: Web: Assessment says 'modified Hinchey Ib'; the uncomplicated variant lists 'hinchey ib' (in the modified Hinchey scale Ib is a pericolic abscess) and is checked first, so the docum |
+| `diverticulitis-abscess-drainage` | variant-abscess | web | quality | known gap | detected diverticulitis_uncomplicated in group Diverticulitis; expected diverticulitis_abscess [known gap: Web: 'hinchey ib' is a keyword of diverticulitis_uncomplicated.] |
+| `diverticulitis-faecal-peritonitis-shock` | variant-peritonitis | web | quality | known gap | detected diverticulitis_abscess in group Diverticulitis; expected diverticulitis_peritonitis [known gap: Web: Substring 'hinchey i' ⊂ 'hinchey iv' selects diverticulitis_abscess.] |
+| `diverticulitis-immunosuppressed` | flag-immunosuppression | web | quality | known gap | no red flag matched among 21 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: Web: Triage counts 'Higher-risk comorbidity' but no red fl |
+| `diverticulitis-purulent-peritonitis` | dx-diverticulitis-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, appendiciti |
+| `diverticulitis-purulent-peritonitis` | mgmt-emergency-surgery-in-documented-plan | web | critical | known gap | no management item matched among 14 (web.plan) [known gap: Web: 'hinchey iii' contains the abscess keyword 'hinchey i', and the abscess variant is checked before the peritonitis variant, so the documented plan (immediate/conservative/follow |
+| `diverticulitis-purulent-peritonitis` | variant-peritonitis | web | quality | known gap | detected diverticulitis_abscess in group Diverticulitis; expected diverticulitis_peritonitis [known gap: Web: Substring 'hinchey i' ⊂ 'hinchey iii' selects diverticulitis_abscess.] |
+| `diverticulitis-uncomplicated-outpatient` | dx-diverticulitis-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis (0.13), inguinal/femoral hernia, appe |
+| `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | web | quality | known gap | no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5– |
+| `diverticulitis-uncomplicated-outpatient` | mgmt-no-routine-antibiotics | web | quality | known gap | forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+1 more) [known gap: Web: '[conservative] Uncomplicated: oral co-amoxiclav 625 mg TDS for 5–7 days' in t |
+| `diverticulitis-uncomplicated-outpatient` | variant-uncomplicated | web | quality | known gap | detected (none) in group Diverticulitis; expected diverticulitis_uncomplicated [known gap: Web: Keyword 'uncomplicated diverticulitis' is not a substring of 'Uncomplicated acute sigmoid diverticulitis'; no variant is selected.] |
 | `dyspepsia-young-no-alarm-test-and-treat` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=40); expected ≤ priority [known gap: Same-day call: adaptiveTriage reads CC+HPI free text without negation — "No family history of stomach cancer" gives "Possible malignancy"  |
 | `dyspepsia-young-no-alarm-test-and-treat` | inv-hpylori-non-invasive | web | quality | known gap | no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K30 (uninvestigated/functional dyspepsia); the GORD management panel (PANE top) lists H. pylori only as a routine investigation, which is n |
 | `dysphagia-progressive-over55` | dx-oesophageal-cancer-top3 | web | critical | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Hiatus Hernia; also in web.symptomInference#1, web.passive#2 [known gap: PANE top 3: GORD, inguinal hernia, hiatus hernia. PANE never gets dysphag |
@@ -6543,6 +8465,10 @@ Guidelines:
 | `ischaemic-colitis-left` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergenc |
 | `ischaemic-colitis-right-af-ami` | mnm-ami | web | critical | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#2 [known gap: Acute mesenteric ischaemia is not a PANE disease (top 3: appendicitis, hern |
 | `ischaemic-colitis-right-af-ami` | inv-cta | web | critical | known gap | no investigation matched among 41 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: K55.0 maps to the ischaemic_colitis protocol, whose imaging is "CT abdomen/pelvis with IV contrast"; nothing asks for CT angiograp |
+| `lbo-cancer-impending-caecal-perforation` | mgmt-no-stent-with-impending-perforation | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic  |
+| `lbo-cancer-impending-caecal-perforation` | variant-lbo-malignant | web | quality | known gap | detected sbo_strangulation in group Bowel Obstruction; expected lbo_malignant [known gap: Web: The word 'closed-loop' selects sbo_strangulation (a small-bowel variant) before lbo_malignant.] |
+| `lbo-right-colon-cancer` | mgmt-right-hemicolectomy | web | quality | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Plan offers the left-sided LBO options only (SEMS, Hartmann's, colostomy); no right colectomy with prim |
+| `lbo-right-colon-cancer` | mgmt-no-left-sided-plan-for-right-lesion | web | quality | known gap | forbidden management item present in web.plan: "options: (1) sems bridge to elective resection, (2) emergency hartmann's, (3) defunctioning colostomy." (+3 more) [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann' |
 | `lgib-angiodysplasia-aspirin` | mnm-angiodysplasia | web | quality | known gap | not in top 3 of web.pane: 1. Haemorrhoids \| 2. Acute Cholecystitis \| 3. Colorectal Cancer [known gap: Angiodysplasia is not a PANE disease; only the iOS ClinicalPathwayEngine GI-haemorrhage list names it.] |
 | `lgib-angiodysplasia-aspirin` | inv-iron-studies | web | quality | known gap | no investigation matched among 30 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No output requests ferritin/iron studies for IDA with bleeding (the plan is the ischaemic-colitis protocol).] |
 | `lgib-angiodysplasia-aspirin` | mgmt-iron | web | quality | known gap | no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No iron replacement anywhere in the plan (no IDA rule reads Hb/MCV/ferritin).] |
@@ -6570,6 +8496,32 @@ Guidelines:
 | `mi-presenting-as-epigastric-pain` | alarm-cardiac | web | critical | known gap | no alarm matched among 3 (web.clinicalPrompts.safety) [known gap: Safety prompts fired are "Appendicitis — emergency surgical indication" (from "Acute abdominal pain" CC) and "Acute abdominal presentation"; nothing cardiac.] |
 | `mi-presenting-as-epigastric-pain` | inv-ecg | web | critical | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No ECG in any output.] |
 | `mi-presenting-as-epigastric-pain` | inv-troponin | web | critical | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No troponin in any output.] |
+| `mimic-aaa-symptomatic-renal-colic-label` | mnm-aaa | web | critical | known gap | not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: renal colic, inguinal/femoral hernia, cholecystiti |
+| `mimic-aaa-symptomatic-renal-colic-label` | inv-cta | web | critical | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: ICD I71.4 has no protocol (only 'I71.9' is mapped), so no CT angiography is suggested.] |
+| `mimic-aaa-symptomatic-renal-colic-label` | mgmt-vascular-referral | web | critical | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No vascular referral: no protocol for I71.4.] |
+| `mimic-dka-abdominal-pain` | mnm-dka | web | critical | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Peptic Ulcer Disease \| 3. Acute Pancreatitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE has no DKA disease node, so it can never appear in the PANE top 3 (appe |
+| `mimic-dka-abdominal-pain` | mgmt-potassium | web | quality | known gap | no management item matched among 32 (web.clinicalPrompts) [known gap: Web: The hyperglycaemia prompt mentions monitoring K+ only as part of the insulin line; no potassium replacement plan.] |
+| `mimic-dka-abdominal-pain` | mgmt-no-laparotomy-for-dka-pain | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Web: 'no rigidity, no rebound' triggers the peritonism prompt ('Emergency laparotomy consent — so |
+| `mimic-ectopic-pregnancy` | dx-ectopic-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Choledocholithiasis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis. The template's |
+| `mimic-ectopic-pregnancy` | mgmt-no-assumed-negative-hcg | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known ga |
+| `mimic-ectopic-ruptured-shock` | dx-ectopic-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Choledocholithiasis; also in web.symptomInference#2 [known gap: Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis despite a positive pregnancy t |
+| `mimic-ectopic-ruptured-shock` | mgmt-no-medical-management-when-ruptured | web | critical | known gap | forbidden management item present in web.plan: "investigation: renal function, lfts (methotrexate suitability) (urgent)" (+1 more) [known gap: Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability test |
+| `mimic-inferior-mi-ecg-confirmed` | mnm-acs | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: Web: PANE has no cardiac (ACS/MI) disease node, so it can never appear in the PANE top 3 (cholecystitis, peptic ulcer,  |
+| `mimic-inferior-mi-ecg-confirmed` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=30); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 30); the resulted ECG (ST elevation) and troponin 412 are not triage inputs, and HR 48/SBP 92 |
+| `mimic-inferior-mi-ecg-confirmed` | alarm-stemi | web | critical | known gap | no alarm matched among 4 (web.clinicalPrompts.safety) [known gap: Web: No prompt reads ECG results or troponin; the only safety prompt is bradycardia.] |
+| `mimic-inferior-mi-ecg-confirmed` | mgmt-reperfusion | web | critical | known gap | no management item matched among 16 (web.clinicalPrompts) [known gap: Web: No reperfusion/PCI action; ICD I21.19 has no protocol.] |
+| `mimic-inferior-mi` | mnm-acs | web | critical | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Acute Cholecystitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE has no cardiac (ACS/MI) disease node, so it can never appear in the PANE top 3 (GORD, cholecystitis, peptic u |
+| `mimic-inferior-mi` | mnm-acs-symptom-engine | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute alcoholic pancreatitis \| 2. Gallstone pancreatitis \| 3. Perforated peptic ulcer \| 4. Acute gastroenteritis \| 5. Gastric carcinoma [known gap: Web: Symptom inference top 5 has no ACS/STEMI ( |
+| `mimic-inferior-mi` | inv-ecg | web | critical | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No ECG suggested; the bradycardia prompt needs HR <50 (HR 52 here).] |
+| `mimic-inferior-mi` | inv-troponin | web | critical | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No troponin suggested.] |
+| `mimic-inferior-mi` | mgmt-cardiology-or-ems | web | quality | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: Web: No cardiology/PCI/emergency-services action.] |
+| `mimic-ruptured-aaa` | dx-aaa-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Renal Colic / Urolithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: inguinal/femoral hernia, renal colic, cholecystiti |
+| `mimic-ruptured-aaa` | alarm-aaa | web | critical | known gap | no alarm matched among 8 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Alarms are 'Hypotension', 'Tachycardia' and the generic 'SBP 84 → Shock Protocol'; none names the aneurysm.] |
+| `mimic-ruptured-aaa` | mgmt-vascular-repair | web | critical | known gap | no management item matched among 22 (web.clinicalPrompts) [known gap: Web: No protocol reaches the plan: ICD I71.3 does not start with the aortic protocol's only prefix 'I71.9', and PANE does not select aortic_aneurysm. Only prompts remain  |
+| `mimic-ruptured-aaa` | mgmt-permissive-hypotension | web | quality | known gap | no management item matched among 22 (web.clinicalPrompts) [known gap: Web: No permissive hypotension (the aortic protocol has it, but is not reached).] |
+| `mimic-ruptured-aaa` | mgmt-no-large-fluid-bolus | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." [known gap: Web: Shock prompt: 'Hartmann's 1L bolus — reassess BP and HR at 15 min' for a ruptured |
+| `mimic-testicular-torsion` | dx-torsion-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: appendicitis, inguinal/femoral hernia, cholecystitis; the  |
+| `mimic-testicular-torsion` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: Clinic |
 | `nsaid-associated-gastric-ulcer` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=52); expected ≤ priority [known gap: Emergency now (score 52): adaptiveTriage reads CC+HPI free text without negation — "No bleeding" matches the "GI or other bleeding" urgen |
 | `nsaid-associated-gastric-ulcer` | mgmt-ppi-8-weeks | web | quality | known gap | no management item matched among 42 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: peptic_ulcer protocol gives omeprazole 20 mg OD "4–8 weeks" in medications (matche |
 | `parathyroid-hypercalcaemic-crisis` | mnm-hypercalcaemia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#3 [known gap: PANE applied no feature ("Nausea / vomiting" template, SOCRATES empty);  |
@@ -6586,9 +8538,37 @@ Guidelines:
 | `pharyngeal-pouch-elderly` | mgmt-pouch-treatment-options | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: No protocol for K22.5.] |
 | `pilonidal-abscess-acute` | dx-pilonidal-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Skin Abscess / Furuncle \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#3 [known gap: PANE ranks skin abscess, hernia and appendicitis: the "Posterior midlin |
 | `pilonidal-abscess-acute` | level-soon | web | quality | known gap | web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ priority [known gap: Web adaptiveTriage has no pilonidal/perianal abscess rule: the level depends on the pain score and incidental words (the base abscess rea |
+| `ppu-elderly-steroids-masked` | alarm-sepsis | web | critical | known gap | no alarm matched among 11 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Sepsis prompts need temperature ≥38 °C with HR >100 (or SBP <90 for the shock prompt); an afebrile patient with qSOFA 3, |
+| `ppu-elderly-steroids-masked` | flag-steroids-masking | web | quality | known gap | no red flag matched among 33 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: Web: No fl |
+| `ppu-elderly-steroids-masked` | mgmt-steroid-cover | web | quality | known gap | no management item matched among 70 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No steroid-cover prompt.] |
+| `ppu-perforated-peptic-ulcer` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal |
+| `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform.] |
+| `ppu-perforated-peptic-ulcer` | inv-no-urgent-ogd-in-perforation | web | quality | known gap | forbidden investigation present in web.plan.investigations: "upper gi endoscopy (ogd)" [known gap: Web: K27.5 maps to the peptic_ulcer protocol and its 'Upper GI endoscopy (OGD) (urgent)' investigation is shown for a free perforation; ICD K |
+| `ppu-septic-shock-delayed` | dx-perforation-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Pancreatitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alco |
 | `rectal-bleeding-young-haemorrhoidal` | level-routine-or-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=115); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → em |
 | `rectal-bleeding-young-haemorrhoidal` | mgmt-no-resuscitation | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
 | `rectal-prolapse-incarcerated` | dx-prolapse-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Haemorrhoids \| 2. Anal Fissure \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4, web.triageSurgical#1 [known gap: PANE ranks haemorrhoids/fissure: the "rectal prolapse" chip is not a PAN |
+| `sbo-adhesive-base` | no-false-peritonism-alarm | web | quality | known gap | forbidden alarm present in web.clinicalPrompts.safety: "generalised peritonism (guarding / rigidity) - peritonism → perforated viscus / peritonitis" [known gap: Web: computeClinicalPrompts fires 'Generalised peritonism → Perforated viscus'  |
+| `sbo-adhesive-base` | mgmt-potassium | web | quality | known gap | no management item matched among 58 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.3: getProtocolByIcd('K56.50') returns the generic bowel_obstructio |
+| `sbo-adhesive-base` | mgmt-no-unrelated-operative-template | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." (+1 more) [known gap: Web: Negated exam text ('No guarding, no rebound, no peritonism') triggers both the per |
+| `sbo-gastrografin-failed` | mgmt-surgery-in-documented-plan | web | quality | known gap | no management item matched among 14 (web.plan) [known gap: Web: sbo_adhesional variant (no 'surgical' phase) is selected; the failed contrast challenge is not a variant trigger, so the documented plan stays conservative.] |
+| `sbo-gastrografin-failed` | mgmt-no-repeat-contrast-challenge | web | quality | known gap | forbidden management item present in web.plan: "...ve] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h." [known gap: Web: Plan text still contains 'water-soluble contrast study at 24 h' after a f |
+| `sbo-gastrografin-failed` | mgmt-no-appendicectomy-template | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web: 'no guarding or rebound' in the exam triggers the ap |
+| `sbo-malignant-carcinomatosis` | mgmt-palliative-mdt | web | quality | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel- |
+| `sbo-malignant-carcinomatosis` | mgmt-medical-mbo | web | quality | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option.] |
+| `sbo-malignant-carcinomatosis` | mgmt-no-routine-laparotomy | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency laparotomy consent - source control; icu post-operatively." [known gap: Web: 'no peritonism' in the exam triggers the peritonism prompt: 'Emergency laparotomy consent —  |
+| `sbo-strangulated-femoral-hernia` | dx-hernia-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Post-operative Ileus; also in web.triageSurgical#1 [known gap: Web: PANE top 3: bowel obstruction, adhesive SBO, post-operative ileus. The SOCRAT |
+| `sbo-strangulation` | mgmt-emergency-surgery-in-documented-plan | web | critical | known gap | no management item matched among 14 (web.plan) [known gap: Web: detectDxVariants picks 'sbo_adhesional' (keyword 'small bowel obstruction' is checked before 'strangulation'), whose allowed phases exclude 'surgical'; the documented plan has  |
+| `sbo-strangulation` | mgmt-no-nom-trial-with-strangulation | web | critical | known gap | forbidden management item present in web.plan: "small bowel obstruction - non-operative trial (drip and suck)" (+1 more) [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin |
+| `sbo-strangulation` | variant-sbo-strangulation | web | quality | known gap | detected sbo_adhesional in group Bowel Obstruction; expected sbo_strangulation [known gap: Web: First-match order: sbo_adhesional ('small bowel obstruction', 'adhesion') is tested before sbo_strangulation.] |
+| `sbo-virgin-abdomen` | mnm-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Acute Cholecystitis \| 3. Acute Appendicitis [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neopl |
+| `sbo-virgin-abdomen` | mnm-hernia | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Acute Cholecystitis \| 3. Acute Appendicitis [known gap: Web: PANE top 3 has no hernia (no groin feature because no lump was found).] |
+| `sbo-virgin-abdomen` | mgmt-no-adhesion-label-in-plan | web | quality | known gap | forbidden management item present in web.plan: "[conservative] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h..." [known gap: Web: Variant 'sbo_adhesional' is chosen from the words 'small bowel  |
+| `sigmoid-volvulus-base` | mnm-volvulus | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#2, web.passive#3 [known gap: Web: PANE has no volvulus disease node, so it can never appe |
+| `sigmoid-volvulus-base` | level-at-least-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=27); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 27: age ≥70, vomiting). 'Massive distension' and 'no flatus or stool' are not red-flag phras |
+| `sigmoid-volvulus-base` | mgmt-endoscopic-decompression | web | critical | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a headi |
+| `sigmoid-volvulus-base` | mgmt-same-admission-resection | web | quality | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No sigmoid colectomy after decompression.] |
+| `sigmoid-volvulus-base` | mgmt-potassium | web | quality | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.2.] |
 | `thyroid-bethesda-1-nondiagnostic` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
 | `thyroid-bethesda-1-nondiagnostic` | mgmt-repeat-fna | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No output proposes a repeat FNA; E04.1 has no protocol.] |
 | `thyroid-bethesda-1-nondiagnostic` | mgmt-no-thyroidectomy-plan | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" f |
