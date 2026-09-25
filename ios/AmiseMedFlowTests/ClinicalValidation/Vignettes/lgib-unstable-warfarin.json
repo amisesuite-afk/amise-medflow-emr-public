@@ -226,11 +226,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No CT angiography output (see lgib-unstable-cta-first). The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the \"Upper GI Bleed\" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan."
+          ]
         }
       ]
     },

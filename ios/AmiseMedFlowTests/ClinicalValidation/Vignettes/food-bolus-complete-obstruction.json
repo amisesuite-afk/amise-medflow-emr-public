@@ -131,11 +131,6 @@
           "esge-fb-2016"
         ],
         "note": "Cannot handle saliva: aspiration risk; the app's own APCQ grades \"cannot swallow saliva\" as emergency.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Same-day call (urgent), not emergency: triage has no rule for \"cannot swallow saliva\"/drooling (APCQ grades saliva-only dysphagia as emergency, adaptiveTriage does not).",
-        "proposedFix": "rules.ts RED_FLAGS: add /(can.?t|unable to|cannot) swallow (saliva|spit|anything)|drooling|food (stuck|bolus)/ → urgent (emergency_now).",
         "unverified": [
           "ios"
         ]
@@ -153,10 +148,6 @@
           "guidelineRefs": [
             "esge-fb-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No red flag names the complete obstruction; only \"Dysphagia — red flag symptom\".",
           "unverified": [
             "ios"
           ]
@@ -197,11 +188,6 @@
           "guidelineRefs": [
             "esge-fb-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol for T18.1 (food bolus); the matchPathways registry has a \"Foreign Body Ingestion / Food Bolus\" pathway but it is not surfaced in management.",
-          "proposedFix": "Add a food-bolus protocol (ESGE 2016: emergent OGD ≤6 h if complete obstruction; push/retrieve; biopsies; no barium).",
           "unverified": [
             "ios"
           ]

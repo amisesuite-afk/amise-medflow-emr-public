@@ -207,11 +207,6 @@
           "acog-pb222-2020"
         ],
         "atLeast": "urgent",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web triage: priority_24_48h (score 20). There is no BP vital red flag (162/106 raises nothing), 'headache'/'blurred vision' are not red-flag terms, and postpartum status is not an input.",
-        "proposedFix": "Add BP ≥ 160/110 (and ≥ 140/90 with headache/visual symptoms in pregnancy or ≤ 6 weeks postpartum) as an urgent red flag.",
         "unverified": [
           "ios"
         ]
@@ -232,11 +227,6 @@
             "amlodipine",
             "antihypertensive"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No antihypertensive: SBP 162 is below the 180 prompt threshold.",
-          "proposedFix": "Pre-eclampsia rule.",
           "unverified": [
             "ios"
           ]
@@ -254,11 +244,6 @@
             "maternity",
             "o&g"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No obstetric output: O14.15 maps to no protocol, so the Assessment panel and Plan are empty; the only prompts are the pregnancy test, acute-abdomen bloods and cervical screening.",
-          "proposedFix": "Pre-eclampsia rule.",
           "unverified": [
             "ios"
           ]
@@ -273,11 +258,6 @@
           "match": [
             "magnesium"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No magnesium sulfate.",
-          "proposedFix": "Pre-eclampsia rule.",
           "unverified": [
             "ios"
           ]

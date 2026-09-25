@@ -193,14 +193,9 @@
             "nice-ng240",
             "uk-meningitis-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Only the sepsis (fever + tachycardia) and leucocytosis prompts fire.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         }
       ]
     },
@@ -232,14 +227,9 @@
             "nice-ng240",
             "uk-meningitis-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Pip-tazo from the sepsis prompt; no ceftriaxone.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         },
         {
           "id": "mgmt-listeria-amoxicillin",
@@ -252,14 +242,9 @@
             "uk-meningitis-2016"
           ],
           "note": "Age >60 and immunosuppression: add amoxicillin for Listeria.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No amoxicillin (Listeria) for age 71 on methotrexate and prednisolone.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         },
         {
           "id": "mgmt-steroid-cover",
@@ -274,14 +259,9 @@
           "guidelineRefs": [
             "sfe-steroid-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Prednisolone dependence not recognised.",
-          "proposedFix": "Steroid-dependence rule, as in the urosepsis vignette."
+          ]
         }
       ]
     }

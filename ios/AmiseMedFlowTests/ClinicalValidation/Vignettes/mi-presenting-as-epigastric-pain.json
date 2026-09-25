@@ -209,11 +209,6 @@
           "esc-acs-2023"
         ],
         "note": "Suspected ACS in an outpatient setting: emergency services/ED.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Same-day call only (score 33): CHEST_PAIN_TERMS and the cardiac red flag need the words \"chest pain/crushing/left arm/jaw\"; epigastric pain with sweating in a diabetic scores age and comorbidity only.",
-        "proposedFix": "rules.ts: add an atypical-ACS rule (epigastric pain/indigestion + sweating/diaphoresis, or + diabetes/age ≥50) → urgent with \"ECG now\".",
         "unverified": [
           "ios"
         ]
@@ -232,11 +227,6 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Safety prompts fired are \"Appendicitis — emergency surgical indication\" (from \"Acute abdominal pain\" CC) and \"Acute abdominal presentation\"; nothing cardiac.",
-          "proposedFix": "As level-emergency.",
           "unverified": [
             "ios"
           ]
@@ -257,11 +247,6 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No ECG in any output.",
-          "proposedFix": "As level-emergency; chest-pain/ACS prompt with ECG + troponin.",
           "unverified": [
             "ios"
           ]
@@ -275,11 +260,6 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No troponin in any output.",
-          "proposedFix": "As inv-ecg.",
           "unverified": [
             "ios"
           ]

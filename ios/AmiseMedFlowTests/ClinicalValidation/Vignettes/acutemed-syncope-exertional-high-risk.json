@@ -182,12 +182,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 18 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts).",
-          "proposedFix": "Add an ESC 2018 syncope risk rule: syncope during exertion or supine, without prodrome, with chest pain/breathlessness, structural heart disease, HR <40 or SBP <90 -> urgent/emergency with ECG and echo; typical reflex prodrome with none of these -> routine."
+          ]
         },
         {
           "id": "inv-echo",

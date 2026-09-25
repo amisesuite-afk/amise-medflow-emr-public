@@ -337,14 +337,9 @@
             "asge-2012-pregnancy",
             "acog-co775-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No obstetric review or fetal monitoring.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace \"β-HCG confirmed negative\" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT."
+          ]
         }
       ],
       "mustExclude": [
@@ -367,14 +362,9 @@
           "guidelineRefs": [
             "fda-2020-nsaid"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Operative-plan post-op orders (lap chole and appendicectomy templates) include ibuprofen at 26 weeks.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace \"β-HCG confirmed negative\" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT."
+          ]
         },
         {
           "id": "mgmt-no-bhcg-negative-assumption",

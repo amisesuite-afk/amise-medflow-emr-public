@@ -326,14 +326,9 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "'guarding' in the exam triggers the full laparoscopic appendicectomy operative plan for an anastomotic leak after anterior resection.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
+          ]
         }
       ]
     },

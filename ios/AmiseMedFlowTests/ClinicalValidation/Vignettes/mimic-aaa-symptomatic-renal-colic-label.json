@@ -246,14 +246,9 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: ICD I71.4 has no protocol (only 'I71.9' is mapped), so no CT angiography is suggested.",
-          "proposedFix": "Same ICD prefix fix (I71)."
+          ]
         }
       ]
     },

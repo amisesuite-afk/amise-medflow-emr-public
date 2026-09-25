@@ -255,12 +255,7 @@
           "note": "Controlled oxygen, target SpO2 88-92%, in hypercapnic COPD.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
-          "proposedFix": "clinical-inference.ts hypoxia prompt: when COPD / hypercapnic risk is recorded, the plan action should read \"controlled oxygen via Venturi, target SpO2 88-92%, ABG\" instead of \"Hudson mask 5-10 L/min, titrate to SpO2 >=94%\" (BTS 2017, GOLD 2025)."
+          ]
         },
         {
           "id": "mgmt-niv",
@@ -346,12 +341,7 @@
           "note": "High-flow oxygen / a >=94% target in hypercapnic COPD worsens CO2 retention.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"• supplemental o₂: hudson mask 5-10l/min, titrate to spo₂ ≥ 94%.\".",
-          "proposedFix": "clinical-inference.ts hypoxia prompt: when COPD / hypercapnic risk is recorded, the plan action should read \"controlled oxygen via Venturi, target SpO2 88-92%, ABG\" instead of \"Hudson mask 5-10 L/min, titrate to SpO2 >=94%\" (BTS 2017, GOLD 2025)."
+          ]
         }
       ]
     }

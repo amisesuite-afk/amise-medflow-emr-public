@@ -365,13 +365,9 @@
           "guidelineRefs": [
             "ada-hhc-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: The hyperglycaemia prompt mentions monitoring K+ only as part of the insulin line; no potassium replacement plan."
+          ]
         }
       ],
       "mustExclude": [

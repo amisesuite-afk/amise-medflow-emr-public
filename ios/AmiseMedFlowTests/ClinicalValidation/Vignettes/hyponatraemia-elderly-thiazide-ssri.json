@@ -237,14 +237,9 @@
           "guidelineRefs": [
             "eur-hypona-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Only \"Review medications for SIADH causes: diuretics, SSRIs, carbamazepine\" — the thiazide is framed as an SIADH cause and never stopped.",
-          "proposedFix": "When a thiazide is on the medication list and Na <130, add \"stop the thiazide\"."
+          ]
         },
         {
           "id": "mgmt-stop-ssri",

@@ -172,12 +172,7 @@
           "note": "Total thyroidectomy is not a standard first operation for an indeterminate unilateral nodule.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "computeClinicalPrompts \"thyroidectomy_pathway\" fires on any radiology result containing \"bethesda\" (any category) and attaches the TOTAL THYROIDECTOMY operative plan.",
-          "proposedFix": "Parse the Bethesda category and branch: I repeat FNA; II surveillance; III–IV repeat FNA / molecular / diagnostic lobectomy; V–VI surgery by risk (total thyroidectomy for cN1, >4 cm, ETE)."
+          ]
         }
       ]
     },

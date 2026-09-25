@@ -182,9 +182,7 @@
           "mode": "calculator",
           "equals": 2,
           "guidelineRefs": ["tg18-dx-cholangitis"],
-          "note": "Two Grade II criteria (WBC >12 ×10⁹/L; temperature ≥39 °C), no organ dysfunction = Grade II. A calculator that omits the WBC criterion under-grades to Grade I and delays drainage.",
-          "knownGap": ["web"],
-          "knownGapNote": "Web clinical-scores.ts (ClinicalScoresPanel) omits the WBC criterion from the Grade II count and returns Grade I; clinical-scales.ts is correct here."
+          "note": "Two Grade II criteria (WBC >12 ×10⁹/L; temperature ≥39 °C), no organ dysfunction = Grade II. A calculator that omits the WBC criterion under-grades to Grade I and delays drainage."
         },
         {
           "id": "score-tg18-autofill",

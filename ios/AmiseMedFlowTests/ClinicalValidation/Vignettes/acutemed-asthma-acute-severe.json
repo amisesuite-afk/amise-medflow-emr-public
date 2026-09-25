@@ -202,12 +202,7 @@
           "note": "High-dose inhaled beta2 agonist is first-line.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 5 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — arrhythmia, right heart strain pattern (PE). | • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. | • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min. | • Confirm cervical smear date — document last result..",
-          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+          ]
         },
         {
           "id": "mgmt-steroid",
@@ -224,12 +219,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 5 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — arrhythmia, right heart strain pattern (PE). | • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. | • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min. | • Confirm cervical smear date — document last result..",
-          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+          ]
         },
         {
           "id": "mgmt-ipratropium",
@@ -263,12 +253,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 5 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — arrhythmia, right heart strain pattern (PE). | • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. | • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min. | • Confirm cervical smear date — document last result..",
-          "proposedFix": "Asthma protocol with oxygen to SpO2 94-98%; the hypoxia prompt fires only below 94%."
+          ]
         }
       ]
     }

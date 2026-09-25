@@ -260,7 +260,6 @@
           "wses-ppu-2020"
         ],
         "knownGap": [
-          "web",
           "ios"
         ],
         "knownGapNote": "Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal|belly|stomach)? pain' because of the word 'upper'; HR 112 is below the >120 vital flag; rigidity/free air are not read by triage. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe upper abdominal pain' gives 'routine'.",

@@ -177,14 +177,9 @@
           "guidelineRefs": [
             "woodcock-steroids-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Long-term prednisolone is visible only as the generic triage reason 'Higher-risk comorbidity present'; no adrenal-insufficiency flag.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a steroid prompt: prednisolone ≥5 mg (or equivalent) for >4 weeks → adrenal suppression flag + peri-operative hydrocortisone plan (Woodcock 2020)."
+          ]
         }
       ]
     },
@@ -205,14 +200,9 @@
             "woodcock-steroids-2020"
           ],
           "note": "Prednisolone ≥5 mg for >4 weeks: hydrocortisone at induction and continued cover until eating and drinking (adrenal crisis risk).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No hydrocortisone / steroid-cover line in any output; clinical-inference.ts has no glucocorticoid rule (hasMed never checks prednisolone/hydrocortisone/dexamethasone).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See flag-steroid-adrenal. Do not state doses without the surgeon's template."
+          ]
         }
       ],
       "mustExclude": [

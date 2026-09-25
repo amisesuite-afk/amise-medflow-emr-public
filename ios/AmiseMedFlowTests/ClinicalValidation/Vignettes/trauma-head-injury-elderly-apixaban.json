@@ -240,14 +240,9 @@
             "atls-10-head"
           ],
           "note": "Reversal ready if CT shows haemorrhage.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The TBI protocol has no anticoagulant-reversal step (DOAC reversal/PCC) and the anticoagulation prompt gives elective bridging advice instead.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add \"anticoagulated: urgent CT; reversal agent ready (andexanet/PCC for factor Xa inhibitors, idarucizumab for dabigatran, PCC + vitamin K for warfarin)\" to the TBI protocol."
+          ]
         }
       ],
       "mustExclude": [

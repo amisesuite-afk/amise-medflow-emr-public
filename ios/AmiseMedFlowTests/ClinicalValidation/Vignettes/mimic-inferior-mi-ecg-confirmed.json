@@ -216,7 +216,6 @@
           "esc-acs-2023"
         ],
         "knownGap": [
-          "web",
           "ios"
         ],
         "knownGapNote": "Web: adaptiveTriage: 'same_day_call' (score 30); the resulted ECG (ST elevation) and troponin 412 are not triage inputs, and HR 48/SBP 92 are inside the vital thresholds. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Upper abdominal discomfort and nausea' gives 'routine'.",
@@ -236,14 +235,9 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No prompt reads ECG results or troponin; the only safety prompt is bradycardia.",
-          "proposedFix": "Same: an ECG/troponin rule in computeClinicalPrompts."
+          ]
         }
       ]
     },
@@ -263,14 +257,9 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No reperfusion/PCI action; ICD I21.19 has no protocol.",
-          "proposedFix": "Add an I21 protocol (primary PCI, antiplatelets, cardiology) for the plan tab."
+          ]
         }
       ],
       "mustExclude": [

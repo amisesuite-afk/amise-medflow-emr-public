@@ -320,14 +320,9 @@
             "wses-ami-2022"
           ],
           "note": "Revascularisation of the SMA before or with resection improves survival.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No revascularisation step; only laparotomy/resection templates.",
-          "proposedFix": "As above: AMI protocol with revascularisation before/with resection."
+          ]
         },
         {
           "id": "mgmt-heparin",

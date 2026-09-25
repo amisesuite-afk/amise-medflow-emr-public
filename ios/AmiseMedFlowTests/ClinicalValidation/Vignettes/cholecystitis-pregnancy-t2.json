@@ -354,14 +354,9 @@
             "sages-2017",
             "acog-co775-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No obstetric review or fetal monitoring in any web output.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace \"β-HCG confirmed negative\" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT."
+          ]
         },
         {
           "id": "mgmt-antibiotics",
@@ -409,14 +404,9 @@
             "fda-2020-nsaid"
           ],
           "note": "NSAIDs should be avoided from 20 weeks’ gestation.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Lap chole operative-plan post-op orders: \"Ibuprofen 400mg TDS (if eGFR normal)\" at 22 weeks.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace \"β-HCG confirmed negative\" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT."
+          ]
         },
         {
           "id": "mgmt-no-teratogenic-antibiotic",

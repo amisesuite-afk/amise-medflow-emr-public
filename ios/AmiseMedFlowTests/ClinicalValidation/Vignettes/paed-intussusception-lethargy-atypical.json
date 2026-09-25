@@ -213,11 +213,6 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' (shock protocol) and 'IV fluid challenge 500ml' for an 8 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 84 is labelled 'shock').",
-          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
           "unverified": [
             "ios"
           ]

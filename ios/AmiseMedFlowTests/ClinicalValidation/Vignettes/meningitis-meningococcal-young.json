@@ -203,14 +203,9 @@
           "guidelineRefs": [
             "nice-ng240"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Emergency level is reached (tachycardia, fever), but the only safety prompts are the acute-abdomen panel, pre-op bloods, leucocytosis and a \"Sepsis criteria\" bundle — no meningitis or non-blanching-rash alarm.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         },
         {
           "id": "alarm-sepsis",
@@ -256,14 +251,9 @@
           "guidelineRefs": [
             "nice-ng240"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: The sepsis prompt gives \"IV Piperacillin-tazobactam 4.5g TDS\", which does not treat meningitis (poor CSF penetration); no ceftriaxone.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         },
         {
           "id": "mgmt-dexamethasone",

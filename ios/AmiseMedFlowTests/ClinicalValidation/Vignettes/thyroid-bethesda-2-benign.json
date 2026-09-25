@@ -178,12 +178,7 @@
           "note": "A total thyroidectomy plan for benign cytology without compression is over-treatment that exposes the patient to permanent hypoparathyroidism and nerve injury.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "computeClinicalPrompts \"thyroidectomy_pathway\" fires on any radiology result containing \"bethesda\" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here for benign cytology (rationale text: \"Bethesda class III–VI or clinical thyroid malignancy\").",
-          "proposedFix": "Parse the Bethesda category and branch: I repeat FNA; II surveillance; III–IV repeat FNA / molecular / diagnostic lobectomy; V–VI surgery by risk (total thyroidectomy for cN1, >4 cm, ETE)."
+          ]
         }
       ]
     },

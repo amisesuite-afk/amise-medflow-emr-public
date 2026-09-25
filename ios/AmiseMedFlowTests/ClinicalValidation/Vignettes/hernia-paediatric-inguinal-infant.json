@@ -144,12 +144,7 @@
         "atMost": "urgent",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage emergency_now: computeVitalRedFlags uses adult thresholds — HR 140 and RR 36 (normal at 4 months) are flagged Tachycardia/Tachypnoea (urgent).",
-        "proposedFix": "Use age-banded paediatric vital-sign ranges (e.g. APLS / PEWS) in computeVitalRedFlags."
+        ]
       }
     },
     "management": {
@@ -167,11 +162,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output mentions herniotomy or paediatric surgical referral."
+          ]
         }
       ],
       "mustExclude": [

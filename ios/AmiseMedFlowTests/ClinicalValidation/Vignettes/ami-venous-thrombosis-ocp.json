@@ -237,7 +237,6 @@
           "esvs-2017"
         ],
         "knownGap": [
-          "web",
           "ios"
         ],
         "knownGapNote": "Web: adaptiveTriage: 'priority_24_48h' (score 20); the only reasons are 'Pregnancy mentioned' (from 'pregnancy test negative') and pain score. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain for five days' gives 'routine'.",

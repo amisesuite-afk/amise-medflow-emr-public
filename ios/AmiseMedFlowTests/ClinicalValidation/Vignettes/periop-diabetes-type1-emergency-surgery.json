@@ -206,14 +206,9 @@
         "id": "level-at-least-urgent",
         "severity": "critical",
         "atLeast": "urgent",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage priority_24_48h (score 26) for ultrasound-confirmed appendicitis awaiting emergency surgery: the free text has no triage keyword (T 37.8 < 38), and triage reads neither imaging nor the confirmed diagnosis. The seeded appendicitis vignettes reach emergency through 'severe pain'/fever wording.",
         "unverified": [
           "ios"
-        ],
-        "proposedFix": "Floor the consultation emergency level by the confirmed working diagnosis and resulted imaging (e.g. confirmed appendicitis → at least urgent)."
+        ]
       }
     },
     "investigations": {
@@ -270,14 +265,9 @@
             "cpoc-diabetes-2022"
           ],
           "note": "Type 1 diabetes: never omit basal insulin (DKA risk); continue it, usually reduced, alongside VRIII.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "VRIII is suggested (glucose >11), but nothing says to continue the basal glargine in type 1 diabetes; the VRIII line reads 'DKA fixed-rate 0.1 units/kg/h' (mixing VRIII and FRIII) in the BGL >15 prompt, which does not fire here.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Diabetes peri-operative prompt: type 1 diabetes → continue basal insulin (CPOC 2022) alongside VRIII; never omit."
+          ]
         }
       ],
       "mustExclude": [

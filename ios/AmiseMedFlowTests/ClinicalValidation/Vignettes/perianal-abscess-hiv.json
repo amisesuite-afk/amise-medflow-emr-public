@@ -204,12 +204,7 @@
         "note": "Same rule as the base case: an undrained abscess is drained promptly; immunosuppression makes delay more dangerous.",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web adaptiveTriage has no perianal abscess/anorectal sepsis rule: the level depends on the pain score and incidental words (the base abscess reaches \"emergency\" only via the negated \"no weight loss\" plus pain 8/10; with pain 6/10 it is routine).",
-        "proposedFix": "Add an anorectal-sepsis triage rule (perianal/perineal pain + swelling/lump, or \"abscess\") → at least same_day_call, and emergency_now with fever + SIRS, diabetes, immunosuppression or spreading erythema."
+        ]
       },
       "redFlags": [
         {
@@ -226,12 +221,7 @@
           "note": "The immunosuppression has to be surfaced: it changes antibiotic use and the differential.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "HIV/immunosuppression in the comorbidity list is not surfaced by triage, prompts or the perianal_abscess protocol (whose IV antibiotic line mentions \"immunocompromised\" only as an indication).",
-          "proposedFix": "Surface HIV/low CD4/biologics/chemotherapy as an immunosuppression flag (triage comorbidity regex + a clinical prompt)."
+          ]
         }
       ]
     },

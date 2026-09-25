@@ -156,14 +156,9 @@
         "guidelineRefs": [
           "bass-sbns-ces-2018"
         ],
-        "knownGap": [
-          "web"
-        ],
         "unverified": [
           "ios"
-        ],
-        "knownGapNote": "Web: Triage \"priority_24_48h\" (score 20): the back-pain branch answers \"Saddle anaesthesia\" and \"Bladder / bowel dysfunction\" are collected by the picker but no triage rule reads them.",
-        "proposedFix": "Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency."
+        ]
       },
       "mustAlarm": [
         {
@@ -176,14 +171,9 @@
           "guidelineRefs": [
             "bass-sbns-ces-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No CES alarm (only pre-op bloods).",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         }
       ]
     },
@@ -198,14 +188,9 @@
           "guidelineRefs": [
             "bass-sbns-ces-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No MRI.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         },
         {
           "id": "inv-bladder-scan",
@@ -244,14 +229,9 @@
           "guidelineRefs": [
             "bass-sbns-ces-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No spinal referral.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         }
       ],
       "mustExclude": [

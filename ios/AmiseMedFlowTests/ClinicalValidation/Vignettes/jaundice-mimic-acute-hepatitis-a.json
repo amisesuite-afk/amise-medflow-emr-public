@@ -344,14 +344,9 @@
             "acg-2017-lft"
           ],
           "note": "No duct dilatation and a hepatocellular pattern: ERCP would add risk (pancreatitis, bleeding with INR 1.4) without benefit.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "\"Charcot's triad → Acute Cholangitis\" prompt: \"Arrange urgent ERCP — biliary decompression\" for a hepatocellular picture with a 4 mm CBD (fever + RUQ pain + jaundice with no duct check).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts charcots_triad: require cholestatic LFTs or duct dilatation on imaging before suggesting ERCP; when ALT >10 × ULN with a normal duct, prompt \"consider acute hepatitis — viral serology, INR\" instead."
+          ]
         },
         {
           "id": "mgmt-no-cholecystectomy",
@@ -367,14 +362,9 @@
             "no role"
           ],
           "note": "Gallbladder wall thickening in acute hepatitis is reactive; operating on it is a recognised error.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Gallstone operative plan and consent prompt fire (hasGallstoneIndication: the \"right upper quadrant pain\" symptom chip, and \"Murphy's sign negative\" matches \"murphy\"), even though the duct is normal and there are no stones.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy",

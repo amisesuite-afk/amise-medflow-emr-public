@@ -169,7 +169,7 @@
           "equals": 1,
           "guidelineRefs": ["tg18-dx-cholangitis"],
           "note": "TG18 Grade II needs any TWO criteria; age ≥75 alone is Grade I. Over-grading is the safer error, hence quality rather than critical, but it changes the drainage timing advice.",
-          "knownGap": ["ios", "web"],
+          "knownGap": ["ios"],
           "knownGapNote": "iOS TokyoCholangitis and web clinical-scales count ONE Grade II criterion as Grade II (TG18 requires two)."
         },
         {

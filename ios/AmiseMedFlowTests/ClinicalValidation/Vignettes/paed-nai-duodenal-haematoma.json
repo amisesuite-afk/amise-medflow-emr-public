@@ -225,11 +225,6 @@
             "abuse",
             "maltreat"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding/maltreatment output in triage, prompts or protocols; T74.12XA maps to no protocol.",
-          "proposedFix": "Suspected-maltreatment rule → safeguarding flag and child protection referral.",
           "unverified": [
             "ios"
           ]
@@ -248,11 +243,6 @@
           "match": [
             "skeletal survey"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No skeletal survey suggested.",
-          "proposedFix": "Suspected-maltreatment rule (RCR/SoR 2017 imaging).",
           "unverified": [
             "ios"
           ]
@@ -273,11 +263,6 @@
             "social services",
             "social work"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No child protection referral output.",
-          "proposedFix": "Suspected-maltreatment rule.",
           "unverified": [
             "ios"
           ]
@@ -295,11 +280,6 @@
             "conservative",
             "parenteral nutrition"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No NG decompression or non-operative duodenal-haematoma plan: T74.12XA maps to no protocol. The only management is the adult pancreatitis prompt from amylase 480 (which also plans an 'interval laparoscopic cholecystectomy — gallstone pancreatitis' for a traumatic pancreatic contusion) and the adult tachycardia work-up (ECG, CTPA).",
-          "proposedFix": "Paediatric blunt-trauma branch for visceral injury: NG decompression, IV fluids by weight, parenteral nutrition if prolonged, non-operative management; do not route traumatic pancreatic injury to the gallstone-pancreatitis prompt.",
           "unverified": [
             "ios"
           ]
@@ -331,11 +311,6 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — the pancreatitis prompt's 'paracetamol 1g QDS + morphine 5mg PRN' and 'IV fluid challenge 500ml' for a 14 kg child.",
-          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
           "unverified": [
             "ios"
           ]

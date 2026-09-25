@@ -291,14 +291,9 @@
           "guidelineRefs": [
             "esvs-2024-aaa"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No aortic imaging suggested (the protocol for the confirmed I71.3 is not reached: no ICD mapping for I71.3, PANE not converged).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "getProtocolByIcd: map I71.x to the aortic_aneurysm protocol; see mnm-aaa."
+          ]
         }
       ]
     },

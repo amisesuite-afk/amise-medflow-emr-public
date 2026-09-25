@@ -294,11 +294,6 @@
             "reversal",
             "re:\\brevers(e|al|ing)\\b"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No reversal agent is suggested. The only anticoagulant output is the elective 'Anticoagulation monitoring + peri-operative bridging plan' prompt: 'hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge with LMWH' — written for planned surgery, not for active haemorrhage on apixaban.",
-          "proposedFix": "When a DOAC/warfarin is recorded and there is bleeding, haemoperitoneum or shock: 'stop anticoagulant; reversal (andexanet alfa / 4F-PCC for factor Xa inhibitors; vitamin K + PCC for warfarin); haematology' instead of the bridging template (ACC 2020).",
           "unverified": [
             "ios"
           ]
@@ -349,11 +344,6 @@
             "no role",
             "exclude appendicitis"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('guarding' from haemoperitoneum) and ignores the confirmed diagnosis. The ovarian_cyst protocol also lists ibuprofen 400 mg TDS for a patient bleeding on apixaban.",
-          "proposedFix": "Gate the appendicectomy operative-plan prompt on an appendicitis working diagnosis (as the Alvarado block does with assessmentHasAppend); guarding from torsion, PID, haemoperitoneum or DKA is not an appendicectomy indication. Add a haemorrhage-on-anticoagulant branch (stop, reverse, no NSAIDs) to the ovarian_cyst protocol.",
           "unverified": [
             "ios"
           ]

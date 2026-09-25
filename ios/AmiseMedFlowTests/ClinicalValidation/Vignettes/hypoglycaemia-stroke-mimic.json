@@ -208,14 +208,9 @@
             "nice-ng128",
             "jbds-hypo-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Only the triage vital flag fires; the five management outputs are preventative (PSA, colonoscopy, ACR, pre-op ECG). No glucose treatment.",
-          "proposedFix": "Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug."
+          ]
         }
       ],
       "mustExclude": [

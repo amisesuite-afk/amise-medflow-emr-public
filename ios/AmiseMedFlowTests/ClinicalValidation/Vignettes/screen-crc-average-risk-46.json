@@ -83,11 +83,6 @@
         ],
         "note": "Asymptomatic screening request: routine.",
         "atMost": "priority",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Over-triage: the topic words 'bowel cancer screening' match 'Possible malignancy' and 'No change in bowel habit' still matches 'Lower GI red flag' ('no change' is treated as a pseudo-negation). Two priority flags (score 50) → emergency_now for a well 46-year-old. (The negated 'no rectal bleeding' no longer fires.)",
-        "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation).",
         "unverified": [
           "ios"
         ]
@@ -103,11 +98,6 @@
           "match": [
             "emergency now"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web triage raises 'Emergency now — do not auto-book … urgent emergency assessment' for a screening request (see level-routine).",
-          "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation).",
           "unverified": [
             "ios"
           ]

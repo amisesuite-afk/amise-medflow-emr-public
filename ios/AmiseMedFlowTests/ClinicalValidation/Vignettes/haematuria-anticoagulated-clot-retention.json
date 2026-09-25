@@ -183,14 +183,9 @@
             "eau-nmibc-2024"
           ],
           "note": "Haematuria on anticoagulation is investigated the same way; the anticoagulant does not explain it.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: R33.8 selects the urinary-retention protocol (catheter, tamsulosin, TWOC); the haematuria protocol (which has cystoscopy, CT urogram and a clot-retention irrigation red flag) is not used, so the haematuria is not investigated.",
-          "proposedFix": "Add a clot-retention/haematuria branch: when haematuria is recorded with retention, keep the haematuria protocol investigations."
+          ]
         },
         {
           "id": "inv-fbc-group",

@@ -231,12 +231,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no alarm names a cardiac cause. The only cardiac signals are the triage reason \"Possible cardiac event\" and the Chest Pain Pathway panel title; every safety prompt raised is non-cardiac (Emergency now, Pre-operative assessment, and e.g. \"Hernia - elective repair indicated\", \"Reproductive-age female with abdominal complaint\", \"Creatinine elevated\").",
-          "proposedFix": "rules.ts / clinical-inference.ts: an ACS rule that fires on chest pain/pressure OR (dyspnoea, jaw/arm pain, epigastric pain, sweating or unexplained fatigue in a patient >=50, diabetic or female) -> emergency_now with \"12-lead ECG within 10 minutes + hs-troponin; 999/ED transfer\"."
+          ]
         }
       ],
       "redFlags": [
@@ -274,12 +269,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no ECG investigation. The triage Chest Pain Pathway panel does fire here and its checklist text reads \"ECG within 10 minutes\", \"Troponin (hs-cTnI/T) at 0h and 3h\" and \"Aspirin 300mg if ACS suspected\" (the harness records panels by title only), but nothing turns them into an investigation order or plan action: the only ECG action anywhere is the \"12-lead ECG - pre-operative cardiac baseline (age >= 40)\" prompt line (or none at 36 years).",
-          "proposedFix": "Add ECG and hs-troponin as investigation actions of the chest-pain pathway / ACS prompt (today the Chest Pain Pathway checklist is shown as a panel but emits no investigation actions)."
+          ]
         },
         {
           "id": "inv-troponin",
@@ -292,12 +282,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no troponin investigation. The triage Chest Pain Pathway panel does fire here and its checklist text reads \"ECG within 10 minutes\", \"Troponin (hs-cTnI/T) at 0h and 3h\" and \"Aspirin 300mg if ACS suspected\" (the harness records panels by title only), but nothing turns them into an investigation order or plan action: no troponin in any investigation, plan or prompt output. (The checklist 0 h/3 h sampling also differs from the ESC 2023 0 h/1 h or 0 h/2 h algorithm.)",
-          "proposedFix": "Add ECG and hs-troponin as investigation actions of the chest-pain pathway / ACS prompt (today the Chest Pain Pathway checklist is shown as a panel but emits no investigation actions)."
+          ]
         }
       ]
     },
@@ -315,12 +300,7 @@
           "note": "Aspirin loading dose unless contraindicated (ESC 2023, class I).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: aspirin appears only in the Chest Pain Pathway checklist text (\"Aspirin 300mg if ACS suspected and no contraindication\"), not in any plan or prompt action.",
-          "proposedFix": "ACS prompt/protocol with aspirin loading dose unless contraindicated."
+          ]
         },
         {
           "id": "mgmt-reperfusion",
@@ -340,12 +320,7 @@
           "note": "Possible STEMI: immediate reperfusion pathway / cardiology.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 9 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • Document: side, type (inguinal direct/indirect/femoral), reducibility, skin changes, sc… | • Consent: hernia repair — recurrence (1–2% TAPP), chronic groin pain (5%), mesh infectio… | LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP) — OPERATIVE PLAN ─────────────────────────────….",
-          "proposedFix": "ACS protocol with the STEMI reperfusion / cardiology line."
+          ]
         }
       ]
     }

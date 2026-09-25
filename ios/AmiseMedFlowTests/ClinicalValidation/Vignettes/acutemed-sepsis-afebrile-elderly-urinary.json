@@ -410,12 +410,7 @@
           "note": "The parastomal hernia is documented as reducible; the tenderness is suprapubic (urinary source). An emergency hernia operation is a wrong-procedure output.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: the hernia pathway prompt sets isIncarcerated from any \"tender\" in the abdominal exam (\"suprapubic tenderness\") and outputs \"Incarcerated / strangulated hernia\" with \"Emergency Theatre: irreducible / strangulated hernia - bowel resection risk\" and an emergency laparoscopic inguinal hernia (TAPP) operative plan, for a documented reducible parastomal hernia in a patient with urosepsis.",
-          "proposedFix": "clinical-inference.ts hernia pathway: isIncarcerated must not be set by any \"tender\" in the abdominal exam; require irreducibility (or tenderness localised to the hernia) and respect \"reducible\"."
+          ]
         }
       ]
     }

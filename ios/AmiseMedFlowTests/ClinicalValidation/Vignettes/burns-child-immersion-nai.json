@@ -123,14 +123,9 @@
             "nice-cg89"
           ],
           "note": "NICE CG89: immersion pattern, symmetrical, buttocks/perineum/lower limbs, delayed presentation, inconsistent explanation → suspect maltreatment.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names \"child with scalds suggesting non-accidental injury — safeguarding referral\") is not selected because PANE top is below 0.20.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE."
+          ]
         },
         {
           "id": "flag-special-areas",
@@ -145,14 +140,9 @@
           "guidelineRefs": [
             "aba-referral"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names \"child with scalds suggesting non-accidental injury — safeguarding referral\") is not selected because PANE top is below 0.20.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE."
+          ]
         }
       ]
     },
@@ -167,14 +157,9 @@
           "guidelineRefs": [
             "rcr-rcpch-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names \"child with scalds suggesting non-accidental injury — safeguarding referral\") is not selected because PANE top is below 0.20.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE."
+          ]
         }
       ]
     },
@@ -197,14 +182,9 @@
           "guidelineRefs": [
             "nice-cg89"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names \"child with scalds suggesting non-accidental injury — safeguarding referral\") is not selected because PANE top is below 0.20.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE."
+          ]
         },
         {
           "id": "mgmt-paediatric-burns-referral",
@@ -225,14 +205,9 @@
             "aba-referral",
             "nnbc-2012"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names \"child with scalds suggesting non-accidental injury — safeguarding referral\") is not selected because PANE top is below 0.20.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE."
+          ]
         }
       ],
       "mustExclude": [

@@ -108,11 +108,6 @@
             "re:\\btdap?\\b",
             "tetanus toxoid"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No tetanus output: S51.812A maps to no protocol, PANE top 3 is inguinal hernia / cholecystitis / GORD, and computeClinicalPrompts has no wound or tetanus-prone rule. Tetanus toxoid/immunoglobulin exist only inside the major-trauma, burns and splenic protocols.",
-          "proposedFix": "Add a wound prompt (laceration/bite/puncture/burn, or S0–T1 injury codes): classify tetanus-prone vs clean, ask immunisation status, and output vaccine ± human tetanus immunoglobulin per ACIP/UKHSA tables; debridement/irrigation.",
           "unverified": [
             "ios"
           ]
@@ -131,11 +126,6 @@
             "re:\\bhtig\\b",
             "immune globulin"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "See mgmt-tetanus-vaccine: no tetanus immunoglobulin output for a high-risk wound with unknown immunisation.",
-          "proposedFix": "See mgmt-tetanus-vaccine.",
           "unverified": [
             "ios"
           ]
@@ -154,11 +144,6 @@
             "wash out",
             "clean"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No wound-care output (see mgmt-tetanus-vaccine).",
-          "proposedFix": "See mgmt-tetanus-vaccine.",
           "unverified": [
             "ios"
           ]

@@ -154,14 +154,9 @@
             "nnbc-2012"
           ],
           "note": "ABA: partial-thickness burns >10% TBSA; knees (major joints) involved.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+          ]
         },
         {
           "id": "mgmt-dressings",

@@ -265,11 +265,6 @@
           "guidelineRefs": [
             "esc-aortic-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol (I71.0) and no prompt suggests CT angiography.",
-          "proposedFix": "As mnm-dissection.",
           "unverified": [
             "ios"
           ]

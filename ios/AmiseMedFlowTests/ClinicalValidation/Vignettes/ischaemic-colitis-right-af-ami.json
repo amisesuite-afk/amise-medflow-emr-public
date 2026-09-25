@@ -252,12 +252,7 @@
           "note": "ACG 2015: isolated right colon ischaemia warrants CT angiography to exclude occlusive SMA disease; ESVS 2017: CTA for suspected AMI.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "K55.0 maps to the ischaemic_colitis protocol, whose imaging is \"CT abdomen/pelvis with IV contrast\"; nothing asks for CT angiography when the ischaemia is right-sided or embolic.",
-          "proposedFix": "In the ischaemic colitis protocol add: isolated right colon ischaemia, AF or lactate rise → CT angiography to exclude AMI (ACG 2015)."
+          ]
         }
       ]
     },
@@ -277,11 +272,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only on the \"Emergency laparotomy consent\" line of the peritonism prompt, which fired on negated peritonism. No vascular/revascularisation output exists for right-sided ischaemia with AMI not excluded."
+          ]
         }
       ]
     }

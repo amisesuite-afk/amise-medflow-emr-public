@@ -412,14 +412,9 @@
             "acg-2024"
           ],
           "note": "Moderate goal-directed resuscitation: lactated Ringer’s 1.5 mL/kg/h after a 10 mL/kg bolus only if hypovolaemic, reassessed against HR, urine output, urea/haematocrit.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No moderate/goal-directed fluid instruction.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate."
+          ]
         },
         {
           "id": "mgmt-same-admission-cholecystectomy",
@@ -540,14 +535,9 @@
             "apec-2020"
           ],
           "note": "ERCP in gallstone pancreatitis only for concurrent cholangitis or persistent biliary obstruction (APEC: no benefit from urgent ERCP without cholangitis). An unconditional ERCP line exposes the patient to post-ERCP pancreatitis and perforation.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Dilated-CBD prompt ERCP (CBD 6 mm, no stone, no cholangitis).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says \"dilated\" without negation) instead of firing on any \"cbd\"/\"common bile duct\" mention; make its ERCP action conditional (\"if a stone is confirmed/ASGE high risk\")."
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -562,14 +552,9 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Appendicectomy operative plan fires on \"guarding\".",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+          ]
         }
       ]
     }

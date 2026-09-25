@@ -207,14 +207,9 @@
             "dilated cbd"
           ],
           "note": "CBD 4 mm (normal).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "\"Dilated CBD\" prompt fires on \"CBD 4 mm, no duct stone\".",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says \"dilated\" without negation) instead of firing on any \"cbd\"/\"common bile duct\" mention; make its ERCP action conditional (\"if a stone is confirmed/ASGE high risk\")."
+          ]
         }
       ]
     },
@@ -297,14 +292,9 @@
             "asge-2019"
           ],
           "note": "ERCP has no role at ASGE low risk; an unconditional ERCP suggestion exposes the patient to post-ERCP pancreatitis without benefit.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "\"ERCP — therapeutic: stone extraction or stenting\" from the false dilated-CBD prompt.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says \"dilated\" without negation) instead of firing on any \"cbd\"/\"common bile duct\" mention; make its ERCP action conditional (\"if a stone is confirmed/ASGE high risk\")."
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy",

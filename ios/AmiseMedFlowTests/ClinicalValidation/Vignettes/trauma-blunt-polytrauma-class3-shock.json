@@ -385,14 +385,9 @@
           "guidelineRefs": [
             "atls-10-abdomen"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The bowel-obstruction clinical prompt fires on abdominal distension and adds 'CT abdomen/pelvis with IV contrast — level (SBO/LBO), transition point' to a haemodynamically unstable trauma patient.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Suppress non-trauma abdominal prompts when a trauma mechanism is recorded, and qualify every CT suggestion with \"once haemodynamically stable\"."
+          ]
         },
         {
           "id": "mgmt-no-antithrombotic-plan",

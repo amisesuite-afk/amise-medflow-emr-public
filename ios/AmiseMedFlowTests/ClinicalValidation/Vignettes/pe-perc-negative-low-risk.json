@@ -130,14 +130,9 @@
         "guidelineRefs": [
           "perc-2004"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Over-triage from negation: 'Not breathless' matches the post-operative/breathless rule and 'No haemoptysis' the haemoptysis rule (both urgent) → emergency_now for a PERC-negative patient.",
         "unverified": [
           "ios"
-        ],
-        "proposedFix": "Handle negation (\"no\", \"not\", \"denies\") in scanRedFlags."
+        ]
       }
     },
     "investigations": {

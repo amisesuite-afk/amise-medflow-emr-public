@@ -150,14 +150,9 @@
             "aa-mh-2021"
           ],
           "note": "An MH alert must be visible before any anaesthetic is planned.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Nothing reads 'malignant hyperthermia' from the PMH: no triage reason, no prompt, no alert. The only safety prompt is the pre-op bloods panel.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+          ]
         }
       ]
     },
@@ -176,14 +171,9 @@
           "guidelineRefs": [
             "aa-mh-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No trigger-free anaesthesia plan; the only plan content is the lap chole operative template ('General anaesthesia + neuromuscular blockade').",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+          ]
         },
         {
           "id": "mgmt-dantrolene",
@@ -194,14 +184,9 @@
           "guidelineRefs": [
             "aa-mh-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output mentions dantrolene.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+          ]
         },
         {
           "id": "mgmt-mh-unit-referral",

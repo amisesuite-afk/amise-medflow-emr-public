@@ -357,14 +357,9 @@
             "iwgdf-2023-infection"
           ],
           "note": "IWGDF/IDSA: urgent surgery for deep abscess, gas and extensive wet gangrene.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain. Prompts give generic sepsis antibiotics only; no drainage/debridement of the plantar abscess.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          ]
         },
         {
           "id": "mgmt-iv-broad-spectrum",

@@ -205,14 +205,9 @@
           "guidelineRefs": [
             "sfe-hypercalc-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Calcium 3.21 is not read (no calcium rule). The case is steered to other cancers: \"Cancer screening triggered (pancreatic) — 2-week-wait\", an occult-malignancy CT and OGD.",
-          "proposedFix": "Hypercalcaemia prompt as above."
+          ]
         }
       ]
     },
@@ -232,14 +227,9 @@
             "nice-ng35"
           ],
           "note": "Hypercalcaemia, AKI, anaemia and lytic lesions: missed myeloma is a missed cancer diagnosis.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No serum protein electrophoresis / free light chains. Outputs are an occult-malignancy CT chest/abdomen/pelvis, OGD and colonoscopy.",
-          "proposedFix": "Add a myeloma prompt: hypercalcaemia or AKI with anaemia, bone pain or lytic lesions → serum protein electrophoresis + serum free light chains (NICE NG35)."
+          ]
         }
       ]
     },
@@ -259,14 +249,9 @@
             "sfe-hypercalc-2016"
           ],
           "note": "SfE 2016: IV 0.9% sodium chloride rehydration; a 500 mL AKI fluid challenge does not count.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No saline rehydration for hypercalcaemia; only the AKI prompt's \"IV fluid challenge (500ml Hartmann's) if pre-renal cause\".",
-          "proposedFix": "Hypercalcaemia prompt as above."
+          ]
         },
         {
           "id": "mgmt-stop-nsaid-acei",

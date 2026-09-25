@@ -156,12 +156,7 @@
         "atMost": "priority",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage emergency_now (score 52): adaptiveTriage RED_FLAGS regexes have no negation handling (\"No vomiting\" → +15; \"change in bowel habit\" in \"No vomiting, no change in bowel habit\" → lower-GI red flag).",
-        "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
+        ]
       }
     },
     "management": {

@@ -187,14 +187,9 @@
         "guidelineRefs": [
           "ukka-hyperk-2023"
         ],
-        "knownGap": [
-          "web"
-        ],
         "unverified": [
           "ios"
-        ],
-        "knownGapNote": "Web: Triage \"same_day_call\" (score 44, one point below the emergency threshold): potassium 6.7 with peaked T waves and oliguric AKI are not triage inputs. The emergency level previously came from negated history.",
-        "proposedFix": "As hyperkalaemia-severe-ckd-acei; add oliguria / AKI stage 3."
+        ]
       },
       "mustAlarm": [
         {

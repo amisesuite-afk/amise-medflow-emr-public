@@ -323,12 +323,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "N49.3 (Fournier gangrene) has no protocol (necrotising_fasciitis is keyed to M72.6), so no plan contains debridement; the sepsis prompt gives antibiotics only.",
-          "proposedFix": "Add Fournier’s gangrene as a PANE disease (or map perineal site + crepitus/necrosis/pain-out-of-proportion + SIRS to necrotising_fasciitis) and give N49.3/perineal NSTI the necrotising_fasciitis protocol; add a safety prompt for \"perianal/perineal infection + pain out of proportion or spreading to scrotum/perineum + SIRS\" → emergency surgical exploration."
+          ]
         },
         {
           "id": "mgmt-broad-abx",

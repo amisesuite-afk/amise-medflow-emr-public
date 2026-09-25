@@ -273,14 +273,9 @@
           "guidelineRefs": [
             "eau-urolith-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: The renal colic protocol's red flag (\"infected obstructed kidney — IV antibiotics + urgent drainage\") is not shown: N13.6 has no protocol and the PANE top is cholecystitis (0.19 < 0.20). Renal colic is PANE #2.",
-          "proposedFix": "Map N13.6 (pyonephrosis) and N13.2 to the renal colic protocol, and add a prompt: fever/sepsis + hydronephrosis or ureteric stone on imaging → decompression."
+          ]
         }
       ]
     },
@@ -329,14 +324,9 @@
             "nice-ng148"
           ],
           "note": "EAU: urgent decompression (nephrostomy or retrograde stent) of the obstructed infected kidney.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No nephrostomy or stent. Sepsis prompts give cultures, pip-tazo and fluids, and \"Identify source … abdominal CT\"; the CT result (stone + hydronephrosis) is not read.",
-          "proposedFix": "As flag-infected-obstruction."
+          ]
         },
         {
           "id": "mgmt-iv-antibiotics",

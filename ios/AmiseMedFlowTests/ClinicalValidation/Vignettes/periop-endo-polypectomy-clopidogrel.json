@@ -172,14 +172,9 @@
             "bsg-esge-2021-anticoag"
           ],
           "note": "High-risk procedure, low thrombotic risk: stop clopidogrel 7 days before (BSG/ESGE 2021).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No clopidogrel instruction: anticoag_check does not include antiplatelets (hasMed list is warfarin/DOACs/heparins only). Only the generic triage reason mentions the drug.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table."
+          ]
         }
       ],
       "mustExclude": [

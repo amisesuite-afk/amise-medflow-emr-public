@@ -321,11 +321,6 @@
             "neuro obs",
             "cerebral injury"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No cerebral-oedema or neurological-observation output; the hyperglycaemia prompt is the adult pathway (VRIII wording, 'DKA fixed-rate 0.1 units/kg/h'), with no paediatric DKA protocol.",
-          "proposedFix": "Paediatric DKA branch (age < 18): BSPED/ISPAD fluids by weight, insulin 0.05–0.1 units/kg/h after fluids, no bolus, hourly neuro observations for cerebral oedema.",
           "unverified": [
             "ios"
           ]
@@ -348,11 +343,6 @@
             "no role",
             "exclude appendicitis"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('voluntary guarding' from DKA) and ignores the confirmed diagnosis.",
-          "proposedFix": "Gate the appendicectomy operative-plan prompt on an appendicitis working diagnosis (as the Alvarado block does with assessmentHasAppend); guarding from torsion, PID, haemoperitoneum or DKA is not an appendicectomy indication. Also suppress when a DKA prompt is active.",
           "unverified": [
             "ios"
           ]
@@ -399,11 +389,6 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — the appendicectomy template's pip-tazo 4.5 g, co-amoxiclav 1.2 g, paracetamol 1 g, ibuprofen 400 mg, morphine 5 mg and 'IV fluid challenge 500ml' for a 26 kg child.",
-          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
           "unverified": [
             "ios"
           ]

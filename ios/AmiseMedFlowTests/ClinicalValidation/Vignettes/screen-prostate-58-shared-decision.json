@@ -121,11 +121,6 @@
           "uspstf-prostate-2018"
         ],
         "atMost": "priority",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Over-triage: 'Two friends have had prostate cancer' → 'Possible malignancy' (priority) → same_day_call.",
-        "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation).",
         "unverified": [
           "ios"
         ]

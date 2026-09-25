@@ -225,12 +225,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 37 management items matched (sources: web.clinicalPrompts, web.managementPanel, web.managementPanel.keyPoints, web.plan, web.protocol.medications). First items: [immediate] High-flow O2; IV access; haemodynamic monitoring; alert anaesthetics/ICU if u… | [immediate] Massive PE: alteplase 10 mg IV bolus then 90 mg over 2 h (if no contraindicat… | [conservative] Anticoagulation: rivaroxaban 15 mg BD × 21 days then 20 mg OD; or LMWH/war… | [conservative] Low-risk PE (PESI I–II, normal troponin/BNP, adequate home support): early….",
-          "proposedFix": "When pregnancyPossible and an emergency presentation, add an obstetric review / fetal monitoring action."
+          ]
         }
       ],
       "mustExclude": [

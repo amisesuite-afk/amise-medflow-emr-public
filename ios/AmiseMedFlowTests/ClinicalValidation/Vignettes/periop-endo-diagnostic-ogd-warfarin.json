@@ -176,14 +176,9 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No 'continue warfarin' for a low-risk diagnostic OGD; the procedure's bleeding risk is not an input to any rule.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+          ]
         }
       ],
       "mustExclude": [
@@ -207,14 +202,9 @@
             "bridge-2015"
           ],
           "note": "Low-risk procedure: warfarin continued; bridging is both unnecessary and a bleeding risk.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "anticoag_check 'warfarin — bridge with LMWH' for a procedure where warfarin should simply continue.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+          ]
         },
         {
           "id": "mgmt-no-inr-reversal",
@@ -234,14 +224,9 @@
             "bsg-esge-2021-anticoag"
           ],
           "note": "Reversing a therapeutic INR for a diagnostic gastroscopy exposes the patient to thromboembolism for no benefit.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The coagulopathy prompt fires on any INR >1.5 (here 2.3, therapeutic): 'Hold elective surgery until INR < 1.5' and 'PO Vitamin K 1–2mg — slow INR correction'. It ignores that the INR is an intended warfarin effect before a low-risk procedure. The negated HPI ('No weight loss, dysphagia, vomiting or melaena') also makes triage emergency_now.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Coagulopathy prompt: when the patient is on warfarin, compare INR with the target range and the planned procedure's bleeding risk; suggest reversal only for bleeding or urgent high-risk surgery."
+          ]
         },
         {
           "id": "mgmt-no-deferral-for-inr",

@@ -192,14 +192,9 @@
           "guidelineRefs": [
             "nice-ng128"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No aspirin. The scales panel instead recommends ABCD2, which NICE NG128 says not to use.",
-          "proposedFix": "Add a TIA prompt (aspirin 300 mg, specialist within 24 h) and remove ABCD2 from the CDS suggestions."
+          ]
         },
         {
           "id": "mgmt-specialist-24h",
@@ -214,14 +209,9 @@
           "guidelineRefs": [
             "nice-ng128"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No TIA clinic / stroke specialist referral.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         },
         {
           "id": "mgmt-defer-elective-surgery",

@@ -169,12 +169,7 @@
           "note": "Ultrasound is the first-line imaging in pregnancy.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: \"\" (the vignette schema has no breast exam field), so the dashboard prompt \"Breast Mass → Triple Assessment\" (USS, mammogram ≥35, core biopsy) is not exercised.",
-          "proposedFix": "Map N63 (unspecified breast lump) to a \"breast lump — triple assessment\" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts."
+          ]
         },
         {
           "id": "inv-core-biopsy",
@@ -192,12 +187,7 @@
           "note": "Core biopsy is safe in pregnancy; delaying diagnosis worsens stage.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: \"\" (the vignette schema has no breast exam field), so the dashboard prompt \"Breast Mass → Triple Assessment\" (USS, mammogram ≥35, core biopsy) is not exercised.",
-          "proposedFix": "Map N63 (unspecified breast lump) to a \"breast lump — triple assessment\" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts."
+          ]
         }
       ]
     },

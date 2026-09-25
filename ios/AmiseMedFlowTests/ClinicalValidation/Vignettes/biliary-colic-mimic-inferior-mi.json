@@ -306,14 +306,9 @@
             "esc-2023-acs"
           ],
           "note": "ESC 2023: 12-lead ECG within 10 minutes of first medical contact.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The only ECG is a plan line \"12-lead ECG — pre-operative cardiac baseline (age ≥ 40)\", not an urgent investigation for ACS.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mnm-acs: ECG as a stat investigation for epigastric pain with cardiac risk features."
+          ]
         },
         {
           "id": "inv-troponin",
@@ -324,14 +319,9 @@
           "guidelineRefs": [
             "esc-2023-acs"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No troponin anywhere.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mnm-acs."
+          ]
         }
       ]
     },
@@ -354,14 +344,9 @@
           "guidelineRefs": [
             "esc-2023-acs"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol for I21.1 and no prompt: no cardiology/reperfusion/antiplatelet output.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "getProtocolByIcd: map I20–I24 to an ACS protocol (or a \"not a surgical diagnosis — refer cardiology\" stub)."
+          ]
         }
       ],
       "mustExclude": [

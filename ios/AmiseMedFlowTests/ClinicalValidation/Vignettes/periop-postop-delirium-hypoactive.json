@@ -205,14 +205,9 @@
             "nice-cg103",
             "sign-157"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Confusion (chip, HPI, AVPU 'C') yields only the generic triage reason 'Systemic red flag symptom'; GCS is suggested as a scale. No delirium flag or 4AT.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Delirium prompt: new confusion/inattention after surgery (or AVPU C) → 'Delirium — 4AT', precipitant screen (bladder scan, urinalysis, glucose, U&E/Na, CXR, cultures), medication review (opioids, anticholinergics), non-pharmacological care; avoid benzodiazepines (NICE CG103, SIGN 157)."
+          ]
         }
       ]
     },
@@ -255,14 +250,9 @@
           "guidelineRefs": [
             "nice-cg103"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Morphine PCA and cyclizine are not reviewed.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See flag-delirium."
+          ]
         },
         {
           "id": "mgmt-non-pharmacological",

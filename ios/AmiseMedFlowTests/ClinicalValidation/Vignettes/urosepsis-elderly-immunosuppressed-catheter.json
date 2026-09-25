@@ -326,14 +326,9 @@
             "sfe-steroid-2020"
           ],
           "note": "Prednisolone 7.5 mg for years: adrenal crisis risk in septic shock; parenteral hydrocortisone.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Prednisolone is not recognised: no hydrocortisone / steroid-cover action in septic shock.",
-          "proposedFix": "Add a steroid-dependence rule (prednisolone ≥5 mg or equivalent): parenteral hydrocortisone in sepsis/surgery (SfE/AAGBI/RCP 2020)."
+          ]
         },
         {
           "id": "mgmt-hold-methotrexate",

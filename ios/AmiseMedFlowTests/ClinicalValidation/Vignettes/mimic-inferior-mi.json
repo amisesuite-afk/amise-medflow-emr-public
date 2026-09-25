@@ -239,14 +239,9 @@
             "esc-acs-2023"
           ],
           "note": "ESC 2023: 12-lead ECG within 10 minutes of first contact.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No ECG suggested; the bradycardia prompt needs HR <50 (HR 52 here).",
-          "proposedFix": "Prompt: epigastric/upper abdominal pain + (age ≥50 or diabetes) + diaphoresis or HR <60 or SBP <100 → 12-lead ECG within 10 min and troponin."
+          ]
         },
         {
           "id": "inv-troponin",
@@ -257,13 +252,9 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No troponin suggested."
+          ]
         }
       ]
     },
@@ -283,13 +274,9 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No cardiology/PCI/emergency-services action."
+          ]
         }
       ]
     },

@@ -274,11 +274,6 @@
             "early pregnancy scan",
             "transvaginal"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No pregnancy ultrasound suggested; the only pregnancy output is 'Urine Pregnancy Test (β-HCG) — mandatory' for a woman recorded at 10 weeks.",
-          "proposedFix": "Hyperemesis rule: dating/viability scan (exclude multiple and molar pregnancy).",
           "unverified": [
             "ios"
           ]
@@ -315,11 +310,6 @@
             "pabrinex",
             "vitamin b1"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No thiamine anywhere; O21.1 maps to no protocol, so no management panel or plan exists.",
-          "proposedFix": "Hyperemesis rule (RCOG GTG 69): thiamine, IV saline with KCl, antiemetics, LMWH.",
           "unverified": [
             "ios"
           ]
@@ -335,11 +325,6 @@
             "re:potassium[^\\n]{0,40}(saline|replace|kcl)",
             "kcl"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No fluid/electrolyte plan beyond the adult tachycardia prompt's 'IV fluid challenge 500ml'.",
-          "proposedFix": "Hyperemesis rule.",
           "unverified": [
             "ios"
           ]
@@ -358,11 +343,6 @@
             "thromboprophylaxis",
             "vte prophylaxis"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No thromboprophylaxis.",
-          "proposedFix": "Hyperemesis rule.",
           "unverified": [
             "ios"
           ]

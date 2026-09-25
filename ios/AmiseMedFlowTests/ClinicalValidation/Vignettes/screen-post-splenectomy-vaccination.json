@@ -99,11 +99,6 @@
           "match": [
             "pneumococ"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No management output at all: Z90.81 (asplenia) maps to no protocol, so the Assessment panel and Plan are empty. Post-splenectomy vaccines exist only in the splenic_laceration protocol (S36 prefixes), which a follow-up coded as asplenia never reaches; no prompt reads 'splenectomy' in the surgical history.",
-          "proposedFix": "Add an asplenia prompt triggered by 'splenectomy' in the surgical history or D73.0/Z90.81: pneumococcal, Hib, MenACWY and MenB, annual influenza, antibiotic prophylaxis and standby course, alert card (BSH 2011 / Green Book ch. 7).",
           "unverified": [
             "ios"
           ]
@@ -136,11 +131,6 @@
             "haemophilus",
             "re:\\bhib\\b"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "See mgmt-pneumococcal.",
-          "proposedFix": "See mgmt-pneumococcal.",
           "unverified": [
             "ios"
           ]
@@ -154,11 +144,6 @@
           "match": [
             "influenza"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "See mgmt-pneumococcal.",
-          "proposedFix": "See mgmt-pneumococcal.",
           "unverified": [
             "ios"
           ]
@@ -175,11 +160,6 @@
             "amoxicillin",
             "prophyla"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "See mgmt-pneumococcal.",
-          "proposedFix": "See mgmt-pneumococcal.",
           "unverified": [
             "ios"
           ]
@@ -196,11 +176,6 @@
             "education",
             "standby"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "See mgmt-pneumococcal.",
-          "proposedFix": "See mgmt-pneumococcal.",
           "unverified": [
             "ios"
           ]

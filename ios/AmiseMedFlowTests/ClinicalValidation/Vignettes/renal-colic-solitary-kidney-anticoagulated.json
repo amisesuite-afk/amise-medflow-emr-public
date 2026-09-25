@@ -250,14 +250,9 @@
             "nice-ng148"
           ],
           "note": "Obstructed solitary kidney with anuria: urgent decompression (EAU; NICE NG148 immediate urology referral).",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Plan and panel give the standard colic pathway (diclofenac, MET, ESWL/URS/PCNL); the solitary-kidney red flag says \"emergency urological referral\" but no decompression; the anuria is not read.",
-          "proposedFix": "Renal colic protocol: an \"obstructed solitary kidney / anuria / bilateral obstruction\" branch with urgent nephrostomy or stent, driven by creatinine rise, anuria or history of nephrectomy."
+          ]
         },
         {
           "id": "mgmt-urology",

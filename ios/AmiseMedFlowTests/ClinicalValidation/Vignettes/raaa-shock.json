@@ -230,10 +230,6 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web alarms are the generic hypotension flag and \"Emergency now\"; nothing names ruptured AAA.",
           "unverified": [
             "ios"
           ]
@@ -322,14 +318,9 @@
             "nice-ng156"
           ],
           "note": "Large crystalloid boluses before aortic control worsen bleeding.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The hypotension clinical prompt ('shock_non_infective', clinical-inference.ts) always adds 'Hartmann's 1L bolus', including for suspected ruptured AAA where permissive hypotension applies.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Suppress the 1 L bolus line when AAA/aortic rupture is suspected (pulsatile mass, known AAA) and say \"permissive hypotension — senior/vascular decision\"."
+          ]
         },
         {
           "id": "mgmt-no-ct-before-theatre-unstable",

@@ -221,12 +221,7 @@
           "note": "Diagnosis in doubt (abdominal presentation): CXR indicated.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 33 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• Erect CXR — exclude free air and basal pneumonia.\" (web.clinicalPrompts); \"• Identify source of infection: CXR + urine dipstick + abdominal CT if no clear focus.\" (web.clinicalPrompts).",
-          "proposedFix": "clinical-inference.ts: a \"fever + tachypnoea/hypoxia + focal chest signs\" prompt with a CXR investigation action (not only plan text); suppress appendicitis cascades when the exam documents chest signs and a soft abdomen."
+          ]
         }
       ]
     },

@@ -466,14 +466,9 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "'generalised guarding and rebound' matches the appendicectomy indication (exam 'rebound'/'guarding'), so the full laparoscopic appendicectomy operative plan is offered for perforated diverticulitis.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
+          ]
         }
       ]
     },

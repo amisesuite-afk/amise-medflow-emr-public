@@ -206,12 +206,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency).",
-          "proposedFix": "Febrile-neutropenia prompt: fever + chemotherapy in the last 6 weeks (or neutrophils <0.5) -> emergency, piperacillin-tazobactam immediately, do not wait for the count."
+          ]
         }
       ]
     },

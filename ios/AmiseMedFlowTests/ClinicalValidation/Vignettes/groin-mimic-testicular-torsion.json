@@ -229,12 +229,7 @@
           "note": "The mother's label (\"hernia\") and the groin template must not produce a hernia plan.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is \"Inguinal / groin hernia\" and site \"groin\" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The PANE top (inguinal hernia 0.22) drives the ManagementPanel, so an elective mesh repair is shown next to the emergency exploration plan.",
-          "proposedFix": "Let the confirmed working diagnosis (ICD / paneDiseaseId) override the PANE top for the ManagementPanel, and add a neutral \"Groin lump\" CC template."
+          ]
         }
       ]
     }

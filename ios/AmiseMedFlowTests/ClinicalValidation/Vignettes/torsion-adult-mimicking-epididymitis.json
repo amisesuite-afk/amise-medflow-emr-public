@@ -196,14 +196,9 @@
           "eau-paed-2024",
           "iusti-eo-2016"
         ],
-        "knownGap": [
-          "web"
-        ],
         "unverified": [
           "ios"
-        ],
-        "knownGapNote": "Web: Triage \"same_day_call\" (score 35): there is no torsion/scrotal rule in rules.ts; the earlier emergency_now came from \"no fever\" in the HPI. The torsion safety prompt and the N44.0 protocol are correct.",
-        "proposedFix": "Add a triage red flag: male with sudden testicular/scrotal pain (or the scrotal-swelling chip with sudden onset) → emergency (as proposed for mimic-testicular-torsion)."
+        ]
       },
       "mustAlarm": [
         {

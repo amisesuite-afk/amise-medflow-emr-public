@@ -274,11 +274,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Adalimumab/azathioprine are not surfaced as immunosuppression (the triage comorbidity regex looks for \"immunosuppressed/steroid/chemotherapy\" in the comorbidity text only)."
+          ]
         }
       ]
     },
@@ -377,12 +373,7 @@
           "note": "A Crohn’s ileocaecal abscess is drained, then resected electively (ileocaecal resection); an emergency appendicectomy is the wrong operation.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web computeClinicalPrompts fires \"Appendicitis — emergency surgical indication\" and adds the full \"LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN\" whenever examAbdomen contains \"guarding\" or \"rebound\" — including negated text (\"no guarding\") and localised guarding from other causes.",
-          "proposedFix": "Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words \"guarding\"/\"rebound\"; add negation handling (no/without/absent) to exam() matching."
+          ]
         },
         {
           "id": "mgmt-no-steroids",

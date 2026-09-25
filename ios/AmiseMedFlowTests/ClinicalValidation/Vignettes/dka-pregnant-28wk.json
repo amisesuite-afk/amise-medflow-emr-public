@@ -302,14 +302,9 @@
             "nice-ng3"
           ],
           "note": "NICE NG3: admit for level 2 critical care where both medical and obstetric care are available; fetal monitoring.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No obstetric or fetal-monitoring action. The only pregnancy outputs are the triage \"Pregnancy mentioned\" reason and the β-hCG prompt (\"If urine β-HCG positive … exclude ectopic\") in a known 28-week pregnancy.",
-          "proposedFix": "When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications."
+          ]
         },
         {
           "id": "mgmt-fixed-rate-insulin",
@@ -373,14 +368,9 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Only \"Monitor K⁺ hourly\" inside the insulin line; no potassium replacement.",
-          "proposedFix": "As for dka-type1-young-typical."
+          ]
         }
       ],
       "mustExclude": [

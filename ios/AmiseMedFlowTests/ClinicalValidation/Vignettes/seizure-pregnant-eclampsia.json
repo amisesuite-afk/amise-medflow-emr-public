@@ -188,14 +188,9 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: BP 172/114 does not fire the hypertensive prompt (SBP ≥180 only); pregnancy is not combined with BP, proteinuria or seizure. Only the β-hCG prompt fires (\"exclude ectopic\" at 34 weeks).",
-          "proposedFix": "Add a pregnancy hypertension rule: pregnant/postpartum + BP ≥160/110 (or ≥140/90 with proteinuria/symptoms) or seizure → eclampsia/pre-eclampsia prompt with magnesium sulfate, antihypertensive, obstetric emergency (NICE NG133)."
+          ]
         }
       ]
     },
@@ -212,14 +207,9 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No magnesium sulfate.",
-          "proposedFix": "As alarm-eclampsia-or-severe-hypertension."
+          ]
         },
         {
           "id": "mgmt-antihypertensive",
@@ -232,14 +222,9 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No antihypertensive (SBP below the 180 threshold).",
-          "proposedFix": "As alarm-eclampsia-or-severe-hypertension."
+          ]
         },
         {
           "id": "mgmt-obstetric-emergency",
@@ -258,14 +243,9 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No obstetric involvement.",
-          "proposedFix": "When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications."
+          ]
         }
       ],
       "mustExclude": [

@@ -296,14 +296,9 @@
             "esvs-2017",
             "wses-ami-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No prompt or triage rule for 'pain out of proportion', AF + abdominal pain, or mesenteric ischaemia.",
-          "proposedFix": "Add a prompt: abdominal pain + AF (or other embolic source) + soft abdomen/severe pain → 'Exclude acute mesenteric ischaemia — CT angiography now; normal lactate does not exclude'."
+          ]
         }
       ]
     },
@@ -326,14 +321,9 @@
             "wses-ami-2022"
           ],
           "note": "Immediate CT angiography (arterial and portal venous phases) — not a routine portal-venous CT.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: K55.0 maps to the ischaemic colitis protocol: 'CT abdomen/pelvis with IV contrast' (portal venous), not CT angiography.",
-          "proposedFix": "Map K55.0 to a dedicated acute mesenteric ischaemia protocol (CTA, heparin, vascular surgery, revascularisation) instead of ischaemic colitis."
+          ]
         },
         {
           "id": "inv-lactate",
@@ -394,14 +384,9 @@
             "wses-ami-2022"
           ],
           "note": "Embolic SMA occlusion: urgent revascularisation (endovascular or open embolectomy) with vascular surgery.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Ischaemic colitis protocol has no revascularisation or vascular-surgery step.",
-          "proposedFix": "As above: AMI protocol with revascularisation and damage-control steps."
+          ]
         },
         {
           "id": "mgmt-antibiotics",

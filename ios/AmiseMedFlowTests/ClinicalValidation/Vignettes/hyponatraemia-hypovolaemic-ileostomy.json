@@ -237,14 +237,9 @@
             "eur-hypona-2014"
           ],
           "note": "Fluid restriction offered without a volume assessment worsens hypovolaemia and AKI.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: At Na 126 the prompt adds \"Fluid restriction 1L/day — euvolaemic SIADH\" without any volume assessment, in a hypovolaemic patient with urine sodium 8 and AKI.",
-          "proposedFix": "Branch on volume status (urine sodium <20/30, postural drop, stoma output, AKI): hypovolaemic → isotonic fluid; fluid restriction only for euvolaemic SIADH."
+          ]
         }
       ]
     }

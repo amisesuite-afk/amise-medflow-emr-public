@@ -223,14 +223,9 @@
             "accp-2022"
           ],
           "note": "ESC 2022: delay elective non-cardiac surgery until 12 months after ACS (6 months after elective PCI); quiescent biliary colic is not time-sensitive.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output relates the stent date to surgical timing. The lap chole operative template (consent, NBM, co-amoxiclav, LMWH) is offered for an elective case 3 months after an ACS stent. Aspirin/ticagrelor raise only the generic triage reason 'Anticoagulant or antiplatelet medication mentioned'.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table."
+          ]
         },
         {
           "id": "mgmt-cardiology-liaison",
@@ -242,14 +237,9 @@
             "esc-ncs-2022"
           ],
           "note": "Any interruption of P2Y12 inhibition early after a stent is a joint decision with the cardiologist (stent thrombosis risk).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No cardiology input suggested for P2Y12 management 3 months after a DES.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table."
+          ]
         }
       ],
       "mustExclude": [

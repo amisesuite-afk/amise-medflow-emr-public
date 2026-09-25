@@ -169,12 +169,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 4 management items matched (sources: web.clinicalPrompts). First items: • If urine β-HCG positive: serum quantitative β-HCG + urgent TVS — exclude ectopic. | • If ectopic suspected: emergency gynaecology referral — surgical or medical management. | • Confirm cervical smear date — document last result. | • Refer gynaecology — cervical smear overdue (> 3 years)..",
-          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+          ]
         },
         {
           "id": "mgmt-steroid",
@@ -192,12 +187,7 @@
           "note": "Oral and inhaled steroids should not be withheld in pregnancy.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 4 management items matched (sources: web.clinicalPrompts). First items: • If urine β-HCG positive: serum quantitative β-HCG + urgent TVS — exclude ectopic. | • If ectopic suspected: emergency gynaecology referral — surgical or medical management. | • Confirm cervical smear date — document last result. | • Refer gynaecology — cervical smear overdue (> 3 years)..",
-          "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
+          ]
         }
       ],
       "mustExclude": [

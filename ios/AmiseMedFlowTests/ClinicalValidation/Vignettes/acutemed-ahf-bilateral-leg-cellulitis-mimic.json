@@ -224,12 +224,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 25 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, CRP (cholecystitis) | LFTs, bilirubin, ALP, GGT (cholecystitis) | Amylase / lipase (exclude pancreatitis) (cholecystitis) | Blood cultures × 2 (before antibiotics) (cholecystitis).",
-          "proposedFix": "Heart-failure protocol with NT-proBNP."
+          ]
         }
       ]
     },
@@ -250,12 +245,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • Anticoagulant bridging: hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge wit… | • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly..",
-          "proposedFix": "lib/pane-engine: add an acute heart failure node (orthopnoea, PND, bilateral crackles, raised JVP, oedema) with a protocol (oxygen if SpO2 <90%, IV loop diuretic, NIV, NT-proBNP, ECG/troponin for ACS precipitant, echo) and map I50/J81."
+          ]
         }
       ],
       "mustExclude": [

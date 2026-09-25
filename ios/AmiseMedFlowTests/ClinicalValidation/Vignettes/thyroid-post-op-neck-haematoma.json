@@ -216,11 +216,7 @@
           "note": "An alarm that names the neck haematoma / airway, so the response is SCOOP rather than generic resuscitation.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The alarm is the generic triage \"Emergency now\" (RR, SpO2, HR); no alarm names the neck haematoma or airway."
+          ]
         }
       ]
     },

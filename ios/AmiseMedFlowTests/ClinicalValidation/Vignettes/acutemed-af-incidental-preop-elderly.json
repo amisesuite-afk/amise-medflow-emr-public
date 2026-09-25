@@ -192,12 +192,7 @@
           "note": "12-lead ECG to confirm AF before any decision (ESC 2024).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 25 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts).",
-          "proposedFix": "Pre-operative prompt: an \"Irregular rhythm\" exam chip should add a 12-lead ECG investigation and an AF prompt (anticoagulation, rate, defer elective surgery)."
+          ]
         }
       ]
     },
@@ -220,12 +215,7 @@
           "note": "CHA2DS2-VA 5: oral anticoagulation recommended (and the peri-operative plan changes).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • Erect CXR — exclude free air and basal pneumonia. | • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • Document: side, type (inguinal direct/indirect/femoral), reducibility, skin changes, sc… | • Consent: hernia repair — recurrence (1–2% TAPP), chronic groin pain (5%), mesh infectio….",
-          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+          ]
         }
       ]
     }

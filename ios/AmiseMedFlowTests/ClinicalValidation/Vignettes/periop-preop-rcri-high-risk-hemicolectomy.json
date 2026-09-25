@@ -250,14 +250,9 @@
           "guidelineRefs": [
             "esc-ncs-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output requests NT-proBNP/BNP or troponin; the only cardiac test is the age-based 'pre-operative cardiac baseline' ECG plan line. RCRI is suggested as a score but its result drives nothing.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "When RCRI ≥1 or known HF/IHD before intermediate/high-risk surgery, prompt ECG + NT-proBNP (± troponin) per ESC 2022; with known HF and poor functional capacity, prompt echocardiography."
+          ]
         },
         {
           "id": "inv-echocardiography",

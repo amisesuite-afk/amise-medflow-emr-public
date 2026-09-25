@@ -290,12 +290,7 @@
           "note": "BSG 2019: interrupt DOACs at presentation; reversal agents only for life-threatening bleeding. The generic peri-operative bridging text does not count.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The only DOAC text is the generic peri-operative bridging prompt (\"hold DOAC 48–72 h pre-op\"); nothing says to interrupt the DOAC at presentation of a bleed.",
-          "proposedFix": "In the GI-bleed prompt, add \"interrupt DOAC/warfarin at presentation; reversal agent only for life-threatening bleeding\" when an anticoagulant is recorded."
+          ]
         }
       ],
       "mustExclude": [

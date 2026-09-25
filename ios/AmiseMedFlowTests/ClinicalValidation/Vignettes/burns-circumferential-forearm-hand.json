@@ -149,14 +149,9 @@
             "atls-10-burns",
             "isbi-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA."
+          ]
         }
       ]
     },
@@ -172,14 +167,9 @@
             "atls-10-burns",
             "isbi-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA."
+          ]
         },
         {
           "id": "mgmt-burns-referral",
@@ -200,14 +190,9 @@
             "aba-referral",
             "nnbc-2012"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA."
+          ]
         },
         {
           "id": "mgmt-elevation",

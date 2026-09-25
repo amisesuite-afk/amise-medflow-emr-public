@@ -219,14 +219,9 @@
             "esvs-ali-2020"
           ],
           "note": "A limb-threatening emergency with normal vital signs: only a condition-specific alarm surfaces it.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+          ]
         }
       ],
       "redFlags": [
@@ -238,14 +233,9 @@
             "embol",
             "anticoag"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+          ]
         }
       ]
     },
@@ -286,14 +276,9 @@
           "guidelineRefs": [
             "esvs-ali-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+          ]
         },
         {
           "id": "mgmt-emergency-revascularisation",
@@ -308,14 +293,9 @@
           "guidelineRefs": [
             "esvs-ali-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+          ]
         }
       ],
       "mustExclude": [

@@ -258,11 +258,7 @@
           "note": "An alarm that names the airway problem, so the response is airway-directed.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The only alarm is the generic triage \"Emergency now\" (vital signs); nothing names stridor or the airway."
+          ]
         }
       ]
     },
@@ -322,12 +318,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No airway step in any web output: triage has no stridor rule (the emergency comes from RR/SpO2), prompts have no airway rule, and the C73 protocol lists stridor only as a red flag.",
-          "proposedFix": "Add a stridor/airway safety rule (triage + prompts): senior anaesthetic/ENT airway review, oxygen, steroids, no elective pathway."
+          ]
         }
       ],
       "mustExclude": [

@@ -203,14 +203,9 @@
         "guidelineRefs": [
           "ukka-hyperk-2023"
         ],
-        "knownGap": [
-          "web"
-        ],
         "unverified": [
           "ios"
-        ],
-        "knownGapNote": "Web: Triage \"same_day_call\" (score 30): no triage rule reads potassium, ECG changes or bradycardia (HR 46 is not a vital red flag; only >120 is). Before the negation fix, \"No chest pain\" in the HPI scored as a cardiac red flag and gave emergency_now for the wrong reason.",
-        "proposedFix": "Feed critical labs into adaptiveTriage (K ≥6.5, or ≥6.0 with ECG change; Na <120; glucose <3.5 or >30; Ca >3.5) and add bradycardia <50 as a vital red flag."
+        ]
       },
       "mustAlarm": [
         {
@@ -275,14 +270,9 @@
             "ukka-hyperk-2023"
           ],
           "note": "UKKA 2023: calcium chloride 10% 10 mL or calcium gluconate 10% 30 mL.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: The prompt gives \"IV Calcium gluconate 10ml 10%\" — one third of the UKKA 2023 dose (calcium gluconate 10% 30 mL or calcium chloride 10% 10 mL).",
-          "proposedFix": "Change the plan text to \"10% calcium gluconate 30 mL IV (or 10% calcium chloride 10 mL)\" after surgeon/pharmacy confirmation."
+          ]
         },
         {
           "id": "mgmt-insulin-glucose",

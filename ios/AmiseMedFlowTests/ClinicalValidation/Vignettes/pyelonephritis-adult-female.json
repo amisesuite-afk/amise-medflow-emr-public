@@ -233,14 +233,9 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No urine culture: N10 has no protocol (the UTI protocol maps only N39.0/N30) and PANE seeds cholecystitis/appendicitis/cholangitis tests (MRCP, CT).",
-          "proposedFix": "Map N10 (and N12) to the UTI protocol, or add a pyelonephritis protocol with MSU culture."
+          ]
         },
         {
           "id": "inv-blood-culture",

@@ -311,14 +311,9 @@
           "guidelineRefs": [
             "jbds-dka-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Alarms are only 'Tachypnoea' (RR 28) and 'Emergency now'; the glucose prompts need glucose >11/15 mmol/L, so euglycaemic DKA (9.8) raises nothing.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mnm-dka."
+          ]
         }
       ]
     },
@@ -337,14 +332,9 @@
           "guidelineRefs": [
             "jbds-dka-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No ketone or blood-gas investigation suggested (they are already resulted; no output interprets them).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mnm-dka."
+          ]
         }
       ]
     },
@@ -363,14 +353,9 @@
             "jbds-dka-2023",
             "cpoc-diabetes-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Empagliflozin is not recognised by any rule.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mnm-dka and periop-diabetes-sglt2-preop-withhold."
+          ]
         },
         {
           "id": "mgmt-dka-insulin-with-glucose",
@@ -386,14 +371,9 @@
             "jbds-dka-2023"
           ],
           "note": "Fixed-rate IV insulin with 10% glucose alongside because the glucose is not high.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No DKA protocol line (fixed-rate insulin with glucose).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mnm-dka."
+          ]
         }
       ],
       "mustExclude": [
@@ -410,14 +390,9 @@
             "if generalised peritonitis"
           ],
           "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "'mild generalised tenderness, no peritonism' matches the peritonism prompt ('generalised tenderness' and 'peritonism' substrings), which adds 'Emergency laparotomy consent — source control; ICU post-operatively' and pip-tazo/metronidazole to a medical emergency (DKA).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy",

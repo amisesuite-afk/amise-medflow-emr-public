@@ -183,14 +183,9 @@
         "guidelineRefs": [
           "wses-spleen-2017"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "adaptiveTriage has no trauma keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns routine_booking (score 8) for a CT-proven grade III splenic laceration.",
         "unverified": [
           "ios"
-        ],
-        "proposedFix": "Add trauma/burns red-flag rules to rules.ts (burn with TBSA, stab/gunshot/penetrating wound, evisceration, high-energy mechanism, head injury on anticoagulant) at urgent severity, and a shock-index or relative-hypotension rule."
+        ]
       }
     },
     "investigations": {

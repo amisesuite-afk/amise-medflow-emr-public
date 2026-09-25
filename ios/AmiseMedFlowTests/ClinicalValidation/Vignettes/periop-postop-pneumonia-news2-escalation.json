@@ -363,14 +363,9 @@
           "guidelineRefs": [
             "bts-oxygen-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The hypoxia prompt's step text mentions 'COPD: target 88–92%', but the plan line it adds is 'Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%'; COPD in the PMH does not change it.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Hypoxia prompt: when COPD/hypercapnic risk is recorded, add 'controlled oxygen, target 88–92% until ABG' as the plan line (BTS 2017)."
+          ]
         }
       ],
       "mustExclude": [
@@ -388,14 +383,9 @@
             "bts-oxygen-2017"
           ],
           "note": "COPD: target 88–92% until blood gases are known (hypercapnic risk). Quality because hypercapnia is not yet established.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "'titrate to SpO₂ ≥ 94%' in a COPD patient.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mgmt-controlled-oxygen."
+          ]
         },
         {
           "id": "mgmt-no-emergency-laparotomy",

@@ -253,11 +253,7 @@
           "note": "Temporary interruption of clopidogrel decided with cardiology (recent-ish coronary stent).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The anticoagulant prompt lists warfarin/DOACs/heparins only; clopidogrel (and other antiplatelets) are not handled in the bleed plan."
+          ]
         }
       ]
     }

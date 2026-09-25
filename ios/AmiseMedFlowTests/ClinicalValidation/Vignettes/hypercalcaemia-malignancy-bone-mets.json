@@ -269,14 +269,9 @@
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Adjusted calcium 3.62 is not read: there is no calcium rule in clinical-inference.ts, and E83.52 has no protocol.",
-          "proposedFix": "Add a hypercalcaemia prompt (adjusted Ca >3.0 or symptomatic): IV 0.9% saline, IV bisphosphonate/denosumab, PTH, stop calcium/vitamin D/thiazide; map E83.5 to a protocol."
+          ]
         }
       ]
     },
@@ -293,14 +288,9 @@
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No PTH.",
-          "proposedFix": "As flag-hypercalcaemia."
+          ]
         }
       ]
     },
@@ -321,14 +311,9 @@
             "endo-hcm-2023"
           ],
           "note": "SfE 2016: IV 0.9% sodium chloride rehydration. Generic fluid lines from other prompts (obstruction resuscitation, AKI fluid challenge) do not count.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No saline rehydration for hypercalcaemia; the only fluid line is the AKI prompt's 500 mL fluid challenge.",
-          "proposedFix": "As flag-hypercalcaemia."
+          ]
         },
         {
           "id": "mgmt-antiresorptive",
@@ -343,14 +328,9 @@
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No bisphosphonate or denosumab.",
-          "proposedFix": "As flag-hypercalcaemia."
+          ]
         },
         {
           "id": "mgmt-stop-calcium-vitd",
@@ -361,14 +341,9 @@
           "guidelineRefs": [
             "sfe-hypercalc-2016"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: The calcium and vitamin D supplements on the medication list are not stopped.",
-          "proposedFix": "As flag-hypercalcaemia; also suppress the osteoporosis calcium/vitamin D prompt when calcium is high."
+          ]
         },
         {
           "id": "mgmt-oncology",

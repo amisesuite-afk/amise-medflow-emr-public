@@ -247,11 +247,6 @@
           "guidelineRefs": [
             "esvs-graft-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Surgical history (aortic graft) is not read by any red-flag rule; triage only scores the bleed.",
-          "proposedFix": "Same rule as mnm-aortoenteric-fistula, surfaced as a safety prompt.",
           "unverified": [
             "ios"
           ]
@@ -273,11 +268,6 @@
           "guidelineRefs": [
             "esvs-graft-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol (no ICD/PANE match) and the GI-bleed prompt only offers OGD/colonoscopy.",
-          "proposedFix": "Same rule; add \"CT angiography\" as the first investigation.",
           "unverified": [
             "ios"
           ]
@@ -310,11 +300,6 @@
           "guidelineRefs": [
             "esvs-graft-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output mentions vascular surgery.",
-          "proposedFix": "Same rule.",
           "unverified": [
             "ios"
           ]

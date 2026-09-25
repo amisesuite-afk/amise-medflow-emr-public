@@ -203,11 +203,6 @@
             "re:(ultrasound|uss|\\bus\\b)[^\\n]{0,30}pylor",
             "re:pylor[^\\n]{0,40}(ultrasound|uss)"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No pyloric ultrasound suggested (see mnm-pyloric-stenosis).",
-          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral.",
           "unverified": [
             "ios"
           ]
@@ -227,11 +222,6 @@
             "capillary gas",
             "bicarbonate"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No blood gas, chloride or bicarbonate is requested; the only electrolyte test is 'FBC, U&E (pre-operative bloods)' seeded from the inguinal-hernia protocol (PANE top) and the adult acute-abdomen panel. The recorded pH 7.53 / Cl 86 / K 3.0 raises no prompt.",
-          "proposedFix": "Pyloric stenosis protocol: capillary/venous gas with chloride and bicarbonate, U&E, glucose; add a metabolic-alkalosis/hypochloraemia lab prompt.",
           "unverified": [
             "ios"
           ]
@@ -253,11 +243,6 @@
             "prior to pyloromyotomy",
             "re:before (surgery|anaesthe)"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No fluid/electrolyte correction plan; the recorded alkalosis (pH 7.53, Cl 86, K 3.0) raises no prompt (hypokalaemia/alkalosis are not read).",
-          "proposedFix": "Pyloric stenosis protocol: correct dehydration, chloride and potassium before pyloromyotomy; add hypokalaemia/hypochloraemic alkalosis lab prompts.",
           "unverified": [
             "ios"
           ]
@@ -272,11 +257,6 @@
             "pyloromyotomy",
             "ramstedt"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No pyloromyotomy suggested.",
-          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral.",
           "unverified": [
             "ios"
           ]
@@ -308,11 +288,6 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' (shock protocol) and 'IV fluid challenge 500ml' for a 3.6 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 80 is labelled 'shock').",
-          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
           "unverified": [
             "ios"
           ]

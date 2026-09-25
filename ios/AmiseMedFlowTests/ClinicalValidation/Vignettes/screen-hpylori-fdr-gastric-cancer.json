@@ -105,11 +105,6 @@
           "maastricht-vi-2022"
         ],
         "atMost": "priority",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Over-triage: the chief complaint 'Father had stomach cancer' matches 'Possible malignancy' (priority) and the family-history comorbidity counts as higher-risk → same_day_call (score 37). (The negated alarm symptoms no longer fire.)",
-        "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation).",
         "unverified": [
           "ios"
         ]

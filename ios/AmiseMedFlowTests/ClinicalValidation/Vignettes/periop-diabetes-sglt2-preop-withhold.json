@@ -182,14 +182,9 @@
             "fda-sglt2-2020"
           ],
           "note": "SGLT2 inhibitors are withheld before surgery (CPOC: the day before and the day of surgery; FDA label: at least 3 days for dapagliflozin) because of euglycaemic ketoacidosis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No SGLT2-inhibitor instruction anywhere. clinical-inference.ts never checks gliflozins; the diabetes prompts are HbA1c/eGFR/ACR monitoring. Dapagliflozin is not in the triage 'Diabetes medication mentioned' regex either (insulin/gliclazide only).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a peri-operative diabetes medication prompt (CPOC 2022): SGLT2i withheld (day before + day of surgery; FDA label 3–4 days) with ketone check; sulfonylurea omitted on the day; metformin by eGFR/missed meals; early on the list; CBG monitoring. Wording to be signed off by the surgeon (hazard H-10 applies to patient-facing text)."
+          ]
         },
         {
           "id": "mgmt-omit-sulfonylurea",
@@ -220,14 +215,9 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Ketones appear only in the hyperglycaemia prompts (glucose >11); glucose is 8.1 here.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mgmt-withhold-sglt2."
+          ]
         },
         {
           "id": "mgmt-glucose-monitoring",

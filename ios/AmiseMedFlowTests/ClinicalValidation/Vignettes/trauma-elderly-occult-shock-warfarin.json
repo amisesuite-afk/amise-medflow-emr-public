@@ -220,14 +220,9 @@
             "atls-10-geriatric",
             "atls-10-shock"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine flags relative hypotension (SBP 108 vs usual 165) or beta-blocker masking of tachycardia; triage relies on fixed thresholds.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a relative-hypotension/shock-index rule and a beta-blocker caveat for trauma in older adults."
+          ]
         }
       ]
     },

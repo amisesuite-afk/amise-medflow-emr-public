@@ -184,11 +184,7 @@
         "atLeast": "urgent",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web, since the engine-matching fixes (2026-09): the perioperative vignette was written against the pre-fix engine, where negated phrases in the free text raised triage. With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=23: no triage rule reads an anaesthetic-hazard history (suxamethonium apnoea) as urgent."
+        ]
       },
       "redFlags": [
         {
@@ -204,14 +200,9 @@
           "guidelineRefs": [
             "bche-review-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The suxamethonium-apnoea history (PMH and HPI) raises nothing; triage reasons are pregnancy (from 'urine pregnancy test negative'), pain and vomiting.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+          ]
         }
       ]
     },
@@ -228,14 +219,9 @@
             "bche-review-2019"
           ],
           "note": "Rapid sequence induction without suxamethonium (e.g. rocuronium with sugammadex available).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The appendicectomy template specifies 'General anaesthesia + endotracheal intubation' with no neuromuscular-blocker caution; no rocuronium/sugammadex alternative for RSI.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+          ]
         }
       ]
     }

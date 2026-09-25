@@ -174,14 +174,9 @@
             "accp-2012-gould"
           ],
           "note": "High VTE risk, low bleeding risk: LMWH prophylaxis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Caprini is suggested as a score, but no output recommends thromboprophylaxis: the plan is the colorectal_cancer protocol (C20 → colorectal_cancer; paneDiseaseId rectal_carcinoma is not used for the protocol) with no VTE content, and there is no colorectal operative template. Triage emergency_now from rectal bleeding history.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a VTE prompt driven by the Caprini/NICE NG89 assessment (VTE risk vs bleeding risk) to every operative plan: LMWH + mechanical prophylaxis, extended 28 days after major abdominal/pelvic cancer surgery."
+          ]
         },
         {
           "id": "mgmt-extended-prophylaxis",
@@ -199,14 +194,9 @@
             "accp-2012-gould"
           ],
           "note": "NICE NG89: extend pharmacological prophylaxis to 28 days after major abdominal/pelvic cancer surgery.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No extended (28-day) prophylaxis after major cancer surgery anywhere.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mgmt-pharmacological-prophylaxis."
+          ]
         },
         {
           "id": "mgmt-mechanical-prophylaxis",
@@ -225,14 +215,9 @@
             "nice-ng89",
             "accp-2012-gould"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No mechanical prophylaxis (TED/IPC) in this plan.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mgmt-pharmacological-prophylaxis."
+          ]
         }
       ]
     }

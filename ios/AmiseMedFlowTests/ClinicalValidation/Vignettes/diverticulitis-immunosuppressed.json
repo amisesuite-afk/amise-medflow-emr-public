@@ -231,8 +231,7 @@
         ],
         "note": "Immunosuppressed patients are high risk: same-day admission, not outpatient care.",
         "knownGap": [
-          "ios",
-          "web"
+          "ios"
         ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal discomfort' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=19: no triage rule covers this presentation."
       },
@@ -251,13 +250,9 @@
             "aga-2021",
             "ascrs-diverticulitis-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Triage counts 'Higher-risk comorbidity' but no red flag or prompt names immunosuppression as a reason not to treat as an outpatient."
+          ]
         }
       ]
     },

@@ -160,14 +160,9 @@
         "guidelineRefs": [
           "nice-ng228"
         ],
-        "knownGap": [
-          "web"
-        ],
         "unverified": [
           "ios"
-        ],
-        "knownGapNote": "Web: Triage \"same_day_call\" (score 35): the \"thunderclap headache\" chip and \"worst ever\" text are not red flags.",
-        "proposedFix": "Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency."
+        ]
       },
       "mustAlarm": [
         {
@@ -181,14 +176,9 @@
           "guidelineRefs": [
             "nice-ng228"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Alarms are the β-hCG prompt, the acute-abdomen panel (the \"vomiting\" chip) and pre-op bloods.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         }
       ]
     },
@@ -209,14 +199,9 @@
           "guidelineRefs": [
             "nice-ng228"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No CT head.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         },
         {
           "id": "inv-lp-if-ct-negative",
@@ -229,14 +214,9 @@
           "guidelineRefs": [
             "nice-ng228"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No LP / CTA pathway.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         }
       ]
     },
@@ -251,14 +231,9 @@
           "guidelineRefs": [
             "nice-ng228"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No neurosurgical referral.",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         },
         {
           "id": "mgmt-nimodipine",

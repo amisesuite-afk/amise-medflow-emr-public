@@ -176,14 +176,9 @@
             "nice-ng217"
           ],
           "note": "NICE NG217: 12-lead ECG in adults with a suspected seizure (cardiac causes). Graded as management because the web prompts add ECGs as plan lines.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No ECG (the pre-operative ECG prompt is age ≥40 only).",
-          "proposedFix": "Add a first-seizure prompt: ECG, glucose, first-seizure clinic within 2 weeks, driving/safety advice (NICE NG217)."
+          ]
         },
         {
           "id": "mgmt-first-seizure-referral",
@@ -198,14 +193,9 @@
           "guidelineRefs": [
             "nice-ng217"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No neurology / first-seizure referral; only two cervical-screening lines in management.",
-          "proposedFix": "As mgmt-ecg."
+          ]
         },
         {
           "id": "mgmt-driving-safety-advice",
@@ -218,14 +208,9 @@
             "nice-ng217"
           ],
           "note": "Driving and safety advice is a patient- and public-safety item.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No driving advice.",
-          "proposedFix": "As mgmt-ecg."
+          ]
         }
       ],
       "mustExclude": [

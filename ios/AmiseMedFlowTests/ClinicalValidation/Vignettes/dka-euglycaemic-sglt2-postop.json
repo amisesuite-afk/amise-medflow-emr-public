@@ -311,14 +311,9 @@
             "cpoc-diabetes-2022"
           ],
           "note": "The alarm must come from ketones/acidosis, not glucose.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Every DKA trigger keys on glucose (triage vital flag >20, prompt BGL >15, lab glucose >11). With glucose 10.2 and ketones 5.1 / pH 7.19 no DKA alarm appears; ketones and pH are not read.",
-          "proposedFix": "Trigger a DKA prompt on blood ketones ≥3.0 mmol/L or pH <7.3 / bicarbonate <15 at any glucose, and flag SGLT2 inhibitors (empagliflozin, dapagliflozin, canagliflozin) as a euglycaemic-DKA risk."
+          ]
         }
       ]
     },
@@ -339,14 +334,9 @@
             "ada-hhc-2024",
             "cpoc-diabetes-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No blood gas is suggested: the ABG action sits in the BGL >15 prompt, which does not fire.",
-          "proposedFix": "Same as alarm-ketoacidosis."
+          ]
         }
       ]
     },
@@ -364,14 +354,9 @@
             "cpoc-diabetes-2022"
           ],
           "note": "Blood ketones diagnose and monitor DKA (JBDS). Graded as management because the web prompts add ketone testing as a plan line, not an investigation order.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No ketone action: the ketone lines belong to the glucose-triggered prompts.",
-          "proposedFix": "Same as alarm-ketoacidosis."
+          ]
         },
         {
           "id": "mgmt-stop-sglt2",
@@ -385,14 +370,9 @@
             "ada-hhc-2024",
             "cpoc-diabetes-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No output mentions the SGLT2 inhibitor; empagliflozin is not recognised by any rule.",
-          "proposedFix": "Add an SGLT2-inhibitor rule: stop/withhold when unwell or peri-operative, check ketones (CPOC, MHRA)."
+          ]
         },
         {
           "id": "mgmt-fixed-rate-insulin",
@@ -412,14 +392,9 @@
             "ada-hhc-2024",
             "cpoc-diabetes-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No insulin plan (glucose-triggered prompts only).",
-          "proposedFix": "Same as alarm-ketoacidosis."
+          ]
         },
         {
           "id": "mgmt-glucose-with-insulin",
@@ -438,14 +413,9 @@
             "cpoc-diabetes-2022"
           ],
           "note": "With glucose already <14 mmol/L, JBDS starts 10% glucose alongside the insulin infusion; insulin alone risks hypoglycaemia.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No glucose-with-insulin plan. Even when the DKA prompt fires it offers insulin without 10% glucose.",
-          "proposedFix": "In the DKA prompt, add 10% glucose alongside the insulin infusion when glucose <14 mmol/L (always in euglycaemic DKA)."
+          ]
         },
         {
           "id": "mgmt-iv-fluids",

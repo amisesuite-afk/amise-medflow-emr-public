@@ -217,14 +217,9 @@
           "guidelineRefs": [
             "atls-10-pregnancy"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes."
+          ]
         },
         {
           "id": "inv-kleihauer",
@@ -238,14 +233,9 @@
             "atls-10-pregnancy",
             "green-top-anti-d-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes."
+          ]
         }
       ],
       "mustExclude": [
@@ -259,14 +249,9 @@
             "b-hcg"
           ],
           "note": "A known 30-week pregnancy does not need a pregnancy test; the prompt should adapt.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The reproductive-age prompt adds 'Urine pregnancy test (β-HCG) — mandatory' although the record says pregnant at 30 weeks.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Skip the pregnancy-test prompt when pregnancy status is recorded as pregnant."
+          ]
         }
       ]
     },
@@ -285,14 +270,9 @@
           "guidelineRefs": [
             "atls-10-pregnancy"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes."
+          ]
         },
         {
           "id": "mgmt-obstetric-team",
@@ -306,14 +286,9 @@
           "guidelineRefs": [
             "atls-10-pregnancy"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes."
+          ]
         },
         {
           "id": "mgmt-anti-d",

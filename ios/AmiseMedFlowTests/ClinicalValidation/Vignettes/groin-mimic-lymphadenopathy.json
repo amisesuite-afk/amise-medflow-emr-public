@@ -248,12 +248,7 @@
           "note": "The referral label (\"hernia\") must not drive a hernia repair plan once the examination says lymph nodes.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is \"Inguinal / groin hernia\" and site \"groin\" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The panel shows \"Elective: Lichtenstein mesh herniorrhaphy … TEP/TAPP\" and the TAPP prompt fires from the CC template name.",
-          "proposedFix": "Let the confirmed working diagnosis (ICD / paneDiseaseId) override the PANE top for the ManagementPanel, and add a neutral \"Groin lump\" CC template."
+          ]
         }
       ]
     }

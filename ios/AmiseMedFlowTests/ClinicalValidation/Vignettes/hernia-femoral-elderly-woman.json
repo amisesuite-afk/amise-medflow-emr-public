@@ -178,11 +178,7 @@
         "note": "Not an emergency today, but must not sit on a routine list.",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=12: no triage rule covers this presentation."
+        ]
       },
       "redFlags": [
         {

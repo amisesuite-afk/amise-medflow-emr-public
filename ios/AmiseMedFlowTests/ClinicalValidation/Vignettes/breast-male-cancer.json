@@ -229,11 +229,7 @@
           "note": "Male breast cancer with a family history: BRCA2 testing.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No BRCA / genetics step for male breast cancer with a family history."
+          ]
         }
       ],
       "mustExclude": [

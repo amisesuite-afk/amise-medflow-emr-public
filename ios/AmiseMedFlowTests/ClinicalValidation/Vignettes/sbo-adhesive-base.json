@@ -262,11 +262,7 @@
         "guidelineRefs": [
           "wses-sbo-2018"
         ],
-        "note": "Bowel obstruction needs same-day admission; in an outpatient practice this is an ER referral.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Possible malignancy, Systemic red flag symptom, Lower GI red flag). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=23: no triage rule covers this presentation."
+        "note": "Bowel obstruction needs same-day admission; in an outpatient practice this is an ER referral."
       },
       "mustNotAlarm": [
         {

@@ -162,11 +162,7 @@
         ],
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=8: no triage rule covers this presentation."
+        ]
       },
       "redFlags": [
         {
@@ -182,14 +178,9 @@
             "esvs-venous-2021"
           ],
           "note": "Thrombus near the SFJ carries DVT/PE risk and changes treatment.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an SVT protocol with ICD I80.0x."
+          ]
         }
       ]
     },
@@ -204,14 +195,9 @@
           "guidelineRefs": [
             "esvs-venous-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an SVT protocol with ICD I80.0x."
+          ]
         }
       ]
     },
@@ -233,14 +219,9 @@
             "esvs-venous-2021"
           ],
           "note": "ESVS 2021: within 3 cm of the SFJ → therapeutic anticoagulation; ≥5 cm elsewhere → fondaparinux 2.5 mg for 45 days.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The varicose-veins protocol only mentions \"superficial thrombophlebitis extending to SFJ\" as a red flag.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an SVT protocol with ICD I80.0x (ESVS 2021 treatment thresholds)."
+          ]
         }
       ],
       "mustExclude": [

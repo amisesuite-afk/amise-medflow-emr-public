@@ -243,14 +243,9 @@
           "guidelineRefs": [
             "nice-cg103"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Confusion only produces the generic triage reason 'Systemic red flag symptom'; no delirium flag.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See periop-postop-delirium-hypoactive/flag-delirium."
+          ]
         }
       ]
     },
@@ -288,14 +283,9 @@
           "guidelineRefs": [
             "woodcock-steroids-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Prednisolone is not recognised; no stress-dose cover in acute illness.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See periop-preop-long-term-steroids."
+          ]
         }
       ],
       "mustExclude": [

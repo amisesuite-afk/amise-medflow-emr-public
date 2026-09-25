@@ -191,7 +191,6 @@
         ],
         "note": "Salvage falls sharply after 6 hours.",
         "knownGap": [
-          "web",
           "ios"
         ],
         "knownGapNote": "Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.",

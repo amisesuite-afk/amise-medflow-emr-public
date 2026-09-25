@@ -210,12 +210,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 27 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — ST elevation MI, arrhythmia, right heart strain (PE).\" (web.clinicalPrompts); \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts).",
-          "proposedFix": "A prompt already offers this as plan text (\"• 12-lead ECG — ST elevation MI, arrhythmia, right heart strain (PE).\"): emit it as an addToInvestigations action so it reaches the investigation list."
+          ]
         }
       ]
     },
@@ -236,12 +231,7 @@
           "note": "Emergency electrical cardioversion for haemodynamically unstable AF (ESC 2024, class I).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 21 management items matched (sources: web.clinicalPrompts). First items: • 2 × large-bore IV cannulae, Hartmann's 1L bolus — reassess BP and HR at 15 min. | • 12-lead ECG — ST elevation MI, arrhythmia, right heart strain (PE). | • Portable CXR — cardiac outline, pulmonary oedema, pneumothorax. | • POCUS: cardiac (effusion/tamponade), aorta (AAA), IVC collapsibility..",
-          "proposedFix": "shock_non_infective prompt: when the rhythm is irregular / AF is documented with HR >150, add \"synchronised DC cardioversion (emergency)\" and cardiology."
+          ]
         }
       ]
     }

@@ -166,14 +166,9 @@
             "asa-osa-2014"
           ],
           "note": "Undiagnosed OSA raises the risk of post-operative respiratory events with opioids and sedation; it must be visible to the anaesthetist.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "STOP-Bang is suggested in the scales list ('snoring' chip, obesity), but nothing flags OSA as a peri-operative risk: no red flag, no alert. Triage adds 'Post-operative concern' (urgent) because the HPI says 'breathless on one flight of stairs'.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Raise an OSA red flag from STOP-Bang ≥5 or snoring + observed apnoea + BMI >35, carried into the anaesthetic/pre-op summary; see also Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+          ]
         }
       ]
     },
@@ -225,14 +220,9 @@
             "asa-osa-2014"
           ],
           "note": "Risk-mitigation plan: anaesthetic awareness, opioid-sparing analgesia, post-operative monitoring; consider sleep study/CPAP where systemic disease is uncontrolled.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No OSA mitigation (anaesthetic review, opioid-sparing analgesia, post-operative monitoring, sleep study/CPAP) in any output; the lap chole template's post-op orders include PRN morphine.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an OSA branch to the operative templates: opioid-sparing multimodal analgesia, continuous oximetry after recovery, CPAP if established (SASM 2016, ASA 2014)."
+          ]
         }
       ],
       "mustExclude": [

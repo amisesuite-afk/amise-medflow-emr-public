@@ -274,14 +274,9 @@
             "nice-ng126"
           ],
           "note": "No pregnancy test has been done; a template asserting 'β-HCG confirmed negative' can let an ectopic go to theatre as 'appendicitis'.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Guarding triggers the appendicectomy operative-plan prompt, which states 'β-HCG confirmed negative' before any test has been done.",
-          "proposedFix": "Replace 'β-HCG confirmed negative' in the template with 'β-HCG result: [ ]' and block the operative template until a negative result is recorded."
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy-booked",

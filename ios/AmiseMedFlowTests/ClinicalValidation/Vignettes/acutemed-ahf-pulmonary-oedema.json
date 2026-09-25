@@ -245,12 +245,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 22 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) | OGD (alarm features or PPI failure) (gord) | FBC, CRP (cholecystitis) | LFTs, bilirubin, ALP, GGT (cholecystitis).",
-          "proposedFix": "Heart-failure protocol with NT-proBNP (the shock prompt lists BNP only when hypotensive)."
+          ]
         },
         {
           "id": "inv-ecg",
@@ -266,12 +261,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 22 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts); \"• 12-lead ECG — arrhythmia, right heart strain pattern (PE).\" (web.clinicalPrompts).",
-          "proposedFix": "A prompt already offers this as plan text (\"• 12-lead ECG — arrhythmia, right heart strain pattern (PE).\"): emit it as an addToInvestigations action so it reaches the investigation list."
+          ]
         },
         {
           "id": "inv-cxr",
@@ -288,12 +278,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 22 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly.\" (web.clinicalPrompts).",
-          "proposedFix": "A prompt already offers this as plan text (\"• CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly.\"): emit it as an addToInvestigations action so it reaches the investigation list."
+          ]
         }
       ]
     },
@@ -316,12 +301,7 @@
           "note": "IV loop diuretic for congestion (ESC 2021, class I).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 16 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
-          "proposedFix": "lib/pane-engine: add an acute heart failure node (orthopnoea, PND, bilateral crackles, raised JVP, oedema) with a protocol (oxygen if SpO2 <90%, IV loop diuretic, NIV, NT-proBNP, ECG/troponin for ACS precipitant, echo) and map I50/J81."
+          ]
         },
         {
           "id": "mgmt-niv",

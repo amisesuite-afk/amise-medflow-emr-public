@@ -220,14 +220,9 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No urine culture (O23.0 unmapped; PANE seeds biliary/appendix tests).",
-          "proposedFix": "Map O23.0/N10 to a pyelonephritis protocol."
+          ]
         }
       ]
     },
@@ -287,14 +282,9 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No obstetric review or fetal monitoring. The β-hCG prompt (\"If urine β-HCG positive … exclude ectopic\") fires in a known 24-week pregnancy.",
-          "proposedFix": "When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications."
+          ]
         }
       ],
       "mustExclude": [

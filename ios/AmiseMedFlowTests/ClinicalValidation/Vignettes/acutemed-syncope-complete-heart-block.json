@@ -221,12 +221,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 22 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — P-wave morphology, PR interval, heart block grade.\" (web.clinicalPrompts); \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts).",
-          "proposedFix": "A prompt already offers this as plan text (\"• 12-lead ECG — P-wave morphology, PR interval, heart block grade.\"): emit it as an addToInvestigations action so it reaches the investigation list."
+          ]
         }
       ],
       "mustExclude": [

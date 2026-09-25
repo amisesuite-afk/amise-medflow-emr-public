@@ -239,11 +239,6 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No investigation output mentions an ECG: the triage chest_pain pathway checklist (\"ECG within 10 minutes\") is not surfaced, and the oesophageal_perforation protocol omits it.",
-          "proposedFix": "computeClinicalPrompts: chest pain (chip or CC/HPI text) → safety prompt \"12-lead ECG within 10 min + hs-troponin\" (ESC 2023).",
           "unverified": [
             "ios"
           ]

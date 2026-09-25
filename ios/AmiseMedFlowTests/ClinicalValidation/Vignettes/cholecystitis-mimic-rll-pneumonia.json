@@ -311,14 +311,9 @@
             "nice-cg191"
           ],
           "note": "The single test that makes the diagnosis; NICE CG191 recommends a chest X-ray to confirm pneumonia.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No CXR investigation for pneumonia; a CXR appears only as plan text in the hypoxia/sepsis prompts (\"CXR — identify cause\", \"Erect CXR — exclude free air and basal pneumonia\"). Partial mitigation.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts: RUQ/upper abdominal pain + (cough or pleuritic pain or SpO₂ <94% or basal crackles) → \"CXR (exclude basal pneumonia)\" as an investigation (addToInvestigations)."
+          ]
         },
         {
           "id": "inv-blood-cultures",
@@ -351,14 +346,9 @@
             "no role"
           ],
           "note": "The gallbladder is normal on ultrasound: a cholecystectomy suggestion is a wrong-diagnosis operative plan.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Gallstone operative plan and consent prompt fire (hasGallstoneIndication: the \"right upper quadrant pain\" symptom chip, and \"Murphy's sign negative\" matches \"murphy\") despite a normal gallbladder on US.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy",

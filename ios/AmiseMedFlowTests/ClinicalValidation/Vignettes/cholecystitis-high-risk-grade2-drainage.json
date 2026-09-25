@@ -339,14 +339,9 @@
             "tg18-dx-cholecystitis"
           ],
           "note": "Duration >72 h is on its own a Grade II criterion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web calculator returns Grade I: it has no \"duration >72 h\" criterion (Grade II only on WBC >18).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-scores.ts scoreTokyoCholecystitis: add the missing TG18 Grade II criteria (duration >72 h, palpable tender RUQ mass, marked local inflammation — gangrenous/emphysematous/abscess/biliary peritonitis) as inputs, as ScalesTab/ClinicalScoresPanel ticks."
+          ]
         }
       ]
     },

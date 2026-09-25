@@ -413,14 +413,9 @@
             "ada-hhc-2024"
           ],
           "note": "JBDS: potassium added to fluids according to the serum level once below 5.5 mmol/L.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: The DKA prompt says \"Monitor K⁺ hourly\" and \"VRIII … + potassium replacement\" only in the step label; the plan line added has no potassium replacement.",
-          "proposedFix": "Add a potassium-replacement line (by serum level, per JBDS) to the BGL >15 DKA/HHS prompt plan text."
+          ]
         },
         {
           "id": "mgmt-continue-basal-insulin",
@@ -436,14 +431,9 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No output mentions continuing long-acting insulin.",
-          "proposedFix": "Add \"continue long-acting insulin\" to the DKA prompt."
+          ]
         },
         {
           "id": "mgmt-glucose-when-falling",
@@ -461,14 +451,9 @@
             "ada-hhc-2024"
           ],
           "note": "JBDS: add 10% glucose when glucose falls below 14 mmol/L while the insulin infusion continues.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No output adds 10% glucose as glucose falls.",
-          "proposedFix": "Add \"start 10% glucose when glucose <14 mmol/L\" to the DKA prompt."
+          ]
         }
       ],
       "mustExclude": [

@@ -238,11 +238,6 @@
             "abuse",
             "violence"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No domestic-abuse or safeguarding output: neither triage rules nor prompts contain partner/assault/domestic terms.",
-          "proposedFix": "Add an intimate-partner-violence rule ('pushed/hit/kicked by partner', 'assault' with pregnancy or repeated injuries) → safeguarding flag and safety-planning actions (NICE PH50).",
           "unverified": [
             "ios"
           ]
@@ -264,11 +259,6 @@
             "fetal monitor",
             "fetal heart"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No CTG/fetal monitoring: no trauma-in-pregnancy content exists; the blunt-trauma protocol is not reached (PANE top < 0.20, O45 unmapped).",
-          "proposedFix": "Trauma-in-pregnancy protocol.",
           "unverified": [
             "ios"
           ]
@@ -322,11 +312,6 @@
             "maternity",
             "o&g"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No obstetric output (see inv-fetal-monitoring).",
-          "proposedFix": "Trauma-in-pregnancy protocol.",
           "unverified": [
             "ios"
           ]
@@ -344,11 +329,6 @@
             "displace the uterus",
             "wedge"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No left lateral tilt / uterine displacement (see inv-fetal-monitoring).",
-          "proposedFix": "Trauma-in-pregnancy protocol.",
           "unverified": [
             "ios"
           ]
@@ -367,11 +347,6 @@
             "safety plan",
             "idva"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safety planning or referral (see flag-domestic-abuse).",
-          "proposedFix": "IPV rule (NICE PH50).",
           "unverified": [
             "ios"
           ]

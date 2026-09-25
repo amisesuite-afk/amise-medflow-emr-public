@@ -238,12 +238,7 @@
           "note": "Bedside echo when CTPA is not immediately feasible in suspected high-risk PE.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 24 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) | D-dimer (only if pre-test probability low/intermediate) (deep_vein_thrombosis) | Venous duplex ultrasound of affected limb (deep_vein_thrombosis) | FBC, coagulation screen (APTT, PT, fibrinogen) (deep_vein_thrombosis).",
-          "proposedFix": "Emit the POCUS/echo action of the shock prompt as an investigation, and map I26.0x so the PE protocol echo line appears."
+          ]
         }
       ]
     },
@@ -324,12 +319,7 @@
           "note": "ESC 2019: aggressive volume expansion can worsen RV function; cautious volume loading only.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min.\".",
-          "proposedFix": "shock_non_infective prompt: when PE is suspected (dyspnoea/hypoxia + raised JVP/DVT signs), replace the 1 L bolus with cautious fluid (≤500 mL) and early vasopressor/thrombolysis discussion."
+          ]
         }
       ]
     }

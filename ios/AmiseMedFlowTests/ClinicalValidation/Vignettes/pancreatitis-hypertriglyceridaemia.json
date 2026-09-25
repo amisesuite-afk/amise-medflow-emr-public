@@ -299,14 +299,9 @@
             "endo-htg-2012"
           ],
           "note": "TG ≥11.3 mmol/L (1000 mg/dL) is a recognised cause of AP. Unrecognised, the aetiology is missed and the patient re-presents (she already has one \"unexplained\" episode). Lipaemia can also make amylase falsely low.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "TG 31.4 mmol/L is not flagged by any output (no TG rule in prompts, triage or protocol); the lipase prompt reads the first lab named amylase/lipase (amylase 140), so no pancreatitis prompt fires either.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts: add a triglycerides ≥11.3 mmol/L (1000 mg/dL) prompt (\"hypertriglyceridaemia-induced pancreatitis: insulin/dextrose infusion, consider apheresis, lipid clinic\"); make numLab take the highest ×ULN of amylase and lipase rather than the first key."
+          ]
         }
       ]
     },
@@ -477,14 +472,9 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Appendicectomy operative plan fires on \"guarding\".",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+          ]
         }
       ]
     },

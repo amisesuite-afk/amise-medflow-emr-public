@@ -350,11 +350,6 @@
             "esge-2021"
           ],
           "note": "An elective peri-operative bridging template (heparin) during active GI haemorrhage is contraindicated.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "computeClinicalPrompts anticoag_check (any anticoagulant) adds the elective peri-operative plan line \"hold DOAC 48–72h pre-op; warfarin — bridge with LMWH per haematology protocol\" to an actively bleeding patient.",
-          "proposedFix": "clinical-inference.ts anticoag_check: suppress the bridging template when GI haemorrhage is present (gi_bleed_panel fired) and replace it with \"Anticoagulant: withhold/reversal decision by clinician (ESGE 2021)\".",
           "unverified": [
             "ios"
           ]

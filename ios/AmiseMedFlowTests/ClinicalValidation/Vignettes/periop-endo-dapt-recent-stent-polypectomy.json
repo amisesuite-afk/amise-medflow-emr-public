@@ -157,14 +157,9 @@
             "bsg-esge-2021-anticoag",
             "esc-ncs-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output addresses DAPT 2 months after a DES before a high-risk polypectomy; triage emergency_now from 'GI or other bleeding' (the negated 'No bleeding').",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table."
+          ]
         },
         {
           "id": "mgmt-defer-or-plan",

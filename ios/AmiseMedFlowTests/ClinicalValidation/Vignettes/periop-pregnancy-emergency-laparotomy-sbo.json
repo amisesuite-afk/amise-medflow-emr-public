@@ -270,14 +270,9 @@
             "acog-co775",
             "sages-pregnancy-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No obstetric team, CTG or fetal monitoring in any output; pregnancy is only a triage reason and the β-HCG prompt ('Urine pregnancy test — mandatory', 'exclude ectopic') for a known 29-week pregnancy.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Pregnancy branch for any operative plan: obstetric review, fetal monitoring by gestation, left uterine displacement, VTE prophylaxis, antenatal steroids when preterm delivery is possible, no NSAIDs from 20 weeks."
+          ]
         },
         {
           "id": "mgmt-vte-prophylaxis",

@@ -111,11 +111,6 @@
         ],
         "note": "NG136: BP ≥ 180/120 with retinal haemorrhage or papilloedema — same-day specialist referral.",
         "atLeast": "urgent",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web triage: routine_booking, score 0, for BP 208/126 with headache, blurred vision and papilloedema. adaptiveTriage has no high-BP vital red flag, and 'headache'/'blurred vision'/'papilloedema' are not red-flag terms. Before the negation fixes this passed only because the negated 'No chest pain' raised 'Possible cardiac event'.",
-        "proposedFix": "Add BP red flags to computeVitalRedFlags (e.g. SBP ≥ 180 or DBP ≥ 120 → urgent; with headache, visual disturbance, papilloedema, chest pain or confusion → emergency), and a pregnancy/postpartum ≥ 160/110 rule (NICE NG136, NG133).",
         "unverified": [
           "ios"
         ]
@@ -152,11 +147,6 @@
             "hypertensive emergency",
             "emergency department"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: the hypertensive_urgency prompt (SBP ≥ 180) offers oral amlodipine and 'reduce SBP by 25% over 24–48 h'; the IV/hypertensive-emergency line appears only at SBP ≥ 220. Recorded papilloedema and retinal haemorrhages are not read, so there is no same-day admission/referral (NICE NG136).",
-          "proposedFix": "When SBP ≥ 180 or DBP ≥ 120 and the exam/HPI records papilloedema, retinal haemorrhage, encephalopathy, chest pain or AKI, output 'hypertensive emergency — same-day admission' regardless of the 220 threshold.",
           "unverified": [
             "ios"
           ]
@@ -180,11 +170,6 @@
             "defer",
             "postpone"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: 'Elective surgery deferred' appears, but the hernia prompt still produces a laparoscopic inguinal hernia repair (TAPP) operative plan and consent for an umbilical hernia.",
-          "proposedFix": "Suppress operative-plan templates while a hypertensive emergency prompt is active, and pick the template by hernia type.",
           "unverified": [
             "ios"
           ]

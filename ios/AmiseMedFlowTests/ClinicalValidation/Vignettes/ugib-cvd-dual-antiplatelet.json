@@ -325,11 +325,6 @@
             "esge-2021"
           ],
           "note": "ESGE: do not interrupt aspirin for secondary prevention; P2Y12 inhibitor decisions with cardiology.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Antiplatelets are only a triage reason (\"Anticoagulant or antiplatelet medication mentioned\"); no plan line routes the aspirin/clopidogrel decision to cardiology. The anticoag prompt does not list aspirin or clopidogrel.",
-          "proposedFix": "Add an antiplatelet-in-GI-bleed prompt (aspirin/clopidogrel/ticagrelor/prasugrel): \"Clinician/cardiology decision — ESGE: do not interrupt low-dose aspirin for secondary prevention; P2Y12 with cardiology\".",
           "unverified": [
             "ios"
           ]

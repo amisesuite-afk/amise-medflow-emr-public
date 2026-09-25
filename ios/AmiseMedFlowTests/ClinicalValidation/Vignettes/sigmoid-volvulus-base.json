@@ -259,12 +259,7 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "ascrs-volvulus-2021"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web: adaptiveTriage: 'priority_24_48h' (score 27: age ≥70, vomiting). 'Massive distension' and 'no flatus or stool' are not red-flag phrases ('unable to pass gas/stool' is).",
-        "proposedFix": "Add obstruction red-flag phrases to RULES ('no flatus', 'not passed wind', 'massive/increasing distension') and a volvulus term."
+        ]
       }
     },
     "management": {

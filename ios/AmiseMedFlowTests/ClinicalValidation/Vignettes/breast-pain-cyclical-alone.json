@@ -145,11 +145,7 @@
         "note": "Breast pain alone is not an NG12 suspected-cancer criterion.",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage same_day_call: \"friend had breast cancer\" matches the \"Possible malignancy\" red flag."
+        ]
       },
       "mustNotAlarm": [
         {

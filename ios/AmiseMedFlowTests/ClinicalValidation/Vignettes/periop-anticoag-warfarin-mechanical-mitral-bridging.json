@@ -154,14 +154,9 @@
           "guidelineRefs": [
             "esc-valve-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The mechanical valve is not surfaced; triage reasons are 'GI or other bleeding' (from 'No bleeding problems'), the anticoagulant reason and post-op concern (from 'laparotomy'). The bridging expectation passes only because the generic prompt bridges every warfarin patient.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Read 'mechanical valve' from PMH into the anticoagulation rule (high thrombotic risk → bridging, VKA only)."
+          ]
         }
       ]
     },

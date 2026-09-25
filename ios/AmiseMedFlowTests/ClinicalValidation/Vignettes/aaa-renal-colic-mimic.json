@@ -205,14 +205,9 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine suggests aortic ultrasound or CTA; the management panel shows the renal colic protocol (PANE top) and I71.3 maps to no protocol.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an \"exclude AAA\" investigation to the renal colic protocol for age ≥60 without known stones, and map I71.3."
+          ]
         }
       ]
     },
@@ -233,10 +228,6 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Management panel shows the renal colic protocol; no vascular step.",
           "unverified": [
             "ios"
           ]

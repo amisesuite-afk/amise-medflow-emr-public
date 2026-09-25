@@ -288,14 +288,9 @@
             "sepsis-3"
           ],
           "note": "Afebrile with normal WBC, but qSOFA 3 (confusion, RR 22, SBP 96), lactate 3.1 and AKI with a known source: sepsis. Steroids and age remove fever and leucocytosis.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Sepsis prompts need temperature ≥38 °C with HR >100 (or SBP <90 for the shock prompt); an afebrile patient with qSOFA 3, lactate 3.1 and AKI raises no sepsis alarm.",
-          "proposedFix": "Add a qSOFA/lactate sepsis rule that does not require fever (RR ≥22, SBP ≤100, altered mentation, lactate ≥2) and treat steroid use/age ≥75 as masking factors."
+          ]
         }
       ],
       "redFlags": [
@@ -308,13 +303,9 @@
             "immunosupp"
           ],
           "note": "Long-term steroids mask peritonism and fever; the flag should be visible.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No flag that long-term steroids mask peritonism and fever."
+          ]
         }
       ]
     },
@@ -436,13 +427,9 @@
             "steroid cover"
           ],
           "note": "Peri-operative steroid cover for a patient on long-term prednisolone (adrenal suppression). Quality: not in the WSES PPU guideline.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No steroid-cover prompt."
+          ]
         },
         {
           "id": "mgmt-stop-nsaid",

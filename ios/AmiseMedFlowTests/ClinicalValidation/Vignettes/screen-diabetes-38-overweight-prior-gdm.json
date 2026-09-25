@@ -127,11 +127,6 @@
             "diabetes monitoring",
             "diabetic foot exam"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: hasPmh(comorbidities, 'diabet') matches 'Previous gestational diabetes' and 'Family history: mother type 2 diabetes', so she is treated as a known diabetic: 'Diabetes mellitus: HbA1c + eGFR — diabetes monitoring' and 'Urine albumin:creatinine ratio — diabetic nephropathy screening'. (The HbA1c expectation passes for this wrong reason; the diabetes_screen prompt itself starts only at 40.)",
-          "proposedFix": "Exclude 'gestational', 'family history' and 'pre-diabetes' from the diabetes comorbidity match; lower diabetes_screen to 35 and add overweight + risk factor at any age (ADA 2024).",
           "unverified": [
             "ios"
           ]

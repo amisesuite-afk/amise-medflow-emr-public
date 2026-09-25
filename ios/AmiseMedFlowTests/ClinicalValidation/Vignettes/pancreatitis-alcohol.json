@@ -342,14 +342,9 @@
             "nice-cg100"
           ],
           "note": "Alcohol-dependent, vomiting, malnourished: thiamine before glucose-containing fluids to prevent Wernicke’s encephalopathy.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No thiamine anywhere for an alcohol-dependent, vomiting patient in early withdrawal.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Pancreatitis protocol (alcohol aetiology) and clinical-inference.ts alcohol prompt: parenteral thiamine (Pabrinex) before glucose, CIWA-Ar-guided benzodiazepine withdrawal management (NICE CG100)."
+          ]
         },
         {
           "id": "mgmt-withdrawal",
@@ -365,14 +360,9 @@
           "guidelineRefs": [
             "nice-cg100"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No withdrawal assessment or management.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See mgmt-thiamine."
+          ]
         },
         {
           "id": "mgmt-alcohol-intervention",
@@ -515,14 +505,9 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Appendicectomy operative plan fires on \"guarding\".",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+          ]
         }
       ]
     },

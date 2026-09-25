@@ -175,14 +175,9 @@
             "nice-cg103",
             "cpoc-bgs-frailty-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Dementia and a previous post-operative delirium are not flagged; triage emergency_now for an elective discussion ('Possible malignancy', 'Systemic red flag symptom' from 'falls'/'confusion' wording, 'Post-operative…' from the 2019 hernia repair).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Delirium-risk prompt for age ≥65 with cognitive impairment or previous delirium (NICE CG103), feeding the operative plan."
+          ]
         }
       ]
     },

@@ -236,14 +236,9 @@
           "nice-cg188"
         ],
         "note": "Pain-free outpatient with normal observations and bloods: elective pathway. Over-triage to emergency is noise, not harm.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "adaptiveTriage returns emergency_now (score 140): \"No fever, no jaundice\" in the HPI fires \"Possible biliary obstruction\" and \"Possible cholangitis pattern\", and \"radiating to the right shoulder blade\" fires \"Possible cardiac event\".",
         "unverified": [
           "ios"
-        ],
-        "proposedFix": "lib/triage-engine rules.ts RED_FLAGS and adaptive-triage.ts: negation-aware matching; restrict the cardiac rule's \"radiating to\" to chest-pain context."
+        ]
       },
       "mustNotAlarm": [
         {
@@ -255,14 +250,9 @@
             "emergency now"
           ],
           "note": "Afebrile, normal WBC/CRP, pain-free.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Triage \"Emergency now\" alarm fires (negated fever/jaundice in the HPI).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+          ]
         },
         {
           "id": "no-dilated-cbd-alarm",
@@ -272,14 +262,9 @@
             "dilated cbd"
           ],
           "note": "The CBD measures 4 mm (normal). A \"dilated CBD\" alarm here is a false positive that drives MRCP/ERCP.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "\"Dilated CBD → MRCP + ERCP\" safety prompt fires on \"CBD 4 mm\" (any mention of the CBD).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says \"dilated\" without negation) instead of firing on any \"cbd\"/\"common bile duct\" mention; make its ERCP action conditional (\"if a stone is confirmed/ASGE high risk\")."
+          ]
         },
         {
           "id": "no-cholangitis-alarm",

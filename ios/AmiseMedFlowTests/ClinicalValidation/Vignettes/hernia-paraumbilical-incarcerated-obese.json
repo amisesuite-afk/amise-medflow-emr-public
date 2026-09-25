@@ -258,11 +258,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No lactate in the umbilical_hernia protocol or the hernia prompts."
+          ]
         }
       ]
     },

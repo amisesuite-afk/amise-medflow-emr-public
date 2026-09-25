@@ -304,11 +304,6 @@
             "preeclampsia",
             "blood pressure"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No hypertension flag: adaptiveTriage has no high-BP vital red flag at all, and the hypertensive_urgency prompt starts at SBP ≥ 180, so BP 164–168/110–112 in pregnancy (severe range ≥ 160/110) raises nothing.",
-          "proposedFix": "Add a BP ≥ 160/110 in-pregnancy/postpartum red flag (treat within the hour) to adaptiveTriage and computeClinicalPrompts.",
           "unverified": [
             "ios"
           ]
@@ -329,11 +324,6 @@
             "re:\\bupcr\\b",
             "proteinuria"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No proteinuria quantification output (see mnm-preeclampsia-hellp).",
-          "proposedFix": "Part of the pre-eclampsia rule.",
           "unverified": [
             "ios"
           ]
@@ -353,11 +343,6 @@
           "match": [
             "magnesium"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No magnesium sulfate anywhere (see mnm-preeclampsia-hellp).",
-          "proposedFix": "Part of the pre-eclampsia rule.",
           "unverified": [
             "ios"
           ]
@@ -374,11 +359,6 @@
             "nifedipine",
             "hydralazine"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No antihypertensive suggested: BP below the 180 prompt threshold; no pregnancy-specific agents (labetalol/nifedipine) anywhere.",
-          "proposedFix": "Part of the pre-eclampsia rule.",
           "unverified": [
             "ios"
           ]
@@ -396,11 +376,6 @@
             "deliver",
             "maternity"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No obstetric output: O14.23 maps to no protocol, so the Assessment panel and Plan are empty; the prompts are biliary (MRCP, ERCP, 'HPB surgical review — Whipple') and gynaecological ('if ectopic suspected').",
-          "proposedFix": "Part of the pre-eclampsia rule.",
           "unverified": [
             "ios"
           ]
@@ -427,11 +402,6 @@
             "after recovery",
             "once recovered"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: the gallstone prompt ('Cholecystitis / gallstone disease — surgical indication') still fires from the ultrasound report although it says 'no gallstones', and adds 'Consent: laparoscopic cholecystectomy' and a full cholecystectomy operative plan; the dilated-CBD prompt fires on 'CBD 4 mm' (MRCP, ERCP, Whipple review).",
-          "proposedFix": "Gate the cholecystectomy template on a biliary working diagnosis and on affirmed stones; parse the CBD diameter before the dilated-CBD prompt.",
           "unverified": [
             "ios"
           ]
@@ -484,11 +454,6 @@
             "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
             "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: the cholecystectomy operative-plan template prescribes 'paracetamol 1g QDS (regular) + ibuprofen 400mg TDS (if eGFR normal)' at 34 weeks with platelets 72.",
-          "proposedFix": "When pregnancy is recorded: strip NSAIDs from 20 weeks, replace 'β-HCG confirmed negative' with the gestation, add obstetric review and fetal monitoring to the operative templates.",
           "unverified": [
             "ios"
           ]

@@ -155,11 +155,6 @@
             "contrast meal",
             "upper gi series"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No upper GI contrast study suggested.",
-          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral.",
           "unverified": [
             "ios"
           ]
@@ -180,11 +175,6 @@
             "paediatric surgeon",
             "pediatric surgeon"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No paediatric surgical referral.",
-          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral.",
           "unverified": [
             "ios"
           ]
@@ -234,11 +224,6 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' and 'IV fluid challenge 500ml' for a 3.9 kg neonate — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 75 is labelled 'shock' in a well-perfused baby).",
-          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
           "unverified": [
             "ios"
           ]

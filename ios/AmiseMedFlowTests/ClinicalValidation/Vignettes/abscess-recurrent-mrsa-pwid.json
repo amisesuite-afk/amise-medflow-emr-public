@@ -209,14 +209,9 @@
             "iv drug",
             "pwid"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The 'IV drug use' toxic habit is not surfaced as a red flag. Triage also fires 'Possible cardiac event' from the words 'left arm' in the surgical history and 'GI or other bleeding' from 'No bleeding' (no negation).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Handle negation in scanRedFlags and do not match cardiac keywords inside surgical history."
+          ]
         }
       ]
     },

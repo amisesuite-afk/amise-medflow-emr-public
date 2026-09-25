@@ -290,14 +290,9 @@
             "esvs-aaa-2024"
           ],
           "note": "A generic hypotension alarm is not enough: the alarm must name the aneurysm so that no one sends the patient for a CT KUB.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Alarms are 'Hypotension', 'Tachycardia' and the generic 'SBP 84 → Shock Protocol'; none names the aneurysm.",
-          "proposedFix": "Add a prompt: pulsatile/expansile mass or known AAA + pain + hypotension → 'Suspected ruptured AAA — vascular surgery now, permissive hypotension'."
+          ]
         }
       ]
     },
@@ -414,13 +409,9 @@
             "esvs-aaa-2024"
           ],
           "note": "ESVS: restrictive (permissive hypotensive) resuscitation before aortic control.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Shock prompt: 'Hartmann's 1L bolus — reassess BP and HR at 15 min' for a ruptured AAA."
+          ]
         }
       ]
     },

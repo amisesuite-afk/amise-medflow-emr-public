@@ -275,14 +275,9 @@
             "prednisolone",
             "drug-induced"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Azathioprine/prednisolone not flagged; drug-induced aetiology not recognised.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts: drug-induced pancreatitis prompt for recognised culprits (azathioprine/6-MP, valproate, ACE inhibitors, oestrogens, etc.) started within ~3 months."
+          ]
         }
       ]
     },
@@ -299,14 +294,9 @@
             "acg-2024"
           ],
           "note": "Continuing the causative drug causes recurrence (thiopurine pancreatitis recurs on rechallenge). Stop azathioprine and discuss an alternative with the IBD team.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output advises stopping azathioprine.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Pancreatitis protocol: \"Identify and stop a causative drug\" step with the culprit list; see flag-immunosuppression."
+          ]
         },
         {
           "id": "mgmt-steroid-cover",
@@ -322,14 +312,9 @@
             "steroid-periop-2020"
           ],
           "note": "On prednisolone 20 mg: do not stop abruptly; IV hydrocortisone if vomiting prevents oral steroid.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No steroid-continuation/cover advice for prednisolone 20 mg with vomiting.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts: glucocorticoid on the medication list + vomiting/NBM → IV hydrocortisone cover."
+          ]
         }
       ],
       "mustExclude": [

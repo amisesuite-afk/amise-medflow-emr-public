@@ -183,12 +183,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No red flag or alarm for a pulsatile groin mass: triage has no pulsatile/aneurysm rule and the prompts have none.",
-          "proposedFix": "Add a triage/prompt safety rule: pulsatile or expansile groin mass → do not needle or explore; duplex/CTA and vascular referral."
+          ]
         }
       ]
     },
@@ -210,11 +205,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No duplex/CT angiography proposed; I72.4 has no protocol."
+          ]
         }
       ]
     },
@@ -235,12 +226,7 @@
           "note": "A hernia operative plan on a femoral aneurysm is dangerous.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is \"Inguinal / groin hernia\" and site \"groin\" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The panel shows the Lichtenstein/TEP/TAPP repair and the TAPP operative-plan prompt fires from the CC template name.",
-          "proposedFix": "Let the confirmed working diagnosis (ICD / paneDiseaseId) override the PANE top for the ManagementPanel, and add a neutral \"Groin lump\" CC template."
+          ]
         }
       ],
       "mustInclude": [

@@ -184,12 +184,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: nothing names anaphylaxis; hypotension is read as haemorrhagic/cardiogenic/obstructive shock and the vomiting adds \"Acute abdominal presentation\". Alarms raised: Hypotension; Tachycardia; Tachypnoea; Low SpO2; Emergency now; SBP 88 mmHg - hypotension; Acute abdominal presentation; Pre-operative assessment; SpO2 92% - hypoxia; HR 150 bpm - unexplained tachycardia.",
-          "proposedFix": "Add an anaphylaxis rule/prompt (acute urticaria/angioedema + airway, breathing or circulation compromise, especially after a drug or food) -> emergency with \"IM adrenaline (1 mg/mL): 500 micrograms adult / 300 micrograms 6-12 y / 150 micrograms <6 y, repeat after 5 min; call 999; lie flat; oxygen; IV fluid\"; and a PANE/triage node so it can appear in the differential."
+          ]
         }
       ]
     },
@@ -207,12 +202,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 12 management items matched (sources: web.clinicalPrompts). First items: • 2 × large-bore IV cannulae, Hartmann's 1L bolus — reassess BP and HR at 15 min. | • 12-lead ECG — ST elevation MI, arrhythmia, right heart strain (PE). | • Portable CXR — cardiac outline, pulmonary oedema, pneumothorax. | • POCUS: cardiac (effusion/tamponade), aorta (AAA), IVC collapsibility..",
-          "proposedFix": "Add an anaphylaxis rule/prompt (acute urticaria/angioedema + airway, breathing or circulation compromise, especially after a drug or food) -> emergency with \"IM adrenaline (1 mg/mL): 500 micrograms adult / 300 micrograms 6-12 y / 150 micrograms <6 y, repeat after 5 min; call 999; lie flat; oxygen; IV fluid\"; and a PANE/triage node so it can appear in the differential."
+          ]
         },
         {
           "id": "mgmt-adrenaline-im-dose-child",
@@ -226,12 +216,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 12 management items matched (sources: web.clinicalPrompts). First items: • 2 × large-bore IV cannulae, Hartmann's 1L bolus — reassess BP and HR at 15 min. | • 12-lead ECG — ST elevation MI, arrhythmia, right heart strain (PE). | • Portable CXR — cardiac outline, pulmonary oedema, pneumothorax. | • POCUS: cardiac (effusion/tamponade), aorta (AAA), IVC collapsibility..",
-          "proposedFix": "Add an anaphylaxis rule/prompt (acute urticaria/angioedema + airway, breathing or circulation compromise, especially after a drug or food) -> emergency with \"IM adrenaline (1 mg/mL): 500 micrograms adult / 300 micrograms 6-12 y / 150 micrograms <6 y, repeat after 5 min; call 999; lie flat; oxygen; IV fluid\"; and a PANE/triage node so it can appear in the differential."
+          ]
         }
       ]
     }

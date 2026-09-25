@@ -220,9 +220,7 @@
           "match": ["obstetric", "obstetrician", "o&g", "maternity", "fetal monitoring", "fetal heart"],
           "guidelineRefs": ["sages-2017"],
           "unverified": ["ios"],
-          "note": "Obstetric consultation and peri-operative fetal heart monitoring (SAGES 2017).",
-          "knownGap": ["web"],
-          "knownGapNote": "No obstetric review or fetal monitoring in the web plan or prompts."
+          "note": "Obstetric consultation and peri-operative fetal heart monitoring (SAGES 2017)."
         }
       ],
       "mustExclude": [
@@ -233,18 +231,14 @@
           "unless": ["avoid", "not in pregnan", "contraindicated", "do not", "no nsaid"],
           "guidelineRefs": ["fda-2020-nsaid"],
           "unverified": ["ios"],
-          "note": "NSAIDs should be avoided from 20 weeks' gestation (fetal renal dysfunction, oligohydramnios, ductal constriction).",
-          "knownGap": ["web"],
-          "knownGapNote": "Web appendicectomy operative-plan prompt orders 'Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular)' for a 22-week pregnant patient."
+          "note": "NSAIDs should be avoided from 20 weeks' gestation (fetal renal dysfunction, oligohydramnios, ductal constriction)."
         },
         {
           "id": "mgmt-no-bhcg-negative-assumption",
           "severity": "quality",
           "match": ["re:(β|b|beta)[- ]?hcg (confirmed )?negative"],
           "note": "The patient is 22 weeks pregnant; templates must not assert a negative pregnancy test.",
-          "knownGap": ["web"],
-          "unverified": ["ios"],
-          "knownGapNote": "Web operative-plan prompt states 'β-HCG confirmed negative' for a patient recorded as pregnant."
+          "unverified": ["ios"]
         }
       ]
     },

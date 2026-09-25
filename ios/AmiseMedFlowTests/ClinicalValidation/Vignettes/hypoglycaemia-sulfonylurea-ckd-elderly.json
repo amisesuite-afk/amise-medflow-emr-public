@@ -226,14 +226,9 @@
           "guidelineRefs": [
             "jbds-hypo-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: The triage vital flag \"Hypoglycaemia\" fires, but no prompt offers treatment: there is no hypoglycaemia rule in clinical-inference.ts (only BGL >15 and glucose >11 rules).",
-          "proposedFix": "Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug."
+          ]
         },
         {
           "id": "mgmt-prolonged-monitoring",
@@ -247,14 +242,9 @@
             "jbds-hypo-2023"
           ],
           "note": "Sulfonylurea hypoglycaemia recurs, especially with CKD: glucose monitoring for an extended period.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No glucose monitoring plan.",
-          "proposedFix": "Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug."
+          ]
         },
         {
           "id": "mgmt-review-sulfonylurea",

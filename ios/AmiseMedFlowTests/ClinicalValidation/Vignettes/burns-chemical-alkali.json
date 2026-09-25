@@ -142,14 +142,9 @@
             "alkali",
             "corrosive"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes."
+          ]
         }
       ]
     },
@@ -191,14 +186,9 @@
             "atls-10-burns",
             "bba-first-aid-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes."
+          ]
         },
         {
           "id": "mgmt-remove-clothing",
@@ -212,14 +202,9 @@
             "atls-10-burns",
             "bba-first-aid-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes."
+          ]
         },
         {
           "id": "mgmt-ophthalmology",
@@ -231,14 +216,9 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes."
+          ]
         },
         {
           "id": "mgmt-burns-referral",
@@ -259,14 +239,9 @@
             "aba-referral",
             "nnbc-2012"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes."
+          ]
         }
       ],
       "mustExclude": [

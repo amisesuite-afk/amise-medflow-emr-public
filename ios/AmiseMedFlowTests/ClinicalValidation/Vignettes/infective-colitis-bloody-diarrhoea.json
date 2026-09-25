@@ -248,12 +248,7 @@
           "note": "IDSA 2017: bloody diarrhoea with fever → stool testing including STEC; results change antibiotic decisions.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No stool culture/STEC testing output (A09 has no protocol; PANE-seeded tests are for appendicitis/biliary disease).",
-          "proposedFix": "Add an infective-colitis rule (bloody diarrhoea ± fever): stool culture incl. STEC/Shiga toxin, C. difficile if antibiotics/healthcare exposure; avoid antimotility agents and empirical antibiotics until STEC excluded (IDSA 2017)."
+          ]
         }
       ]
     },

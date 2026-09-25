@@ -343,14 +343,9 @@
             "acg-2024"
           ],
           "note": "IAP/APA 2013: with peripancreatic collections, delay cholecystectomy until the collections resolve or beyond 6 weeks (risk of infecting the necrosis). An unconditional same-admission cholecystectomy is the wrong branch here.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Lipase prompt (300–1000 U/L band): \"Plan interval laparoscopic cholecystectomy — same admission or within 2 weeks\" despite a 6 × 4 cm necrotic collection.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts pancreatitis prompts: same-admission cholecystectomy only for mild AP; with collections/necrosis, defer until they resolve or >6 weeks (IAP/APA 2013)."
+          ]
         },
         {
           "id": "mgmt-no-early-necrosectomy",

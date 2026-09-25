@@ -260,14 +260,9 @@
             "accp-2022"
           ],
           "note": "No heparin bridging for DOAC interruption. Quality because the matched plan line names warfarin for the bridge, but it is headed \"Anticoagulant bridging\" for a DOAC patient.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "A DOAC patient gets the line headed 'Anticoagulant bridging' (warfarin bridge with LMWH). The DOAC part, 'hold DOAC 48–72h pre-op (renal-adjusted)', does not scale to bleeding risk (1 day for low/moderate risk per PAUSE).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy",

@@ -184,12 +184,7 @@
           "note": "Tracheal narrowing with positional dyspnoea is a red flag that must be surfaced.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No red flag names tracheal compression, stridor or retrosternal extension; triage escalates only because \"breathless\" matches the post-operative-concern rule. E04.2 maps to no protocol.",
-          "proposedFix": "Add compressive-goitre red flags (orthopnoea, Pemberton, tracheal narrowing on CT) and map E04.2 to a goitre protocol."
+          ]
         }
       ]
     },
@@ -218,11 +213,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "CT neck/thorax appears only inside the thyroidectomy prompt plan text, not as an investigation."
+          ]
         }
       ]
     },

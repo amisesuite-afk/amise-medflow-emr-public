@@ -226,14 +226,9 @@
             "eur-hypona-2014"
           ],
           "note": "Sodium rechecked after each hypertonic bolus (European 2014).",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No sodium recheck interval.",
-          "proposedFix": "Add \"recheck sodium after each bolus, then 4-hourly\" to the hyponatraemia prompt."
+          ]
         },
         {
           "id": "mgmt-hypertonic-saline",
@@ -261,14 +256,9 @@
             "eur-hypona-2014"
           ],
           "note": "European 2014: 150 mL 3% over 20 min, repeated, target +5 mmol/L.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Hypertonic saline is given as an infusion, \"IV 3% saline 1–2ml/kg/h\", not the 150 mL/20-minute bolus the European guideline gives for severe symptoms.",
-          "proposedFix": "For Na <125 with severe symptoms (seizure, reduced GCS, vomiting): 150 mL 3% over 20 min, repeat up to twice, target +5 mmol/L."
+          ]
         },
         {
           "id": "mgmt-correction-limit",
@@ -296,14 +286,9 @@
             "eur-hypona-2014"
           ],
           "note": "The cause (hypotonic fluid) must be stopped.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No output addresses the cause: the 5% glucose infusion is not flagged and \"Review medications for SIADH causes\" does not mention IV fluids.",
-          "proposedFix": "When post-operative or on IV fluids, add \"stop hypotonic IV fluids\" to the hyponatraemia prompt."
+          ]
         }
       ]
     }

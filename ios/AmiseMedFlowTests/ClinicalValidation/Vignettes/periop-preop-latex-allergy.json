@@ -182,14 +182,9 @@
             "nap6-2018"
           ],
           "note": "Known latex anaphylaxis: latex-free theatre, ward and equipment.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The allergy is shown in the header ('Allergy: Latex') but nothing adapts the plan: the lap chole template is unchanged and no output mentions a latex-free theatre.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+          ]
         },
         {
           "id": "mgmt-first-on-list",

@@ -208,11 +208,7 @@
         "atLeast": "priority",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=12: no triage rule covers this presentation."
+        ]
       },
       "redFlags": [
         {
@@ -232,12 +228,7 @@
           "note": "Thin shiny skin over an umbilical hernia with tense ascites: rupture risk must be surfaced.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No web output mentions rupture/skin ulceration/leak for an umbilical hernia with ascites; the umbilical protocol red flag is only \"Irreducible or tender\".",
-          "proposedFix": "Add a cirrhosis/ascites branch to umbilical_hernia: red flags (thin/ulcerated skin, leak → urgent repair), hepatology co-management, ascites control, Child-Pugh/MELD."
+          ]
         },
         {
           "id": "flag-liver-disease",
@@ -295,11 +286,7 @@
           "note": "Repair without controlling ascites risks leak, recurrence and peritonitis; hepatology co-management is standard.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No ascites-control / hepatology step in the umbilical_hernia protocol, the dx variant or the prompts."
+          ]
         }
       ],
       "mustExclude": [

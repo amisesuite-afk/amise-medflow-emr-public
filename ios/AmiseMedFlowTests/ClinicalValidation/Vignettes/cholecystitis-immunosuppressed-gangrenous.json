@@ -282,14 +282,9 @@
             "tacrolimus"
           ],
           "note": "Immunosuppression masks fever, pain and leucocytosis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output mentions immunosuppression, transplant or steroids.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-inference.ts: add an immunosuppression prompt (tacrolimus/mycophenolate/azathioprine/prednisolone ≥5 mg or \"transplant\" in PMH/medications): masked signs, lower threshold for imaging/escalation, steroid cover, drug interactions."
+          ]
         }
       ]
     },
@@ -305,14 +300,9 @@
             "tg18-dx-cholecystitis"
           ],
           "note": "Marked local inflammation (gangrenous cholecystitis) is on its own a Grade II criterion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web calculator returns Grade I: no \"marked local inflammation\" (gangrenous) criterion.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "clinical-scores.ts scoreTokyoCholecystitis: add the missing TG18 Grade II criteria (duration >72 h, palpable tender RUQ mass, marked local inflammation — gangrenous/emphysematous/abscess/biliary peritonitis) as inputs, as ScalesTab/ClinicalScoresPanel ticks."
+          ]
         }
       ]
     },
@@ -392,14 +382,9 @@
           "guidelineRefs": [
             "steroid-periop-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No peri-operative steroid cover for a patient on prednisolone 7.5 mg.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "See flag-immunosuppression; add peri-operative hydrocortisone cover (AAGBI/RCP/SfE 2020) to operative-plan templates when a glucocorticoid is on the medication list."
+          ]
         },
         {
           "id": "mgmt-transplant-liaison",

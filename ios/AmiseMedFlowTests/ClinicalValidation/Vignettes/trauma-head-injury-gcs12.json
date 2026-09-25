@@ -186,14 +186,9 @@
           "guidelineRefs": [
             "nice-ng232"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No red flag mentions GCS 12: triage has no GCS input, and S06.0X1A maps to no protocol (the TBI protocol is registered as S09.9), so protocol red flags are absent; PANE (0.37) shows TBI only in the management panel.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add S06 to the traumatic_brain_injury protocol prefixes and a GCS <13 / GCS <15 at 2 h red flag."
+          ]
         }
       ]
     },

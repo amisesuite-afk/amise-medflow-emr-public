@@ -202,14 +202,9 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+          ]
         },
         {
           "id": "flag-special-areas",
@@ -221,14 +216,9 @@
           "guidelineRefs": [
             "aba-referral"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+          ]
         }
       ]
     },
@@ -342,14 +332,9 @@
             "aba-referral",
             "nnbc-2012"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+          ]
         }
       ]
     },

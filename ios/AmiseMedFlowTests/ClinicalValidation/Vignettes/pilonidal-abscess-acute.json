@@ -161,12 +161,7 @@
         ],
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Web adaptiveTriage has no pilonidal/perianal abscess rule: the level depends on the pain score and incidental words (the base abscess reaches \"emergency\" only via the negated \"no weight loss\" plus pain 8/10; with pain 6/10 it is routine).",
-        "proposedFix": "Add an anorectal-sepsis triage rule (perianal/perineal pain + swelling/lump, or \"abscess\") → at least same_day_call, and emergency_now with fever + SIRS, diabetes, immunosuppression or spreading erythema."
+        ]
       }
     },
     "management": {

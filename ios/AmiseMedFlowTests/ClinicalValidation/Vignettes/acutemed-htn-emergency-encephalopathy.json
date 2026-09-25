@@ -213,12 +213,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 22 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts).",
-          "proposedFix": "Hypertension prompt: emit ECG and troponin as investigations (today the ECG appears only in the action text and as a pre-operative baseline)."
+          ]
         },
         {
           "id": "inv-ct-head",
@@ -298,12 +293,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • Assess for end-organ damage: headache (SAH), visual change (papilloedema), focal neurol… | • CXR — mediastinal widening (dissection), pulmonary oedema (LVF). | • Oral antihypertensives: Amlodipine 5mg OD. Aim to reduce SBP by 25% over 24–48h (not ac… | • If hypertensive emergency: IV labetalol 20mg bolus or GTN infusion — target MAP reducti….",
-          "proposedFix": "Hypertensive-emergency branch with ICU/HDU admission (ESC 2019 position document)."
+          ]
         }
       ],
       "mustExclude": [

@@ -233,8 +233,7 @@
         ],
         "note": "Immunosuppression blunts the signs; perforated appendicitis needs same-day surgical care.",
         "knownGap": [
-          "ios",
-          "web"
+          "ios"
         ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Mild right-sided abdominal pain for 2 days' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom, Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=12: no triage rule covers this presentation."
       },
@@ -249,13 +248,9 @@
             "tacrolimus"
           ],
           "note": "Immunosuppression should be surfaced as a risk factor (masked signs, higher complication rate).",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Triage scores 'Higher-risk comorbidity present' but no red flag, prompt or protocol text names immunosuppression or steroids as masking the signs."
+          ]
         }
       ]
     },
@@ -326,13 +321,9 @@
             "peri-operative steroid"
           ],
           "note": "Patient on long-term prednisolone: peri-operative steroid cover. Quality: no single appendicitis-guideline statement.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No peri-operative steroid-cover prompt for a patient on long-term prednisolone."
+          ]
         }
       ]
     }

@@ -343,12 +343,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 32 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• Identify source of infection: CXR + urine dipstick + abdominal CT if no clear focus.\" (web.clinicalPrompts); \"• CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly.\" (web.clinicalPrompts).",
-          "proposedFix": "A prompt already offers this as plan text (\"• Identify source of infection: CXR + urine dipstick + abdominal CT if no clear focus.\"): emit it as an addToInvestigations action so it reaches the investigation list."
+          ]
         },
         {
           "id": "inv-lactate",

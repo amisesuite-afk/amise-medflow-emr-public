@@ -241,14 +241,9 @@
             "nice-ng148",
             "eau-luts-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No catheter: the AKI prompt treats creatinine 486 as pre-renal (\"IV fluid challenge\") and refers to nephrology; the ultrasound report (1.6 L bladder, bilateral hydronephrosis) is not read, and N13.8 has no protocol.",
-          "proposedFix": "Read hydronephrosis/bladder volume from imaging and a palpable bladder from the exam: add \"catheterise, measure residual, urology\" to the AKI prompt; map N13 to the urinary-retention protocol."
+          ]
         },
         {
           "id": "mgmt-post-obstructive-diuresis",
@@ -263,14 +258,9 @@
             "eau-luts-2024"
           ],
           "note": "After decompressing high-pressure chronic retention, diuresis can cause hypovolaemia and electrolyte loss.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: Not mentioned (the retention protocol has it, but no protocol is active).",
-          "proposedFix": "As mgmt-catheterise."
+          ]
         },
         {
           "id": "mgmt-urology",

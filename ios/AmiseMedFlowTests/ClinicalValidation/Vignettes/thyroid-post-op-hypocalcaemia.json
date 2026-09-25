@@ -133,12 +133,7 @@
         "note": "Symptomatic hypocalcaemia with QT prolongation needs immediate treatment.",
         "unverified": [
           "ios"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage priority_24_48h (score 25, post-op only): no rule for tingling/tetany/hypocalcaemia and lab values are not read by adaptiveTriage.",
-        "proposedFix": "Add post-thyroidectomy hypocalcaemia rules: symptoms (perioral tingling, carpopedal spasm) and adjusted calcium below range → urgent; IV calcium gluconate + ECG prompt."
+        ]
       },
       "redFlags": [
         {
@@ -154,11 +149,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No web engine reads the adjusted calcium 1.78 mmol/L or the symptoms; E89.2 maps to no protocol."
+          ]
         }
       ]
     },
@@ -176,11 +167,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No ECG/cardiac monitoring proposed."
+          ]
         },
         {
           "id": "inv-magnesium",
@@ -193,11 +180,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No magnesium proposed."
+          ]
         }
       ]
     },
@@ -216,11 +199,7 @@
           "note": "SfE: symptomatic or severe acute hypocalcaemia is treated with IV calcium gluconate under cardiac monitoring.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No IV calcium gluconate anywhere (only inside the elective thyroidectomy operative template, which does not fire here)."
+          ]
         },
         {
           "id": "mgmt-oral-calcium-vitd",

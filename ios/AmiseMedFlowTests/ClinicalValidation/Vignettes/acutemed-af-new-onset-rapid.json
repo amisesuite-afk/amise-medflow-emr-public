@@ -196,12 +196,7 @@
           "note": "A 12-lead ECG is required to confirm AF (ESC 2024).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). It appears only as plan text: \"• 12-lead ECG — pre-operative cardiac baseline (age ≥ 40).\" (web.clinicalPrompts); \"• 12-lead ECG — arrhythmia, right heart strain pattern (PE).\" (web.clinicalPrompts).",
-          "proposedFix": "A prompt already offers this as plan text (\"• 12-lead ECG — arrhythmia, right heart strain pattern (PE).\"): emit it as an addToInvestigations action so it reaches the investigation list."
+          ]
         },
         {
           "id": "inv-tft",
@@ -216,12 +211,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) | FBC, CRP (cholecystitis) | LFTs, bilirubin, ALP, GGT (cholecystitis) | Amylase / lipase (exclude pancreatitis) (cholecystitis).",
-          "proposedFix": "AF prompt/protocol with thyroid function (ESC 2024 precipitant screen); the tachycardia prompt mentions TFTs in its action text but emits only D-dimer as an investigation."
+          ]
         }
       ]
     },
@@ -245,12 +235,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • 12-lead ECG — arrhythmia, right heart strain pattern (PE). | • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. | • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min..",
-          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+          ]
         },
         {
           "id": "mgmt-anticoagulation",
@@ -269,12 +254,7 @@
           "note": "CHA2DS2-VA 3 (hypertension, diabetes, age 65-74): oral anticoagulation recommended.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 13 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • 12-lead ECG — arrhythmia, right heart strain pattern (PE). | • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. | • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min..",
-          "proposedFix": "lib/pane-engine: add an atrial fibrillation node (palpitations, irregular pulse, dyspnoea, age/hypertension modifiers) with an AF-CARE protocol (ECG confirmation, rate control, CHA2DS2-VA/DOAC, TFT) and map I48."
+          ]
         }
       ]
     }

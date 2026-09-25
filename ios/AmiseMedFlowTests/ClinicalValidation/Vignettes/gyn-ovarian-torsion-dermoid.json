@@ -289,11 +289,6 @@
             "no role",
             "exclude appendicitis"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('voluntary guarding' from torsion) and ignores the confirmed diagnosis. The pelvic-free-fluid prompt also adds a 'Ruptured ectopic protocol' although the urine hCG is recorded negative.",
-          "proposedFix": "Gate the appendicectomy operative-plan prompt on an appendicitis working diagnosis (as the Alvarado block does with assessmentHasAppend); guarding from torsion, PID, haemoperitoneum or DKA is not an appendicectomy indication.",
           "unverified": [
             "ios"
           ]

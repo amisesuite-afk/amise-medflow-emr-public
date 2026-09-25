@@ -210,14 +210,9 @@
             "rest pain",
             "6 ps"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches same_day_call from age, comorbidity and antiplatelet points.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+          ]
         }
       ]
     },
@@ -252,14 +247,9 @@
           "guidelineRefs": [
             "esvs-ali-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol matches I74.3 and PANE top is below 0.20 (the PAD protocol would also lack heparin/ALI steps).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+          ]
         },
         {
           "id": "mgmt-urgent-vascular",
@@ -274,14 +264,9 @@
           "guidelineRefs": [
             "esvs-ali-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol matches I74.3 and PANE top is below 0.20.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+          ]
         }
       ],
       "mustExclude": [

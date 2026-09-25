@@ -146,14 +146,9 @@
             "nice-cg89"
           ],
           "note": "Bruising in a non-mobile infant, on the ears and trunk, with an inconsistent explanation: NICE CG89 \"suspect maltreatment\".",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding rule exists in triage, prompts or protocols; T76.12XA maps to no protocol.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a NICE CG89 safeguarding prompt (age <1 or not independently mobile with bruising; ear/neck/trunk bruises; inconsistent history; delay; immersion scald pattern) that routes to the safeguarding lead."
+          ]
         }
       ]
     },
@@ -168,14 +163,9 @@
           "guidelineRefs": [
             "rcr-rcpch-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding investigations are suggested (skeletal survey, CT head <1 year, FBC/clotting).",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add RCR/RCPCH investigations to the safeguarding prompt."
+          ]
         },
         {
           "id": "inv-ct-head-infant",
@@ -237,14 +227,9 @@
           "guidelineRefs": [
             "nice-cg89"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No safeguarding referral is suggested.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Add a NICE CG89 safeguarding prompt."
+          ]
         }
       ],
       "mustExclude": [

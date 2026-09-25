@@ -273,14 +273,9 @@
           "guidelineRefs": [
             "eau-urolith-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: No obstetric review; the β-hCG/ectopic prompt fires instead.",
-          "proposedFix": "When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications."
+          ]
         },
         {
           "id": "mgmt-paracetamol-opioid",
@@ -344,14 +339,9 @@
             "eau-urolith-2024"
           ],
           "note": "A dilated ureter is not a dilated bile duct: no biliary indication for ERCP in this pregnant patient.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
-          ],
-          "knownGapNote": "Web: \"Dilated proximal ureter\" in the ultrasound report matches the dilated-CBD rule (any \"dilated\"): MRCP, \"ERCP — therapeutic\", CA 19-9 and \"HPB surgical review — Whipple / Hartmann's\" are offered to a pregnant woman with hydronephrosis.",
-          "proposedFix": "Require \"CBD\"/\"bile duct\" in the dilated-CBD rule (hasRadResult) and parse the organ, not the word \"dilated\"."
+          ]
         }
       ]
     }

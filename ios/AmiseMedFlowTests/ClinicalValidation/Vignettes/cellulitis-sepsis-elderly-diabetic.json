@@ -296,10 +296,6 @@
             "bisoprolol"
           ],
           "note": "Beta-blockade blunts tachycardia.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine flags that bisoprolol blunts the tachycardic response.",
           "unverified": [
             "ios"
           ]

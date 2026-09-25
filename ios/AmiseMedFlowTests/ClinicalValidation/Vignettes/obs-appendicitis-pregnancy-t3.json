@@ -301,11 +301,6 @@
             "ctg",
             "cardiotocograph"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No obstetric or fetal-monitoring output: the appendicitis protocol and dx variant have no pregnancy branch; the only pregnancy output is the urine β-HCG prompt (for a woman recorded at 32 weeks).",
-          "proposedFix": "When pregnancy is recorded: strip NSAIDs from 20 weeks, replace 'β-HCG confirmed negative' with the gestation, add obstetric review and fetal monitoring to the operative templates.",
           "unverified": [
             "ios"
           ]
@@ -348,11 +343,6 @@
             "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
             "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: the appendicectomy operative-plan prompt prescribes 'paracetamol 1g QDS + ibuprofen 400mg TDS (regular)' at 32 weeks.",
-          "proposedFix": "When pregnancy is recorded: strip NSAIDs from 20 weeks, replace 'β-HCG confirmed negative' with the gestation, add obstetric review and fetal monitoring to the operative templates.",
           "unverified": [
             "ios"
           ]
@@ -367,11 +357,6 @@
           "match": [
             "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: the appendicectomy operative-plan prompt states '• β-HCG confirmed negative (female of reproductive age)' although she is recorded as 32 weeks pregnant.",
-          "proposedFix": "Replace the line with 'β-HCG result: [ ]' (or the recorded gestation) and block the template until a negative result is recorded.",
           "unverified": [
             "ios"
           ]

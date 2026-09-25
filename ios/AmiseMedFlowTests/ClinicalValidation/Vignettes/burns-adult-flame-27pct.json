@@ -176,14 +176,9 @@
           "atls-10-burns",
           "aba-referral"
         ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "adaptiveTriage has no burn keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns same_day_call for a 27% TBSA burn (HR 118).",
         "unverified": [
           "ios"
-        ],
-        "proposedFix": "Add trauma/burns red-flag rules to rules.ts (burn with TBSA, stab/gunshot/penetrating wound, evisceration, high-energy mechanism, head injury on anticoagulant) at urgent severity, and a shock-index or relative-hypotension rule."
+        ]
       },
       "redFlags": [
         {
@@ -195,14 +190,9 @@
             "full thickness",
             "full-thickness"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+          ]
         }
       ]
     },
@@ -317,14 +307,9 @@
             "aba-referral",
             "nnbc-2012"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
           "unverified": [
             "ios"
-          ],
-          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+          ]
         },
         {
           "id": "mgmt-tetanus",

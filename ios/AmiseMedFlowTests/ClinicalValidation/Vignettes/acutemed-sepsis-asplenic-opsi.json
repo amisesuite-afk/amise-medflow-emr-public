@@ -191,12 +191,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no red flag matched among 15 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency).",
-          "proposedFix": "Add asplenia/splenectomy to the higher-risk comorbidity list and a febrile-asplenic prompt (immediate antibiotics, OPSI)."
+          ]
         }
       ]
     },
