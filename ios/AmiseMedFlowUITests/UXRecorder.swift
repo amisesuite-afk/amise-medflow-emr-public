@@ -95,9 +95,30 @@ final class UXRecorder {
         } catch {
             snapshot("FAILED - \(error)")
             note("Failed: \(error)")
+            note("On screen at failure: \(screenInventory())")
             finish(outcome: "failed")
             XCTFail("\(flow) on \(Self.deviceName): \(error)")
         }
+    }
+
+    /// Compact description of what was on screen when a flow failed, for the job log (the
+    /// screenshots are in an artifact that is not always reachable): navigation titles, whether
+    /// an alert or sheet is up, and every accessibility identifier present. Demo data only.
+    private func screenInventory() -> String {
+        guard let root = try? app.snapshot() else { return "(no snapshot)" }
+        var ids: [String] = []
+        var titles: [String] = []
+        var alerts = 0
+        func walk(_ node: XCUIElementSnapshot) {
+            if !node.identifier.isEmpty, !ids.contains(node.identifier) { ids.append(node.identifier) }
+            if node.elementType == .navigationBar, !node.identifier.isEmpty { titles.append(node.identifier) }
+            if node.elementType == .alert { alerts += 1 }
+            node.children.forEach(walk)
+        }
+        walk(root)
+        let shown = ids.prefix(60).joined(separator: ", ")
+        return "nav bars [\(titles.joined(separator: " | "))]; alerts \(alerts); "
+            + "\(ids.count) identifiers: \(shown)\(ids.count > 60 ? ", …" : "")"
     }
 
     /// Verification steps that are not part of the user's task: not counted.
@@ -266,8 +287,12 @@ final class UXRecorder {
                          toX: screen.width * (leftwards ? 0.25 : 0.75))
                 } else if f.midY <= screen.minY + 40 {
                     app.swipeDown()
+                } else if app.keyboards.firstMatch.exists {
+                    // Covered by the keyboard: a centred swipe would land on the keys and not
+                    // scroll, so drag the form from its visible upper part instead.
+                    dragVertically(fromY: screen.height * 0.45, toY: screen.height * 0.15)
                 } else {
-                    app.swipeUp()   // below the screen, or on screen but covered (keyboard, footer)
+                    app.swipeUp()   // below the screen, or on screen but covered (footer)
                 }
             } else if searchUpwards {
                 app.swipeDown()     // lazily built list rows appear only as the list scrolls
@@ -286,6 +311,13 @@ final class UXRecorder {
         if element.exists && element.isHittable { return }
         bringOnScreen(element, searchUpwards: upwards)
         guard element.exists else { throw UXError.missing(what) }
+    }
+
+    private func dragVertically(fromY: CGFloat, toY: CGFloat) {
+        let origin = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+        let x = app.frame.width * 0.5
+        origin.withOffset(CGVector(dx: x, dy: fromY))
+            .press(forDuration: 0.05, thenDragTo: origin.withOffset(CGVector(dx: x, dy: toY)))
     }
 
     private func drag(atY y: CGFloat, fromX: CGFloat, toX: CGFloat) {
