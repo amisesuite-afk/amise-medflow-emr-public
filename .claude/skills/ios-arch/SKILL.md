@@ -306,6 +306,40 @@ the front-desk iPad, so it must never expose another patient's data:
 - No photo library inside the questionnaire (camera only), no staff triage labels (acuity).
 - `PreConsultEntrySheet` is staff transcription of a paper form, not patient-facing.
 
+## Lab / imaging report import (on device, clinician-reviewed)
+
+Laboratory Services Ltd results and Tapion Hospital imaging reports (OKEU / St Jude's selectable)
+come in as PDF or pasted text and are parsed on the device only (PDFKit text; Vision OCR only on
+request for a scanned PDF). AIService is never used. Nothing is saved before the clinician taps Save.
+- Entry points: `ReportImportMenu` (Investigations tab, Documents), and PDFs shared from another app
+  (the "SLUlabservices" app, Files): `project.yml` declares `CFBundleDocumentTypes` com.adobe.pdf
+  (Viewer, Alternate) + `LSSupportsOpeningDocumentsInPlace = false`; `.incomingReportHandling`
+  (app root) stages the file via `.onOpenURL` (`IncomingReportInbox`: PDF header check, 25 MB limit,
+  Application Support/IncomingReports, complete protection, not backed up, Inbox copy deleted,
+  removed after 7 days). It shows nothing while locked, signed out or in patient hand-over
+  (`PatientHandoverState`, counted by `PatientHandoverPresentation`). Staff pick the patient with
+  `QuestionnairePatientSearch` (seeded with the report surname, never auto-selected).
+- Pure parts: `ReportHeaderParser` (name/DOB/accession/dates; day/month assumed, ambiguity kept;
+  `PatientIdentityMatcher`), `LabReportParser` + `LabRowNormaliser`, `LabAnalyteCatalog`,
+  `ImagingReportParser`, `ReportKindGuesser`, `PortalLink`, `IncomingReportStaging`,
+  `ReportImportBuilder`. Tests: `LabReportParserTests.swift`, `IncomingReportStagingTests.swift`.
+- Identity: any name/DOB/sex mismatch, missing DOB, a DOB that only matches read month/day, or two
+  names on one report needs the explicit "This report belongs to …" toggle.
+- Saving (`ReportImportSaver`): lab rows → `InvestigationEntry` (Blood, Resulted, orderedAt =
+  resultedAt = collection time, `result` starts with the value) under catalogue names chosen so
+  `latestLab(named:)` and `LabPanel` read each as its own analyte (substring matching: never
+  "HbA1c", "Fasting glucose", "Direct bilirubin", "Lactate dehydrogenase" — the catalogue test
+  enforces this; `LabScoreKeywords` copies the populators' keyword lists — keep in step). Units
+  the scores assume (µmol/L creatinine, mmol/L urea/glucose, g/dL Hb, g/L albumin) are converted
+  only with an exact factor, original kept in the text; ambiguous/unexpected/missing units and
+  implausible values leave the row unticked. Imaging → one Imaging entry (Impression + Findings,
+  optional `portalURL` opened in Safari; never fetched, credential-bearing links refused). PDF →
+  `PatientDocument` ("Lab / Bloods" / "Imaging"). Audit `create lab_result` / `imaging_report` /
+  `document` with fixed labels only. Only nurse+ saves results; front desk may attach the PDF.
+- `InvestigationEntry` gained optional `source`, `accession`, `referenceRange`, `flag`,
+  `reportedAt`, `portalURL`, `documentId` (old JSON decodes). `latestLab` and `LabPanel` now skip
+  Imaging and Endoscopy entries (`InvCategory.holdsLabValues`): narrative reports are never lab values.
+
 ## On-device store safety (never lose data silently)
 
 `AmiseMedFlowApp.makeModelContainer()` opens the SwiftData store through `StoreRecovery.open`
