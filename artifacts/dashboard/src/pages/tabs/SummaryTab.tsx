@@ -12,6 +12,7 @@ import { AMISE_LOGO_SVG } from './lib/docTemplate';
 import { saveBlobAsPDF } from './lib/pdfExport';
 import { allergyStatus, allergyNoteText } from '@/lib/allergy-status';
 import { examNoteLines } from '@/lib/exam-documentation';
+import { lifestyleSummary } from '@workspace/triage-engine/lifestyle-practices';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -453,6 +454,8 @@ function planTextToHtml(plan: string): string {
 }
 
 function buildDirectSummaryHtml(ctx: DirectCtx, meta: PrintMeta): string {
+  // Fasting, complementary therapies, night-shift work, sleep — only when recorded.
+  const lifestyleLine = lifestyleSummary(ctx.lifestyleHistory);
   const site = SITE_INFO[meta.site] ?? SITE_INFO.rodney_bay;
   const now = new Date();
   const ect = { timeZone: 'America/St_Lucia' };
@@ -565,7 +568,8 @@ ${ctx.familyHistory && ctx.familyHistory.length ? `<div style="margin-bottom:6px
 ${ctx.familyHistoryNotes ? `<div style="margin-bottom:6px">${escHtml(ctx.familyHistoryNotes)}</div>` : ''}
 ${ctx.toxicHabits && ctx.toxicHabits.length ? `<div style="margin-bottom:6px"><div class="sub-lbl">Social / Habits</div>${items(ctx.toxicHabits)}</div>` : ''}
 ${ctx.occupation ? `<div><span class="lbl">Occupation:</span> ${escHtml(ctx.occupation)}</div>` : ''}
-${(!ctx.familyHistory?.length && !ctx.familyHistoryNotes && !ctx.toxicHabits?.length && !ctx.occupation) ? '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not reported</div>' : ''}
+${lifestyleLine ? `<div><span class="lbl">Lifestyle:</span> ${escHtml(lifestyleLine)}</div>` : ''}
+${(!ctx.familyHistory?.length && !ctx.familyHistoryNotes && !ctx.toxicHabits?.length && !ctx.occupation && !lifestyleLine) ? '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not reported</div>' : ''}
 </div></div>
 
 ${vitalsArr.length ? `<div class="section">

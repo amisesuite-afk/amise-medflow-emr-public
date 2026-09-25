@@ -10,6 +10,7 @@ import { getMatrix } from '@/lib/cc-matrices';
 import { confirmedPlanSource, insertSuggestedPlan } from '@/lib/diagnosis-suggestion';
 import { buildPlanText, planProtocolFor } from '@/lib/plan-builder';
 import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
+import LifestylePracticesPanel from '@/components/LifestylePracticesPanel';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased VTE risk — pharmacological prophylaxis per NICE NG89 (LMWH, weight- and renal-adjusted) + mechanical prophylaxis unless contraindicated. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -464,6 +465,9 @@ export default function PlanTab() {
             No protocol matched for this diagnosis — complete the plan manually.
           </div>
         )}
+
+        {/* Fasting / sleep safety prompts and evidence-graded non-drug options (tap to add). */}
+        <LifestylePracticesPanel />
 
         <div className="fld">
           <label>Plan</label>
