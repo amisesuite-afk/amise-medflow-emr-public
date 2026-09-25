@@ -6,7 +6,7 @@
  *    of the visit), and a relative's cancer is not this patient's comorbidity.
  */
 import { describe, expect, it } from 'vitest';
-import { adaptiveTriage, type AdaptiveTriageInput } from '@workspace/triage-engine';
+import { adaptiveTriage, scanRedFlags, type AdaptiveTriageInput } from '@workspace/triage-engine';
 
 const run = (over: Partial<AdaptiveTriageInput>) => adaptiveTriage({ symptoms: [], ...over });
 
@@ -59,5 +59,21 @@ describe('asymptomatic screening requests are not over-triaged', () => {
   });
   it("the patient's own cancer is still a higher-risk comorbidity", () => {
     expect(run({ age: 50, freeText: 'Review.', comorbidities: ['Breast cancer 2019 on letrozole'] }).reasons).toContain('Higher-risk comorbidity present');
+  });
+});
+
+describe('diabetic foot red flag (rules 1.4.0, NICE NG19)', () => {
+  const flags = (t: string) => scanRedFlags(t).matches.map(m => `${m.reason}|${m.severity}`);
+  it('limb-threatening features are urgent', () => {
+    expect(flags('Diabetic with gangrene of the 2nd toe')).toContain('Diabetic foot emergency|urgent');
+    expect(flags('Foot infection with pus')).toContain('Diabetic foot emergency|urgent');
+  });
+  it('an ulcer alone is a 1-working-day priority, not an emergency', () => {
+    const f = flags('Diabetic foot ulcer under the first metatarsal head, clean base');
+    expect(f.some(x => x.endsWith('|urgent'))).toBe(false);
+    expect(f.some(x => x.startsWith('Diabetic foot problem') && x.endsWith('|priority'))).toBe(true);
+  });
+  it('spreading redness alone is not a diabetic-foot emergency', () => {
+    expect(flags('Spreading redness of the shin for 2 days').some(x => x.startsWith('Diabetic foot'))).toBe(false);
   });
 });

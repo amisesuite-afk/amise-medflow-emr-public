@@ -1,6 +1,6 @@
 import { testAffirmed } from './negation';
 
-export const RULES_VERSION = '1.3.0';
+export const RULES_VERSION = '1.4.0';
 
 export type AppointmentType =
   | 'new_consult'
@@ -178,8 +178,15 @@ export const RED_FLAGS: RedFlag[] = [
     reason: 'Systemic red flag symptom', severity: 'priority' },
   { pattern: /\b(unable to pass stool|unable to pass gas|obstructed|strangulated|irreducible hernia|vomiting repeatedly)\b/i,
     reason: 'Possible obstruction or complicated hernia', severity: 'urgent' },
-  { pattern: /\b(diabetic foot|foot ulcer|foot wound|gangrene|foot infection|osteomyelitis|spreading redness|exposed bone)\b/i,
+  // NICE NG19 (2015, updated 2019): a limb-threatening diabetic foot problem (gangrene, infection,
+  // osteomyelitis, exposed bone) needs immediate referral; any other active foot problem (an ulcer
+  // or wound) needs the foot protection / MDT service within 1 working day. "Spreading redness"
+  // alone is cellulitis, not a diabetic-foot emergency (the emergency layer recognises NSTI and
+  // sepsis) — v1.4.0.
+  { pattern: /\b(gangrene|foot infection|infected (diabetic )?foot|osteomyelitis|exposed bone)\b/i,
     reason: 'Diabetic foot emergency', severity: 'urgent' },
+  { pattern: /\b(diabetic foot|foot ulcer|foot wound)\b/i,
+    reason: 'Diabetic foot problem — foot protection / MDT review within 1 working day (NICE NG19)', severity: 'priority' },
   { pattern: /\b(dysphagia|trouble swallowing|can'?t swallow|food sticking)\b/i,
     reason: 'Dysphagia — red flag symptom', severity: 'priority' },
   { pattern: /\b(haemoptysis|coughing blood|blood in sputum)\b/i,

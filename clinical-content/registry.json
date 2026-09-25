@@ -868,7 +868,7 @@
       "title": "Triage rules: red-flag patterns, slot rules, exclusions, pathway definitions, reminder cascade, forbidden patterns",
       "platforms": ["web", "api", "front-desk"],
       "kind": "triage-rules",
-      "contentVersion": "1.3.0",
+      "contentVersion": "1.4.0",
       "versionStamp": { "file": "lib/triage-engine/src/rules.ts", "type": "regex", "pattern": "RULES_VERSION\\s*=\\s*'([^']+)'" },
       "files": ["lib/triage-engine/src/rules.ts"],
       "tests": ["artifacts/api-server/src/test/triage-rules.test.ts", "artifacts/api-server/src/test/triage-emergency.test.ts"],
@@ -883,7 +883,8 @@
       "changeAuthority": "Any repository committer. Ships on web/API/front-desk deploy.",
       "notes": "The only rule set with a version constant today (RULES_VERSION). It is not surfaced to users or recorded with a triage result.",
       "changelog": [
-        { "version": "1.3.0", "date": "2026-09-25", "change": "SURGEON-DECISIONS E2: cardiac red flag narrowed to chest pain radiating to arm/jaw/neck or crushing/pressure chest pain ('radiating to' and 'left arm' alone removed); plain chest pain is a priority flag (ECG). 'breathless' / 'shortness of breath' removed from the post-operative concern (graded by physiology in adaptive-triage). 'cancer' in a relative's history or a screening request and 'no change in bowel habit' no longer flag. Chest pain pathway trigger narrowed; its checklist uses the ESC 2023 0 h/1 h troponin algorithm and aspirin 150–300 mg (ESC 2023). Details: docs/clinical-validation/changes/fix-web-triage.md." }
+        { "version": "1.3.0", "date": "2026-09-25", "change": "SURGEON-DECISIONS E2: cardiac red flag narrowed to chest pain radiating to arm/jaw/neck or crushing/pressure chest pain ('radiating to' and 'left arm' alone removed); plain chest pain is a priority flag (ECG). 'breathless' / 'shortness of breath' removed from the post-operative concern (graded by physiology in adaptive-triage). 'cancer' in a relative's history or a screening request and 'no change in bowel habit' no longer flag. Chest pain pathway trigger narrowed; its checklist uses the ESC 2023 0 h/1 h troponin algorithm and aspirin 150–300 mg (ESC 2023). Details: docs/clinical-validation/changes/fix-web-triage.md." },
+        { "version": "1.4.0", "date": "2026-09-25", "change": "Diabetic foot red flag split per NICE NG19: gangrene, foot infection, osteomyelitis and exposed bone stay urgent (limb-threatening, immediate referral); a diabetic foot ulcer or wound is priority (foot protection / MDT within 1 working day); 'spreading redness' alone (cellulitis) no longer reads as a diabetic-foot emergency. Details: docs/clinical-validation/changes/web-last-gaps.md." }
       ]
     },
     {

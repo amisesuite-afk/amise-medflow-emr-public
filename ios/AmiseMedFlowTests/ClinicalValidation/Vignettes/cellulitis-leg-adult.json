@@ -181,12 +181,7 @@
         "guidelineRefs": [
           "nice-ng141"
         ],
-        "note": "Mild cellulitis without systemic toxicity is an outpatient problem.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Over-triage: the HPI word 'spreading redness' matches the diabetic-foot red flag (rules.ts, urgent) → emergency_now in a non-diabetic with mild cellulitis.",
-        "proposedFix": "Require a diabetes context (comorbidity or diabetic-foot words other than 'spreading redness') for the diabetic-foot red flag."
+        "note": "Mild cellulitis without systemic toxicity is an outpatient problem."
       },
       "mustNotAlarm": [
         {
