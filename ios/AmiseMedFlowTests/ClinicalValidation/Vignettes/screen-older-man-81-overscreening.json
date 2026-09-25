@@ -94,10 +94,7 @@
         "guidelineRefs": [
           "uspstf-prostate-2018"
         ],
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "investigations": {
@@ -116,9 +113,6 @@
             "not recommended",
             "recommend against",
             "not indicated"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -140,9 +134,10 @@
             "prior screening",
             "overall health"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -159,9 +154,6 @@
           "unless": [
             "not recommended",
             "recommend against"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -180,9 +172,6 @@
             "individual",
             "selective",
             "life expectancy"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -190,10 +179,7 @@
     "pathway": {
       "id": "pathway-wellness",
       "severity": "quality",
-      "equals": "wellness",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wellness"
     }
   },
   "guideline": [

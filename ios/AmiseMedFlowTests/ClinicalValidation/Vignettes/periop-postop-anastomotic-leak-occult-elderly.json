@@ -208,10 +208,7 @@
           "guidelineRefs": [
             "isrec-2010"
           ],
-          "note": "Older patients on beta-blockers or steroids may not mount fever or tachycardia; new AF, delirium and rising CRP after bowel surgery are leak signs.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Older patients on beta-blockers or steroids may not mount fever or tachycardia; new AF, delirium and rising CRP after bowel surgery are leak signs."
         }
       ]
     },
@@ -222,9 +219,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "wses-iai-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -237,9 +231,6 @@
           ],
           "guidelineRefs": [
             "nice-cg103"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -257,9 +248,10 @@
             "wses-iai-2017",
             "isrec-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)"
         }
       ]
     },
@@ -278,9 +270,10 @@
           "guidelineRefs": [
             "woodcock-steroids-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -297,9 +290,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
         }
       ]

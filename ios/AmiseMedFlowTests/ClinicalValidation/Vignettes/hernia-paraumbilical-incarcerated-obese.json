@@ -190,10 +190,7 @@
             "icd:K42",
             "hernia"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -204,9 +201,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-hernia-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -221,9 +215,6 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -233,9 +224,6 @@
           "severity": "quality",
           "match": [
             "penicillin"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -250,9 +238,6 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -272,9 +257,6 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -289,9 +271,6 @@
             "amoxicillin"
           ],
           "note": "Penicillin allergy recorded; plans should not propose penicillins without an allergy check.",
-          "unverified": [
-            "ios"
-          ],
           "knownGap": [
             "web"
           ],

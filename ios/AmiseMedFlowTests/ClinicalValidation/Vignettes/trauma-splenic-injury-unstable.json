@@ -168,9 +168,10 @@
           "guidelineRefs": [
             "wses-spleen-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Acute Coronary Syndrome | 3. Community-Acquired Pneumonia | 4. Acute Appendicitis | 5. Small Bowel Obstruction"
         }
       ]
     },
@@ -182,9 +183,6 @@
         "guidelineRefs": [
           "wses-spleen-2017",
           "atls-10-shock"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -200,9 +198,6 @@
           ],
           "guidelineRefs": [
             "atls-10-shock"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -224,9 +219,6 @@
             "wses-spleen-2017",
             "atls-10-abdomen"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Qualify protocol CT investigations with \"haemodynamically stable only\"."
         }
       ]
@@ -245,9 +237,6 @@
           "guidelineRefs": [
             "wses-spleen-2017",
             "atls-10-abdomen"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -265,9 +254,6 @@
           ],
           "guidelineRefs": [
             "atls-10-shock"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -279,9 +265,6 @@
           ],
           "guidelineRefs": [
             "crash-2"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -304,10 +287,7 @@
           "guidelineRefs": [
             "wses-spleen-2017"
           ],
-          "note": "Non-operative management is contraindicated in the unstable patient.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Non-operative management is contraindicated in the unstable patient."
         },
         {
           "id": "mgmt-no-antithrombotic-plan",
@@ -333,10 +313,7 @@
           "guidelineRefs": [
             "atls-10-shock"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     }

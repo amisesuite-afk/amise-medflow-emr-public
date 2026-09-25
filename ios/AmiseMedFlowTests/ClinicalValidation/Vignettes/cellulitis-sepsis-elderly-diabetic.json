@@ -224,9 +224,10 @@
           "guidelineRefs": [
             "idsa-ssti-2014"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Acute Heart Failure / Pulmonary Oedema | 3. Community-Acquired Pneumonia | 4. Acute Kidney Injury | 5. Delirium (Acute Confusional State); also in ios.ccEarly#3"
         }
       ],
       "mustNotMiss": [
@@ -242,9 +243,10 @@
             "wses-sis-ssti-2018"
           ],
           "note": "IDSA: severe cellulitis with systemic toxicity must be assessed for necrotising infection.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Sepsis | 2. Acute Heart Failure / Pulmonary Oedema | 3. Community-Acquired Pneumonia | 4. Acute Kidney Injury | 5. Delirium (Acute Confusional State)"
         }
       ]
     },
@@ -256,9 +258,6 @@
         "guidelineRefs": [
           "nice-ng51",
           "ssc-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -272,9 +271,6 @@
           "guidelineRefs": [
             "nice-ng51",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -287,9 +283,10 @@
             "bisoprolol"
           ],
           "note": "Beta-blockade blunts tachycardia.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 20 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.scoreCalculator.qsofa, ios.scoreCalculator.sirs, ios.pipeline.alert, ios.acuity)"
         }
       ]
     },
@@ -301,9 +298,6 @@
           "score": "qsofa",
           "guidelineRefs": [
             "sepsis-3"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -316,9 +310,6 @@
           "equals": 3,
           "guidelineRefs": [
             "sepsis-3"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -333,10 +324,7 @@
           "guidelineRefs": [
             "sepsis-3"
           ],
-          "note": "Record has AVPU V, RR 24, SBP 94.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Record has AVPU V, RR 24, SBP 94."
         }
       ]
     },
@@ -351,9 +339,6 @@
           "guidelineRefs": [
             "ssc-2021",
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -364,9 +349,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -391,9 +373,6 @@
             "nice-ng141",
             "nice-ng51",
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -407,10 +386,7 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "note": "Cautious in heart failure.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Cautious in heart failure."
         }
       ],
       "mustExclude": [
@@ -425,10 +401,7 @@
             "web.plan",
             "ios.radiation.plan"
           ],
-          "note": "A plan built on the Eron I oral regimen under-treats sepsis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A plan built on the Eron I oral regimen under-treats sepsis."
         }
       ]
     }

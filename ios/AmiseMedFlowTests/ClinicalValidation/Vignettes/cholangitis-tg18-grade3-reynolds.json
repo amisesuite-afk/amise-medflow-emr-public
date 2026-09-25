@@ -286,9 +286,6 @@
           "k": 3,
           "guidelineRefs": [
             "tg18-dx-cholangitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -299,9 +296,6 @@
           "match": [
             "sepsis",
             "septic"
-          ],
-          "knownGap": [
-            "ios"
           ],
           "knownGapNote": "PANE has no sepsis node; symptom inference ranks sepsis #2. iOS: fallback mode: the built-in jaundice list (5 candidates) does not contain this diagnosis."
         }
@@ -317,9 +311,6 @@
           "ssc-2021"
         ],
         "note": "Grade III cholangitis in septic shock: resuscitation, critical care and urgent drainage.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS ClinicalPathwayEngine: 'jaundice' gives urgent; no emergency keyword in CC/PMH."
       },
       "mustAlarm": [
@@ -527,9 +518,6 @@
             "doac",
             "reversal"
           ],
-          "unverified": [
-            "ios"
-          ],
           "note": "Hold the DOAC; plan drainage (stent without sphincterotomy, or percutaneous) around the coagulopathy."
         }
       ],
@@ -549,9 +537,6 @@
           ],
           "guidelineRefs": [
             "tg18-drainage"
-          ],
-          "unverified": [
-            "ios"
           ],
           "note": "Operative drainage is reserved for failed or unavailable endoscopic/percutaneous drainage."
         }

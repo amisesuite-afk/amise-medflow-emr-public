@@ -99,9 +99,6 @@
         "guidelineRefs": [
           "nice-cg89",
           "aba-referral"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -122,10 +119,7 @@
           "guidelineRefs": [
             "nice-cg89"
           ],
-          "note": "NICE CG89: immersion pattern, symmetrical, buttocks/perineum/lower limbs, delayed presentation, inconsistent explanation → suspect maltreatment.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE CG89: immersion pattern, symmetrical, buttocks/perineum/lower limbs, delayed presentation, inconsistent explanation → suspect maltreatment."
         },
         {
           "id": "flag-special-areas",
@@ -139,9 +133,6 @@
           ],
           "guidelineRefs": [
             "aba-referral"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -157,9 +148,10 @@
           "guidelineRefs": [
             "rcr-rcpch-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)"
         }
       ]
     },
@@ -181,9 +173,6 @@
           ],
           "guidelineRefs": [
             "nice-cg89"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -204,9 +193,6 @@
           "guidelineRefs": [
             "aba-referral",
             "nnbc-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -235,20 +221,14 @@
           "guidelineRefs": [
             "nice-cg89"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-burns",
       "severity": "quality",
-      "equals": "burns",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "burns"
     }
   },
   "guideline": [

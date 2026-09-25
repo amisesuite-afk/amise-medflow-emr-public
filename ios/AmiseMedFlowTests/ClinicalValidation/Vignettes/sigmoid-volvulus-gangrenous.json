@@ -209,9 +209,6 @@
           "wses-volvulus-2023",
           "ssc-2021"
         ],
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal distension, pain and fever' gives 'urgent'."
       },
       "mustAlarm": [
@@ -224,9 +221,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -240,9 +234,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -257,9 +248,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -280,9 +268,10 @@
             "ascrs-volvulus-2021",
             "wses-volvulus-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-antibiotics",
@@ -300,9 +289,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -317,9 +303,10 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -347,9 +334,10 @@
             "wses-volvulus-2023"
           ],
           "note": "Endoscopic detorsion is contraindicated with peritonitis, gangrene or perforation.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"sigmoid volvulus without ischaemia: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission; gangrene or...\""
         }
       ]
     },

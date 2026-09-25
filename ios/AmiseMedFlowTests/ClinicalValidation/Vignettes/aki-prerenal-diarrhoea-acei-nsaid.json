@@ -239,9 +239,6 @@
           "guidelineRefs": [
             "kdigo-aki-2012",
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -275,9 +272,6 @@
         "guidelineRefs": [
           "kdigo-aki-2012",
           "nice-ng148"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -293,9 +287,6 @@
           "guidelineRefs": [
             "kdigo-aki-2012",
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -313,9 +304,10 @@
             "nice-ng148"
           ],
           "note": "NICE NG148: urinalysis for everyone with AKI. Graded as management because the web prompt adds it as a plan line.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-stop-acei",
@@ -327,9 +319,10 @@
             "kdigo-aki-2012",
             "nice-ng148"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-stop-nsaid",
@@ -340,9 +333,6 @@
           "guidelineRefs": [
             "kdigo-aki-2012",
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -354,11 +344,11 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "unverified": [
+          "knownGapNote": "Web: The AKI prompt holds \"NSAIDs, ACE-I, ARBs, metformin\" but not diuretics (furosemide continues). | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Add diuretics to the AKI hold list (NICE NG148).",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: The AKI prompt holds \"NSAIDs, ACE-I, ARBs, metformin\" but not diuretics (furosemide continues).",
-          "proposedFix": "Add diuretics to the AKI hold list (NICE NG148)."
+          ]
         },
         {
           "id": "mgmt-hold-metformin",
@@ -369,9 +359,10 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-iv-fluids",
@@ -387,9 +378,6 @@
           "guidelineRefs": [
             "kdigo-aki-2012",
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

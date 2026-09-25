@@ -201,10 +201,7 @@
           "guidelineRefs": [
             "wses-ssti-2018"
           ],
-          "note": "Pain out of proportion + spreading erythema + SIRS in a diabetic: NSTI must be on the differential even without crepitus.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Pain out of proportion + spreading erythema + SIRS in a diabetic: NSTI must be on the differential even without crepitus."
         }
       ]
     },
@@ -215,9 +212,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-ssti-2018"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -232,10 +226,7 @@
           "guidelineRefs": [
             "mhra-sglt2-2019"
           ],
-          "note": "SGLT2 inhibitors carry a regulatory warning for Fournier’s gangrene; stop the drug.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SGLT2 inhibitors carry a regulatory warning for Fournier’s gangrene; stop the drug."
         }
       ]
     },
@@ -253,9 +244,6 @@
           ],
           "guidelineRefs": [
             "wses-ssti-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

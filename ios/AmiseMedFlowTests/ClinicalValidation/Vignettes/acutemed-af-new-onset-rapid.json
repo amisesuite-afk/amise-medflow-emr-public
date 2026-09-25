@@ -119,9 +119,6 @@
           "k": 3,
           "guidelineRefs": [
             "esc-af-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -153,10 +150,7 @@
         "guidelineRefs": [
           "esc-af-2024"
         ],
-        "note": "New AF at 138/min: same-day assessment, not a routine booking. Stable, so not necessarily emergency.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "New AF at 138/min: same-day assessment, not a routine booking. Stable, so not necessarily emergency."
       }
     },
     "scores": {
@@ -167,9 +161,6 @@
           "score": "cha2ds2-vasc",
           "guidelineRefs": [
             "esc-af-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -188,10 +179,7 @@
           "guidelineRefs": [
             "esc-af-2024"
           ],
-          "note": "A 12-lead ECG is required to confirm AF (ESC 2024).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A 12-lead ECG is required to confirm AF (ESC 2024)."
         },
         {
           "id": "inv-tft",
@@ -203,9 +191,6 @@
           ],
           "guidelineRefs": [
             "esc-af-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -227,9 +212,6 @@
           ],
           "guidelineRefs": [
             "esc-af-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -246,10 +228,7 @@
           "guidelineRefs": [
             "esc-af-2024"
           ],
-          "note": "CHA2DS2-VA 3 (hypertension, diabetes, age 65-74): oral anticoagulation recommended.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "CHA2DS2-VA 3 (hypertension, diabetes, age 65-74): oral anticoagulation recommended."
         }
       ]
     }

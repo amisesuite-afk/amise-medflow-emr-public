@@ -136,10 +136,7 @@
             "es-phaeo-2014",
             "ese-adrenal-2023"
           ],
-          "note": "Classic paroxysms with an enhancing heterogeneous adrenal mass.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Classic paroxysms with an enhancing heterogeneous adrenal mass."
         }
       ]
     },
@@ -156,9 +153,6 @@
           ],
           "guidelineRefs": [
             "es-phaeo-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -175,9 +169,10 @@
             "es-phaeo-2014",
             "ese-adrenal-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ],
       "mustExclude": [
@@ -198,9 +193,6 @@
           "guidelineRefs": [
             "ese-adrenal-2023",
             "es-phaeo-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -221,9 +213,10 @@
             "es-phaeo-2014"
           ],
           "note": "Endocrine Society 2014: pre-operative alpha-adrenoceptor blockade for 7–14 days.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -241,10 +234,7 @@
           "guidelineRefs": [
             "es-phaeo-2014"
           ],
-          "note": "Unopposed beta-blockade in phaeochromocytoma can precipitate a hypertensive crisis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Unopposed beta-blockade in phaeochromocytoma can precipitate a hypertensive crisis."
         }
       ]
     }

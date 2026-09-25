@@ -154,9 +154,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng232"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -169,9 +166,6 @@
         "guidelineRefs": [
           "nice-ng232",
           "atls-10-head"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -185,9 +179,6 @@
           ],
           "guidelineRefs": [
             "nice-ng232"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -201,9 +192,10 @@
           "guidelineRefs": [
             "nice-ng232"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): gcs not recommended; recommended: (none)"
         }
       ]
     },
@@ -220,10 +212,7 @@
           "guidelineRefs": [
             "nice-ng232"
           ],
-          "note": "GCS <13 on assessment and more than one vomit: CT head within 1 hour.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "GCS <13 on assessment and more than one vomit: CT head within 1 hour."
         },
         {
           "id": "inv-c-spine",
@@ -235,9 +224,10 @@
           "guidelineRefs": [
             "nice-ng232"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)"
         }
       ]
     },
@@ -252,9 +242,6 @@
           "guidelineRefs": [
             "nice-ng232",
             "atls-10-head"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -272,9 +259,6 @@
           ],
           "guidelineRefs": [
             "nice-ng232"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -282,10 +266,7 @@
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

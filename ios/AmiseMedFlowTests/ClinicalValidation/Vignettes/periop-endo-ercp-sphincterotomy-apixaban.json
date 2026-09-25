@@ -182,9 +182,6 @@
           "k": 3,
           "guidelineRefs": [
             "asge-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -201,9 +198,6 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -221,9 +215,10 @@
             "bsg-esge-2021-anticoag",
             "pause-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-ercp",
@@ -234,9 +229,6 @@
           ],
           "guidelineRefs": [
             "asge-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -259,9 +251,6 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -276,10 +265,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

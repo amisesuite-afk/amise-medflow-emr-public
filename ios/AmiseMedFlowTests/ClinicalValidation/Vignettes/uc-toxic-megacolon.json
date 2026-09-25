@@ -229,9 +229,10 @@
           "guidelineRefs": [
             "ecco-uc-surg-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inflammatory Bowel Disease | 2. Sepsis | 3. Acute Appendicitis | 4. Community-Acquired Pneumonia | 5. Small Bowel Obstruction"
         }
       ]
     },
@@ -243,9 +244,6 @@
         "guidelineRefs": [
           "ecco-uc-surg-2022",
           "bsg-ibd-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -261,9 +259,6 @@
           ],
           "guidelineRefs": [
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -276,9 +271,6 @@
           ],
           "guidelineRefs": [
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -312,10 +304,11 @@
             "bsg-ibd-2019"
           ],
           "note": "Colonoscopy (with insufflation) is contraindicated in toxic megacolon — perforation risk.",
-          "unverified": [
+          "proposedFix": "Mark the UC colonoscopy investigation conditional (\"not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only\") and add a toxic-megacolon dx-variant that drops endoscopy.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Mark the UC colonoscopy investigation conditional (\"not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only\") and add a toxic-megacolon dx-variant that drops endoscopy."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.radiation: \"colonoscopy + biopsy - gold standard diagnosis - extent and pattern\""
         }
       ]
     },
@@ -331,9 +324,6 @@
           ],
           "guidelineRefs": [
             "ecco-uc-surg-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -349,9 +339,6 @@
           ],
           "guidelineRefs": [
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -390,9 +377,6 @@
           ],
           "guidelineRefs": [
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

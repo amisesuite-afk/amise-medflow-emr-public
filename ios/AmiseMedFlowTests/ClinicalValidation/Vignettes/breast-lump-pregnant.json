@@ -130,19 +130,17 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)"
         },
         {
           "id": "flag-pregnancy",
           "severity": "quality",
           "match": [
             "pregnan"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -162,10 +160,7 @@
             "rcog-gtg12-2011",
             "nccn-breast-2025"
           ],
-          "note": "Ultrasound is the first-line imaging in pregnancy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Ultrasound is the first-line imaging in pregnancy."
         },
         {
           "id": "inv-core-biopsy",
@@ -180,10 +175,7 @@
           "guidelineRefs": [
             "rcog-gtg12-2011"
           ],
-          "note": "Core biopsy is safe in pregnancy; delaying diagnosis worsens stage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Core biopsy is safe in pregnancy; delaying diagnosis worsens stage."
         }
       ]
     },
@@ -206,9 +198,10 @@
             "nccn-breast-2025"
           ],
           "note": "Tamoxifen is teratogenic; it must not be proposed during pregnancy.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"adjuvant: endocrine therapy if er+ (tamoxifen / aromatase inhibitor), herceptin if her2+\""
         },
         {
           "id": "mgmt-no-deferral",
@@ -223,9 +216,6 @@
           ],
           "guidelineRefs": [
             "rcog-gtg12-2011"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

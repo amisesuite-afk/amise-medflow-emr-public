@@ -226,10 +226,7 @@
           "guidelineRefs": [
             "acg-ci-2015"
           ],
-          "note": "The mimic of infective colitis, IBD and diverticulitis; managed differently.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The mimic of infective colitis, IBD and diverticulitis; managed differently."
         }
       ]
     },
@@ -240,9 +237,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "acg-ci-2015"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -257,9 +251,6 @@
           ],
           "guidelineRefs": [
             "acg-ci-2015"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -273,9 +264,10 @@
             "acg-ci-2015"
           ],
           "note": "ACG 2015: early colonoscopy (within 48 h) to confirm the diagnosis.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi)"
         },
         {
           "id": "inv-stool-culture",
@@ -289,9 +281,10 @@
           "guidelineRefs": [
             "acg-ci-2015"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi)"
         }
       ]
     },
@@ -315,9 +308,6 @@
             "acg-ci-2015"
           ],
           "note": "Non-gangrenous ischaemic colitis is managed supportively; an appendicectomy plan is a contraindicated operation. The exam text records \"no guarding or peritonism\".",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words \"guarding\"/\"rebound\"; add negation handling (no/without/absent) to exam() matching."
         },
         {
@@ -342,10 +332,7 @@
           "guidelineRefs": [
             "acg-ci-2015"
           ],
-          "note": "Anticoagulation is not a treatment for non-occlusive colon ischaemia (only for mesenteric venous thrombosis) and worsens bleeding.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Anticoagulation is not a treatment for non-occlusive colon ischaemia (only for mesenteric venous thrombosis) and worsens bleeding."
         }
       ]
     }

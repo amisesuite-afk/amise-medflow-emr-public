@@ -146,9 +146,10 @@
           "guidelineRefs": [
             "ascrs-fissure-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Medication Side Effect / Adverse Drug Reaction | 2. Anxiety Disorder | 3. Acute Kidney Injury | 4. Preventive / Screening Visit | 5. Hypertensive Emergency"
         }
       ]
     },
@@ -159,9 +160,6 @@
         "atMost": "priority",
         "guidelineRefs": [
           "ascrs-fissure-2023"
-        ],
-        "unverified": [
-          "ios"
         ],
         "knownGap": [
           "web"
@@ -182,9 +180,6 @@
           ],
           "guidelineRefs": [
             "ascrs-fissure-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -198,9 +193,6 @@
           ],
           "guidelineRefs": [
             "ascrs-fissure-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -223,9 +215,6 @@
           ],
           "guidelineRefs": [
             "ascrs-fissure-2023"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGap": [
             "web"

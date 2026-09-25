@@ -194,9 +194,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -209,10 +206,7 @@
         "guidelineRefs": [
           "wses-hernia-2017"
         ],
-        "note": "An irreducible hernia needs same-day surgical assessment: strangulation cannot be excluded without it.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "An irreducible hernia needs same-day surgical assessment: strangulation cannot be excluded without it."
       },
       "redFlags": [
         {
@@ -226,9 +220,6 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -242,9 +233,6 @@
           "mode": "calculator",
           "equals": 0,
           "platforms": [
-            "ios"
-          ],
-          "unverified": [
             "ios"
           ]
         }
@@ -262,9 +250,6 @@
             "wses-hernia-2017"
           ],
           "note": "WSES 2017: lactate (with CPK, D-dimer) helps predict strangulation.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add lactate (± CPK, D-dimer) and CT when strangulation is uncertain to the hernia protocols for irreducible hernias."
         }
       ]
@@ -281,10 +266,7 @@
           "guidelineRefs": [
             "wses-hernia-2017"
           ],
-          "note": "Either gentle reduction followed by early repair, or emergency repair.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Either gentle reduction followed by early repair, or emergency repair."
         },
         {
           "id": "mgmt-mesh-clean-field",
@@ -296,9 +278,10 @@
             "wses-hernia-2017"
           ],
           "note": "WSES 2017: synthetic mesh repair is recommended in a clean surgical field (no bowel resection).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -318,10 +301,7 @@
             "herniasurge-2018",
             "wses-hernia-2017"
           ],
-          "note": "Watchful waiting applies to reducible minimally symptomatic hernias only.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Watchful waiting applies to reducible minimally symptomatic hernias only."
         }
       ]
     },

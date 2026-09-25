@@ -168,9 +168,6 @@
           "k": 3,
           "guidelineRefs": [
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -190,12 +187,10 @@
           ],
           "note": "Torsion stays on the differential until excluded.",
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion is not in the top 3 (symptom inference lists \"torsion / epididymo-orchitis\" #2).",
+          "knownGapNote": "Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion is not in the top 3 (symptom inference lists \"torsion / epididymo-orchitis\" #2). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inguinal Hernia | 2. Hydrocele | 3. Epididymo-orchitis | 4. Fournier's Gangrene | 5. Incarcerated / Strangulated Hernia",
           "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
         }
       ]
@@ -212,9 +207,6 @@
         "note": "Same-day review, not an emergency, once Doppler shows normal testicular flow and onset is gradual (over-triage check).",
         "knownGap": [
           "web"
-        ],
-        "unverified": [
-          "ios"
         ],
         "knownGapNote": "Web: Triage \"emergency_now\" (score 48): fever in the text and the 38.1 °C vital plus a moderate pain score add up past the emergency threshold (45); the scrotal chip itself adds nothing.",
         "proposedFix": "Negation handling in triage free text; do not escalate gradual scrotal pain with normal Doppler flow."
@@ -235,9 +227,6 @@
           ],
           "guidelineRefs": [
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -254,9 +243,6 @@
           ],
           "guidelineRefs": [
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -275,9 +261,6 @@
           ],
           "guidelineRefs": [
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -289,9 +272,6 @@
           ],
           "guidelineRefs": [
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -303,9 +283,6 @@
           ],
           "guidelineRefs": [
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -323,9 +300,6 @@
           ],
           "guidelineRefs": [
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -348,9 +322,6 @@
           "note": "Exploration is right when torsion cannot be excluded; here gradual onset, urethritis and normal Doppler flow make an unconditional exploration plan over-treatment.",
           "knownGap": [
             "web"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: The scrotal-chip torsion prompt always adds \"Emergency scrotal exploration\" regardless of onset, Doppler result or confirmed epididymo-orchitis.",
           "proposedFix": "Condition the torsion prompt on sudden onset / absent cremasteric reflex, or phrase exploration as \"if torsion cannot be excluded\"."

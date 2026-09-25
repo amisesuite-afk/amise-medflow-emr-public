@@ -102,9 +102,6 @@
           "esc-syncope-2018"
         ],
         "note": "Low-risk reflex syncope: discharge from the emergency setting; an emergency redirect is over-triage.",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -123,9 +120,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -145,9 +139,6 @@
             "esc-syncope-2018"
           ],
           "note": "ECG in every syncope, even when low risk.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add an ESC 2018 syncope risk rule: syncope during exertion or supine, without prodrome, with chest pain/breathlessness, structural heart disease, HR <40 or SBP <90 -> urgent/emergency with ECG and echo; typical reflex prodrome with none of these -> routine."
         }
       ],
@@ -162,9 +153,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -178,9 +166,10 @@
             "esc-syncope-2018"
           ],
           "note": "No PE features. Also a check on iOS DiagnosisRadiationEngine, whose first-keyword substring match may send any diagnosis containing \"pe\" (syncope, suspected) to the pulmonary embolism card.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: \"ctpa (definitive): if wells pe >4, or d-dimer positive\" (+2 more)"
         }
       ]
     }

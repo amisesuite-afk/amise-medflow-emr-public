@@ -194,9 +194,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -224,9 +221,6 @@
           "knownGap": [
             "web"
           ],
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: Web CDS has no AIR rule."
         },
         {
@@ -239,12 +233,10 @@
           ],
           "note": "WSES 2020 names the AIR and the Adult Appendicitis Score as the best-performing adult scores.",
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: Neither platform implements the Adult Appendicitis Score."
+          "knownGapNote": "Web: Neither platform implements the Adult Appendicitis Score. | iOS CI 2026-09-25 (run 36169134350, database mode): aas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews"
         }
       ],
       "values": [
@@ -257,10 +249,7 @@
           "guidelineRefs": [
             "alvarado-1986"
           ],
-          "note": "Migration 1 + nausea 1 + RIF tenderness 2 + WBC >10 2 = 6 (possible).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Migration 1 + nausea 1 + RIF tenderness 2 + WBC >10 2 = 6 (possible)."
         },
         {
           "id": "score-air-calculator",
@@ -274,10 +263,7 @@
           "guidelineRefs": [
             "air-2008"
           ],
-          "note": "RIF pain 1 + rebound light 1 + PMN 70–84% 1 + WBC 10–14.9 1 + CRP 10–49 1 = 5 (intermediate).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "RIF pain 1 + rebound light 1 + PMN 70–84% 1 + WBC 10–14.9 1 + CRP 10–49 1 = 5 (intermediate)."
         }
       ]
     },
@@ -295,10 +281,7 @@
           "guidelineRefs": [
             "wses-2020"
           ],
-          "note": "WSES 2020: intermediate-risk patients need imaging (US, then CT if needed) before the decision to operate or discharge.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2020: intermediate-risk patients need imaging (US, then CT if needed) before the decision to operate or discharge."
         }
       ]
     },
@@ -311,10 +294,7 @@
             "re:skip if ≥ ?7",
             "re:skip (ct|imaging)"
           ],
-          "note": "Direct-to-theatre without imaging is not supported for an intermediate band.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Direct-to-theatre without imaging is not supported for an intermediate band."
         }
       ]
     }

@@ -128,9 +128,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng141"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -144,9 +141,6 @@
           "nice-ng141"
         ],
         "note": "Eron I-II cellulitis: outpatient oral antibiotics; an emergency redirect is over-triage.",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -170,9 +164,6 @@
           "guidelineRefs": [
             "nice-ng141"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Map L03.11x (cellulitis of lower limb) to the cellulitis protocol in getProtocolByIcd; let the Assessment panel follow the confirmed diagnosis rather than the PANE top (cholecystitis 0.152 for a leg cellulitis)."
         }
       ],
@@ -189,10 +180,7 @@
             "nice-ng158",
             "nice-ng141"
           ],
-          "note": "DVT is not suspected (no swelling, no risk factors); empirical anticoagulation would be harm without benefit.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DVT is not suspected (no swelling, no risk factors); empirical anticoagulation would be harm without benefit."
         }
       ]
     }

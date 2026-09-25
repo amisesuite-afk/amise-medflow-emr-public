@@ -233,10 +233,7 @@
           "guidelineRefs": [
             "wses-sbo-2018"
           ],
-          "note": "Bologna: contrast not in the colon at 24 h predicts failure of NOM; NOM beyond 72 h without progress increases morbidity and mortality — operate.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Bologna: contrast not in the colon at 24 h predicts failure of NOM; NOM beyond 72 h without progress increases morbidity and mortality — operate."
         },
         {
           "id": "mgmt-surgery-in-documented-plan",
@@ -284,20 +281,14 @@
           "match": [
             "appendicectomy"
           ],
-          "note": "An appendicectomy operative plan in an SBO patient can only come from the negated exam text ('no guarding or rebound').",
-          "unverified": [
-            "ios"
-          ]
+          "note": "An appendicectomy operative plan in an SBO patient can only come from the negated exam text ('no guarding or rebound')."
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

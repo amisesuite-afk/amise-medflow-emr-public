@@ -221,10 +221,7 @@
             "bsg-ida-2021",
             "nice-ng12"
           ],
-          "note": "Iron-deficiency anaemia at 76 with bleeding: colorectal cancer must be on the differential until colonoscopy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Iron-deficiency anaemia at 76 with bleeding: colorectal cancer must be on the differential until colonoscopy."
         },
         {
           "id": "mnm-angiodysplasia",
@@ -237,9 +234,10 @@
           "guidelineRefs": [
             "bsg-lgib-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Iron Deficiency Anaemia | 2. Acute Kidney Injury | 3. Colorectal Carcinoma | 4. Ischaemic Colitis | 5. Upper GI Bleeding (Peptic Ulcer)"
         }
       ]
     },
@@ -254,9 +252,6 @@
           "guidelineRefs": [
             "bsg-ida-2021",
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -268,9 +263,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -289,9 +281,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -305,9 +294,10 @@
           "guidelineRefs": [
             "bsg-lgib-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -334,9 +324,6 @@
             "bsg-lgib-2019"
           ],
           "note": "Therapeutic heparin in an actively bleeding patient is harmful.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Exclude K55.2x (angiodysplasia) from the ischaemic_colitis protocol prefixes; add an angiodysplasia/LGIB protocol (colonoscopy + APC, iron, continue secondary-prevention aspirin)."
         },
         {
@@ -356,10 +343,7 @@
           "guidelineRefs": [
             "bsg-lgib-2019"
           ],
-          "note": "BSG 2019: aspirin for secondary cardiovascular prevention should not be stopped routinely in LGIB (coronary stent).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "BSG 2019: aspirin for secondary cardiovascular prevention should not be stopped routinely in LGIB (coronary stent)."
         },
         {
           "id": "mgmt-no-empirical-antibiotics",
@@ -379,9 +363,6 @@
           ],
           "guidelineRefs": [
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

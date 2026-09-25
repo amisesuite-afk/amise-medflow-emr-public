@@ -164,9 +164,6 @@
           "k": 3,
           "guidelineRefs": [
             "esc-hf-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -200,9 +197,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "esc-hf-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -218,9 +212,6 @@
           ],
           "guidelineRefs": [
             "esc-hf-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -237,9 +228,6 @@
           "guidelineRefs": [
             "esc-hf-2021",
             "nice-cg187"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -253,9 +241,6 @@
           ],
           "guidelineRefs": [
             "esc-hf-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -270,9 +255,6 @@
           ],
           "guidelineRefs": [
             "esc-hf-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -293,10 +275,7 @@
             "esc-hf-2021",
             "nice-cg187"
           ],
-          "note": "IV loop diuretic for congestion (ESC 2021, class I).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "IV loop diuretic for congestion (ESC 2021, class I)."
         },
         {
           "id": "mgmt-niv",
@@ -312,9 +291,10 @@
             "esc-hf-2021"
           ],
           "note": "RR >25 and SpO2 <90%: consider NIV.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -331,10 +311,7 @@
           "guidelineRefs": [
             "esc-hf-2021"
           ],
-          "note": "A litre bolus or 30 mL/kg in florid pulmonary oedema is harmful.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A litre bolus or 30 mL/kg in florid pulmonary oedema is harmful."
         },
         {
           "id": "mgmt-no-fluid-challenge",
@@ -346,9 +323,6 @@
             "esc-hf-2021"
           ],
           "note": "Even a conditional 500 mL fluid challenge is inappropriate with pulmonary oedema on examination.",
-          "unverified": [
-            "ios"
-          ],
           "knownGap": [
             "web"
           ],

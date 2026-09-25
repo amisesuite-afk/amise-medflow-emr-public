@@ -163,9 +163,6 @@
           "k": 3,
           "guidelineRefs": [
             "ascrs-abscess-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -183,13 +180,11 @@
           "guidelineRefs": [
             "ascrs-anal-scc-2018"
           ],
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2."
+          "knownGapNote": "Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess | 2. Perianal Abscess | 3. Inguinal Hernia | 4. Deep Vein Thrombosis | 5. Incarcerated / Strangulated Hernia"
         }
       ]
     },
@@ -201,10 +196,7 @@
         "guidelineRefs": [
           "ascrs-abscess-2022"
         ],
-        "note": "Same rule as the base case: an undrained abscess is drained promptly; immunosuppression makes delay more dangerous.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Same rule as the base case: an undrained abscess is drained promptly; immunosuppression makes delay more dangerous."
       },
       "redFlags": [
         {
@@ -218,10 +210,7 @@
           "guidelineRefs": [
             "ascrs-abscess-2022"
           ],
-          "note": "The immunosuppression has to be surfaced: it changes antibiotic use and the differential.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The immunosuppression has to be surfaced: it changes antibiotic use and the differential."
         }
       ]
     },
@@ -238,9 +227,10 @@
           "guidelineRefs": [
             "ascrs-abscess-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)"
         }
       ]
     },
@@ -257,9 +247,6 @@
           ],
           "guidelineRefs": [
             "ascrs-abscess-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -278,9 +265,6 @@
           ],
           "guidelineRefs": [
             "ascrs-abscess-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -177,9 +177,6 @@
           "k": 3,
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -192,9 +189,6 @@
         "guidelineRefs": [
           "esvs-aaa-2024",
           "nice-ng156"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -210,9 +204,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -224,9 +215,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -241,9 +229,6 @@
             "cross-match",
             "group and",
             "blood products"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -264,9 +249,6 @@
             "esvs-aaa-2024",
             "nice-ng156"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add I71.3 (ruptured AAA) and I71.4 to the aortic_aneurysm protocol icd10Prefixes (or use the prefix I71)."
         },
         {
@@ -280,9 +262,6 @@
           "guidelineRefs": [
             "esvs-aaa-2024",
             "nice-ng156"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Add I71.3/I71.4 to the aortic_aneurysm protocol."
         }
@@ -304,10 +283,7 @@
             "esvs-aaa-2024",
             "nice-ng156"
           ],
-          "note": "Large crystalloid boluses before aortic control worsen bleeding.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Large crystalloid boluses before aortic control worsen bleeding."
         },
         {
           "id": "mgmt-no-ct-before-theatre-unstable",
@@ -322,9 +298,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -351,20 +324,14 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

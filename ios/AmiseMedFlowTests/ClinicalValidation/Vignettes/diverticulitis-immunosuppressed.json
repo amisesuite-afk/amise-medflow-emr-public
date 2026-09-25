@@ -212,9 +212,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -230,9 +227,6 @@
           "ascrs-diverticulitis-2020"
         ],
         "note": "Immunosuppressed patients are high risk: same-day admission, not outpatient care.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal discomfort' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=19: no triage rule covers this presentation."
       },
       "redFlags": [
@@ -249,9 +243,6 @@
             "wses-diverticulitis-2020",
             "aga-2021",
             "ascrs-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -277,10 +268,7 @@
             "aga-2021",
             "ascrs-diverticulitis-2020"
           ],
-          "note": "Antibiotics are required in immunocompromised patients (the no-antibiotic option applies only to immunocompetent patients).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Antibiotics are required in immunocompromised patients (the no-antibiotic option applies only to immunocompetent patients)."
         },
         {
           "id": "mgmt-admit-iv",
@@ -294,9 +282,6 @@
             "wses-diverticulitis-2020",
             "aga-2021",
             "ascrs-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -321,10 +306,7 @@
             "aga-2021",
             "ascrs-diverticulitis-2020"
           ],
-          "note": "Omitting antibiotics is unsafe in an immunosuppressed patient.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Omitting antibiotics is unsafe in an immunosuppressed patient."
         },
         {
           "id": "mgmt-no-oral-outpatient-plan",

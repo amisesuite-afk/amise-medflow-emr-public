@@ -206,9 +206,6 @@
         "guidelineRefs": [
           "eau-urolith-2024",
           "nice-ng148"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -223,9 +220,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -249,10 +243,7 @@
             "eau-urolith-2024",
             "nice-ng148"
           ],
-          "note": "Obstructed solitary kidney with anuria: urgent decompression (EAU; NICE NG148 immediate urology referral).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Obstructed solitary kidney with anuria: urgent decompression (EAU; NICE NG148 immediate urology referral)."
         },
         {
           "id": "mgmt-urology",
@@ -262,9 +253,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -278,10 +266,7 @@
           "guidelineRefs": [
             "eau-urolith-2024"
           ],
-          "note": "The decompression needs a plan for apixaban.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The decompression needs a plan for apixaban."
         }
       ],
       "mustExclude": [
@@ -308,11 +293,11 @@
             "nice-ng148"
           ],
           "note": "AKI on CKD in a solitary kidney, anticoagulated: NSAIDs are contraindicated.",
-          "unverified": [
+          "knownGapNote": "Web: \"Diclofenac 75 mg IM / PR (first-line)\" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"diclofenac 75 mg im or pr (nsaid - first line, reduces ureteric spasm)\"",
+          "proposedFix": "Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded.",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: \"Diclofenac 75 mg IM / PR (first-line)\" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban.",
-          "proposedFix": "Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded."
+          ]
         },
         {
           "id": "mgmt-no-conservative-met",
@@ -329,11 +314,11 @@
             "eau-urolith-2024"
           ],
           "note": "Conservative stone passage is not an option for an anuric solitary kidney.",
-          "unverified": [
+          "knownGapNote": "Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"alpha blocker (met - medical expulsive therapy):\" (+1 more)",
+          "proposedFix": "As mgmt-urgent-decompression.",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney.",
-          "proposedFix": "As mgmt-urgent-decompression."
+          ]
         }
       ]
     }

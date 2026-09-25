@@ -255,10 +255,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "Atypical elderly presentation (afebrile, mild pain, equivocal Murphy’s) must not demote cholecystitis once imaging is characteristic.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Atypical elderly presentation (afebrile, mild pain, equivocal Murphy’s) must not demote cholecystitis once imaging is characteristic."
         }
       ],
       "mustNotMiss": [
@@ -272,12 +269,10 @@
           ],
           "note": "Elderly vasculopath with vague pain and vomiting: mesenteric ischaemia belongs in the differential.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia).",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Cholecystitis | 2. Acute Appendicitis | 3. Small Bowel Obstruction | 4. Acute Pancreatitis | 5. Ascending Cholangitis",
           "proposedFix": "PANE: age ≥75 / vascular risk modifier for mesenteric ischaemia."
         }
       ]
@@ -290,10 +285,7 @@
         "guidelineRefs": [
           "tg18-mgmt-cholecystitis"
         ],
-        "note": "TG18 Grade II in an 81-year-old: admission and same-day surgical assessment. iOS (predicted, not observed): routine — no urgent keyword in the CC.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "TG18 Grade II in an 81-year-old: admission and same-day surgical assessment. iOS (predicted, not observed): routine — no urgent keyword in the CC."
       },
       "redFlags": [
         {
@@ -305,10 +297,7 @@
             "frail",
             "age"
           ],
-          "note": "Diabetes and age: masked signs, higher gangrene/perforation risk.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Diabetes and age: masked signs, higher gangrene/perforation risk."
         }
       ]
     },
@@ -323,10 +312,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "WBC >18 × 10⁹/L is on its own a Grade II criterion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WBC >18 × 10⁹/L is on its own a Grade II criterion."
         },
         {
           "id": "score-tg18-autofill",
@@ -342,9 +328,6 @@
             "web"
           ],
           "knownGapNote": "clinical-scores auto-derived grade = 0 \"criteria not met\" despite WBC 19.4 and a characteristic US report (needs manual imaging ticks).",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-scores.ts: derive the TG18 imaging criterion from the radiology result text (wall thickening, pericholecystic fluid, sonographic Murphy's) and local signs from exam chips."
         }
       ]
@@ -360,10 +343,7 @@
           "guidelineRefs": [
             "tg18-antimicrobial"
           ],
-          "note": "TG18: blood cultures in Grade II/III.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "TG18: blood cultures in Grade II/III."
         }
       ]
     },
@@ -386,10 +366,7 @@
           "guidelineRefs": [
             "tg18-mgmt-cholecystitis"
           ],
-          "note": "Grade II: early LC if fit (CCI/ASA-PS), otherwise drainage if not responding. Either must be in the plan.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Grade II: early LC if fit (CCI/ASA-PS), otherwise drainage if not responding. Either must be in the plan."
         },
         {
           "id": "mgmt-antibiotics",
@@ -410,9 +387,6 @@
           ],
           "guidelineRefs": [
             "tg18-antimicrobial"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -426,9 +400,10 @@
             "sliding scale",
             "vrii"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -450,12 +425,10 @@
           ],
           "note": "CKD 3a, age 81, dehydrated: NSAIDs risk AKI.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Lap chole operative-plan post-op orders: \"Ibuprofen 400mg TDS (if eGFR normal)\" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless).",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "Lap chole operative-plan post-op orders: \"Ibuprofen 400mg TDS (if eGFR normal)\" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless). | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ...\"",
           "proposedFix": "Operative-plan templates: omit NSAIDs when comorbidities include CKD or age ≥75, rather than a free-text \"if eGFR normal\" caveat."
         },
         {
@@ -470,10 +443,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },

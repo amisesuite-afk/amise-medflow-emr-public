@@ -207,9 +207,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Small Bowel Obstruction | 2. Acute Gastroenteritis | 3. Acute Pancreatitis | 4. Acute Appendicitis | 5. Acute Kidney Injury"
         }
       ],
       "mustNotMiss": [
@@ -226,9 +227,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction | 2. Acute Gastroenteritis | 3. Acute Pancreatitis | 4. Acute Appendicitis | 5. Acute Kidney Injury"
         }
       ]
     },
@@ -240,10 +242,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Dehydration, K 2.9 and AKI need same-day admission (not a 2-week outpatient slot).",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Dehydration, K 2.9 and AKI need same-day admission (not a 2-week outpatient slot)."
       },
       "redFlags": [
         {
@@ -258,9 +257,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage)"
         }
       ]
     },
@@ -278,9 +278,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 17 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)"
         },
         {
           "id": "inv-ct",
@@ -290,9 +291,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -311,10 +309,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "Aspiration risk with a full stomach.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Aspiration risk with a full stomach."
         },
         {
           "id": "mgmt-iv-saline-potassium",
@@ -327,9 +322,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

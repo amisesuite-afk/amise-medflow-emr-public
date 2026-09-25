@@ -220,9 +220,6 @@
           ],
           "guidelineRefs": [
             "wses-sis-ssti-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -238,9 +235,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-sis-ssti-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -253,9 +247,6 @@
         "guidelineRefs": [
           "wses-sis-ssti-2018",
           "ssc-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -272,9 +263,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -288,10 +276,7 @@
             "dka",
             "ketoacidosis"
           ],
-          "note": "Glucose 24 in sepsis: DKA/HHS screen and insulin plan.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Glucose 24 in sepsis: DKA/HHS screen and insulin plan."
         }
       ]
     },
@@ -305,9 +290,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -318,9 +300,6 @@
             "glucose",
             "vbg",
             "blood gas"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -339,9 +318,6 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add N49.3 (Fournier's gangrene) to the necrotising_fasciitis protocol icd10Prefixes."
         },
         {
@@ -353,9 +329,6 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018",
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Add N49.3 to the necrotising_fasciitis protocol icd10Prefixes."
         },
@@ -372,9 +345,6 @@
           ],
           "guidelineRefs": [
             "wses-sis-ssti-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -389,20 +359,14 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "note": "Urology input for testes/urethra; faecal diversion when the perineal wound will be soiled.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Urology input for testes/urethra; faecal diversion when the perineal wound will be soiled."
         }
       ]
     },
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

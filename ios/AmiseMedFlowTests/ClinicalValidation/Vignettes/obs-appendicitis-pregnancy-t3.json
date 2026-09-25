@@ -231,10 +231,7 @@
           "match": [
             "append"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -245,10 +242,7 @@
         "guidelineRefs": [
           "wses-2020"
         ],
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       },
       "redFlags": [
         {
@@ -259,9 +253,6 @@
           ],
           "match": [
             "pregnan"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -278,9 +269,6 @@
           "match": [
             "appendicectomy",
             "appendectomy"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -300,9 +288,6 @@
             "fetal heart",
             "ctg",
             "cardiotocograph"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -317,9 +302,10 @@
             "uterine displacement",
             "left uterine"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.alvarado, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -342,9 +328,6 @@
           "unless": [
             "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
             "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -356,9 +339,6 @@
           "note": "She is 32 weeks pregnant: a template stating \"β-HCG confirmed negative\" is false and dangerous.",
           "match": [
             "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

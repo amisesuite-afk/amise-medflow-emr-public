@@ -183,10 +183,7 @@
             "ata-atc-2021",
             "bta-2014"
           ],
-          "note": "Rapid growth over weeks with stridor in an older patient (Hashimoto's): anaplastic carcinoma and thyroid lymphoma are the diagnoses to name.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Rapid growth over weeks with stridor in an older patient (Hashimoto's): anaplastic carcinoma and thyroid lymphoma are the diagnoses to name."
         },
         {
           "id": "mnm-thyroid-malignancy",
@@ -195,9 +192,6 @@
             "thyroid carcinoma",
             "thyroid cancer",
             "icd:C73"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -210,9 +204,6 @@
         "guidelineRefs": [
           "ata-atc-2021",
           "bta-2014"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -229,10 +220,7 @@
           "guidelineRefs": [
             "ata-atc-2021"
           ],
-          "note": "Any emergency alarm counts here (the generic triage alarm included).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Any emergency alarm counts here (the generic triage alarm included)."
         },
         {
           "id": "alarm-airway-specific",
@@ -246,10 +234,7 @@
           "guidelineRefs": [
             "ata-atc-2021"
           ],
-          "note": "An alarm that names the airway problem, so the response is airway-directed.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "An alarm that names the airway problem, so the response is airway-directed."
         }
       ]
     },
@@ -269,9 +254,10 @@
             "ata-atc-2021"
           ],
           "note": "ATA 2021: core or open biopsy when FNA cannot distinguish anaplastic carcinoma from lymphoma.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-ct-neck-chest",
@@ -282,9 +268,10 @@
           "guidelineRefs": [
             "ata-atc-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -303,9 +290,10 @@
           "guidelineRefs": [
             "ata-atc-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -318,10 +306,7 @@
           "guidelineRefs": [
             "ata-atc-2021"
           ],
-          "note": "A templated elective total-thyroidectomy plan is not the next step for a stridulous, probably unresectable anaplastic/lymphoma mass.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A templated elective total-thyroidectomy plan is not the next step for a stridulous, probably unresectable anaplastic/lymphoma mass."
         }
       ]
     }

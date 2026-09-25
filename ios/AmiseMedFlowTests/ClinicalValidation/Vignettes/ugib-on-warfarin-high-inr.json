@@ -191,9 +191,6 @@
           "k": 3,
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -205,9 +202,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "esge-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -226,9 +220,6 @@
           ],
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -240,9 +231,6 @@
           ],
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -255,9 +243,6 @@
           "score": "glasgow-blatchford",
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -275,9 +260,10 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)"
         },
         {
           "id": "inv-group-save",
@@ -293,9 +279,6 @@
           ],
           "guidelineRefs": [
             "bsg-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -315,10 +298,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "ESGE: withhold the VKA; give vitamin K and PCC if haemodynamically unstable. The choice is the clinician's.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESGE: withhold the VKA; give vitamin K and PCC if haemodynamically unstable. The choice is the clinician's."
         },
         {
           "id": "mgmt-ogd-within-24h",
@@ -333,9 +313,6 @@
           "guidelineRefs": [
             "esge-2021",
             "nice-cg141"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -349,10 +326,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "An elective peri-operative bridging template (heparin) during active GI haemorrhage is contraindicated.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "An elective peri-operative bridging template (heparin) during active GI haemorrhage is contraindicated."
         },
         {
           "id": "mgmt-no-patient-hold-advice",
@@ -363,10 +337,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "Patient-directed hold/stop instructions are forbidden (hazard H-10).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Patient-directed hold/stop instructions are forbidden (hazard H-10)."
         },
         {
           "id": "mgmt-no-tranexamic-acid",
@@ -380,9 +351,10 @@
             "halt-it-2020"
           ],
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
         }
       ]
     }

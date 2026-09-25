@@ -135,9 +135,6 @@
           "k": 3,
           "guidelineRefs": [
             "ehs-ahs-umbilical-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -146,10 +143,7 @@
       "emergencyLevel": {
         "id": "level-routine",
         "severity": "quality",
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "management": {
@@ -163,10 +157,7 @@
           "guidelineRefs": [
             "ehs-ahs-umbilical-2020"
           ],
-          "note": "EHS/AHS 2020: mesh repair suggested for defects ≥1 cm (preperitoneal flat mesh, open).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "EHS/AHS 2020: mesh repair suggested for defects ≥1 cm (preperitoneal flat mesh, open)."
         },
         {
           "id": "mgmt-smoking",
@@ -177,9 +168,10 @@
           "guidelineRefs": [
             "ehs-ahs-umbilical-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -191,9 +183,6 @@
             "laparoscopic inguinal hernia repair"
           ],
           "note": "An inguinal TAPP operative plan is the wrong template for an umbilical hernia.",
-          "unverified": [
-            "ios"
-          ],
           "knownGap": [
             "web"
           ],

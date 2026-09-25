@@ -320,9 +320,6 @@
           "ssc-2021"
         ],
         "note": "Septic shock with organ dysfunction: immediate resuscitation and critical care.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS ClinicalPathwayEngine reads only CC/PMH text for emergency keywords; this CC yields routine."
       },
       "mustAlarm": [
@@ -467,9 +464,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -480,10 +474,11 @@
             "coagulation",
             "clotting"
           ],
-          "unverified": [
+          "note": "Before percutaneous drainage.",
+          "knownGap": [
             "ios"
           ],
-          "note": "Before percutaneous drainage."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 18 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
         }
       ],
       "mustExclude": []
@@ -598,9 +593,6 @@
           ],
           "guidelineRefs": [
             "tg18-mgmt-cholecystitis"
-          ],
-          "unverified": [
-            "ios"
           ],
           "note": "TG18 allows early cholecystectomy in Grade III only with favourable organ failure and no negative predictive factor; neurological dysfunction is a negative predictive factor.",
           "knownGap": [

@@ -168,9 +168,6 @@
           ],
           "guidelineRefs": [
             "ascrs-haem-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -188,9 +185,6 @@
           "guidelineRefs": [
             "nice-ng12",
             "ascrs-haem-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -204,9 +198,10 @@
           "guidelineRefs": [
             "ascrs-haem-2024"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 7 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         }
       ]
     },
@@ -222,10 +217,7 @@
           "guidelineRefs": [
             "ascrs-haem-2024"
           ],
-          "note": "Rubber band ligation on anticoagulation carries a higher risk of delayed haemorrhage; the plan should address the anticoagulant.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Rubber band ligation on anticoagulation carries a higher risk of delayed haemorrhage; the plan should address the anticoagulant."
         }
       ]
     }

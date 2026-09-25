@@ -152,9 +152,10 @@
             "ata-2015"
           ],
           "note": "ATA 2015: for tumours with clinical nodal metastases (cN1), the initial procedure should be total thyroidectomy.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-lateral-neck-dissection",
@@ -168,9 +169,10 @@
             "ata-2015"
           ],
           "note": "Therapeutic lateral neck dissection for biopsy-proven lateral compartment nodes.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -196,9 +198,6 @@
         "id": "level-not-emergency",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       }
     },

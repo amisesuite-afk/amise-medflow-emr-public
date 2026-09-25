@@ -169,9 +169,10 @@
           "guidelineRefs": [
             "wses-spleen-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Appendicitis | 2. Perforated Peptic Ulcer | 3. Community-Acquired Pneumonia | 4. Acute Pancreatitis | 5. Testicular Torsion"
         }
       ]
     },
@@ -182,9 +183,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "wses-spleen-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -202,9 +200,6 @@
           ],
           "guidelineRefs": [
             "wses-spleen-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -225,10 +220,7 @@
           "guidelineRefs": [
             "wses-spleen-2017"
           ],
-          "note": "Stable patients: non-operative management only with close monitoring and immediate access to theatre.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Stable patients: non-operative management only with close monitoring and immediate access to theatre."
         }
       ],
       "mustExclude": [
@@ -249,9 +241,6 @@
           ],
           "guidelineRefs": [
             "wses-spleen-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -278,20 +267,14 @@
           "guidelineRefs": [
             "wses-spleen-2017"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

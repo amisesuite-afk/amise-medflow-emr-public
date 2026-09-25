@@ -83,10 +83,7 @@
         "guidelineRefs": [
           "uspstf-breast-2024"
         ],
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       },
       "mustNotAlarm": [
         {
@@ -98,9 +95,6 @@
           "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
           "match": [
             "emergency now"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -116,9 +110,10 @@
           "match": [
             "mammogra"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-biennial-interval",
@@ -133,9 +128,10 @@
             "re:2-yearly",
             "re:two-yearly"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -151,9 +147,6 @@
             "triple assessment",
             "2-week",
             "two-week wait"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -161,10 +154,7 @@
     "pathway": {
       "id": "pathway-wellness",
       "severity": "quality",
-      "equals": "wellness",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wellness"
     }
   },
   "guideline": [

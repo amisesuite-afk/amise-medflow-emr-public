@@ -92,9 +92,10 @@
             "home bp",
             "out-of-office"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-urine-acr",
@@ -108,9 +109,6 @@
             "albumin-creatinine",
             "albumin creatinine",
             "microalbumin"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -128,9 +126,10 @@
             "re:cardiovascular risk (score|calculat|estimat|assessment)",
             "framingham"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     },
@@ -142,10 +141,7 @@
           "nice-ng136"
         ],
         "note": "Stage 1 range without symptoms: routine confirmation, not same-day.",
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       },
       "mustNotAlarm": [
         {
@@ -157,9 +153,6 @@
           "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
           "match": [
             "emergency now"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -167,10 +160,7 @@
     "pathway": {
       "id": "pathway-wellness",
       "severity": "quality",
-      "equals": "wellness",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wellness"
     }
   },
   "guideline": [

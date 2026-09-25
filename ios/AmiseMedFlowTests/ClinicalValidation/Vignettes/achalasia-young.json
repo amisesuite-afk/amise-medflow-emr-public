@@ -156,9 +156,6 @@
           "k": 3,
           "guidelineRefs": [
             "achalasia-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -171,10 +168,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Dysphagia with weight loss: urgent OGD (NG12) even though achalasia is the likely diagnosis.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Dysphagia with weight loss: urgent OGD (NG12) even though achalasia is the likely diagnosis."
       },
       "redFlags": [
         {
@@ -185,9 +179,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -207,9 +198,10 @@
             "achalasia-2020",
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-manometry",
@@ -220,9 +212,10 @@
           "guidelineRefs": [
             "achalasia-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-barium-swallow",
@@ -234,9 +227,10 @@
           "guidelineRefs": [
             "achalasia-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -254,9 +248,10 @@
           "guidelineRefs": [
             "achalasia-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

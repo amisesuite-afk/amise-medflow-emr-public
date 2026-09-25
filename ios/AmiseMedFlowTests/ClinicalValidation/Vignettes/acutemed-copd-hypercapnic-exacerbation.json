@@ -157,9 +157,6 @@
           "k": 3,
           "guidelineRefs": [
             "gold-2025"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -189,9 +186,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "gold-2025"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -207,9 +201,6 @@
           ],
           "guidelineRefs": [
             "bts-o2-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -228,9 +219,6 @@
           "guidelineRefs": [
             "gold-2025",
             "bts-o2-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -247,10 +235,7 @@
             "bts-o2-2017",
             "gold-2025"
           ],
-          "note": "Controlled oxygen, target SpO2 88-92%, in hypercapnic COPD.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Controlled oxygen, target SpO2 88-92%, in hypercapnic COPD."
         },
         {
           "id": "mgmt-niv",
@@ -264,10 +249,7 @@
           "guidelineRefs": [
             "gold-2025"
           ],
-          "note": "Acute respiratory acidosis (pH <=7.35, PaCO2 >=6.0 kPa): NIV.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Acute respiratory acidosis (pH <=7.35, PaCO2 >=6.0 kPa): NIV."
         },
         {
           "id": "mgmt-bronchodilator",
@@ -284,9 +266,6 @@
           "guidelineRefs": [
             "gold-2025"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
         },
         {
@@ -301,9 +280,6 @@
           ],
           "guidelineRefs": [
             "gold-2025"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
         }
@@ -325,10 +301,7 @@
             "bts-o2-2017",
             "gold-2025"
           ],
-          "note": "High-flow oxygen / a >=94% target in hypercapnic COPD worsens CO2 retention.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "High-flow oxygen / a >=94% target in hypercapnic COPD worsens CO2 retention."
         }
       ]
     }

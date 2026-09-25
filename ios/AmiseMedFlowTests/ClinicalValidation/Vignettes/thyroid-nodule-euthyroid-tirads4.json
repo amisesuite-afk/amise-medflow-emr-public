@@ -145,9 +145,6 @@
           "k": 3,
           "guidelineRefs": [
             "bta-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -157,9 +154,6 @@
         "id": "level-not-urgent",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       }
     },
@@ -178,9 +172,10 @@
             "bta-2014"
           ],
           "note": "TSH first: it decides between FNA and a radionuclide scan.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-us",
@@ -196,9 +191,10 @@
             "bta-2014"
           ],
           "note": "As an investigation order. The recommendation itself is checked under management (mgmt-us-fna-recommended).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-fna",
@@ -212,9 +208,10 @@
             "acr-tirads-2017"
           ],
           "note": "As an investigation order. ACR TI-RADS: TR4 nodules ≥1.5 cm meet the FNA threshold.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ],
       "mustExclude": [
@@ -240,10 +237,7 @@
           "guidelineRefs": [
             "ata-2015"
           ],
-          "note": "A radionuclide scan is for a subnormal TSH.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A radionuclide scan is for a subnormal TSH."
         },
         {
           "id": "inv-no-unrelated-seeded-orders",
@@ -278,9 +272,10 @@
             "bta-2014"
           ],
           "note": "The plan or a prompt must recommend ultrasound-guided FNA for a TR4 nodule ≥1.5 cm.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

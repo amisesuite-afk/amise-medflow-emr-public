@@ -221,19 +221,13 @@
           "guidelineRefs": [
             "wses-asbo-2017"
           ],
-          "note": "Obstruction in a thin elderly woman with a virgin abdomen and medial thigh pain: obturator hernia must be on the list.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Obstruction in a thin elderly woman with a virgin abdomen and medial thigh pain: obturator hernia must be on the list."
         },
         {
           "id": "mnm-hernia-any",
           "severity": "quality",
           "match": [
             "hernia"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -245,10 +239,7 @@
             "obstruct",
             "icd:K56"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -259,9 +250,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-asbo-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -275,9 +263,6 @@
           ],
           "guidelineRefs": [
             "wses-asbo-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -295,10 +280,7 @@
           "guidelineRefs": [
             "wses-asbo-2017"
           ],
-          "note": "CT is the only reliable pre-operative diagnosis of obturator hernia; SBO without previous surgery needs cross-sectional imaging.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "CT is the only reliable pre-operative diagnosis of obturator hernia; SBO without previous surgery needs cross-sectional imaging."
         }
       ]
     },
@@ -317,9 +299,10 @@
           "guidelineRefs": [
             "wses-asbo-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 26 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -338,9 +321,10 @@
             "wses-asbo-2017"
           ],
           "note": "The non-operative ASBO pathway is for adhesional obstruction; this is a hernia.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic\""
         }
       ]
     },

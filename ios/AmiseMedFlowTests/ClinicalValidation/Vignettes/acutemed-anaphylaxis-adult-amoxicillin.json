@@ -140,9 +140,6 @@
           "k": 3,
           "guidelineRefs": [
             "rcuk-anaphylaxis-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -154,9 +151,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "rcuk-anaphylaxis-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -172,9 +166,6 @@
           ],
           "guidelineRefs": [
             "rcuk-anaphylaxis-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -188,10 +179,7 @@
           "guidelineRefs": [
             "rcuk-anaphylaxis-2021"
           ],
-          "note": "The new allergy must be visible during the consultation.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The new allergy must be visible during the consultation."
         }
       ]
     },
@@ -206,9 +194,6 @@
           ],
           "guidelineRefs": [
             "rcuk-anaphylaxis-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -223,9 +208,6 @@
           ],
           "guidelineRefs": [
             "rcuk-anaphylaxis-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -244,9 +226,6 @@
           ],
           "guidelineRefs": [
             "rcuk-anaphylaxis-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -268,10 +247,7 @@
           "guidelineRefs": [
             "rcuk-anaphylaxis-2021"
           ],
-          "note": "A penicillin in any plan for a patient in penicillin anaphylaxis is contraindicated.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A penicillin in any plan for a patient in penicillin anaphylaxis is contraindicated."
         },
         {
           "id": "mgmt-no-antihistamine-steroid-without-adrenaline",
@@ -288,10 +264,7 @@
           "guidelineRefs": [
             "rcuk-anaphylaxis-2021"
           ],
-          "note": "RCUK 2021: antihistamines and steroids are not first-line and must never replace adrenaline.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "RCUK 2021: antihistamines and steroids are not first-line and must never replace adrenaline."
         }
       ]
     }

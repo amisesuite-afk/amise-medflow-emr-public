@@ -155,9 +155,10 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: ios:abcd2, ios:nihss, ios:mrs, caprini"
         }
       ]
     },
@@ -174,9 +175,6 @@
           "guidelineRefs": [
             "nice-cg103",
             "cpoc-bgs-frailty-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -196,10 +194,11 @@
           "guidelineRefs": [
             "anaemia-consensus-2017"
           ],
-          "unverified": [
+          "proposedFix": "See periop-preop-rcri-high-risk-hemicolectomy/inv-iron-studies.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See periop-preop-rcri-high-risk-hemicolectomy/inv-iron-studies."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -217,10 +216,11 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "unverified": [
+          "proposedFix": "See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-delirium-prevention",
@@ -235,10 +235,11 @@
             "nice-cg103",
             "cpoc-bgs-frailty-2021"
           ],
-          "unverified": [
+          "proposedFix": "See flag-delirium-risk.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See flag-delirium-risk."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-shared-decision",
@@ -253,10 +254,11 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "unverified": [
+          "proposedFix": "See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -272,10 +274,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

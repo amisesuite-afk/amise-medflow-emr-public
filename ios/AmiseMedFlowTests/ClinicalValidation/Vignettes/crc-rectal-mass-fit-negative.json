@@ -180,9 +180,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -194,9 +191,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "bsg-acpgbi-fit-2022"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -210,9 +204,6 @@
           "guidelineRefs": [
             "bsg-acpgbi-fit-2022",
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -231,10 +222,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "MRI pelvis for T/N stage, CRM and EMVI before any treatment decision.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "MRI pelvis for T/N stage, CRM and EMVI before any treatment decision."
         },
         {
           "id": "inv-colonoscopy",
@@ -244,9 +232,6 @@
           ],
           "guidelineRefs": [
             "bsg-acpgbi-fit-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -262,9 +247,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

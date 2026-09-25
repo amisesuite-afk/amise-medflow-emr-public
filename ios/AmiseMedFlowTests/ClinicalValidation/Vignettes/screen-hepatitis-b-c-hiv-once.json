@@ -87,9 +87,10 @@
             "hcv",
             "hep c"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
         },
         {
           "id": "inv-hbv",
@@ -103,9 +104,10 @@
             "hep b",
             "hbv"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
         },
         {
           "id": "inv-hiv",
@@ -116,19 +118,17 @@
           "match": [
             "re:\\bhiv\\b"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
         }
       ]
     },
     "pathway": {
       "id": "pathway-wellness",
       "severity": "quality",
-      "equals": "wellness",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wellness"
     }
   },
   "guideline": [

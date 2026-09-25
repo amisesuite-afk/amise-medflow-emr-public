@@ -131,9 +131,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "atls-10-burns"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -148,9 +145,6 @@
           "guidelineRefs": [
             "atls-10-burns",
             "isbi-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -166,9 +160,6 @@
           "guidelineRefs": [
             "atls-10-burns",
             "isbi-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -189,9 +180,6 @@
           "guidelineRefs": [
             "aba-referral",
             "nnbc-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -203,20 +191,18 @@
           "guidelineRefs": [
             "isbi-2016"
           ],
-          "unverified": [
+          "proposedFix": "Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     },
     "pathway": {
       "id": "pathway-burns",
       "severity": "quality",
-      "equals": "burns",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "burns"
     }
   },
   "guideline": [

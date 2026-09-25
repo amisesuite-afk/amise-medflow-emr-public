@@ -165,9 +165,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "eur-hypona-2014"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -180,9 +177,6 @@
           ],
           "guidelineRefs": [
             "eur-hypona-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -200,12 +194,10 @@
           ],
           "note": "Potassium replacement raises sodium too: part of the overcorrection risk.",
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt.",
+          "knownGapNote": "Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt. | iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 13 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)",
           "proposedFix": "Add a hypokalaemia prompt, and warn that correcting potassium raises sodium."
         }
       ]
@@ -224,9 +216,10 @@
             "eur-hypona-2014"
           ],
           "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-stop-thiazide",
@@ -236,9 +229,6 @@
           ],
           "guidelineRefs": [
             "eur-hypona-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -250,9 +240,6 @@
           ],
           "guidelineRefs": [
             "eur-hypona-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -267,10 +254,7 @@
           "guidelineRefs": [
             "eur-hypona-2014"
           ],
-          "note": "Elderly, chronic, hypokalaemic, thiazide: high risk of osmotic demyelination with rapid correction.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Elderly, chronic, hypokalaemic, thiazide: high risk of osmotic demyelination with rapid correction."
         },
         {
           "id": "mgmt-single-hypertonic-150",
@@ -283,10 +267,7 @@
           "guidelineRefs": [
             "eur-hypona-2014"
           ],
-          "note": "Moderately severe symptoms: a single 150 mL 3% infusion (European 2014).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Moderately severe symptoms: a single 150 mL 3% infusion (European 2014)."
         }
       ]
     }

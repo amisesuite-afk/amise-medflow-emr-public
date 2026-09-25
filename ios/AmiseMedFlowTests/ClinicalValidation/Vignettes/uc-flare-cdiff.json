@@ -200,9 +200,6 @@
           "guidelineRefs": [
             "ecco-infections-2021",
             "idsa-cdi-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -214,9 +211,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "idsa-cdi-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -235,10 +229,11 @@
             "ecco-infections-2021"
           ],
           "note": "IDSA/SHEA 2021: fidaxomicin (preferred) or oral vancomycin for an initial episode. ECCO 2021: treat CDI in IBD with vancomycin or fidaxomicin.",
-          "unverified": [
+          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

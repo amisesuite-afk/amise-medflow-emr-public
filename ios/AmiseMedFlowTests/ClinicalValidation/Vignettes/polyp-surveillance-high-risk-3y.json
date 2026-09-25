@@ -94,10 +94,7 @@
           "guidelineRefs": [
             "bsg-surv-2020"
           ],
-          "note": "BSG 2020: ≥ 2 premalignant polyps with ≥ 1 advanced (adenoma ≥ 10 mm or HGD), or ≥ 5 premalignant polyps → one-off colonoscopy at 3 years. Low-risk findings → no colonoscopic surveillance (return to screening).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "BSG 2020: ≥ 2 premalignant polyps with ≥ 1 advanced (adenoma ≥ 10 mm or HGD), or ≥ 5 premalignant polyps → one-off colonoscopy at 3 years. Low-risk findings → no colonoscopic surveillance (return to screening)."
         }
       ],
       "mustExclude": [
@@ -118,9 +115,6 @@
           ],
           "guidelineRefs": [
             "bsg-surv-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -166,9 +166,6 @@
           "k": 3,
           "guidelineRefs": [
             "abs-best-practice-2010"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -177,10 +174,7 @@
       "emergencyLevel": {
         "id": "level-at-least-urgent",
         "severity": "quality",
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       }
     },
     "investigations": {
@@ -197,9 +191,10 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         },
         {
           "id": "inv-pus-culture",
@@ -207,9 +202,6 @@
           "match": [
             "c&s",
             "culture"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -226,10 +218,7 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "note": "Ultrasound-guided needle aspiration is first-line for breast abscess; open drainage for failures, large or skin-compromised abscesses.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Ultrasound-guided needle aspiration is first-line for breast abscess; open drainage for failures, large or skin-compromised abscesses."
         },
         {
           "id": "mgmt-continue-breastfeeding",
@@ -243,9 +232,10 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -256,9 +246,6 @@
             "stop breastfeeding",
             "cease breastfeeding",
             "suppress lactation"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -196,9 +196,6 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -210,9 +207,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "esc-acs-2023"
-        ],
-        "knownGap": [
-          "ios"
         ],
         "knownGapNote": "Web: adaptiveTriage: 'same_day_call' (score 30); the resulted ECG (ST elevation) and troponin 412 are not triage inputs, and HR 48/SBP 92 are inside the vital thresholds. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Upper abdominal discomfort and nausea' gives 'routine'.",
         "proposedFix": "Feed resulted ECG/troponin into triage and prompts ('ST elevation', troponin above the 99th centile → emergency, STEMI pathway)."
@@ -230,9 +224,6 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -252,9 +243,6 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -270,10 +258,7 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "note": "A GI work-up for a STEMI wastes the reperfusion window.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A GI work-up for a STEMI wastes the reperfusion window."
         }
       ]
     }

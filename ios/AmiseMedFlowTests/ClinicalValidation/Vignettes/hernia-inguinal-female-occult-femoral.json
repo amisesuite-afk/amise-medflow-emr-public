@@ -137,10 +137,7 @@
           "guidelineRefs": [
             "herniasurge-2018"
           ],
-          "note": "HerniaSurge: femoral hernias are relatively common in women with groin hernias and are frequently misdiagnosed as inguinal.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "HerniaSurge: femoral hernias are relatively common in women with groin hernias and are frequently misdiagnosed as inguinal."
         }
       ]
     },
@@ -148,10 +145,7 @@
       "emergencyLevel": {
         "id": "level-not-emergency",
         "severity": "quality",
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "management": {
@@ -169,9 +163,10 @@
             "herniasurge-2018"
           ],
           "note": "HerniaSurge suggests a laparoscopic approach for groin hernia repair in women (occult femoral hernia).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -190,10 +185,7 @@
           "guidelineRefs": [
             "herniasurge-2018"
           ],
-          "note": "Watchful waiting is a men-only option in HerniaSurge; in women the femoral-hernia (strangulation) risk argues for repair.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Watchful waiting is a men-only option in HerniaSurge; in women the femoral-hernia (strangulation) risk argues for repair."
         }
       ]
     },

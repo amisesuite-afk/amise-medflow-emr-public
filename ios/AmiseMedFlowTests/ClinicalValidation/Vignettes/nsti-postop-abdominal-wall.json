@@ -217,10 +217,7 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "note": "Crepitus, dishwater discharge and pain out of proportion must lift NSTI above simple SSI.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Crepitus, dishwater discharge and pain out of proportion must lift NSTI above simple SSI."
         }
       ],
       "mustNotMiss": [
@@ -234,9 +231,10 @@
             "leak"
           ],
           "note": "Deep organ-space infection is the other post-laparotomy source.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Sepsis | 2. Surgical Site Infection | 3. Necrotising Soft Tissue Infection (Necrotising Fasciitis) | 4. Pulmonary Embolism | 5. Acute Kidney Injury"
         }
       ]
     },
@@ -247,9 +245,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-sis-ssti-2018"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -266,9 +261,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -279,10 +271,7 @@
           "match": [
             "penicillin"
           ],
-          "note": "Penicillin allergy recorded: the regimen must account for it.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Penicillin allergy recorded: the regimen must account for it."
         }
       ]
     },
@@ -296,9 +285,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -316,9 +302,6 @@
           ],
           "guidelineRefs": [
             "wses-sis-ssti-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -330,9 +313,10 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -348,20 +332,14 @@
             "ios.radiation.plan",
             "ios.soap.plan"
           ],
-          "note": "The documented plan must not be the superficial-SSI plan (open, oral co-amoxiclav, heal by secondary intention).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The documented plan must not be the superficial-SSI plan (open, oral co-amoxiclav, heal by secondary intention)."
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

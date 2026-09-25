@@ -222,10 +222,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "DKA in pregnancy can occur at lower glucose levels.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DKA in pregnancy can occur at lower glucose levels."
         }
       ]
     },
@@ -238,9 +235,6 @@
           "nice-ng3",
           "jbds-dka-2023",
           "ada-hhc-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -256,9 +250,6 @@
             "nice-ng3",
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -276,10 +267,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "Blood ketones diagnose and monitor DKA (JBDS). Graded as management because the web prompts add ketone testing as a plan line, not an investigation order.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Blood ketones diagnose and monitor DKA (JBDS). Graded as management because the web prompts add ketone testing as a plan line, not an investigation order."
         },
         {
           "id": "mgmt-obstetric-fetal",
@@ -296,10 +284,7 @@
           "guidelineRefs": [
             "nice-ng3"
           ],
-          "note": "NICE NG3: admit for level 2 critical care where both medical and obstetric care are available; fetal monitoring.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE NG3: admit for level 2 critical care where both medical and obstetric care are available; fetal monitoring."
         },
         {
           "id": "mgmt-fixed-rate-insulin",
@@ -318,9 +303,6 @@
             "nice-ng3",
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -341,9 +323,6 @@
             "nice-ng3",
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -362,9 +341,6 @@
             "nice-ng3",
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -390,9 +366,6 @@
           ],
           "guidelineRefs": [
             "fda-nsaid-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -407,9 +380,6 @@
             "nice-ng3",
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -424,9 +394,6 @@
             "nice-ng3",
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

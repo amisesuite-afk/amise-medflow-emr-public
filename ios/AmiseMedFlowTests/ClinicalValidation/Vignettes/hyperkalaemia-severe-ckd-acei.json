@@ -183,9 +183,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -197,9 +194,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "ukka-hyperk-2023"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -212,9 +206,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -232,10 +223,7 @@
           "guidelineRefs": [
             "ukka-hyperk-2023"
           ],
-          "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order."
         },
         {
           "id": "mgmt-iv-calcium",
@@ -247,10 +235,7 @@
           "guidelineRefs": [
             "ukka-hyperk-2023"
           ],
-          "note": "ECG changes: IV calcium for membrane stabilisation.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ECG changes: IV calcium for membrane stabilisation."
         },
         {
           "id": "mgmt-iv-calcium-dose",
@@ -264,10 +249,7 @@
           "guidelineRefs": [
             "ukka-hyperk-2023"
           ],
-          "note": "UKKA 2023: calcium chloride 10% 10 mL or calcium gluconate 10% 30 mL.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "UKKA 2023: calcium chloride 10% 10 mL or calcium gluconate 10% 30 mL."
         },
         {
           "id": "mgmt-insulin-glucose",
@@ -278,9 +260,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -293,10 +272,7 @@
           "guidelineRefs": [
             "ukka-hyperk-2023"
           ],
-          "note": "Insulin–glucose causes hypoglycaemia, particularly in CKD.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Insulin–glucose causes hypoglycaemia, particularly in CKD."
         },
         {
           "id": "mgmt-salbutamol",
@@ -306,9 +282,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -319,9 +292,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -336,9 +306,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -237,9 +237,6 @@
           "k": 3,
           "guidelineRefs": [
             "atlanta-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -251,9 +248,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "acg-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -265,9 +259,6 @@
           ],
           "guidelineRefs": [
             "acog-co723-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -296,9 +287,6 @@
             "acg-2024"
           ],
           "note": "A conditional CECT at 48–72 h for non-improvement is acceptable in pregnancy (CT is not contraindicated when needed); an unconditional CT is not.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "HpiTab.seedInvestigationsFromPane: keep conditionals; no ionising imaging when pregnant unless severe/not improving."
         }
       ]
@@ -319,9 +307,6 @@
           "guidelineRefs": [
             "sages-2017",
             "acog-co775-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -336,10 +321,7 @@
           "guidelineRefs": [
             "sages-2017"
           ],
-          "note": "SAGES 2017: laparoscopic cholecystectomy for gallstone pancreatitis in pregnancy (second trimester ideal) reduces recurrence.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SAGES 2017: laparoscopic cholecystectomy for gallstone pancreatitis in pregnancy (second trimester ideal) reduces recurrence."
         }
       ],
       "mustExclude": [
@@ -361,10 +343,11 @@
             "acg-2024"
           ],
           "note": "WATERFALL (NEJM 2022) was stopped for harm: aggressive resuscitation (20 mL/kg bolus then 3 mL/kg/h) caused more fluid overload (20.5% vs 6.3%) without benefit. ACG 2024 recommends moderate, goal-directed fluids. A plan that says \"aggressive\" or 250–500 mL/h is a fluid-overload hazard.",
-          "unverified": [
+          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia...\""
         },
         {
           "id": "mgmt-no-prophylactic-antibiotics",
@@ -400,9 +383,6 @@
             "aga-2018"
           ],
           "note": "Prophylactic antibiotics are not recommended in acute pancreatitis, including predicted severe disease and sterile necrosis; they are reserved for infected necrosis or a concurrent infection such as cholangitis.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Pancreatitis context: suppress the peritonism prompt's antibiotics (negated \"no peritonism\" trigger) and the SIRS \"Sepsis-6 … antibiotics\" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit \"No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)\" line to the pancreatitis protocol."
         },
         {
@@ -432,10 +412,7 @@
             "aga-2018",
             "apec-2020"
           ],
-          "note": "ERCP in gallstone pancreatitis only for concurrent cholangitis or persistent biliary obstruction (APEC: no benefit from urgent ERCP without cholangitis). An unconditional ERCP line exposes the patient to post-ERCP pancreatitis and perforation.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ERCP in gallstone pancreatitis only for concurrent cholangitis or persistent biliary obstruction (APEC: no benefit from urgent ERCP without cholangitis). An unconditional ERCP line exposes the patient to post-ERCP pancreatitis and perforation."
         },
         {
           "id": "mgmt-no-nsaid-after-20-weeks",
@@ -455,9 +432,6 @@
           ],
           "guidelineRefs": [
             "fda-2020-nsaid"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -465,9 +439,6 @@
           "severity": "quality",
           "match": [
             "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -482,10 +453,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },

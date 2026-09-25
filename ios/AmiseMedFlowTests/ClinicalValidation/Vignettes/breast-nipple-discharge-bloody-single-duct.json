@@ -135,10 +135,7 @@
           "guidelineRefs": [
             "nccn-breast-dx-2025"
           ],
-          "note": "Bloody single-duct discharge: papilloma is commonest but DCIS/carcinoma must be excluded.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Bloody single-duct discharge: papilloma is commonest but DCIS/carcinoma must be excluded."
         }
       ]
     },
@@ -146,10 +143,7 @@
       "emergencyLevel": {
         "id": "level-at-least-priority",
         "severity": "quality",
-        "atLeast": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "priority"
       },
       "redFlags": [
         {
@@ -164,9 +158,10 @@
             "nice-ng12"
           ],
           "note": "NICE NG12: aged 50 and over with, in one breast only, nipple discharge, retraction or other changes of concern.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)"
         }
       ]
     },
@@ -182,9 +177,10 @@
             "nccn-breast-dx-2025",
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-uss",
@@ -198,9 +194,10 @@
           "guidelineRefs": [
             "nccn-breast-dx-2025"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -217,9 +214,10 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -235,10 +233,7 @@
             "once",
             "after"
           ],
-          "note": "Reassurance without imaging is inappropriate for spontaneous bloody single-duct discharge.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Reassurance without imaging is inappropriate for spontaneous bloody single-duct discharge."
         }
       ]
     }

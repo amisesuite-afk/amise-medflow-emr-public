@@ -166,9 +166,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -180,9 +177,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "nice-ng51"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -195,9 +189,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -210,9 +201,6 @@
           "score": "news2",
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -227,9 +215,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -240,9 +225,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -256,9 +238,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: The UTI protocol asks for \"MSU C&S (mid-stream urine)\" in a catheterised man; the catheter change appears only as plan text (\"CAUTI: remove or change catheter\").",
           "proposedFix": "When a catheter is recorded, ask for a catheter specimen after changing the catheter."
@@ -281,9 +260,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -299,9 +275,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -318,9 +291,10 @@
             "sfe-steroid-2020"
           ],
           "note": "Prednisolone 7.5 mg for years: adrenal crisis risk in septic shock; parenteral hydrocortisone.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-hold-methotrexate",
@@ -331,11 +305,11 @@
           "guidelineRefs": [
             "nice-ng51"
           ],
-          "unverified": [
+          "knownGapNote": "Web: Methotrexate is not mentioned. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Add immunosuppressant review to the sepsis prompt.",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: Methotrexate is not mentioned.",
-          "proposedFix": "Add immunosuppressant review to the sepsis prompt."
+          ]
         }
       ],
       "mustExclude": [
@@ -350,10 +324,7 @@
           "guidelineRefs": [
             "nice-ng51"
           ],
-          "note": "Urinary source with a soft abdomen: no laparotomy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Urinary source with a soft abdomen: no laparotomy."
         }
       ]
     }

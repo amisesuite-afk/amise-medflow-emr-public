@@ -204,9 +204,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -221,9 +218,6 @@
           "aga-2021",
           "ascrs-diverticulitis-2020"
         ],
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal pain and fever' gives 'routine'."
       }
     },
@@ -235,9 +229,10 @@
           "match": [
             "blood culture"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation)"
         },
         {
           "id": "inv-colonoscopy-after",
@@ -249,10 +244,7 @@
             "wses-diverticulitis-2020",
             "aga-2021"
           ],
-          "note": "Colonoscopy after complicated diverticulitis to exclude cancer.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Colonoscopy after complicated diverticulitis to exclude cancer."
         }
       ]
     },
@@ -269,9 +261,6 @@
             "wses-diverticulitis-2020",
             "aga-2021",
             "ascrs-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -288,9 +277,10 @@
             "ascrs-diverticulitis-2020"
           ],
           "note": "Abscess >4–5 cm: percutaneous drainage with antibiotics (WSES 2020).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-drainage-in-documented-plan",

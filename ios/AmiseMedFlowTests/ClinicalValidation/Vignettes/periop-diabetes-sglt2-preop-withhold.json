@@ -145,10 +145,7 @@
       "emergencyLevel": {
         "id": "level-not-urgent",
         "severity": "quality",
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "investigations": {
@@ -162,9 +159,10 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)"
         }
       ]
     },
@@ -182,9 +180,10 @@
             "fda-sglt2-2020"
           ],
           "note": "SGLT2 inhibitors are withheld before surgery (CPOC: the day before and the day of surgery; FDA label: at least 3 days for dapagliflozin) because of euglycaemic ketoacidosis.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-omit-sulfonylurea",
@@ -197,10 +196,11 @@
             "cpoc-diabetes-2022"
           ],
           "note": "Sulfonylurea omitted on the day of surgery (hypoglycaemia while fasting).",
-          "unverified": [
+          "proposedFix": "See mgmt-withhold-sglt2.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See mgmt-withhold-sglt2."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-ketone-check",
@@ -211,9 +211,10 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-glucose-monitoring",
@@ -228,10 +229,11 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "unverified": [
+          "proposedFix": "See mgmt-withhold-sglt2.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See mgmt-withhold-sglt2."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -247,10 +249,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

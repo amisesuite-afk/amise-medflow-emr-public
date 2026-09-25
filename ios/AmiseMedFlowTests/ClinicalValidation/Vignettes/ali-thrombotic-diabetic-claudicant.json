@@ -171,10 +171,7 @@
           "guidelineRefs": [
             "esvs-ali-2020"
           ],
-          "note": "A chronic PAD label alone would miss the acute threat.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A chronic PAD label alone would miss the acute threat."
         }
       ]
     },
@@ -186,10 +183,7 @@
         "guidelineRefs": [
           "esvs-ali-2020"
         ],
-        "note": "IIa: urgent revascularisation (hours).",
-        "unverified": [
-          "ios"
-        ]
+        "note": "IIa: urgent revascularisation (hours)."
       },
       "redFlags": [
         {
@@ -204,9 +198,6 @@
             "acute limb",
             "rest pain",
             "6 ps"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -224,9 +215,6 @@
           ],
           "guidelineRefs": [
             "esvs-ali-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -241,9 +229,6 @@
           ],
           "guidelineRefs": [
             "esvs-ali-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -258,9 +243,6 @@
           ],
           "guidelineRefs": [
             "esvs-ali-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -276,9 +258,6 @@
             "web.plan",
             "ios.radiation.plan",
             "ios.soap.plan"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -129,9 +129,6 @@
           "k": 3,
           "guidelineRefs": [
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -143,9 +140,6 @@
         "atMost": "urgent",
         "guidelineRefs": [
           "idsa-ssti-2014"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -162,9 +156,6 @@
           ],
           "guidelineRefs": [
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -184,9 +175,6 @@
             "idsa-ssti-2014"
           ],
           "note": "IDSA: incision and drainage is the recommended treatment for a formed abscess; antibiotics alone are inadequate.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
         }
       ]
@@ -194,10 +182,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

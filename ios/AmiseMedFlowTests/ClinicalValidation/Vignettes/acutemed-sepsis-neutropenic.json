@@ -149,9 +149,6 @@
           ],
           "guidelineRefs": [
             "nice-cg151"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -163,9 +160,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "nice-cg151"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -181,9 +175,6 @@
           ],
           "guidelineRefs": [
             "nice-cg151"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -198,9 +189,6 @@
           ],
           "guidelineRefs": [
             "nice-cg151"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -216,10 +204,7 @@
           "guidelineRefs": [
             "nice-cg151"
           ],
-          "note": "Peripheral and line cultures.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Peripheral and line cultures."
         }
       ]
     },
@@ -252,9 +237,6 @@
           ],
           "guidelineRefs": [
             "nice-cg151"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -266,9 +248,6 @@
           ],
           "guidelineRefs": [
             "nice-cg151"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

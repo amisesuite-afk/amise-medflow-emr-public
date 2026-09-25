@@ -138,9 +138,6 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -156,9 +153,6 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag",
             "esc-ncs-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -171,9 +165,6 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table."
         }
@@ -191,9 +182,6 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag",
             "esc-ncs-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -209,10 +197,7 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
           ],
-          "note": "Stopping clopidogrel 2 months after a DES without cardiology agreement risks stent thrombosis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Stopping clopidogrel 2 months after a DES without cardiology agreement risks stent thrombosis."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -226,10 +211,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

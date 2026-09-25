@@ -176,9 +176,6 @@
           "k": 3,
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -190,9 +187,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "esge-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -206,9 +200,6 @@
           ],
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -221,9 +212,6 @@
           "score": "glasgow-blatchford",
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -241,9 +229,6 @@
           ],
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -263,9 +248,6 @@
           "guidelineRefs": [
             "esge-2021",
             "nice-cg141"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -282,9 +264,10 @@
             "halt-it-2020"
           ],
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
         }
       ]
     },

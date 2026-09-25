@@ -125,9 +125,6 @@
           ],
           "match": [
             "intussus"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -155,10 +152,7 @@
           "applegate-2009"
         ],
         "note": "Lethargy/reduced responsiveness and CRT 3 s in an infant are high-risk features.",
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       }
     },
     "investigations": {
@@ -174,9 +168,6 @@
             "re:(ultrasound|uss|\\bus\\b)[^\\n]{0,30}abdo",
             "re:abdominal (ultrasound|uss)",
             "uss abdomen"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "A protocol for the PANE node intussusception with abdominal ultrasound (target sign) and paediatric surgical referral (APLS / BSPGHAN)."
         }
@@ -208,9 +199,6 @@
             "over 50 kg",
             "age ≥ 12",
             "microgram/kg"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

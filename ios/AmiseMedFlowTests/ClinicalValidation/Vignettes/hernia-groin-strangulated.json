@@ -226,9 +226,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -255,9 +252,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-hernia-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -272,9 +266,6 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -284,10 +275,7 @@
         {
           "id": "score-rec-qsofa",
           "severity": "quality",
-          "score": "qsofa",
-          "unverified": [
-            "ios"
-          ]
+          "score": "qsofa"
         }
       ],
       "values": [
@@ -300,10 +288,7 @@
           "platforms": [
             "ios"
           ],
-          "note": "RR 24 (≥22) + SBP 98 (≤100) = 2 (Sepsis-3).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "RR 24 (≥22) + SBP 98 (≤100) = 2 (Sepsis-3)."
         }
       ]
     },
@@ -317,9 +302,6 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -339,9 +321,10 @@
           "guidelineRefs": [
             "wses-hernia-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)"
         },
         {
           "id": "mgmt-bowel-viability",
@@ -353,9 +336,10 @@
           "guidelineRefs": [
             "wses-hernia-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)"
         },
         {
           "id": "mgmt-resuscitation",
@@ -365,9 +349,6 @@
             "re:iv fluid",
             "hartmann",
             "crystalloid"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -388,10 +369,7 @@
           "guidelineRefs": [
             "wses-hernia-2017"
           ],
-          "note": "WSES 2017: manual reduction is contraindicated when strangulation is suspected (risk of reducing non-viable bowel).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2017: manual reduction is contraindicated when strangulation is suspected (risk of reducing non-viable bowel)."
         }
       ]
     },

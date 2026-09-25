@@ -196,12 +196,10 @@
           ],
           "note": "Gynaecological causes (ovarian cyst/torsion, ectopic) must be on the list for a young woman with RIF pain.",
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain."
+          "knownGapNote": "Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Appendicitis | 2. Acute Gastroenteritis | 3. Acute Diverticulitis | 4. Acute Pancreatitis | 5. Perforated Peptic Ulcer"
         }
       ]
     },
@@ -228,12 +226,10 @@
             "air-2008"
           ],
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: Web CDS has no AIR rule."
+          "knownGapNote": "Web: Web CDS has no AIR rule. | iOS CI 2026-09-25 (run 36169134350, database mode): air not recommended; recommended: news2, mews"
         }
       ],
       "values": [
@@ -246,10 +242,7 @@
           "guidelineRefs": [
             "alvarado-1986"
           ],
-          "note": "Nausea 1 + RIF tenderness 2 = 3 (unlikely).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Nausea 1 + RIF tenderness 2 = 3 (unlikely)."
         },
         {
           "id": "score-air-calculator",
@@ -263,10 +256,7 @@
           "guidelineRefs": [
             "air-2008"
           ],
-          "note": "RIF pain 1 = 1 (low probability, 0–4).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "RIF pain 1 = 1 (low probability, 0–4)."
         }
       ]
     },
@@ -283,9 +273,10 @@
             "wses-2020",
             "nice-ng126"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)"
         }
       ]
     },
@@ -306,10 +297,7 @@
           "guidelineRefs": [
             "wses-2020"
           ],
-          "note": "WSES 2020: low-risk patients (AIR 0–4) can be observed or discharged with safety-netting, without routine imaging.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2020: low-risk patients (AIR 0–4) can be observed or discharged with safety-netting, without routine imaging."
         }
       ],
       "mustExclude": [
@@ -324,9 +312,6 @@
             "wses-2020"
           ],
           "note": "An operative plan for a low-risk score band (and with 'no guarding, no rebound' in the exam text) risks a negative appendicectomy.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Negation-aware exam() matching in computeClinicalPrompts; gate the operative template on a confirmed appendicitis diagnosis, not on exam substrings."
         }
       ]

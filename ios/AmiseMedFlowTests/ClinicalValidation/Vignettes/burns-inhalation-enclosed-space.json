@@ -171,9 +171,10 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia | 2. Sepsis | 3. Bacterial Meningitis / Meningococcal Sepsis | 4. Acute Kidney Injury | 5. Non-Occlusive Mesenteric Ischaemia (NOMI)"
         }
       ]
     },
@@ -184,9 +185,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "atls-10-burns"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -201,9 +199,6 @@
           ],
           "guidelineRefs": [
             "atls-10-burns"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -215,9 +210,6 @@
           ],
           "guidelineRefs": [
             "aba-referral"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -236,10 +228,7 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "note": "Pulse oximetry reads COHb as oxyhaemoglobin.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Pulse oximetry reads COHb as oxyhaemoglobin."
         }
       ]
     },
@@ -258,10 +247,11 @@
             "atls-10-burns",
             "isbi-2016"
           ],
-          "unverified": [
+          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-100-oxygen",
@@ -276,9 +266,6 @@
           ],
           "guidelineRefs": [
             "atls-10-burns"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
         },
@@ -295,9 +282,6 @@
           "guidelineRefs": [
             "burns-fluid-threshold",
             "aba-fluid-2008"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
         },
@@ -319,9 +303,6 @@
           "guidelineRefs": [
             "aba-referral",
             "nnbc-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -329,10 +310,7 @@
     "pathway": {
       "id": "pathway-burns",
       "severity": "quality",
-      "equals": "burns",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "burns"
     }
   },
   "guideline": [

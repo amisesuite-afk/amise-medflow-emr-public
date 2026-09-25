@@ -156,9 +156,6 @@
           "k": 3,
           "guidelineRefs": [
             "baldini-pour-2009"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -172,9 +169,6 @@
           "web"
         ],
         "knownGapNote": "Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria."
       }
     },
@@ -196,9 +190,6 @@
             "pcrmp-2016"
           ],
           "note": "PSA is falsely raised by retention and catheterisation; defer it.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Remove PSA from the acute retention investigations; keep 'PSA at ≥6 weeks if indicated' in follow-up."
         }
       ]
@@ -215,9 +206,10 @@
             "baldini-pour-2009",
             "eau-luts-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-alpha-blocker-twoc",
@@ -232,19 +224,17 @@
           "guidelineRefs": [
             "eau-luts-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

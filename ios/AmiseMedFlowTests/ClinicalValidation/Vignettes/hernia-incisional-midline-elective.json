@@ -165,9 +165,6 @@
           "k": 3,
           "guidelineRefs": [
             "ehs-incisional-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -177,9 +174,6 @@
         "id": "level-routine",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -200,9 +194,10 @@
             "ehs-incisional-2023"
           ],
           "note": "CT defines defect width, loss of domain and content for planning.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -221,9 +216,10 @@
           "guidelineRefs": [
             "ehs-incisional-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-mesh",
@@ -234,9 +230,10 @@
           "guidelineRefs": [
             "ehs-incisional-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

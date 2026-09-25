@@ -191,10 +191,7 @@
             "obstruction",
             "adhesi"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -205,9 +202,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "acog-co775"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -219,9 +213,6 @@
           ],
           "guidelineRefs": [
             "acog-co775"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -244,12 +235,10 @@
           ],
           "note": "MRI has already answered the question; CT is not contraindicated in pregnancy when needed, but should not be suggested unqualified.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PANE seeding, unqualified at 29 weeks although MRI has been done. The pelvic-free-fluid prompt also fires 'Ruptured ectopic protocol' at 29 weeks.",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PANE seeding, unqualified at 29 weeks although MRI has been done. The pelvic-free-fluid prompt also fires 'Ruptured ectopic protocol' at 29 weeks. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: \"ct abdomen/pelvis with contrast (defines level, cause, strangulation - sensitivity 94%)\"",
           "proposedFix": "When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6)."
         }
       ]
@@ -269,9 +258,6 @@
           "guidelineRefs": [
             "acog-co775",
             "sages-pregnancy-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -290,9 +276,6 @@
           "guidelineRefs": [
             "rcog-gtg37a",
             "sages-pregnancy-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -307,10 +290,11 @@
           "guidelineRefs": [
             "sages-pregnancy-2017"
           ],
-          "unverified": [
+          "proposedFix": "See mgmt-obstetric-involvement.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See mgmt-obstetric-involvement."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-antenatal-steroids",
@@ -325,10 +309,11 @@
           "guidelineRefs": [
             "nice-ng25"
           ],
-          "unverified": [
+          "proposedFix": "See mgmt-obstetric-involvement.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See mgmt-obstetric-involvement."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -351,10 +336,7 @@
           "guidelineRefs": [
             "fda-nsaid-2020"
           ],
-          "note": "NSAIDs from 20 weeks: fetal renal dysfunction and oligohydramnios; at 29 weeks also ductus arteriosus constriction.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NSAIDs from 20 weeks: fetal renal dysfunction and oligohydramnios; at 29 weeks also ductus arteriosus constriction."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -368,10 +350,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

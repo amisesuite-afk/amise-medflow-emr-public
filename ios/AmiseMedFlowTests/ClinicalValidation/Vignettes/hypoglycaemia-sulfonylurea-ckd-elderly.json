@@ -151,9 +151,6 @@
           ],
           "guidelineRefs": [
             "jbds-hypo-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -179,9 +176,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "jbds-hypo-2023"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -193,9 +187,6 @@
           ],
           "guidelineRefs": [
             "jbds-hypo-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -220,9 +211,6 @@
           ],
           "guidelineRefs": [
             "jbds-hypo-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -236,10 +224,7 @@
           "guidelineRefs": [
             "jbds-hypo-2023"
           ],
-          "note": "Sulfonylurea hypoglycaemia recurs, especially with CKD: glucose monitoring for an extended period.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Sulfonylurea hypoglycaemia recurs, especially with CKD: glucose monitoring for an extended period."
         },
         {
           "id": "mgmt-review-sulfonylurea",
@@ -249,9 +234,6 @@
           ],
           "guidelineRefs": [
             "jbds-hypo-2023"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: Gliclazide is not mentioned in any output.",
           "proposedFix": "Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug."

@@ -211,9 +211,6 @@
           "k": 3,
           "guidelineRefs": [
             "ascrs-abscess-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -231,13 +228,11 @@
             "wses-ssti-2018"
           ],
           "note": "Diabetes + perianal sepsis with cellulitis: necrotising infection must be considered.",
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal abscess, hernia, pilonidal); symptom inference ranks Fournier’s #1."
+          "knownGapNote": "PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal abscess, hernia, pilonidal); symptom inference ranks Fournier’s #1. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess | 2. Perianal Abscess | 3. Inguinal Hernia | 4. Infective Endocarditis | 5. Acute Pyelonephritis"
         }
       ]
     },
@@ -248,9 +243,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "ascrs-abscess-2022"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -264,9 +256,6 @@
           ],
           "guidelineRefs": [
             "ascrs-abscess-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -285,9 +274,10 @@
           "guidelineRefs": [
             "ascrs-abscess-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-antibiotics",
@@ -306,10 +296,7 @@
           "guidelineRefs": [
             "ascrs-abscess-2022"
           ],
-          "note": "Cellulitis and systemic signs in a diabetic: antibiotics are indicated after drainage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Cellulitis and systemic signs in a diabetic: antibiotics are indicated after drainage."
         },
         {
           "id": "mgmt-glycaemic",
@@ -323,9 +310,6 @@
           ],
           "guidelineRefs": [
             "ascrs-abscess-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

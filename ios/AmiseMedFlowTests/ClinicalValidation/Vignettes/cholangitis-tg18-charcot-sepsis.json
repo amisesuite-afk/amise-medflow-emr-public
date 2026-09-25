@@ -102,7 +102,9 @@
       "web": {
         "ccTemplate": "Obstructive jaundice",
         "symptoms": ["jaundice", "right upper quadrant pain", "fever", "rigors", "dark urine", "pale stool"],
-        "symptomDetails": { "jaundice": ["Fever", "Rigors", "Dark urine", "Pale stool", "Abdominal pain", "Known gallstones"] },
+        "symptomDetails": {
+          "jaundice": ["Fever", "Rigors", "Dark urine", "Pale stool", "Abdominal pain", "Known gallstones"]
+        },
         "examFindings": { "abdomen": ["Tender RUQ"], "general": ["Jaundiced"] },
         "durationDays": 2,
         "painScore": 5
@@ -119,7 +121,6 @@
           "unless": ["sclerosing"],
           "k": 3,
           "guidelineRefs": ["tg18-dx-cholangitis"],
-          "unverified": ["ios"],
           "note": "TG18 definite diagnosis (systemic inflammation + cholestasis + biliary dilatation with a stone)."
         },
         {
@@ -128,7 +129,8 @@
           "match": ["cholangitis"],
           "unless": ["sclerosing"],
           "k": 1,
-          "unverified": ["ios"]
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 1 of ios.bayes: 1. Choledocholithiasis | 2. Sepsis | 3. Ascending Cholangitis; also in ios.ccEarly#1, ios.pipeline#2"
         }
       ],
       "mustNotMiss": [

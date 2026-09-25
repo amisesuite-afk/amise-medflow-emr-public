@@ -211,9 +211,6 @@
           "ssc-2021",
           "wses-diverticulitis-2020"
         ],
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and collapse' gives 'routine'."
       },
       "mustAlarm": [
@@ -226,9 +223,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -242,9 +236,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -259,9 +250,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -279,10 +267,7 @@
           "guidelineRefs": [
             "wses-diverticulitis-2020"
           ],
-          "note": "WSES 2020: Hartmann's (or damage-control surgery) for faecal peritonitis in an unstable/septic-shock patient.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2020: Hartmann's (or damage-control surgery) for faecal peritonitis in an unstable/septic-shock patient."
         },
         {
           "id": "mgmt-antibiotics",
@@ -300,9 +285,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -317,10 +299,7 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "note": "Septic shock on vasopressors needs critical care.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Septic shock on vasopressors needs critical care."
         }
       ],
       "mustExclude": [
@@ -339,10 +318,7 @@
           "guidelineRefs": [
             "wses-diverticulitis-2020"
           ],
-          "note": "Primary anastomosis is not advised in septic shock / faecal peritonitis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Primary anastomosis is not advised in septic shock / faecal peritonitis."
         }
       ]
     },

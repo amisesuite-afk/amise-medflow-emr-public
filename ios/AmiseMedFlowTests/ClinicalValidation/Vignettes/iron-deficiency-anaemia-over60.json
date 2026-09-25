@@ -199,10 +199,7 @@
           "nice-ng12",
           "bsg-ida-2021"
         ],
-        "note": "IDA at ≥60 is a suspected-cancer (urgent) referral criterion. Web passes today for the wrong reason: \"breathless\" in the CC matches the post-operative red-flag rule (Post-operative concern → emergency_now); the anaemia itself raises nothing.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "IDA at ≥60 is a suspected-cancer (urgent) referral criterion. Web passes today for the wrong reason: \"breathless\" in the CC matches the post-operative red-flag rule (Post-operative concern → emergency_now); the anaemia itself raises nothing."
       },
       "redFlags": [
         {
@@ -217,9 +214,6 @@
           "guidelineRefs": [
             "bsg-ida-2021",
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -237,9 +231,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -252,9 +243,6 @@
           "guidelineRefs": [
             "bsg-ida-2021",
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -268,9 +256,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -282,9 +267,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -303,9 +285,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

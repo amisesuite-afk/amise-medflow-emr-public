@@ -175,9 +175,10 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Pancreatitis | 2. Upper GI Bleeding (Peptic Ulcer) | 3. Oesophageal Variceal Bleeding | 4. Acute Kidney Injury | 5. Small Bowel Obstruction"
         },
         {
           "id": "dx-ugib-top3",
@@ -196,9 +197,6 @@
           "k": 3,
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -217,10 +215,7 @@
           "web"
         ],
         "knownGapNote": "Emergency now (score 120): any \"blood\"/\"bleed\" word is an urgent red flag regardless of volume or GBS, and \"No chest pain\" in the HPI fires \"Possible cardiac event\" (adaptiveTriage reads CC+HPI free text without negation).",
-        "proposedFix": "adaptive-triage: grade GI bleeding by haemodynamics/GBS instead of the word; add negation handling (\"no …\", \"denies …\") before RED_FLAGS matching.",
-        "unverified": [
-          "ios"
-        ]
+        "proposedFix": "adaptive-triage: grade GI bleeding by haemodynamics/GBS instead of the word; add negation handling (\"no …\", \"denies …\") before RED_FLAGS matching."
       }
     },
     "scores": {
@@ -231,9 +226,6 @@
           "score": "glasgow-blatchford",
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -255,9 +247,6 @@
           "guidelineRefs": [
             "esge-2021",
             "acg-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -273,9 +262,10 @@
             "esge-2021",
             "halt-it-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
         }
       ]
     }

@@ -142,10 +142,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "Hard, fixed, tethered lump with nipple retraction and a node.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Hard, fixed, tethered lump with nipple retraction and a node."
         }
       ]
     },
@@ -156,9 +153,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "nice-ng12"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -173,10 +167,11 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)"
         },
         {
           "id": "flag-suspicious",
@@ -185,9 +180,6 @@
             "malignan",
             "cancer",
             "suspicious"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -204,9 +196,10 @@
             "abs-best-practice-2010",
             "nccn-breast-dx-2025"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-uss",
@@ -220,9 +213,10 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-core-biopsy",
@@ -237,9 +231,10 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-axilla",
@@ -250,9 +245,10 @@
           "guidelineRefs": [
             "nccn-breast-dx-2025"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -265,9 +261,10 @@
             "mdt",
             "multidisciplinary"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -284,10 +281,7 @@
             "if ",
             "before any definitive"
           ],
-          "note": "Definitive surgery is planned after histology and MDT, not at the first visit.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Definitive surgery is planned after histology and MDT, not at the first visit."
         }
       ]
     },

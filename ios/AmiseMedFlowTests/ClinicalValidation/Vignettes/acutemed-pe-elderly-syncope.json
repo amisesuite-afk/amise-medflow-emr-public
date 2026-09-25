@@ -136,9 +136,6 @@
           "guidelineRefs": [
             "esc-pe-2019",
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -152,10 +149,7 @@
           "esc-syncope-2018",
           "esc-pe-2019"
         ],
-        "note": "High-risk syncope (no prodrome, new breathlessness, relative hypotension) with hypoxia.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "High-risk syncope (no prodrome, new breathlessness, relative hypotension) with hypoxia."
       },
       "mustAlarm": [
         {
@@ -170,9 +164,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -191,10 +182,7 @@
           "guidelineRefs": [
             "esc-syncope-2018"
           ],
-          "note": "ECG in every syncope (ESC 2018).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ECG in every syncope (ESC 2018)."
         },
         {
           "id": "inv-ctpa",
@@ -208,9 +196,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

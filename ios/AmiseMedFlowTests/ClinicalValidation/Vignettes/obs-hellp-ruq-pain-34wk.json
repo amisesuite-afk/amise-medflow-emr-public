@@ -251,9 +251,6 @@
           "match": [
             "eclampsia",
             "hellp"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -266,10 +263,7 @@
           "nice-ng133",
           "acog-pb222-2020"
         ],
-        "atLeast": "emergency",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "emergency"
       },
       "redFlags": [
         {
@@ -280,9 +274,6 @@
           ],
           "match": [
             "pregnan"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -298,9 +289,6 @@
             "pre-eclampsia",
             "preeclampsia",
             "blood pressure"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -318,9 +306,6 @@
             "protein creatinine",
             "re:\\bupcr\\b",
             "proteinuria"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -337,9 +322,6 @@
           "note": "Seizure prophylaxis in severe pre-eclampsia/HELLP.",
           "match": [
             "magnesium"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -353,9 +335,6 @@
             "labetalol",
             "nifedipine",
             "hydralazine"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -370,9 +349,6 @@
             "obstetrician",
             "deliver",
             "maternity"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -396,9 +372,6 @@
             "elective",
             "after recovery",
             "once recovered"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -423,9 +396,6 @@
             "postnatal",
             "postpartum",
             "not in pregnancy"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -448,9 +418,6 @@
           "unless": [
             "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
             "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

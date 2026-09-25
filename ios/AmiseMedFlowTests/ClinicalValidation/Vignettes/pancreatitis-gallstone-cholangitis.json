@@ -285,9 +285,6 @@
           "k": 3,
           "guidelineRefs": [
             "atlanta-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -304,10 +301,7 @@
           "guidelineRefs": [
             "tg18-dx-cholangitis"
           ],
-          "note": "Fever ≥39 °C, rigors, jaundice and a duct stone: concurrent cholangitis changes management (ERCP within 24 h, antibiotics).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Fever ≥39 °C, rigors, jaundice and a duct stone: concurrent cholangitis changes management (ERCP within 24 h, antibiotics)."
         }
       ]
     },
@@ -319,9 +313,6 @@
         "guidelineRefs": [
           "tg18-mgmt-cholangitis",
           "acg-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -334,9 +325,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -349,9 +337,6 @@
           "score": "tg18-cholangitis",
           "guidelineRefs": [
             "tg18-dx-cholangitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -365,10 +350,7 @@
           "guidelineRefs": [
             "tg18-dx-cholangitis"
           ],
-          "note": "Three Grade II criteria (WBC, fever ≥39, bilirubin ≥5 mg/dL), no organ dysfunction.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Three Grade II criteria (WBC, fever ≥39, bilirubin ≥5 mg/dL), no organ dysfunction."
         }
       ]
     },
@@ -383,9 +365,6 @@
           "guidelineRefs": [
             "tg18-antimicrobial",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -403,10 +382,7 @@
             "acg-2024",
             "tg18-mgmt-cholangitis"
           ],
-          "note": "ACG 2024: gallstone pancreatitis with concurrent cholangitis → ERCP.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ACG 2024: gallstone pancreatitis with concurrent cholangitis → ERCP."
         },
         {
           "id": "mgmt-ercp-within-24h",
@@ -420,10 +396,7 @@
             "iap-apa-2013",
             "tg18-mgmt-cholangitis"
           ],
-          "note": "Timing matters: ACG 2024 and IAP/APA 2013 — ERCP within 24 h when acute pancreatitis is complicated by cholangitis. A 72-hour window for cholangitis leaves an obstructed, infected duct undrained.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Timing matters: ACG 2024 and IAP/APA 2013 — ERCP within 24 h when acute pancreatitis is complicated by cholangitis. A 72-hour window for cholangitis leaves an obstructed, infected duct undrained."
         },
         {
           "id": "mgmt-antibiotics",
@@ -451,10 +424,7 @@
           "guidelineRefs": [
             "tg18-antimicrobial"
           ],
-          "note": "Cholangitis is the indication for antibiotics here (not the pancreatitis).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Cholangitis is the indication for antibiotics here (not the pancreatitis)."
         }
       ],
       "mustExclude": [
@@ -476,10 +446,11 @@
             "acg-2024"
           ],
           "note": "WATERFALL (NEJM 2022) was stopped for harm: aggressive resuscitation (20 mL/kg bolus then 3 mL/kg/h) caused more fluid overload (20.5% vs 6.3%) without benefit. ACG 2024 recommends moderate, goal-directed fluids. A plan that says \"aggressive\" or 250–500 mL/h is a fluid-overload hazard.",
-          "unverified": [
+          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...e pancreatitis - lactate 2.1 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio...\""
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -493,10 +464,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

@@ -184,10 +184,7 @@
           "guidelineRefs": [
             "iwgdf-2023-charcot"
           ],
-          "note": "A hot swollen neuropathic foot with intact skin is Charcot until proven otherwise; missing it leads to collapse and deformity.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A hot swollen neuropathic foot with intact skin is Charcot until proven otherwise; missing it leads to collapse and deformity."
         }
       ]
     },
@@ -199,10 +196,7 @@
         "guidelineRefs": [
           "nice-ng19"
         ],
-        "note": "Suspected acute Charcot: MDT foot service within 1 working day.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Suspected acute Charcot: MDT foot service within 1 working day."
       }
     },
     "investigations": {
@@ -216,10 +210,11 @@
           "guidelineRefs": [
             "iwgdf-2023-charcot"
           ],
-          "unverified": [
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -240,10 +235,11 @@
             "iwgdf-2023-charcot"
           ],
           "note": "Immediate offloading while the diagnosis is confirmed.",
-          "unverified": [
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -264,10 +260,7 @@
           "guidelineRefs": [
             "iwgdf-2023-charcot"
           ],
-          "note": "Failed \"cellulitis\" treatment should prompt the Charcot diagnosis, not escalation to IV antibiotics.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Failed \"cellulitis\" treatment should prompt the Charcot diagnosis, not escalation to IV antibiotics."
         }
       ]
     }

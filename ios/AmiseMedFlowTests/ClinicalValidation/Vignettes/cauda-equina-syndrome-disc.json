@@ -136,9 +136,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -150,9 +147,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "bass-sbns-ces-2018"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -165,9 +159,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -182,9 +173,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -197,9 +185,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: No bladder scan / post-void residual.",
           "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
@@ -220,9 +205,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -240,9 +222,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

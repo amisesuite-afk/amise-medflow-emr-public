@@ -215,10 +215,7 @@
             "corpus lute",
             "haemorrhagic cyst"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -229,10 +226,7 @@
         "guidelineRefs": [
           "acc-bleeding-2020"
         ],
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       },
       "redFlags": [
         {
@@ -246,9 +240,6 @@
             "anticoag",
             "apixaban",
             "doac"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -266,9 +257,6 @@
             "cross-match",
             "group and",
             "group & "
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -289,9 +277,10 @@
             "reversal",
             "re:\\brevers(e|al|ing)\\b"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-stop-apixaban",
@@ -303,9 +292,10 @@
           "match": [
             "re:(hold|stop|withhold|omit|suspend)[^\\n]{0,25}(anticoag|apixaban|doac)"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-gynaecology",
@@ -317,9 +307,10 @@
             "gynaecolog",
             "gynecolog"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -338,9 +329,6 @@
             "not indicated",
             "no role",
             "exclude appendicitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -369,9 +357,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

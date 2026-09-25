@@ -183,9 +183,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -199,9 +196,6 @@
           "nice-ng126"
         ],
         "note": "Shoulder-tip pain, pre-syncope and tachycardia suggest haemoperitoneum: immediate emergency assessment.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain' gives 'routine'."
       }
     },
@@ -217,10 +211,7 @@
           "guidelineRefs": [
             "nice-ng126"
           ],
-          "note": "Mandatory in every woman of reproductive age with abdominal pain.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Mandatory in every woman of reproductive age with abdominal pain."
         },
         {
           "id": "inv-transvaginal-us",
@@ -234,9 +225,6 @@
           ],
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -252,9 +240,6 @@
           ],
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -268,10 +253,7 @@
           "guidelineRefs": [
             "nice-ng126"
           ],
-          "note": "No pregnancy test has been done; a template asserting 'β-HCG confirmed negative' can let an ectopic go to theatre as 'appendicitis'.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No pregnancy test has been done; a template asserting 'β-HCG confirmed negative' can let an ectopic go to theatre as 'appendicitis'."
         },
         {
           "id": "mgmt-no-appendicectomy-booked",
@@ -281,9 +263,6 @@
           ],
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -291,10 +270,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

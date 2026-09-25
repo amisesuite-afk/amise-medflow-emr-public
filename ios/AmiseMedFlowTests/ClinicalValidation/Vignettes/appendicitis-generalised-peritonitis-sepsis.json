@@ -228,9 +228,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -245,9 +242,6 @@
           "ssc-2021"
         ],
         "note": "Generalised peritonitis with sepsis (SBP 92, lactate 3.4): emergency resuscitation and source control.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain all over and fever' gives 'routine'."
       },
       "mustAlarm": [
@@ -260,9 +254,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -280,9 +271,6 @@
           ],
           "guidelineRefs": [
             "sepsis-3"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -298,10 +286,11 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "unverified": [
+          "proposedFix": "Blood cultures in the appendicitis protocol for the generalised-peritonitis / septic variant (WSES 2020), or a sepsis protocol for the PANE node sepsis.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Blood cultures in the appendicitis protocol for the generalised-peritonitis / septic variant (WSES 2020), or a sepsis protocol for the PANE node sepsis."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)"
         },
         {
           "id": "inv-lactate",
@@ -312,9 +301,10 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)"
         }
       ]
     },
@@ -332,9 +322,6 @@
           ],
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -354,9 +341,6 @@
           "guidelineRefs": [
             "wses-2020",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -372,9 +356,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -388,9 +369,10 @@
             "wses-2020"
           ],
           "note": "WSES 2020: after source control for complicated appendicitis, a short postoperative course (about 3–5 days) is adequate.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)"
         }
       ]
     },

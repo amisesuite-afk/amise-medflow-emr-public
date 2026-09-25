@@ -227,9 +227,6 @@
           "guidelineRefs": [
             "esvs-2017",
             "wses-ami-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -243,9 +240,6 @@
           "wses-ami-2022",
           "ssc-2021"
         ],
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and collapse' gives 'routine'."
       },
       "mustAlarm": [
@@ -258,9 +252,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -274,9 +265,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -295,9 +283,6 @@
           "guidelineRefs": [
             "esvs-2017",
             "wses-ami-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -315,10 +300,7 @@
             "esvs-2017",
             "wses-ami-2022"
           ],
-          "note": "Revascularisation of the SMA before or with resection improves survival.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Revascularisation of the SMA before or with resection improves survival."
         },
         {
           "id": "mgmt-heparin",
@@ -338,9 +320,6 @@
           ],
           "guidelineRefs": [
             "esvs-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -353,9 +332,6 @@
           ],
           "guidelineRefs": [
             "wses-ami-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -369,9 +345,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

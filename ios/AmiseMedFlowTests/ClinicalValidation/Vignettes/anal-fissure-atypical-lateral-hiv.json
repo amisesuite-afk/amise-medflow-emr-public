@@ -153,9 +153,6 @@
           "guidelineRefs": [
             "ascrs-fissure-2023",
             "ascrs-anal-scc-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -172,13 +169,11 @@
           "guidelineRefs": [
             "ascrs-fissure-2023"
           ],
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions them)."
+          "knownGapNote": "Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions them). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Perianal Abscess | 2. Anal Carcinoma | 3. Inguinal Hernia | 4. Fournier's Gangrene | 5. Femoral Hernia"
         }
       ]
     },
@@ -196,9 +191,6 @@
           ],
           "guidelineRefs": [
             "ascrs-fissure-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -216,9 +208,6 @@
           "guidelineRefs": [
             "ascrs-fissure-2023",
             "ascrs-anal-scc-2018"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Add an \"atypical fissure\" dx-variant (lateral, multiple, painless, indurated, HIV/IBD) that replaces the treatment phases with EUA + biopsy, syphilis/HSV/HIV/TB testing and Crohn’s assessment (ASCRS 2023)."
         }
@@ -250,9 +239,10 @@
             "ascrs-fissure-2023"
           ],
           "note": "Sphincterotomy (or botulinum) for an undiagnosed atypical ulcer risks incontinence and delays a cancer or infection diagnosis.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"if chronic / failed medical: lateral internal sphincterotomy\""
         }
       ]
     }

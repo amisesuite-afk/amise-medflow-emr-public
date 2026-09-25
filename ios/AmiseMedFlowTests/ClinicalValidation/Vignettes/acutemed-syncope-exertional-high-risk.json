@@ -122,9 +122,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -137,10 +134,7 @@
         "guidelineRefs": [
           "esc-syncope-2018"
         ],
-        "note": "High-risk syncope: early intensive evaluation (ED or syncope unit).",
-        "unverified": [
-          "ios"
-        ]
+        "note": "High-risk syncope: early intensive evaluation (ED or syncope unit)."
       },
       "redFlags": [
         {
@@ -154,9 +148,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -174,9 +165,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -191,9 +179,6 @@
             "esc-syncope-2018"
           ],
           "note": "Suspected structural heart disease: echocardiography.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Syncope rule/protocol with echocardiography when a murmur or structural heart disease is recorded (ESC 2018)."
         }
       ]

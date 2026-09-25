@@ -178,9 +178,10 @@
           "guidelineRefs": [
             "bsg-lgib-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Perianal Abscess | 2. Ischaemic Colitis | 3. Skin Abscess | 4. Femoral Hernia | 5. Fournier's Gangrene"
         }
       ]
     },
@@ -194,9 +195,6 @@
           "oakland-2017"
         ],
         "note": "BSG 2019: a minor self-terminating bleed with Oakland score ≤ 8 and no other reason for admission can be discharged for urgent outpatient investigation. Over-triage to \"emergency\" is a quality (resource) failure, not a safety one.",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -215,13 +213,11 @@
             "bsg-lgib-2019"
           ],
           "note": "BSG 2019 recommends the Oakland score to identify minor bleeds suitable for discharge.",
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for \"lower gi bleed\").",
+          "knownGapNote": "No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for \"lower gi bleed\"). | iOS CI 2026-09-25 (run 36169134350, database mode): oakland not recommended; recommended: glasgow-blatchford, ios:oakland, rockall, aims65, ios:forrest",
           "proposedFix": "Add the Oakland score (age, sex, previous LGIB admission, DRE blood, HR, SBP, Hb) to clinical-scales and a CDS rule for rectal bleeding; ≤ 8 → discharge with outpatient investigation (BSG 2019)."
         }
       ]
@@ -247,10 +243,7 @@
           "guidelineRefs": [
             "bsg-lgib-2019"
           ],
-          "note": "CT angiography is for haemodynamically unstable bleeding; not indicated here.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "CT angiography is for haemodynamically unstable bleeding; not indicated here."
         }
       ]
     },
@@ -271,10 +264,7 @@
           "guidelineRefs": [
             "bsg-lgib-2019"
           ],
-          "note": "Discharge with outpatient investigation/follow-up.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Discharge with outpatient investigation/follow-up."
         }
       ],
       "mustExclude": [
@@ -300,9 +290,6 @@
             "bsg-lgib-2019"
           ],
           "note": "Hb 14.6 g/dL: no transfusion or cross-match. BSG 2019 restrictive thresholds (Hb 70 g/L; 80 g/L with cardiovascular disease).",
-          "unverified": [
-            "ios"
-          ],
           "knownGap": [
             "web"
           ],

@@ -178,9 +178,6 @@
           ],
           "guidelineRefs": [
             "bts-cap-child-2011"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -192,9 +189,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "bts-cap-child-2011"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -213,10 +207,7 @@
           "guidelineRefs": [
             "bts-cap-child-2011"
           ],
-          "note": "Diagnosis in doubt (abdominal presentation): CXR indicated.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Diagnosis in doubt (abdominal presentation): CXR indicated."
         }
       ]
     },
@@ -234,9 +225,6 @@
             "bts-cap-child-2011"
           ],
           "note": "Wrong procedure for a chest cause of abdominal pain.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Gate the appendicectomy operative-plan cascade on the working diagnosis (see HPB findings gap 1) and a negation-aware exam matcher (\"no guarding\")."
         },
         {
@@ -249,9 +237,6 @@
             "bts-cap-child-2011"
           ],
           "note": "Wrong procedure in a 9-year-old with pneumonia.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "The Assessment panel follows the PANE top (cholecystitis 0.299) instead of the confirmed diagnosis (J18.1); prefer the locked working diagnosis (HPB findings gap 7)."
         }
       ]

@@ -205,9 +205,10 @@
             "tubo-ovarian"
           ],
           "k": 3,
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Ectopic Pregnancy | 2. Acute Appendicitis | 3. Sepsis | 4. Community-Acquired Pneumonia | 5. Liver Abscess (Pyogenic / Amoebic)"
         }
       ]
     },
@@ -218,10 +219,7 @@
         "guidelineRefs": [
           "cdc-sti-2021"
         ],
-        "atLeast": "emergency",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "emergency"
       },
       "mustAlarm": [
         {
@@ -233,9 +231,6 @@
           "match": [
             "sepsis",
             "septic"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -250,9 +245,6 @@
           ],
           "match": [
             "blood culture"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -271,9 +263,6 @@
             "parenteral",
             "cefoxitin",
             "cefotetan"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -285,9 +274,6 @@
           "note": "TOA not responding, or large: image-guided or laparoscopic drainage.",
           "match": [
             "drain"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -300,9 +286,6 @@
             "admi",
             "hospitalis",
             "inpatient"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -322,9 +305,6 @@
             "not indicated",
             "no role",
             "exclude appendicitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -353,9 +333,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

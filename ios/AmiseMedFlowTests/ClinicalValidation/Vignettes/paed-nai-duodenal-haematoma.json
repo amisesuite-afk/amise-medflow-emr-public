@@ -188,13 +188,11 @@
             "inflicted"
           ],
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists malrotation and intussusception.",
-          "proposedFix": "Add a suspected-maltreatment rule (NICE CG89) for children: visceral injury without a confirmed accidental mechanism, patterned bruising, inconsistent history, delayed presentation.",
-          "unverified": [
+            "web",
             "ios"
-          ]
+          ],
+          "knownGapNote": "PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists malrotation and intussusception. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Pancreatitis | 2. Community-Acquired Pneumonia | 3. Acute Coronary Syndrome | 4. Acute Kidney Injury | 5. Delirium (Acute Confusional State)",
+          "proposedFix": "Add a suspected-maltreatment rule (NICE CG89) for children: visceral injury without a confirmed accidental mechanism, patterned bruising, inconsistent history, delayed presentation."
         }
       ]
     },
@@ -205,10 +203,7 @@
         "guidelineRefs": [
           "nice-cg89"
         ],
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       },
       "redFlags": [
         {
@@ -224,9 +219,6 @@
             "child protection",
             "abuse",
             "maltreat"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -242,9 +234,6 @@
           "note": "Case-by-case over 2 years; indicated here (old rib fracture on CT).",
           "match": [
             "skeletal survey"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -262,9 +251,6 @@
             "child protection",
             "social services",
             "social work"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -280,9 +266,10 @@
             "conservative",
             "parenteral nutrition"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -310,9 +297,6 @@
             "over 50 kg",
             "age ≥ 12",
             "microgram/kg"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -329,9 +313,6 @@
             "if ",
             "perforation",
             "fail"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -360,9 +341,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -371,9 +349,10 @@
       "id": "pathway-trauma",
       "severity": "quality",
       "equals": "trauma",
-      "unverified": [
+      "knownGap": [
         "ios"
-      ]
+      ],
+      "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma"
     }
   },
   "guideline": [

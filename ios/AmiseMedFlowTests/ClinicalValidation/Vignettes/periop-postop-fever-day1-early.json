@@ -177,9 +177,6 @@
           ],
           "guidelineRefs": [
             "ogrady-fever-2008"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -197,9 +194,6 @@
           "web"
         ],
         "knownGapNote": "Triage emergency_now (score 152) for T 38.2, HR 94 on day 1: 'Post-operative concern' (urgent) for any 'post-op' word, 'Post-op fever — source must be identified', 'Fever', and the anticoagulant reason (prophylactic enoxaparin).",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria."
       }
     },
@@ -212,9 +206,10 @@
           "guidelineRefs": [
             "rcp-news2-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): news2 not recommended; recommended: caprini"
         }
       ]
     },
@@ -236,10 +231,11 @@
           "guidelineRefs": [
             "ogrady-fever-2008"
           ],
-          "unverified": [
+          "proposedFix": "Post-operative fever prompt by day (early: atelectasis/inflammatory; day 5+: leak/SSI/collection; UTI, line, VTE).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Post-operative fever prompt by day (early: atelectasis/inflammatory; day 5+: leak/SSI/collection; UTI, line, VTE)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -264,9 +260,6 @@
             "ogrady-fever-2008"
           ],
           "note": "No broad-spectrum antibiotics for a day-1 fever without a source.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Assessment panel: follow the locked working diagnosis, not the PANE top (findings/hpb.md gap 7)."
         },
         {
@@ -279,10 +272,7 @@
           "guidelineRefs": [
             "nice-ng89"
           ],
-          "note": "The patient is on prophylactic-dose enoxaparin only; a peri-operative anticoagulant bridging plan does not apply.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The patient is on prophylactic-dose enoxaparin only; a peri-operative anticoagulant bridging plan does not apply."
         },
         {
           "id": "mgmt-no-emergency-laparotomy",
@@ -296,10 +286,7 @@
             "if peritonitis",
             "if generalised peritonitis"
           ],
-          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -313,20 +300,14 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

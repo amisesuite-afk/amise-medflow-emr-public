@@ -138,9 +138,6 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -158,9 +155,10 @@
             "bsg-esge-2021-anticoag"
           ],
           "note": "Check the INR is within the therapeutic range in the week before.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 30 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
         }
       ]
     },
@@ -176,9 +174,10 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -201,10 +200,7 @@
             "bsg-esge-2021-anticoag",
             "bridge-2015"
           ],
-          "note": "Low-risk procedure: warfarin continued; bridging is both unnecessary and a bleeding risk.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Low-risk procedure: warfarin continued; bridging is both unnecessary and a bleeding risk."
         },
         {
           "id": "mgmt-no-inr-reversal",
@@ -223,10 +219,7 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
           ],
-          "note": "Reversing a therapeutic INR for a diagnostic gastroscopy exposes the patient to thromboembolism for no benefit.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Reversing a therapeutic INR for a diagnostic gastroscopy exposes the patient to thromboembolism for no benefit."
         },
         {
           "id": "mgmt-no-deferral-for-inr",
@@ -236,9 +229,6 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

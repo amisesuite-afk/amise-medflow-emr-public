@@ -116,8 +116,7 @@
           "match": ["cholangitis"],
           "unless": ["sclerosing"],
           "k": 3,
-          "guidelineRefs": ["tg18-dx-cholangitis"],
-          "unverified": ["ios"]
+          "guidelineRefs": ["tg18-dx-cholangitis"]
         }
       ],
       "mustNotMiss": [
@@ -144,9 +143,7 @@
           "id": "no-sepsis-alarm-mild",
           "severity": "quality",
           "match": ["sepsis"],
-          "unverified": ["ios"],
           "note": "Normal heart rate, BP and mentation ('No confusion' is a pertinent negative). A sepsis banner here is caused by negation handling, not physiology.",
-          "knownGap": ["ios"],
           "knownGapNote": "iOS ClinicalTextParser has no negation handling: 'No confusion' counts as organ dysfunction and, with fever, fires 'Possible Sepsis'."
         }
       ]
@@ -169,7 +166,6 @@
           "equals": 1,
           "guidelineRefs": ["tg18-dx-cholangitis"],
           "note": "TG18 Grade II needs any TWO criteria; age ≥75 alone is Grade I. Over-grading is the safer error, hence quality rather than critical, but it changes the drainage timing advice.",
-          "knownGap": ["ios"],
           "knownGapNote": "iOS TokyoCholangitis and web clinical-scales count ONE Grade II criterion as Grade II (TG18 requires two)."
         },
         {

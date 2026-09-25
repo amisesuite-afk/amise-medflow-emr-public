@@ -224,9 +224,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -240,9 +237,6 @@
           "wses-hernia-2017"
         ],
         "note": "Strangulated hernia: emergency surgery.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Painful lump in the right groin and vomiting' gives 'routine'."
       }
     },
@@ -256,9 +250,6 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -269,10 +260,7 @@
             "anticoag",
             "doac"
           ],
-          "note": "DOAC timing/reversal before emergency surgery.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DOAC timing/reversal before emergency surgery."
         }
       ],
       "mustExclude": [
@@ -297,10 +285,7 @@
           "guidelineRefs": [
             "wses-hernia-2017"
           ],
-          "note": "WSES 2017: do not attempt reduction when strangulation is suspected (tender, erythematous, systemic signs, raised lactate) — non-viable bowel can be reduced into the abdomen.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2017: do not attempt reduction when strangulation is suspected (tender, erythematous, systemic signs, raised lactate) — non-viable bowel can be reduced into the abdomen."
         }
       ]
     },

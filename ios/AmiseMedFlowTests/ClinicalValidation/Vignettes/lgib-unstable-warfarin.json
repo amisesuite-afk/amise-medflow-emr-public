@@ -187,9 +187,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "bsg-lgib-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -203,9 +200,6 @@
           ],
           "guidelineRefs": [
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -223,9 +217,6 @@
           ],
           "guidelineRefs": [
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -245,10 +236,7 @@
           "guidelineRefs": [
             "bsg-lgib-2019"
           ],
-          "note": "BSG 2019: interrupt warfarin at presentation; in unstable bleeding reverse with prothrombin complex concentrate and IV vitamin K.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "BSG 2019: interrupt warfarin at presentation; in unstable bleeding reverse with prothrombin complex concentrate and IV vitamin K."
         },
         {
           "id": "mgmt-restart-anticoag-plan",
@@ -260,9 +248,10 @@
             "bsg-lgib-2019"
           ],
           "note": "BSG 2019: plan when to restart warfarin (the guideline suggests about 7 days after the bleed in most patients) — the thrombotic risk of AF persists.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

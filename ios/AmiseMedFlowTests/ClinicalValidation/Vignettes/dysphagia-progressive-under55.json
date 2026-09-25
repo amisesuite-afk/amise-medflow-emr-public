@@ -146,10 +146,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect."
       },
       "redFlags": [
         {
@@ -160,9 +157,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -182,10 +176,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "Cancer is less likely at 38 but NG12 still requires exclusion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Cancer is less likely at 38 but NG12 still requires exclusion."
         }
       ],
       "mustRankTopK": [
@@ -201,9 +192,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -222,9 +210,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -243,10 +232,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "An \"OGD if age >55\" rule would exclude this patient; dysphagia qualifies at any age.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "An \"OGD if age >55\" rule would exclude this patient; dysphagia qualifies at any age."
         }
       ]
     }

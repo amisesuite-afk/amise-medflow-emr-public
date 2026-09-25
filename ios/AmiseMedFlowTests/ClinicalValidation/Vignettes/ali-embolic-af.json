@@ -178,9 +178,6 @@
           "k": 3,
           "guidelineRefs": [
             "esvs-ali-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -193,10 +190,7 @@
         "guidelineRefs": [
           "esvs-ali-2020"
         ],
-        "note": "Rutherford IIb: emergency revascularisation.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Rutherford IIb: emergency revascularisation."
       },
       "mustAlarm": [
         {
@@ -213,10 +207,7 @@
           "guidelineRefs": [
             "esvs-ali-2020"
           ],
-          "note": "A limb-threatening emergency with normal vital signs: only a condition-specific alarm surfaces it.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A limb-threatening emergency with normal vital signs: only a condition-specific alarm surfaces it."
         }
       ],
       "redFlags": [
@@ -227,9 +218,6 @@
             "atrial fibrillation",
             "embol",
             "anticoag"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -249,9 +237,6 @@
             "esvs-ali-2020"
           ],
           "note": "Imaging must not delay revascularisation in IIb.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
         }
       ]
@@ -266,9 +251,6 @@
           ],
           "guidelineRefs": [
             "esvs-ali-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -283,9 +265,6 @@
           ],
           "guidelineRefs": [
             "esvs-ali-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -301,20 +280,14 @@
             "ios.radiation.plan",
             "ios.soap.plan"
           ],
-          "note": "A chronic PAD plan in acute ischaemia.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A chronic PAD plan in acute ischaemia."
         }
       ]
     },
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

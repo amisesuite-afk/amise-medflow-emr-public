@@ -128,9 +128,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -143,10 +140,7 @@
         "guidelineRefs": [
           "nice-ng128"
         ],
-        "note": "NICE NG128: specialist assessment within 24 h of onset.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "NICE NG128: specialist assessment within 24 h of onset."
       }
     },
     "investigations": {
@@ -164,9 +158,6 @@
           "guidelineRefs": [
             "nice-ng128"
           ],
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: No carotid imaging.",
           "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
         }
@@ -183,9 +174,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -200,9 +188,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -215,11 +200,11 @@
             "nice-ng128"
           ],
           "note": "Surgeon-relevant: elective hernia repair postponed after a TIA.",
-          "unverified": [
+          "knownGapNote": "Web: The pending hernia repair is not deferred (no TIA rule). | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator).",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: The pending hernia repair is not deferred (no TIA rule).",
-          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+          ]
         }
       ]
     }

@@ -172,9 +172,6 @@
           "guidelineRefs": [
             "esc-pe-2019",
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -187,9 +184,6 @@
         "guidelineRefs": [
           "nice-ng158",
           "esc-pe-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -205,9 +199,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -220,9 +211,6 @@
           "score": "wells-pe",
           "guidelineRefs": [
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -242,9 +230,6 @@
           "guidelineRefs": [
             "nice-ng158",
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -268,10 +253,7 @@
             "nice-ng158",
             "esc-pe-2019"
           ],
-          "note": "Interim therapeutic anticoagulation if CTPA is delayed.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Interim therapeutic anticoagulation if CTPA is delayed."
         }
       ],
       "mustExclude": [
@@ -286,9 +268,6 @@
             "nice-ng158"
           ],
           "note": "Wells PE >4 -> CTPA directly; a D-dimer gate or the DVT cut-off (≥2) does not follow NICE NG158.",
-          "unverified": [
-            "ios"
-          ],
           "knownGap": [
             "web"
           ],

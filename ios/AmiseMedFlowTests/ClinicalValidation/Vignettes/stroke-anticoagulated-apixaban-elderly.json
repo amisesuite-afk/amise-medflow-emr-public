@@ -139,9 +139,6 @@
         "guidelineRefs": [
           "nice-ng128",
           "eso-ivt-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -155,9 +152,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -179,10 +173,7 @@
           "guidelineRefs": [
             "nice-ng128"
           ],
-          "note": "NICE NG128: immediate CT for anyone on anticoagulants.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE NG128: immediate CT for anyone on anticoagulants."
         },
         {
           "id": "inv-coagulation",
@@ -197,9 +188,6 @@
           ],
           "guidelineRefs": [
             "eso-ivt-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -215,9 +203,6 @@
           "guidelineRefs": [
             "nice-ng128",
             "eso-ivt-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -243,9 +228,10 @@
             "eso-ivt-2021"
           ],
           "note": "ESO 2021: no IV thrombolysis within 48 h of a DOAC dose (without specific levels or reversal).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"thrombolysis (iv alteplase 0.9 mg/kg max 90 mg):\" (+4 more)"
         }
       ]
     }

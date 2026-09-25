@@ -189,10 +189,7 @@
           "match": [
             "ectopic"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -205,9 +202,10 @@
         ],
         "note": "Stable, no peritonism: same-day assessment; pregnancy test first.",
         "atLeast": "priority",
-        "unverified": [
+        "knownGap": [
           "ios"
-        ]
+        ],
+        "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ p"
       }
     },
     "investigations": {
@@ -223,9 +221,6 @@
           "match": [
             "hcg",
             "pregnancy test"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -240,9 +235,6 @@
             "re:\\btvs\\b",
             "pelvic ultrasound",
             "uss pelvis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -259,9 +251,6 @@
             "gynaecolog",
             "gynecolog",
             "early pregnancy"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -275,9 +264,6 @@
           "note": "No pregnancy test has been done: a template asserting a negative β-hCG is unsafe.",
           "match": [
             "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -289,9 +275,6 @@
           "note": "Left iliac fossa pain at 29 with an IUS is not diverticulitis until pregnancy is excluded.",
           "match": [
             "re:diverticul[^\\n]{0,60}(co-amoxiclav|antibiotic|metronidazole)"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

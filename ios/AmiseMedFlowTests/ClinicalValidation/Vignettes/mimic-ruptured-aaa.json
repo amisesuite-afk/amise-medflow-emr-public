@@ -220,10 +220,7 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "note": "Flank pain + collapse + pulsatile mass in a 74-year-old smoker: ruptured AAA first, not renal colic.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Flank pain + collapse + pulsatile mass in a 74-year-old smoker: ruptured AAA first, not renal colic."
         }
       ],
       "mustNotMiss": [
@@ -250,9 +247,6 @@
         "guidelineRefs": [
           "esvs-aaa-2024"
         ],
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left loin pain and collapse' gives 'routine'."
       },
       "mustAlarm": [
@@ -267,9 +261,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -284,10 +275,7 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "note": "A generic hypotension alarm is not enough: the alarm must name the aneurysm so that no one sends the patient for a CT KUB.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A generic hypotension alarm is not enough: the alarm must name the aneurysm so that no one sends the patient for a CT KUB."
         }
       ]
     },
@@ -304,9 +292,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -327,9 +312,6 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Map the whole I71 family (I71.3, I71.4, I71.9) to the aortic protocol (getProtocolByIcd prefix 'I71')."
         },
         {
@@ -341,9 +323,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -373,10 +352,7 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "note": "An NSAID 'renal colic' plan in a haemorrhaging patient is harmful (platelet function, renal injury) and signals anchoring on the wrong diagnosis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "An NSAID 'renal colic' plan in a haemorrhaging patient is harmful (platelet function, renal injury) and signals anchoring on the wrong diagnosis."
         },
         {
           "id": "mgmt-no-large-fluid-bolus",
@@ -396,19 +372,17 @@
             "esvs-aaa-2024"
           ],
           "note": "ESVS: restrictive (permissive hypotensive) resuscitation before aortic control.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...road-spectrum; narrow when cultures return); iv crystalloid 30 ml/kg over 3 h if lactate ≥4 or hypotension; vasopressors (noradrenaline) if map <65 ...\""
         }
       ]
     },
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

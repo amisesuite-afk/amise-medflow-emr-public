@@ -165,9 +165,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "eau-luts-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -183,9 +180,10 @@
             "eau-nmibc-2024"
           ],
           "note": "Haematuria on anticoagulation is investigated the same way; the anticoagulant does not explain it.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         },
         {
           "id": "inv-fbc-group",
@@ -200,9 +198,10 @@
           "guidelineRefs": [
             "eau-nmibc-2024"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         }
       ]
     },
@@ -217,9 +216,6 @@
           ],
           "guidelineRefs": [
             "eau-luts-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -235,9 +231,6 @@
             "eau-luts-2024"
           ],
           "note": "Standard practice for clot retention; not a specific guideline statement.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: No three-way catheter or irrigation; a standard Foley is suggested.",
           "proposedFix": "As inv-cystoscopy."
         },
@@ -251,9 +244,6 @@
           ],
           "guidelineRefs": [
             "eau-nmibc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -266,9 +256,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

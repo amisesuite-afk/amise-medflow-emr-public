@@ -241,10 +241,7 @@
           "guidelineRefs": [
             "ada-hhc-2024"
           ],
-          "note": "DKA must be on the displayed differential of abdominal pain in a type 1 diabetic with glucose 29.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DKA must be on the displayed differential of abdominal pain in a type 1 diabetic with glucose 29."
         },
         {
           "id": "mnm-dka-symptom-engine",
@@ -268,9 +265,6 @@
         "guidelineRefs": [
           "ada-hhc-2024"
         ],
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and vomiting' gives 'routine'."
       },
       "mustAlarm": [
@@ -284,9 +278,6 @@
           ],
           "guidelineRefs": [
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -305,9 +296,6 @@
           ],
           "guidelineRefs": [
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -327,9 +315,6 @@
           ],
           "guidelineRefs": [
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -346,9 +331,6 @@
           ],
           "guidelineRefs": [
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -359,9 +341,6 @@
           ],
           "guidelineRefs": [
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -387,9 +366,6 @@
             "ada-hhc-2024"
           ],
           "note": "DKA pseudo-peritonitis resolves with treatment; an operative plan before correcting the acidosis is dangerous.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Negation-aware exam matching, and suppress operative templates while a DKA prompt is active (reassess the abdomen after correction)."
         }
       ]

@@ -147,9 +147,10 @@
             "icd:N62"
           ],
           "k": 3,
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Breast Abscess / Mastitis | 2. Anxiety Disorder | 3. Medication Side Effect / Adverse Drug Reaction | 4. Femoral Hernia | 5. Deep Vein Thrombosis"
         }
       ]
     },
@@ -158,9 +159,6 @@
         "id": "level-routine",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -178,9 +176,10 @@
             "review medications",
             "drug cause"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     },
@@ -193,9 +192,10 @@
             "testes",
             "testicular"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     }

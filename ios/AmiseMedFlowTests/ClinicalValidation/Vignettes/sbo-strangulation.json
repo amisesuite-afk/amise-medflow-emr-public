@@ -231,9 +231,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -247,9 +244,6 @@
           "wses-sbo-2018"
         ],
         "note": "Strangulation signs (fever, tachycardia, peritonism, lactate, CT) mandate emergency surgery.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Constant abdominal pain, distension and vomiting' gives 'urgent'."
       },
       "mustAlarm": [
@@ -262,9 +256,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -280,9 +271,6 @@
           ],
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -297,9 +285,6 @@
           ],
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -311,9 +296,6 @@
             "group & screen",
             "crossmatch",
             "blood group"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -337,9 +319,6 @@
           ],
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -382,9 +361,6 @@
           ],
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -415,11 +391,11 @@
             "wses-sbo-2018"
           ],
           "note": "Bologna: non-operative management and contrast challenge are contraindicated when strangulation/peritonitis is present; delay increases resection and mortality.",
-          "unverified": [
+          "knownGapNote": "Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic\"",
+          "proposedFix": "Check sbo_strangulation before sbo_adhesional (specific-first) and drop the conservative phase whenever strangulation words, lactate > 2 with peritonism, or closed-loop appear.",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.",
-          "proposedFix": "Check sbo_strangulation before sbo_adhesional (specific-first) and drop the conservative phase whenever strangulation words, lactate > 2 with peritonism, or closed-loop appear."
+          ]
         }
       ]
     },

@@ -178,9 +178,6 @@
         "guidelineRefs": [
           "bsg-lgib-2019",
           "esge-polypectomy-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -193,9 +190,6 @@
           ],
           "guidelineRefs": [
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -213,10 +207,7 @@
             "esge-polypectomy-2017",
             "bsg-lgib-2019"
           ],
-          "note": "Early repeat colonoscopy to treat the post-polypectomy site (not a routine/screening colonoscopy).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Early repeat colonoscopy to treat the post-polypectomy site (not a routine/screening colonoscopy)."
         },
         {
           "id": "mgmt-endoscopic-haemostasis",
@@ -231,9 +222,6 @@
             "esge-polypectomy-2017"
           ],
           "note": "ESGE 2017: delayed post-polypectomy bleeding with ongoing bleeding → colonoscopy and endoscopic haemostasis (clips; thermal coagulation).",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add a post-polypectomy bleed rule (post-procedure + rectal bleeding): repeat colonoscopy with endoscopic haemostasis (ESGE)."
         },
         {
@@ -247,9 +235,10 @@
             "bsg-lgib-2019"
           ],
           "note": "Temporary interruption of clopidogrel decided with cardiology (recent-ish coronary stent).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

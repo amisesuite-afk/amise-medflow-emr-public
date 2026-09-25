@@ -158,10 +158,7 @@
             "toxic",
             "icd:E05"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -184,9 +181,10 @@
             "ata-hyper-2016"
           ],
           "note": "ATA 2015: if the serum TSH is subnormal, a radionuclide thyroid scan should be obtained.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ],
       "mustExclude": [
@@ -206,10 +204,7 @@
           "guidelineRefs": [
             "ata-2015"
           ],
-          "note": "Hyperfunctioning nodules are rarely malignant and do not need FNA.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Hyperfunctioning nodules are rarely malignant and do not need FNA."
         }
       ]
     },
@@ -227,9 +222,10 @@
           "guidelineRefs": [
             "ata-hyper-2016"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-definitive",
@@ -243,9 +239,10 @@
           "guidelineRefs": [
             "ata-hyper-2016"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

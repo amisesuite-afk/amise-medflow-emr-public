@@ -122,10 +122,7 @@
             "mastalgia",
             "benign"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -138,10 +135,7 @@
           "abs-best-practice-2010",
           "nice-ng12"
         ],
-        "note": "Breast pain alone is not an NG12 suspected-cancer criterion.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Breast pain alone is not an NG12 suspected-cancer criterion."
       },
       "mustNotAlarm": [
         {
@@ -152,9 +146,6 @@
             "re:(2-week|two-week|two week|2ww|suspected cancer)[^\\n]{0,60}breast",
             "re:breast[^\\n]{0,60}(2-week|two-week|two week|2ww|suspected cancer)",
             "cancer screening triggered"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -180,10 +171,7 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "note": "Imaging is not indicated for cyclical pain with a normal examination.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Imaging is not indicated for cyclical pain with a normal examination."
         }
       ]
     },
@@ -198,9 +186,10 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

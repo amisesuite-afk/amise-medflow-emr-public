@@ -154,9 +154,10 @@
             "ata-2015"
           ],
           "note": "Bethesda V needs surgery (extent by risk); surveillance alone would be unsafe.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -167,10 +168,7 @@
             "no treatment required for benign fnac",
             "no surgery indicated"
           ],
-          "note": "Benign-nodule surveillance text would be unsafe for a Bethesda V nodule.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Benign-nodule surveillance text would be unsafe for a Bethesda V nodule."
         }
       ]
     },
@@ -179,9 +177,6 @@
         "id": "level-not-emergency",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       }
     }

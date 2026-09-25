@@ -236,10 +236,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "DKA must appear on the primary differential (glucose 27.8, ketones 4.9, pH 7.14).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DKA must appear on the primary differential (glucose 27.8, ketones 4.9, pH 7.14)."
         },
         {
           "id": "mnm-dka-symptom-engine",
@@ -267,9 +264,6 @@
         "guidelineRefs": [
           "jbds-dka-2023",
           "ada-hhc-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -284,9 +278,6 @@
           "guidelineRefs": [
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -306,9 +297,6 @@
           "guidelineRefs": [
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -324,10 +312,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "Potassium falls with insulin: must be measured and monitored.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Potassium falls with insulin: must be measured and monitored."
         }
       ]
     },
@@ -343,10 +328,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "Blood ketones diagnose and monitor DKA (JBDS). Graded as management because the web prompts add ketone testing as a plan line, not an investigation order.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Blood ketones diagnose and monitor DKA (JBDS). Graded as management because the web prompts add ketone testing as a plan line, not an investigation order."
         },
         {
           "id": "mgmt-fixed-rate-insulin",
@@ -364,9 +346,6 @@
           "guidelineRefs": [
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -386,9 +365,6 @@
           "guidelineRefs": [
             "jbds-dka-2023",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -407,10 +383,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "JBDS: potassium added to fluids according to the serum level once below 5.5 mmol/L.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "JBDS: potassium added to fluids according to the serum level once below 5.5 mmol/L."
         },
         {
           "id": "mgmt-continue-basal-insulin",
@@ -426,9 +399,10 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-glucose-when-falling",
@@ -445,10 +419,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "JBDS: add 10% glucose when glucose falls below 14 mmol/L while the insulin infusion continues.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "JBDS: add 10% glucose when glucose falls below 14 mmol/L while the insulin infusion continues."
         }
       ],
       "mustExclude": [
@@ -464,10 +435,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "No surgical abdomen: the abdominal ache of DKA must not trigger an operative plan.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No surgical abdomen: the abdominal ache of DKA must not trigger an operative plan."
         },
         {
           "id": "mgmt-no-laparotomy",
@@ -481,10 +449,7 @@
             "jbds-dka-2023",
             "ada-hhc-2024"
           ],
-          "note": "DKA abdominal signs settle with treatment; no laparotomy plan.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DKA abdominal signs settle with treatment; no laparotomy plan."
         }
       ]
     }

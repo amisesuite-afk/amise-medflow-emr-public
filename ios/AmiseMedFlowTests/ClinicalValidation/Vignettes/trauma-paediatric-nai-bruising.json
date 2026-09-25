@@ -105,12 +105,10 @@
             "nice-cg89"
           ],
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine has non-accidental injury / child maltreatment as a diagnosis.",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "No engine has non-accidental injury / child maltreatment as a diagnosis. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Delirium (Acute Confusional State) | 2. Pulmonary Embolism | 3. Atrial Fibrillation | 4. Sepsis | 5. Transient Ischaemic Attack",
           "proposedFix": "Add suspected physical abuse to the paediatric differential (bruising in a non-mobile infant, TEN-4 sites, inconsistent history, delayed presentation)."
         }
       ]
@@ -122,9 +120,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "nice-cg89"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -145,10 +140,7 @@
           "guidelineRefs": [
             "nice-cg89"
           ],
-          "note": "Bruising in a non-mobile infant, on the ears and trunk, with an inconsistent explanation: NICE CG89 \"suspect maltreatment\".",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Bruising in a non-mobile infant, on the ears and trunk, with an inconsistent explanation: NICE CG89 \"suspect maltreatment\"."
         }
       ]
     },
@@ -162,9 +154,6 @@
           ],
           "guidelineRefs": [
             "rcr-rcpch-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -177,9 +166,6 @@
           ],
           "guidelineRefs": [
             "rcr-rcpch-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -191,9 +177,6 @@
           ],
           "guidelineRefs": [
             "nice-cg89"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -216,9 +199,6 @@
           ],
           "guidelineRefs": [
             "nice-cg89"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -247,20 +227,14 @@
           "guidelineRefs": [
             "nice-cg89"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

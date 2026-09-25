@@ -189,9 +189,6 @@
           "note": "An abdominal aortic aneurysm entry does not count: the work-up and the harm (antithrombotics) differ.",
           "guidelineRefs": [
             "esc-aortic-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -221,9 +218,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "esc-aortic-2014"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -238,9 +232,6 @@
           ],
           "guidelineRefs": [
             "esc-aortic-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -259,9 +250,6 @@
           ],
           "guidelineRefs": [
             "esc-aortic-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -281,9 +269,6 @@
           ],
           "guidelineRefs": [
             "esc-aortic-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -305,10 +290,7 @@
           "guidelineRefs": [
             "esc-aortic-2014"
           ],
-          "note": "Antiplatelet, anticoagulant or thrombolytic treatment in aortic dissection can be fatal.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Antiplatelet, anticoagulant or thrombolytic treatment in aortic dissection can be fatal."
         }
       ]
     }

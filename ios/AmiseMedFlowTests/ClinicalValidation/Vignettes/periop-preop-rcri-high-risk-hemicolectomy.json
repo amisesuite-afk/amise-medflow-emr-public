@@ -219,9 +219,6 @@
           "guidelineRefs": [
             "esc-ncs-2022",
             "rcri-1999"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -230,9 +227,6 @@
           "score": "asa",
           "guidelineRefs": [
             "asa-ps-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -250,9 +244,10 @@
           "guidelineRefs": [
             "esc-ncs-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-echocardiography",
@@ -265,10 +260,11 @@
             "esc-ncs-2022"
           ],
           "note": "Known HF with poor functional capacity before high-risk surgery: reassess LV function.",
-          "unverified": [
+          "proposedFix": "See inv-natriuretic-peptide-or-troponin.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See inv-natriuretic-peptide-or-troponin."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-iron-studies",
@@ -284,10 +280,11 @@
             "anaemia-consensus-2017"
           ],
           "note": "Hb 10.8 g/dL before major elective surgery: treat iron deficiency (IV iron when surgery is within weeks).",
-          "unverified": [
+          "proposedFix": "Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -304,9 +301,10 @@
             "esc-ncs-2022"
           ],
           "note": "ESC 2022: 12-lead ECG before intermediate/high-risk surgery in patients with cardiovascular disease or risk factors. Graded as management because the web prompt delivers the ECG as a plan line (the harness files addToPlan actions under management).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-functional-capacity",
@@ -321,10 +319,11 @@
           "guidelineRefs": [
             "esc-ncs-2022"
           ],
-          "unverified": [
+          "proposedFix": "Add a functional-capacity question to the pre-operative prompt set (ESC 2022).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a functional-capacity question to the pre-operative prompt set (ESC 2022)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -340,10 +339,7 @@
           "guidelineRefs": [
             "esc-ncs-2022"
           ],
-          "note": "Previous PCI: continue aspirin through non-cardiac surgery if bleeding risk allows.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Previous PCI: continue aspirin through non-cardiac surgery if bleeding risk allows."
         }
       ]
     }

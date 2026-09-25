@@ -187,9 +187,10 @@
             "iga vasculitis",
             "vasculitis"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Renal / Ureteric Colic | 2. Acute Appendicitis | 3. Acute Gastroenteritis | 4. Small Bowel Obstruction | 5. Acute Pancreatitis"
         }
       ],
       "mustRankTopK": [
@@ -221,9 +222,6 @@
             "re:(ultrasound|uss|\\bus\\b)[^\\n]{0,40}(abdo|intussus)",
             "uss abdomen",
             "abdominal ultrasound"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -238,9 +236,6 @@
             "urinalysis",
             "urine dipstick",
             "blood pressure"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -272,9 +267,10 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy...\""
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -291,9 +287,6 @@
             "not indicated",
             "no role",
             "exclude appendicitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -309,9 +302,6 @@
             "if ",
             "perforation",
             "failed"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

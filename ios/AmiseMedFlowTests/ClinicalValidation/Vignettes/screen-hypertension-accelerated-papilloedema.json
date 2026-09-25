@@ -110,10 +110,7 @@
           "nice-ng136"
         ],
         "note": "NG136: BP ≥ 180/120 with retinal haemorrhage or papilloedema — same-day specialist referral.",
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       },
       "mustAlarm": [
         {
@@ -124,9 +121,6 @@
           ],
           "match": [
             "hypertens"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -146,9 +140,6 @@
             "admi",
             "hypertensive emergency",
             "emergency department"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -169,9 +160,6 @@
           "unless": [
             "defer",
             "postpone"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -190,9 +178,6 @@
             "creatinine",
             "urinalysis",
             "urine"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

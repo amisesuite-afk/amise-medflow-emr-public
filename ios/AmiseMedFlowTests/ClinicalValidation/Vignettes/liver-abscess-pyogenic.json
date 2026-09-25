@@ -268,9 +268,6 @@
           "k": 3,
           "guidelineRefs": [
             "review-liver-abscess-2015"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -283,10 +280,7 @@
         "guidelineRefs": [
           "ssc-2021"
         ],
-        "note": "Sepsis from an undrained abscess.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Sepsis from an undrained abscess."
       },
       "mustAlarm": [
         {
@@ -299,10 +293,7 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "note": "SIRS with lactate 2.3 and a source; quality because the organ-dysfunction threshold for Sepsis-3 is borderline.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SIRS with lactate 2.3 and a source; quality because the organ-dysfunction threshold for Sepsis-3 is borderline."
         }
       ],
       "redFlags": [
@@ -313,9 +304,6 @@
             "diabet",
             "glucose",
             "hyperglyc"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -331,9 +319,6 @@
           "guidelineRefs": [
             "ssc-2021",
             "review-liver-abscess-2015"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -345,9 +330,6 @@
           ],
           "guidelineRefs": [
             "review-liver-abscess-2015"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -361,10 +343,7 @@
           "guidelineRefs": [
             "review-amoebiasis-2003"
           ],
-          "note": "Caribbean practice: exclude amoebic abscess before drainage decisions.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Caribbean practice: exclude amoebic abscess before drainage decisions."
         },
         {
           "id": "inv-aspirate-culture",
@@ -378,9 +357,10 @@
           "guidelineRefs": [
             "review-liver-abscess-2015"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 10 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         }
       ]
     },
@@ -406,9 +386,6 @@
           "guidelineRefs": [
             "idsa-2010-ciai",
             "review-liver-abscess-2015"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -423,10 +400,7 @@
             "idsa-2010-ciai",
             "review-liver-abscess-2015"
           ],
-          "note": "Source control for a 7 cm multiloculated abscess: image-guided aspiration/drainage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Source control for a 7 cm multiloculated abscess: image-guided aspiration/drainage."
         },
         {
           "id": "mgmt-prolonged-course",
@@ -440,9 +414,10 @@
           "guidelineRefs": [
             "review-liver-abscess-2015"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-source-search",
@@ -455,9 +430,6 @@
           ],
           "guidelineRefs": [
             "review-liver-abscess-2015"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -469,9 +441,10 @@
             "glycaemic",
             "diabet"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -493,9 +466,6 @@
           "guidelineRefs": [
             "idsa-2010-ciai"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
         },
         {
@@ -510,10 +480,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

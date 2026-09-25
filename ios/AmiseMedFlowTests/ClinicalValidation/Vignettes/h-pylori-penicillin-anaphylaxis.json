@@ -154,9 +154,6 @@
           ],
           "guidelineRefs": [
             "maastricht-6"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -174,9 +171,10 @@
             "maastricht-6"
           ],
           "proposedFix": "As h-pylori-positive-eradication; add the bismuth quadruple (tetracycline + metronidazole) regimen.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -199,10 +197,7 @@
             "maastricht-6"
           ],
           "note": "Amoxicillin in documented penicillin anaphylaxis is a contraindicated plan.",
-          "proposedFix": "buildPlanText / protocol medications: filter or flag drugs that match a recorded allergy class (penicillins); same finding as the seed appendicitis/cholangitis vignettes.",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "buildPlanText / protocol medications: filter or flag drugs that match a recorded allergy class (penicillins); same finding as the seed appendicitis/cholangitis vignettes."
         }
       ]
     }

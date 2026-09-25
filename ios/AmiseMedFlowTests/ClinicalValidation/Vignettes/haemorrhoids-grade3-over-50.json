@@ -155,9 +155,10 @@
           "guidelineRefs": [
             "ascrs-haem-2024"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Inguinal Hernia | 2. Skin Abscess | 3. Incisional Hernia | 4. Incarcerated / Strangulated Hernia | 5. Femoral Hernia"
         }
       ],
       "mustNotMiss": [
@@ -180,13 +181,11 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3 (haemorrhoids, hernia, fissure) does not keep colorectal cancer visible in a 58-year-old with bleeding; the haemorrhoid protocol does request colonoscopy (> 40)."
+          "knownGapNote": "PANE top 3 (haemorrhoids, hernia, fissure) does not keep colorectal cancer visible in a 58-year-old with bleeding; the haemorrhoid protocol does request colonoscopy (> 40). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inguinal Hernia | 2. Skin Abscess | 3. Incisional Hernia | 4. Incarcerated / Strangulated Hernia | 5. Femoral Hernia"
         }
       ]
     },
@@ -205,10 +204,7 @@
             "ascrs-haem-2024",
             "nice-ng12"
           ],
-          "note": "ASCRS 2024 and NG12/DG56: rectal bleeding at 58 needs colonic evaluation (colonoscopy, or FIT-guided per local pathway) before it is attributed to haemorrhoids.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ASCRS 2024 and NG12/DG56: rectal bleeding at 58 needs colonic evaluation (colonoscopy, or FIT-guided per local pathway) before it is attributed to haemorrhoids."
         }
       ]
     },
@@ -226,9 +222,6 @@
           ],
           "guidelineRefs": [
             "ascrs-haem-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

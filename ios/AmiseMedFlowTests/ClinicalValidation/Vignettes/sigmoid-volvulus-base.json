@@ -226,9 +226,6 @@
           "k": 3,
           "guidelineRefs": [
             "ascrs-volvulus-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -242,9 +239,10 @@
           "guidelineRefs": [
             "ascrs-volvulus-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction | 2. Acute Diverticulitis | 3. Irritable Bowel Syndrome | 4. Acute Appendicitis | 5. Non-Occlusive Mesenteric Ischaemia (NOMI); also in ios.triage#4"
         }
       ]
     },
@@ -276,9 +274,6 @@
             "wses-volvulus-2023"
           ],
           "note": "First-line treatment without peritonitis or ischaemia; avoids an emergency laparotomy in a frail 81-year-old.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a heading ('Sigmoid/Caecal Volvulus — Management:') followed by bowel-obstruction steps. Decompression appears only in the dx-variant urgency note.",
           "proposedFix": "Give lbo_volvulus a real plan prefix: sigmoid — endoscopic detorsion + flatus tube if no peritonitis/ischaemia, then sigmoid colectomy in the same admission; caecal — right hemicolectomy; gangrene/peritonitis — Hartmann's. Split into sigmoid and caecal variants."
         },
@@ -295,9 +290,6 @@
             "wses-volvulus-2023"
           ],
           "note": "Recurrence after decompression alone is high; sigmoid resection in the same admission if fit.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: No sigmoid colectomy after decompression."
         },
         {
@@ -307,20 +299,17 @@
             "potassium",
             "re:\\bkcl\\b"
           ],
-          "unverified": [
+          "knownGapNote": "Web: No potassium replacement despite K 3.2. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: No potassium replacement despite K 3.2."
+          ]
         }
       ]
     },
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     },
     "dxVariant": {
       "id": "variant-lbo-volvulus",

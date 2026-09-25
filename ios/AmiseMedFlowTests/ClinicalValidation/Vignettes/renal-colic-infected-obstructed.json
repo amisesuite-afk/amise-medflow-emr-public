@@ -223,9 +223,6 @@
           "k": 3,
           "guidelineRefs": [
             "eau-urolith-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -239,9 +236,6 @@
           "eau-urolith-2024",
           "nice-ng51",
           "nice-ng148"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -254,9 +248,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -272,9 +263,6 @@
           ],
           "guidelineRefs": [
             "eau-urolith-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -297,9 +285,6 @@
           "guidelineRefs": [
             "eau-urolith-2024",
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "A protocol for the PANE node infected_obstructed_kidney (EAU Urolithiasis 2024: cultures, antibiotics, urgent decompression)."
         }
@@ -324,10 +309,7 @@
             "eau-urolith-2024",
             "nice-ng148"
           ],
-          "note": "EAU: urgent decompression (nephrostomy or retrograde stent) of the obstructed infected kidney.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "EAU: urgent decompression (nephrostomy or retrograde stent) of the obstructed infected kidney."
         },
         {
           "id": "mgmt-iv-antibiotics",
@@ -344,9 +326,6 @@
           "guidelineRefs": [
             "eau-urolith-2024",
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -357,9 +336,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: No urology referral.",
           "proposedFix": "As flag-infected-obstruction."
@@ -390,9 +366,10 @@
             "eau-urolith-2024"
           ],
           "note": "EAU: definitive stone removal is delayed until the infection has resolved.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"5-10 mm: met + urology follow-up; eswl if no spontaneous passage at 4 weeks\" (+2 more)"
         },
         {
           "id": "mgmt-no-laparotomy",
@@ -405,10 +382,7 @@
           "guidelineRefs": [
             "eau-urolith-2024"
           ],
-          "note": "The source is the obstructed kidney: decompression, not laparotomy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The source is the obstructed kidney: decompression, not laparotomy."
         }
       ]
     }

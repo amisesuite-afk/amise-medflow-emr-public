@@ -113,9 +113,6 @@
           "match": [
             "malrotation",
             "volvulus"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -128,10 +125,7 @@
           "langer-malrotation-2017"
         ],
         "note": "A normal examination does not exclude volvulus.",
-        "atLeast": "emergency",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "emergency"
       }
     },
     "investigations": {
@@ -149,9 +143,6 @@
             "re:\\bugi\\b",
             "contrast meal",
             "upper gi series"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -169,9 +160,6 @@
             "re:pediatric surg",
             "paediatric surgeon",
             "pediatric surgeon"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -189,9 +177,6 @@
             "omeprazole",
             "thickened feed",
             "antacid"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -218,9 +203,6 @@
             "over 50 kg",
             "age ≥ 12",
             "microgram/kg"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -249,9 +231,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

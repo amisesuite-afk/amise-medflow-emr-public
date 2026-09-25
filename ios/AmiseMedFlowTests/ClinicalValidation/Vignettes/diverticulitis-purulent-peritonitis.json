@@ -200,9 +200,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -217,9 +214,6 @@
           "aga-2021",
           "ascrs-diverticulitis-2020"
         ],
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Severe generalised abdominal pain and fever' gives 'routine'."
       },
       "mustAlarm": [
@@ -232,9 +226,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -249,9 +240,10 @@
           "guidelineRefs": [
             "wses-diverticulitis-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 4 (ios.pipeline.alert, ios.acuity)"
         }
       ]
     },
@@ -265,9 +257,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -286,9 +275,6 @@
           ],
           "guidelineRefs": [
             "wses-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -324,10 +310,7 @@
           "guidelineRefs": [
             "wses-diverticulitis-2020"
           ],
-          "note": "WSES 2020: in stable, immunocompetent patients, resection with primary anastomosis ± diverting stoma is an alternative to Hartmann's.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2020: in stable, immunocompetent patients, resection with primary anastomosis ± diverting stoma is an alternative to Hartmann's."
         },
         {
           "id": "mgmt-antibiotics",
@@ -345,9 +328,6 @@
           ],
           "guidelineRefs": [
             "wses-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

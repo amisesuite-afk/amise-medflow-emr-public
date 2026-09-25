@@ -141,9 +141,6 @@
           ],
           "guidelineRefs": [
             "ascrs-fissure-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -159,9 +156,10 @@
             "ascrs-fissure-2023"
           ],
           "note": "Women with previous vaginal deliveries may have occult sphincter defects; LIS carries an incontinence risk.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

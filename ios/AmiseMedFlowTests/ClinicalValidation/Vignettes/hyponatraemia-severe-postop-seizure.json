@@ -172,9 +172,6 @@
           ],
           "guidelineRefs": [
             "eur-hypona-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -186,9 +183,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "eur-hypona-2014"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -201,9 +195,6 @@
           ],
           "guidelineRefs": [
             "eur-hypona-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -220,10 +211,7 @@
           "guidelineRefs": [
             "eur-hypona-2014"
           ],
-          "note": "Sodium rechecked after each hypertonic bolus (European 2014).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Sodium rechecked after each hypertonic bolus (European 2014)."
         },
         {
           "id": "mgmt-hypertonic-saline",
@@ -236,9 +224,6 @@
           ],
           "guidelineRefs": [
             "eur-hypona-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -250,10 +235,7 @@
           "guidelineRefs": [
             "eur-hypona-2014"
           ],
-          "note": "European 2014: 150 mL 3% over 20 min, repeated, target +5 mmol/L.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "European 2014: 150 mL 3% over 20 min, repeated, target +5 mmol/L."
         },
         {
           "id": "mgmt-correction-limit",
@@ -266,9 +248,6 @@
           ],
           "guidelineRefs": [
             "eur-hypona-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -280,10 +259,7 @@
           "guidelineRefs": [
             "eur-hypona-2014"
           ],
-          "note": "The cause (hypotonic fluid) must be stopped.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The cause (hypotonic fluid) must be stopped."
         }
       ]
     }

@@ -107,9 +107,6 @@
             "re:tetanus[^\\n]{0,40}(vaccin|toxoid|booster|immunis|\\btd)",
             "re:\\btdap?\\b",
             "tetanus toxoid"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -125,9 +122,6 @@
             "re:\\btig\\b",
             "re:\\bhtig\\b",
             "immune globulin"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -143,9 +137,6 @@
             "washout",
             "wash out",
             "clean"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -176,9 +167,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -191,10 +179,7 @@
           "ukhsa-tetanus-2019"
         ],
         "atLeast": "priority",
-        "atMost": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "urgent"
       }
     }
   },

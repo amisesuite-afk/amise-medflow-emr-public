@@ -137,9 +137,6 @@
           ],
           "guidelineRefs": [
             "sign158-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -151,9 +148,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "sign158-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -169,9 +163,6 @@
           ],
           "guidelineRefs": [
             "sign158-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -192,9 +183,6 @@
           ],
           "guidelineRefs": [
             "sign158-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -213,9 +201,6 @@
           "guidelineRefs": [
             "sign158-2019"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Asthma protocol with the life-threatening branch (critical care / anaesthetist)."
         },
         {
@@ -226,9 +211,6 @@
           ],
           "guidelineRefs": [
             "sign158-2019"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Asthma protocol: IV magnesium sulphate in acute severe/life-threatening asthma."
         }

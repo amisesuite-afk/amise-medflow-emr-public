@@ -150,9 +150,6 @@
           "guidelineRefs": [
             "nice-ng141",
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -172,10 +169,7 @@
           "knownGap": [
             "web"
           ],
-          "knownGapNote": "PANE top 3: Acute cholecystitis, Cellulitis, GORD; DVT not listed. Triage surgical matches list DVT #1.",
-          "unverified": [
-            "ios"
-          ]
+          "knownGapNote": "PANE top 3: Acute cholecystitis, Cellulitis, GORD; DVT not listed. Triage surgical matches list DVT #1."
         }
       ]
     },
@@ -192,9 +186,6 @@
           "web"
         ],
         "knownGapNote": "Over-triage: the HPI word 'spreading redness' matches the diabetic-foot red flag (rules.ts, urgent) → emergency_now in a non-diabetic with mild cellulitis.",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Require a diabetes context (comorbidity or diabetic-foot words other than 'spreading redness') for the diabetic-foot red flag."
       },
       "mustNotAlarm": [
@@ -205,10 +196,7 @@
             "shock",
             "haemodynamic instability"
           ],
-          "note": "Normal haemodynamics.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Normal haemodynamics."
         }
       ]
     },
@@ -225,9 +213,10 @@
           "guidelineRefs": [
             "nice-ng141"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 10 (ios.pipeline.decisions, ios.radiation)"
         }
       ]
     },
@@ -243,9 +232,6 @@
             "nice-ng141"
           ],
           "note": "NICE NG141 first-choice oral antibiotic for non-severe cellulitis.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
         },
         {
@@ -261,9 +247,6 @@
           ],
           "guidelineRefs": [
             "nice-ng141"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
         }
@@ -283,9 +266,6 @@
           "sources": [
             "web.plan",
             "ios.radiation.plan"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -293,10 +273,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

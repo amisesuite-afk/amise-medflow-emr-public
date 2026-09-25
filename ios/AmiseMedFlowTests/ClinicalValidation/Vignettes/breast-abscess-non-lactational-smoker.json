@@ -150,10 +150,7 @@
             "duct ectasia",
             "icd:N61"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -171,9 +168,10 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)"
         }
       ]
     },
@@ -189,9 +187,6 @@
           ],
           "guidelineRefs": [
             "abs-best-practice-2010"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -202,9 +197,10 @@
             "metronidazole",
             "anaerob"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-smoking-cessation",
@@ -212,9 +208,10 @@
           "match": [
             "smok"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-exclude-malignancy",
@@ -224,9 +221,10 @@
             "mammogra",
             "exclude malignancy"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -241,10 +239,7 @@
             "if lactational",
             "not breastfeeding"
           ],
-          "note": "Breastfeeding advice is irrelevant (not lactating): a sign that the plan does not adapt to the history.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Breastfeeding advice is irrelevant (not lactating): a sign that the plan does not adapt to the history."
         }
       ]
     }

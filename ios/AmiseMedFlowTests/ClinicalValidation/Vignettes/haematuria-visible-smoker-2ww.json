@@ -134,9 +134,6 @@
           "guidelineRefs": [
             "nice-ng12",
             "eau-nmibc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -149,10 +146,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "A suspected-cancer referral, not an emergency (CLAUDE.md: red flags are not emergencies).",
-        "unverified": [
-          "ios"
-        ]
+        "note": "A suspected-cancer referral, not an emergency (CLAUDE.md: red flags are not emergencies)."
       }
     },
     "investigations": {
@@ -166,9 +160,10 @@
           "guidelineRefs": [
             "eau-nmibc-2024"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions)"
         },
         {
           "id": "inv-upper-tract-imaging",
@@ -182,9 +177,10 @@
           "guidelineRefs": [
             "eau-nmibc-2024"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions)"
         }
       ]
     },
@@ -205,9 +201,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-smoking-cessation",
@@ -219,9 +216,10 @@
           "guidelineRefs": [
             "eau-nmibc-2024"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -241,9 +239,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

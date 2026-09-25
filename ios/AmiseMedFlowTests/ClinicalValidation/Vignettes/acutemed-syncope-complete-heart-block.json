@@ -131,9 +131,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -145,9 +142,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "esc-syncope-2018"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -161,9 +155,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -180,9 +171,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -194,9 +182,10 @@
           "guidelineRefs": [
             "esc-syncope-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     },
@@ -213,9 +202,6 @@
           ],
           "guidelineRefs": [
             "esc-syncope-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -230,10 +216,7 @@
           "guidelineRefs": [
             "esc-syncope-2018"
           ],
-          "note": "No PE features; checks the iOS radiation-card substring match (\"pe\" in \"syncope\"/\"suspected\").",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No PE features; checks the iOS radiation-card substring match (\"pe\" in \"syncope\"/\"suspected\")."
         }
       ]
     }

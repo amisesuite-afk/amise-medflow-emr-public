@@ -154,9 +154,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -187,9 +184,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "nice-ng128"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -203,9 +197,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -226,9 +217,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -246,9 +234,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -263,9 +248,6 @@
           ],
           "guidelineRefs": [
             "nice-ng128"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -277,9 +259,10 @@
           "guidelineRefs": [
             "nice-ng128"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -299,10 +282,7 @@
           "guidelineRefs": [
             "nice-ng128"
           ],
-          "note": "NICE NG128: aspirin 300 mg only once haemorrhage is excluded (24 h after thrombolysis).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE NG128: aspirin 300 mg only once haemorrhage is excluded (24 h after thrombolysis)."
         }
       ]
     }

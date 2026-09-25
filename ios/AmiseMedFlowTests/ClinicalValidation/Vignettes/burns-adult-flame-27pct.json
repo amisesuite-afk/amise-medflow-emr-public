@@ -156,9 +156,10 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Gastro-oesophageal Reflux Disease | 2. Community-Acquired Pneumonia | 3. Atrial Fibrillation | 4. Necrotising Soft Tissue Infection (Necrotising Fasciitis) | 5. Acute Limb Ischaemia"
         }
       ]
     },
@@ -170,9 +171,6 @@
         "guidelineRefs": [
           "atls-10-burns",
           "aba-referral"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -184,9 +182,6 @@
             "major burn",
             "full thickness",
             "full-thickness"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -203,9 +198,6 @@
           ],
           "guidelineRefs": [
             "atls-10-burns"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -226,9 +218,6 @@
             "burns-fluid-threshold",
             "aba-fluid-2008"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
         },
         {
@@ -244,9 +233,6 @@
             "burns-fluid-threshold",
             "atls-10-burns"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
         },
         {
@@ -260,9 +246,6 @@
           "guidelineRefs": [
             "aba-fluid-2008",
             "atls-10-burns"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
         },
@@ -284,9 +267,6 @@
           "guidelineRefs": [
             "aba-referral",
             "nnbc-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -297,9 +277,6 @@
           ],
           "guidelineRefs": [
             "atls-10-burns"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
         }
@@ -314,9 +291,6 @@
           ],
           "guidelineRefs": [
             "burns-fluid-threshold"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -334,20 +308,14 @@
             "web.protocol",
             "web.managementPanel"
           ],
-          "note": "Reading the iOS source, \"tb\" inside \"TBSA\" would attach the pulmonary tuberculosis plan to a burn diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Reading the iOS source, \"tb\" inside \"TBSA\" would attach the pulmonary tuberculosis plan to a burn diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-burns",
       "severity": "quality",
-      "equals": "burns",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "burns"
     }
   },
   "guideline": [

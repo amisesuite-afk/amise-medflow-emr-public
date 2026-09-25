@@ -170,10 +170,7 @@
           "match": [
             "append"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -182,9 +179,10 @@
         "id": "level-at-least-urgent",
         "severity": "critical",
         "atLeast": "urgent",
-        "unverified": [
+        "knownGap": [
           "ios"
-        ]
+        ],
+        "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ u"
       },
       "redFlags": [
         {
@@ -199,9 +197,6 @@
           ],
           "guidelineRefs": [
             "bche-review-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -219,9 +214,10 @@
             "bche-review-2019"
           ],
           "note": "Rapid sequence induction without suxamethonium (e.g. rocuronium with sugammadex available).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

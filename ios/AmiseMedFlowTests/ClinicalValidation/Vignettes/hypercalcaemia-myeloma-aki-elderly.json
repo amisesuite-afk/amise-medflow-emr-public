@@ -189,9 +189,6 @@
           "sfe-hypercalc-2016",
           "nice-ng35",
           "nice-ng148"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -204,9 +201,6 @@
           ],
           "guidelineRefs": [
             "sfe-hypercalc-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -227,9 +221,10 @@
             "nice-ng35"
           ],
           "note": "Hypercalcaemia, AKI, anaemia and lytic lesions: missed myeloma is a missed cancer diagnosis.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         }
       ]
     },
@@ -248,10 +243,7 @@
           "guidelineRefs": [
             "sfe-hypercalc-2016"
           ],
-          "note": "SfE 2016: IV 0.9% sodium chloride rehydration; a 500 mL AKI fluid challenge does not count.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SfE 2016: IV 0.9% sodium chloride rehydration; a 500 mL AKI fluid challenge does not count."
         },
         {
           "id": "mgmt-stop-nsaid-acei",
@@ -261,9 +253,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -286,9 +275,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

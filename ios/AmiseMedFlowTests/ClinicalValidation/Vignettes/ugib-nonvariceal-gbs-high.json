@@ -223,9 +223,6 @@
           "k": 3,
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -239,10 +236,7 @@
           "esge-2021",
           "nice-cg141"
         ],
-        "note": "GBS 12 is not low risk: admission and endoscopy within 24 h, same day.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "GBS 12 is not low risk: admission and endoscopy within 24 h, same day."
       },
       "mustAlarm": [
         {
@@ -257,9 +251,6 @@
           ],
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -275,9 +266,10 @@
             "esge-2021"
           ],
           "note": "NSAID is the likely cause and must be stopped (clinician decision).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity)"
         }
       ]
     },
@@ -290,9 +282,6 @@
           "guidelineRefs": [
             "esge-2021",
             "blatchford-2000"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -310,9 +299,6 @@
           ],
           "guidelineRefs": [
             "nice-cg141"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -330,10 +316,7 @@
           "guidelineRefs": [
             "bsg-2020"
           ],
-          "note": "Hb 9.8 with ongoing melaena: blood must be available.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Hb 9.8 with ongoing melaena: blood must be available."
         },
         {
           "id": "inv-ogd",
@@ -347,9 +330,6 @@
           "guidelineRefs": [
             "esge-2021",
             "nice-cg141"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -370,9 +350,6 @@
             "esge-2021",
             "nice-cg141",
             "acg-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -389,10 +366,7 @@
             "esge-2021",
             "bsg-2020"
           ],
-          "note": "Restrictive: transfuse at Hb ≤7 g/dL, target 7–9 g/dL (no cardiovascular disease).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Restrictive: transfuse at Hb ≤7 g/dL, target 7–9 g/dL (no cardiovascular disease)."
         },
         {
           "id": "mgmt-ppi",
@@ -409,10 +383,7 @@
             "esge-2021",
             "nice-cg141"
           ],
-          "note": "ESGE suggests considering high-dose IV PPI before endoscopy; NICE CG141 advises against PPI before endoscopy. Post-endoscopy PPI for high-risk stigmata is agreed. Quality only because the sources disagree on the pre-endoscopy dose.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESGE suggests considering high-dose IV PPI before endoscopy; NICE CG141 advises against PPI before endoscopy. Post-endoscopy PPI for high-risk stigmata is agreed. Quality only because the sources disagree on the pre-endoscopy dose."
         },
         {
           "id": "mgmt-stop-nsaid",
@@ -426,9 +397,10 @@
             "esge-2021",
             "nice-cg184"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-hpylori",
@@ -439,9 +411,6 @@
           "guidelineRefs": [
             "esge-2021",
             "maastricht-6"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -459,9 +428,10 @@
           ],
           "note": "ESGE 2021 recommends against tranexamic acid in NVUGIH (HALT-IT: no mortality benefit, more venous thromboembolism).",
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
         }
       ]
     },

@@ -185,10 +185,7 @@
             "re:\\bpid\\b",
             "salpingitis"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -207,9 +204,6 @@
             "gonorr",
             "endocervical swab",
             "vaginal swab"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -221,9 +215,6 @@
           "match": [
             "hcg",
             "pregnancy test"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -235,9 +226,6 @@
           "match": [
             "re:\\bhiv\\b",
             "syphilis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -254,9 +242,6 @@
           "note": "Chlamydia cover is the core of every PID regimen.",
           "match": [
             "doxycycline"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -267,9 +252,6 @@
           ],
           "match": [
             "ceftriaxone"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -281,9 +263,6 @@
           ],
           "match": [
             "partner"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -303,9 +282,6 @@
             "not indicated",
             "no role",
             "exclude appendicitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -334,9 +310,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

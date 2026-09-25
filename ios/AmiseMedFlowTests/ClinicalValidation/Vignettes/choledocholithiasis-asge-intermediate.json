@@ -210,9 +210,10 @@
           "guidelineRefs": [
             "asge-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystitis, qsofa, sofa, news2, mews"
         }
       ]
     },
@@ -234,10 +235,7 @@
             "asge-2019",
             "bsg-2017-cbds"
           ],
-          "note": "ASGE intermediate risk: EUS or MRCP (or intra-operative cholangiography/laparoscopic US) to confirm a duct stone before any ERCP.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ASGE intermediate risk: EUS or MRCP (or intra-operative cholangiography/laparoscopic US) to confirm a duct stone before any ERCP."
         }
       ]
     },
@@ -269,10 +267,11 @@
             "asge-2019"
           ],
           "note": "ASGE 2019 (intermediate risk): do not proceed straight to ERCP — about half of these patients have no stone, and ERCP carries a 3–10% risk of post-ERCP pancreatitis, bleeding and perforation. An unconditional ERCP line in the plan is a patient-safety defect.",
-          "unverified": [
+          "proposedFix": "Choledocholithiasis protocol and dx-variants: add ASGE 2019 risk variants (high → ERCP; intermediate → EUS/MRCP or IOC/LCBDE, ERCP only if a stone is confirmed; low → LC ± IOC), fed by the existing asgeCbd scale.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Choledocholithiasis protocol and dx-variants: add ASGE 2019 risk variants (high → ERCP; intermediate → EUS/MRCP or IOC/LCBDE, ERCP only if a stone is confirmed; low → LC ± IOC), fed by the existing asgeCbd scale."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"ercp ± sphincterotomy + stone extraction (primary intervention)\" (+3 more)"
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -286,10 +285,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ],
       "mustInclude": [
@@ -305,9 +301,6 @@
           "guidelineRefs": [
             "nice-cg188",
             "asge-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

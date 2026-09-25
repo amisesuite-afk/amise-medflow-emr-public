@@ -182,9 +182,10 @@
             "nice-cg184"
           ],
           "note": "Continuing the NSAID risks bleeding or perforation.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.pipeline.alert)"
         }
       ],
       "emergencyLevel": {
@@ -194,10 +195,7 @@
         "guidelineRefs": [
           "nice-cg184"
         ],
-        "proposedFix": "Negation handling in adaptive-triage and computeClinicalPrompts exam-text rules.",
-        "unverified": [
-          "ios"
-        ]
+        "proposedFix": "Negation handling in adaptive-triage and computeClinicalPrompts exam-text rules."
       }
     },
     "investigations": {
@@ -212,10 +210,7 @@
             "nice-cg184",
             "maastricht-6"
           ],
-          "note": "A negative rapid urease test on PPI/NSAID may be false-negative; confirm with histology or breath/stool test.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A negative rapid urease test on PPI/NSAID may be false-negative; confirm with histology or breath/stool test."
         }
       ]
     },
@@ -230,9 +225,6 @@
           ],
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -245,9 +237,6 @@
           ],
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -260,9 +249,6 @@
           ],
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -285,9 +271,10 @@
             "nice-cg184"
           ],
           "note": "Aspirin for secondary prevention after TIA is continued with PPI cover; stopping it is a clinician decision, never an automatic plan line.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"stop nsaids + aspirin if possible; use paracetamol instead\""
         },
         {
           "id": "mgmt-no-patient-hold-advice",
@@ -297,9 +284,6 @@
           ],
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

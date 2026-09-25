@@ -88,10 +88,7 @@
       "emergencyLevel": {
         "id": "level-routine-or-priority",
         "severity": "quality",
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "investigations": {
@@ -113,9 +110,6 @@
             "web"
           ],
           "knownGapNote": "preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt."
         },
         {
@@ -128,10 +122,7 @@
           "guidelineRefs": [
             "nice-ng45"
           ],
-          "note": "PSA is not a pre-operative test (NICE NG45) and there are no urinary symptoms.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "PSA is not a pre-operative test (NICE NG45) and there are no urinary symptoms."
         }
       ]
     },
@@ -151,9 +142,10 @@
             "sign-104"
           ],
           "note": "NICE NG125: prophylaxis for clean surgery involving a prosthesis (mesh), single dose on induction.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -167,10 +159,7 @@
             "sign-104",
             "ashp-2013"
           ],
-          "note": "No post-operative antibiotic course after clean mesh repair.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No post-operative antibiotic course after clean mesh repair."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -184,10 +173,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

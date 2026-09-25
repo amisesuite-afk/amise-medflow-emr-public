@@ -127,9 +127,6 @@
           "web"
         ],
         "knownGapNote": "adaptiveTriage emergency_now (score 100) for an asymptomatic referral: \"never had … jaundice or fever\" fires biliary-obstruction and cholangitis-pattern rules.",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
       },
       "mustNotAlarm": [
@@ -147,9 +144,6 @@
             "web"
           ],
           "knownGapNote": "\"Emergency now\" and \"Dilated CBD\" alarms fire on negated history and \"CBD 4 mm\".",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
         }
       ]
@@ -184,9 +178,6 @@
             "web"
           ],
           "knownGapNote": "With no features applied, PANE still ranks cholecystitis first (0.27 ≥ 0.20), so the Assessment panel shows early LC within 72 h; the gallstone operative-plan prompt fires on \"gallstones\" in the US report.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
         },
         {
@@ -217,9 +208,6 @@
             "web"
           ],
           "knownGapNote": "Assessment panel (cholecystitis protocol from PANE top) lists IV co-amoxiclav/pip-tazo.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol."
         },
         {
@@ -234,10 +222,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ],
       "mustInclude": [
@@ -256,10 +241,11 @@
           "guidelineRefs": [
             "nice-cg188"
           ],
-          "unverified": [
+          "proposedFix": "Add a biliary-colic/asymptomatic-cholelithiasis protocol (see biliary-colic-uncomplicated) with the NICE CG188 \"no treatment for asymptomatic stones in a normal gallbladder\" branch.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a biliary-colic/asymptomatic-cholelithiasis protocol (see biliary-colic-uncomplicated) with the NICE CG188 \"no treatment for asymptomatic stones in a normal gallbladder\" branch."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

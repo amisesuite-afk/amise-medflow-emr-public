@@ -188,9 +188,6 @@
           "guidelineRefs": [
             "kdigo-aki-2012",
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -208,9 +205,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -226,9 +220,6 @@
           "guidelineRefs": [
             "kdigo-aki-2012",
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -242,9 +233,10 @@
             "nice-ng148"
           ],
           "note": "Urine dipstick for every AKI. Graded as management because the web prompt delivers it as a plan line.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-volume-assessment",
@@ -258,9 +250,6 @@
           ],
           "guidelineRefs": [
             "kdigo-aki-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -285,9 +274,10 @@
             "nice-ng148"
           ],
           "note": "No NSAID suggestion in established AKI.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...or solitary kidney → emergency decompression (eau 2024); no nsaids in aki\""
         },
         {
           "id": "mgmt-no-emergency-laparotomy",
@@ -301,10 +291,7 @@
             "if peritonitis",
             "if generalised peritonitis"
           ],
-          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion."
         },
         {
           "id": "mgmt-no-insulin-dextrose-mild-k",
@@ -321,12 +308,10 @@
           ],
           "note": "K⁺ 5.8 is mild hyperkalaemia (UKKA 2020: insulin-glucose from 6.0 mmol/L); treat the cause and recheck.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0).",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0). | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1...\"",
           "proposedFix": "Grade the hyperkalaemia prompt by UKKA 2020 bands: mild 5.5–5.9 → treat the cause and recheck; moderate/severe → insulin-glucose (±calcium with ECG changes)."
         },
         {
@@ -341,20 +326,14 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

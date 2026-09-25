@@ -148,9 +148,6 @@
           ],
           "guidelineRefs": [
             "chest-icp-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -163,9 +160,6 @@
         "guidelineRefs": [
           "chest-icp-2020",
           "bts-o2-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -181,9 +175,6 @@
           ],
           "guidelineRefs": [
             "bts-o2-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -199,9 +190,6 @@
           ],
           "guidelineRefs": [
             "chest-icp-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -222,9 +210,6 @@
             "chest-icp-2020"
           ],
           "note": "CXR is essential in the immunocompromised host.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "A protocol for the PANE node pneumonia with CXR (NICE NG138 / BTS CAP), or a respiratory prompt that adds CXR as an investigation."
         },
         {
@@ -235,9 +220,6 @@
           ],
           "guidelineRefs": [
             "chest-icp-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -258,10 +240,11 @@
             "chest-icp-2020"
           ],
           "note": "Broader differential in the immunocompromised host: Pneumocystis, drug (methotrexate) pneumonitis.",
-          "unverified": [
+          "proposedFix": "Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

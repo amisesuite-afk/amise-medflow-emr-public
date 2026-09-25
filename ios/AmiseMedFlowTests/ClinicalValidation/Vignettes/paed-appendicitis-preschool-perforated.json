@@ -206,10 +206,7 @@
           "match": [
             "append"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -221,10 +218,7 @@
           "wses-2020",
           "nice-ng143"
         ],
-        "atLeast": "emergency",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "emergency"
       }
     },
     "scores": {
@@ -237,13 +231,11 @@
           ],
           "score": "pas",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old.",
-          "proposedFix": "Add PAS to the scales and suggest it (instead of adult scores) when age < 16 with RLQ pain.",
-          "unverified": [
+            "web",
             "ios"
-          ]
+          ],
+          "knownGapNote": "getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old. | iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews",
+          "proposedFix": "Add PAS to the scales and suggest it (instead of adult scores) when age < 16 with RLQ pain."
         }
       ]
     },
@@ -258,9 +250,6 @@
           "match": [
             "re:\\biv\\b[^\\n]{0,40}(antibiot|co-amoxiclav|amoxiclav|piperacillin|ceftriaxone|cefuroxime|metronidazole|gentamicin)",
             "antibiotic"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -272,9 +261,6 @@
           "match": [
             "appendicectomy",
             "appendectomy"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -305,9 +291,10 @@
             "microgram/kg"
           ],
           "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy...\""
         },
         {
           "id": "mgmt-no-gastroenteritis-discharge",
@@ -318,9 +305,6 @@
           "match": [
             "oral rehydration",
             "re:discharge[^\\n]{0,30}(home|gp)"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -271,9 +271,6 @@
           "k": 3,
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -285,9 +282,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "tg18-mgmt-cholecystitis"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -306,9 +300,6 @@
           ],
           "guidelineRefs": [
             "tg18-mgmt-cholecystitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -322,10 +313,7 @@
           "guidelineRefs": [
             "tg18-mgmt-cholecystitis"
           ],
-          "note": "TG18 uses CCI and ASA-PS to choose between early LC and drainage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "TG18 uses CCI and ASA-PS to choose between early LC and drainage."
         }
       ],
       "values": [
@@ -338,10 +326,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "Duration >72 h is on its own a Grade II criterion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Duration >72 h is on its own a Grade II criterion."
         }
       ]
     },
@@ -355,9 +340,6 @@
           ],
           "guidelineRefs": [
             "tg18-antimicrobial"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -378,10 +360,7 @@
             "tg18-mgmt-cholecystitis",
             "tg18-gb-drainage"
           ],
-          "note": "TG18 Grade II, CCI ≥6 / ASA-PS ≥3, not responding to antimicrobials: urgent/early gallbladder drainage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "TG18 Grade II, CCI ≥6 / ASA-PS ≥3, not responding to antimicrobials: urgent/early gallbladder drainage."
         },
         {
           "id": "mgmt-drainage-in-documented-plan",
@@ -426,10 +405,11 @@
             "tg18-mgmt-cholecystitis"
           ],
           "note": "For CCI 8 / ASA IV, TG18 does not recommend early LC; an unqualified early-LC line in the plan is misleading. Quality because the plan lists options and the surgeon chooses.",
-          "unverified": [
+          "proposedFix": "Cholecystitis protocol: \"Early LC within 72 h if CCI ≤5 and ASA-PS ≤2 (TG18)\"; add a high-risk branch \"antibiotics, then PTGBD if not responding; delayed LC if fitness improves\".",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Cholecystitis protocol: \"Early LC within 72 h if CCI ≤5 and ASA-PS ≤2 (TG18)\"; add a high-risk branch \"antibiotics, then PTGBD if not responding; delayed LC if fitness improves\"."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"consider early laparoscopic cholecystectomy within 72h (grade i-ii tokyo)\" (+2 more)"
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -443,10 +423,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },

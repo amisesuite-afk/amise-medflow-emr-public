@@ -142,10 +142,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "Unilateral hard eccentric subareolar mass with nipple retraction in a man ≥50.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Unilateral hard eccentric subareolar mass with nipple retraction in a man ≥50."
         }
       ]
     },
@@ -162,10 +159,11 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)"
         }
       ]
     },
@@ -185,9 +183,10 @@
             "nice-ng12",
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-core-biopsy",
@@ -202,9 +201,10 @@
           "guidelineRefs": [
             "abs-best-practice-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -218,9 +218,10 @@
             "genetic"
           ],
           "note": "Male breast cancer with a family history: BRCA2 testing.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -231,10 +232,7 @@
             "tamoxifen 20 mg od × 3–6 months",
             "subcutaneous mastectomy (pull-through"
           ],
-          "note": "Gynaecomastia treatment for a suspicious male breast mass would delay a cancer diagnosis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Gynaecomastia treatment for a suspicious male breast mass would delay a cancer diagnosis."
         }
       ]
     }

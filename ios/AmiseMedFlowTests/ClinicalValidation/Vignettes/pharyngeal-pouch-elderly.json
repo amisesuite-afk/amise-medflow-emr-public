@@ -166,13 +166,11 @@
             "esge-zenker-2020"
           ],
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No pharyngeal pouch / Zenker node in PANE or symptom inference; site \"Upper neck\" maps to neck_lump.",
-          "proposedFix": "Add a pharyngeal pouch node (high dysphagia, regurgitation of undigested food, halitosis, gurgling, aspiration) and a K22.5 protocol.",
-          "unverified": [
+            "web",
             "ios"
-          ]
+          ],
+          "knownGapNote": "No pharyngeal pouch / Zenker node in PANE or symptom inference; site \"Upper neck\" maps to neck_lump. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Oesophageal / Gastric Carcinoma | 2. Gastro-oesophageal Reflux Disease | 3. Pancreatic Carcinoma | 4. Upper GI Bleeding (Peptic Ulcer) | 5. Acute Coronary Syndrome; also in ios.triage#3",
+          "proposedFix": "Add a pharyngeal pouch node (high dysphagia, regurgitation of undigested food, halitosis, gurgling, aspiration) and a K22.5 protocol."
         }
       ]
     },
@@ -184,10 +182,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Dysphagia (any age) with weight loss aged ≥55: urgent assessment.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Dysphagia (any age) with weight loss aged ≥55: urgent assessment."
       },
       "redFlags": [
         {
@@ -199,9 +194,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage)"
         }
       ]
     },
@@ -223,9 +219,10 @@
             "nice-ng12",
             "esge-zenker-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-barium-first",
@@ -238,9 +235,10 @@
             "esge-zenker-2020"
           ],
           "note": "Contrast swallow defines the pouch and lowers the risk of intubating (and perforating) it blindly.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -259,9 +257,10 @@
           "guidelineRefs": [
             "esge-zenker-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

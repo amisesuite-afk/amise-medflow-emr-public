@@ -140,10 +140,7 @@
         "guidelineRefs": [
           "nice-ng45"
         ],
-        "note": "Elective pre-operative assessment of a well patient: not an emergency or same-day problem.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Elective pre-operative assessment of a well patient: not an emergency or same-day problem."
       }
     },
     "scores": {
@@ -160,9 +157,6 @@
             "web"
           ],
           "knownGapNote": "getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (Perioperative tab) is not set by the harness, so this may pass in the app once that tab is filled.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Trigger ASA on encounter type (pre-operative assessment / elective surgery visit) and on a confirmed operative plan, not only on symptom words."
         }
       ]
@@ -187,9 +181,6 @@
             "web"
           ],
           "knownGapNote": "The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt."
         },
         {
@@ -202,10 +193,7 @@
           "guidelineRefs": [
             "nice-ng45"
           ],
-          "note": "NICE NG45: no ECG for ASA 1 intermediate surgery without cardiovascular disease.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE NG45: no ECG for ASA 1 intermediate surgery without cardiovascular disease."
         }
       ],
       "mustInclude": [
@@ -221,9 +209,10 @@
             "nice-ng45"
           ],
           "note": "NICE NG45: on the day of surgery ask women of childbearing potential whether they could be pregnant and offer a test with consent.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 7 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)"
         }
       ]
     },
@@ -243,9 +232,6 @@
             "web"
           ],
           "knownGapNote": "The lap_chole_pathway operative template starts 'NBM from midnight (or ≥ 6h solids / 2h clear fluids)'.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Replace with 'Solids until 6 h and clear fluids until 2 h before anaesthesia' (ESA 2011) in the lap chole, appendicectomy and hernia templates."
         },
         {
@@ -262,9 +248,6 @@
             "web"
           ],
           "knownGapNote": "The lap chole template orders 'IV Co-amoxiclav 1.2g at induction (single prophylactic dose)' unconditionally.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Make prophylaxis conditional on SIGN 104 high-risk criteria (e.g. acute cholecystitis, jaundice, CBD exploration, age/ASA) and check the allergy record."
         },
         {
@@ -279,10 +262,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

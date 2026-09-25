@@ -113,9 +113,6 @@
         "guidelineRefs": [
           "atls-10-burns",
           "burns-fluid-threshold"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -126,9 +123,6 @@
             "child",
             "paediatric",
             "pediatric"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -146,9 +140,6 @@
             "atls-10-burns"
           ],
           "note": "Rule of nines overestimates limbs and underestimates the head in young children.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
         }
       ]
@@ -168,9 +159,6 @@
           "guidelineRefs": [
             "burns-fluid-threshold",
             "atls-10-burns"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -183,10 +171,11 @@
             "atls-10-burns"
           ],
           "note": "Children need maintenance glucose-containing fluid in addition to the resuscitation volume.",
-          "unverified": [
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-child-urine-target",
@@ -198,9 +187,6 @@
           ],
           "guidelineRefs": [
             "atls-10-burns"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
         },
@@ -222,9 +208,6 @@
           "guidelineRefs": [
             "aba-referral",
             "nnbc-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -238,9 +221,6 @@
           ],
           "guidelineRefs": [
             "burns-fluid-threshold"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -248,10 +228,7 @@
     "pathway": {
       "id": "pathway-burns",
       "severity": "quality",
-      "equals": "burns",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "burns"
     }
   },
   "guideline": [

@@ -118,7 +118,6 @@
           "match": ["appendic"],
           "k": 3,
           "guidelineRefs": ["wses-2020"],
-          "unverified": ["ios"],
           "note": "Appendicitis is the commonest non-obstetric surgical emergency in pregnancy; the displaced (higher) site must not lower its rank."
         }
       ],
@@ -135,7 +134,7 @@
           "id": "mnm-pyelonephritis",
           "severity": "quality",
           "match": ["pyelonephritis", "urinary tract infection", "uti", "urosepsis"],
-          "knownGap": ["ios", "web"],
+          "knownGap": ["web"],
           "knownGapNote": "Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis."
         }
       ]
@@ -147,7 +146,6 @@
         "atLeast": "urgent",
         "guidelineRefs": ["wses-2020"],
         "note": "Delay to surgery raises fetal loss when appendicitis perforates: same-day surgical and obstetric assessment.",
-        "knownGap": ["ios"],
         "knownGapNote": "iOS ClinicalPathwayEngine: CC matches no pathway, so acuity stays routine."
       },
       "redFlags": [
@@ -157,7 +155,6 @@
           "match": ["pregnan"],
           "guidelineRefs": ["acog-co723-2017"],
           "note": "Pregnancy must be surfaced as a safety flag before imaging, drugs or theatre.",
-          "knownGap": ["ios"],
           "knownGapNote": "iOS Patient has no pregnancy field; VisitRiskAssessment raises \"Could be pregnant?\" only on trauma/burns/procedure pathways."
         }
       ]
@@ -200,8 +197,7 @@
           "severity": "quality",
           "match": ["gadolinium"],
           "unless": ["avoid", "without", "non-contrast"],
-          "guidelineRefs": ["acog-co723-2017"],
-          "unverified": ["ios"]
+          "guidelineRefs": ["acog-co723-2017"]
         }
       ]
     },
@@ -219,7 +215,6 @@
           "severity": "quality",
           "match": ["obstetric", "obstetrician", "o&g", "maternity", "fetal monitoring", "fetal heart"],
           "guidelineRefs": ["sages-2017"],
-          "unverified": ["ios"],
           "note": "Obstetric consultation and peri-operative fetal heart monitoring (SAGES 2017)."
         }
       ],
@@ -230,15 +225,13 @@
           "match": ["nsaid", "ibuprofen", "diclofenac", "naproxen", "ketorolac", "parecoxib"],
           "unless": ["avoid", "not in pregnan", "contraindicated", "do not", "no nsaid"],
           "guidelineRefs": ["fda-2020-nsaid"],
-          "unverified": ["ios"],
           "note": "NSAIDs should be avoided from 20 weeks' gestation (fetal renal dysfunction, oligohydramnios, ductal constriction)."
         },
         {
           "id": "mgmt-no-bhcg-negative-assumption",
           "severity": "quality",
           "match": ["re:(β|b|beta)[- ]?hcg (confirmed )?negative"],
-          "note": "The patient is 22 weeks pregnant; templates must not assert a negative pregnancy test.",
-          "unverified": ["ios"]
+          "note": "The patient is 22 weeks pregnant; templates must not assert a negative pregnancy test."
         }
       ]
     },

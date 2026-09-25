@@ -162,9 +162,10 @@
             "icd:E21"
           ],
           "k": 3,
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Hypercalcaemia | 2. Obstructive Sleep Apnoea | 3. Iron Deficiency Anaemia | 4. Acute Kidney Injury | 5. Malignant Hypercalcaemia; also in ios.pipeline#1"
         }
       ]
     },
@@ -172,10 +173,7 @@
       "emergencyLevel": {
         "id": "level-not-emergency",
         "severity": "quality",
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "investigations": {
@@ -191,9 +189,6 @@
           ],
           "guidelineRefs": [
             "phpt-workshop-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -206,9 +201,6 @@
           ],
           "guidelineRefs": [
             "phpt-workshop-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -243,10 +235,7 @@
           "guidelineRefs": [
             "phpt-workshop-2022"
           ],
-          "note": "Fifth Workshop 2022: parathyroidectomy is indicated when any criterion is met; this patient meets three.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Fifth Workshop 2022: parathyroidectomy is indicated when any criterion is met; this patient meets three."
         },
         {
           "id": "mgmt-stop-thiazide",
@@ -258,10 +247,7 @@
             "phpt-workshop-2022",
             "sfe-hypercalcaemia-2016"
           ],
-          "note": "Thiazides raise serum calcium; the patient takes one. The plan must address it.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Thiazides raise serum calcium; the patient takes one. The plan must address it."
         }
       ]
     }

@@ -1,6 +1,6 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-25T17:28:52.488Z.
+Generated 2026-09-25T17:59:54.450Z.
 
 - Harness clinval-web/1; 397 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 397 | 3087 | 2625 | 370 | 92 | 66 | 0 | 358 | 0 | 0 |
+| web | 397 | 3087 | 2865 | 130 | 92 | 5 | 0 | 126 | 0 | 0 |
 
 ## Blocking failures
 
@@ -20,72 +20,11 @@ None.
 
 ## All critical failures (including known gaps and unverified)
 
-- `acutemed-pe-pregnancy-30wk` / **mgmt-no-doac-or-warfarin-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] anticoagulation: rivaroxaban 15 mg bd × 21 days then 20 mg od; or lmwh/warfarin." (+5 more) [known gap: Web run 2026-09-25: forbidden management item present in web.plan: "[conservative] anticoagulation: rivaroxaban 15 mg bd × 21 days then 20 mg od; or lmwh/warfarin." (+5 more).]
-- `anal-cancer-red-flags` / **inv-biopsy** (web, FAIL (known gap)): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No output asks for EUA/biopsy of the anal lesion: C21.0 has no protocol; the plan shown is the haemorrhoids protocol (PANE top) and colonoscopy + biopsy from colorectal_cancer seeding.]
-- `anal-fissure-atypical-lateral-hiv` / **inv-eua-biopsy** (web, FAIL (known gap)): no investigation matched among 18 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The anal_fissure protocol has no EUA/biopsy investigation (only "biopsy if non-healing after 8 weeks" in red flags), and the atypical/lateral red flag does not change the plan.]
-- `anal-fissure-atypical-lateral-hiv` / **mgmt-no-sphincterotomy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[surgical] lateral internal sphincterotomy (lis) - highly effective but 1-2% incontinence risk." (+2 more) [known gap: The anal_fissure plan is phase-unfiltered (no fissure dx-variant), so lateral internal sphincterotomy and botulinum toxin are in the documented plan for an undiagnosed atypical ulcer.]
-- `appendicitis-paediatric-9y` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+3 more) [known gap: Web: Protocol steps, protocol medications and the appendicectomy prompt carry adult fixed doses (co-amoxiclav 1.2 g TDS, paracetamol 1 g, ibuprofen 400 mg TDS, pip-tazo 4.5 g) with no weight or age adjustment for a 30 kg child.]
-- `appendicitis-pregnant-t2` / **inv-mri-after-inconclusive-us** (web, FAIL (known gap)): no investigation matched among 32 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
-- `breast-inflammatory-cancer` / **mgmt-no-bcs-or-slnb** (web, FAIL (known gap)): forbidden management item present in web.plan: "[surgical] wide local excision (breast-conserving) + slnb or axillary clearance." (+3 more) [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch.]
-- `breast-nipple-discharge-bloody-single-duct` / **mgmt-no-reassurance-only** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] duct ectasia: reassurance; evening primrose oil; avoid nipple manipulation." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): the Assessment management panel now follows the confirmed diagnosis (paneDiseaseId duct_ectasia) instead of the PANE leader; the duct ectasia protocol offers "reassurance; evening primrose oil". There is no nipple-discharge / single-duct bloody discharge protocol.]
-- `caecal-volvulus` / **mgmt-resection** (web, FAIL (known gap)): no management item matched among 31 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowel-obstruction steps.]
-- `cdiff-fulminant-colitis` / **mgmt-vancomycin-metronidazole** (web, FAIL (known gap)): no management item matched among 24 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". The only vancomycin is IV vancomycin in the septic-shock prompt, which does not treat CDI.]
-- `cdiff-fulminant-colitis` / **mgmt-surgical-consult** (web, FAIL (known gap)): no management item matched among 24 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).]
-- `charcot-foot-cellulitis-mimic` / **mgmt-immobilise-offload** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- `breast-inflammatory-cancer` / **mgmt-no-bcs-or-slnb** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"]
 - `cholangitis-tg18-grade3-reynolds` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 - `cholecystitis-tg18-grade3-organ-dysfunction` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
-- `cholecystitis-tg18-grade3-organ-dysfunction` / **mgmt-no-penicillin-in-anaphylaxis** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+3 more) [known gap: Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penicillin anaphylaxis.]
-- `choledocholithiasis-asge-intermediate` / **mgmt-no-unconditional-ercp** (web, FAIL (known gap)): forbidden management item present in web.plan: "[surgical] ercp + sphincterotomy and stone extraction." (+5 more) [known gap: Plan tab: "[surgical] ERCP + sphincterotomy and stone extraction." unconditionally for ASGE intermediate risk (no stone seen), before MRCP/EUS.]
-- `crohns-ileocaecal-abscess` / **mgmt-drainage** (web, FAIL (known gap)): no management item matched among 44 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The crohns_disease protocol says "Abscess or fistula — urgent imaging and intervention" (red flag) but no step for percutaneous drainage; the management panel shows the appendicitis protocol because PANE ranks appendicitis first (0.71).]
-- `crohns-ileocaecal-abscess` / **mgmt-no-steroids** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "budesonide 9 mg po (oral) od (once daily) - ileal disease flare - less systemic side effec..." (+1 more) [known gap: The crohns_disease protocol medications (prednisolone, budesonide, IV hydrocortisone "flare induction") are offered unconditionally, including for a septic abscess.]
-- `crohns-perianal-complex-fistula` / **mgmt-eua-seton** (web, FAIL (known gap)): no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's perianal_abscess protocol; the panel now follows the confirmed diagnosis (crohns_disease), whose protocol has no EUA/seton step.]
-- `crohns-perianal-complex-fistula` / **mgmt-drainage** (web, FAIL (known gap)): no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's perianal_abscess protocol; the panel now follows the confirmed diagnosis (crohns_disease), whose protocol has no drainage step.]
-- `dvt-pregnancy-22wk` / **mgmt-no-doac-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] direct oral anticoagulant (doac): rivaroxaban 15 mg bd for 21 days then 20 mg od; or apixaban 10 mg bd for 7 days then 5 mg b..." (+5 more) [known gap: The DVT plan offers rivaroxaban/apixaban as first line with no pregnancy check although the record says pregnant (22 weeks) and pregnancyPossible is true; the protocol has no pregnancy-aware variant.]
-- `dvt-pregnancy-22wk` / **mgmt-no-warfarin-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] alternative: lmwh bridging to warfarin (target inr 2-3) if doac contraindicated (severe renal failure, pregnancy)." (+3 more) [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy.]
-- `fistula-in-ano-complex-anterior-female` / **mgmt-seton-or-sparing** (web, FAIL (known gap)): no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61.]
-- `fistula-in-ano-complex-anterior-female` / **mgmt-no-sphincterotomy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[surgical] lateral internal sphincterotomy (lis) - highly effective but 1-2% incontinence risk." (+2 more) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61. A lateral internal sphincterotomy in a woman with a complex anterior fistula and an obstetric sphincter injury risks incontinence.]
-- `fistula-in-ano-simple-low` / **mgmt-fistulotomy** (web, FAIL (known gap)): no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61.]
-- `fistula-in-ano-simple-low` / **mgmt-no-fissure-plan** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] gtn 0.2% topical bd for 8 weeks or diltiazem 2% bd (less headaches)." (+6 more) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61. The documented plan is GTN/diltiazem, botulinum toxin and lateral internal sphincterotomy.]
-- `food-bolus-complete-obstruction` / **inv-emergency-ogd** (web, FAIL (known gap)): no investigation matched among 8 (web.pane.seeded, web.clinicalPrompts) [known gap: Web 2026-09-25: passed before pane model 1.0.0 only because the wrong PANE top 3 (GORD: "OGD") seeded that protocol's tests; PANE now ranks oesophageal food bolus obstruction, which has no management protocol yet, so nothing seeds an emergency OGD.]
-- `gyn-ovarian-torsion-premenarchal-11` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "ondansetron 4 mg iv (intravenous) tds (three times daily) - antiemetic" (+2 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the ovarian_torsion protocol medications (ondansetron 4 mg, paracetamol 1 g, ibuprofen 400 mg) and the appendicectomy prompt/template (pip-tazo 4.5 g, co-amoxiclav 1.2 g, morphine 5 mg) for a 38 kg child, plus 'IV fluid challenge 500ml'.]
-- `h-pylori-penicillin-anaphylaxis` / **mgmt-no-amoxicillin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+2 more) [known gap: Gastritis protocol plan line and medications list amoxicillin despite a recorded penicillin anaphylaxis (the allergy shows only in the header).]
-- `hernia-paediatric-inguinal-infant` / **mgmt-no-watchful-waiting** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] truss may be offered for unfit patients declining surgery - monitor for strangulation..." (+1 more) [known gap: The inguinal_hernia protocol has no paediatric branch: the plan offers "Truss may be offered for unfit patients declining surgery".]
-- `hernia-paediatric-inguinal-infant` / **mgmt-no-adult-mesh-repair** (web, FAIL (known gap)): forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+4 more) [known gap: Adult plan for a 4-month-old: "Lichtenstein mesh herniorrhaphy … TEP/TAPP" (protocol) and computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan.]
-- `lbo-cancer-impending-caecal-perforation` / **mgmt-no-stent-with-impending-perforation** (web, FAIL (known gap)): forbidden management item present in web.plan: "options: (1) sems bridge to elective resection, (2) emergency hartmann's, (3) defunctioning colos..." (+1 more) [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated').]
-- `lgib-angiodysplasia-aspirin` / **mgmt-no-heparin** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "heparin weight-based per local protocol iv (intravenous) continuous infusion - mesenter..." [known gap: ICD K55.21 (angiodysplasia of colon with haemorrhage) matches the ischaemic_colitis protocol (prefix K55), whose medications include a therapeutic heparin infusion (for mesenteric venous thrombosis) — offered to a bleeding patient.]
-- `lgib-unstable-cta-first` / **mgmt-no-terlipressin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] suspected varices: terlipressin 2 mg qds + prophylactic iv ceftriaxone." (+1 more) [known gap: The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan. The plan text includes "Suspected varices: terlipressin" and variceal steps for a patient without liver disease.]
-- `mimic-ectopic-ruptured-shock` / **mgmt-no-medical-management-when-ruptured** (web, FAIL (known gap)): forbidden management item present in web.plan: "investigation: renal function, lfts (methotrexate suitability) (urgent)" (+1 more) [known gap: Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability tests and the methotrexate/expectant steps appear for a shocked patient (no ectopic dx-variant group).]
-- `paed-appendicitis-preschool-perforated` / **mgmt-no-adult-fixed-doses** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+4 more) [known gap: Web: adult fixed doses with no weight or age adjustment — protocol 'co-amoxiclav 1.2 g TDS or cefuroxime 750 mg TDS + metronidazole 500 mg TDS', ondansetron 4 mg, paracetamol 1 g; prompts 'IV Piperacillin-tazobactam 4.5g TDS', 'Hartmann's 1L bolus', and the operative template's paracetamol 1 g + ibuprofen 400 mg + morphine 5 mg for a 16 kg child.]
-- `pancreatitis-alcohol` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
-- `pancreatitis-drug-induced-immunosuppressed` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
-- `pancreatitis-elderly-bisap-heart-failure` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" for a 79-year-old with EF 30% — no heart-failure caveat.]
-- `pancreatitis-gallstone-cholangitis` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
-- `pancreatitis-gallstone-mild` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab and Assessment panel: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h initial)"; protocol medication "Hartmann's 500 ml Q2H — aggressive fluid resuscitation"; lipase prompt "NBM + aggressive IV fluid resuscitation".]
-- `pancreatitis-hypertriglyceridaemia` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
-- `pancreatitis-pregnancy` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
-- `pancreatitis-severe-organ-failure` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "icu admission. aggressive resuscitation. enteral feeding via ngt/njt within 24-48 h (superior to tpn)." (+3 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" in established respiratory failure with pleural effusions.]
-- `periop-abx-penicillin-anaphylaxis-colectomy` / **mgmt-no-penicillin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+6 more) [known gap: Penicillins despite recorded penicillin anaphylaxis: Plan tab (dx-variant 'diverticulitis_abscess' prefix 'IV antibiotics: piperacillin-tazobactam' and protocol 'oral co-amoxiclav'), protocol medications (co-amoxiclav, pip-tazo) and the negated-free-air prompt (pip-tazo). Nothing reads the allergy list. Same root cause as the seed finding 'Allergies: neither platform's plan templates check the recorded allergy'.]
-- `periop-postop-pe-high-risk-shock` / **mgmt-no-unqualified-thrombolysis** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "alteplase 10 mg iv bolus, then 90 mg over 2 hours iv (intravenous) stat (once) - massive ..." (+2 more) [known gap: The pulmonary_embolism protocol management step is qualified ('if no contraindication'), but its medications list 'Alteplase 10 mg IV bolus, then 90 mg over 2 hours … Massive PE with haemodynamic compromise' and the key point 'systemic thrombolysis (alteplase 100 mg IV over 2 hours) is life-saving' with no contraindication check, 6 days after a laparotomy.]
-- `periop-postop-ssi-organ-space-diabetic` / **mgmt-drainage** (web, FAIL (known gap)): no management item matched among 51 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The surgical_site_infection protocol management has superficial wound opening and 'Deep incisional SSI: formal surgical debridement', but no radiological drainage of an organ-space collection; 'CT-guided drainage' appears only in the protocol red flags. The negated 'no generalised peritonism' adds 'Emergency laparotomy consent'.]
-- `periop-vte-high-bleeding-risk-mechanical` / **mgmt-mechanical-prophylaxis** (web, FAIL (known gap)): no management item matched among 40 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No VTE decision at all on post-operative day 1: the plan is the peptic_ulcer protocol (with 'OGD within 24 h' after an operation that already controlled the bleed). No LMWH is suggested either, so the no-LMWH check passes by omission.]
-- `renal-colic-solitary-kidney-anticoagulated` / **mgmt-no-nsaid** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] analgesia: diclofenac 75 mg im / pr (first-line); opioids if nsaids contraindicated; antiemetic." (+2 more) [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban.]
-- `sbo-strangulation` / **mgmt-no-nom-trial-with-strangulation** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] drip and suck: ngt decompression, iv fluids, catheter (hourly uo), nbm; correct electrolytes." [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.]
-- `sigmoid-volvulus-base` / **mgmt-endoscopic-decompression** (web, FAIL (known gap)): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a heading ('Sigmoid/Caecal Volvulus — Management:') followed by bowel-obstruction steps. Decompression appears only in the dx-variant urgency note.]
-- `thyroid-rapid-enlargement-stridor` / **inv-core-biopsy** (web, FAIL (known gap)): no investigation matched among 29 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma.]
-- `trauma-tension-pneumothorax` / **mgmt-adult-site-not-2nd-ics** (web, FAIL (known gap)): forbidden management item present in web.plan: "...te] tension pneumothorax: needle decompression (14g cannula 2nd ics mcl) → immediate clinical improvement → proceed to icd." (+2 more) [known gap: The pneumothorax protocol says "needle decompression (14G cannula 2nd ICS MCL)" for all patients (and a key point repeats it), while ATLS 10 moved the adult site to the 4th/5th ICS anterior to the mid-axillary line.]
-- `uc-flare-cdiff` / **mgmt-cdi-treatment** (web, FAIL (known gap)): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". No output treats CDI (no vancomycin/fidaxomicin).]
-- `uc-steroid-refractory-cmv` / **inv-cmv** (web, FAIL (known gap)): no investigation matched among 32 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The CMV-positive biopsy result is not read and no output mentions CMV.]
-- `uc-steroid-refractory-cmv` / **mgmt-antiviral** (web, FAIL (known gap)): no management item matched among 44 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No antiviral (ganciclovir) anywhere; the UC plan escalates immunosuppression (infliximab, ciclosporin, tofacitinib) regardless of CMV.]
-- `uc-toxic-megacolon` / **inv-no-colonoscopy** (web, FAIL (known gap)): forbidden investigation present in web.plan.investigations: "flexible sigmoidoscopy / colonoscopy + biopsies" (+1 more) [known gap: The ulcerative_colitis protocol lists "Flexible sigmoidoscopy / colonoscopy + biopsies" as an urgent investigation with no severity condition, so the documented plan orders a colonoscopy in toxic megacolon.]
-- `ugib-cvd-dual-antiplatelet` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
-- `ugib-elderly-doac-pre-endoscopy-rockall` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
-- `ugib-melaena-only-woman` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
-- `ugib-nonvariceal-gbs-high` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
-- `ugib-nonvariceal-gbs-low-outpatient` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
-- `ugib-nonvariceal-unstable-shock` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
-- `ugib-on-warfarin-high-inr` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
-- `variceal-bleed-known-cirrhosis` / **mgmt-no-liberal-transfusion-varices** (web, FAIL (known gap)): forbidden management item present in web.plan: "...uid resuscitation (crystalloid); transfuse to hb 70-90 g/l (80-100 in varices)." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because no protocol loaded. The Assessment management panel now follows the confirmed diagnosis (upper_gi_bleed), whose step says "transfuse to Hb 70-90 g/L (80-100 in varices)" (Baveno VII: 70-80).]
-- `variceal-bleed-unrecognised-cirrhosis` / **mgmt-no-liberal-transfusion-varices** (web, FAIL (known gap)): forbidden management item present in web.plan: "...uid resuscitation (crystalloid); transfuse to hb 70-90 g/l (80-100 in varices)." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because no protocol loaded. The Assessment management panel now follows the confirmed diagnosis (upper_gi_bleed), whose step says "transfuse to Hb 70-90 g/L (80-100 in varices)" (Baveno VII: 70-80).]
+- `dvt-pregnancy-22wk` / **mgmt-no-warfarin-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... weeks (mhra 2020); anticoagulation with lmwh, not doacs or warfarin (rcog gtg 37a/b); ultrasound or mri before ionising imaging where it answers th..." [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more)]
+- `lbo-cancer-impending-caecal-perforation` / **mgmt-no-stent-with-impending-perforation** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated'). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)"]
 
 ## Results by condition and permutation
 
@@ -144,16 +83,14 @@ Permutation of `abscess-thigh-adult`.
 | mnm-pseudoaneurysm | mustNotMiss | quality | FAIL (known gap) |  |  |
 | level-at-least-urgent | emergencyLevel | quality | PASS | IDSA practice guideline 2014 |  |
 | flag-ivdu | redFlags | quality | PASS |  |  |
-| inv-duplex-before-drainage | investigationInclude | quality | FAIL (known gap) |  |  |
+| inv-duplex-before-drainage | investigationInclude | quality | PASS |  |  |
 | inv-mrsa-culture | investigationInclude | quality | PASS | IDSA practice guideline 2014 |  |
-| inv-bbv | investigationInclude | quality | FAIL (known gap) |  |  |
+| inv-bbv | investigationInclude | quality | PASS |  |  |
 | mgmt-incision-drainage | managementInclude | quality | PASS | IDSA practice guideline 2014 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
 
 Failure details:
 
-- **mnm-pseudoaneurysm** (web): not in top 3 of web.pane: 1. Skin Abscess / Furuncle \| 2. Cellulitis \| 3. Perianal Abscess / Fistula [known gap: No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin site chip adds groin_swelling).]
-- **inv-duplex-before-drainage** (web): no investigation matched among 19 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No engine recommends imaging a groin injection-site swelling before incision.]
-- **inv-bbv** (web): no investigation matched among 19 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No blood-borne virus screen suggested for a person who injects drugs.]
+- **mnm-pseudoaneurysm** (web): not in top 3 of web.pane: 1. Skin Abscess / Furuncle \| 2. Cellulitis \| 3. Perianal Abscess / Fistula [known gap: No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin site chip adds groin_swelling). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Incarcerated / Strangulated Hernia \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Femoral Hernia]
 
 Guidelines:
 
@@ -330,8 +267,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, fatigue, nausea_vomiting, radiation_arm_jaw, exertional_symptoms, diaphoresis, known_diabetes, known_ckd, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, pale_clammy, foot_problem, foot_ulcer, peripheral_neuropathy, raised_creatinine, hyperglycaemia, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: matchPathways: Chest Pain — Emergency Redirect (10), Diabetic Foot (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -373,8 +310,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, chest_pain_pressure, radiation_arm_jaw, diaphoresis, dyspnoea, exertional_symptoms, severe_pain, previous_surgery, chest_tightness, pregnant, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), Varicose Veins (5)
 
 </details>
@@ -414,8 +351,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, chest_pain_pressure, radiation_arm_jaw, diaphoresis, nausea_vomiting, severe_pain, pallor, known_hypertension, vascular_risk, pale_clammy, hernia_compressible, hernia_swelling, umbilical_swelling, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: matchPathways: Chest Pain — Emergency Redirect (10), Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -438,7 +375,7 @@ Permutation of `acutemed-af-new-onset-rapid`.
 
 Failure details:
 
-- **mnm-af** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Femoral Hernia \| 3. Incisional Hernia [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis. PANE has no atrial fibrillation (or any arrhythmia) node.]
+- **mnm-af** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Femoral Hernia \| 3. Incisional Hernia [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis. PANE has no atrial fibrillation (or any arrhythmia) node. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Femoral Hernia \| 3. Renal / Ureteric Colic \| 4. Incarcerated / Strangulated Hernia \| 5. Obturator Hernia]
 - **score-rec-cha2ds2vasc** (web): cha2ds2-vasc not recommended; recommended: news2, caprini, asa, rcri, cfs [known gap: Web run 2026-09-25: cha2ds2-vasc not recommended; recommended: news2, caprini, asa, rcri, cfs.]
 
 Guidelines:
@@ -458,8 +395,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: groin_swelling, irregular_pulse, known_hypertension, vascular_risk, antiplatelet_use, acei_arb_use, hernia_compressible, groin_lump_reducible, hernia_swelling, previous_surgery, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
+- note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Pre-operative Assessment (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -498,8 +435,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: palpitations, exertional_symptoms, dyspnoea, irregular_pulse, known_hypertension, vascular_risk, known_diabetes, acei_arb_use, hernia_compressible, groin_lump_reducible, hernia_swelling, acute_onset, tachycardia, haemodynamic_instability, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
+- note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -538,8 +475,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: palpitations, chest_tightness, dizziness, confusion, syncope, irregular_pulse, crackles, known_af, known_hypertension, vascular_risk, anticoagulant_use, previous_surgery, diaphoresis, pale_clammy, pallor, recent_surgery, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
+- note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: matchPathways: Post-operative Follow-up (General) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -580,8 +517,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: leg_swelling, bilateral_leg_oedema, bilateral_leg_symptoms, exertional_symptoms, dyspnoea, orthopnoea, weight_gain, raised_jvp, irregular_pulse, crackles, known_heart_disease, vascular_risk, known_af, known_hypertension, anticoagulant_use, diuretic_use, recent_antibiotics, erythema_surrounding, raised_bp, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_heart_failure (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_heart_failure (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -628,8 +565,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, orthopnoea, leg_swelling, bilateral_leg_oedema, cough, productive_cough, crackles, raised_jvp, known_heart_disease, vascular_risk, known_hypertension, diuretic_use, acei_arb_use, antiplatelet_use, previous_surgery, hernia_swelling, incisional_swelling, acute_onset, tachycardia, raised_bp, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_heart_failure (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_heart_failure (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -669,8 +606,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: rash, wheeze, hoarseness, dyspnoea, syncope, dizziness, urticaria_angioedema, allergen_exposure, dyspnoea_pe, sudden_onset, recent_antibiotics, previous_surgery, pruritus, swelling_fluctuant_soft, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: anaphylaxis (from the confirmed diagnosis)
+- note: PlanTab protocol: anaphylaxis (from the confirmed diagnosis)
 - note: matchPathways: Post-operative Follow-up (General) (5), Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -708,8 +645,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: stridor, wheeze, rash, nausea_vomiting, dyspnoea, urticaria_angioedema, dyspnoea_pe, sudden_onset, known_asthma, previous_surgery, postprandial_pain, mottled_skin, allergen_exposure, hernia_swelling, umbilical_swelling, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: anaphylaxis (from the confirmed diagnosis)
+- note: PlanTab protocol: anaphylaxis (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -727,12 +664,8 @@ Guidelines:
 | mgmt-bronchodilator | managementInclude | critical | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 |  |
 | mnm-asthma-symptom-inference | mustNotMiss | quality | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 |  |
 | mgmt-steroid | managementInclude | quality | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 |  |
-| mgmt-ipratropium | managementInclude | quality | FAIL (known gap) | BTS/SIGN 158 - British guideline on the management of asthma 2019 | Asthma protocol (BTS/SIGN 158). |
+| mgmt-ipratropium | managementInclude | quality | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 | Asthma protocol (BTS/SIGN 158). |
 | mgmt-oxygen | managementInclude | quality | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019; BTS guideline for oxygen use in healthcare and emergency settings 2017 |  |
-
-Failure details:
-
-- **mgmt-ipratropium** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 5 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — arrhythmia, right heart strain pattern (PE). \| • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. \| • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min. \| • Confirm cervical smear date — document last result..]
 
 Guidelines:
 
@@ -753,8 +686,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: wheeze, chest_tightness, dyspnoea, known_asthma, relief_sitting_forward, speech_breathless, natal_cleft, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_asthma (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_asthma (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -773,13 +706,8 @@ Permutation of `acutemed-asthma-acute-severe`.
 | level-emergency | emergencyLevel | critical | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 |  |
 | alarm-hypoxia | mustAlarm | critical | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 |  |
 | mgmt-bronchodilator | managementInclude | critical | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 |  |
-| mgmt-critical-care | managementInclude | quality | FAIL (known gap) | BTS/SIGN 158 - British guideline on the management of asthma 2019 | Asthma protocol with the life-threatening branch (critical care / anaesthetist). |
-| mgmt-magnesium | managementInclude | quality | FAIL (known gap) | BTS/SIGN 158 - British guideline on the management of asthma 2019 | Asthma protocol: IV magnesium sulphate in acute severe/life-threatening asthma. |
-
-Failure details:
-
-- **mgmt-critical-care** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 6 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. \| • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism. \| • 12-lead ECG — arrhythmia, right heart strain pattern (PE)..]
-- **mgmt-magnesium** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 6 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. \| • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism. \| • 12-lead ECG — arrhythmia, right heart strain pattern (PE)..]
+| mgmt-critical-care | managementInclude | quality | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 | Asthma protocol with the life-threatening branch (critical care / anaesthetist). |
+| mgmt-magnesium | managementInclude | quality | PASS | BTS/SIGN 158 - British guideline on the management of asthma 2019 | Asthma protocol: IV magnesium sulphate in acute severe/life-threatening asthma. |
 
 Guidelines:
 
@@ -799,8 +727,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, wheeze, confusion, dyspnoea_pe, sudden_onset, reduced_breath_sounds, known_asthma, silent_chest, fatigue, acute_onset, tachycardia, haemodynamic_instability, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_asthma (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_asthma (from the confirmed diagnosis)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -877,8 +805,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, cough, crackles, reduced_breath_sounds, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
+- note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (5), Acute Appendicitis (5)
 
 </details>
@@ -932,8 +860,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: cough, productive_cough, fever, confusion, crackles, bronchial_breathing, known_hypertension, vascular_risk, known_malignancy, previous_surgery, purulent_sputum, dehydration, anorexia, bowel_resection, raised_urea, raised_creatinine, elevated_wbc, raised_crp, acute_onset, tachycardia, hypotension, haemodynamic_instability, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
+- note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (10), Diverticular Disease / Diverticulitis (5)
 
@@ -955,11 +883,7 @@ Permutation of `acutemed-cap-low-severity`.
 | inv-cxr | investigationInclude | critical | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 | A protocol for the PANE node pneumonia with CXR (NICE NG138 / BTS CAP), or a respiratory prompt that adds CXR as an investigation. |
 | rf-immunosuppression | redFlags | quality | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 |  |
-| mgmt-pcp-or-pneumonitis | managementInclude | quality | FAIL (known gap) | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 | Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis). |
-
-Failure details:
-
-- **mgmt-pcp-or-pneumonitis** (web): no management item matched among 16 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 10 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). \| • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. \| • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..]
+| mgmt-pcp-or-pneumonitis | managementInclude | quality | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 | Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis). |
 
 Guidelines:
 
@@ -980,8 +904,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: cough, exertional_symptoms, dyspnoea, fatigue, crackles, immunosuppression, steroid_use, previous_repair, previous_surgery, fever, joint_pain, hernia_swelling, incisional_swelling, raised_crp, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
+- note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -1000,15 +924,13 @@ Guidelines:
 | mnm-pneumonia-symptom-inference | mustNotMiss | quality | PASS | NICE NG250 - Pneumonia: diagnosis and management 2025 |  |
 | level-not-emergency | emergencyLevel | quality | FAIL (known gap) | NICE NG250 - Pneumonia: diagnosis and management 2025; BTS guidelines for the management of community acquired pneumonia in adults: update 2009 2009 | Negation-aware red-flag scan; do not treat a healed wound 3 weeks after a minor excision as a post-operative concern; tier fever + normal physiology below emergency. |
 | score-rec-curb65 | scoreRecommended | quality | PASS | BTS guidelines for the management of community acquired pneumonia in adults: update 2009 2009; NICE NG250 - Pneumonia: diagnosis and management 2025 |  |
-| inv-cxr | investigationInclude | quality | FAIL (known gap) | NICE NG250 - Pneumonia: diagnosis and management 2025 | Pneumonia protocol with CXR. |
-| mgmt-amoxicillin | managementInclude | quality | FAIL (known gap) | NICE NG250 - Pneumonia: diagnosis and management 2025 | lib/pane-engine: add a community-acquired pneumonia node (productive cough, fever, pleuritic pain, focal crackles/bronchial breathing, hypoxia) with a protocol (CURB65/CRB65 severity, CXR, amoxicillin for low severity, blood cultures + IV co-amoxiclav/clarithromycin for high severity) and map J18/J15. |
+| inv-cxr | investigationInclude | quality | PASS | NICE NG250 - Pneumonia: diagnosis and management 2025 | Pneumonia protocol with CXR. |
+| mgmt-amoxicillin | managementInclude | quality | PASS | NICE NG250 - Pneumonia: diagnosis and management 2025 | lib/pane-engine: add a community-acquired pneumonia node (productive cough, fever, pleuritic pain, focal crackles/bronchial breathing, hypoxia) with a protocol (CURB65/CRB65 severity, CXR, amoxicillin for low severity, blood cultures + IV co-amoxiclav/clarithromycin for high severity) and map J18/J15. |
 | mgmt-no-iv-broad-spectrum | managementExclude | quality | PASS | NICE NG250 - Pneumonia: diagnosis and management 2025 |  |
 
 Failure details:
 
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=115); expected ≤ urgent [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=130); expected ≤ urgent. Triage reasons: Possible cardiac event; Systemic red flag symptom; Fever; Post-operative or recent-procedure concern; Post-op fever — source must be identified.]
-- **inv-cxr** (web): no investigation matched among 11 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, CRP (cholecystitis) \| LFTs, bilirubin, ALP, GGT (cholecystitis) \| Amylase / lipase (exclude pancreatitis) (cholecystitis) \| Blood cultures × 2 (before antibiotics) (cholecystitis).]
-- **mgmt-amoxicillin** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 0 management items matched (sources: none).]
 
 Guidelines:
 
@@ -1028,8 +950,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: cough, productive_cough, fever, chest_pain, pleuritic_chest_pain, crackles, bronchial_breathing, previous_surgery, diaphoresis, purulent_sputum, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
+- note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: matchPathways: Soft Tissue Mass / Lipoma (10), Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -1093,13 +1015,8 @@ Guidelines:
 | mnm-copd-symptom-inference | mustNotMiss | quality | PASS | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 |  |
 | inv-abg | investigationInclude | quality | PASS | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025; BTS guideline for oxygen use in healthcare and emergency settings 2017 |  |
 | mgmt-niv | managementInclude | quality | PASS | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 |  |
-| mgmt-bronchodilator | managementInclude | quality | FAIL (known gap) | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 | lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46. |
-| mgmt-steroid | managementInclude | quality | FAIL (known gap) | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 | lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46. |
-
-Failure details:
-
-- **mgmt-bronchodilator** (web): no management item matched among 17 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. \| • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. \| • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..]
-- **mgmt-steroid** (web): no management item matched among 17 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. \| • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. \| • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..]
+| mgmt-bronchodilator | managementInclude | quality | PASS | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 | lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46. |
+| mgmt-steroid | managementInclude | quality | PASS | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 | lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46. |
 
 Guidelines:
 
@@ -1119,8 +1036,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dyspnoea, cough, productive_cough, wheeze, confusion, crackles, known_copd, purulent_sputum, anxiety_tremor, hernia_swelling, smoker, vascular_risk, hypercapnia, acute_onset, tachycardia, raised_bp, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: copd_exacerbation (from the confirmed diagnosis)
+- note: PlanTab protocol: copd_exacerbation (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1137,14 +1054,13 @@ Permutation of `acutemed-copd-hypercapnic-exacerbation`.
 |---|---|---|---|---|---|
 | mnm-copd | mustNotMiss | quality | PASS | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 |  |
 | level-not-emergency | emergencyLevel | quality | FAIL (known gap) | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 | rules.ts: "breathless / shortness of breath" is classified as "Post-operative concern" (urgent) in every context; restrict it to post-operative patients and grade breathlessness by physiology. |
-| mgmt-bronchodilator | managementInclude | quality | FAIL (known gap) | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 | lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46. |
+| mgmt-bronchodilator | managementInclude | quality | PASS | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 | lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46. |
 | mgmt-no-uncontrolled-oxygen | managementExclude | quality | PASS | BTS guideline for oxygen use in healthcare and emergency settings 2017 |  |
 | mgmt-no-iv-antibiotics | managementExclude | quality | PASS | GOLD 2025 report - Global strategy for the prevention, diagnosis and management of COPD 2025 |  |
 
 Failure details:
 
 - **level-not-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=7); expected ≤ priority [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority. Triage reasons: Post-operative concern; Age 60 or older.]
-- **mgmt-bronchodilator** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 10 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). \| • Document last mammogram date — refer to radiology if overdue. \| • Arrange bilateral mammogram — screening protocol. \| • Faecal occult blood test — CRC screening (if colonoscopy declined)..]
 
 Guidelines:
 
@@ -1164,8 +1080,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: cough, productive_cough, wheeze, exertional_symptoms, dyspnoea, known_copd, previous_surgery, hernia_swelling, umbilical_swelling, smoker, vascular_risk, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: copd_exacerbation (from the confirmed diagnosis)
+- note: PlanTab protocol: copd_exacerbation (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1242,8 +1158,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, colicky_pain, change_bowel_habit, episodic_pain, postprandial_pain, diarrhoea, dizziness, dehydration, known_diabetes, known_heart_disease, vascular_risk, known_hypertension, known_ckd, acei_arb_use, diuretic_use, previous_surgery, fatigue, oliguria, raised_creatinine, raised_urea, tachycardia, hypotension, haemodynamic_instability, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: matchPathways: Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -1290,8 +1206,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, anorexia, abdominal_pain, dyspnoea, known_diabetes, known_hypertension, vascular_risk, sglt2_inhibitor, acei_arb_use, kussmaul, hyperglycaemia, ketonaemia, metabolic_acidosis, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -1333,8 +1249,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: headache, nausea_vomiting, visual_disturbance, confusion, known_hypertension, vascular_risk, papilloedema, gcs_drop, restless_writhing, burn_wound, raised_creatinine, proteinuria, acute_onset, raised_bp, severe_hypertension, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hypertensive_emergency (from the confirmed diagnosis)
+- note: PlanTab protocol: hypertensive_emergency (from the confirmed diagnosis)
 - note: matchPathways: Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -1376,8 +1292,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, epigastric_pain, nausea_vomiting, severe_pain, headache, visual_disturbance, urticaria_angioedema, pregnant, raised_liver_enzymes, thrombocytopenia, anaemia, proteinuria, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
+- note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -1567,8 +1483,8 @@ Permutation of `acutemed-pe-ocp-long-haul`.
 
 Failure details:
 
-- **mnm-postop-collection** (web): not in top 3 of web.pane: 1. Pulmonary Embolism \| 2. Post-operative Pneumonia / Atelectasis \| 3. Community-acquired Pneumonia (Adult / Child) [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) \| 2. Acute Cholecystitis \| 3. Pulmonary Embolism. PANE ranked surgical site infection first because the "Post-op follow-up" CC template hint sets wound_erythema and wound_discharge to present.]
-- **alarm-hypoxia-or-tachycardia** (web): no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment.]
+- **mnm-postop-collection** (web): not in top 3 of web.pane: 1. Pulmonary Embolism \| 2. Post-operative Pneumonia / Atelectasis \| 3. Community-acquired Pneumonia (Adult / Child) [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) \| 2. Acute Cholecystitis \| 3. Pulmonary Embolism. PANE ranked surgical site infection first because the "Post-op follow-up" CC template hint sets wound_erythema and wound_discharge to present. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Stable Angina \| 2. Pneumothorax \| 3. Surgical Site Infection \| 4. Pulmonary Embolism \| 5. Atrial Fibrillation]
+- **alarm-hypoxia-or-tachycardia** (web): no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. \| iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 1 (ios.acuity)]
 
 Guidelines:
 
@@ -1607,14 +1523,10 @@ Permutation of `acutemed-pe-ocp-long-haul`.
 | mnm-pe | mustNotMiss | critical | PASS | 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 |  |
 | inv-ctpa-or-vq | investigationInclude | critical | PASS | 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 |  |
-| mgmt-no-doac-or-warfarin-in-pregnancy | managementExclude | critical | FAIL (known gap) | 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 | Pregnancy-aware PE protocol: LMWH (weight-adjusted) instead of DOACs/warfarin when pregnancyPossible; add CUS first if leg symptoms, then CTPA or V/Q; obstetric involvement. |
+| mgmt-no-doac-or-warfarin-in-pregnancy | managementExclude | critical | PASS | 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 | Pregnancy-aware PE protocol: LMWH (weight-adjusted) instead of DOACs/warfarin when pregnancyPossible; add CUS first if leg symptoms, then CTPA or V/Q; obstetric involvement. |
 | rf-pregnancy | redFlags | quality | PASS | 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 |  |
 | mgmt-lmwh | managementInclude | quality | PASS | 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 |  |
 | mgmt-obstetric | managementInclude | quality | PASS | 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 |  |
-
-Failure details:
-
-- **mgmt-no-doac-or-warfarin-in-pregnancy** (web): forbidden management item present in web.plan: "[conservative] anticoagulation: rivaroxaban 15 mg bd × 21 days then 20 mg od; or lmwh/warfarin." (+5 more) [known gap: Web run 2026-09-25: forbidden management item present in web.plan: "[conservative] anticoagulation: rivaroxaban 15 mg bd × 21 days then 20 mg od; or lmwh/warfarin." (+5 more).]
 
 Guidelines:
 
@@ -1682,8 +1594,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, fatigue, dehydration, known_hypertension, vascular_risk, previous_surgery, suprapubic_pain, mottled_skin, hernia_compressible, hernia_swelling, stoma, parastomal_bulge, abdominal_tenderness, elevated_wbc, raised_crp, raised_creatinine, raised_lactate, positive_urinalysis, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: sepsis (from the confirmed diagnosis)
+- note: PlanTab protocol: sepsis (from the confirmed diagnosis)
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
@@ -1725,8 +1637,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fever, rigors, myalgia, nausea_vomiting, rash, non_blanching_rash, asplenia, previous_surgery, mottled_skin, trauma_mechanism, mechanism_blunt, acute_onset, tachycardia, haemodynamic_instability, tachypnoea, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: sepsis (from the confirmed diagnosis)
+- note: PlanTab protocol: sepsis (from the confirmed diagnosis)
 
 </details>
 
@@ -1807,8 +1719,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: syncope, fatigue, exertional_symptoms, dyspnoea, sudden_onset, known_hypertension, vascular_risk, previous_surgery, loss_of_consciousness, hernia_swelling, acute_onset, bradycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
+- note: PlanTab protocol: syncope (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1825,11 +1737,7 @@ Guidelines:
 | level-at-least-urgent | emergencyLevel | critical | PASS | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 |  |
 | inv-ecg | investigationInclude | critical | PASS | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 |  |
 | rf-high-risk-syncope | redFlags | quality | PASS | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 |  |
-| inv-echo | investigationInclude | quality | FAIL (known gap) | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 | Syncope rule/protocol with echocardiography when a murmur or structural heart disease is recorded (ESC 2018). |
-
-Failure details:
-
-- **inv-echo** (web): no investigation matched among 12 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 18 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) \| OGD (alarm features or PPI failure) (gord) \| FBC, CRP (cholecystitis) \| LFTs, bilirubin, ALP, GGT (cholecystitis).]
+| inv-echo | investigationInclude | quality | PASS | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 | Syncope rule/protocol with echocardiography when a murmur or structural heart disease is recorded (ESC 2018). |
 
 Guidelines:
 
@@ -1848,8 +1756,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: syncope, chest_tightness, exertional_symptoms, dyspnoea, sudden_onset, chest_pain, heart_murmur, known_hypertension, vascular_risk, acei_arb_use, previous_surgery, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
+- note: PlanTab protocol: syncope (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), Post-operative Follow-up (General) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -1866,14 +1774,13 @@ Permutation of `acutemed-syncope-exertional-high-risk`.
 |---|---|---|---|---|---|
 | level-not-emergency | emergencyLevel | quality | FAIL (known gap) | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 | ESC 2018 low-risk syncope rule (typical reflex prodrome and trigger, normal exam) -> routine; negation-aware scan ("No chest pain" matches the cardiac rule). |
 | no-alarm-cardiac | mustNotAlarm | quality | PASS | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 |  |
-| inv-ecg | investigationInclude | quality | FAIL (known gap) | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 | Add an ESC 2018 syncope risk rule: syncope during exertion or supine, without prodrome, with chest pain/breathlessness, structural heart disease, HR <40 or SBP <90 -> urgent/emergency with ECG and echo; typical reflex prodrome with none of these -> routine. |
+| inv-ecg | investigationInclude | quality | PASS | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 | Add an ESC 2018 syncope risk rule: syncope during exertion or supine, without prodrome, with chest pain/breathlessness, structural heart disease, HR <40 or SBP <90 -> urgent/emergency with ECG and echo; typical reflex prodrome with none of these -> routine. |
 | inv-no-ct-head | investigationExclude | quality | PASS | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 |  |
 | inv-no-ctpa | investigationExclude | quality | PASS | 2018 ESC Guidelines for the diagnosis and management of syncope 2018 |  |
 
 Failure details:
 
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=50); expected ≤ priority [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=90); expected ≤ priority. Triage reasons: Possible malignancy; Possible cardiac event; Systemic red flag symptom.]
-- **inv-ecg** (web): no investigation matched among 11 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, CRP (cholecystitis) \| LFTs, bilirubin, ALP, GGT (cholecystitis) \| Amylase / lipase (exclude pancreatitis) (cholecystitis) \| Blood cultures × 2 (before antibiotics) (cholecystitis).]
 
 Guidelines:
 
@@ -1892,8 +1799,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: syncope, sudden_onset, diaphoresis, nausea_vomiting, loss_of_consciousness, pallor, breast_lump, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
+- note: PlanTab protocol: syncope (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1929,7 +1836,7 @@ Guidelines:
 - alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
-- dx variant: (none) (Thyroid)
+- dx variant: (none) (no group)
 - note: PANE features applied: abdominal_mass, headache, known_hypertension, vascular_risk, acei_arb_use, loin_pain, known_stone, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from the confirmed diagnosis)
 - note: PlanTab protocol: adrenal_incidentaloma (from the confirmed diagnosis)
@@ -1969,7 +1876,7 @@ Guidelines:
 - alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Severe hypertension (≥ 180/120) without recorded acute organ damage [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SBP 182 mmHg — hypertensive urgency [web.clinicalPrompts.safety]
 - recommended scores: cha2ds2-vasc, news2, caprini, asa, rcri, web:gad7
 - score values: (none)
-- dx variant: (none) (Thyroid)
+- dx variant: (none) (no group)
 - note: PANE features applied: abdominal_mass, headache, palpitations, night_sweats, weight_loss, chronic_course, known_hypertension, vascular_risk, diaphoresis, pallor, paroxysmal_episodes, tachycardia, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from the confirmed diagnosis)
 - note: PlanTab protocol: adrenal_incidentaloma (from the confirmed diagnosis)
@@ -1992,14 +1899,9 @@ Permutation of `aki-prerenal-diarrhoea-acei-nsaid`.
 | mgmt-catheterise | managementInclude | critical | PASS | NICE NG148 2019; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
 | mgmt-post-obstructive-diuresis | managementInclude | critical | PASS | NICE CG97 2010; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
 | flag-hyperkalaemia | redFlags | quality | PASS | NICE NG148 2019 |  |
-| mgmt-urology | managementInclude | quality | FAIL (known gap) | NICE NG148 2019 | As mgmt-catheterise. |
-| mgmt-stop-anticholinergic | managementInclude | quality | FAIL (known gap) | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | Add anticholinergic drugs to a retention precipitant check. |
+| mgmt-urology | managementInclude | quality | PASS | NICE NG148 2019 | As mgmt-catheterise. |
+| mgmt-stop-anticholinergic | managementInclude | quality | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | Add anticholinergic drugs to a retention precipitant check. |
 | mgmt-no-early-twoc | managementExclude | quality | PASS | NICE CG97 2010 |  |
-
-Failure details:
-
-- **mgmt-urology** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Nephrology only; no urology referral.]
-- **mgmt-stop-anticholinergic** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Amitriptyline is not recognised as a retention precipitant.]
 
 Guidelines:
 
@@ -2021,8 +1923,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: urinary_incontinence, prostate_symptoms, confusion, abdominal_distension, urinary_retention_symptoms, anticholinergic_or_opioid, palpable_bladder, overflow_incontinence, peripheral_neuropathy, raised_creatinine, raised_urea, hyperkalaemia_lab, hydronephrosis, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -2043,13 +1945,12 @@ Guidelines:
 | mgmt-iv-fluids | managementInclude | critical | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
 | mnm-aki-symptom-engine | mustNotMiss | quality | FAIL (known gap) | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 | Feed creatinine against baseline into symptom inference. |
 | mgmt-urinalysis | managementInclude | quality | PASS | NICE NG148 2019 |  |
-| mgmt-stop-diuretic | managementInclude | quality | FAIL (known gap) | NICE NG148 2019 | Add diuretics to the AKI hold list (NICE NG148). |
+| mgmt-stop-diuretic | managementInclude | quality | PASS | NICE NG148 2019 | Add diuretics to the AKI hold list (NICE NG148). |
 | mgmt-hold-metformin | managementInclude | quality | PASS | NICE NG148 2019 |  |
 
 Failure details:
 
 - **mnm-aki-symptom-engine** (web): not in top 5 of web.symptomInference: 1. Acute gastroenteritis \| 2. Acute cholecystitis \| 3. BPPV / labyrinthitis / vestibular neuritis \| 4. DKA / hyperglycaemic hyperosmolar state \| 5. Acute mesenteric ischaemia; also in web.pane#1 [known gap: Web: Symptom inference ranks gastroenteritis, pyloric stenosis, cholecystitis, BPPV and DKA; AKI is not in its top 5 (it reads chips, not creatinine).]
-- **mgmt-stop-diuretic** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: The AKI prompt holds "NSAIDs, ACE-I, ARBs, metformin" but not diuretics (furosemide continues).]
 
 Guidelines:
 
@@ -2069,8 +1970,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, colicky_pain, dizziness, diarrhoea, episodic_pain, dehydration, postprandial_pain, known_hypertension, vascular_risk, known_heart_disease, known_diabetes, acei_arb_use, diuretic_use, nsaid_use, previous_surgery, joint_pain, oliguria, raised_creatinine, raised_urea, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -2089,13 +1990,9 @@ Guidelines:
 | mgmt-heparin | managementInclude | critical | PASS | ESVS 2020 clinical practice guidelines 2020 |  |
 | mgmt-emergency-revascularisation | managementInclude | critical | PASS | ESVS 2020 clinical practice guidelines 2020 |  |
 | flag-af-embolic-source | redFlags | quality | PASS |  |  |
-| inv-cta-or-duplex | investigationInclude | quality | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| inv-cta-or-duplex | investigationInclude | quality | PASS | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
 | mgmt-no-claudication-plan | managementExclude | quality | PASS |  |  |
 | pathway-first-visit | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **inv-cta-or-duplex** (web): no investigation matched among 6 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
 
 Guidelines:
 
@@ -2115,8 +2012,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, foot_problem, limb_pain, pain_worse_movement, severe_pain, cold_limb, mottled_skin, limb_numbness, limb_weakness, focal_weakness, irregular_pulse, absent_pulses, known_af, known_hypertension, vascular_risk, pallor, anticoagulant_use, raised_lactate, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_limb_ischaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_limb_ischaemia (from the confirmed diagnosis)
 - note: matchPathways: Peripheral Vascular Disease (10)
 
 </details>
@@ -2157,8 +2054,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, foot_problem, nocturnal_pain, worse_lying_flat, severe_pain, rest_pain, cold_limb, limb_numbness, peripheral_neuropathy, claudication, known_diabetes, vascular_risk, known_hypertension, antiplatelet_use, absent_pulses, mottled_skin, pallor, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_limb_ischaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_limb_ischaemia (from the confirmed diagnosis)
 - note: matchPathways: Peripheral Vascular Disease (15)
 
 </details>
@@ -2200,8 +2097,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, periumbilical_pain, sudden_onset, acute_onset, colicky_pain, pain_out_of_proportion, nausea_vomiting, diarrhoea, severe_pain, palpitations, known_af, known_hypertension, vascular_risk, acei_arb_use, irregular_pulse, restless_writhing, anticoagulant_use, elevated_wbc, af_on_ecg, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from the confirmed diagnosis)
-- note: PlanTab protocol: ischaemic_colitis (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2221,12 +2118,8 @@ Permutation of `ami-embolic-af`.
 | mgmt-emergency-laparotomy | managementInclude | critical | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
 | mgmt-revascularisation | managementInclude | critical | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
 | mgmt-heparin | managementInclude | quality | PASS | ESVS clinical practice guidelines 2017 |  |
-| mgmt-second-look | managementInclude | quality | FAIL | WSES updated guidelines 2022 |  |
+| mgmt-second-look | managementInclude | quality | PASS | WSES updated guidelines 2022 |  |
 | mgmt-icu | managementInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
-
-Failure details:
-
-- **mgmt-second-look** (web): no management item matched among 64 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts)
 
 Guidelines:
 
@@ -2247,8 +2140,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, sudden_onset, acute_onset, syncope, fever, nausea_vomiting, pain_worse_movement, severe_pain, pr_bleeding, abdominal_distension, guarding, known_af, vascular_risk, known_hypertension, antiplatelet_use, periumbilical_pain, mottled_skin, confusion, rebound_tenderness, elevated_wbc, raised_lactate, raised_creatinine, raised_crp, pelvic_free_fluid, mesenteric_ct_signs, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from the confirmed diagnosis)
-- note: PlanTab protocol: ischaemic_colitis (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Bowel Obstruction (Small / Large) (12), Acute Abdomen (7)
 
 </details>
@@ -2265,14 +2158,9 @@ Permutation of `ami-embolic-af`.
 | level-at-least-urgent | emergencyLevel | critical | PASS | ESVS clinical practice guidelines 2017 | Let triage read resulted imaging (thrombosis, ischaemia) and D-dimer; do not treat 'pregnancy test negative' as a pregnancy mention (negation). |
 | inv-pregnancy-test | investigationInclude | critical | PASS | NICE NG126 2019 |  |
 | mgmt-anticoagulation | managementInclude | critical | PASS | ESVS clinical practice guidelines 2017 |  |
-| inv-thrombophilia | investigationInclude | quality | FAIL (known gap) | ESVS clinical practice guidelines 2017 |  |
-| mgmt-stop-cocp | managementInclude | quality | FAIL (known gap) | ESVS clinical practice guidelines 2017 |  |
+| inv-thrombophilia | investigationInclude | quality | PASS | ESVS clinical practice guidelines 2017 |  |
+| mgmt-stop-cocp | managementInclude | quality | PASS | ESVS clinical practice guidelines 2017 |  |
 | mgmt-no-laparotomy-without-peritonitis | managementExclude | quality | PASS | ESVS clinical practice guidelines 2017 |  |
-
-Failure details:
-
-- **inv-thrombophilia** (web): no investigation matched among 21 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: No thrombophilia work-up.]
-- **mgmt-stop-cocp** (web): no management item matched among 28 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No prompt to stop the oestrogen-containing pill.]
 
 Guidelines:
 
@@ -2292,8 +2180,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, acute_onset, colicky_pain, nausea_vomiting, diarrhoea, anorexia, postprandial_pain, diffuse_abdominal_pain, oestrogen_use, smoker, vascular_risk, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from the confirmed diagnosis)
-- note: PlanTab protocol: ischaemic_colitis (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2309,17 +2197,11 @@ Guidelines:
 | mnm-anal-cancer | mustNotMiss | critical | PASS | NICE NG12 2023; ASCRS clinical practice guidelines 2018 |  |
 | level-at-least-priority | emergencyLevel | critical | PASS | NICE NG12 2023 |  |
 | flag-malignancy | redFlags | critical | PASS | NICE NG12 2023 |  |
-| inv-biopsy | investigationInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2018 |  |
+| inv-biopsy | investigationInclude | critical | PASS | ASCRS clinical practice guidelines 2018 |  |
 | mgmt-no-haemorrhoid-treatment | managementExclude | critical | PASS | ASCRS clinical practice guidelines 2018 |  |
-| inv-mri-pelvis | investigationInclude | quality | FAIL | ASCRS clinical practice guidelines 2018 |  |
+| inv-mri-pelvis | investigationInclude | quality | PASS | ASCRS clinical practice guidelines 2018 |  |
 | inv-hiv-test | investigationInclude | quality | PASS | ASCRS clinical practice guidelines 2018 |  |
-| mgmt-chemoradiotherapy | managementInclude | quality | FAIL (known gap) | ASCRS clinical practice guidelines 2018 |  |
-
-Failure details:
-
-- **inv-biopsy** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No output asks for EUA/biopsy of the anal lesion: C21.0 has no protocol; the plan shown is the haemorrhoids protocol (PANE top) and colonoscopy + biopsy from colorectal_cancer seeding.]
-- **inv-mri-pelvis** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts)
-- **mgmt-chemoradiotherapy** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: No chemoradiotherapy/oncology output (no anal cancer protocol); the management panel shows the haemorrhoid protocol.]
+| mgmt-chemoradiotherapy | managementInclude | quality | PASS | ASCRS clinical practice guidelines 2018 |  |
 
 Guidelines:
 
@@ -2339,8 +2221,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, anal_pain, weight_loss, pruritus_ani, progressive_course, perianal_swelling, previous_surgery, pruritus, inguinal_nodes, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: anal_cancer (from the confirmed diagnosis)
+- note: PlanTab protocol: anal_cancer (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -2399,15 +2281,13 @@ Permutation of `anal-fissure-acute-posterior`.
 |---|---|---|---|---|---|
 | mnm-anal-cancer | mustNotMiss | critical | PASS | ASCRS clinical practice guidelines 2023; ASCRS clinical practice guidelines 2018 |  |
 | flag-atypical | redFlags | critical | PASS | ASCRS clinical practice guidelines 2023 |  |
-| inv-eua-biopsy | investigationInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2023; ASCRS clinical practice guidelines 2018 | Add an "atypical fissure" dx-variant (lateral, multiple, painless, indurated, HIV/IBD) that replaces the treatment phases with EUA + biopsy, syphilis/HSV/HIV/TB testing and Crohn’s assessment (ASCRS 2023). |
-| mgmt-no-sphincterotomy | managementExclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2023 |  |
+| inv-eua-biopsy | investigationInclude | critical | PASS | ASCRS clinical practice guidelines 2023; ASCRS clinical practice guidelines 2018 | Add an "atypical fissure" dx-variant (lateral, multiple, painless, indurated, HIV/IBD) that replaces the treatment phases with EUA + biopsy, syphilis/HSV/HIV/TB testing and Crohn’s assessment (ASCRS 2023). |
+| mgmt-no-sphincterotomy | managementExclude | critical | PASS | ASCRS clinical practice guidelines 2023 |  |
 | mnm-sti-crohn | mustNotMiss | quality | FAIL (known gap) | ASCRS clinical practice guidelines 2023 |  |
 
 Failure details:
 
-- **mnm-sti-crohn** (web): not in top 3 of web.pane: 1. Anal Cancer (Squamous Cell Carcinoma of the Anus) \| 2. Anal Fissure \| 3. Ulcerative Colitis [known gap: Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions them).]
-- **inv-eua-biopsy** (web): no investigation matched among 18 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The anal_fissure protocol has no EUA/biopsy investigation (only "biopsy if non-healing after 8 weeks" in red flags), and the atypical/lateral red flag does not change the plan.]
-- **mgmt-no-sphincterotomy** (web): forbidden management item present in web.plan: "[surgical] lateral internal sphincterotomy (lis) - highly effective but 1-2% incontinence risk." (+2 more) [known gap: The anal_fissure plan is phase-unfiltered (no fissure dx-variant), so lateral internal sphincterotomy and botulinum toxin are in the documented plan for an undiagnosed atypical ulcer.]
+- **mnm-sti-crohn** (web): not in top 3 of web.pane: 1. Anal Cancer (Squamous Cell Carcinoma of the Anus) \| 2. Anal Fissure \| 3. Ulcerative Colitis [known gap: Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions them). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Perianal Abscess \| 2. Anal Carcinoma \| 3. Inguinal Hernia \| 4. Fournier's Gangrene \| 5. Femoral Hernia]
 
 Guidelines:
 
@@ -2483,12 +2363,11 @@ Guidelines:
 | inv-ct-angiography | investigationInclude | critical | PASS | 2014 ESC Guidelines on the diagnosis and treatment of aortic diseases 2014 |  |
 | mgmt-no-antithrombotic | managementExclude | critical | PASS | 2014 ESC Guidelines on the diagnosis and treatment of aortic diseases 2014 |  |
 | mnm-dissection-symptom-inference | mustNotMiss | quality | FAIL (known gap) | 2014 ESC Guidelines on the diagnosis and treatment of aortic diseases 2014 |  |
-| mgmt-bp-heart-rate-control | managementInclude | quality | FAIL (known gap) | 2014 ESC Guidelines on the diagnosis and treatment of aortic diseases 2014 |  |
+| mgmt-bp-heart-rate-control | managementInclude | quality | PASS | 2014 ESC Guidelines on the diagnosis and treatment of aortic diseases 2014 |  |
 
 Failure details:
 
 - **mnm-dissection-symptom-inference** (web): not in top 5 of web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm \| 2. Acute mesenteric ischaemia \| 3. Gallstone pancreatitis \| 4. Acute alcoholic pancreatitis \| 5. Perforated peptic ulcer; also in web.pane#1 [known gap: Symptom inference has an "Aortic dissection" entry but it needs chest-pain chips ("Tearing / ripping"); with abdominal chips it is outside the top 5.]
-- **mgmt-bp-heart-rate-control** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: No output.]
 
 Guidelines:
 
@@ -2507,8 +2386,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, severe_pain, back_pain, syncope, dizziness, known_hypertension, vascular_risk, radiation_arm_jaw, diaphoresis, tearing_pain, heart_murmur, abdominal_tenderness, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: aortic_dissection (from the confirmed diagnosis)
+- note: PlanTab protocol: aortic_dissection (from the confirmed diagnosis)
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -2526,12 +2405,8 @@ Guidelines:
 | flag-aortic-graft | redFlags | critical | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
 | inv-ct-angiography | investigationInclude | critical | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
 | mgmt-vascular-surgery | managementInclude | critical | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
-| inv-blood-cultures | investigationInclude | quality | FAIL | ESVS 2020 Clinical Practice Guidelines 2020 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
 | mgmt-no-tranexamic-acid | managementExclude | quality | PASS | HALT-IT randomised trial 2020 |  |
-
-Failure details:
-
-- **inv-blood-cultures** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts)
 
 Guidelines:
 
@@ -2630,13 +2505,12 @@ Permutation of `appendicitis-adult-typical`.
 | mnm-gynaecological | mustNotMiss | quality | FAIL (known gap) |  |  |
 | inv-ultrasound-first | investigationInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-lap-appendicectomy-offered | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-antibiotics-first-option | managementInclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; CODA trial 2020 | Add a 'conservative' step to the appendicitis protocol: antibiotics-first for CT-confirmed uncomplicated appendicitis without appendicolith after shared decision (WSES 2020, CODA), with the recurrence figure. |
+| mgmt-antibiotics-first-option | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020; CODA trial 2020 | Add a 'conservative' step to the appendicitis protocol: antibiotics-first for CT-confirmed uncomplicated appendicitis without appendicolith after shared decision (WSES 2020, CODA), with the recurrence figure. |
 | variant-uncomplicated | dxVariant | quality | PASS | WSES Jerusalem guidelines 2020 |  |
 
 Failure details:
 
 - **mnm-gynaecological** (web): not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Mesenteric adenitis \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Typhoid fever [known gap: Web: Symptom inference top 5: appendicitis ×2, alcoholic pancreatitis, gastroenteritis, typhoid; no gynaecological cause for a 28-year-old woman.]
-- **mgmt-antibiotics-first-option** (web): no management item matched among 50 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendicitis; the protocol's only non-operative step is for an appendix mass.]
 
 Guidelines:
 
@@ -2675,14 +2549,13 @@ Permutation of `appendicitis-adult-typical`.
 | dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-lap-appendicectomy | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-appendicolith-caution | managementInclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; CODA trial 2020 |  |
+| mgmt-appendicolith-caution | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020; CODA trial 2020 |  |
 | mgmt-no-antibiotics-first-despite-appendicolith | managementExclude | quality | PASS | CODA trial 2020; WSES Jerusalem guidelines 2020 |  |
 | mgmt-no-routine-postop-antibiotics | managementExclude | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020 |  |
 | variant-uncomplicated | dxVariant | quality | PASS | WSES Jerusalem guidelines 2020 |  |
 
 Failure details:
 
-- **mgmt-appendicolith-caution** (web): no management item matched among 50 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure.]
 - **mgmt-no-routine-postop-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo 4.5g tds + metronidazole 500mg tds × 5 ..." [known gap: Web: Appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis.]
 
 Guidelines:
@@ -2729,7 +2602,7 @@ Permutation of `appendicitis-adult-typical`.
 | flag-elderly-atypical | redFlags | quality | PASS |  |  |
 | score-rec-alvarado | scoreRecommended | quality | PASS |  |  |
 | inv-renal-function | investigationInclude | quality | PASS |  |  |
-| inv-lactate-or-cta | investigationInclude | quality | FAIL | ESVS clinical practice guidelines 2017 |  |
+| inv-lactate-or-cta | investigationInclude | quality | PASS | ESVS clinical practice guidelines 2017 |  |
 | mgmt-anticoagulant-plan | managementInclude | quality | PASS |  |  |
 | mgmt-lap-appendicectomy | managementInclude | quality | PASS | SIFIPAC/WSES/SICG/SIMEU guidelines 2020 |  |
 | mgmt-no-discharge-on-low-score | managementExclude | quality | PASS |  |  |
@@ -2740,7 +2613,6 @@ Failure details:
 
 - **mnm-caecal-neoplasm** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Mesenteric Ischaemia \| 3. Perforated Peptic Ulcer / Perforated Viscus [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **mnm-diverticulitis** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Mesenteric Ischaemia \| 3. Perforated Peptic Ulcer / Perforated Viscus [known gap: Not in PANE top 3.]
-- **inv-lactate-or-cta** (web): no investigation matched among 29 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts)
 
 Guidelines:
 
@@ -2866,7 +2738,7 @@ Permutation of `appendicitis-adult-typical`.
 | level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
 | score-alvarado-calculator | scoreValue | critical | PASS | Alvarado score (MANTRELS) 1986 |  |
 | mgmt-lap-appendicectomy | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-no-adult-fixed-doses | managementExclude | critical | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg with adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | PASS |  | Give protocol medications and prompt templates an age/weight branch (mg/kg with adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg. |
 | mnm-mesenteric-adenitis | mustNotMiss | quality | PASS |  |  |
 | score-rec-pas | scoreRecommended | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; Pediatric Appendicitis Score (PAS) 2002 |  |
 | inv-ultrasound | investigationInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
@@ -2878,9 +2750,8 @@ Permutation of `appendicitis-adult-typical`.
 
 Failure details:
 
-- **score-rec-pas** (web): pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old.]
-- **mgmt-no-unqualified-ct-child** (web): forbidden management item present in web.plan: "investigation: ct abdomen/pelvis with iv contrast (urgent)" (+2 more) [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads 'Investigation: CT abdomen/pelvis with IV contrast (urgent)' for a child whose ultrasound already confirmed appendicitis; the prompt strip adds 'CT abdomen/pelvis — appendix calibre'.]
-- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+3 more) [known gap: Web: Protocol steps, protocol medications and the appendicectomy prompt carry adult fixed doses (co-amoxiclav 1.2 g TDS, paracetamol 1 g, ibuprofen 400 mg TDS, pip-tazo 4.5 g) with no weight or age adjustment for a 30 kg child.]
+- **score-rec-pas** (web): pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews]
+- **mgmt-no-unqualified-ct-child** (web): forbidden management item present in web.clinicalPrompts: "• ct abdomen/pelvis - appendix calibre, perforation, appendicolith." (+1 more) [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads 'Investigation: CT abdomen/pelvis with IV contrast (urgent)' for a child whose ultrasound already confirmed appendicitis; the prompt strip adds 'CT abdomen/pelvis — appendix calibre'. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: fbc, β-hcg (females), urinalysis / msu, ct abdomen/pelvis with iv contrast, uss abdomen."]
 - **mgmt-no-routine-postop-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav [weight-based dose - calculate per bnfc] tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo [weight-based dose - calculate per bnfc..." [known gap: Web: Appendicectomy operative-plan prompt prescribes IV then oral co-amoxiclav for 5 days after simple appendicitis.]
 
 Guidelines:
@@ -2959,7 +2830,7 @@ Permutation of `appendicitis-adult-typical`.
 | dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020 |  |
 | flag-pregnancy | redFlags | critical | PASS | ACOG Committee Opinion No. 723 2017 |  |
-| inv-mri-after-inconclusive-us | investigationInclude | critical | FAIL (known gap) | WSES Jerusalem guidelines 2020; ACOG Committee Opinion No. 723 2017 |  |
+| inv-mri-after-inconclusive-us | investigationInclude | critical | PASS | WSES Jerusalem guidelines 2020; ACOG Committee Opinion No. 723 2017 |  |
 | mgmt-no-nsaid-after-20-weeks | managementExclude | critical | PASS | US FDA Drug Safety Communication 2020 |  |
 | mnm-obstetric-cause | mustNotMiss | quality | FAIL (known gap) |  |  |
 | mnm-pyelonephritis | mustNotMiss | quality | FAIL (known gap) |  |  |
@@ -2976,8 +2847,7 @@ Failure details:
 
 - **mnm-obstetric-cause** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **mnm-pyelonephritis** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
-- **inv-mri-after-inconclusive-us** (web): no investigation matched among 32 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
-- **inv-no-unqualified-ct** (web): forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast - if uss inconclusive or high clinical suspicio..." (+2 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.]
+- **inv-no-unqualified-ct** (web): forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis if the erect cxr is non-diagnostic (perforated_peptic_ulcer)" (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.]
 
 Guidelines:
 
@@ -3025,7 +2895,7 @@ Permutation of `appendicitis-adult-typical`.
 Failure details:
 
 - **score-rec-air** (web): air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.]
-- **score-rec-aas** (web): aas not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Neither platform implements the Adult Appendicitis Score.]
+- **score-rec-aas** (web): aas not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Neither platform implements the Adult Appendicitis Score. \| iOS CI 2026-09-25 (run 36169134350, database mode): aas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews]
 
 Guidelines:
 
@@ -3073,8 +2943,8 @@ Permutation of `appendicitis-adult-typical`.
 
 Failure details:
 
-- **mnm-gynaecological** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pyelonephritis / Upper Urinary Tract Infection [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain.]
-- **score-rec-air** (web): air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.]
+- **mnm-gynaecological** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pyelonephritis / Upper Urinary Tract Infection [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Gastroenteritis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Perforated Peptic Ulcer]
+- **score-rec-air** (web): air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule. \| iOS CI 2026-09-25 (run 36169134350, database mode): air not recommended; recommended: news2, mews]
 
 Guidelines:
 
@@ -3116,7 +2986,7 @@ Permutation of `biliary-colic-uncomplicated`.
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | level-routine | emergencyLevel | quality | FAIL (known gap) | NICE CG188 2014 | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
 | no-alarm | mustNotAlarm | quality | FAIL (known gap) |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
-| mgmt-reassure-safety-net | managementInclude | quality | FAIL (known gap) | NICE CG188 2014 | Add a biliary-colic/asymptomatic-cholelithiasis protocol (see biliary-colic-uncomplicated) with the NICE CG188 "no treatment for asymptomatic stones in a normal gallbladder" branch. |
+| mgmt-reassure-safety-net | managementInclude | quality | PASS | NICE CG188 2014 | Add a biliary-colic/asymptomatic-cholelithiasis protocol (see biliary-colic-uncomplicated) with the NICE CG188 "no treatment for asymptomatic stones in a normal gallbladder" branch. |
 | mgmt-no-cholecystectomy | managementExclude | quality | FAIL (known gap) | NICE CG188 2014 | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
 | mgmt-no-antibiotics | managementExclude | quality | FAIL (known gap) |  | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. |
 
@@ -3124,8 +2994,7 @@ Failure details:
 
 - **level-routine** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=60); expected ≤ routine [known gap: adaptiveTriage emergency_now (score 100) for an asymptomatic referral: "never had … jaundice or fever" fires biliary-obstruction and cholangitis-pattern rules.]
 - **no-alarm** (web): forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. call 911 or go to the nearest emergency department now ..." [known gap: "Emergency now" and "Dilated CBD" alarms fire on negated history and "CBD 4 mm".]
-- **mgmt-reassure-safety-net** (web): no management item matched among 15 (web.clinicalPrompts) [known gap: No output recommends reassurance/no treatment for asymptomatic stones.]
-- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+1 more) [known gap: With no features applied, PANE still ranks cholecystitis first (0.27 ≥ 0.20), so the Assessment panel shows early LC within 72 h; the gallstone operative-plan prompt fires on "gallstones" in the US report.]
+- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.plan: "[surgical] gallbladder polyp ≥ 10 mm: laparoscopic cholecystectomy; 6-9 mm with risk factors: cholecystectomy or ultrasound surveillance (2022 joi..." (+4 more) [known gap: With no features applied, PANE still ranks cholecystitis first (0.27 ≥ 0.20), so the Assessment panel shows early LC within 72 h; the gallstone operative-plan prompt fires on "gallstones" in the US report.]
 - **mgmt-no-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment panel (cholecystitis protocol from PANE top) lists IV co-amoxiclav/pip-tazo.]
 
 Guidelines:
@@ -3145,8 +3014,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fever, haematuria, us_gallstones, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
+- note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -3165,7 +3034,7 @@ Guidelines:
 | no-sepsis-alarm | mustNotAlarm | quality | PASS |  |  |
 | no-dilated-cbd-alarm | mustNotAlarm | quality | PASS |  |  |
 | no-cholangitis-alarm | mustNotAlarm | quality | PASS | NICE CG188 2014 | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
-| flag-return-precautions | redFlags | quality | FAIL (known gap) | NICE CG188 2014 |  |
+| flag-return-precautions | redFlags | quality | PASS | NICE CG188 2014 |  |
 | score-rec-asge-cbd | scoreRecommended | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
 | inv-lfts | investigationInclude | quality | PASS | NICE CG188 2014 |  |
 | inv-ultrasound | investigationInclude | quality | PASS | NICE CG188 2014 |  |
@@ -3174,7 +3043,6 @@ Guidelines:
 
 Failure details:
 
-- **flag-return-precautions** (web): no red flag matched among 13 (web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Web, since the engine-matching fixes (2026-09): this passed only on the cholangitis triage pathway and Charcot/Murphy prompts that fired on negated text ("not jaundiced", "no fever", "Murphy's sign negative"). No output now gives return precautions.]
 - **mgmt-no-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment panel shows the cholecystitis protocol (PANE top) with IV co-amoxiclav/pip-tazo; the Murphy's-sign prompt (fired by "Murphy's sign negative") adds IV co-amoxiclav.]
 
 Guidelines:
@@ -3195,8 +3063,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, chronic_course, ruq_pain, epigastric_pain, shoulder_tip_pain, nausea_vomiting, episodic_pain, postprandial_pain, fatty_food_trigger, severe_pain, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
+- note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (24), Jaundice Workup (15), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -3212,12 +3080,8 @@ Permutation of `biliary-colic-uncomplicated`.
 | mgmt-cholecystectomy | managementInclude | critical | PASS | ESGAR/EAES/EFISDS/ESGE joint guideline 2022; NICE CG188 2014 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | level-not-emergency | emergencyLevel | quality | PASS |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
-| flag-polyp | redFlags | quality | FAIL (known gap) | ESGAR/EAES/EFISDS/ESGE joint guideline 2022 | clinical-inference.ts: add a radiology-result prompt for gallbladder polyp with size parsing (≥10 mm → cholecystectomy if fit; 6–9 mm → surveillance; ESGAR/EAES/EFISDS/ESGE 2022). |
+| flag-polyp | redFlags | quality | PASS | ESGAR/EAES/EFISDS/ESGE joint guideline 2022 | clinical-inference.ts: add a radiology-result prompt for gallbladder polyp with size parsing (≥10 mm → cholecystectomy if fit; 6–9 mm → surveillance; ESGAR/EAES/EFISDS/ESGE 2022). |
 | mgmt-histology | managementInclude | quality | PASS | ESGAR/EAES/EFISDS/ESGE joint guideline 2022 |  |
-
-Failure details:
-
-- **flag-polyp** (web): no red flag matched among 14 (web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No engine mentions the 12 mm polyp (no polyp rule in triage, prompts or protocols).]
 
 Guidelines:
 
@@ -3237,8 +3101,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, chronic_course, ruq_pain, shoulder_tip_pain, nausea_vomiting, episodic_pain, postprandial_pain, fatty_food_trigger, known_hypertension, vascular_risk, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
+- note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (29), Pancreatic Mass / Cyst (21), IBD — Surgical Complications (Crohn's / UC) (14)
 
 </details>
@@ -3283,8 +3147,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, nausea_vomiting, severe_pain, sudden_onset, pallor, diaphoresis, abdominal_tenderness, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, pale_clammy, dizziness, smoker, hyperglycaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -3306,11 +3170,7 @@ Guidelines:
 | mgmt-surgical-referral | managementInclude | critical | PASS | WSES guidelines 2019 |  |
 | mnm-acs | mustNotMiss | quality | PASS | 2023 ESC Guidelines for the management of acute coronary syndromes 2023 |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | WSES guidelines 2019 |  |
-| mgmt-antifungal | managementInclude | quality | FAIL (known gap) | WSES guidelines 2019 |  |
-
-Failure details:
-
-- **mgmt-antifungal** (web): no management item matched among 50 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: oesophageal_perforation protocol has no antifungal.]
+| mgmt-antifungal | managementInclude | quality | PASS | WSES guidelines 2019 |  |
 
 Guidelines:
 
@@ -3548,7 +3408,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-no-bcs-or-slnb** (web): forbidden management item present in web.plan: "[surgical] wide local excision (breast-conserving) + slnb or axillary clearance." (+3 more) [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch.]
+- **mgmt-no-bcs-or-slnb** (web): forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"]
 
 Guidelines:
 
@@ -3567,7 +3427,7 @@ Guidelines:
 - alarms: Suspected inflammatory breast cancer [web.clinicalPrompts.safety]; Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
 - recommended scores: news2, ecog
 - score values: (none)
-- dx variant: (none) (Breast)
+- dx variant: breast_inflammatory (Breast)
 - note: PANE features applied: breast_lump, chronic_course, periumbilical_pain, localised_pain, skin_dimpling, progressive_course, breast_redness, erythema_surrounding, axillary_nodes, recent_antibiotics, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: invasive_ductal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: invasive_ductal_carcinoma (from the confirmed diagnosis)
@@ -3610,8 +3470,8 @@ Guidelines:
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, breast_lump_mobile, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
+- note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (15)
 
 </details>
@@ -3635,12 +3495,8 @@ Permutation of `breast-lump-under-30`.
 | flag-suspicious | redFlags | quality | PASS |  |  |
 | inv-axilla | investigationInclude | quality | PASS | NCCN Guidelines 2025 |  |
 | mgmt-mdt | managementInclude | quality | PASS |  |  |
-| mgmt-no-surgery-before-histology | managementExclude | quality | FAIL (known gap) |  |  |
+| mgmt-no-surgery-before-histology | managementExclude | quality | PASS |  |  |
 | variant-triple-assessment | dxVariant | quality | PASS |  |  |
-
-Failure details:
-
-- **mgmt-no-surgery-before-histology** (web): forbidden management item present in web.protocol.medications: "...orphine sulfate 2.5-5 mg iv (intravenous) prn (as needed) - mastectomy / alnd post-operative pain" (+2 more) [known gap: Web, since the engine-matching fixes (2026-09): the Assessment management panel now follows the confirmed diagnosis (invasive_ductal_carcinoma) instead of the PANE leader; that protocol lists wide local excision + SLNB with no "after histology" condition.]
 
 Guidelines:
 
@@ -3661,8 +3517,8 @@ Guidelines:
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, skin_dimpling, breast_lump_hard, nipple_inversion, axillary_nodes, oestrogen_use, breast_lump_mobile, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: invasive_ductal_carcinoma (from the confirmed diagnosis)
-- note: PlanTab protocol: invasive_ductal_carcinoma (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
+- note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -3703,8 +3559,8 @@ Guidelines:
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, breast_lump_hard, axillary_nodes, pregnant, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
+- note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (10)
 
 </details>
@@ -3728,7 +3584,7 @@ Guidelines:
 Failure details:
 
 - **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "breast lump" RED_FLAG is priority ("Possible malignancy") regardless of age, and the adaptive action maps priority to a same-day call.]
-- **inv-no-first-line-mammogram** (web): forbidden investigation present in web.pane.seeded: "uss + mammography (phyllodes_tumour)" (+1 more)
+- **inv-no-first-line-mammogram** (web): forbidden investigation present in web.pane.seeded: "bilateral mammography + uss (invasive_ductal_carcinoma)"
 
 Guidelines:
 
@@ -3749,8 +3605,8 @@ Guidelines:
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, breast_lump_mobile, oestrogen_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: fibroadenoma (from the confirmed diagnosis)
-- note: PlanTab protocol: fibroadenoma (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
+- note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (10)
 
 </details>
@@ -3790,8 +3646,8 @@ Guidelines:
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
 - note: PANE features applied: breast_lump, chronic_course, periumbilical_pain, skin_dimpling, breast_lump_hard, nipple_inversion, progressive_course, axillary_nodes, known_malignancy, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
+- note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (15), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -3849,13 +3705,9 @@ Guidelines:
 | flag-2ww | redFlags | critical | PASS | NICE NG12 2015 |  |
 | inv-mammogram | investigationInclude | critical | PASS | NCCN Guidelines 2025; Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | inv-uss | investigationInclude | critical | PASS | NCCN Guidelines 2025 |  |
-| mgmt-no-reassurance-only | managementExclude | critical | FAIL (known gap) |  |  |
+| mgmt-no-reassurance-only | managementExclude | critical | PASS |  |  |
 | level-at-least-priority | emergencyLevel | quality | PASS |  |  |
 | mgmt-duct-excision | managementInclude | quality | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
-
-Failure details:
-
-- **mgmt-no-reassurance-only** (web): forbidden management item present in web.plan: "[conservative] duct ectasia: reassurance; evening primrose oil; avoid nipple manipulation." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): the Assessment management panel now follows the confirmed diagnosis (paneDiseaseId duct_ectasia) instead of the PANE leader; the duct ectasia protocol offers "reassurance; evening primrose oil". There is no nipple-discharge / single-duct bloody discharge protocol.]
 
 Guidelines:
 
@@ -3876,8 +3728,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nipple_discharge, chronic_course, periumbilical_pain, breast_lump, episodic_pain, bloody_nipple_discharge, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: duct_ectasia (from the confirmed diagnosis)
-- note: PlanTab protocol: duct_ectasia (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: nipple_discharge (from the confirmed diagnosis)
+- note: PlanTab protocol: nipple_discharge (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (5)
 
 </details>
@@ -3894,11 +3746,7 @@ Guidelines:
 | level-routine | emergencyLevel | quality | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NICE NG12 2015 |  |
 | no-cancer-alarm | mustNotAlarm | quality | PASS |  |  |
 | inv-no-imaging-or-biopsy | investigationExclude | quality | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
-| mgmt-reassurance | managementInclude | quality | FAIL (known gap) | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
-
-Failure details:
-
-- **mgmt-reassurance** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: N64.4 (mastodynia) maps to no protocol; no mastalgia guidance.]
+| mgmt-reassurance | managementInclude | quality | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 
 Guidelines:
 
@@ -3918,8 +3766,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, breast_pain, cyclical_breast_pain, episodic_pain, bilateral_breast, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: mastalgia (from the confirmed diagnosis)
+- note: PlanTab protocol: mastalgia (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (15)
 
 </details>
@@ -4028,15 +3876,11 @@ Permutation of `burns-adult-flame-27pct`.
 | mgmt-copious-irrigation | managementInclude | critical | PASS | ATLS 10th edition 2018; British Burn Association 2018 |  |
 | mgmt-burns-referral | managementInclude | critical | PASS | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 |  |
 | flag-chemical | redFlags | quality | PASS |  |  |
-| inv-eye-ph | investigationInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes. |
+| inv-eye-ph | investigationInclude | quality | PASS | ATLS 10th edition 2018 | Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes. |
 | mgmt-remove-clothing | managementInclude | quality | PASS | ATLS 10th edition 2018; British Burn Association 2018 |  |
 | mgmt-ophthalmology | managementInclude | quality | PASS | ATLS 10th edition 2018 |  |
 | mgmt-no-neutralisation | managementExclude | quality | PASS | British Burn Association 2018; ATLS 10th edition 2018 |  |
 | pathway-burns | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **inv-eye-ph** (web): no investigation matched among 10 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
 
 Guidelines:
 
@@ -4058,8 +3902,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, severe_pain, skin_lesion, wound_pain, erythema_surrounding, localised_pain, burn_wound, blistering, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: corrosive_injury (from the confirmed diagnosis)
+- note: PlanTab protocol: corrosive_injury (from the confirmed diagnosis)
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4103,8 +3947,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: skin_lesion, wound_pain, erythema_surrounding, natal_cleft, burn_wound, blistering, acute_onset, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
+- note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4123,17 +3967,11 @@ Permutation of `burns-adult-flame-27pct`.
 | mgmt-formal-fluids | managementInclude | critical | PASS | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026; ATLS 10th edition 2018 |  |
 | mgmt-paediatric-burns-referral | managementInclude | critical | PASS | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 |  |
 | flag-paediatric-burn | redFlags | quality | PASS |  |  |
-| inv-lund-browder | investigationInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
-| mgmt-maintenance-fluid | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
-| mgmt-child-urine-target | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| inv-lund-browder | investigationInclude | quality | PASS | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-maintenance-fluid | managementInclude | quality | PASS | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-child-urine-target | managementInclude | quality | PASS | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
 | mgmt-no-oral-fluids-only | managementExclude | quality | PASS | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026 |  |
 | pathway-burns | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **inv-lund-browder** (web): no investigation matched among 17 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
-- **mgmt-maintenance-fluid** (web): no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
-- **mgmt-child-urine-target** (web): no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
 
 Guidelines:
 
@@ -4175,12 +4013,8 @@ Permutation of `burns-adult-flame-27pct`.
 | flag-circumferential | redFlags | critical | PASS | ATLS 10th edition 2018; ISBI Practice Guidelines for Burn Care 2016 |  |
 | mgmt-escharotomy | managementInclude | critical | PASS | ATLS 10th edition 2018; ISBI Practice Guidelines for Burn Care 2016 |  |
 | mgmt-burns-referral | managementInclude | critical | PASS | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 |  |
-| mgmt-elevation | managementInclude | quality | FAIL (known gap) | ISBI Practice Guidelines for Burn Care 2016 | Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA. |
+| mgmt-elevation | managementInclude | quality | PASS | ISBI Practice Guidelines for Burn Care 2016 | Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA. |
 | pathway-burns | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **mgmt-elevation** (web): no management item matched among 29 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
 
 Guidelines:
 
@@ -4315,13 +4149,9 @@ Permutation of `sigmoid-volvulus-base`.
 |---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | PASS | ASCRS clinical practice guidelines 2021 |  |
 | inv-pregnancy-test | investigationInclude | critical | PASS | NICE NG126 2019 |  |
-| mgmt-resection | managementInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2021 | Separate caecal-volvulus variant with right hemicolectomy/ileocaecal resection (ASCRS 2021). |
+| mgmt-resection | managementInclude | critical | PASS | ASCRS clinical practice guidelines 2021 | Separate caecal-volvulus variant with right hemicolectomy/ileocaecal resection (ASCRS 2021). |
 | mgmt-no-endoscopic-reduction-caecal | managementExclude | quality | PASS | ASCRS clinical practice guidelines 2021 |  |
 | variant-lbo-volvulus | dxVariant | quality | PASS | ASCRS clinical practice guidelines 2021 |  |
-
-Failure details:
-
-- **mgmt-resection** (web): no management item matched among 31 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowel-obstruction steps.]
 
 Guidelines:
 
@@ -4382,8 +4212,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: urinary_retention_symptoms, back_pain, limb_numbness, constipation, bilateral_leg_symptoms, sciatica, saddle_anaesthesia, worse_straining, reduced_anal_tone, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: cauda_equina_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: cauda_equina_syndrome (from the confirmed diagnosis)
 
 </details>
 
@@ -4400,12 +4230,8 @@ Guidelines:
 | alarm-cauda-equina | mustAlarm | critical | PASS | SBNS/BASS 2018 |  |
 | inv-emergency-mri | investigationInclude | critical | PASS | SBNS/BASS 2018 |  |
 | mgmt-spinal-surgical-referral | managementInclude | critical | PASS | SBNS/BASS 2018 |  |
-| inv-bladder-scan | investigationInclude | quality | FAIL (known gap) | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| inv-bladder-scan | investigationInclude | quality | PASS | SBNS/BASS 2018 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
 | mgmt-no-conservative-only | managementExclude | quality | PASS | SBNS/BASS 2018 |  |
-
-Failure details:
-
-- **inv-bladder-scan** (web): no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No bladder scan / post-void residual.]
 
 Guidelines:
 
@@ -4424,8 +4250,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: back_pain, limb_numbness, prostate_symptoms, bilateral_leg_symptoms, sciatica, urinary_retention_symptoms, saddle_anaesthesia, nsaid_use, anticholinergic_or_opioid, reduced_anal_tone, prolapse_pr, palpable_bladder, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: cauda_equina_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: cauda_equina_syndrome (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4443,16 +4269,10 @@ Guidelines:
 | flag-self-harm | redFlags | critical | PASS | WSES guidelines 2019 |  |
 | mgmt-no-emesis-or-neutralisation | managementExclude | critical | PASS | WSES guidelines 2019 |  |
 | inv-ct-or-endoscopy | investigationInclude | quality | PASS | WSES guidelines 2019 |  |
-| inv-airway-assessment | investigationInclude | quality | FAIL (known gap) | WSES guidelines 2019 | Add a caustic-ingestion protocol/prompt (WSES 2019: airway first, no emesis/neutralisation/blind NG tube, CT ± endoscopy, psychiatry). |
-| mgmt-psychiatric-assessment | managementInclude | quality | FAIL (known gap) | WSES guidelines 2019 | As inv-airway-assessment. |
-| mgmt-nil-by-mouth | managementInclude | quality | FAIL (known gap) | WSES guidelines 2019 | As inv-airway-assessment. |
+| inv-airway-assessment | investigationInclude | quality | PASS | WSES guidelines 2019 | Add a caustic-ingestion protocol/prompt (WSES 2019: airway first, no emesis/neutralisation/blind NG tube, CT ± endoscopy, psychiatry). |
+| mgmt-psychiatric-assessment | managementInclude | quality | PASS | WSES guidelines 2019 | As inv-airway-assessment. |
+| mgmt-nil-by-mouth | managementInclude | quality | PASS | WSES guidelines 2019 | As inv-airway-assessment. |
 | mgmt-no-blind-ng-tube | managementExclude | quality | PASS | WSES guidelines 2019 |  |
-
-Failure details:
-
-- **inv-airway-assessment** (web): no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: No caustic-ingestion protocol or prompt; nothing mentions airway assessment.]
-- **mgmt-psychiatric-assessment** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: Only the triage reason "Mental health crisis"; no plan line.]
-- **mgmt-nil-by-mouth** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No plan output at all for T54.3.]
 
 Guidelines:
 
@@ -4471,8 +4291,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, chest_pain, heartburn, nausea_vomiting, odynophagia, hoarseness, dysphagia_liquids, severe_pain, dysphagia, hyponatraemia_drug, epigastric_pain, drooling, abdominal_tenderness, burn_wound, tachycardia, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: corrosive_injury (from the confirmed diagnosis)
+- note: PlanTab protocol: corrosive_injury (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Chest Pain — Emergency Redirect (5), Foreign Body Ingestion / Food Bolus (5)
 
 </details>
@@ -4490,15 +4310,10 @@ Permutation of `infective-colitis-bloody-diarrhoea`.
 | mnm-cdiff | mustNotMiss | critical | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 |  |
 | level-emergency | emergencyLevel | critical | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018 |  |
 | alarm-sepsis | mustAlarm | critical | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018 |  |
-| mgmt-vancomycin-metronidazole | managementInclude | critical | FAIL (known gap) | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
-| mgmt-surgical-consult | managementInclude | critical | FAIL (known gap) | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
+| mgmt-vancomycin-metronidazole | managementInclude | critical | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
+| mgmt-surgical-consult | managementInclude | critical | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
 | mgmt-no-antimotility | managementExclude | critical | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018 |  |
 | score-qsofa-calculator | scoreValue | quality | n/a | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018 |  |
-
-Failure details:
-
-- **mgmt-vancomycin-metronidazole** (web): no management item matched among 24 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". The only vancomycin is IV vancomycin in the septic-shock prompt, which does not treat CDI.]
-- **mgmt-surgical-consult** (web): no management item matched among 24 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).]
 
 Guidelines:
 
@@ -4518,8 +4333,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, change_bowel_habit, severe_pain, diarrhoea, abdominal_distension, confusion, guarding, known_ckd, known_copd, recent_antibiotics, ppi_use, tympanic_abdomen, cdiff_positive, elevated_wbc, raised_creatinine, raised_lactate, raised_crp, tachycardia, haemodynamic_instability, hypotension, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: clostridioides_difficile (from the confirmed diagnosis)
+- note: PlanTab protocol: clostridioides_difficile (from the confirmed diagnosis)
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
 
@@ -4643,15 +4458,10 @@ Permutation of `dfi-moderate-osteomyelitis`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | mnm-charcot | mustNotMiss | critical | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 |  |
-| mgmt-immobilise-offload | managementInclude | critical | FAIL (known gap) | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-immobilise-offload | managementInclude | critical | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | level-priority | emergencyLevel | quality | PASS | NICE NG19 2015 |  |
-| inv-mri | investigationInclude | quality | FAIL (known gap) | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-mri | investigationInclude | quality | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | mgmt-no-escalated-antibiotics | managementExclude | quality | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 |  |
-
-Failure details:
-
-- **inv-mri** (web): no investigation matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **mgmt-immobilise-offload** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
 
 Guidelines:
 
@@ -4671,8 +4481,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, chronic_course, pain_worse_movement, erythema_surrounding, joint_pain, limb_numbness, peripheral_neuropathy, trauma_mechanism, recent_antibiotics, warm_swollen_foot, wound_erythema, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: charcot_foot (from the confirmed diagnosis)
+- note: PlanTab protocol: charcot_foot (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4702,17 +4512,15 @@ Guidelines:
 | inv-lfts | investigationInclude | quality | PASS |  |  |
 | inv-coagulation | investigationInclude | quality | PASS |  |  |
 | inv-mrcp-or-eus | investigationInclude | quality | PASS |  |  |
-| mgmt-drainage-in-generated-plan | managementInclude | quality | FAIL (known gap) |  |  |
+| mgmt-drainage-in-generated-plan | managementInclude | quality | PASS |  |  |
 | mgmt-iv-fluids | managementInclude | quality | PASS |  |  |
 | mgmt-interval-cholecystectomy | managementInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | pathway-first-visit | pathway | quality | n/a |  |  |
-| variant-grade2 | dxVariant | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| variant-grade2 | dxVariant | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 
 Failure details:
 
 - **score-tg18-autofill** (web): expected = 2; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: Web clinical-scores needs manual imaging ticks before it will diagnose, so auto-fill reads "criteria not met".]
-- **mgmt-drainage-in-generated-plan** (web): no management item matched among 13 (web.plan) [known gap: dx-variants: 'ascending cholangitis' is a Grade I keyword, Grade I is checked first, and Grade I phases exclude 'surgical', so ERCP disappears from the generated plan.]
-- **variant-grade2** (web): detected cholangitis_grade1 in group Cholangitis; expected cholangitis_grade2 [known gap: dx-variants selects Grade I from 'ascending cholangitis'.]
 
 Guidelines:
 
@@ -4734,7 +4542,7 @@ Guidelines:
 - alarms: Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; Fever 39.4°C + HR 112 bpm [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, qsofa, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=2; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=2; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=0
-- dx variant: cholangitis_grade1 (Cholangitis)
+- dx variant: cholangitis_grade2 (Cholangitis)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, fever, rigors, nausea_vomiting, pain_worse_movement, dark_urine, pallor, abdominal_pain, us_gallstones, known_hypertension, vascular_risk, previous_surgery, elevated_wbc, raised_crp, raised_liver_enzymes, raised_lactate, dilated_cbd, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholangitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
@@ -4764,13 +4572,12 @@ Permutation of `cholangitis-tg18-charcot-sepsis`.
 | inv-blood-cultures | investigationInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-drainage-plan | managementInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | pathway-first-visit | pathway | quality | n/a |  |  |
-| variant-grade1 | dxVariant | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| variant-grade1 | dxVariant | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 
 Failure details:
 
 - **mnm-malignant-obstruction** (web): not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3 includes Inguinal / Femoral Hernia (male/age prior modifiers) instead.]
 - **score-tg18-autofill** (web): expected = 1; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill: age >75 alone → Grade II; web clinical-scores: criteria not met without manual imaging ticks.]
-- **variant-grade1** (web): detected (none) in group Cholangitis; expected cholangitis_grade1 [known gap: dx-variants keywords need 'mild cholangitis' word order; 'Mild acute cholangitis' selects no variant.]
 
 Guidelines:
 
@@ -4789,7 +4596,7 @@ Guidelines:
 - alarms: Emergency now [web.triage.emergency]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, qsofa, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=1; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=1; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=0
-- dx variant: (none) (Cholangitis)
+- dx variant: cholangitis_grade1 (Cholangitis)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, colicky_pain, fever, episodic_pain, postprandial_pain, dark_urine, abdominal_pain, us_gallstones, known_hypertension, vascular_risk, elevated_wbc, raised_crp, raised_liver_enzymes, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholangitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
@@ -4826,12 +4633,11 @@ Permutation of `cholangitis-tg18-charcot-sepsis`.
 | mgmt-anticoagulant-plan | managementInclude | quality | PASS |  |  |
 | mgmt-no-surgery-first | managementExclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | pathway-first-visit | pathway | quality | n/a |  |  |
-| variant-grade3 | dxVariant | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| variant-grade3 | dxVariant | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 
 Failure details:
 
 - **score-tg18-autofill** (web): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
-- **variant-grade3** (web): detected (none) in group Cholangitis; expected cholangitis_grade3 [known gap: dx-variants needs 'severe cholangitis' word order; 'Severe acute cholangitis' selects no variant.]
 
 Guidelines:
 
@@ -4853,7 +4659,7 @@ Guidelines:
 - alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; High fever [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Atrial fibrillation with haemodynamic instability [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Charcot's triad (RUQ pain + fever + jaundice) [web.clinicalPrompts.safety]; Fever 39.6°C + HR 128 bpm + SBP 78 mmHg — septic shock [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; WBC 24.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; INR 1.8 — coagulopathy [web.clinicalPrompts.safety]; Creatinine 212 μmol/L — elevated [web.clinicalPrompts.safety]; Dilated common bile duct on imaging [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; Albumin 24 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
 - recommended scores: tg18-cholangitis, cha2ds2-vasc, qsofa, gcs, asge-cbd, web:wagner, news2, caprini, has-bled, asa, rcri, cfs
 - score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=3; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=3; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=0
-- dx variant: (none) (Cholangitis)
+- dx variant: cholangitis_grade3 (Cholangitis)
 - note: PANE features applied: jaundice, acute_onset, ruq_pain, fever, rigors, severe_pain, confusion, abdominal_pain, us_gallstones, guarding, known_af, known_diabetes, anticoagulant_use, mottled_skin, gcs_drop, elevated_wbc, raised_crp, raised_liver_enzymes, raised_creatinine, raised_urea, thrombocytopenia, raised_lactate, hyperglycaemia, dilated_cbd, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholangitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
@@ -4880,13 +4686,9 @@ Permutation of `cholecystitis-tg18-grade1`.
 | mgmt-gallbladder-drainage | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; Tokyo Guidelines 2018 2018 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
-| mgmt-no-unqualified-early-lc | managementExclude | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | Cholecystitis protocol key points: qualify early LC by grade and fitness (TG18: CCI/ASA-PS; drainage for Grade III/unfit/acalculous critically ill). |
+| mgmt-no-unqualified-early-lc | managementExclude | quality | PASS | Tokyo Guidelines 2018 2018 | Cholecystitis protocol key points: qualify early LC by grade and fitness (TG18: CCI/ASA-PS; drainage for Grade III/unfit/acalculous critically ill). |
 | pathway-ward-review | pathway | quality | n/a |  |  |
 | variant-grade3 | dxVariant | quality | PASS | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I; add "acalculous" to Grade III keywords when organ dysfunction is documented. |
-
-Failure details:
-
-- **mgmt-no-unqualified-early-lc** (web): forbidden management item present in web.managementPanel.keyPoints: "early laparoscopic cholecystectomy (within 72 h) reduces complications vs interval surgery." [known gap: Assessment panel key point "Early laparoscopic cholecystectomy (within 72 h) reduces complications" is shown unqualified for a ventilated Grade III patient.]
 
 Guidelines:
 
@@ -4995,9 +4797,9 @@ Permutation of `cholecystitis-tg18-grade1`.
 
 Failure details:
 
-- **mnm-mesenteric-ischaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia).]
+- **mnm-mesenteric-ischaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Small Bowel Obstruction \| 4. Acute Pancreatitis \| 5. Ascending Cholangitis]
 - **score-tg18-autofill** (web): expected ≥ 2; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: clinical-scores auto-derived grade = 0 "criteria not met" despite WBC 19.4 and a characteristic US report (needs manual imaging ticks).]
-- **mgmt-no-nsaid-ckd** (web): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole operative-plan post-op orders: "Ibuprofen 400mg TDS (if eGFR normal)" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless).]
+- **mgmt-no-nsaid-ckd** (web): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole operative-plan post-op orders: "Ibuprofen 400mg TDS (if eGFR normal)" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."]
 
 Guidelines:
 
@@ -5040,14 +4842,9 @@ Permutation of `cholecystitis-tg18-grade1`.
 | flag-surgical-risk | redFlags | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | score-rec-asa | scoreRecommended | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
-| mgmt-drainage-in-documented-plan | managementInclude | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | dx-variants.ts: include the conservative (drainage) phase in the Grade II variant, and fix variant order (see variant-grade2). |
-| mgmt-no-unqualified-early-lc | managementExclude | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 | Cholecystitis protocol: "Early LC within 72 h if CCI ≤5 and ASA-PS ≤2 (TG18)"; add a high-risk branch "antibiotics, then PTGBD if not responding; delayed LC if fitness improves". |
+| mgmt-drainage-in-documented-plan | managementInclude | quality | PASS | Tokyo Guidelines 2018 2018 | dx-variants.ts: include the conservative (drainage) phase in the Grade II variant, and fix variant order (see variant-grade2). |
+| mgmt-no-unqualified-early-lc | managementExclude | quality | PASS | Tokyo Guidelines 2018 2018 | Cholecystitis protocol: "Early LC within 72 h if CCI ≤5 and ASA-PS ≤2 (TG18)"; add a high-risk branch "antibiotics, then PTGBD if not responding; delayed LC if fitness improves". |
 | variant-grade2 | dxVariant | quality | PASS | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I. |
-
-Failure details:
-
-- **mgmt-drainage-in-documented-plan** (web): no management item matched among 13 (web.plan) [known gap: Grade I variant allows immediate/surgical/followup phases only, so "percutaneous cholecystostomy if … unfit for surgery" (conservative phase) is missing from the Plan tab; it appears only in the Assessment panel.]
-- **mgmt-no-unqualified-early-lc** (web): forbidden management item present in web.plan: "[surgical] early laparoscopic cholecystectomy within 72 h (grade i-ii)." (+2 more) [known gap: Plan tab: "[surgical] Early laparoscopic cholecystectomy within 72 h (Grade I–II)" for a CCI 8 / ASA IV patient, with no fitness qualifier.]
 
 Guidelines:
 
@@ -5239,7 +5036,7 @@ Permutation of `cholecystitis-tg18-grade1`.
 | inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign 2021; Tokyo Guidelines 2018 2018 |  |
 | mgmt-gb-drainage | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-organ-support | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign 2021 |  |
-| mgmt-no-penicillin-in-anaphylaxis | managementExclude | critical | FAIL (known gap) |  |  |
+| mgmt-no-penicillin-in-anaphylaxis | managementExclude | critical | PASS |  |  |
 | mnm-cholangitis | mustNotMiss | quality | PASS |  |  |
 | flag-organ-support | redFlags | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | score-rec-tg18-cholecystitis | scoreRecommended | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
@@ -5249,7 +5046,7 @@ Permutation of `cholecystitis-tg18-grade1`.
 | inv-coagulation | investigationInclude | quality | PASS |  |  |
 | mgmt-gb-drainage-in-generated-plan | managementInclude | quality | PASS |  |  |
 | mgmt-non-penicillin-antibiotic | managementInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
-| mgmt-no-early-cholecystectomy-in-shock | managementExclude | quality | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| mgmt-no-early-cholecystectomy-in-shock | managementExclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | pathway-first-visit | pathway | quality | n/a |  |  |
 | variant-grade3 | dxVariant | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 
@@ -5257,8 +5054,6 @@ Failure details:
 
 - **score-rec-tg18-cholecystitis** (web): tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs [known gap: No TG18 cholecystitis CDS rule on web.]
 - **score-tg18-autofill** (web): expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
-- **mgmt-no-penicillin-in-anaphylaxis** (web): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+3 more) [known gap: Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penicillin anaphylaxis.]
-- **mgmt-no-early-cholecystectomy-in-shock** (web): forbidden management item present in web.managementPanel.keyPoints: "early laparoscopic cholecystectomy (within 72 h) reduces complications vs interval surgery." [known gap: iOS TG18 Grade III recommendation offers 'emergency cholecystectomy' as an equal alternative; web key points recommend early cholecystectomy without grade qualification.]
 
 Guidelines:
 
@@ -5326,8 +5121,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, rigors, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, cough, productive_cough, dyspnoea, chest_pain, crackles, bronchial_breathing, purulent_sputum, smoker, vascular_risk, elevated_wbc, raised_crp, raised_urea, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
+- note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), IBD — Surgical Complications (Crohn's / UC) (12)
 
 </details>
@@ -5347,13 +5142,12 @@ Guidelines:
 | mnm-malignant-obstruction | mustNotMiss | quality | FAIL (known gap) |  | PANE: keep one malignant obstruction node in the displayed list when jaundice is present (or display top 5). |
 | score-rec-asge-cbd | scoreRecommended | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
 | inv-coagulation | investigationInclude | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
-| inv-no-mrcp-before-ercp | investigationExclude | quality | FAIL (known gap) | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | Choledocholithiasis protocol: make MRCP/EUS conditional on ASGE intermediate risk; high risk → ERCP directly. |
+| inv-no-mrcp-before-ercp | investigationExclude | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | Choledocholithiasis protocol: make MRCP/EUS conditional on ASGE intermediate risk; high risk → ERCP directly. |
 | mgmt-cholecystectomy-after-ercp | managementInclude | quality | PASS | BSG updated guideline on the management of common bile duct stones 2017 |  |
 
 Failure details:
 
-- **mnm-malignant-obstruction** (web): not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Biliary Colic / Symptomatic Cholelithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#2 [known gap: PANE top 3: cholecystitis, choledocholithiasis, pancreatitis (symptom inference #4 has cholangiocarcinoma).]
-- **inv-no-mrcp-before-ercp** (web): forbidden investigation present in web.plan.investigations: "mrcp (cbd stone confirmation)" (+2 more) [known gap: Choledocholithiasis protocol lists MRCP unconditionally, even when a duct stone is seen on US (ASGE high risk).]
+- **mnm-malignant-obstruction** (web): not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Biliary Colic / Symptomatic Cholelithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#2 [known gap: PANE top 3: cholecystitis, choledocholithiasis, pancreatitis (symptom inference #4 has cholangiocarcinoma). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Choledocholithiasis \| 2. Biliary Colic \| 3. Acute Cholecystitis \| 4. Ascending Cholangitis \| 5. Acute Pancreatitis]
 
 Guidelines:
 
@@ -5399,7 +5193,7 @@ Permutation of `choledocholithiasis-asge-high-risk`.
 
 Failure details:
 
-- **mnm-malignant-obstruction** (web): not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4 [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cause for obstructive jaundice at 79 (symptom inference #4 has one).]
+- **mnm-malignant-obstruction** (web): not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4 [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cause for obstructive jaundice at 79 (symptom inference #4 has one). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Choledocholithiasis \| 2. Ascending Cholangitis \| 3. Liver Cirrhosis (Decompensated) \| 4. Acute Pancreatitis \| 5. Acute Appendicitis]
 
 Guidelines:
 
@@ -5440,13 +5234,9 @@ Permutation of `choledocholithiasis-asge-high-risk`.
 | mgmt-no-nsaid-after-20-weeks | managementExclude | critical | PASS | US FDA Drug Safety Communication 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
 | inv-no-unqualified-ct | investigationExclude | quality | PASS | ACOG Committee Opinion No. 723 2017 |  |
-| mgmt-fluoroscopy-minimised | managementInclude | quality | FAIL (known gap) | ASGE guideline 2012 | Choledocholithiasis protocol: pregnancy branch per ASGE 2012 (therapeutic ERCP, minimal fluoroscopy, obstetric input). |
+| mgmt-fluoroscopy-minimised | managementInclude | quality | PASS | ASGE guideline 2012 | Choledocholithiasis protocol: pregnancy branch per ASGE 2012 (therapeutic ERCP, minimal fluoroscopy, obstetric input). |
 | mgmt-obstetric-involvement | managementInclude | quality | PASS | ASGE guideline 2012; ACOG Committee Opinion No. 775 2019 |  |
 | mgmt-no-bhcg-negative-assumption | managementExclude | quality | PASS |  | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
-
-Failure details:
-
-- **mgmt-fluoroscopy-minimised** (web): no management item matched among 31 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ERCP is offered with no pregnancy adaptation (fluoroscopy minimisation, shielding, obstetric support).]
 
 Guidelines:
 
@@ -5487,14 +5277,10 @@ Permutation of `choledocholithiasis-asge-high-risk`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | inv-mrcp-or-eus | investigationInclude | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019; BSG updated guideline on the management of common bile duct stones 2017 |  |
-| mgmt-no-unconditional-ercp | managementExclude | critical | FAIL (known gap) | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | Choledocholithiasis protocol and dx-variants: add ASGE 2019 risk variants (high → ERCP; intermediate → EUS/MRCP or IOC/LCBDE, ERCP only if a stone is confirmed; low → LC ± IOC), fed by the existing asgeCbd scale. |
+| mgmt-no-unconditional-ercp | managementExclude | critical | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | Choledocholithiasis protocol and dx-variants: add ASGE 2019 risk variants (high → ERCP; intermediate → EUS/MRCP or IOC/LCBDE, ERCP only if a stone is confirmed; low → LC ± IOC), fed by the existing asgeCbd scale. |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | score-rec-asge-cbd | scoreRecommended | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
 | mgmt-cholecystectomy | managementInclude | quality | PASS | NICE CG188 2014; ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
-
-Failure details:
-
-- **mgmt-no-unconditional-ercp** (web): forbidden management item present in web.plan: "[surgical] ercp + sphincterotomy and stone extraction." (+5 more) [known gap: Plan tab: "[surgical] ERCP + sphincterotomy and stone extraction." unconditionally for ASGE intermediate risk (no stone seen), before MRCP/EUS.]
 
 Guidelines:
 
@@ -5535,12 +5321,8 @@ Permutation of `choledocholithiasis-asge-high-risk`.
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | level-not-emergency | emergencyLevel | quality | PASS |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
 | no-dilated-cbd-alarm | mustNotAlarm | quality | PASS |  |  |
-| inv-no-routine-mrcp | investigationExclude | quality | FAIL (known gap) | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | HpiTab.seedInvestigationsFromPane: keep protocol conditionals ("if CBD dilated/LFTs abnormal") instead of seeding unconditionally. |
+| inv-no-routine-mrcp | investigationExclude | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | HpiTab.seedInvestigationsFromPane: keep protocol conditionals ("if CBD dilated/LFTs abnormal") instead of seeding unconditionally. |
 | mgmt-lap-chole | managementInclude | quality | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019; NICE CG188 2014 |  |
-
-Failure details:
-
-- **inv-no-routine-mrcp** (web): forbidden investigation present in web.pane.seeded: "mrcp (cbd stone confirmation) (choledocholithiasis)" [known gap: MRCP seeded from the choledocholithiasis protocol (PANE #2) for an ASGE low-risk patient.]
 
 Guidelines:
 
@@ -5560,8 +5342,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, chronic_course, ruq_pain, radiation_to_back, nausea_vomiting, episodic_pain, postprandial_pain, fatty_food_trigger, severe_pain, back_pain, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
+- note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Jaundice Workup (15), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -5645,8 +5427,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, chronic_course, suprapubic_pain, episodic_pain, colicky_pain, known_hypertension, vascular_risk, previous_surgery, abdominal_tenderness, positive_fit, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
+- note: PlanTab protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19), IBD — Surgical Complications (Crohn's / UC) (14), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12)
 
 </details>
@@ -5687,8 +5469,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: weight_loss, chronic_course, fatigue, exertional_symptoms, dyspnoea, pallor, anaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -5887,8 +5669,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, weight_loss, change_bowel_habit, progressive_course, diarrhoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
+- note: PlanTab protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -5902,19 +5684,14 @@ Guidelines:
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | level-admit | emergencyLevel | critical | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 |  |
-| mgmt-drainage | managementInclude | critical | FAIL (known gap) | ECCO guidelines on therapeutics in Crohn’s disease 2020 | Add "intra-abdominal abscess: IV antibiotics + percutaneous drainage, then delayed resection; wean steroids" to the crohns_disease protocol (ECCO 2020). |
+| mgmt-drainage | managementInclude | critical | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 | Add "intra-abdominal abscess: IV antibiotics + percutaneous drainage, then delayed resection; wean steroids" to the crohns_disease protocol (ECCO 2020). |
 | mgmt-antibiotics | managementInclude | critical | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 |  |
-| mgmt-no-steroids | managementExclude | critical | FAIL (known gap) | ECCO guidelines on therapeutics in Crohn’s disease 2020 | Condition the Crohn’s steroid medications on "no abscess/sepsis" and add an explicit caution (ECCO 2020). |
+| mgmt-no-steroids | managementExclude | critical | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 | Condition the Crohn’s steroid medications on "no abscess/sepsis" and add an explicit caution (ECCO 2020). |
 | dx-crohn-top3 | mustRankTopK | quality | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 |  |
 | no-alarm-pneumoperitoneum | mustNotAlarm | quality | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 | Add negation handling to hasRadResult (no/without/absent … free gas/free air). |
 | flag-immunosuppressed | redFlags | quality | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 |  |
 | mgmt-resection-plan | managementInclude | quality | PASS | ECCO guidelines on therapeutics in Crohn’s disease 2020 |  |
-
-Failure details:
-
-- **mgmt-drainage** (web): no management item matched among 44 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The crohns_disease protocol says "Abscess or fistula — urgent imaging and intervention" (red flag) but no step for percutaneous drainage; the management panel shows the appendicitis protocol because PANE ranks appendicitis first (0.71).]
-- **mgmt-no-steroids** (web): forbidden management item present in web.protocol.medications: "budesonide 9 mg po (oral) od (once daily) - ileal disease flare - less systemic side effec..." (+1 more) [known gap: The crohns_disease protocol medications (prednisolone, budesonide, IV hydrocortisone "flare induction") are offered unconditionally, including for a septic abscess.]
 
 Guidelines:
 
@@ -5952,17 +5729,12 @@ Permutation of `crohns-ileocaecal-abscess`.
 |---|---|---|---|---|---|
 | level-same-day | emergencyLevel | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
 | inv-mri-pelvis | investigationInclude | critical | PASS | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
-| mgmt-eua-seton | managementInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
-| mgmt-drainage | managementInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2022 |  |
+| mgmt-eua-seton | managementInclude | critical | PASS | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
+| mgmt-drainage | managementInclude | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-no-fistulotomy | managementExclude | critical | PASS | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
 | mgmt-no-sphincterotomy | managementExclude | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
 | dx-perianal-sepsis-top3 | mustRankTopK | quality | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-biologic | managementInclude | quality | PASS | BSG consensus guidelines 2019 |  |
-
-Failure details:
-
-- **mgmt-eua-seton** (web): no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's perianal_abscess protocol; the panel now follows the confirmed diagnosis (crohns_disease), whose protocol has no EUA/seton step.]
-- **mgmt-drainage** (web): no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's perianal_abscess protocol; the panel now follows the confirmed diagnosis (crohns_disease), whose protocol has no drainage step.]
 
 Guidelines:
 
@@ -6000,24 +5772,14 @@ Guidelines:
 | inv-foot-xray | investigationInclude | critical | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
 | level-at-least-urgent | emergencyLevel | quality | PASS | NICE NG19 2015 |  |
 | flag-diabetic-foot | redFlags | quality | PASS |  |  |
-| inv-mri-or-bone-sample | investigationInclude | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| inv-deep-tissue-culture | investigationInclude | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| inv-vascular-assessment | investigationInclude | quality | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-offloading | managementInclude | quality | FAIL (known gap) | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-mdt-foot | managementInclude | quality | FAIL (known gap) | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-antibiotic | managementInclude | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-iwgdf-grade | managementInclude | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023; IWGDF guidelines on the classification of foot ulcers in people with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-mri-or-bone-sample | investigationInclude | quality | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-deep-tissue-culture | investigationInclude | quality | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-vascular-assessment | investigationInclude | quality | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-offloading | managementInclude | quality | PASS | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-mdt-foot | managementInclude | quality | PASS | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-antibiotic | managementInclude | quality | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-iwgdf-grade | managementInclude | quality | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023; IWGDF guidelines on the classification of foot ulcers in people with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | pathway-first-visit | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **inv-mri-or-bone-sample** (web): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **inv-deep-tissue-culture** (web): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **inv-vascular-assessment** (web): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **mgmt-offloading** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **mgmt-mdt-foot** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **mgmt-antibiotic** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **mgmt-iwgdf-grade** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain. The web CDS suggests the Wagner scale; IWGDF 2023 recommends IWGDF/IDSA for infection.]
 
 Guidelines:
 
@@ -6040,8 +5802,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, chronic_course, pain_worse_movement, foot_ulcer, limb_numbness, peripheral_neuropathy, probe_to_bone, erythema_surrounding, spreading_redness, discharge_pus, known_hypertension, vascular_risk, sglt2_inhibitor, acei_arb_use, wound_erythema, wound_discharge, elevated_wbc, raised_crp, raised_bp, hyperglycaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
 - note: matchPathways: Diabetic Foot (15), Wound Management (Acute / Chronic / SSI) (10)
 
 </details>
@@ -6063,14 +5825,9 @@ Permutation of `dfi-moderate-osteomyelitis`.
 | mgmt-urgent-surgery | managementInclude | critical | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
 | mgmt-iv-broad-spectrum | managementInclude | critical | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
 | mnm-nsti | mustNotMiss | quality | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
-| inv-vascular-imaging | investigationInclude | quality | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-vascular | managementInclude | quality | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-vascular-imaging | investigationInclude | quality | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-vascular | managementInclude | quality | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | mgmt-glycaemic | managementInclude | quality | PASS |  |  |
-
-Failure details:
-
-- **inv-vascular-imaging** (web): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **mgmt-vascular** (web): no management item matched among 26 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
 
 Guidelines:
 
@@ -6092,8 +5849,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, acute_onset, fever, rigors, pain_worse_movement, foot_ulcer, cold_limb, skin_necrosis, swelling_fluctuant_soft, erythema_surrounding, spreading_redness, absent_pulses, vascular_risk, known_ckd, insulin_or_sulfonylurea, antiplatelet_use, crepitus_soft_tissue, elevated_wbc, raised_crp, raised_creatinine, hyperglycaemia, raised_lactate, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
 - note: matchPathways: Diabetic Foot (15), Peripheral Vascular Disease (10)
 
 </details>
@@ -6118,7 +5875,7 @@ Permutation of `dfi-moderate-osteomyelitis`.
 
 Failure details:
 
-- **flag-incompressible** (web): no red flag matched among 20 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring.]
+- **flag-incompressible** (web): no red flag matched among 20 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity)]
 
 Guidelines:
 
@@ -6158,15 +5915,13 @@ Permutation of `dfi-moderate-osteomyelitis`.
 | level-priority-not-emergency | emergencyLevel | quality | FAIL (known gap) | NICE NG19 2015 | Grade the diabetic-foot red flag: ulcer alone → priority; infection, ischaemia, gangrene or fever → urgent. Handle negation. |
 | no-sepsis-alarm | mustNotAlarm | quality | PASS |  |  |
 | inv-vascular-assessment | investigationInclude | quality | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
-| mgmt-offloading | managementInclude | quality | FAIL (known gap) | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-mdt-foot | managementInclude | quality | FAIL (known gap) | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-offloading | managementInclude | quality | PASS | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-mdt-foot | managementInclude | quality | PASS | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | mgmt-no-antibiotics | managementExclude | quality | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
 
 Failure details:
 
 - **level-priority-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer; the negated 'no fever' also scores as 'Systemic red flag symptom'.]
-- **mgmt-offloading** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
-- **mgmt-mdt-foot** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
 
 Guidelines:
 
@@ -6188,8 +5943,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: foot_problem, known_diabetes, chronic_course, pain_worse_movement, foot_ulcer, limb_numbness, peripheral_neuropathy, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
 - note: matchPathways: Diabetic Foot (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6205,16 +5960,10 @@ Guidelines:
 | dx-diverticulitis-top3 | mustRankTopK | critical | PASS | WSES guidelines 2020 |  |
 | level-same-day-not-emergency | emergencyLevel | quality | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
 | inv-ct | investigationInclude | quality | PASS | WSES guidelines 2020 |  |
-| mgmt-selective-antibiotics | managementInclude | quality | FAIL (known gap) | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 | Update the uncomplicated step to WSES 2020 / AGA 2021: antibiotics selectively; observation without antibiotics in immunocompetent patients without systemic features. |
-| mgmt-no-routine-antibiotics | managementExclude | quality | FAIL (known gap) | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-selective-antibiotics | managementInclude | quality | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 | Update the uncomplicated step to WSES 2020 / AGA 2021: antibiotics selectively; observation without antibiotics in immunocompetent patients without systemic features. |
+| mgmt-no-routine-antibiotics | managementExclude | quality | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
 | pathway-first-visit | pathway | quality | n/a |  |  |
-| variant-uncomplicated | dxVariant | quality | FAIL (known gap) | WSES guidelines 2020 |  |
-
-Failure details:
-
-- **mgmt-selective-antibiotics** (web): no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5–7 days.]
-- **mgmt-no-routine-antibiotics** (web): forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+1 more) [known gap: Web: '[conservative] Uncomplicated: oral co-amoxiclav 625 mg TDS for 5–7 days' in the documented plan.]
-- **variant-uncomplicated** (web): detected (none) in group Diverticulitis; expected diverticulitis_uncomplicated [known gap: Web: Keyword 'uncomplicated diverticulitis' is not a substring of 'Uncomplicated acute sigmoid diverticulitis'; no variant is selected.]
+| variant-uncomplicated | dxVariant | quality | PASS | WSES guidelines 2020 |  |
 
 Guidelines:
 
@@ -6233,7 +5982,7 @@ Guidelines:
 - alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri
 - score values: (none)
-- dx variant: (none) (Diverticulitis)
+- dx variant: diverticulitis_uncomplicated (Diverticulitis)
 - note: PANE features applied: abdominal_pain, lif_pain, acute_onset, fever, nausea_vomiting, pain_worse_movement, known_hypertension, vascular_risk, acei_arb_use, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
@@ -6454,8 +6203,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, epigastric_pain, dyspnoea, anorexia, fatigue, recent_surgery, previous_surgery, known_diabetes, known_hypertension, vascular_risk, sglt2_inhibitor, acei_arb_use, dehydration, kussmaul, abdominal_tenderness, ketonaemia, metabolic_acidosis, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -6549,8 +6298,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, dyspnoea, polyuria_polydipsia, fatigue, known_diabetes, insulin_or_sulfonylurea, mottled_skin, dehydration, kussmaul, diarrhoea, hyperglycaemia, ketonaemia, metabolic_acidosis, raised_urea, elevated_wbc, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6570,15 +6319,13 @@ Permutation of `dvt-wells-likely`.
 | flag-pregnancy | redFlags | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 | inv-compression-duplex | investigationInclude | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 | mgmt-lmwh | managementInclude | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
-| mgmt-no-doac-in-pregnancy | managementExclude | critical | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Make the DVT/PE plans pregnancy-aware (pregnancy → LMWH only; hide DOAC and warfarin lines) and add a dx-variant or plan prefix for VTE in pregnancy. |
+| mgmt-no-doac-in-pregnancy | managementExclude | critical | PASS | RCOG Green-top Guideline No. 37b 2015 | Make the DVT/PE plans pregnancy-aware (pregnancy → LMWH only; hide DOAC and warfarin lines) and add a dx-variant or plan prefix for VTE in pregnancy. |
 | mgmt-no-warfarin-in-pregnancy | managementExclude | critical | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Rewrite the DVT protocol line: pregnancy → treatment-dose LMWH throughout pregnancy; warfarin is contraindicated antenatally. |
-| inv-no-ddimer-in-pregnancy | investigationExclude | quality | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy. |
+| inv-no-ddimer-in-pregnancy | investigationExclude | quality | PASS | RCOG Green-top Guideline No. 37b 2015 | Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy. |
 
 Failure details:
 
-- **inv-no-ddimer-in-pregnancy** (web): forbidden investigation present in web.plan.investigations: "d-dimer (only if pre-test probability low/intermediate)" (+1 more) [known gap: The DVT protocol lists "D-dimer (only if pre-test probability low/intermediate)" without a pregnancy caveat.]
-- **mgmt-no-doac-in-pregnancy** (web): forbidden management item present in web.plan: "[conservative] direct oral anticoagulant (doac): rivaroxaban 15 mg bd for 21 days then 20 mg od; or apixaban 10 mg bd for 7 days then 5 mg b..." (+5 more) [known gap: The DVT plan offers rivaroxaban/apixaban as first line with no pregnancy check although the record says pregnant (22 weeks) and pregnancyPossible is true; the protocol has no pregnancy-aware variant.]
-- **mgmt-no-warfarin-in-pregnancy** (web): forbidden management item present in web.plan: "[conservative] alternative: lmwh bridging to warfarin (target inr 2-3) if doac contraindicated (severe renal failure, pregnancy)." (+3 more) [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy.]
+- **mgmt-no-warfarin-in-pregnancy** (web): forbidden management item present in web.clinicalPrompts: "... weeks (mhra 2020); anticoagulation with lmwh, not doacs or warfarin (rcog gtg 37a/b); ultrasound or mri before ionising imaging where it answers th..." [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more)]
 
 Guidelines:
 
@@ -6615,13 +6362,9 @@ Guidelines:
 | dx-dvt-top3 | mustRankTopK | critical | PASS | NICE NG158 2020 |  |
 | level-same-day | emergencyLevel | critical | PASS | NICE NG158 2020 |  |
 | inv-leg-ultrasound | investigationInclude | critical | PASS | NICE NG158 2020 |  |
-| flag-oestrogen | redFlags | quality | FAIL (known gap) |  | Handle negation in scanRedFlags; flag oestrogen-containing medication as a VTE risk factor. |
+| flag-oestrogen | redFlags | quality | PASS |  | Handle negation in scanRedFlags; flag oestrogen-containing medication as a VTE risk factor. |
 | score-rec-wells-dvt | scoreRecommended | quality | PASS | NICE NG158 2020; Wells DVT score (two-level) 2003 |  |
 | mgmt-anticoagulation | managementInclude | quality | PASS | NICE NG158 2020 |  |
-
-Failure details:
-
-- **flag-oestrogen** (web): no red flag matched among 12 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The combined oral contraceptive is not flagged. Triage also scores 'Possible cardiac event' and 'Haemoptysis' from the negated text 'No chest pain, breathlessness or haemoptysis'.]
 
 Guidelines:
 
@@ -6658,16 +6401,10 @@ Guidelines:
 | dx-dyspepsia-causes-top3 | mustRankTopK | quality | PASS | NICE CG184 2014 |  |
 | level-routine | emergencyLevel | quality | PASS | NICE CG184 2014 | adaptive-triage: negation handling (see gord-no-alarm-empirical-ppi). |
 | no-cancer-alarm | mustNotAlarm | quality | PASS | NICE NG12 2015 |  |
-| inv-hpylori-non-invasive | investigationInclude | quality | FAIL (known gap) | NICE CG184 2014; Maastricht VI/Florence consensus report 2022 | Add a dyspepsia (K30/R10.13) protocol: CG184 test-and-treat or 4-week PPI; NG12 alarm check. |
+| inv-hpylori-non-invasive | investigationInclude | quality | PASS | NICE CG184 2014; Maastricht VI/Florence consensus report 2022 | Add a dyspepsia (K30/R10.13) protocol: CG184 test-and-treat or 4-week PPI; NG12 alarm check. |
 | inv-no-urgent-ogd | investigationExclude | quality | PASS | NICE CG184 2014; NICE NG12 2015 |  |
-| mgmt-test-and-treat-or-ppi | managementInclude | quality | FAIL (known gap) | NICE CG184 2014; Maastricht VI/Florence consensus report 2022 |  |
-| mgmt-lifestyle | managementInclude | quality | FAIL (known gap) | NICE CG184 2014 |  |
-
-Failure details:
-
-- **inv-hpylori-non-invasive** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K30 (uninvestigated/functional dyspepsia); the GORD management panel (PANE top) lists H. pylori only as a routine investigation, which is not seeded.]
-- **mgmt-test-and-treat-or-ppi** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's GORD protocol; the panel now follows the confirmed diagnosis (K30), which maps to no protocol, so no panel is shown.]
-- **mgmt-lifestyle** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's GORD protocol; the panel now follows the confirmed diagnosis (K30), which maps to no protocol, so no panel is shown.]
+| mgmt-test-and-treat-or-ppi | managementInclude | quality | PASS | NICE CG184 2014; Maastricht VI/Florence consensus report 2022 |  |
+| mgmt-lifestyle | managementInclude | quality | PASS | NICE CG184 2014 |  |
 
 Guidelines:
 
@@ -6688,8 +6425,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, epigastric_pain, heartburn, nausea_vomiting, episodic_pain, postprandial_pain, antacid_relief, abdominal_distension, abdominal_tenderness, abdominal_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: dyspepsia (from the confirmed diagnosis)
+- note: PlanTab protocol: dyspepsia (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -6791,15 +6528,13 @@ Permutation of `food-bolus-complete-obstruction`.
 | inv-oesophageal-biopsies | investigationInclude | critical | PASS | BSG/BSPGHAN joint consensus guidelines 2022 |  |
 | mnm-eoe | mustNotMiss | quality | FAIL (known gap) | BSG/BSPGHAN joint consensus guidelines 2022 | Add an EoE node (young, atopy, intermittent solid dysphagia, bolus episodes) and a K20.0 protocol (≥6 biopsies from ≥2 levels; PPI / budesonide / diet; dilatation). |
 | level-priority-not-emergency | emergencyLevel | quality | FAIL (known gap) | NICE NG12 2015 | cancer-screening.ts: parenthesise the colorectal cancerType condition (c.met && (… \|\| … )); dysphagia should give priority, not emergency_now, when the patient is swallowing. |
-| inv-six-biopsies-two-levels | investigationInclude | quality | FAIL (known gap) | BSG/BSPGHAN joint consensus guidelines 2022 |  |
-| mgmt-eoe-treatment-options | managementInclude | quality | FAIL (known gap) | BSG/BSPGHAN joint consensus guidelines 2022 |  |
+| inv-six-biopsies-two-levels | investigationInclude | quality | PASS | BSG/BSPGHAN joint consensus guidelines 2022 |  |
+| mgmt-eoe-treatment-options | managementInclude | quality | PASS | BSG/BSPGHAN joint consensus guidelines 2022 |  |
 
 Failure details:
 
-- **mnm-eoe** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Oesophageal Stricture (Benign) \| 3. Hiatus Hernia [known gap: No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture protocol).]
+- **mnm-eoe** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Oesophageal Stricture (Benign) \| 3. Hiatus Hernia [known gap: No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture protocol). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Oesophageal / Gastric Carcinoma \| 3. Upper GI Bleeding (Peptic Ulcer) \| 4. Oesophageal Web / Plummer-Vinson Syndrome \| 5. Acute Coronary Syndrome]
 - **level-priority-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≥ priority, ≤ urgent [known gap: Emergency now: "Systemic red flag symptom" and "Dysphagia" red flags plus a 2-week-wait cancer screen labelled "colorectal" (cancer-screening.ts operator-precedence bug; see findings).]
-- **inv-six-biopsies-two-levels** (web): no investigation matched among 12 (web.pane.seeded, web.clinicalPrompts) [known gap: As inv-oesophageal-biopsies.]
-- **mgmt-eoe-treatment-options** (web): no management item matched among 1 (web.clinicalPrompts) [known gap: No management output at all for K20.0.]
 
 Guidelines:
 
@@ -6819,8 +6554,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, chronic_course, epigastric_pain, chest_pain, chest_pain_pressure, episodic_pain, dysphagia_solids, known_asthma, atopy, fever, heartburn, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: eosinophilic_oesophagitis (from the confirmed diagnosis)
+- note: PlanTab protocol: eosinophilic_oesophagitis (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (15), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -6848,7 +6583,7 @@ Permutation of `mimic-testicular-torsion`.
 
 Failure details:
 
-- **mnm-torsion-considered** (web): not in top 3 of web.pane: 1. Epididymo-orchitis \| 2. Acute Pyelonephritis / Upper Urinary Tract Infection \| 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); also in web.symptomInference#2, web.passive#5 [known gap: Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion is not in the top 3 (symptom inference lists "torsion / epididymo-orchitis" #2).]
+- **mnm-torsion-considered** (web): not in top 3 of web.pane: 1. Epididymo-orchitis \| 2. Acute Pyelonephritis / Upper Urinary Tract Infection \| 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); also in web.symptomInference#2, web.passive#5 [known gap: Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion is not in the top 3 (symptom inference lists "torsion / epididymo-orchitis" #2). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Hydrocele \| 3. Epididymo-orchitis \| 4. Fournier's Gangrene \| 5. Incarcerated / Strangulated Hernia]
 - **level-priority** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≥ priority, ≤ urgent [known gap: Web: Triage "emergency_now" (score 48): fever in the text and the 38.1 °C vital plus a moderate pain score add up past the emergency threshold (45); the scrotal chip itself adds nothing.]
 - **mgmt-no-unconditional-exploration** (web): forbidden management item present in web.clinicalPrompts: "• emergency scrotal exploration - do not delay surgery for ultrasound when torsion is suspected (eau 2024); sal..." (+1 more) [known gap: Web: The scrotal-chip torsion prompt always adds "Emergency scrotal exploration" regardless of onset, Doppler result or confirmed epididymo-orchitis.]
 
@@ -6887,14 +6622,9 @@ Permutation of `fistula-in-ano-simple-low`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | inv-mri-pelvis | investigationInclude | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
-| mgmt-seton-or-sparing | managementInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2022 |  |
+| mgmt-seton-or-sparing | managementInclude | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-no-primary-fistulotomy | managementExclude | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
-| mgmt-no-sphincterotomy | managementExclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2022 |  |
-
-Failure details:
-
-- **mgmt-seton-or-sparing** (web): no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61.]
-- **mgmt-no-sphincterotomy** (web): forbidden management item present in web.plan: "[surgical] lateral internal sphincterotomy (lis) - highly effective but 1-2% incontinence risk." (+2 more) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61. A lateral internal sphincterotomy in a woman with a complex anterior fistula and an obstetric sphincter injury risks incontinence.]
+| mgmt-no-sphincterotomy | managementExclude | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
 
 Guidelines:
 
@@ -6913,8 +6643,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, anal_pain, faecal_incontinence, episodic_pain, discharge_perianal, tenesmus, previous_surgery, urinary_incontinence, frequency_urgency, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: anal_fissure (from the confirmed diagnosis)
-- note: PlanTab protocol: anal_fissure (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: fistula_in_ano (from the confirmed diagnosis)
+- note: PlanTab protocol: fistula_in_ano (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -6927,14 +6657,9 @@ Guidelines:
 
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
-| mgmt-fistulotomy | managementInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2022 | Add a fistula-in-ano protocol keyed to K60.3–K60.5 (simple → fistulotomy; complex → MRI, loose seton, sphincter-preserving repair; Parks classification) and narrow anal_fissure to K60.0–K60.2. |
-| mgmt-no-fissure-plan | managementExclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2022 |  |
+| mgmt-fistulotomy | managementInclude | critical | PASS | ASCRS clinical practice guidelines 2022 | Add a fistula-in-ano protocol keyed to K60.3–K60.5 (simple → fistulotomy; complex → MRI, loose seton, sphincter-preserving repair; Parks classification) and narrow anal_fissure to K60.0–K60.2. |
+| mgmt-no-fissure-plan | managementExclude | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
 | dx-fistula-top3 | mustRankTopK | quality | PASS | ASCRS clinical practice guidelines 2022 |  |
-
-Failure details:
-
-- **mgmt-fistulotomy** (web): no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61.]
-- **mgmt-no-fissure-plan** (web): forbidden management item present in web.plan: "[conservative] gtn 0.2% topical bd for 8 weeks or diltiazem 2% bd (less headaches)." (+6 more) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61. The documented plan is GTN/diltiazem, botulinum toxin and lateral internal sphincterotomy.]
 
 Guidelines:
 
@@ -6953,8 +6678,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, anal_pain, faecal_incontinence, episodic_pain, discharge_perianal, previous_surgery, tender_cord, swelling_fluctuant_soft, discharge_pus, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: anal_fissure (from the confirmed diagnosis)
-- note: PlanTab protocol: anal_fissure (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: fistula_in_ano (from the confirmed diagnosis)
+- note: PlanTab protocol: fistula_in_ano (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), IBD — Surgical Complications (Crohn's / UC) (12), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -6968,16 +6693,11 @@ Guidelines:
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | level-emergency | emergencyLevel | critical | PASS | ESGE Clinical Guideline 2016 |  |
-| inv-emergency-ogd | investigationInclude | critical | FAIL (known gap) | ESGE Clinical Guideline 2016; WSES guidelines 2019 | A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies). |
+| inv-emergency-ogd | investigationInclude | critical | PASS | ESGE Clinical Guideline 2016; WSES guidelines 2019 | A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies). |
 | mgmt-endoscopic-removal | managementInclude | critical | PASS | ESGE Clinical Guideline 2016 |  |
 | flag-complete-obstruction | redFlags | quality | PASS | ESGE Clinical Guideline 2016 |  |
-| mgmt-biopsies-underlying-cause | managementInclude | quality | FAIL (known gap) | ESGE Clinical Guideline 2016; BSG/BSPGHAN joint consensus guidelines 2022 |  |
+| mgmt-biopsies-underlying-cause | managementInclude | quality | PASS | ESGE Clinical Guideline 2016; BSG/BSPGHAN joint consensus guidelines 2022 |  |
 | mgmt-no-barium | managementExclude | quality | PASS | ESGE Clinical Guideline 2016 |  |
-
-Failure details:
-
-- **inv-emergency-ogd** (web): no investigation matched among 8 (web.pane.seeded, web.clinicalPrompts) [known gap: Web 2026-09-25: passed before pane model 1.0.0 only because the wrong PANE top 3 (GORD: "OGD") seeded that protocol's tests; PANE now ranks oesophageal food bolus obstruction, which has no management protocol yet, so nothing seeds an emergency OGD.]
-- **mgmt-biopsies-underlying-cause** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: As mgmt-endoscopic-removal.]
 
 Guidelines:
 
@@ -6998,8 +6718,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, sudden_onset, acute_onset, epigastric_pain, chest_pain, chest_pain_pressure, regurgitation, dysphagia_liquids, severe_pain, odynophagia, known_asthma, nausea_vomiting, complete_dysphagia, drooling, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: food_bolus_obstruction (from the confirmed diagnosis)
+- note: PlanTab protocol: food_bolus_obstruction (from the confirmed diagnosis)
 - note: matchPathways: Foreign Body Ingestion / Food Bolus (5), IBD — Surgical Complications (Crohn's / UC) (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -7042,8 +6762,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, anal_pain, perineal_pain, fever, rigors, severe_pain, scrotal_swelling, erythema_surrounding, confusion, skin_necrosis, known_diabetes, alcohol_use, pain_out_of_proportion, spreading_redness, swelling_fluctuant_soft, crepitus_soft_tissue, elevated_wbc, raised_crp, raised_creatinine, hyperglycaemia, raised_lactate, thrombocytopenia, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: fournier_gangrene (from the confirmed diagnosis)
+- note: PlanTab protocol: fournier_gangrene (from the confirmed diagnosis)
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
@@ -7179,11 +6899,7 @@ Permutation of `gord-no-alarm-empirical-ppi`.
 | level-at-least-priority | emergencyLevel | critical | PASS | NICE NG12 2015 |  |
 | flag-weight-loss-cancer | redFlags | critical | PASS | NICE NG12 2015 |  |
 | inv-ogd | investigationInclude | critical | PASS | NICE NG12 2015 |  |
-| mgmt-urgent-two-week-ogd | managementInclude | quality | FAIL (known gap) | NICE NG12 2015 |  |
-
-Failure details:
-
-- **mgmt-urgent-two-week-ogd** (web): no management item matched among 34 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: GORD protocol OGD line is conditional ("Alarm features, age >55, or 4-week PPI trial failed") and not urgent; no 2-week-wait wording. The triage reason "Cancer screening triggered" is present but labelled "colorectal".]
+| mgmt-urgent-two-week-ogd | managementInclude | quality | PASS | NICE NG12 2015 |  |
 
 Guidelines:
 
@@ -7376,13 +7092,9 @@ Permutation of `gyn-ovarian-torsion-dermoid`.
 | dx-torsion-top3 | mustRankTopK | critical | PASS | ACOG Committee Opinion No. 783 2019 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | ACOG Committee Opinion No. 783 2019 |  |
 | mgmt-laparoscopy | managementInclude | critical | PASS | ACOG Committee Opinion No. 783 2019 |  |
-| mgmt-no-adult-fixed-doses | managementExclude | critical | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | PASS |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
 | mgmt-ovarian-conservation | managementInclude | quality | PASS | ACOG Committee Opinion No. 783 2019 |  |
 | mgmt-no-default-oophorectomy | managementExclude | quality | PASS | ACOG Committee Opinion No. 783 2019 |  |
-
-Failure details:
-
-- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.protocol.medications: "ondansetron 4 mg iv (intravenous) tds (three times daily) - antiemetic" (+2 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the ovarian_torsion protocol medications (ondansetron 4 mg, paracetamol 1 g, ibuprofen 400 mg) and the appendicectomy prompt/template (pip-tazo 4.5 g, co-amoxiclav 1.2 g, morphine 5 mg) for a 38 kg child, plus 'IV fluid challenge 500ml'.]
 
 Guidelines:
 
@@ -7549,13 +7261,8 @@ Permutation of `h-pylori-positive-eradication`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | flag-penicillin-allergy | redFlags | critical | PASS | Maastricht VI/Florence consensus report 2022 |  |
-| mgmt-no-amoxicillin | managementExclude | critical | FAIL (known gap) | Maastricht VI/Florence consensus report 2022 | buildPlanText / protocol medications: filter or flag drugs that match a recorded allergy class (penicillins); same finding as the seed appendicitis/cholangitis vignettes. |
-| mgmt-bismuth-quadruple | managementInclude | quality | FAIL (known gap) | Maastricht VI/Florence consensus report 2022 | As h-pylori-positive-eradication; add the bismuth quadruple (tetracycline + metronidazole) regimen. |
-
-Failure details:
-
-- **mgmt-bismuth-quadruple** (web): no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No penicillin-free regimen in any H. pylori protocol.]
-- **mgmt-no-amoxicillin** (web): forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+2 more) [known gap: Gastritis protocol plan line and medications list amoxicillin despite a recorded penicillin anaphylaxis (the allergy shows only in the header).]
+| mgmt-no-amoxicillin | managementExclude | critical | PASS | Maastricht VI/Florence consensus report 2022 | buildPlanText / protocol medications: filter or flag drugs that match a recorded allergy class (penicillins); same finding as the seed appendicitis/cholangitis vignettes. |
+| mgmt-bismuth-quadruple | managementInclude | quality | PASS | Maastricht VI/Florence consensus report 2022 | As h-pylori-positive-eradication; add the bismuth quadruple (tetracycline + metronidazole) regimen. |
 
 Guidelines:
 
@@ -7589,14 +7296,9 @@ Permutation of `dyspepsia-young-no-alarm-test-and-treat`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | mgmt-eradication | managementInclude | quality | PASS | Maastricht VI/Florence consensus report 2022 |  |
-| mgmt-14-day-or-bismuth | managementInclude | quality | FAIL (known gap) | Maastricht VI/Florence consensus report 2022 | Gastritis / peptic_ulcer / gastric_carcinoma protocols: align H. pylori regimens with Maastricht VI (14 days; bismuth quadruple first-line where clarithromycin resistance is high or unknown). The three protocols currently disagree (7, 7–14 and 14 days). |
+| mgmt-14-day-or-bismuth | managementInclude | quality | PASS | Maastricht VI/Florence consensus report 2022 | Gastritis / peptic_ulcer / gastric_carcinoma protocols: align H. pylori regimens with Maastricht VI (14 days; bismuth quadruple first-line where clarithromycin resistance is high or unknown). The three protocols currently disagree (7, 7–14 and 14 days). |
 | mgmt-test-of-cure | managementInclude | quality | PASS | Maastricht VI/Florence consensus report 2022 |  |
-| mgmt-no-7-day-clarithromycin-triple | managementExclude | quality | FAIL (known gap) | Maastricht VI/Florence consensus report 2022 | As mgmt-14-day-or-bismuth. |
-
-Failure details:
-
-- **mgmt-14-day-or-bismuth** (web): no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Gastritis protocol: "triple therapy (PPI + amoxicillin + clarithromycin × 7 days)"; no bismuth quadruple option, no 14-day course.]
-- **mgmt-no-7-day-clarithromycin-triple** (web): forbidden management item present in web.plan: "... h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+1 more) [known gap: Gastritis protocol plan line and medications prescribe clarithromycin triple therapy for 7 days (patient also had prior clarithromycin).]
+| mgmt-no-7-day-clarithromycin-triple | managementExclude | quality | PASS | Maastricht VI/Florence consensus report 2022 | As mgmt-14-day-or-bismuth. |
 
 Guidelines:
 
@@ -7636,13 +7338,9 @@ Permutation of `haematuria-visible-smoker-2ww`.
 | inv-cystoscopy | investigationInclude | critical | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
 | mgmt-catheterise | managementInclude | critical | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
 | inv-fbc-group | investigationInclude | quality | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
-| mgmt-three-way-irrigation | managementInclude | quality | FAIL (known gap) | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | As inv-cystoscopy. |
+| mgmt-three-way-irrigation | managementInclude | quality | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | As inv-cystoscopy. |
 | mgmt-anticoagulant-review | managementInclude | quality | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
 | mgmt-urology-referral | managementInclude | quality | PASS | NICE NG12 2015 |  |
-
-Failure details:
-
-- **mgmt-three-way-irrigation** (web): no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No three-way catheter or irrigation; a standard Foley is suggested.]
 
 Guidelines:
 
@@ -7761,7 +7459,7 @@ Guidelines:
 
 Failure details:
 
-- **mnm-crc** (web): not in top 3 of web.pane: 1. Rectal Prolapse \| 2. Haemorrhoids \| 3. Anal Cancer (Squamous Cell Carcinoma of the Anus); also in web.symptomInference#4 [known gap: PANE top 3 (haemorrhoids, hernia, fissure) does not keep colorectal cancer visible in a 58-year-old with bleeding; the haemorrhoid protocol does request colonoscopy (> 40).]
+- **mnm-crc** (web): not in top 3 of web.pane: 1. Rectal Prolapse \| 2. Haemorrhoids \| 3. Anal Cancer (Squamous Cell Carcinoma of the Anus); also in web.symptomInference#4 [known gap: PANE top 3 (haemorrhoids, hernia, fissure) does not keep colorectal cancer visible in a 58-year-old with bleeding; the haemorrhoid protocol does request colonoscopy (> 40). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Skin Abscess \| 3. Incisional Hernia \| 4. Incarcerated / Strangulated Hernia \| 5. Femoral Hernia]
 
 Guidelines:
 
@@ -7798,11 +7496,7 @@ Permutation of `haemorrhoids-grade3-over-50`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | dx-haemorrhoids-top3 | mustRankTopK | quality | PASS | ASCRS clinical practice guidelines 2024 |  |
-| mgmt-excision-72h | managementInclude | quality | FAIL (known gap) | ASCRS clinical practice guidelines 2024 | Add a thrombosed-external-haemorrhoid dx-variant: < 72 h → excision under LA; > 72 h → conservative (ASCRS 2024). |
-
-Failure details:
-
-- **mgmt-excision-72h** (web): no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The haemorrhoids protocol mentions "acutely thrombosed external haemorrhoid (< 72 h) — surgical excision under LA" only as a red flag; the plan steps (fibre, RBL, haemorrhoidectomy, HALO) have no thrombosed-external branch.]
+| mgmt-excision-72h | managementInclude | quality | PASS | ASCRS clinical practice guidelines 2024 | Add a thrombosed-external-haemorrhoid dx-variant: < 72 h → excision under LA; > 72 h → conservative (ASCRS 2024). |
 
 Guidelines:
 
@@ -7928,12 +7622,8 @@ Guidelines:
 | mgmt-no-watchful-waiting | managementExclude | critical | PASS | HerniaSurge 2018; WSES guidelines 2017 |  |
 | variant-incarcerated | dxVariant | critical | PASS |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
 | score-qsofa-calculator | scoreValue | quality | n/a |  |  |
-| inv-lactate | investigationInclude | quality | FAIL (known gap) | WSES guidelines 2017 | Add lactate (± CPK, D-dimer) and CT when strangulation is uncertain to the hernia protocols for irreducible hernias. |
+| inv-lactate | investigationInclude | quality | PASS | WSES guidelines 2017 | Add lactate (± CPK, D-dimer) and CT when strangulation is uncertain to the hernia protocols for irreducible hernias. |
 | mgmt-mesh-clean-field | managementInclude | quality | PASS | WSES guidelines 2017 |  |
-
-Failure details:
-
-- **inv-lactate** (web): no investigation matched among 13 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The inguinal_hernia protocol lists FBC, U&E only; no lactate/CPK (WSES strangulation markers) anywhere in the web outputs.]
 
 Guidelines:
 
@@ -8061,13 +7751,9 @@ Guidelines:
 | no-emergency-alarm | mustNotAlarm | quality | PASS |  |  |
 | no-strangulation-prompt | mustNotAlarm | quality | PASS |  | Use word-boundary + negation-aware matching for "tender" in the hernia prompt (exclude "non-tender", "not tender"). |
 | mgmt-mesh-repair | managementInclude | quality | PASS | HerniaSurge 2018 |  |
-| mgmt-watchful-waiting-option | managementInclude | quality | FAIL (known gap) | HerniaSurge 2018 | Add the HerniaSurge watchful-waiting option for minimally symptomatic men to the inguinal_hernia protocol (conservative phase). |
+| mgmt-watchful-waiting-option | managementInclude | quality | PASS | HerniaSurge 2018 | Add the HerniaSurge watchful-waiting option for minimally symptomatic men to the inguinal_hernia protocol (conservative phase). |
 | mgmt-no-emergency-repair | managementExclude | quality | PASS |  |  |
 | variant-reducible | dxVariant | quality | PASS |  |  |
-
-Failure details:
-
-- **mgmt-watchful-waiting-option** (web): no management item matched among 32 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Neither the inguinal_hernia protocol nor the prompts mention watchful waiting (only "truss for unfit patients declining surgery").]
 
 Guidelines:
 
@@ -8147,11 +7833,7 @@ Guidelines:
 | mgmt-no-gastrografin-trial | managementExclude | critical | PASS | Bologna guidelines 2018 |  |
 | dx-obstruction-top3 | mustRankTopK | quality | PASS |  |  |
 | mnm-hernia-any | mustNotMiss | quality | PASS |  |  |
-| variant-strangulated-or-obstructed | dxVariant | quality | FAIL (known gap) |  |  |
-
-Failure details:
-
-- **variant-strangulated-or-obstructed** (web): detected (none) in group Hernia; expected hernia_incarcerated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment ("Small bowel obstruction due to left obturator hernia") has no hernia keyword ("obstructed hernia", "irreducible", "incarcerated"), so no variant is chosen.]
+| variant-strangulated-or-obstructed | dxVariant | quality | PASS |  |  |
 
 Guidelines:
 
@@ -8169,7 +7851,7 @@ Guidelines:
 - alarms: Emergency now [web.triage.emergency]; Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, cfs
 - score values: (none)
-- dx variant: (none) (Hernia)
+- dx variant: hernia_incarcerated (Hernia)
 - note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, periumbilical_pain, colicky_pain, nausea_vomiting, anorexia, episodic_pain, pain_worse_movement, postprandial_pain, severe_pain, abdominal_distension, constipation, bilious_vomiting, known_ckd, dehydration, tympanic_abdomen, howship_romberg, medial_thigh_pain, tinkling_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_urea, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: obturator_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: obturator_hernia (from the confirmed diagnosis)
@@ -8191,11 +7873,7 @@ Permutation of `hernia-paediatric-inguinal-infant`.
 | level-at-least-urgent | emergencyLevel | critical | PASS | EUPSA guideline 2022 |  |
 | flag-incarcerated | redFlags | critical | PASS |  |  |
 | mgmt-reduction-then-repair | managementInclude | critical | PASS | EUPSA guideline 2022 |  |
-| mgmt-no-adult-plan | managementExclude | quality | FAIL (known gap) |  |  |
-
-Failure details:
-
-- **mgmt-no-adult-plan** (web): forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+2 more) [known gap: Adult inguinal protocol and TAPP template for an infant (see the base paediatric vignette).]
+| mgmt-no-adult-plan | managementExclude | quality | PASS |  |  |
 
 Guidelines:
 
@@ -8230,15 +7908,10 @@ Guidelines:
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | dx-inguinal-top3 | mustRankTopK | critical | PASS | EUPSA guideline 2022 |  |
-| mgmt-no-watchful-waiting | managementExclude | critical | FAIL (known gap) | EUPSA guideline 2022 | Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16. |
-| mgmt-no-adult-mesh-repair | managementExclude | critical | FAIL (known gap) | EUPSA guideline 2022 | Age-gate the hernia protocol and prompt (paediatric herniotomy template; suppress adult pre-op items such as PSA/ECG). |
+| mgmt-no-watchful-waiting | managementExclude | critical | PASS | EUPSA guideline 2022 | Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16. |
+| mgmt-no-adult-mesh-repair | managementExclude | critical | PASS | EUPSA guideline 2022 | Age-gate the hernia protocol and prompt (paediatric herniotomy template; suppress adult pre-op items such as PSA/ECG). |
 | level-not-emergency | emergencyLevel | quality | PASS |  |  |
 | mgmt-prompt-repair | managementInclude | quality | PASS | EUPSA guideline 2022 |  |
-
-Failure details:
-
-- **mgmt-no-watchful-waiting** (web): forbidden management item present in web.plan: "[conservative] truss may be offered for unfit patients declining surgery - monitor for strangulation..." (+1 more) [known gap: The inguinal_hernia protocol has no paediatric branch: the plan offers "Truss may be offered for unfit patients declining surgery".]
-- **mgmt-no-adult-mesh-repair** (web): forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+4 more) [known gap: Adult plan for a 4-month-old: "Lichtenstein mesh herniorrhaphy … TEP/TAPP" (protocol) and computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan.]
 
 Guidelines:
 
@@ -8477,8 +8150,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, dehydration, polyuria_polydipsia, fatigue, frequency_urgency, known_diabetes, known_hypertension, vascular_risk, known_ckd, insulin_or_sulfonylurea, previous_surgery, gcs_drop, hyperglycaemia, very_high_glucose, raised_urea, raised_creatinine, elevated_wbc, raised_crp, positive_urinalysis, acute_onset, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hyperosmolar_hyperglycaemic_state (from the confirmed diagnosis)
+- note: PlanTab protocol: hyperosmolar_hyperglycaemic_state (from the confirmed diagnosis)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8500,11 +8173,7 @@ Guidelines:
 | mgmt-no-laparotomy | managementExclude | critical | PASS | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 |  |
 | inv-pth | investigationInclude | quality | PASS | Society for Endocrinology 2016; Endocrine Society clinical practice guideline 2023 |  |
 | mgmt-stop-calcium-vitd | managementInclude | quality | PASS | Society for Endocrinology 2016 |  |
-| mgmt-oncology | managementInclude | quality | FAIL (known gap) | Endocrine Society clinical practice guideline 2023 | As flag-hypercalcaemia. |
-
-Failure details:
-
-- **mgmt-oncology** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No oncology referral.]
+| mgmt-oncology | managementInclude | quality | PASS | Endocrine Society clinical practice guideline 2023 | As flag-hypercalcaemia. |
 
 Guidelines:
 
@@ -8524,8 +8193,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Breast)
 - note: PANE features applied: nausea_vomiting, diffuse_abdominal_pain, confusion, polyuria_polydipsia, constipation, bone_pain, known_malignancy, anticholinergic_or_opioid, previous_surgery, lif_pain, dehydration, hypercalcaemia_lab, raised_creatinine, raised_urea, acute_onset, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hypercalcaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: hypercalcaemia (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8566,8 +8235,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: back_pain, fatigue, constipation, polyuria_polydipsia, bone_pain, weight_loss, nocturnal_pain, known_hypertension, vascular_risk, nsaid_use, acei_arb_use, pallor, hypercalcaemia_lab, raised_creatinine, raised_urea, anaemia, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hypercalcaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: hypercalcaemia (from the confirmed diagnosis)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), GI Bleeding (Upper and Lower) (12)
 
 </details>
@@ -8612,8 +8281,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fatigue, known_hypertension, vascular_risk, acei_arb_use, nsaid_use, anticoagulant_use, previous_surgery, leg_swelling, oliguria, stoma, abdominal_tenderness, recent_surgery, bowel_resection, hyperkalaemia_lab, raised_creatinine, raised_urea, elevated_wbc, raised_crp, acute_onset, tachycardia, trauma_mechanism, aortic_graft
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: matchPathways: Diverticular Disease / Diverticulitis (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -8655,8 +8324,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: fatigue, dizziness, palpitations, known_diabetes, known_ckd, known_heart_disease, vascular_risk, acei_arb_use, diuretic_use, recent_antibiotics, insulin_or_sulfonylurea, leg_swelling, bilateral_leg_oedema, pallor, hyperkalaemia_lab, raised_creatinine, raised_urea, anaemia, acute_onset, bradycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hyperkalaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: hyperkalaemia (from the confirmed diagnosis)
 - note: matchPathways: Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -8695,8 +8364,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: limb_weakness, focal_weakness, facial_weakness, speech_disturbance, confusion, low_glucose, known_diabetes, insulin_or_sulfonylurea, sudden_onset, radiation_arm_jaw, diaphoresis, gcs_drop, acute_onset, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hypoglycaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: hypoglycaemia (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5)
 
 </details>
@@ -8715,11 +8384,7 @@ Guidelines:
 | mgmt-treat-hypoglycaemia | managementInclude | critical | PASS | JBDS-IP 2023 |  |
 | mgmt-prolonged-monitoring | managementInclude | critical | PASS | JBDS-IP 2023 |  |
 | mnm-hypoglycaemia-symptom-engine | mustNotMiss | quality | PASS | JBDS-IP 2023 |  |
-| mgmt-review-sulfonylurea | managementInclude | quality | FAIL (known gap) | JBDS-IP 2023 | Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug. |
-
-Failure details:
-
-- **mgmt-review-sulfonylurea** (web): no management item matched among 16 (web.clinicalPrompts) [known gap: Web: Gliclazide is not mentioned in any output.]
+| mgmt-review-sulfonylurea | managementInclude | quality | PASS | JBDS-IP 2023 | Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug. |
 
 Guidelines:
 
@@ -8738,8 +8403,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, night_sweats, speech_disturbance, low_glucose, known_diabetes, known_ckd, known_hypertension, vascular_risk, insulin_or_sulfonylurea, diaphoresis, pallor, gcs_drop, raised_creatinine, acute_onset, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hypoglycaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: hypoglycaemia (from the confirmed diagnosis)
 
 </details>
 
@@ -8764,7 +8429,7 @@ Permutation of `hyponatraemia-severe-postop-seizure`.
 
 Failure details:
 
-- **flag-hypokalaemia** (web): no red flag matched among 12 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt.]
+- **flag-hypokalaemia** (web): no red flag matched among 15 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt. \| iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 13 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)]
 
 Guidelines:
 
@@ -8783,8 +8448,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, confusion, gait_disturbance, anorexia, dizziness, known_hypertension, vascular_risk, diuretic_use, hyponatraemia_drug, low_mood, trauma_mechanism, mechanism_blunt, hyponatraemia_lab, acute_onset, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
+- note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
 
 </details>
 
@@ -8822,8 +8487,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dizziness, polyuria_polydipsia, dehydration, fatigue, diarrhoea, ppi_use, known_malignancy, previous_surgery, colicky_pain, oliguria, stoma, bowel_resection, hyponatraemia_lab, raised_urea, raised_creatinine, acute_onset, recent_surgery, tachycardia, trauma_mechanism, aortic_graft
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
+- note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8862,8 +8527,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: seizure, headache, nausea_vomiting, confusion, anticholinergic_or_opioid, previous_surgery, gcs_drop, abdominal_tenderness, recent_surgery, hyponatraemia_lab, acute_onset, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
+- note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -8904,8 +8569,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, nausea_vomiting, pr_bleeding, episodic_pain, diarrhoea, abdominal_pain, dehydration, bloody_diarrhoea, abdominal_tenderness, sick_contacts, elevated_wbc, raised_crp, raised_urea, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: infective_colitis (from the confirmed diagnosis)
+- note: PlanTab protocol: infective_colitis (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -8945,8 +8610,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, diffuse_abdominal_pain, progressive_course, pain_worse_movement, fatigue, exertional_symptoms, dyspnoea, pallor, known_hypertension, vascular_risk, acei_arb_use, anaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5)
 
 </details>
@@ -9023,8 +8688,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, periumbilical_pain, nausea_vomiting, pr_bleeding, severe_pain, palpitations, rlq_pain, irregular_pulse, known_af, known_heart_disease, vascular_risk, pain_out_of_proportion, anticoagulant_use, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, raised_urea, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from the confirmed diagnosis)
-- note: PlanTab protocol: ischaemic_colitis (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -9131,7 +8796,7 @@ Permutation of `lbo-obstructing-sigmoid-cancer`.
 
 Failure details:
 
-- **mgmt-no-stent-with-impending-perforation** (web): forbidden management item present in web.plan: "options: (1) sems bridge to elective resection, (2) emergency hartmann's, (3) defunctioning colos..." (+1 more) [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated').]
+- **mgmt-no-stent-with-impending-perforation** (web): forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated'). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)"]
 
 Guidelines:
 
@@ -9166,14 +8831,13 @@ Permutation of `lbo-obstructing-sigmoid-cancer`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | PASS | WSES guidelines 2018 |  |
-| mgmt-right-hemicolectomy | managementInclude | quality | FAIL (known gap) | WSES guidelines 2018 | Split lbo_malignant into left- and right-sided variants; right-sided = right colectomy with primary anastomosis. |
+| mgmt-right-hemicolectomy | managementInclude | quality | PASS | WSES guidelines 2018 | Split lbo_malignant into left- and right-sided variants; right-sided = right colectomy with primary anastomosis. |
 | mgmt-no-left-sided-plan-for-right-lesion | managementExclude | quality | FAIL (known gap) | WSES guidelines 2018 |  |
 | variant-lbo-malignant | dxVariant | quality | PASS | WSES guidelines 2018 |  |
 
 Failure details:
 
-- **mgmt-right-hemicolectomy** (web): no management item matched among 28 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Plan offers the left-sided LBO options only (SEMS, Hartmann's, colostomy); no right colectomy with primary anastomosis.]
-- **mgmt-no-left-sided-plan-for-right-lesion** (web): forbidden management item present in web.plan: "options: (1) sems bridge to elective resection, (2) emergency hartmann's, (3) defunctioning colostomy." (+3 more) [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctioning colostomy') is applied to a hepatic-flexure tumour.]
+- **mgmt-no-left-sided-plan-for-right-lesion** (web): forbidden management item present in web.clinicalPrompts: "...lignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctioning colostomy') is applied to a hepatic-flexure tumour.]
 
 Guidelines:
 
@@ -9210,19 +8874,13 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 |---|---|---|---|---|---|
 | mnm-crc | mustNotMiss | critical | PASS | BSG guideline 2021; NICE NG12 2023 |  |
 | inv-colonoscopy | investigationInclude | critical | PASS | BSG guideline 2021; BSG guideline 2019 |  |
-| mgmt-no-heparin | managementExclude | critical | FAIL (known gap) | BSG guideline 2019 | Exclude K55.2x (angiodysplasia) from the ischaemic_colitis protocol prefixes; add an angiodysplasia/LGIB protocol (colonoscopy + APC, iron, continue secondary-prevention aspirin). |
+| mgmt-no-heparin | managementExclude | critical | PASS | BSG guideline 2019 | Exclude K55.2x (angiodysplasia) from the ischaemic_colitis protocol prefixes; add an angiodysplasia/LGIB protocol (colonoscopy + APC, iron, continue secondary-prevention aspirin). |
 | mgmt-no-stop-aspirin | managementExclude | critical | PASS | BSG guideline 2019 |  |
 | mnm-angiodysplasia | mustNotMiss | quality | PASS | BSG guideline 2019 |  |
 | inv-iron-studies | investigationInclude | quality | PASS | BSG guideline 2021 |  |
 | mgmt-iron | managementInclude | quality | PASS | BSG guideline 2021 |  |
-| mgmt-apc | managementInclude | quality | FAIL (known gap) | BSG guideline 2019 |  |
-| mgmt-no-empirical-antibiotics | managementExclude | quality | FAIL (known gap) | BSG guideline 2019 |  |
-
-Failure details:
-
-- **mgmt-apc** (web): no management item matched among 38 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No endoscopic therapy (argon plasma coagulation) — there is no angiodysplasia protocol.]
-- **mgmt-no-heparin** (web): forbidden management item present in web.protocol.medications: "heparin weight-based per local protocol iv (intravenous) continuous infusion - mesenter..." [known gap: ICD K55.21 (angiodysplasia of colon with haemorrhage) matches the ischaemic_colitis protocol (prefix K55), whose medications include a therapeutic heparin infusion (for mesenteric venous thrombosis) — offered to a bleeding patient.]
-- **mgmt-no-empirical-antibiotics** (web): forbidden management item present in web.plan: "[immediate] iv fluids, nbm, broad-spectrum iv antibiotics (piperacillin-tazobactam)." (+1 more) [known gap: Same K55 → ischaemic_colitis routing: "broad-spectrum IV antibiotics (piperacillin-tazobactam)" and NBM for an outpatient with angiodysplasia.]
+| mgmt-apc | managementInclude | quality | PASS | BSG guideline 2019 |  |
+| mgmt-no-empirical-antibiotics | managementExclude | quality | PASS | BSG guideline 2019 |  |
 
 Guidelines:
 
@@ -9243,8 +8901,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, chronic_course, episodic_pain, fatigue, exertional_symptoms, dyspnoea, pallor, heart_murmur, known_heart_disease, vascular_risk, known_ckd, antiplatelet_use, previous_surgery, change_bowel_habit, anaemia, raised_urea, raised_creatinine, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from the confirmed diagnosis)
-- note: PlanTab protocol: ischaemic_colitis (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: angiodysplasia (from the confirmed diagnosis)
+- note: PlanTab protocol: angiodysplasia (from the confirmed diagnosis)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), IBD — Surgical Complications (Crohn's / UC) (14), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -9265,13 +8923,12 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 | mnm-crc | mustNotMiss | quality | FAIL | BSG guideline 2019 |  |
 | score-rec-oakland | scoreRecommended | quality | FAIL (known gap) | Oakland score 2017; BSG guideline 2019 |  |
 | inv-colonoscopy | investigationInclude | quality | PASS | BSG guideline 2019 |  |
-| mgmt-no-diverticulitis-antibiotics | managementExclude | quality | FAIL (known gap) | BSG guideline 2019 | Route K57.x1 (with bleeding) to the lower GI bleeding protocol; keep K57.x2/x3 (diverticulitis/abscess) on the diverticulitis protocol. |
+| mgmt-no-diverticulitis-antibiotics | managementExclude | quality | PASS | BSG guideline 2019 | Route K57.x1 (with bleeding) to the lower GI bleeding protocol; keep K57.x2/x3 (diverticulitis/abscess) on the diverticulitis protocol. |
 
 Failure details:
 
 - **mnm-crc** (web): not in top 3 of web.pane: 1. Lower GI Haemorrhage (Diverticular / Angiodysplasia) \| 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal) \| 3. Acute Mesenteric Ischaemia; also in web.symptomInference#2, web.passive#5
-- **score-rec-oakland** (web): oakland not recommended; recommended: cha2ds2-vasc, news2, rockall, has-bled, cfs [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for "lower gi bleed").]
-- **mgmt-no-diverticulitis-antibiotics** (web): forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+4 more) [known gap: ICD K57.31 (diverticulosis with bleeding) maps to the diverticulitis protocol and dx-variant group, so a diverticular bleed gets the diverticulitis plan (co-amoxiclav, Hinchey-based Hartmann’s).]
+- **score-rec-oakland** (web): oakland not recommended; recommended: cha2ds2-vasc, news2, rockall, has-bled, cfs [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for "lower gi bleed"). \| iOS CI 2026-09-25 (run 36169134350, database mode): oakland not recommended; recommended: ios:oakland, hinchey, rockall, qsofa, ios:mpi, news2, mews]
 
 Guidelines:
 
@@ -9291,8 +8948,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Diverticulitis)
 - note: PANE features applied: pr_bleeding, acute_onset, episodic_pain, known_af, known_ckd, anticoagulant_use, pallor, anaemia, raised_urea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
-- note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
+- note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Diverticular Disease / Diverticulitis (12), Acute Abdomen (7)
 
 </details>
@@ -9315,7 +8972,7 @@ Guidelines:
 Failure details:
 
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ urgent [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → emergency_now), so every rectal bleed — including minor outlet bleeding — is "emergency".]
-- **score-rec-oakland** (web): oakland not recommended; recommended: news2, rockall [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for "lower gi bleed").]
+- **score-rec-oakland** (web): oakland not recommended; recommended: news2, rockall [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for "lower gi bleed"). \| iOS CI 2026-09-25 (run 36169134350, database mode): oakland not recommended; recommended: glasgow-blatchford, ios:oakland, rockall, aims65, ios:forrest]
 - **mgmt-no-transfusion** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore cannulae, Hartmann’s bolus, cross-match 2 units) for any rectal-bleeding chip, regardless of volume, haemodynamics or Hb.]
 
 Guidelines:
@@ -9355,12 +9012,8 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 | level-admit | emergencyLevel | critical | PASS | BSG guideline 2019; ESGE guideline 2017 |  |
 | mgmt-repeat-colonoscopy | managementInclude | critical | PASS | ESGE guideline 2017; BSG guideline 2019 |  |
 | flag-antiplatelet | redFlags | quality | PASS | BSG guideline 2019 |  |
-| mgmt-endoscopic-haemostasis | managementInclude | quality | FAIL (known gap) | ESGE guideline 2017 | Add a post-polypectomy bleed rule (post-procedure + rectal bleeding): repeat colonoscopy with endoscopic haemostasis (ESGE). |
+| mgmt-endoscopic-haemostasis | managementInclude | quality | PASS | ESGE guideline 2017 | Add a post-polypectomy bleed rule (post-procedure + rectal bleeding): repeat colonoscopy with endoscopic haemostasis (ESGE). |
 | mgmt-antiplatelet-plan | managementInclude | quality | PASS | BSG guideline 2019 |  |
-
-Failure details:
-
-- **mgmt-endoscopic-haemostasis** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No post-polypectomy bleeding protocol (K91.840 has none); the only plan is the generic GI-bleed prompt without endoscopic haemostasis/clips.]
 
 Guidelines:
 
@@ -9380,8 +9033,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: pr_bleeding, acute_onset, episodic_pain, recent_surgery, previous_surgery, known_heart_disease, vascular_risk, known_diabetes, antiplatelet_use, dizziness, pallor, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
+- note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), IBD — Surgical Complications (Crohn's / UC) (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10)
 
 </details>
@@ -9400,7 +9053,7 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 | alarm-instability | mustAlarm | critical | PASS | BSG guideline 2019 |  |
 | inv-cta-first | investigationInclude | critical | PASS | BSG guideline 2019; ACG clinical guideline 2023 |  |
 | mgmt-resuscitation | managementInclude | critical | PASS | BSG guideline 2019 |  |
-| mgmt-no-terlipressin | managementExclude | critical | FAIL (known gap) | BSG guideline 2019 | Remove K92 from the upper_gi_bleed protocol/dx-variant ICD prefixes (or require upper-GI words) and route lower GI bleeding to its own protocol. |
+| mgmt-no-terlipressin | managementExclude | critical | PASS | BSG guideline 2019 | Remove K92 from the upper_gi_bleed protocol/dx-variant ICD prefixes (or require upper-GI words) and route lower GI bleeding to its own protocol. |
 | score-rec-shock-index | scoreRecommended | quality | FAIL (known gap) | BSG guideline 2019 |  |
 | inv-upper-source | investigationInclude | quality | PASS | BSG guideline 2019 |  |
 | inv-group-crossmatch | investigationInclude | quality | PASS | BSG guideline 2019 |  |
@@ -9409,7 +9062,6 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 Failure details:
 
 - **score-rec-shock-index** (web): web:shockIndex not recommended; recommended: qsofa, news2, rockall, caprini, asa, rcri, cfs [known gap: No shock-index output on web; BSG 2019 defines instability by shock index > 1.]
-- **mgmt-no-terlipressin** (web): forbidden management item present in web.plan: "[immediate] suspected varices: terlipressin 2 mg qds + prophylactic iv ceftriaxone." (+1 more) [known gap: The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan. The plan text includes "Suspected varices: terlipressin" and variceal steps for a patient without liver disease.]
 
 Guidelines:
 
@@ -9429,8 +9081,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
 - note: PANE features applied: pr_bleeding, sudden_onset, acute_onset, episodic_pain, syncope, dizziness, haemodynamic_instability, known_hypertension, vascular_risk, diaphoresis, pale_clammy, mottled_skin, pallor, alcohol_use, anaemia, raised_lactate, tachycardia, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
-- note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
+- note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: matchPathways: Diverticular Disease / Diverticulitis (17), GI Bleeding (Upper and Lower) (15), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12)
 
 </details>
@@ -9449,11 +9101,7 @@ Permutation of `lgib-unstable-cta-first`.
 | flag-warfarin | redFlags | critical | PASS | BSG guideline 2019 |  |
 | inv-cta-first | investigationInclude | critical | PASS | BSG guideline 2019 |  |
 | mgmt-reverse-warfarin | managementInclude | critical | PASS | BSG guideline 2019 |  |
-| mgmt-restart-anticoag-plan | managementInclude | quality | FAIL (known gap) | BSG guideline 2019 |  |
-
-Failure details:
-
-- **mgmt-restart-anticoag-plan** (web): no management item matched among 54 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output plans when to restart warfarin after the bleed; the only anticoagulant text is the reversal line and generic peri-operative bridging.]
+| mgmt-restart-anticoag-plan | managementInclude | quality | PASS | BSG guideline 2019 |  |
 
 Guidelines:
 
@@ -9472,8 +9120,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
 - note: PANE features applied: pr_bleeding, acute_onset, episodic_pain, dizziness, haemodynamic_instability, irregular_pulse, known_af, known_hypertension, vascular_risk, anticoagulant_use, pallor, confusion, recent_antibiotics, anaemia, raised_urea, raised_lactate, tachycardia, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
-- note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
+- note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Diverticular Disease / Diverticulitis (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10)
 
 </details>
@@ -9493,13 +9141,8 @@ Permutation of `liver-abscess-pyogenic`.
 | mgmt-metronidazole | managementInclude | critical | PASS | Amebiasis (narrative review 2003 | lib/pane-engine management index: map A06.4 to the liver_abscess protocol (amoebic branch: metronidazole 750–800 mg TDS 7–10 days then a luminal agent) and see mgmt-no-appendicectomy. |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. |
 | inv-blood-cultures | investigationInclude | quality | PASS |  |  |
-| mgmt-luminal-agent | managementInclude | quality | FAIL (known gap) | Amebiasis (narrative review 2003 | liver_abscess protocol: add paromomycin or diloxanide furoate after metronidazole for amoebic abscess. |
-| mgmt-no-routine-drainage | managementExclude | quality | FAIL (known gap) | Amebiasis (narrative review 2003 |  |
-
-Failure details:
-
-- **mgmt-luminal-agent** (web): no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No luminal amoebicide anywhere (the liver_abscess protocol also omits it).]
-- **mgmt-no-routine-drainage** (web): forbidden management item present in web.plan: "[surgical] uss-guided percutaneous aspiration / drain insertion (abscess >3 cm)." (+2 more) [known gap: Web, since the engine-matching fixes (2026-09): the Assessment management panel now follows the confirmed diagnosis (liver_abscess) instead of the PANE leader (appendicitis); the liver_abscess protocol lists USS-guided aspiration/drainage and has no amoebic branch.]
+| mgmt-luminal-agent | managementInclude | quality | PASS | Amebiasis (narrative review 2003 | liver_abscess protocol: add paromomycin or diloxanide furoate after metronidazole for amoebic abscess. |
+| mgmt-no-routine-drainage | managementExclude | quality | PASS | Amebiasis (narrative review 2003 |  |
 
 Guidelines:
 
@@ -9519,8 +9162,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: chronic_course, ruq_pain, shoulder_tip_pain, fever, anorexia, pain_worse_movement, pleuritic_chest_pain, abdominal_pain, bloody_diarrhoea, diarrhoea, abdominal_tenderness, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: liver_abscess (from the confirmed diagnosis)
-- note: PlanTab protocol: liver_abscess (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: amoebic_liver_abscess (from the confirmed diagnosis)
+- note: PlanTab protocol: amoebic_liver_abscess (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Acute Abdomen (7)
 
 </details>
@@ -9703,8 +9346,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, fever, headache, confusion, neck_stiffness, immunosuppression, steroid_use, gcs_drop, joint_pain, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: bacterial_meningitis (from the confirmed diagnosis)
+- note: PlanTab protocol: bacterial_meningitis (from the confirmed diagnosis)
 
 </details>
 
@@ -9723,13 +9366,8 @@ Guidelines:
 | mgmt-ceftriaxone-now | managementInclude | critical | PASS | NICE NG240 2024 |  |
 | mnm-meningitis-symptom-engine | mustNotMiss | quality | PASS | NICE NG240 2024; NICE NG51 2024 |  |
 | alarm-sepsis | mustAlarm | quality | PASS | NICE NG51 2024 |  |
-| mgmt-dexamethasone | managementInclude | quality | FAIL (known gap) | NICE NG240 2024 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
-| mgmt-public-health | managementInclude | quality | FAIL (known gap) | NICE NG240 2024 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
-
-Failure details:
-
-- **mgmt-dexamethasone** (web): no management item matched among 16 (web.clinicalPrompts) [known gap: Web: No dexamethasone.]
-- **mgmt-public-health** (web): no management item matched among 16 (web.clinicalPrompts) [known gap: Web: No public-health notification.]
+| mgmt-dexamethasone | managementInclude | quality | PASS | NICE NG240 2024 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-public-health | managementInclude | quality | PASS | NICE NG240 2024 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
 
 Guidelines:
 
@@ -9749,8 +9387,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, fever, headache, neck_stiffness, photophobia, non_blanching_rash, rash, nausea_vomiting, confusion, mottled_skin, gcs_drop, bilateral_leg_symptoms, elevated_wbc, raised_crp, raised_lactate, thrombocytopenia, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: bacterial_meningitis (from the confirmed diagnosis)
+- note: PlanTab protocol: bacterial_meningitis (from the confirmed diagnosis)
 
 </details>
 
@@ -9791,8 +9429,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, nausea_vomiting, pain_worse_movement, heartburn, fatigue, pallor, diaphoresis, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, pale_clammy, abdominal_tenderness, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -9870,8 +9508,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, epigastric_pain, acute_onset, colicky_pain, polyuria_polydipsia, nausea_vomiting, confusion, guarding, known_diabetes, insulin_or_sulfonylurea, kussmaul, anorexia, hyperglycaemia, ketonaemia, metabolic_acidosis, raised_creatinine, elevated_wbc, tachycardia, haemodynamic_instability, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9930,11 +9568,7 @@ Permutation of `mimic-ectopic-pregnancy`.
 | alarm-ectopic | mustAlarm | critical | PASS | NICE NG126 2019 |  |
 | inv-crossmatch | investigationInclude | critical | PASS | NICE NG126 2019 |  |
 | mgmt-emergency-surgery | managementInclude | critical | PASS | NICE NG126 2019 |  |
-| mgmt-no-medical-management-when-ruptured | managementExclude | critical | FAIL (known gap) | NICE NG126 2019 | Add ectopic dx-variants (ruptured/unstable → immediate + surgical; unruptured stable → conservative options). |
-
-Failure details:
-
-- **mgmt-no-medical-management-when-ruptured** (web): forbidden management item present in web.plan: "investigation: renal function, lfts (methotrexate suitability) (urgent)" (+1 more) [known gap: Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability tests and the methotrexate/expectant steps appear for a shocked patient (no ectopic dx-variant group).]
+| mgmt-no-medical-management-when-ruptured | managementExclude | critical | PASS | NICE NG126 2019 | Add ectopic dx-variants (ruptured/unstable → immediate + surgical; unruptured stable → conservative options). |
 
 Guidelines:
 
@@ -9996,8 +9630,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, epigastric_pain, acute_onset, diaphoresis, nausea_vomiting, night_sweats, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, pale_clammy, heartburn, smoker, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -10033,8 +9667,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, epigastric_pain, acute_onset, fatigue, nausea_vomiting, known_diabetes, known_ckd, insulin_or_sulfonylurea, diaphoresis, pale_clammy, pallor, raised_troponin, raised_creatinine, st_elevation, bradycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -10132,11 +9766,7 @@ Permutation of `mscc-prostate-cancer-weakness`.
 | level-priority | emergencyLevel | critical | PASS | NICE NG234 2023 |  |
 | inv-mri-spine | investigationInclude | critical | PASS | NICE NG234 2023 |  |
 | mgmt-mscc-safety-net | managementInclude | critical | PASS | NICE NG234 2023 |  |
-| mgmt-oncology | managementInclude | quality | FAIL (known gap) | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
-
-Failure details:
-
-- **mgmt-oncology** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No oncology referral.]
+| mgmt-oncology | managementInclude | quality | PASS | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
 
 Guidelines:
 
@@ -10155,8 +9785,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: back_pain, bone_pain, nocturnal_pain, known_malignancy, previous_surgery, cough, gait_disturbance, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
+- note: PlanTab protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: matchPathways: Breast Lump / Breast Disease (5), Post-operative Follow-up (General) (5), Skin Lesion / Excision (5)
 
 </details>
@@ -10193,8 +9823,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: back_pain, limb_weakness, focal_weakness, limb_numbness, gait_disturbance, prostate_symptoms, bilateral_leg_symptoms, sciatica, nocturnal_pain, known_malignancy, worse_lying_flat, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
+- note: PlanTab protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -10212,13 +9842,9 @@ Guidelines:
 | mgmt-no-blanket-stop-aspirin | managementExclude | critical | PASS | NICE CG184 2014 |  |
 | level-not-emergency | emergencyLevel | quality | PASS | NICE CG184 2014 | Negation handling in adaptive-triage and computeClinicalPrompts exam-text rules. |
 | inv-hpylori | investigationInclude | quality | PASS | NICE CG184 2014; Maastricht VI/Florence consensus report 2022 |  |
-| mgmt-ppi-8-weeks | managementInclude | quality | FAIL (known gap) | NICE CG184 2014 |  |
+| mgmt-ppi-8-weeks | managementInclude | quality | PASS | NICE CG184 2014 |  |
 | mgmt-repeat-ogd-gastric-ulcer | managementInclude | quality | PASS | NICE CG184 2014 |  |
 | mgmt-no-patient-hold-advice | managementExclude | quality | PASS | NICE CG184 2014 |  |
-
-Failure details:
-
-- **mgmt-ppi-8-weeks** (web): no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: peptic_ulcer protocol gives omeprazole 20 mg OD "4–8 weeks" in medications (matched only in part) — the plan text has no 8-week full-dose course for an NSAID ulcer.]
 
 Guidelines:
 
@@ -10388,8 +10014,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, perineal_pain, groin_pain, radiation_to_groin, fever, rigors, pain_worse_movement, severe_pain, scrotal_swelling, anal_pain, confusion, diaphoresis, erythema_surrounding, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, previous_surgery, testicular_pain, swelling_fluctuant_soft, crepitus_soft_tissue, skin_necrosis, elevated_wbc, anaemia, raised_crp, hyponatraemia_lab, raised_creatinine, hyperglycaemia, raised_lactate, tachycardia, haemodynamic_instability, hypotension, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from the confirmed diagnosis)
-- note: PlanTab protocol: necrotising_fasciitis (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: fournier_gangrene (from the confirmed diagnosis)
+- note: PlanTab protocol: fournier_gangrene (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), Post-operative Follow-up (General) (5)
 
 </details>
@@ -10482,8 +10108,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, suprapubic_pain, radiation_to_back, pain_worse_movement, severe_pain, pelvic_pain, back_pain, pallor, pregnant, uterine_tenderness, trauma_mechanism, mechanism_blunt, anaemia, thrombocytopenia, tachycardia, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: placental_abruption (from the confirmed diagnosis)
+- note: PlanTab protocol: placental_abruption (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10615,8 +10241,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, ruq_pain, epigastric_pain, acute_onset, headache, visual_disturbance, nausea_vomiting, pain_worse_movement, abdominal_tenderness, antiplatelet_use, urticaria_angioedema, pregnant, thrombocytopenia, raised_liver_enzymes, anaemia, proteinuria, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
+- note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -10663,8 +10289,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, epigastric_pain, dizziness, weight_loss, postprandial_pain, dehydration, pregnant, kussmaul, abdominal_tenderness, ketonaemia, positive_pregnancy_test, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hyperemesis_gravidarum (from the confirmed diagnosis)
+- note: PlanTab protocol: hyperemesis_gravidarum (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10702,10 +10328,10 @@ Guidelines:
 - alarms: Emergency now [web.triage.emergency]; Severe hypertension in pregnancy / postpartum — suspected pre-eclampsia [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
 - recommended scores: ranson, news2, web:gerdq
 - score values: (none)
-- dx variant: (none) (Breast)
+- dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, epigastric_pain, acute_onset, heartburn, headache, visual_disturbance, nausea_vomiting, abdominal_tenderness, pregnant, post_lactation, thrombocytopenia, proteinuria, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
+- note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -10723,17 +10349,15 @@ Permutation of `appendicitis-paediatric-9y`.
 | dx-appendicitis-top3 | mustRankTopK | critical | PASS | WSES Jerusalem guidelines 2020 |  |
 | level-emergency | emergencyLevel | critical | PASS | WSES Jerusalem guidelines 2020; NICE NG143 2019 |  |
 | mgmt-iv-antibiotics | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-no-adult-fixed-doses | managementExclude | critical | FAIL (known gap) |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | PASS |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
 | score-rec-pas | scoreRecommended | quality | FAIL (known gap) | Pediatric Appendicitis Score (PAS) 2002 | Add PAS to the scales and suggest it (instead of adult scores) when age < 16 with RLQ pain. |
 | mgmt-appendicectomy | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-no-gastroenteritis-discharge | managementExclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
-| variant-abscess | dxVariant | quality | FAIL (known gap) |  | Check complicated variants (generalised peritonitis → localised → abscess → phlegmon) before the uncomplicated one, and include 'abscess'/'perforated' keywords. |
+| variant-abscess | dxVariant | quality | PASS |  | Check complicated variants (generalised peritonitis → localised → abscess → phlegmon) before the uncomplicated one, and include 'abscess'/'perforated' keywords. |
 
 Failure details:
 
-- **score-rec-pas** (web): pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old.]
-- **mgmt-no-adult-fixed-doses** (web): forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+4 more) [known gap: Web: adult fixed doses with no weight or age adjustment — protocol 'co-amoxiclav 1.2 g TDS or cefuroxime 750 mg TDS + metronidazole 500 mg TDS', ondansetron 4 mg, paracetamol 1 g; prompts 'IV Piperacillin-tazobactam 4.5g TDS', 'Hartmann's 1L bolus', and the operative template's paracetamol 1 g + ibuprofen 400 mg + morphine 5 mg for a 16 kg child.]
-- **variant-abscess** (web): detected appendicitis_uncomplicated in group Acute Appendicitis; expected appendicitis_abscess [known gap: detectDxVariants still picks appendicitis_uncomplicated for 'Perforated appendicitis with periappendiceal abscess … a 3 cm abscess'.]
+- **score-rec-pas** (web): pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews]
 
 Guidelines:
 
@@ -10752,7 +10376,7 @@ Guidelines:
 - alarms: Tachycardia (for age) [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Peritonitis — possible perforated viscus [web.clinicalPrompts.safety]; Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendix > 6mm / inflamed on imaging [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=9
-- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- dx variant: appendicitis_abscess (Acute Appendicitis)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, acute_onset, fever, nausea_vomiting, diarrhoea, anorexia, pain_worse_movement, guarding, rebound_tenderness, mottled_skin, elevated_wbc, raised_crp, pelvic_free_fluid, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
@@ -10800,8 +10424,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, periumbilical_pain, acute_onset, confusion, polyuria_polydipsia, nausea_vomiting, weight_loss, guarding, mottled_skin, gcs_drop, kussmaul, hyperglycaemia, ketonaemia, metabolic_acidosis, elevated_wbc, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (12), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10902,12 +10526,8 @@ Guidelines:
 | mgmt-no-adult-fixed-doses | managementExclude | critical | PASS |  |  |
 | dx-intussusception-symptom-engine | mustRankTopK | quality | PASS |  |  |
 | inv-ultrasound | investigationInclude | quality | PASS | APSA Outcomes and Evidence-Based Practice Committee 2021 |  |
-| mgmt-fluid-resuscitation | managementInclude | quality | FAIL (known gap) | APSA Outcomes and Evidence-Based Practice Committee 2021 | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-fluid-resuscitation | managementInclude | quality | PASS | APSA Outcomes and Evidence-Based Practice Committee 2021 | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
 | mgmt-no-first-line-laparotomy | managementExclude | quality | PASS | APSA Outcomes and Evidence-Based Practice Committee 2021 |  |
-
-Failure details:
-
-- **mgmt-fluid-resuscitation** (web): no management item matched among 31 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No mL/kg fluid output; fluids appear only as adult volumes ('Hartmann's 500ml bolus, crossmatch 2 units pRBC', 'IV fluid challenge 500ml').]
 
 Guidelines:
 
@@ -10927,8 +10547,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, acute_onset, colicky_pain, episodic_pain, pallor, nausea_vomiting, bilious_vomiting, pr_bleeding, inconsolable_crying, poor_feeding, abdominal_mass, rlq_pain, ruq_pain, lethargy, redcurrant_stool, elevated_wbc, target_sign, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
-- note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: intussusception (from the confirmed diagnosis)
+- note: PlanTab protocol: intussusception (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -11009,8 +10629,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, bilious_vomiting, inconsolable_crying, poor_feeding, postprandial_pain, heartburn, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: malrotation_volvulus (from the confirmed diagnosis)
+- note: PlanTab protocol: malrotation_volvulus (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -11051,8 +10671,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, sudden_onset, acute_onset, bilious_vomiting, poor_feeding, inconsolable_crying, abdominal_distension, mottled_skin, pregnant, post_lactation, low_glucose, raised_lactate, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: malrotation_volvulus (from the confirmed diagnosis)
+- note: PlanTab protocol: malrotation_volvulus (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -11080,7 +10700,7 @@ Permutation of `trauma-paediatric-nai-bruising`.
 
 Failure details:
 
-- **mnm-nai** (web): not in top 3 of web.pane: 1. Splenic Laceration \| 2. Blunt Abdominal Trauma \| 3. Acute Pancreatitis [known gap: PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists malrotation and intussusception.]
+- **mnm-nai** (web): not in top 3 of web.pane: 1. Splenic Laceration \| 2. Blunt Abdominal Trauma \| 3. Acute Pancreatitis [known gap: PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists malrotation and intussusception. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State)]
 
 Guidelines:
 
@@ -11100,8 +10720,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, epigastric_pain, acute_onset, radiation_to_back, nausea_vomiting, bilious_vomiting, abdominal_tenderness, trauma_mechanism, mechanism_blunt, elevated_amylase, raised_liver_enzymes, tachycardia, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
+- note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -11143,8 +10763,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, projectile_vomiting, hungry_after_vomiting, poor_feeding, dehydration, failure_to_thrive, postprandial_pain, abdominal_mass, ruq_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pyloric_stenosis (from the confirmed diagnosis)
+- note: PlanTab protocol: pyloric_stenosis (from the confirmed diagnosis)
 
 </details>
 
@@ -11207,14 +10827,10 @@ Permutation of `painless-jaundice-pancreatic-head`.
 | dx-pancreatic-cancer-top3 | mustRankTopK | critical | PASS | ESMO Clinical Practice Guideline 2023 |  |
 | mgmt-no-resection | managementExclude | critical | PASS | ESMO Clinical Practice Guideline 2023; NICE NG85 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
-| flag-frailty | redFlags | quality | FAIL (known gap) |  | clinical-inference.ts or VisitRisk equivalent: flag frailty (CFS ≥5, housebound, age ≥80) against operative templates. |
+| flag-frailty | redFlags | quality | PASS |  | clinical-inference.ts or VisitRisk equivalent: flag frailty (CFS ≥5, housebound, age ≥80) against operative templates. |
 | mgmt-palliative-biliary-drainage | managementInclude | quality | PASS | ESGE Clinical Guideline 2018; NICE NG85 2018 |  |
 | mgmt-palliative-care | managementInclude | quality | PASS | ESMO Clinical Practice Guideline 2023 |  |
 | mgmt-mdt | managementInclude | quality | PASS | NICE NG85 2018 |  |
-
-Failure details:
-
-- **flag-frailty** (web): no red flag matched among 29 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No frailty/performance-status flag (CFS 6 in the PMH).]
 
 Guidelines:
 
@@ -11294,7 +10910,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
 | mgmt-thiamine | managementInclude | critical | PASS | NICE CG100 2010 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | flag-alcohol | redFlags | quality | PASS | NICE CG100 2010 |  |
@@ -11304,10 +10920,6 @@ Permutation of `pancreatitis-gallstone-mild`.
 | mgmt-early-oral-feeding | managementInclude | quality | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-cholecystectomy | managementExclude | quality | PASS | ACG Guideline 2024 |  |
 | variant-mild | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
-
-Failure details:
-
-- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
 
 Guidelines:
 
@@ -11352,17 +10964,13 @@ Permutation of `pancreatitis-gallstone-mild`.
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
 | mgmt-stop-azathioprine | managementInclude | critical | PASS | ACG Guideline 2024 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | flag-immunosuppression | redFlags | quality | PASS |  |  |
 | mgmt-steroid-cover | managementInclude | quality | PASS | AAGBI/RCP/Society for Endocrinology guideline 2020 |  |
 | mgmt-no-cholecystectomy | managementExclude | quality | PASS |  |  |
 | variant-mild | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
-
-Failure details:
-
-- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
 
 Guidelines:
 
@@ -11404,29 +11012,23 @@ Guidelines:
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
 | mgmt-same-admission-cholecystectomy | managementInclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; PONCHO trial 2015 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
 | mgmt-no-routine-ercp | managementExclude | critical | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | score-rec-bisap | scoreRecommended | quality | FAIL (known gap) | BISAP score 2008; ACG Guideline 2024 | clinical-cds.ts bisap rule: also trigger on workingDiagnosis.diseaseId === "pancreatitis" or lipase/amylase ≥3 × ULN. |
 | inv-ultrasound | investigationInclude | quality | PASS | ACG Guideline 2024 |  |
-| inv-triglycerides | investigationInclude | quality | FAIL (known gap) | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides and calcium to the aetiology work-up (ACG 2024). |
+| inv-triglycerides | investigationInclude | quality | PASS | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides and calcium to the aetiology work-up (ACG 2024). |
 | inv-calcium | investigationInclude | quality | PASS | ACG Guideline 2024 |  |
-| inv-no-early-ct | investigationExclude | quality | FAIL (known gap) | ACG Guideline 2024 | HpiTab.seedInvestigationsFromPane: carry `conditional` through, or do not seed conditional investigations. |
+| inv-no-early-ct | investigationExclude | quality | PASS | ACG Guideline 2024 | HpiTab.seedInvestigationsFromPane: carry `conditional` through, or do not seed conditional investigations. |
 | mgmt-moderate-fluids | managementInclude | quality | PASS | WATERFALL trial 2022; ACG Guideline 2024 |  |
-| mgmt-early-oral-feeding | managementInclude | quality | FAIL (known gap) | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis protocol step 3: "Early oral feeding as tolerated (within 24–72 h); NG/NJ enteral if not tolerated" (ACG 2024/AGA 2018). |
-| mgmt-no-routine-nbm | managementExclude | quality | FAIL (known gap) | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis protocol: replace routine NBM with early oral feeding (ACG 2024). |
-| variant-mild | dxVariant | quality | FAIL (known gap) | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today "No cholangitis"/"no pancreatitis" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match "moderately severe" before "severe acute pancreatitis"; move "pancreatic necrosis" out of the moderate list or check persistent organ failure first), and accept qualifiers between "mild" and "pancreatitis" (e.g. "mild acute biliary pancreatitis"). |
+| mgmt-early-oral-feeding | managementInclude | quality | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis protocol step 3: "Early oral feeding as tolerated (within 24–72 h); NG/NJ enteral if not tolerated" (ACG 2024/AGA 2018). |
+| mgmt-no-routine-nbm | managementExclude | quality | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis protocol: replace routine NBM with early oral feeding (ACG 2024). |
+| variant-mild | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today "No cholangitis"/"no pancreatitis" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match "moderately severe" before "severe acute pancreatitis"; move "pancreatic necrosis" out of the moderate list or check persistent organ failure first), and accept qualifiers between "mild" and "pancreatitis" (e.g. "mild acute biliary pancreatitis"). |
 
 Failure details:
 
 - **score-rec-bisap** (web): bisap not recommended; recommended: alvarado, ranson, news2, web:gerdq, asa, stop-bang [known gap: CDS BISAP rule fires only on a "pancreatitis"/"epigastric pain" chip plus an alcohol/gallstone/hyperlipidaemia comorbidity; it ignores the locked working diagnosis and the lipase result.]
-- **inv-triglycerides** (web): no investigation matched among 28 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Pancreatitis protocol investigations have no triglycerides (iOS radiation has them).]
-- **inv-no-early-ct** (web): forbidden investigation present in web.pane.seeded: "cect abdomen (assess pancreatic necrosis) (pancreatitis)" [known gap: HPI completion seeds "CECT abdomen (assess pancreatic necrosis)" as an urgent order, dropping the protocol's conditional "at 48–72 h if severe or not improving".]
-- **mgmt-early-oral-feeding** (web): no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No early oral feeding line: the mild variant (which has one) is not detected (see variant-mild) and the protocol says "NBM".]
-- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab and Assessment panel: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h initial)"; protocol medication "Hartmann's 500 ml Q2H — aggressive fluid resuscitation"; lipase prompt "NBM + aggressive IV fluid resuscitation".]
-- **mgmt-no-routine-nbm** (web): forbidden management item present in web.plan: "[immediate] nbm - enteral feeding via ng/nj if not tolerating po at 48 h." (+1 more) [known gap: Protocol step "NBM — enteral feeding via NG/NJ if not tolerating PO at 48 h"; lipase prompt "NBM + …".]
-- **variant-mild** (web): detected (none) in group Pancreatitis; expected pancreatitis_mild [known gap: Assessment "…No cholangitis…" selects the Cholangitis group by text before the Pancreatitis group is checked; no variant, so the Plan tab shows every phase (including necrosectomy).]
 
 Guidelines:
 
@@ -11451,7 +11053,7 @@ Guidelines:
 - alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 2450 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, news2, web:gerdq, asa, stop-bang
 - score values: (none)
-- dx variant: (none) (Pancreatitis)
+- dx variant: pancreatitis_mild (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, nausea_vomiting, postprandial_pain, worse_lying_flat, relief_sitting_forward, severe_pain, back_pain, sudden_onset, abdominal_tenderness, guarding, alcohol_use, elevated_amylase, elevated_wbc, raised_crp, raised_liver_enzymes, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
@@ -11470,21 +11072,16 @@ Permutation of `pancreatitis-gallstone-mild`.
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024; BISAP score 2008 |  |
 | mgmt-hdu-level-care | managementInclude | critical | PASS | ACG Guideline 2024; BISAP score 2008 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
 | mgmt-no-routine-ercp | managementExclude | critical | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | flag-heart-failure | redFlags | quality | PASS | WATERFALL trial 2022 |  |
 | flag-anticoagulant | redFlags | quality | PASS |  |  |
 | score-rec-bisap | scoreRecommended | quality | PASS | BISAP score 2008; ACG Guideline 2024 |  |
-| inv-triglycerides | investigationInclude | quality | FAIL (known gap) | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides and calcium. |
+| inv-triglycerides | investigationInclude | quality | PASS | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides and calcium. |
 | mgmt-moderate-fluids | managementInclude | quality | PASS | WATERFALL trial 2022; ACG Guideline 2024 |  |
 | mgmt-same-admission-cholecystectomy | managementInclude | quality | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; PONCHO trial 2015 |  |
-
-Failure details:
-
-- **inv-triglycerides** (web): no investigation matched among 33 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No triglycerides in the pancreatitis protocol.]
-- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" for a 79-year-old with EF 30% — no heart-failure caveat.]
 
 Guidelines:
 
@@ -11533,11 +11130,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 | mgmt-enteral-nutrition | managementInclude | quality | PASS | ACG Guideline 2024; NICE NG104 2018 |  |
 | mgmt-no-early-necrosectomy | managementExclude | quality | PASS | ESGE guideline 2018; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013 |  |
 | mgmt-no-tpn | managementExclude | quality | PASS | NICE NG104 2018; ACG Guideline 2024 |  |
-| variant-moderate | dxVariant | quality | FAIL (known gap) | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match "moderately severe" before "severe acute pancreatitis"; move "pancreatic necrosis" out of the moderate list or check persistent organ failure first), and accept qualifiers between "mild" and "pancreatitis" (e.g. "mild acute biliary pancreatitis"). |
-
-Failure details:
-
-- **variant-moderate** (web): detected (none) in group Pancreatitis; expected pancreatitis_moderate [known gap: "Moderately severe acute pancreatitis" contains "severe acute pancreatitis" → severe variant (ICU prefix, surgical phase) selected.]
+| variant-moderate | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match "moderately severe" before "severe acute pancreatitis"; move "pancreatic necrosis" out of the moderate list or check persistent organ failure first), and accept qualifiers between "mild" and "pancreatitis" (e.g. "mild acute biliary pancreatitis"). |
 
 Guidelines:
 
@@ -11559,7 +11152,7 @@ Guidelines:
 - alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Amylase/lipase 420 U/L — 3–10× upper limit [web.clinicalPrompts.safety]; Albumin 29 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, web:gerdq, asa, rcri
 - score values: (none)
-- dx variant: (none) (Pancreatitis)
+- dx variant: pancreatitis_moderate (Pancreatitis)
 - note: PANE features applied: abdominal_pain, acute_onset, epigastric_pain, radiation_to_back, fever, nausea_vomiting, postprandial_pain, back_pain, abdominal_tenderness, known_hypertension, vascular_risk, skin_necrosis, elevated_wbc, raised_crp, elevated_amylase, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
@@ -11578,21 +11171,16 @@ Permutation of `pancreatitis-gallstone-mild`.
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
 | flag-pregnancy | redFlags | critical | PASS | ACOG Committee Opinion No. 723 2017 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
 | mgmt-no-routine-ercp | managementExclude | critical | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-nsaid-after-20-weeks | managementExclude | critical | PASS | US FDA Drug Safety Communication 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
-| inv-no-unqualified-ct | investigationExclude | quality | FAIL (known gap) | ACOG Committee Opinion No. 723 2017; ACG Guideline 2024 | HpiTab.seedInvestigationsFromPane: keep conditionals; no ionising imaging when pregnant unless severe/not improving. |
+| inv-no-unqualified-ct | investigationExclude | quality | PASS | ACOG Committee Opinion No. 723 2017; ACG Guideline 2024 | HpiTab.seedInvestigationsFromPane: keep conditionals; no ionising imaging when pregnant unless severe/not improving. |
 | mgmt-obstetric-involvement | managementInclude | quality | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017; ACOG Committee Opinion No. 775 2019 |  |
 | mgmt-cholecystectomy-in-pregnancy | managementInclude | quality | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
 | mgmt-no-bhcg-negative-assumption | managementExclude | quality | PASS |  |  |
 | variant-mild | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today "No cholangitis"/"no pancreatitis" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. |
-
-Failure details:
-
-- **inv-no-unqualified-ct** (web): forbidden investigation present in web.pane.seeded: "cect abdomen (assess pancreatic necrosis) (pancreatitis)" [known gap: "CECT abdomen (assess pancreatic necrosis)" seeded unconditionally (conditional dropped) at 21 weeks. HpiTab.seedInvestigationsFromPane seeds every stat/urgent investigation of the top-3 PANE protocols, including CT from unrelated protocols, with no pregnancy check.]
-- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
 
 Guidelines:
 
@@ -11639,13 +11227,13 @@ Permutation of `pancreatitis-gallstone-mild`.
 | level-emergency | emergencyLevel | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012; ACG Guideline 2024 |  |
 | alarm-organ-failure | mustAlarm | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | mgmt-critical-care | managementInclude | critical | PASS | ACG Guideline 2024; Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-routine-ercp | managementExclude | critical | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | score-rec-bisap | scoreRecommended | quality | FAIL (known gap) | BISAP score 2008; ACG Guideline 2024 | clinical-cds.ts bisap rule: trigger on the working diagnosis. |
 | mgmt-enteral-nutrition | managementInclude | quality | PASS | ACG Guideline 2024; NICE NG104 2018 |  |
-| mgmt-abdominal-compartment | managementInclude | quality | FAIL (known gap) |  | Pancreatitis protocol (severe): add intra-abdominal pressure monitoring / abdominal compartment syndrome. |
+| mgmt-abdominal-compartment | managementInclude | quality | PASS |  | Pancreatitis protocol (severe): add intra-abdominal pressure monitoring / abdominal compartment syndrome. |
 | mgmt-no-early-necrosectomy | managementExclude | quality | PASS | ESGE guideline 2018; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013 |  |
 | pathway-ward-review | pathway | quality | n/a |  |  |
 | variant-severe | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today "No cholangitis"/"no pancreatitis" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match "moderately severe" before "severe acute pancreatitis"; move "pancreatic necrosis" out of the moderate list or check persistent organ failure first), and accept qualifiers between "mild" and "pancreatitis" (e.g. "mild acute biliary pancreatitis"). |
@@ -11653,8 +11241,6 @@ Permutation of `pancreatitis-gallstone-mild`.
 Failure details:
 
 - **score-rec-bisap** (web): bisap not recommended; recommended: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang [known gap: BISAP not suggested (CDS rule ignores the working diagnosis); 12 other scales are.]
-- **mgmt-abdominal-compartment** (web): no management item matched among 62 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No intra-abdominal pressure monitoring despite a documented bladder pressure of 16 mmHg.]
-- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "icu admission. aggressive resuscitation. enteral feeding via ngt/njt within 24-48 h (superior to tpn)." (+3 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" in established respiratory failure with pleural effusions.]
 
 Guidelines:
 
@@ -11705,14 +11291,10 @@ Permutation of `pancreatitis-gallstone-mild`.
 | mgmt-ercp-urgent | managementInclude | critical | PASS | ACG Guideline 2024; Tokyo Guidelines 2018 2018 |  |
 | mgmt-ercp-within-24h | managementInclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; Tokyo Guidelines 2018 2018 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | alarm-sepsis | mustAlarm | quality | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | score-rec-tg18-cholangitis | scoreRecommended | quality | PASS | Tokyo Guidelines 2018 2018 |  |
-
-Failure details:
-
-- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
 
 Guidelines:
 
@@ -11757,19 +11339,14 @@ Permutation of `pancreatitis-gallstone-mild`.
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | ACG Guideline 2024 |  |
 | flag-hypertriglyceridaemia | redFlags | critical | PASS | ACG Guideline 2024; Endocrine Society clinical practice guideline 2012 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | score-rec-bisap | scoreRecommended | quality | PASS | BISAP score 2008; ACG Guideline 2024 |  |
-| inv-triglycerides | investigationInclude | quality | FAIL (known gap) | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides. |
+| inv-triglycerides | investigationInclude | quality | PASS | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides. |
 | mgmt-tg-lowering | managementInclude | quality | PASS | Endocrine Society clinical practice guideline 2012; ACG Guideline 2024 |  |
 | mgmt-no-cholecystectomy | managementExclude | quality | PASS |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
 | variant-mild | dxVariant | quality | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
-
-Failure details:
-
-- **inv-triglycerides** (web): no investigation matched among 30 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No triglycerides in the pancreatitis protocol investigations.]
-- **mgmt-no-aggressive-fluids** (web): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
 
 Guidelines:
 
@@ -11937,11 +11514,7 @@ Permutation of `pe-postop-day5`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | level-not-emergency | emergencyLevel | quality | PASS | Pulmonary Embolism Rule-out Criteria (PERC) 2004 |  |
-| inv-no-ctpa | investigationExclude | quality | FAIL | Pulmonary Embolism Rule-out Criteria (PERC) 2004; NICE NG158 2020 |  |
-
-Failure details:
-
-- **inv-no-ctpa** (web): forbidden investigation present in web.pane.seeded: "ctpa (ct pulmonary angiography) - gold standard (pulmonary_embolism)"
+| inv-no-ctpa | investigationExclude | quality | PASS | Pulmonary Embolism Rule-out Criteria (PERC) 2004; NICE NG158 2020 |  |
 
 Guidelines:
 
@@ -12036,7 +11609,7 @@ Permutation of `perianal-abscess-simple`.
 
 Failure details:
 
-- **mnm-nsti** (web): not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Cellulitis; also in web.symptomInference#1, web.passive#2 [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal abscess, hernia, pilonidal); symptom inference ranks Fournier’s #1.]
+- **mnm-nsti** (web): not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Cellulitis; also in web.symptomInference#1, web.passive#2 [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal abscess, hernia, pilonidal); symptom inference ranks Fournier’s #1. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Infective Endocarditis \| 5. Acute Pyelonephritis]
 
 Guidelines:
 
@@ -12082,7 +11655,7 @@ Permutation of `perianal-abscess-simple`.
 
 Failure details:
 
-- **mnm-anal-neoplasia** (web): not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Anal Fissure; also in web.symptomInference#2, web.passive#2 [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2.]
+- **mnm-anal-neoplasia** (web): not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Anal Fissure; also in web.symptomInference#2, web.passive#2 [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Incarcerated / Strangulated Hernia]
 
 Guidelines:
 
@@ -12119,11 +11692,7 @@ Guidelines:
 | dx-abscess-top3 | mustRankTopK | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
 | level-same-day | emergencyLevel | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-drainage | managementInclude | critical | PASS | ASCRS clinical practice guidelines 2022 |  |
-| mgmt-no-routine-antibiotics | managementExclude | quality | FAIL (known gap) | ASCRS clinical practice guidelines 2022 |  |
-
-Failure details:
-
-- **mgmt-no-routine-antibiotics** (web): forbidden management item present in web.protocol.medications: "metronidazole 400 mg po (oral) tds (three times daily) - anaerobic cover for fistula tract" [known gap: The perianal_abscess protocol medications include oral metronidazole "anaerobic cover for fistula tract" without an indication condition; ASCRS 2022 reserves antibiotics for cellulitis, systemic infection or immunosuppression.]
+| mgmt-no-routine-antibiotics | managementExclude | quality | PASS | ASCRS clinical practice guidelines 2022 |  |
 
 Guidelines:
 
@@ -12205,17 +11774,14 @@ Guidelines:
 |---|---|---|---|---|---|
 | flag-penicillin-allergy | redFlags | critical | PASS | RCoA NAP6 2018; AAAAI/ACAAI Joint Task Force practice parameter 2022 |  |
 | mgmt-no-emergency-laparotomy | managementExclude | critical | PASS |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
-| mgmt-no-penicillin | managementExclude | critical | FAIL (known gap) | AAAAI/ACAAI Joint Task Force practice parameter 2022; NICE NG125 2019 | Allergy-aware plan generation: filter or substitute every drug line against the allergy record (penicillin class includes co-amoxiclav, pip-tazo, flucloxacillin, amoxicillin) and show the substitution. |
+| mgmt-no-penicillin | managementExclude | critical | PASS | AAAAI/ACAAI Joint Task Force practice parameter 2022; NICE NG125 2019 | Allergy-aware plan generation: filter or substitute every drug line against the allergy record (penicillin class includes co-amoxiclav, pip-tazo, flucloxacillin, amoxicillin) and show the substitution. |
 | level-not-urgent | emergencyLevel | quality | FAIL (known gap) |  | adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter. |
-| mgmt-prophylaxis-timing | managementInclude | quality | FAIL (known gap) | ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery 2013; NICE NG125 2019 | Add a surgical-prophylaxis prompt keyed on the planned procedure class (clean-contaminated colorectal → single IV dose within 60 min before incision, repeat for long cases) that reads the allergy record. |
-| mgmt-non-penicillin-alternative | managementInclude | quality | FAIL (known gap) | ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery 2013; AAAAI/ACAAI Joint Task Force practice parameter 2022 | When a penicillin allergy is recorded, substitute the allergy alternative in every antibiotic line (ASHP 2013 table) and suppress penicillin lines. |
+| mgmt-prophylaxis-timing | managementInclude | quality | PASS | ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery 2013; NICE NG125 2019 | Add a surgical-prophylaxis prompt keyed on the planned procedure class (clean-contaminated colorectal → single IV dose within 60 min before incision, repeat for long cases) that reads the allergy record. |
+| mgmt-non-penicillin-alternative | managementInclude | quality | PASS | ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery 2013; AAAAI/ACAAI Joint Task Force practice parameter 2022 | When a penicillin allergy is recorded, substitute the allergy alternative in every antibiotic line (ASHP 2013 table) and suppress penicillin lines. |
 
 Failure details:
 
 - **level-not-urgent** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority [known gap: Triage emergency_now (score 47) for an elective planning visit: 'Systemic red flag symptom' from 'collapse' in the allergy history, and 'Post-operative or recent-procedure concern' from 'drained percutaneously'.]
-- **mgmt-prophylaxis-timing** (web): no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No prophylaxis plan for the elective colectomy at all: the diverticulitis protocol is a treatment protocol for acute disease, and there is no colorectal operative template.]
-- **mgmt-non-penicillin-alternative** (web): no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No non-beta-lactam alternative in the documented plan or panel. (The uncomplicated-diverticulitis dx-variant prefix has 'ciprofloxacin + metronidazole if penicillin allergy', but the detected variant here is the abscess one, whose prefix is pip-tazo.)]
-- **mgmt-no-penicillin** (web): forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+6 more) [known gap: Penicillins despite recorded penicillin anaphylaxis: Plan tab (dx-variant 'diverticulitis_abscess' prefix 'IV antibiotics: piperacillin-tazobactam' and protocol 'oral co-amoxiclav'), protocol medications (co-amoxiclav, pip-tazo) and the negated-free-air prompt (pip-tazo). Nothing reads the allergy list. Same root cause as the seed finding 'Allergies: neither platform's plan templates check the recorded allergy'.]
 
 Guidelines:
 
@@ -12305,11 +11871,7 @@ Guidelines:
 | mgmt-no-bridging | managementExclude | critical | PASS | BRIDGE trial 2015; ACCP guideline 2022; 2017 ACC expert consensus decision pathway 2017 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | score-rec-cha2ds2-vasc | scoreRecommended | quality | PASS | 2017 ACC expert consensus decision pathway 2017 |  |
-| mgmt-resume-warfarin | managementInclude | quality | FAIL (known gap) | ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
-
-Failure details:
-
-- **mgmt-resume-warfarin** (web): no management item matched among 20 (web.clinicalPrompts) [known gap: No restart plan for warfarin after surgery.]
+| mgmt-resume-warfarin | managementInclude | quality | PASS | ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
 
 Guidelines:
 
@@ -12330,8 +11892,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, irregular_pulse, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -12416,8 +11978,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: nausea_vomiting, acute_onset, diffuse_abdominal_pain, anorexia, postprandial_pain, abdominal_pain, dyspnoea, fatigue, known_diabetes, known_hypertension, vascular_risk, sglt2_inhibitor, acei_arb_use, anticoagulant_use, previous_surgery, dehydration, kussmaul, recent_surgery, metabolic_acidosis, ketonaemia, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
+- note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -12434,14 +11996,9 @@ Guidelines:
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | level-not-urgent | emergencyLevel | quality | PASS |  |  |
 | inv-hba1c | investigationInclude | quality | PASS | CPOC guideline 2022 |  |
-| mgmt-omit-sulfonylurea | managementInclude | quality | FAIL (known gap) | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
+| mgmt-omit-sulfonylurea | managementInclude | quality | PASS | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
 | mgmt-ketone-check | managementInclude | quality | PASS | CPOC guideline 2022 |  |
-| mgmt-glucose-monitoring | managementInclude | quality | FAIL (known gap) | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
-
-Failure details:
-
-- **mgmt-omit-sulfonylurea** (web): no management item matched among 32 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No sulfonylurea instruction (hypoglycaemia while fasting).]
-- **mgmt-glucose-monitoring** (web): no management item matched among 32 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No peri-operative capillary glucose monitoring line.]
+| mgmt-glucose-monitoring | managementInclude | quality | PASS | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
 
 Guidelines:
 
@@ -12482,11 +12039,7 @@ Permutation of `periop-diabetes-sglt2-preop-withhold`.
 | mgmt-continue-basal-insulin | managementInclude | critical | PASS | CPOC guideline 2022 |  |
 | mgmt-no-stop-insulin | managementExclude | critical | PASS | CPOC guideline 2022 |  |
 | dx-appendicitis-top3 | mustRankTopK | quality | PASS |  |  |
-| inv-ketones | investigationInclude | quality | FAIL (known gap) | CPOC guideline 2022 | Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt. |
-
-Failure details:
-
-- **inv-ketones** (web): no investigation matched among 32 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Ketones appear only as a plan line ('Urine ketones — exclude diabetic ketoacidosis', addToPlan, graded as management), not as an investigation; the recorded capillary ketones (0.8) are not interpreted.]
+| inv-ketones | investigationInclude | quality | PASS | CPOC guideline 2022 | Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt. |
 
 Guidelines:
 
@@ -12526,11 +12079,7 @@ Permutation of `periop-endo-polypectomy-clopidogrel`.
 | mgmt-no-stop-aspirin | managementExclude | critical | PASS | BSG/ESGE guideline 2021; 2022 ESC guidelines 2022 |  |
 | mgmt-no-unsupervised-p2y12-stop | managementExclude | critical | PASS | BSG/ESGE guideline 2021 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
-| mgmt-defer-or-plan | managementInclude | quality | FAIL (known gap) | BSG/ESGE guideline 2021 | Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table. |
-
-Failure details:
-
-- **mgmt-defer-or-plan** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: No deferral or staged plan.]
+| mgmt-defer-or-plan | managementInclude | quality | PASS | BSG/ESGE guideline 2021 | Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table. |
 
 Guidelines:
 
@@ -12550,8 +12099,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_heart_disease, vascular_risk, known_hypertension, known_diabetes, antiplatelet_use, previous_surgery, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -12591,8 +12140,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: epigastric_pain, heartburn, known_af, known_hypertension, vascular_risk, anticoagulant_use, ppi_use, abdominal_pain, irregular_pulse, abdominal_tenderness, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: dyspepsia (from the confirmed diagnosis)
+- note: PlanTab protocol: dyspepsia (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (25), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -12675,8 +12224,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_hypertension, vascular_risk, antiplatelet_use, acei_arb_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12694,17 +12243,10 @@ Permutation of `periop-nela-frail-emergency-laparotomy`.
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | flag-delirium-risk | redFlags | quality | PASS | NICE CG103 2023; CPOC/BGS guideline 2021 |  |
 | score-rec-cfs | scoreRecommended | quality | PASS | CPOC/BGS guideline 2021 |  |
-| inv-iron-studies | investigationInclude | quality | FAIL (known gap) | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | See periop-preop-rcri-high-risk-hemicolectomy/inv-iron-studies. |
-| mgmt-cga | managementInclude | quality | FAIL (known gap) | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input. |
-| mgmt-delirium-prevention | managementInclude | quality | FAIL (known gap) | NICE CG103 2023; CPOC/BGS guideline 2021 | See flag-delirium-risk. |
-| mgmt-shared-decision | managementInclude | quality | FAIL (known gap) | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision. |
-
-Failure details:
-
-- **inv-iron-studies** (web): no investigation matched among 18 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Hb 9.4 g/dL with a caecal cancer: only 'FBC (exclude iron-deficiency anaemia)'; no iron studies or pre-operative iron plan.]
-- **mgmt-cga** (web): no management item matched among 23 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: CFS is suggested but no comprehensive geriatric assessment or elderly-medicine input.]
-- **mgmt-delirium-prevention** (web): no management item matched among 23 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No delirium prevention plan.]
-- **mgmt-shared-decision** (web): no management item matched among 23 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No capacity / shared decision-making prompt with dementia.]
+| inv-iron-studies | investigationInclude | quality | PASS | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | See periop-preop-rcri-high-risk-hemicolectomy/inv-iron-studies. |
+| mgmt-cga | managementInclude | quality | PASS | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input. |
+| mgmt-delirium-prevention | managementInclude | quality | PASS | NICE CG103 2023; CPOC/BGS guideline 2021 | See flag-delirium-risk. |
+| mgmt-shared-decision | managementInclude | quality | PASS | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision. |
 
 Guidelines:
 
@@ -12749,18 +12291,14 @@ Guidelines:
 | variant-peritonitis | dxVariant | critical | PASS | WSES guidelines 2017 | Match Hinchey keywords on word boundaries (\bhinchey (i\|1)\b) and check the peritonitis variant first (dx-variants.ts diverticulitis group); add a vector to lint:dx-phases. |
 | score-rec-cfs | scoreRecommended | quality | PASS | CPOC/BGS guideline 2021; National Emergency Laparotomy Audit (NELA) 2023 |  |
 | score-rec-p-possum | scoreRecommended | quality | FAIL (known gap) | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 | Suggest P-POSSUM/NELA risk on a locked emergency-surgery diagnosis (perforation, peritonitis, obstruction) and on the emergency-surgery visit type. |
-| mgmt-mortality-risk | managementInclude | quality | FAIL (known gap) | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 | See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing). |
-| mgmt-geriatric-input | managementInclude | quality | FAIL (known gap) | CPOC/BGS guideline 2021; National Emergency Laparotomy Audit (NELA) 2023 | Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021). |
-| mgmt-shared-decision | managementInclude | quality | FAIL (known gap) | CPOC/BGS guideline 2021 | Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery. |
-| mgmt-doac-plan | managementInclude | quality | FAIL (known gap) | 2022 ESC guidelines 2022 | Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022). |
+| mgmt-mortality-risk | managementInclude | quality | PASS | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 | See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing). |
+| mgmt-geriatric-input | managementInclude | quality | PASS | CPOC/BGS guideline 2021; National Emergency Laparotomy Audit (NELA) 2023 | Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021). |
+| mgmt-shared-decision | managementInclude | quality | PASS | CPOC/BGS guideline 2021 | Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery. |
+| mgmt-doac-plan | managementInclude | quality | PASS | 2022 ESC guidelines 2022 | Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022). |
 
 Failure details:
 
-- **score-rec-p-possum** (web): p-possum not recommended; recommended: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists in the CDS list.]
-- **mgmt-mortality-risk** (web): no management item matched among 68 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No documented mortality risk in any output.]
-- **mgmt-geriatric-input** (web): no management item matched among 68 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: CFS is suggested, but no elderly-medicine/geriatric review for an 84-year-old CFS 6 undergoing emergency laparotomy (NELA standard).]
-- **mgmt-shared-decision** (web): no management item matched among 68 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No goals-of-care, treatment escalation or resuscitation-status prompt.]
-- **mgmt-doac-plan** (web): no management item matched among 68 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Apixaban taken this morning is covered only by the generic 'hold DOAC 48–72h pre-op' line, which does not apply to emergency surgery; no timing, anti-Xa or haemostatic plan.]
+- **score-rec-p-possum** (web): p-possum not recommended; recommended: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists in the CDS list. \| iOS CI 2026-09-25 (run 36169134350, database mode): p-possum not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews]
 
 Guidelines:
 
@@ -12811,7 +12349,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-no-insulin-dextrose-mild-k** (web): forbidden management item present in web.clinicalPrompts: "• iv insulin-glucose: 10 units soluble insulin with 25 g glucose - shift k⁺ intracellularly; monitor..." (+1 more) [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0).]
+- **mgmt-no-insulin-dextrose-mild-k** (web): forbidden management item present in web.clinicalPrompts: "• iv insulin-glucose: 10 units soluble insulin with 25 g glucose - shift k⁺ intracellularly; monitor..." (+1 more) [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1..."]
 
 Guidelines:
 
@@ -12832,8 +12370,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dehydration, polyuria_polydipsia, known_ckd, known_hypertension, vascular_risk, nsaid_use, acei_arb_use, anticholinergic_or_opioid, anticoagulant_use, previous_surgery, oliguria, recent_surgery, bowel_resection, raised_creatinine, raised_urea, raised_crp, acute_onset, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12941,13 +12479,9 @@ Guidelines:
 | mnm-precipitants | mustNotMiss | quality | PASS | NICE CG103 2023 |  |
 | inv-precipitant-screen | investigationInclude | quality | PASS | NICE CG103 2023 |  |
 | mgmt-medication-review | managementInclude | quality | PASS | NICE CG103 2023 |  |
-| mgmt-non-pharmacological | managementInclude | quality | FAIL (known gap) | NICE CG103 2023 | See flag-delirium. |
+| mgmt-non-pharmacological | managementInclude | quality | PASS | NICE CG103 2023 | See flag-delirium. |
 | mgmt-no-routine-antipsychotic | managementExclude | quality | PASS | NICE CG103 2023 |  |
 | pathway-ward-review | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **mgmt-non-pharmacological** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: No non-pharmacological delirium care.]
 
 Guidelines:
 
@@ -12967,8 +12501,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: confusion, known_hypertension, vascular_risk, anticholinergic_or_opioid, anticoagulant_use, previous_surgery, reduced_breath_sounds, urinary_retention_symptoms, palpable_bladder, recent_surgery, raised_crp, acute_onset, hypoxia, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: delirium (from the confirmed diagnosis)
+- note: PlanTab protocol: delirium (from the confirmed diagnosis)
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -12986,7 +12520,7 @@ Guidelines:
 | mnm-postop-causes | mustNotMiss | quality | PASS | ACCM/IDSA 2008 |  |
 | level-not-emergency | emergencyLevel | quality | FAIL (known gap) | ACCM/IDSA 2008 | Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria. |
 | score-rec-news2 | scoreRecommended | quality | PASS | RCP 2017 |  |
-| mgmt-clinical-source-review | managementInclude | quality | FAIL (known gap) | ACCM/IDSA 2008 | Post-operative fever prompt by day (early: atelectasis/inflammatory; day 5+: leak/SSI/collection; UTI, line, VTE). |
+| mgmt-clinical-source-review | managementInclude | quality | PASS | ACCM/IDSA 2008 | Post-operative fever prompt by day (early: atelectasis/inflammatory; day 5+: leak/SSI/collection; UTI, line, VTE). |
 | mgmt-no-broad-spectrum | managementExclude | quality | PASS | ACCM/IDSA 2008 | Assessment panel: follow the locked working diagnosis, not the PANE top (findings/hpb.md gap 7). |
 | mgmt-no-anticoag-bridging-prompt | managementExclude | quality | PASS | NICE NG89 2018 |  |
 | pathway-ward-review | pathway | quality | n/a |  |  |
@@ -12994,7 +12528,6 @@ Guidelines:
 Failure details:
 
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=152); expected ≤ urgent [known gap: Triage emergency_now (score 152) for T 38.2, HR 94 on day 1: 'Post-operative concern' (urgent) for any 'post-op' word, 'Post-op fever — source must be identified', 'Fever', and the anticoagulant reason (prophylactic enoxaparin).]
-- **mgmt-clinical-source-review** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: No chest physiotherapy/mobilisation/wound review line; the Assessment panel shows the cholecystitis protocol (PANE top).]
 
 Guidelines:
 
@@ -13015,8 +12548,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, ruq_pain, shoulder_tip_pain, fever, pain_worse_movement, pleuritic_chest_pain, recent_surgery, previous_surgery, anticoagulant_use, reduced_breath_sounds, nausea_vomiting, elevated_wbc, raised_crp, postop_fever, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: postoperative_fever (from the confirmed diagnosis)
+- note: PlanTab protocol: postoperative_fever (from the confirmed diagnosis)
 - note: matchPathways: Post-operative Follow-up (General) (10), Soft Tissue Mass / Lipoma (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -13078,14 +12611,10 @@ Permutation of `pe-postop-day5`.
 | alarm-shock | mustAlarm | critical | PASS | 2019 ESC guidelines 2019 |  |
 | mgmt-reperfusion | managementInclude | critical | PASS | 2019 ESC guidelines 2019 |  |
 | mgmt-critical-care | managementInclude | critical | PASS | 2019 ESC guidelines 2019 |  |
-| mgmt-no-unqualified-thrombolysis | managementExclude | critical | FAIL (known gap) | 2019 ESC guidelines 2019 | Qualify the alteplase medication and key point with the ESC 2019 contraindications (major surgery within 3 weeks) and put surgical embolectomy / catheter-directed therapy first when the patient is post-operative. |
+| mgmt-no-unqualified-thrombolysis | managementExclude | critical | PASS | 2019 ESC guidelines 2019 | Qualify the alteplase medication and key point with the ESC 2019 contraindications (major surgery within 3 weeks) and put surgical embolectomy / catheter-directed therapy first when the patient is post-operative. |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | inv-echo-or-ctpa | investigationInclude | quality | PASS | 2019 ESC guidelines 2019 |  |
 | mgmt-ufh | managementInclude | quality | PASS | 2019 ESC guidelines 2019 |  |
-
-Failure details:
-
-- **mgmt-no-unqualified-thrombolysis** (web): forbidden management item present in web.protocol.medications: "alteplase 10 mg iv bolus, then 90 mg over 2 hours iv (intravenous) stat (once) - massive ..." (+2 more) [known gap: The pulmonary_embolism protocol management step is qualified ('if no contraindication'), but its medications list 'Alteplase 10 mg IV bolus, then 90 mg over 2 hours … Massive PE with haemodynamic compromise' and the key point 'systemic thrombolysis (alteplase 100 mg IV over 2 hours) is life-saving' with no contraindication check, 6 days after a laparotomy.]
 
 Guidelines:
 
@@ -13152,8 +12681,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: acute_onset, chest_pain, dyspnoea, cough, pleuritic_chest_pain, fever, pain_worse_movement, productive_cough, confusion, known_copd, ppi_use, anticoagulant_use, previous_surgery, purulent_sputum, crackles, bronchial_breathing, recent_surgery, wound_pain, smoker, vascular_risk, elevated_wbc, raised_crp, raised_lactate, raised_urea, consolidation, postop_fever, tachycardia, tachypnoea, hypoxia, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
+- note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -13171,16 +12700,12 @@ Permutation of `periop-postop-ssi-superficial`.
 | dx-ssi-or-collection-top3 | mustRankTopK | critical | PASS | NICE NG125 2019; WSES guidelines 2017 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | Surviving Sepsis Campaign 2021 |  |
 | alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-drainage | managementInclude | critical | FAIL (known gap) | WSES guidelines 2017 | Add an organ/space SSI step to the SSI protocol: CT-guided percutaneous drainage of accessible collections (WSES 2017), relaparotomy for diffuse peritonitis. |
+| mgmt-drainage | managementInclude | critical | PASS | WSES guidelines 2017 | Add an organ/space SSI step to the SSI protocol: CT-guided percutaneous drainage of accessible collections (WSES 2017), relaparotomy for diffuse peritonitis. |
 | mgmt-iv-antibiotics | managementInclude | critical | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2017 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-glycaemic-control | managementInclude | quality | PASS | CPOC guideline 2022 |  |
 | mgmt-no-emergency-laparotomy | managementExclude | quality | PASS |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
-
-Failure details:
-
-- **mgmt-drainage** (web): no management item matched among 51 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The surgical_site_infection protocol management has superficial wound opening and 'Deep incisional SSI: formal surgical debridement', but no radiological drainage of an organ-space collection; 'CT-guided drainage' appears only in the protocol red flags. The negated 'no generalised peritonism' adds 'Emergency laparotomy consent'.]
 
 Guidelines:
 
@@ -13264,14 +12789,13 @@ Guidelines:
 | dx-retention-top3 | mustRankTopK | critical | PASS | Postoperative urinary retention 2009 |  |
 | mgmt-catheterise | managementInclude | critical | PASS | Postoperative urinary retention 2009; EAU guidelines 2023 |  |
 | level-not-emergency | emergencyLevel | quality | FAIL (known gap) |  | Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria. |
-| inv-no-acute-psa | investigationExclude | quality | FAIL (known gap) | PHE Prostate Cancer Risk Management Programme 2016 | Remove PSA from the acute retention investigations; keep 'PSA at ≥6 weeks if indicated' in follow-up. |
+| inv-no-acute-psa | investigationExclude | quality | PASS | PHE Prostate Cancer Risk Management Programme 2016 | Remove PSA from the acute retention investigations; keep 'PSA at ≥6 weeks if indicated' in follow-up. |
 | mgmt-alpha-blocker-twoc | managementInclude | quality | PASS | EAU guidelines 2023 |  |
 | pathway-ward-review | pathway | quality | n/a |  |  |
 
 Failure details:
 
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=45); expected ≤ urgent [known gap: Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.]
-- **inv-no-acute-psa** (web): forbidden investigation present in web.plan.investigations: "u&e, egfr, psa (once catheterised)" (+1 more) [known gap: The urinary_retention protocol lists 'U&E, eGFR, PSA (once catheterised)' as an urgent investigation (it also says 'PSA reassay at 6 weeks'), and the preventative prompt adds PSA. PSA is falsely raised by retention and catheterisation.]
 
 Guidelines:
 
@@ -13316,14 +12840,12 @@ Permutation of `periop-nela-frail-emergency-laparotomy`.
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | inv-no-unqualified-ct | investigationExclude | quality | FAIL (known gap) | ACOG Committee Opinion 775 2019 | When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6). |
 | mgmt-vte-prophylaxis | managementInclude | quality | PASS | RCOG Green-top Guideline 37a 2015; SAGES guidelines 2017 |  |
-| mgmt-left-uterine-displacement | managementInclude | quality | FAIL (known gap) | SAGES guidelines 2017 | See mgmt-obstetric-involvement. |
-| mgmt-antenatal-steroids | managementInclude | quality | FAIL (known gap) | NICE NG25 2022 | See mgmt-obstetric-involvement. |
+| mgmt-left-uterine-displacement | managementInclude | quality | PASS | SAGES guidelines 2017 | See mgmt-obstetric-involvement. |
+| mgmt-antenatal-steroids | managementInclude | quality | PASS | NICE NG25 2022 | See mgmt-obstetric-involvement. |
 
 Failure details:
 
-- **inv-no-unqualified-ct** (web): forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (transition point, ischaemia, closed loop)" (+3 more) [known gap: 'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PANE seeding, unqualified at 29 weeks although MRI has been done. The pelvic-free-fluid prompt also fires 'Ruptured ectopic protocol' at 29 weeks.]
-- **mgmt-left-uterine-displacement** (web): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No positioning advice.]
-- **mgmt-antenatal-steroids** (web): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No antenatal corticosteroid consideration at 29 weeks.]
+- **inv-no-unqualified-ct** (web): forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis with iv contrast (transition point, ischaemia, closed loop) (adhesion_obstruct..." (+1 more) [known gap: 'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PANE seeding, unqualified at 29 weeks although MRI has been done. The pelvic-free-fluid prompt also fires 'Ruptured ectopic protocol' at 29 weeks. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast (defines level, cause, strangulation - sensitivity 94%)"]
 
 Guidelines:
 
@@ -13363,7 +12885,7 @@ Guidelines:
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | level-not-urgent | emergencyLevel | quality | PASS | NICE NG45 2016 |  |
 | score-rec-asa | scoreRecommended | quality | FAIL (known gap) | ASA Physical Status Classification System 2020 | Trigger ASA on encounter type (pre-operative assessment / elective surgery visit) and on a confirmed operative plan, not only on symptom words. |
-| inv-pregnancy-status | investigationInclude | quality | FAIL | NICE NG45 2016 |  |
+| inv-pregnancy-status | investigationInclude | quality | PASS | NICE NG45 2016 |  |
 | inv-no-routine-coag | investigationExclude | quality | FAIL (known gap) | NICE NG45 2016 | preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt. |
 | inv-no-routine-ecg | investigationExclude | quality | PASS | NICE NG45 2016 |  |
 | mgmt-no-fasting-from-midnight | managementExclude | quality | FAIL (known gap) | ESA guideline 2011 | Replace with 'Solids until 6 h and clear fluids until 2 h before anaesthesia' (ESA 2011) in the lap chole, appendicectomy and hernia templates. |
@@ -13372,7 +12894,6 @@ Guidelines:
 Failure details:
 
 - **score-rec-asa** (web): asa not recommended; recommended: asge-cbd, news2 [known gap: getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (Perioperative tab) is not set by the harness, so this may pass in the app once that tab is filled.]
-- **inv-pregnancy-status** (web): no investigation matched among 23 (web.pane.seeded, web.clinicalPrompts)
 - **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.]
 - **mgmt-no-fasting-from-midnight** (web): forbidden management item present in web.clinicalPrompts: "...────────────────────────────────────────── pre-operative: • nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single..." [known gap: The lap_chole_pathway operative template starts 'NBM from midnight (or ≥ 6h solids / 2h clear fluids)'.]
 - **mgmt-no-routine-antibiotic-prophylaxis** (web): forbidden management item present in web.clinicalPrompts: "... nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of s..." [known gap: The lap chole template orders 'IV Co-amoxiclav 1.2g at induction (single prophylactic dose)' unconditionally.]
@@ -13397,8 +12918,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13417,13 +12938,12 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | mgmt-correct-k-before-surgery | managementInclude | critical | PASS | UK Kidney Association 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | score-rec-rcri | scoreRecommended | quality | PASS | Revised Cardiac Risk Index (Lee) 1999 |  |
-| mgmt-dialysis-timing | managementInclude | quality | FAIL (known gap) | UK Kidney Association 2020 | In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'. |
+| mgmt-dialysis-timing | managementInclude | quality | PASS | UK Kidney Association 2020 | In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'. |
 | mgmt-no-unadjusted-lmwh | managementExclude | quality | FAIL (known gap) | NICE NG89 2018 | Operative templates: 'LMWH dose-adjusted for renal function (UFH if eGFR <30 or dialysis per local protocol)' when creatinine/eGFR or dialysis is recorded. |
 | mgmt-no-nsaid | managementExclude | quality | PASS | NICE NG203 2021 |  |
 
 Failure details:
 
-- **mgmt-dialysis-timing** (web): no management item matched among 29 (web.clinicalPrompts) [known gap: The hyperkalaemia prompt fires (ECG, calcium not given at 6.2, insulin-dextrose, 'Surgery DEFERRED — K⁺ must be < 5.5') but never mentions dialysis for a haemodialysis patient.]
 - **mgmt-no-unadjusted-lmwh** (web): forbidden management item present in web.clinicalPrompts: "...iclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of surgery; ted stockings. • iv access; identify allergy..." [known gap: The lap chole template orders 'LMWH (Enoxaparin 40mg SC) night before + day of surgery' with no renal qualification for a dialysis patient.]
 
 Guidelines:
@@ -13446,8 +12966,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_ckd, known_hypertension, vascular_risk, previous_surgery, anaemia, raised_creatinine, raised_urea, hyperkalaemia_lab, us_gallstones, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -13465,11 +12985,7 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | flag-latex-allergy | redFlags | critical | PASS | RCoA NAP6 2018 |  |
 | mgmt-latex-free | managementInclude | critical | PASS | AAGBI safety guideline 2009; RCoA NAP6 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
-| mgmt-first-on-list | managementInclude | quality | FAIL (known gap) | AAGBI safety guideline 2009 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
-
-Failure details:
-
-- **mgmt-first-on-list** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: No 'first on the list' instruction.]
+| mgmt-first-on-list | managementInclude | quality | PASS | AAGBI safety guideline 2009 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
 
 Guidelines:
 
@@ -13489,8 +13005,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, wheeze, urticaria_angioedema, pruritus, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13527,8 +13043,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, steroid_use, immunosuppression, joint_pain, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13547,11 +13063,7 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | mgmt-trigger-free-anaesthesia | managementInclude | critical | PASS | Association of Anaesthetists guideline 2021 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | mgmt-dantrolene | managementInclude | quality | PASS | Association of Anaesthetists guideline 2021 |  |
-| mgmt-mh-unit-referral | managementInclude | quality | FAIL (known gap) | Association of Anaesthetists guideline 2021 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
-
-Failure details:
-
-- **mgmt-mh-unit-referral** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No referral of the untested relative to an MH unit.]
+| mgmt-mh-unit-referral | managementInclude | quality | PASS | Association of Anaesthetists guideline 2021 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
 
 Guidelines:
 
@@ -13570,8 +13082,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_malignancy, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13612,8 +13124,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, fatigue, known_hypertension, vascular_risk, dyspnoea, previous_surgery, us_gallstones, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13633,15 +13145,9 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | score-rec-rcri | scoreRecommended | quality | PASS | 2022 ESC guidelines 2022; Revised Cardiac Risk Index (Lee) 1999 |  |
 | score-rec-asa | scoreRecommended | quality | PASS | ASA Physical Status Classification System 2020 |  |
 | inv-natriuretic-peptide-or-troponin | investigationInclude | quality | PASS | 2022 ESC guidelines 2022 |  |
-| inv-echocardiography | investigationInclude | quality | FAIL (known gap) | 2022 ESC guidelines 2022 | See inv-natriuretic-peptide-or-troponin. |
-| inv-iron-studies | investigationInclude | quality | FAIL (known gap) | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017). |
-| mgmt-functional-capacity | managementInclude | quality | FAIL (known gap) | 2022 ESC guidelines 2022 | Add a functional-capacity question to the pre-operative prompt set (ESC 2022). |
-
-Failure details:
-
-- **inv-echocardiography** (web): no investigation matched among 18 (web.plan.investigations, web.clinicalPrompts) [known gap: No echocardiography suggested for known HFrEF (EF 35%) with poor functional capacity before cancer surgery.]
-- **inv-iron-studies** (web): no investigation matched among 18 (web.plan.investigations, web.clinicalPrompts) [known gap: Hb 10.8 g/dL before major cancer surgery: only 'FBC (exclude iron-deficiency anaemia)' from the colorectal protocol; no ferritin/iron studies or pre-operative iron plan (the severe_anaemia prompt needs Hb <8).]
-- **mgmt-functional-capacity** (web): no management item matched among 32 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Functional capacity (METs / two flights) is never asked for or documented; the colorectal_cancer protocol and prompts have no pre-operative risk content.]
+| inv-echocardiography | investigationInclude | quality | PASS | 2022 ESC guidelines 2022 | See inv-natriuretic-peptide-or-troponin. |
+| inv-iron-studies | investigationInclude | quality | PASS | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017). |
+| mgmt-functional-capacity | managementInclude | quality | PASS | 2022 ESC guidelines 2022 | Add a functional-capacity question to the pre-operative prompt set (ESC 2022). |
 
 Guidelines:
 
@@ -13705,8 +13211,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: ruq_pain, episodic_pain, known_hypertension, vascular_risk, antiplatelet_use, acei_arb_use, known_heart_disease, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
+- note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pre-operative Assessment (10), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7)
 
 </details>
@@ -13798,14 +13304,9 @@ Permutation of `periop-vte-caprini-high-cancer-surgery`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | flag-bleeding | redFlags | critical | PASS | NICE NG89 2018 |  |
-| mgmt-mechanical-prophylaxis | managementInclude | critical | FAIL (known gap) | NICE NG89 2018; ACCP 9th edition 2012 | See periop-vte-caprini-high-cancer-surgery; when bleeding risk outweighs VTE risk, suggest mechanical prophylaxis and a daily reassessment. |
+| mgmt-mechanical-prophylaxis | managementInclude | critical | PASS | NICE NG89 2018; ACCP 9th edition 2012 | See periop-vte-caprini-high-cancer-surgery; when bleeding risk outweighs VTE risk, suggest mechanical prophylaxis and a daily reassessment. |
 | mgmt-no-lmwh-now | managementExclude | critical | PASS | NICE NG89 2018 |  |
-| mgmt-reassess-vte-bleeding | managementInclude | quality | FAIL (known gap) | NICE NG89 2018 | See mgmt-mechanical-prophylaxis. |
-
-Failure details:
-
-- **mgmt-mechanical-prophylaxis** (web): no management item matched among 40 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No VTE decision at all on post-operative day 1: the plan is the peptic_ulcer protocol (with 'OGD within 24 h' after an operation that already controlled the bleed). No LMWH is suggested either, so the no-LMWH check passes by omission.]
-- **mgmt-reassess-vte-bleeding** (web): no management item matched among 40 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No daily VTE/bleeding reassessment.]
+| mgmt-reassess-vte-bleeding | managementInclude | quality | PASS | NICE NG89 2018 | See mgmt-mechanical-prophylaxis. |
 
 Guidelines:
 
@@ -13843,14 +13344,12 @@ Guidelines:
 | flag-dysphagia | redFlags | critical | PASS | NICE NG12 2015 |  |
 | inv-imaging-or-endoscopy | investigationInclude | critical | PASS | NICE NG12 2015; ESGE Guideline 2020 |  |
 | mnm-pouch | mustNotMiss | quality | FAIL (known gap) | ESGE Guideline 2020 | Add a pharyngeal pouch node (high dysphagia, regurgitation of undigested food, halitosis, gurgling, aspiration) and a K22.5 protocol. |
-| inv-barium-first | investigationInclude | quality | FAIL (known gap) | ESGE Guideline 2020 |  |
-| mgmt-pouch-treatment-options | managementInclude | quality | FAIL (known gap) | ESGE Guideline 2020 |  |
+| inv-barium-first | investigationInclude | quality | PASS | ESGE Guideline 2020 |  |
+| mgmt-pouch-treatment-options | managementInclude | quality | PASS | ESGE Guideline 2020 |  |
 
 Failure details:
 
-- **mnm-pouch** (web): not in top 3 of web.pane: 1. Oesophageal Carcinoma \| 2. Oesophageal Stricture (Benign) \| 3. Achalasia [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump.]
-- **inv-barium-first** (web): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K22.5; no output mentions a contrast swallow.]
-- **mgmt-pouch-treatment-options** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No protocol for K22.5.]
+- **mnm-pouch** (web): not in top 3 of web.pane: 1. Oesophageal Carcinoma \| 2. Oesophageal Stricture (Benign) \| 3. Achalasia [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Oesophageal / Gastric Carcinoma \| 2. Gastro-oesophageal Reflux Disease \| 3. Pancreatic Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Acute Coronary Syndrome; also in ios.triage#3]
 
 Guidelines:
 
@@ -13870,8 +13369,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: dysphagia, chronic_course, neck_pain, regurgitation, aspiration_symptoms, weight_loss, progressive_course, dysphagia_solids, cough, dysphagia_progressive, known_hypertension, vascular_risk, postprandial_pain, crackles, undigested_food_vomit, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pharyngeal_pouch (from the confirmed diagnosis)
+- note: PlanTab protocol: pharyngeal_pouch (from the confirmed diagnosis)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -13942,8 +13441,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -13965,7 +13464,7 @@ Guidelines:
 | score-rec-boey | scoreRecommended | quality | FAIL (known gap) | WSES guidelines 2020; Boey score (perforated peptic ulcer) 1987 |  |
 | inv-group-and-save | investigationInclude | quality | PASS |  |  |
 | inv-h-pylori | investigationInclude | quality | PASS | WSES guidelines 2020 |  |
-| inv-no-urgent-ogd-in-perforation | investigationExclude | quality | FAIL (known gap) | WSES guidelines 2020 | Add a perforated-ulcer variant (K25–K28 .1/.2/.5/.6) to a peptic-ulcer group separate from 'Upper GI Bleed'; defer OGD to follow-up. |
+| inv-no-urgent-ogd-in-perforation | investigationExclude | quality | PASS | WSES guidelines 2020 | Add a perforated-ulcer variant (K25–K28 .1/.2/.5/.6) to a peptic-ulcer group separate from 'Upper GI Bleed'; defer OGD to follow-up. |
 | mgmt-ppi | managementInclude | quality | PASS | WSES guidelines 2020 |  |
 | mgmt-stop-nsaid | managementInclude | quality | PASS | WSES guidelines 2020 |  |
 | mgmt-h-pylori-eradication | managementInclude | quality | PASS | WSES guidelines 2020 |  |
@@ -13973,8 +13472,7 @@ Guidelines:
 
 Failure details:
 
-- **score-rec-boey** (web): boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform.]
-- **inv-no-urgent-ogd-in-perforation** (web): forbidden investigation present in web.plan.investigations: "upper gi endoscopy (ogd)" [known gap: Web: K27.5 maps to the peptic_ulcer protocol and its 'Upper GI endoscopy (OGD) (urgent)' investigation is shown for a free perforation; ICD K25–K28 also routes the dx-variant group to 'Upper GI Bleed'.]
+- **score-rec-boey** (web): boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews]
 
 Guidelines:
 
@@ -14109,13 +13607,8 @@ Guidelines:
 | mgmt-no-nitrofurantoin | managementExclude | critical | PASS | NICE NG111 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | NICE NG111 2018 |  |
 | level-urgent | emergencyLevel | quality | PASS | NICE NG111 2018 |  |
-| inv-blood-culture | investigationInclude | quality | FAIL | NICE NG51 2024 |  |
-| mgmt-ng111-antibiotic | managementInclude | quality | FAIL (known gap) | NICE NG111 2018 | Pyelonephritis protocol with NG111 options. |
-
-Failure details:
-
-- **inv-blood-culture** (web): no investigation matched among 11 (web.clinicalPrompts)
-- **mgmt-ng111-antibiotic** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: The only antibiotic is pip-tazo from the SIRS and peritonism prompts; no NG111 choice.]
+| inv-blood-culture | investigationInclude | quality | PASS | NICE NG51 2024 |  |
+| mgmt-ng111-antibiotic | managementInclude | quality | PASS | NICE NG111 2018 | Pyelonephritis protocol with NG111 options. |
 
 Guidelines:
 
@@ -14135,8 +13628,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, loin_pain, fever, rigors, nausea_vomiting, dysuria, frequency_urgency, pain_worse_movement, oestrogen_use, renal_angle_tenderness, abdominal_tenderness, positive_urinalysis, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pyelonephritis (from the confirmed diagnosis)
+- note: PlanTab protocol: pyelonephritis (from the confirmed diagnosis)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -14161,12 +13654,8 @@ Permutation of `pyelonephritis-adult-female`.
 | mgmt-no-nsaid-pregnancy | managementExclude | critical | PASS | FDA Drug Safety Communication 2020 |  |
 | mgmt-no-cholecystectomy | managementExclude | critical | PASS | NICE NG111 2018 |  |
 | mgmt-no-laparotomy | managementExclude | critical | PASS | NICE NG111 2018 |  |
-| mgmt-ng111-pregnancy-antibiotic | managementInclude | quality | FAIL (known gap) | NICE NG111 2018 | Map O23.0/N10 to a pyelonephritis protocol with an NG111 pregnancy branch. |
+| mgmt-ng111-pregnancy-antibiotic | managementInclude | quality | PASS | NICE NG111 2018 | Map O23.0/N10 to a pyelonephritis protocol with an NG111 pregnancy branch. |
 | mgmt-no-trimethoprim | managementExclude | quality | PASS | NICE NG111 2018 |  |
-
-Failure details:
-
-- **mgmt-ng111-pregnancy-antibiotic** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: Web: The only antibiotic is pip-tazo from the SIRS prompt; no cefalexin or cefuroxime (O23.0 has no protocol).]
 
 Guidelines:
 
@@ -14186,8 +13675,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, loin_pain, fever, rigors, nausea_vomiting, dysuria, pain_worse_movement, renal_angle_tenderness, pregnant, positive_urinalysis, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pyelonephritis (from the confirmed diagnosis)
+- note: PlanTab protocol: pyelonephritis (from the confirmed diagnosis)
 
 </details>
 
@@ -14336,11 +13825,7 @@ Permutation of `renal-colic-typical`.
 | mgmt-iv-antibiotics | managementInclude | critical | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG51 2024 |  |
 | mgmt-no-definitive-stone-treatment | managementExclude | critical | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-no-laparotomy | managementExclude | critical | PASS | EAU Guidelines on Urolithiasis 2024 |  |
-| mgmt-urology | managementInclude | quality | FAIL (known gap) | NICE NG148 2019 | As flag-infected-obstruction. |
-
-Failure details:
-
-- **mgmt-urology** (web): no management item matched among 27 (web.clinicalPrompts) [known gap: Web: No urology referral.]
+| mgmt-urology | managementInclude | quality | PASS | NICE NG148 2019 | As flag-infected-obstruction. |
 
 Guidelines:
 
@@ -14361,8 +13846,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, acute_onset, loin_pain, colicky_pain, radiation_to_groin, fever, rigors, nausea_vomiting, pain_worse_movement, ruq_pain, known_diabetes, renal_angle_tenderness, diaphoresis, pale_clammy, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, positive_urinalysis, hyperglycaemia, hydronephrosis, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: obstructed_infected_kidney (from the confirmed diagnosis)
+- note: PlanTab protocol: obstructed_infected_kidney (from the confirmed diagnosis)
 
 </details>
 
@@ -14387,8 +13872,8 @@ Permutation of `renal-colic-typical`.
 
 Failure details:
 
-- **inv-no-ct-first** (web): forbidden investigation present in web.pane.seeded: "ct kub (non-contrast) - stone size, location, hydronephrosis (renal_colic)" [known gap: Web: PANE seeds "CT KUB (non-contrast)" (renal_colic) and "CT abdomen/pelvis with IV contrast" (appendicitis) as urgent orders in a 26-week pregnancy.]
-- **mgmt-paracetamol-opioid** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line.]
+- **inv-no-ct-first** (web): forbidden investigation present in web.pane.seeded: "ct kub (or ultrasound) to confirm obstruction (infected_obstructed_kidney)" [known gap: Web: PANE seeds "CT KUB (non-contrast)" (renal_colic) and "CT abdomen/pelvis with IV contrast" (appendicitis) as urgent orders in a 26-week pregnancy.]
+- **mgmt-paracetamol-opioid** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -14426,15 +13911,10 @@ Permutation of `renal-colic-typical`.
 | level-emergency | emergencyLevel | critical | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 |  |
 | alarm-aki | mustAlarm | critical | PASS | NICE NG148 2019 |  |
 | mgmt-urgent-decompression | managementInclude | critical | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 |  |
-| mgmt-no-nsaid | managementExclude | critical | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 | Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded. |
+| mgmt-no-nsaid | managementExclude | critical | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 | Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded. |
 | mgmt-urology | managementInclude | quality | PASS | NICE NG148 2019 |  |
 | mgmt-anticoagulant-plan | managementInclude | quality | PASS | EAU Guidelines on Urolithiasis 2024 |  |
-| mgmt-no-conservative-met | managementExclude | quality | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | As mgmt-urgent-decompression. |
-
-Failure details:
-
-- **mgmt-no-nsaid** (web): forbidden management item present in web.plan: "[immediate] analgesia: diclofenac 75 mg im / pr (first-line); opioids if nsaids contraindicated; antiemetic." (+2 more) [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban.]
-- **mgmt-no-conservative-met** (web): forbidden management item present in web.plan: "[conservative] met (medical expulsive therapy): tamsulosin 0.4 mg od for distal ureteric stone ≤10 mm × 4 weeks." (+3 more) [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney.]
+| mgmt-no-conservative-met | managementExclude | quality | PASS | EAU Guidelines on Urolithiasis 2024 | As mgmt-urgent-decompression. |
 
 Guidelines:
 
@@ -14532,8 +14012,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, headache, neck_pain, thunderclap_headache, severe_pain, known_hypertension, vascular_risk, previous_surgery, worse_straining, neck_stiffness, hernia_swelling, recent_surgery, raised_bp, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
+- note: PlanTab protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
 - note: matchPathways: Post-operative Follow-up (General) (10), Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -14554,11 +14034,7 @@ Guidelines:
 | mgmt-no-antithrombotic | managementExclude | critical | PASS | NICE NG228 2022 |  |
 | mnm-sah-symptom-engine | mustNotMiss | quality | PASS | NICE NG228 2022 |  |
 | inv-lp-if-ct-negative | investigationInclude | quality | PASS | NICE NG228 2022 |  |
-| mgmt-nimodipine | managementInclude | quality | FAIL (known gap) | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
-
-Failure details:
-
-- **mgmt-nimodipine** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: Web: No nimodipine.]
+| mgmt-nimodipine | managementInclude | quality | PASS | NICE NG228 2022 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
 
 Guidelines:
 
@@ -14577,8 +14053,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, headache, thunderclap_headache, neck_stiffness, nausea_vomiting, photophobia, severe_pain, known_hypertension, vascular_risk, acei_arb_use, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
+- note: PlanTab protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
 
 </details>
 
@@ -14638,15 +14114,10 @@ Permutation of `sbo-adhesive-base`.
 |---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | PASS | WSES Bologna guidelines 2018 |  |
 | mgmt-surgery | managementInclude | critical | PASS | WSES Bologna guidelines 2018 |  |
-| mgmt-surgery-in-documented-plan | managementInclude | quality | FAIL (known gap) | WSES Bologna guidelines 2018 | Add a 'failed NOM' variant (contrast not in colon at 24 h, no resolution by 72 h) with immediate + surgical phases. |
-| mgmt-no-repeat-contrast-challenge | managementExclude | quality | FAIL (known gap) | WSES Bologna guidelines 2018 |  |
+| mgmt-surgery-in-documented-plan | managementInclude | quality | PASS | WSES Bologna guidelines 2018 | Add a 'failed NOM' variant (contrast not in colon at 24 h, no resolution by 72 h) with immediate + surgical phases. |
+| mgmt-no-repeat-contrast-challenge | managementExclude | quality | PASS | WSES Bologna guidelines 2018 |  |
 | mgmt-no-appendicectomy-template | managementExclude | quality | PASS |  |  |
 | pathway-ward-review | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **mgmt-surgery-in-documented-plan** (web): no management item matched among 11 (web.plan) [known gap: Web: sbo_adhesional variant (no 'surgical' phase) is selected; the failed contrast challenge is not a variant trigger, so the documented plan stays conservative.]
-- **mgmt-no-repeat-contrast-challenge** (web): forbidden management item present in web.plan: "[conservative] gastrografin challenge at 24 h (100 ml oral / ngt) - if contrast reaches colon in 24 h, >95% resolve without s..." [known gap: Web: Plan text still contains 'water-soluble contrast study at 24 h' after a failed challenge.]
 
 Guidelines:
 
@@ -14663,7 +14134,7 @@ Guidelines:
 - alarms: Emergency now [web.triage.emergency]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
 - recommended scores: alvarado, ranson, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: (none)
-- dx variant: sbo_adhesional (Bowel Obstruction)
+- dx variant: sbo_failed_nonoperative (Bowel Obstruction)
 - note: PANE features applied: abdominal_pain, periumbilical_pain, acute_onset, colicky_pain, nausea_vomiting, constipation, absolute_constipation, abdominal_distension, episodic_pain, diffuse_abdominal_pain, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, previous_surgery, bilious_vomiting, tympanic_abdomen, bowel_resection, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
@@ -14681,14 +14152,9 @@ Permutation of `sbo-adhesive-base`.
 |---|---|---|---|---|---|
 | dx-obstruction-top3 | mustRankTopK | critical | PASS | WSES Bologna guidelines 2018 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | MASCC guidelines 2021 |  |
-| mgmt-palliative-mdt | managementInclude | quality | FAIL (known gap) | MASCC guidelines 2021 | Add a malignant-SBO variant (carcinomatosis, multiple transition points) with palliative/oncology MDT and MASCC medical management. |
-| mgmt-medical-mbo | managementInclude | quality | FAIL (known gap) | MASCC guidelines 2021 |  |
+| mgmt-palliative-mdt | managementInclude | quality | PASS | MASCC guidelines 2021 | Add a malignant-SBO variant (carcinomatosis, multiple transition points) with palliative/oncology MDT and MASCC medical management. |
+| mgmt-medical-mbo | managementInclude | quality | PASS | MASCC guidelines 2021 |  |
 | mgmt-no-routine-laparotomy | managementExclude | quality | PASS | MASCC guidelines 2021 |  |
-
-Failure details:
-
-- **mgmt-palliative-mdt** (web): no management item matched among 38 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel-obstruction protocol.]
-- **mgmt-medical-mbo** (web): no management item matched among 38 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option.]
 
 Guidelines:
 
@@ -14767,15 +14233,11 @@ Permutation of `sbo-adhesive-base`.
 | alarm-strangulation | mustAlarm | critical | PASS | WSES Bologna guidelines 2018 |  |
 | mgmt-emergency-surgery | managementInclude | critical | PASS | WSES Bologna guidelines 2018 |  |
 | mgmt-emergency-surgery-in-documented-plan | managementInclude | critical | PASS | WSES Bologna guidelines 2018 | Same ordering fix; the strangulation variant's surgical phase then carries the operation into the documented plan. |
-| mgmt-no-nom-trial-with-strangulation | managementExclude | critical | FAIL (known gap) | WSES Bologna guidelines 2018 | Check sbo_strangulation before sbo_adhesional (specific-first) and drop the conservative phase whenever strangulation words, lactate > 2 with peritonism, or closed-loop appear. |
+| mgmt-no-nom-trial-with-strangulation | managementExclude | critical | PASS | WSES Bologna guidelines 2018 | Check sbo_strangulation before sbo_adhesional (specific-first) and drop the conservative phase whenever strangulation words, lactate > 2 with peritonism, or closed-loop appear. |
 | inv-lactate | investigationInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
 | inv-group-and-save | investigationInclude | quality | PASS |  |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
 | variant-sbo-strangulation | dxVariant | quality | PASS | WSES Bologna guidelines 2018 |  |
-
-Failure details:
-
-- **mgmt-no-nom-trial-with-strangulation** (web): forbidden management item present in web.plan: "[immediate] drip and suck: ngt decompression, iv fluids, catheter (hourly uo), nbm; correct electrolytes." [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.]
 
 Guidelines:
 
@@ -14815,12 +14277,11 @@ Permutation of `sbo-adhesive-base`.
 | mnm-neoplasm | mustNotMiss | quality | FAIL (known gap) |  |  |
 | mnm-hernia | mustNotMiss | quality | PASS |  |  |
 | mgmt-surgical-exploration | managementInclude | quality | PASS | WSES Bologna guidelines 2018 |  |
-| mgmt-no-adhesion-label-in-plan | managementExclude | quality | FAIL (known gap) | WSES Bologna guidelines 2018 |  |
+| mgmt-no-adhesion-label-in-plan | managementExclude | quality | PASS | WSES Bologna guidelines 2018 |  |
 
 Failure details:
 
-- **mnm-neoplasm** (web): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Obturator Hernia \| 3. Small Bowel Obstruction — Adhesions [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neoplasm node (colorectal cancer only), and the trigger answer 'After meals' is read as fatty_food_trigger, which lifts cholecystitis.]
-- **mgmt-no-adhesion-label-in-plan** (web): forbidden management item present in web.plan: "[conservative] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h..." [known gap: Web: Variant 'sbo_adhesional' is chosen from the words 'small bowel obstruction' even though the assessment says 'virgin abdomen … adhesions unlikely'; the plan keeps the adhesive-SBO conservative step.]
+- **mnm-neoplasm** (web): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Obturator Hernia \| 3. Small Bowel Obstruction — Adhesions [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neoplasm node (colorectal cancer only), and the trigger answer 'After meals' is read as fatty_food_trigger, which lifts cholecystitis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Gastric Outlet Obstruction \| 3. Renal / Ureteric Colic \| 4. Obturator Hernia \| 5. Acute Kidney Injury]
 
 Guidelines:
 
@@ -15274,8 +14735,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: umbilical_swelling, headache, visual_disturbance, known_hypertension, vascular_risk, leg_swelling, papilloedema, hernia_compressible, hernia_swelling, burn_wound, proteinuria, acute_onset, raised_bp, severe_hypertension, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: hypertensive_emergency (from the confirmed diagnosis)
+- note: PlanTab protocol: hypertensive_emergency (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -15394,8 +14855,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -15431,8 +14892,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: known_hypertension, vascular_risk, previous_surgery, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
+- note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: matchPathways: Post-operative Follow-up (General) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -15498,7 +14959,7 @@ Permutation of `trauma-splenic-injury-unstable`.
 
 Failure details:
 
-- **mgmt-meningococcal** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal.]
+- **mgmt-meningococcal** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -15632,8 +15093,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: seizure, syncope, loss_of_consciousness, confusion, symptoms_resolved, tongue_bite, urinary_incontinence, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: first_seizure (from the confirmed diagnosis)
+- note: PlanTab protocol: first_seizure (from the confirmed diagnosis)
 
 </details>
 
@@ -15672,8 +15133,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: seizure, headache, visual_disturbance, confusion, ruq_pain, gcs_drop, urticaria_angioedema, pregnant, proteinuria, thrombocytopenia, raised_liver_enzymes, acute_onset, tachycardia, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
+- note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
 
 </details>
 
@@ -15687,18 +15148,12 @@ Guidelines:
 |---|---|---|---|---|---|
 | dx-obstruction-top3 | mustRankTopK | critical | PASS | ASCRS clinical practice guidelines 2021 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | ASCRS clinical practice guidelines 2021 |  |
-| mgmt-endoscopic-decompression | managementInclude | critical | FAIL (known gap) | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 | Give lbo_volvulus a real plan prefix: sigmoid — endoscopic detorsion + flatus tube if no peritonitis/ischaemia, then sigmoid colectomy in the same admission; caecal — right hemicolectomy; gangrene/peritonitis — Hartmann's. Split into sigmoid and caecal variants. |
+| mgmt-endoscopic-decompression | managementInclude | critical | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 | Give lbo_volvulus a real plan prefix: sigmoid — endoscopic detorsion + flatus tube if no peritonitis/ischaemia, then sigmoid colectomy in the same admission; caecal — right hemicolectomy; gangrene/peritonitis — Hartmann's. Split into sigmoid and caecal variants. |
 | mnm-volvulus | mustNotMiss | quality | PASS | ASCRS clinical practice guidelines 2021 |  |
-| mgmt-same-admission-resection | managementInclude | quality | FAIL (known gap) | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
-| mgmt-potassium | managementInclude | quality | FAIL (known gap) |  |  |
+| mgmt-same-admission-resection | managementInclude | quality | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
+| mgmt-potassium | managementInclude | quality | PASS |  |  |
 | pathway-first-visit | pathway | quality | n/a |  |  |
 | variant-lbo-volvulus | dxVariant | quality | PASS | ASCRS clinical practice guidelines 2021 |  |
-
-Failure details:
-
-- **mgmt-endoscopic-decompression** (web): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a heading ('Sigmoid/Caecal Volvulus — Management:') followed by bowel-obstruction steps. Decompression appears only in the dx-variant urgency note.]
-- **mgmt-same-admission-resection** (web): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No sigmoid colectomy after decompression.]
-- **mgmt-potassium** (web): no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.2.]
 
 Guidelines:
 
@@ -15802,8 +15257,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, facial_weakness, focal_weakness, limb_weakness, speech_disturbance, known_af, known_hypertension, vascular_risk, radiation_arm_jaw, irregular_pulse, anticoagulant_use, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_stroke (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_stroke (from the confirmed diagnosis)
 
 </details>
 
@@ -15842,8 +15297,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: sudden_onset, acute_onset, limb_weakness, focal_weakness, facial_weakness, speech_disturbance, known_af, known_hypertension, vascular_risk, anticoagulant_use, acei_arb_use, previous_surgery, radiation_arm_jaw, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: acute_stroke (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_stroke (from the confirmed diagnosis)
 
 </details>
 
@@ -15879,8 +15334,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: varicosities, acute_onset, limb_pain, radiation_to_groin, pain_worse_movement, rash, tender_cord, erythema_surrounding, localised_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: superficial_vein_thrombosis (from the confirmed diagnosis)
+- note: PlanTab protocol: superficial_vein_thrombosis (from the confirmed diagnosis)
 - note: matchPathways: Varicose Veins (15)
 
 </details>
@@ -15916,7 +15371,7 @@ Guidelines:
 - alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
-- dx variant: (none) (Thyroid)
+- dx variant: thyroid_bethesda_nondiagnostic (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
@@ -15955,7 +15410,7 @@ Guidelines:
 - alarms: Thyroid nodule / neck mass [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
 - recommended scores: news2
 - score values: (none)
-- dx variant: (none) (Thyroid)
+- dx variant: thyroid_bethesda_benign (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
@@ -16073,8 +15528,8 @@ Guidelines:
 - score values: (none)
 - dx variant: thyroid_total (Thyroid)
 - note: PANE features applied: neck_lump, chronic_course, thyroid_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: thyroid_carcinoma (from the confirmed diagnosis)
-- note: PlanTab protocol: thyroid_carcinoma (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -16214,11 +15669,7 @@ Guidelines:
 | mgmt-iv-calcium | managementInclude | critical | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | inv-ecg | investigationInclude | quality | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | inv-magnesium | investigationInclude | quality | PASS | Society for Endocrinology emergency guidance 2016 |  |
-| mgmt-oral-calcium-vitd | managementInclude | quality | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
-
-Failure details:
-
-- **mgmt-oral-calcium-vitd** (web): no management item matched among 13 (web.clinicalPrompts) [known gap: No oral calcium / alfacalcidol plan.]
+| mgmt-oral-calcium-vitd | managementInclude | quality | PASS | Society for Endocrinology emergency guidance 2016 |  |
 
 Guidelines:
 
@@ -16235,10 +15686,10 @@ Guidelines:
 - alarms: Emergency now [web.triage.emergency]; Acute hypocalcaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, news2, clavien-dindo, ecog
 - score values: (none)
-- dx variant: thyroid_total (Thyroid)
+- dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, limb_numbness, myalgia, known_malignancy, colicky_pain, neck_surgery, acute_onset, trauma_mechanism, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: post_thyroidectomy_hypocalcaemia (from the confirmed diagnosis)
+- note: PlanTab protocol: post_thyroidectomy_hypocalcaemia (from the confirmed diagnosis)
 - note: matchPathways: Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -16257,14 +15708,9 @@ Guidelines:
 | mgmt-bedside-decompression | managementInclude | critical | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | mgmt-no-conservative-first | managementExclude | critical | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | alarm-airway-specific | mustAlarm | quality | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
-| inv-no-imaging-before-decompression | investigationExclude | quality | FAIL (known gap) | DAS / BAETS / ENT UK consensus 2022 |  |
+| inv-no-imaging-before-decompression | investigationExclude | quality | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | mgmt-return-to-theatre | managementInclude | quality | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
-| mgmt-no-thyroidectomy-prefix | managementExclude | quality | FAIL (known gap) |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
-
-Failure details:
-
-- **inv-no-imaging-before-decompression** (web): forbidden investigation present in web.plan.investigations: "uss wound (confirm haematoma, guide aspiration of liquefied collections)" [known gap: The generic postop_haematoma investigations include "USS wound (confirm haematoma …)" with no exception for a neck haematoma with airway compromise.]
-- **mgmt-no-thyroidectomy-prefix** (web): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: The assessment mentions "thyroidectomy", so detectDxVariants selects thyroid_total and prepends the elective Total Thyroidectomy template to the haematoma plan.]
+| mgmt-no-thyroidectomy-prefix | managementExclude | quality | PASS |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
 
 Guidelines:
 
@@ -16281,7 +15727,7 @@ Guidelines:
 - alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Airway emergency — neck haematoma after thyroid/parathyroid surgery [web.clinicalPrompts.safety]; Bleeding on enoxaparin [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 90% — hypoxia [web.clinicalPrompts.safety]; HR 122 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]
 - recommended scores: wells-pe, wells-dvt, qsofa, web:wagner, news2, clavien-dindo, curb65
 - score values: (none)
-- dx variant: thyroid_total (Thyroid)
+- dx variant: (none) (no group)
 - note: PANE features applied: previous_surgery, recent_surgery, sudden_onset, acute_onset, anterior_triangle_lump, neck_lump, localised_pain, dyspnoea, stridor, dysphagia, severe_pain, wound_swelling, anticoagulant_use, drooling, rapid_growth, neck_surgery, tachycardia, haemodynamic_instability, raised_bp, tachypnoea, hypoxia, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: postop_haematoma (from the confirmed diagnosis)
 - note: PlanTab protocol: postop_haematoma (from the confirmed diagnosis)
@@ -16300,16 +15746,12 @@ Guidelines:
 | mnm-anaplastic-or-lymphoma | mustNotMiss | critical | PASS | 2021 ATA guidelines 2021; British Thyroid Association guidelines 2014 |  |
 | level-emergency | emergencyLevel | critical | PASS | 2021 ATA guidelines 2021; British Thyroid Association guidelines 2014 |  |
 | alarm-emergency | mustAlarm | critical | PASS | 2021 ATA guidelines 2021 |  |
-| inv-core-biopsy | investigationInclude | critical | FAIL (known gap) | 2021 ATA guidelines 2021 |  |
+| inv-core-biopsy | investigationInclude | critical | PASS | 2021 ATA guidelines 2021 |  |
 | mgmt-airway | managementInclude | critical | PASS | 2021 ATA guidelines 2021 |  |
 | mnm-thyroid-malignancy | mustNotMiss | quality | PASS |  |  |
 | alarm-airway-specific | mustAlarm | quality | PASS | 2021 ATA guidelines 2021 |  |
 | inv-ct-neck-chest | investigationInclude | quality | PASS | 2021 ATA guidelines 2021 |  |
 | mgmt-no-elective-thyroidectomy-plan | managementExclude | quality | PASS | 2021 ATA guidelines 2021 |  |
-
-Failure details:
-
-- **inv-core-biopsy** (web): no investigation matched among 29 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma.]
 
 Guidelines:
 
@@ -16367,8 +15809,8 @@ Guidelines:
 - score values: (none)
 - dx variant: thyroid_total (Thyroid)
 - note: PANE features applied: neck_lump, thyroid_swelling, chronic_course, diffuse_abdominal_pain, dyspnoea, dysphagia, progressive_course, orthopnoea, dysphagia_solids, episodic_pain, known_hypertension, vascular_risk, acei_arb_use, worse_lying_flat, tracheal_deviation, aspiration_symptoms, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
+- note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: matchPathways: Thyroid / Neck Mass (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -16387,13 +15829,8 @@ Permutation of `stroke-acute-fast-positive`.
 | level-urgent | emergencyLevel | critical | PASS | NICE NG128 2019 |  |
 | mgmt-aspirin-300 | managementInclude | critical | PASS | NICE NG128 2019 |  |
 | mgmt-specialist-24h | managementInclude | critical | PASS | NICE NG128 2019 |  |
-| inv-vascular-imaging | investigationInclude | quality | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
-| mgmt-defer-elective-surgery | managementInclude | quality | FAIL (known gap) | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
-
-Failure details:
-
-- **inv-vascular-imaging** (web): no investigation matched among 13 (web.clinicalPrompts) [known gap: Web: No carotid imaging.]
-- **mgmt-defer-elective-surgery** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: Web: The pending hernia repair is not deferred (no TIA rule).]
+| inv-vascular-imaging | investigationInclude | quality | PASS | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
+| mgmt-defer-elective-surgery | managementInclude | quality | PASS | NICE NG128 2019 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
 
 Guidelines:
 
@@ -16412,8 +15849,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (Hernia)
 - note: PANE features applied: sudden_onset, acute_onset, limb_weakness, focal_weakness, speech_disturbance, known_hypertension, vascular_risk, known_diabetes, radiation_arm_jaw, symptoms_resolved, hernia_swelling, smoker, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: transient_ischaemic_attack (from the confirmed diagnosis)
+- note: PlanTab protocol: transient_ischaemic_attack (from the confirmed diagnosis)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Pre-operative Assessment (5)
 
 </details>
@@ -16475,18 +15912,13 @@ Guidelines:
 | mgmt-laparotomy | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
 | mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
 | dx-abdominal-trauma-top3 | mustRankTopK | quality | PASS | ATLS 10th edition 2018 |  |
-| flag-shock-class | redFlags | quality | FAIL (known gap) | ATLS 10th edition 2018 | Add an ATLS class estimate (HR, BP, pulse pressure, RR, GCS, base deficit) to the trauma red flags. |
+| flag-shock-class | redFlags | quality | PASS | ATLS 10th edition 2018 | Add an ATLS class estimate (HR, BP, pulse pressure, RR, GCS, base deficit) to the trauma red flags. |
 | inv-fast | investigationInclude | quality | PASS | ATLS 10th edition 2018 |  |
 | inv-crossmatch | investigationInclude | quality | PASS |  |  |
 | mgmt-txa | managementInclude | quality | PASS | CRASH-2 2011; NICE NG39 2016 |  |
-| mgmt-pelvic-binder | managementInclude | quality | FAIL (known gap) | NICE NG39 2016 | Add "pelvic binder if pelvic injury suspected with haemodynamic instability" to the blunt trauma protocol immediate phase. |
+| mgmt-pelvic-binder | managementInclude | quality | PASS | NICE NG39 2016 | Add "pelvic binder if pelvic injury suspected with haemodynamic instability" to the blunt trauma protocol immediate phase. |
 | mgmt-no-ct-while-unstable | managementExclude | quality | PASS | ATLS 10th edition 2018 |  |
 | pathway-trauma | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **flag-shock-class** (web): no red flag matched among 38 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine names the ATLS haemorrhage class; the protocol uses "SBP <90 + HR >120" for MTP.]
-- **mgmt-pelvic-binder** (web): no management item matched among 49 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The blunt abdominal trauma protocol does not mention a pelvic binder for pelvic tenderness in shock.]
 
 Guidelines:
 
@@ -16535,7 +15967,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-no-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "• no routine lmwh bridging for atrial fibrillation (bridge trial; accp 2022); bridging only for high throm..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K).]
+- **mgmt-no-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "• no routine lmwh bridging for atrial fibrillation (bridge trial; accp 2022); bridging only for high throm..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no lmwh bridging for most atrial fibrillation (bridge; accp 2022) - bridge only for high thrombo..."]
 
 Guidelines:
 
@@ -16669,7 +16101,7 @@ Guidelines:
 
 Failure details:
 
-- **mnm-nai** (web): not in top 3 of web.pane: 1. Rib Fractures \| 2. Traumatic Brain Injury \| 3. Intussusception [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis.]
+- **mnm-nai** (web): not in top 3 of web.pane: 1. Rib Fractures \| 2. Traumatic Brain Injury \| 3. Intussusception [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Delirium (Acute Confusional State) \| 2. Pulmonary Embolism \| 3. Atrial Fibrillation \| 4. Sepsis \| 5. Transient Ischaemic Attack]
 
 Guidelines:
 
@@ -16689,8 +16121,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: inconsolable_crying, non_blanching_rash, trauma_mechanism, mechanism_blunt, acute_onset, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
-- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
+- note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
 
 </details>
 
@@ -16711,13 +16143,12 @@ Guidelines:
 | mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
 | inv-kleihauer | investigationInclude | quality | PASS | ATLS 10th edition 2018; BSH guideline 2014 |  |
 | inv-no-pregnancy-test | investigationExclude | quality | FAIL |  |  |
-| mgmt-anti-d | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018; BSH guideline 2014 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
+| mgmt-anti-d | managementInclude | quality | PASS | ATLS 10th edition 2018; BSH guideline 2014 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
 | pathway-trauma | pathway | quality | n/a |  |  |
 
 Failure details:
 
 - **inv-no-pregnancy-test** (web): forbidden investigation present in web.pane.seeded: "β-hcg (exclude ectopic pregnancy) (pelvic_inflammatory_disease)" (+2 more)
-- **mgmt-anti-d** (web): no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
 
 Guidelines:
 
@@ -16738,8 +16169,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, suprapubic_pain, colicky_pain, radiation_to_back, pain_worse_movement, severe_pain, abnormal_uterine_bleeding, pelvic_pain, pregnant, uterine_tenderness, trauma_mechanism, mechanism_blunt, anaemia, tachycardia, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: blunt_abdominal_trauma (from the confirmed diagnosis)
-- note: PlanTab protocol: blunt_abdominal_trauma (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: trauma_in_pregnancy (from the confirmed diagnosis)
+- note: PlanTab protocol: trauma_in_pregnancy (from the confirmed diagnosis)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16801,12 +16232,8 @@ Permutation of `trauma-splenic-injury-stable`.
 | mgmt-no-nom-unstable | managementExclude | critical | PASS | WSES classification and guidelines 2017 |  |
 | mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
 | dx-splenic-top3 | mustRankTopK | quality | PASS | WSES classification and guidelines 2017 |  |
-| inv-no-ct-unstable | investigationExclude | quality | FAIL (known gap) | WSES classification and guidelines 2017; ATLS 10th edition 2018 | Qualify protocol CT investigations with "haemodynamically stable only". |
+| inv-no-ct-unstable | investigationExclude | quality | PASS | WSES classification and guidelines 2017; ATLS 10th edition 2018 | Qualify protocol CT investigations with "haemodynamically stable only". |
 | mgmt-txa | managementInclude | quality | PASS | CRASH-2 2011 |  |
-
-Failure details:
-
-- **inv-no-ct-unstable** (web): forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (aast grading)" (+1 more) [known gap: The splenic protocol lists "CT abdomen/pelvis with IV contrast (AAST grading)" without "if stable" in the unstable patient.]
 
 Guidelines:
 
@@ -16930,13 +16357,9 @@ Guidelines:
 | alarm-hypoxia-shock | mustAlarm | critical | PASS | ATLS 10th edition 2018 |  |
 | flag-tension | redFlags | critical | PASS | ATLS 10th edition 2018 |  |
 | mgmt-immediate-decompression | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
-| mgmt-adult-site-not-2nd-ics | managementExclude | critical | FAIL (known gap) | ATLS 10th edition 2018 | Change the adult site to the 4th/5th ICS just anterior to the mid-axillary line (2nd ICS MCL for children); surgeon to confirm. |
+| mgmt-adult-site-not-2nd-ics | managementExclude | critical | PASS | ATLS 10th edition 2018 | Change the adult site to the 4th/5th ICS just anterior to the mid-axillary line (2nd ICS MCL for children); surgeon to confirm. |
 | inv-no-imaging-first | investigationExclude | quality | PASS | ATLS 10th edition 2018 |  |
 | pathway-trauma | pathway | quality | n/a |  |  |
-
-Failure details:
-
-- **mgmt-adult-site-not-2nd-ics** (web): forbidden management item present in web.plan: "...te] tension pneumothorax: needle decompression (14g cannula 2nd ics mcl) → immediate clinical improvement → proceed to icd." (+2 more) [known gap: The pneumothorax protocol says "needle decompression (14G cannula 2nd ICS MCL)" for all patients (and a key point repeats it), while ATLS 10 moved the adult site to the 4th/5th ICS anterior to the mid-axillary line.]
 
 Guidelines:
 
@@ -16983,12 +16406,11 @@ Guidelines:
 | inv-flexi-biopsy | investigationInclude | quality | PASS | BSG consensus guidelines 2019; ECCO guidelines 2021 |  |
 | inv-axr | investigationInclude | quality | PASS | BSG consensus guidelines 2019 |  |
 | mgmt-day3-assessment | managementInclude | quality | PASS | Oxford (Travis) criteria 1996; BSG consensus guidelines 2019 |  |
-| mgmt-truelove-criteria-correct | managementExclude | quality | FAIL (known gap) | BSG consensus guidelines 2019 | Correct the key point in lib/pane-engine management protocols (colorectalHerniaBreast.ts, ulcerative_colitis): "≥ 6 bloody stools/day plus HR > 90, T > 37.8 °C, Hb < 10.5 g/dL or ESR > 30 mm/h". |
+| mgmt-truelove-criteria-correct | managementExclude | quality | PASS | BSG consensus guidelines 2019 | Correct the key point in lib/pane-engine management protocols (colorectalHerniaBreast.ts, ulcerative_colitis): "≥ 6 bloody stools/day plus HR > 90, T > 37.8 °C, Hb < 10.5 g/dL or ESR > 30 mm/h". |
 
 Failure details:
 
-- **score-rec-truelove-witts** (web): truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson.]
-- **mgmt-truelove-criteria-correct** (web): forbidden management item present in web.managementPanel.keyPoints: "...ts criteria classify acute severe uc: hr >90, temp >37.8°c, wbc >10.5, >6 stools/day." [known gap: The ulcerative_colitis protocol key point reads "Truelove-Witts criteria: HR > 90, temp > 37.8 °C, WBC > 10.5, > 6 stools/day" — the criterion is Hb < 10.5 g/dL (and ESR > 30), not WBC.]
+- **score-rec-truelove-witts** (web): truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. \| iOS CI 2026-09-25 (run 36169134350, database mode): truelove-witts not recommended; recommended: ios:trueloveWitts]
 
 Guidelines:
 
@@ -17029,13 +16451,8 @@ Permutation of `uc-acute-severe-truelove-witts`.
 | level-inpatient | emergencyLevel | critical | PASS | BSG consensus guidelines 2019 |  |
 | mgmt-rescue-therapy | managementInclude | critical | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022; BSG consensus guidelines 2019 |  |
 | mgmt-colectomy-option | managementInclude | critical | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022; BSG consensus guidelines 2019 |  |
-| inv-cmv | investigationInclude | quality | FAIL (known gap) | ECCO guidelines 2021 | Add "flexible sigmoidoscopy with biopsies incl. CMV (IHC/PCR)" to the ASUC/steroid-refractory steps (ECCO 2021). |
-| mgmt-joint-review | managementInclude | quality | FAIL (known gap) | BSG consensus guidelines 2019 |  |
-
-Failure details:
-
-- **inv-cmv** (web): no investigation matched among 30 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No CMV testing anywhere (UC protocol investigations: bloods, AXR, stool C&S + C. difficile, sigmoidoscopy/colonoscopy, CT).]
-- **mgmt-joint-review** (web): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only on the appendicectomy operative template, which fired on "no guarding"/"no rebound". No output now names a joint medical-surgical review.]
+| inv-cmv | investigationInclude | quality | PASS | ECCO guidelines 2021 | Add "flexible sigmoidoscopy with biopsies incl. CMV (IHC/PCR)" to the ASUC/steroid-refractory steps (ECCO 2021). |
+| mgmt-joint-review | managementInclude | quality | PASS | BSG consensus guidelines 2019 |  |
 
 Guidelines:
 
@@ -17075,12 +16492,8 @@ Permutation of `uc-acute-severe-truelove-witts`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | mnm-cdiff | mustNotMiss | critical | PASS | ECCO guidelines 2021; IDSA/SHEA focused update 2021 |  |
-| mgmt-cdi-treatment | managementInclude | critical | FAIL (known gap) | IDSA/SHEA focused update 2021; ECCO guidelines 2021 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
+| mgmt-cdi-treatment | managementInclude | critical | PASS | IDSA/SHEA focused update 2021; ECCO guidelines 2021 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
 | level-at-least-priority | emergencyLevel | quality | PASS | IDSA/SHEA focused update 2021 |  |
-
-Failure details:
-
-- **mgmt-cdi-treatment** (web): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". No output treats CDI (no vancomycin/fidaxomicin).]
 
 Guidelines:
 
@@ -17100,8 +16513,8 @@ Guidelines:
 - score values: (none)
 - dx variant: (none) (no group)
 - note: PANE features applied: change_bowel_habit, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, pr_bleeding, diarrhoea, abdominal_pain, ulcerative_colitis_history, immunosuppression, recent_antibiotics, bloody_diarrhoea, cdiff_positive, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
-- note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: clostridioides_difficile (from the confirmed diagnosis)
+- note: PlanTab protocol: clostridioides_difficile (from the confirmed diagnosis)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -17116,14 +16529,9 @@ Permutation of `uc-acute-severe-truelove-witts`.
 
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
-| inv-cmv | investigationInclude | critical | FAIL (known gap) | ECCO guidelines 2021 | Read biopsy/IHC results for CMV in UC; steroid-refractory UC → CMV testing prompt (ECCO 2021). |
-| mgmt-antiviral | managementInclude | critical | FAIL (known gap) | ECCO guidelines 2021 | Add a CMV-colitis branch: CMV on biopsy in steroid-refractory UC → IV ganciclovir, review immunomodulators (ECCO 2021). |
+| inv-cmv | investigationInclude | critical | PASS | ECCO guidelines 2021 | Read biopsy/IHC results for CMV in UC; steroid-refractory UC → CMV testing prompt (ECCO 2021). |
+| mgmt-antiviral | managementInclude | critical | PASS | ECCO guidelines 2021 | Add a CMV-colitis branch: CMV on biopsy in steroid-refractory UC → IV ganciclovir, review immunomodulators (ECCO 2021). |
 | mgmt-colectomy-option | managementInclude | quality | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022 |  |
-
-Failure details:
-
-- **inv-cmv** (web): no investigation matched among 32 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The CMV-positive biopsy result is not read and no output mentions CMV.]
-- **mgmt-antiviral** (web): no management item matched among 44 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No antiviral (ganciclovir) anywhere; the UC plan escalates immunosuppression (infliximab, ciclosporin, tofacitinib) regardless of CMV.]
 
 Guidelines:
 
@@ -17162,15 +16570,11 @@ Permutation of `uc-acute-severe-truelove-witts`.
 | level-emergency | emergencyLevel | critical | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022; BSG consensus guidelines 2019 |  |
 | alarm-toxic | mustAlarm | critical | PASS | BSG consensus guidelines 2019 |  |
 | flag-megacolon | redFlags | critical | PASS | BSG consensus guidelines 2019 |  |
-| inv-no-colonoscopy | investigationExclude | critical | FAIL (known gap) | BSG consensus guidelines 2019 | Mark the UC colonoscopy investigation conditional ("not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only") and add a toxic-megacolon dx-variant that drops endoscopy. |
+| inv-no-colonoscopy | investigationExclude | critical | PASS | BSG consensus guidelines 2019 | Mark the UC colonoscopy investigation conditional ("not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only") and add a toxic-megacolon dx-variant that drops endoscopy. |
 | mgmt-colectomy | managementInclude | critical | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022 |  |
 | mgmt-no-antimotility | managementExclude | critical | PASS | BSG consensus guidelines 2019 |  |
 | mnm-perforation | mustNotMiss | quality | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022 |  |
 | mgmt-iv-steroids | managementInclude | quality | PASS | BSG consensus guidelines 2019 |  |
-
-Failure details:
-
-- **inv-no-colonoscopy** (web): forbidden investigation present in web.plan.investigations: "flexible sigmoidoscopy / colonoscopy + biopsies" (+1 more) [known gap: The ulcerative_colitis protocol lists "Flexible sigmoidoscopy / colonoscopy + biopsies" as an urgent investigation with no severity condition, so the documented plan orders a colonoscopy in toxic megacolon.]
 
 Guidelines:
 
@@ -17210,20 +16614,15 @@ Guidelines:
 | inv-group-save | investigationInclude | critical | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | inv-ogd | investigationInclude | critical | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | ESGE Guideline 2021; NICE CG141 2012; ACG Clinical Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | flag-nsaid | redFlags | quality | PASS | ESGE Guideline 2021 |  |
 | score-rec-gbs | scoreRecommended | quality | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | inv-fbc-urea | investigationInclude | quality | PASS | NICE CG141 2012 |  |
 | mgmt-restrictive-transfusion | managementInclude | quality | PASS | ESGE Guideline 2021; BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ppi | managementInclude | quality | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
-| mgmt-stop-nsaid | managementInclude | quality | FAIL (known gap) | ESGE Guideline 2021; NICE CG184 2014 |  |
+| mgmt-stop-nsaid | managementInclude | quality | PASS | ESGE Guideline 2021; NICE CG184 2014 |  |
 | mgmt-hpylori | managementInclude | quality | PASS | ESGE Guideline 2021; Maastricht VI/Florence consensus report 2022 |  |
 | variant-nonvariceal | dxVariant | quality | PASS | ESGE Guideline 2021 |  |
-
-Failure details:
-
-- **mgmt-stop-nsaid** (web): no management item matched among 40 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The upper_gi_bleed protocol only says "PPI long-term if NSAID cannot be stopped"; no line tells the clinician to stop the NSAID.]
-- **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 
 Guidelines:
 
@@ -17269,15 +16668,11 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | inv-group-save | investigationInclude | critical | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-no-blanket-stop-aspirin | managementExclude | critical | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS | ESGE Guideline 2021 |  |
 | mgmt-transfusion-threshold-8 | managementInclude | quality | PASS | ESGE Guideline 2021; BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-cardiology-antiplatelet-decision | managementInclude | quality | PASS | ESGE Guideline 2021 |  |
 | mgmt-no-patient-hold-advice | managementExclude | quality | PASS | ESGE Guideline 2021 |  |
-
-Failure details:
-
-- **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 
 Guidelines:
 
@@ -17319,16 +16714,11 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | inv-group-save | investigationInclude | critical | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-no-lmwh-bridging | managementExclude | critical | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | score-rec-rockall | scoreRecommended | quality | PASS | Rockall score 1996; NICE CG141 2012 |  |
 | inv-renal-function | investigationInclude | quality | PASS | ESGE Guideline 2021 |  |
-| mgmt-transfusion-threshold-8 | managementInclude | quality | FAIL (known gap) | ESGE Guideline 2021 | upper_gi_bleed protocol: add the ESGE cardiovascular threshold (Hb ≤8 g/dL, target ≥10) and key it on cardiac comorbidity. |
-
-Failure details:
-
-- **mgmt-transfusion-threshold-8** (web): no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Only the generic "transfuse to Hb 70–90 g/L" line; heart failure does not change the threshold to 8 g/dL.]
-- **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
+| mgmt-transfusion-threshold-8 | managementInclude | quality | PASS | ESGE Guideline 2021 | upper_gi_bleed protocol: add the ESGE cardiovascular threshold (Hb ≤8 g/dL, target ≥10) and key it on cardiac comorbidity. |
 
 Guidelines:
 
@@ -17371,13 +16761,9 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | alarm-gi-bleed | mustAlarm | critical | PASS | ESGE Guideline 2021 |  |
 | inv-ogd | investigationInclude | critical | PASS | ESGE Guideline 2021 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS | ESGE Guideline 2021 |  |
 | variant-nonvariceal | dxVariant | quality | PASS | ESGE Guideline 2021 |  |
-
-Failure details:
-
-- **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 
 Guidelines:
 
@@ -17413,17 +16799,15 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
 | dx-ugib-top3 | mustRankTopK | critical | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | level-not-emergency | emergencyLevel | quality | PASS | ESGE Guideline 2021; ACG Clinical Guideline 2021 |  |
 | score-rec-gbs | scoreRecommended | quality | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | inv-ogd | investigationInclude | quality | PASS | ESGE Guideline 2021 |  |
-| mgmt-outpatient | managementInclude | quality | FAIL (known gap) | ESGE Guideline 2021; ACG Clinical Guideline 2021; BSG-led multisociety consensus care bundle 2020 | upper_gi_bleed protocol / gi_bleed_panel prompt: add "GBS ≤1 — outpatient endoscopy, no admission (ESGE 2021, ACG 2021)" keyed on the calculated GBS. |
+| mgmt-outpatient | managementInclude | quality | PASS | ESGE Guideline 2021; ACG Clinical Guideline 2021; BSG-led multisociety consensus care bundle 2020 | upper_gi_bleed protocol / gi_bleed_panel prompt: add "GBS ≤1 — outpatient endoscopy, no admission (ESGE 2021, ACG 2021)" keyed on the calculated GBS. |
 | mgmt-no-transfusion | managementExclude | quality | FAIL (known gap) | ESGE Guideline 2021 | gi_bleed_panel: make the resuscitation/crossmatch line conditional on instability, Hb or GBS. |
 
 Failure details:
 
-- **mgmt-outpatient** (web): no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output says the patient can be managed as an outpatient; the GI-bleed prompt adds a resuscitation plan instead.]
-- **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 - **mgmt-no-transfusion** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: gi_bleed_panel prompt fires on any haematemesis/melaena symptom and adds "2 × large-bore IV cannulae, Hartmann's 500 ml bolus, crossmatch 2 units pRBC" regardless of Hb (14.6) or GBS (0).]
 
 Guidelines:
@@ -17469,16 +16853,11 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | mgmt-resuscitation | managementInclude | critical | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-transfusion | managementInclude | critical | PASS | ESGE Guideline 2021; BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-endoscopy-after-resus | managementInclude | critical | PASS | NICE CG141 2012; ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | inv-coagulation | investigationInclude | quality | PASS | BSG-led multisociety consensus care bundle 2020 |  |
-| mgmt-critical-care | managementInclude | quality | FAIL (known gap) | BSG-led multisociety consensus care bundle 2020 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
+| mgmt-critical-care | managementInclude | quality | PASS | BSG-led multisociety consensus care bundle 2020 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
 | mgmt-escalation-ir-surgery | managementInclude | quality | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
-
-Failure details:
-
-- **mgmt-critical-care** (web): no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No HDU/ICU/critical-care line in the protocol, prompts or dx variant; the only variant is "haemodynamically stable".]
-- **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 
 Guidelines:
 
@@ -17522,15 +16901,11 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | inv-group-save | investigationInclude | critical | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-no-lmwh-bridging | managementExclude | critical | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | flag-coagulopathy | redFlags | quality | PASS | ESGE Guideline 2021 |  |
 | score-rec-gbs | scoreRecommended | quality | PASS | ESGE Guideline 2021 |  |
 | mgmt-reversal-considered | managementInclude | quality | PASS | ESGE Guideline 2021 |  |
 | mgmt-no-patient-hold-advice | managementExclude | quality | PASS | ESGE Guideline 2021 |  |
-
-Failure details:
-
-- **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 
 Guidelines:
 
@@ -17703,13 +17078,8 @@ Permutation of `pyelonephritis-adult-female`.
 | mgmt-no-laparotomy | managementExclude | critical | PASS | NICE NG51 2024 |  |
 | score-news2 | scoreRecommended | quality | PASS | NICE NG51 2024 |  |
 | inv-lactate | investigationInclude | quality | PASS | NICE NG51 2024 |  |
-| inv-urine-from-new-catheter | investigationInclude | quality | FAIL (known gap) | NICE NG51 2024 | When a catheter is recorded, ask for a catheter specimen after changing the catheter. |
-| mgmt-hold-methotrexate | managementInclude | quality | FAIL (known gap) | NICE NG51 2024 | Add immunosuppressant review to the sepsis prompt. |
-
-Failure details:
-
-- **inv-urine-from-new-catheter** (web): no investigation matched among 12 (web.plan.investigations, web.clinicalPrompts) [known gap: Web: The UTI protocol asks for "MSU C&S (mid-stream urine)" in a catheterised man; the catheter change appears only as plan text ("CAUTI: remove or change catheter").]
-- **mgmt-hold-methotrexate** (web): no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Methotrexate is not mentioned.]
+| inv-urine-from-new-catheter | investigationInclude | quality | PASS | NICE NG51 2024 | When a catheter is recorded, ask for a catheter specimen after changing the catheter. |
+| mgmt-hold-methotrexate | managementInclude | quality | PASS | NICE NG51 2024 | Add immunosuppressant review to the sepsis prompt. |
 
 Guidelines:
 
@@ -17752,22 +17122,16 @@ Guidelines:
 | mgmt-antibiotic-prophylaxis | managementInclude | critical | PASS | Baveno VII 2022; NICE CG141 2012 | Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its "80–100 in varices" transfusion target at the same time. |
 | mgmt-endoscopy-12h | managementInclude | critical | PASS | Baveno VII 2022 |  |
 | mgmt-band-ligation | managementInclude | critical | PASS | Baveno VII 2022; NICE CG141 2012 | Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its "80–100 in varices" transfusion target at the same time. |
-| mgmt-no-liberal-transfusion-varices | managementExclude | critical | FAIL (known gap) | Baveno VII 2022; Restrictive vs liberal transfusion in acute upper GI bleeding (RCT) 2013 |  |
+| mgmt-no-liberal-transfusion-varices | managementExclude | critical | PASS | Baveno VII 2022; Restrictive vs liberal transfusion in acute upper GI bleeding (RCT) 2013 |  |
 | mnm-variceal | mustNotMiss | quality | PASS | Baveno VII 2022 |  |
 | flag-cirrhosis | redFlags | quality | PASS | Baveno VII 2022 |  |
 | score-rec-child-pugh | scoreRecommended | quality | PASS | Baveno VII 2022 |  |
 | score-rec-gbs | scoreRecommended | quality | PASS | NICE CG141 2012 |  |
 | inv-inr-lfts | investigationInclude | quality | PASS | Baveno VII 2022 |  |
-| mgmt-restrictive-transfusion-varices | managementInclude | quality | FAIL (known gap) | Baveno VII 2022; Restrictive vs liberal transfusion in acute upper GI bleeding (RCT) 2013 | Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its "80–100 in varices" transfusion target at the same time. |
+| mgmt-restrictive-transfusion-varices | managementInclude | quality | PASS | Baveno VII 2022; Restrictive vs liberal transfusion in acute upper GI bleeding (RCT) 2013 | Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its "80–100 in varices" transfusion target at the same time. |
 | mgmt-pre-emptive-tips | managementInclude | quality | PASS | Baveno VII 2022 |  |
-| mgmt-no-tranexamic-acid | managementExclude | quality | FAIL | HALT-IT randomised trial 2020 |  |
+| mgmt-no-tranexamic-acid | managementExclude | quality | PASS | HALT-IT randomised trial 2020 |  |
 | variant-variceal | dxVariant | quality | PASS | Baveno VII 2022 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
-
-Failure details:
-
-- **mgmt-restrictive-transfusion-varices** (web): no management item matched among 49 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).]
-- **mgmt-no-liberal-transfusion-varices** (web): forbidden management item present in web.plan: "...uid resuscitation (crystalloid); transfuse to hb 70-90 g/l (80-100 in varices)." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because no protocol loaded. The Assessment management panel now follows the confirmed diagnosis (upper_gi_bleed), whose step says "transfuse to Hb 70-90 g/L (80-100 in varices)" (Baveno VII: 70-80).]
-- **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..."
 
 Guidelines:
 
@@ -17789,8 +17153,8 @@ Guidelines:
 - score values: (none)
 - dx variant: ugib_variceal (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, sudden_onset, acute_onset, diffuse_abdominal_pain, abdominal_distension, nausea_vomiting, melaena, jaundice, haematemesis, alcohol_use, ascites, pallor, known_liver_disease, known_hypertension, vascular_risk, diuretic_use, pr_bleeding, spider_naevi, erythema_surrounding, anaemia, raised_urea, thrombocytopenia, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
-- note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: variceal_bleed (from the confirmed diagnosis)
+- note: PlanTab protocol: variceal_bleed (from the confirmed diagnosis)
 - note: matchPathways: GI Bleeding (Upper and Lower) (20), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -17807,17 +17171,13 @@ Permutation of `variceal-bleed-known-cirrhosis`.
 | level-emergency | emergencyLevel | critical | PASS | Baveno VII 2022 |  |
 | mgmt-vasoactive | managementInclude | critical | PASS | Baveno VII 2022; NICE CG141 2012 | Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its "80–100 in varices" transfusion target at the same time. |
 | mgmt-antibiotic-prophylaxis | managementInclude | critical | PASS | Baveno VII 2022 | Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its "80–100 in varices" transfusion target at the same time. |
-| mgmt-no-liberal-transfusion-varices | managementExclude | critical | FAIL (known gap) | Baveno VII 2022; Restrictive vs liberal transfusion in acute upper GI bleeding (RCT) 2013 |  |
+| mgmt-no-liberal-transfusion-varices | managementExclude | critical | PASS | Baveno VII 2022; Restrictive vs liberal transfusion in acute upper GI bleeding (RCT) 2013 |  |
 | mnm-variceal | mustNotMiss | quality | PASS | Baveno VII 2022 |  |
 | flag-liver-disease | redFlags | quality | PASS | Baveno VII 2022 |  |
 | score-rec-child-pugh | scoreRecommended | quality | PASS | Baveno VII 2022 |  |
 | inv-inr-lfts | investigationInclude | quality | PASS | Baveno VII 2022 |  |
 | mgmt-band-ligation | managementInclude | quality | PASS | Baveno VII 2022 | Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its "80–100 in varices" transfusion target at the same time. |
 | variant-variceal | dxVariant | quality | PASS | Baveno VII 2022 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
-
-Failure details:
-
-- **mgmt-no-liberal-transfusion-varices** (web): forbidden management item present in web.plan: "...uid resuscitation (crystalloid); transfuse to hb 70-90 g/l (80-100 in varices)." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because no protocol loaded. The Assessment management panel now follows the confirmed diagnosis (upper_gi_bleed), whose step says "transfuse to Hb 70-90 g/L (80-100 in varices)" (Baveno VII: 70-80).]
 
 Guidelines:
 
@@ -17838,8 +17198,8 @@ Guidelines:
 - score values: (none)
 - dx variant: ugib_variceal (Upper GI Bleed)
 - note: PANE features applied: upper_gi_bleeding, sudden_onset, acute_onset, diffuse_abdominal_pain, abdominal_distension, nausea_vomiting, haematemesis, leg_swelling, bilateral_leg_oedema, ascites, pallor, pr_bleeding, spider_naevi, erythema_surrounding, alcohol_use, anaemia, raised_urea, thrombocytopenia, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
-- note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
-- note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: AssessmentTab ManagementPanel protocol: variceal_bleed (from the confirmed diagnosis)
+- note: PlanTab protocol: variceal_bleed (from the confirmed diagnosis)
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -17849,360 +17209,128 @@ Guidelines:
 | Vignette | Expectation | Platform | Severity | Flag | Detail |
 |---|---|---|---|---|---|
 | `abscess-recurrent-mrsa-pwid` | mnm-pseudoaneurysm | web | quality | known gap | not in top 3 of web.pane: 1. Skin Abscess / Furuncle \| 2. Cellulitis \| 3. Perianal Abscess / Fistula [known gap: No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin s |
-| `abscess-recurrent-mrsa-pwid` | inv-duplex-before-drainage | web | quality | known gap | no investigation matched among 19 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No engine recommends imaging a groin injection-site swelling before incision.] |
-| `abscess-recurrent-mrsa-pwid` | inv-bbv | web | quality | known gap | no investigation matched among 19 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No blood-borne virus screen suggested for a person who injects drugs.] |
 | `acutemed-af-incidental-preop-elderly` | mnm-af | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Femoral Hernia \| 3. Incisional Hernia [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis |
 | `acutemed-af-incidental-preop-elderly` | score-rec-cha2ds2vasc | web | quality | known gap | cha2ds2-vasc not recommended; recommended: news2, caprini, asa, rcri, cfs [known gap: Web run 2026-09-25: cha2ds2-vasc not recommended; recommended: news2, caprini, asa, rcri, cfs.] |
 | `acutemed-ahf-pulmonary-oedema` | mgmt-no-fluid-challenge | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• no iv fluid challenge - heart-failure signs or suspected pe recorded (esc 2021; esc 2019)." [known gap: Web run 2026-09-25: forbidden management item present in web.clinicalPrompt |
-| `acutemed-asthma-acute-severe` | mgmt-ipratropium | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 5 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — arrhythmia, right heart strain pattern (PE). \| • CTPA |
-| `acutemed-asthma-life-threatening` | mgmt-critical-care | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 6 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| •  |
-| `acutemed-asthma-life-threatening` | mgmt-magnesium | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 6 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| •  |
-| `acutemed-cap-immunosuppressed` | mgmt-pcp-or-pneumonitis | web | quality | known gap | no management item matched among 16 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 10 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). \| • Suppl |
 | `acutemed-cap-low-severity` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=115); expected ≤ urgent [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=130); expected ≤ urgent. Triage reasons: Possible ca |
-| `acutemed-cap-low-severity` | inv-cxr | web | quality | known gap | no investigation matched among 11 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, CRP (cholecystitis) \| LFTs, bilirubin, ALP, G |
-| `acutemed-cap-low-severity` | mgmt-amoxicillin | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 0 management items matched (sources: none).] |
 | `acutemed-cellulitis-true-portal-of-entry` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≤ urgent [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≤ urgent. Triage reasons: Systemic red  |
-| `acutemed-copd-hypercapnic-exacerbation` | mgmt-bronchodilator | web | quality | known gap | no management item matched among 17 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| • |
-| `acutemed-copd-hypercapnic-exacerbation` | mgmt-steroid | web | quality | known gap | no management item matched among 17 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. \| • |
 | `acutemed-copd-mild-exacerbation-outpatient` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=7); expected ≤ priority [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority. Triage reasons: Post-operat |
-| `acutemed-copd-mild-exacerbation-outpatient` | mgmt-bronchodilator | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 10 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). \| • Docum |
 | `acutemed-gastroenteritis-mimic-euglycaemic-dka` | mnm-dka-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Gallstone pancreatitis \| 3. Acute cholecystitis \| 4. Perforated peptic ulcer \| 5. Acute alcoholic pancreatitis; also in web.pane#1 [known gap: Web run 2026-09-25: not in t |
 | `acutemed-pe-ocp-long-haul` | mgmt-no-ddimer-gate | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: "•  |
 | `acutemed-pe-post-lap-chole-pleuritic` | mnm-postop-collection | web | quality | known gap | not in top 3 of web.pane: 1. Pulmonary Embolism \| 2. Post-operative Pneumonia / Atelectasis \| 3. Community-acquired Pneumonia (Adult / Child) [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) \| 2. |
-| `acutemed-pe-post-lap-chole-pleuritic` | alarm-hypoxia-or-tachycardia | web | quality | known gap | no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment.] |
-| `acutemed-pe-pregnancy-30wk` | mgmt-no-doac-or-warfarin-in-pregnancy | web | critical | known gap | forbidden management item present in web.plan: "[conservative] anticoagulation: rivaroxaban 15 mg bd × 21 days then 20 mg od; or lmwh/warfarin." (+5 more) [known gap: Web run 2026-09-25: forbidden management item present in web.plan: "[cons |
-| `acutemed-syncope-exertional-high-risk` | inv-echo | web | quality | known gap | no investigation matched among 12 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 18 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) \ |
+| `acutemed-pe-post-lap-chole-pleuritic` | alarm-hypoxia-or-tachycardia | web | quality | known gap | no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. \| iOS CI 2026-09-25 (run 36169134350, database mode): no |
 | `acutemed-syncope-vasovagal-low-risk` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=50); expected ≤ priority [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=90); expected ≤ priority. Triage reasons: Possible  |
-| `acutemed-syncope-vasovagal-low-risk` | inv-ecg | web | quality | known gap | no investigation matched among 11 (web.clinicalPrompts) [known gap: Web run 2026-09-25: none of 20 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, CRP (cholecystitis) \| LFTs, bilirubin, ALP, G |
-| `aki-obstructive-chronic-retention-elderly` | mgmt-urology | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Nephrology only; no urology referral.] |
-| `aki-obstructive-chronic-retention-elderly` | mgmt-stop-anticholinergic | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: Web: Amitriptyline is not recognised as a retention precipitant.] |
 | `aki-prerenal-diarrhoea-acei-nsaid` | mnm-aki-symptom-engine | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute gastroenteritis \| 2. Acute cholecystitis \| 3. BPPV / labyrinthitis / vestibular neuritis \| 4. DKA / hyperglycaemic hyperosmolar state \| 5. Acute mesenteric ischaemia; also in web.pane#1 [kn |
-| `aki-prerenal-diarrhoea-acei-nsaid` | mgmt-stop-diuretic | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: The AKI prompt holds "NSAIDs, ACE-I, ARBs, metformin" but not diuretics (furosemide continues).] |
-| `ali-embolic-af` | inv-cta-or-duplex | web | quality | known gap | no investigation matched among 6 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the  |
-| `ami-venous-thrombosis-ocp` | inv-thrombophilia | web | quality | known gap | no investigation matched among 21 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: No thrombophilia work-up.] |
-| `ami-venous-thrombosis-ocp` | mgmt-stop-cocp | web | quality | known gap | no management item matched among 28 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No prompt to stop the oestrogen-containing pill.] |
-| `anal-cancer-red-flags` | inv-biopsy | web | critical | known gap | no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No output asks for EUA/biopsy of the anal lesion: C21.0 has no protocol; the plan shown is the haemorrhoids protocol (PANE top) and colonoscopy + biopsy fr |
-| `anal-cancer-red-flags` | mgmt-chemoradiotherapy | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: No chemoradiotherapy/oncology output (no anal cancer protocol); the management panel shows the haemorrhoid protocol.] |
 | `anal-fissure-acute-posterior` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
 | `anal-fissure-acute-posterior` | mgmt-no-resuscitation | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
 | `anal-fissure-atypical-lateral-hiv` | mnm-sti-crohn | web | quality | known gap | not in top 3 of web.pane: 1. Anal Cancer (Squamous Cell Carcinoma of the Anus) \| 2. Anal Fissure \| 3. Ulcerative Colitis [known gap: Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions |
-| `anal-fissure-atypical-lateral-hiv` | inv-eua-biopsy | web | critical | known gap | no investigation matched among 18 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The anal_fissure protocol has no EUA/biopsy investigation (only "biopsy if non-healing after 8 weeks" in red flags), and the atypi |
-| `anal-fissure-atypical-lateral-hiv` | mgmt-no-sphincterotomy | web | critical | known gap | forbidden management item present in web.plan: "[surgical] lateral internal sphincterotomy (lis) - highly effective but 1-2% incontinence risk." (+2 more) [known gap: The anal_fissure plan is phase-unfiltered (no fissure dx-variant), so lat |
 | `aortic-dissection-epigastric-back-pain` | mnm-dissection-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm \| 2. Acute mesenteric ischaemia \| 3. Gallstone pancreatitis \| 4. Acute alcoholic pancreatitis \| 5. Perforated peptic ulcer; also in web.pane#1 [kn |
-| `aortic-dissection-epigastric-back-pain` | mgmt-bp-heart-rate-control | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: No output.] |
 | `appendicitis-adult-typical` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web CDS has no AIR rule (and no AIR calculator); Alvarado only.] |
 | `appendicitis-adult-typical` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo  |
 | `appendicitis-antibiotics-first-coda` | mnm-gynaecological | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Mesenteric adenitis \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Typhoid fever [known gap: Web: Symptom inference top 5: appendicitis ×2, alcoholic pa |
-| `appendicitis-antibiotics-first-coda` | mgmt-antibiotics-first-option | web | quality | known gap | no management item matched among 50 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendici |
-| `appendicitis-appendicolith` | mgmt-appendicolith-caution | web | quality | known gap | no management item matched among 50 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it |
 | `appendicitis-appendicolith` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo  |
 | `appendicitis-elderly-atypical` | mnm-caecal-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Mesenteric Ischaemia \| 3. Perforated Peptic Ulcer / Perforated Viscus [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not c |
 | `appendicitis-elderly-atypical` | mnm-diverticulitis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Mesenteric Ischaemia \| 3. Perforated Peptic Ulcer / Perforated Viscus [known gap: Not in PANE top 3.] |
-| `appendicitis-paediatric-9y` | score-rec-pas | web | quality | known gap | pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old.] |
-| `appendicitis-paediatric-9y` | mgmt-no-unqualified-ct-child | web | quality | known gap | forbidden management item present in web.plan: "investigation: ct abdomen/pelvis with iv contrast (urgent)" (+2 more) [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads ' |
-| `appendicitis-paediatric-9y` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+3 more) [known gap: Web: Protocol steps, protocol medications and the appendicectomy  |
+| `appendicitis-paediatric-9y` | score-rec-pas | web | quality | known gap | pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not reco |
+| `appendicitis-paediatric-9y` | mgmt-no-unqualified-ct-child | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ct abdomen/pelvis - appendix calibre, perforation, appendicolith." (+1 more) [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the doc |
 | `appendicitis-paediatric-9y` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav [weight-based dose - calculate per bnfc] tds × 24h → oral co-amoxiclav × 5 days. • p |
 | `appendicitis-pregnant-t2` | mnm-obstetric-cause | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list ( |
 | `appendicitis-pregnant-t2` | mnm-pyelonephritis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain |
-| `appendicitis-pregnant-t2` | inv-mri-after-inconclusive-us | web | critical | known gap | no investigation matched among 32 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging of |
-| `appendicitis-pregnant-t2` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast - if uss inconclusive or high clinical suspicio..." (+2 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.] |
+| `appendicitis-pregnant-t2` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis if the erect cxr is non-diagnostic (perforated_peptic_ulcer)" (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.] |
 | `appendicitis-score-intermediate-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.] |
-| `appendicitis-score-intermediate-band` | score-rec-aas | web | quality | known gap | aas not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Neither platform implements the Adult Appendicitis Score.] |
+| `appendicitis-score-intermediate-band` | score-rec-aas | web | quality | known gap | aas not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Neither platform implements the Adult Appendicitis Score. \| iOS CI 2026-09-25 (run 36169134350, database mode): aas not recommended; recommended: alvarado, air, rip |
 | `appendicitis-score-low-band` | mnm-gynaecological | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pyelonephritis / Upper Urinary Tract Infection [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the  |
-| `appendicitis-score-low-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.] |
+| `appendicitis-score-low-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule. \| iOS CI 2026-09-25 (run 36169134350, database mode): air not recommended; recommended: news2, mews] |
 | `biliary-colic-asymptomatic-incidental-gallstones` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=60); expected ≤ routine [known gap: adaptiveTriage emergency_now (score 100) for an asymptomatic referral: "never had … jaundice or fever" fires biliary-obstruction and chola |
 | `biliary-colic-asymptomatic-incidental-gallstones` | no-alarm | web | quality | known gap | forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. call 911 or go to the nearest emergency department now ..." [known gap: "Emergency now" and "Dilated CBD" alarms fire on negated history and "CBD 4 mm".] |
-| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-reassure-safety-net | web | quality | known gap | no management item matched among 15 (web.clinicalPrompts) [known gap: No output recommends reassurance/no treatment for asymptomatic stones.] |
-| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-cholecystectomy | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• consent: laparoscopic cholecystectomy - bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained..." (+1 more) [known gap: With no features applied, PANE stil |
+| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-cholecystectomy | web | quality | known gap | forbidden management item present in web.plan: "[surgical] gallbladder polyp ≥ 10 mm: laparoscopic cholecystectomy; 6-9 mm with risk factors: cholecystectomy or ultrasound surveillance (2022 joi..." (+4 more) [known gap: With no features ap |
 | `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment  |
-| `biliary-colic-incidental-polyp` | flag-polyp | web | quality | known gap | no red flag matched among 14 (web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No engine mentions the 12 mm polyp (no polyp rule in triage, prompts or protocols).] |
 | `biliary-colic-mimic-inferior-mi` | alarm-cardiac-or-haemodynamic | web | quality | known gap | no alarm matched among 4 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Only the generic "Emergency now" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).] |
-| `biliary-colic-uncomplicated` | flag-return-precautions | web | quality | known gap | no red flag matched among 13 (web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Web, since the engine-matching fixes (2026-09): this passed only on the cholangitis triage pathway and Charcot/Murphy prompts that fired |
 | `biliary-colic-uncomplicated` | mgmt-no-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment  |
-| `boerhaave-classic-mackler` | mgmt-antifungal | web | quality | known gap | no management item matched among 50 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: oesophageal_perforation protocol has no antifungal.] |
 | `breast-family-history-brca` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Triage same_day_call: the word "cancer" in the complaint ("Worried about breast cancer") matches the "Possible malignancy" red flag.] |
-| `breast-inflammatory-cancer` | mgmt-no-bcs-or-slnb | web | critical | known gap | forbidden management item present in web.plan: "[surgical] wide local excision (breast-conserving) + slnb or axillary clearance." (+3 more) [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wi |
-| `breast-lump-over-35-suspicious` | mgmt-no-surgery-before-histology | web | quality | known gap | forbidden management item present in web.protocol.medications: "...orphine sulfate 2.5-5 mg iv (intravenous) prn (as needed) - mastectomy / alnd post-operative pain" (+2 more) [known gap: Web, since the engine-matching fixes (2026-09): the  |
+| `breast-inflammatory-cancer` | mgmt-no-bcs-or-slnb | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ |
 | `breast-lump-under-30` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "breast lump" RED_FLAG is priority ("Possible malignancy") regardless of age, and the adaptive action maps priority  |
 | `breast-male-gynaecomastia` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=74); expected ≤ priority [known gap: Triage same_day_call: "breast lump" → Possible malignancy (priority) and the cancer screen triggers (age ≥30 + breast lump, applied to men |
-| `breast-nipple-discharge-bloody-single-duct` | mgmt-no-reassurance-only | web | critical | known gap | forbidden management item present in web.plan: "[conservative] duct ectasia: reassurance; evening primrose oil; avoid nipple manipulation." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): the Assessment management pane |
-| `breast-pain-cyclical-alone` | mgmt-reassurance | web | quality | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: N64.4 (mastodynia) maps to no protocol; no mastalgia guidance.] |
-| `burns-chemical-alkali` | inv-eye-ph | web | quality | known gap | no investigation matched among 10 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the A |
-| `burns-child-scald-12pct` | inv-lund-browder | web | quality | known gap | no investigation matched among 17 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T |
-| `burns-child-scald-12pct` | mgmt-maintenance-fluid | web | quality | known gap | no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31 |
-| `burns-child-scald-12pct` | mgmt-child-urine-target | web | quality | known gap | no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31 |
-| `burns-circumferential-forearm-hand` | mgmt-elevation | web | quality | known gap | no management item matched among 29 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ |
-| `caecal-volvulus` | mgmt-resection | web | critical | known gap | no management item matched among 31 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowe |
-| `cauda-equina-syndrome-disc` | inv-bladder-scan | web | quality | known gap | no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: No bladder scan / post-void residual.] |
-| `caustic-ingestion-alkali` | inv-airway-assessment | web | quality | known gap | no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: No caustic-ingestion protocol or prompt; nothing mentions airway assessment.] |
-| `caustic-ingestion-alkali` | mgmt-psychiatric-assessment | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Only the triage reason "Mental health crisis"; no plan line.] |
-| `caustic-ingestion-alkali` | mgmt-nil-by-mouth | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No plan output at all for T54.3.] |
-| `cdiff-fulminant-colitis` | mgmt-vancomycin-metronidazole | web | critical | known gap | no management item matched among 24 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". T |
-| `cdiff-fulminant-colitis` | mgmt-surgical-consult | web | critical | known gap | no management item matched among 24 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).] |
 | `cellulitis-leg-adult` | mnm-dvt | web | quality | known gap | not in top 3 of web.pane: 1. Cellulitis \| 2. Necrotising Fasciitis (NSTI) \| 3. Perianal Abscess / Fistula [known gap: PANE top 3: Acute cholecystitis, Cellulitis, GORD; DVT not listed. Triage surgical matches list DVT #1.] |
 | `cellulitis-leg-adult` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Over-triage: the HPI word 'spreading redness' matches the diabetic-foot red flag (rules.ts, urgent) → emergency_now in a non-diabetic with  |
-| `charcot-foot-cellulitis-mimic` | inv-mri | web | quality | known gap | no investigation matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot |
-| `charcot-foot-cellulitis-mimic` | mgmt-immobilise-offload | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
 | `cholangitis-tg18-charcot-sepsis` | score-tg18-autofill | web | quality | known gap | expected = 2; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: Web clinical-scores needs manual imaging ticks before it will diagnose, so auto-fill reads "criteria not met".] |
-| `cholangitis-tg18-charcot-sepsis` | mgmt-drainage-in-generated-plan | web | quality | known gap | no management item matched among 13 (web.plan) [known gap: dx-variants: 'ascending cholangitis' is a Grade I keyword, Grade I is checked first, and Grade I phases exclude 'surgical', so ERCP disappears from the generated plan.] |
-| `cholangitis-tg18-charcot-sepsis` | variant-grade2 | web | quality | known gap | detected cholangitis_grade1 in group Cholangitis; expected cholangitis_grade2 [known gap: dx-variants selects Grade I from 'ascending cholangitis'.] |
 | `cholangitis-tg18-grade1-single-criterion` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3 includes Inguinal / Femoral Hernia (male/age prior modifiers) instead.] |
 | `cholangitis-tg18-grade1-single-criterion` | score-tg18-autofill | web | quality | known gap | expected = 1; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill: age >75 alone → Grade II; web clinical-scores: criteria not met without manual imaging ticks.] |
-| `cholangitis-tg18-grade1-single-criterion` | variant-grade1 | web | quality | known gap | detected (none) in group Cholangitis; expected cholangitis_grade1 [known gap: dx-variants keywords need 'mild cholangitis' word order; 'Mild acute cholangitis' selects no variant.] |
 | `cholangitis-tg18-grade3-reynolds` | score-tg18-autofill | web | critical | known gap | expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria |
-| `cholangitis-tg18-grade3-reynolds` | variant-grade3 | web | quality | known gap | detected (none) in group Cholangitis; expected cholangitis_grade3 [known gap: dx-variants needs 'severe cholangitis' word order; 'Severe acute cholangitis' selects no variant.] |
-| `cholecystitis-acalculous-icu` | mgmt-no-unqualified-early-lc | web | quality | known gap | forbidden management item present in web.managementPanel.keyPoints: "early laparoscopic cholecystectomy (within 72 h) reduces complications vs interval surgery." [known gap: Assessment panel key point "Early laparoscopic cholecystectomy (wi |
-| `cholecystitis-elderly-diabetic-atypical` | mnm-mesenteric-ischaemia | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia).] |
+| `cholecystitis-elderly-diabetic-atypical` | mnm-mesenteric-ischaemia | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). \| iOS CI 2026-09-25 (run 36169134 |
 | `cholecystitis-elderly-diabetic-atypical` | score-tg18-autofill | web | quality | known gap | expected ≥ 2; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: clinical-scores auto-derived grade = 0 "criteria not met" despite WBC 19.4 and a characteristic US report (needs manual im |
 | `cholecystitis-elderly-diabetic-atypical` | mgmt-no-nsaid-ckd | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole op |
-| `cholecystitis-high-risk-grade2-drainage` | mgmt-drainage-in-documented-plan | web | quality | known gap | no management item matched among 13 (web.plan) [known gap: Grade I variant allows immediate/surgical/followup phases only, so "percutaneous cholecystostomy if … unfit for surgery" (conservative phase) is missing from the Plan tab; it appear |
-| `cholecystitis-high-risk-grade2-drainage` | mgmt-no-unqualified-early-lc | web | quality | known gap | forbidden management item present in web.plan: "[surgical] early laparoscopic cholecystectomy within 72 h (grade i-ii)." (+2 more) [known gap: Plan tab: "[surgical] Early laparoscopic cholecystectomy within 72 h (Grade I–II)" for a CCI 8 /  |
 | `cholecystitis-tg18-grade1` | score-rec-tg18-cholecystitis | web | quality | known gap | tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2, asa, stop-bang [known gap: Web CDS has a TG18 cholangitis rule but none for cholecystitis.] |
 | `cholecystitis-tg18-grade1` | score-tg18-autofill | web | quality | known gap | expected = 1; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads "criteria not met"; web  |
 | `cholecystitis-tg18-grade2` | score-rec-tg18-cholecystitis | web | quality | known gap | tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, web:wagner, news2, caprini, asa, rcri [known gap: No TG18 cholecystitis CDS rule on web.] |
 | `cholecystitis-tg18-grade3-organ-dysfunction` | score-rec-tg18-cholecystitis | web | quality | known gap | tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs [known gap: No TG18 cholecystitis CDS rule on web.] |
 | `cholecystitis-tg18-grade3-organ-dysfunction` | score-tg18-autofill | web | critical | known gap | expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets |
-| `cholecystitis-tg18-grade3-organ-dysfunction` | mgmt-no-penicillin-in-anaphylaxis | web | critical | known gap | forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or piperacillin-tazobactam for severe." (+3 more) [known gap: Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the |
-| `cholecystitis-tg18-grade3-organ-dysfunction` | mgmt-no-early-cholecystectomy-in-shock | web | quality | known gap | forbidden management item present in web.managementPanel.keyPoints: "early laparoscopic cholecystectomy (within 72 h) reduces complications vs interval surgery." [known gap: iOS TG18 Grade III recommendation offers 'emergency cholecystectom |
 | `choledocholithiasis-asge-high-risk` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Biliary Colic / Symptomatic Cholelithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#2 [known gap: PANE top 3: cholecystitis, choledocholithiasis, pancreati |
-| `choledocholithiasis-asge-high-risk` | inv-no-mrcp-before-ercp | web | quality | known gap | forbidden investigation present in web.plan.investigations: "mrcp (cbd stone confirmation)" (+2 more) [known gap: Choledocholithiasis protocol lists MRCP unconditionally, even when a duct stone is seen on US (ASGE high risk).] |
-| `choledocholithiasis-asge-intermediate` | mgmt-no-unconditional-ercp | web | critical | known gap | forbidden management item present in web.plan: "[surgical] ercp + sphincterotomy and stone extraction." (+5 more) [known gap: Plan tab: "[surgical] ERCP + sphincterotomy and stone extraction." unconditionally for ASGE intermediate risk (no  |
-| `choledocholithiasis-asge-low-risk` | inv-no-routine-mrcp | web | quality | known gap | forbidden investigation present in web.pane.seeded: "mrcp (cbd stone confirmation) (choledocholithiasis)" [known gap: MRCP seeded from the choledocholithiasis protocol (PANE #2) for an ASGE low-risk patient.] |
 | `choledocholithiasis-elderly-warfarin` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4 [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cau |
-| `choledocholithiasis-pregnancy` | mgmt-fluoroscopy-minimised | web | quality | known gap | no management item matched among 31 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ERCP is offered with no pregnancy adaptation (fluoroscopy minimisation, shielding, |
 | `crc-screening-african-caribbean-fhx` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the words "colorectal cancer" in the family-history comorbidity trigger "Possible malignancy" (priority) → same_day_call for  |
-| `crohns-ileocaecal-abscess` | mgmt-drainage | web | critical | known gap | no management item matched among 44 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The crohns_disease protocol says "Abscess or fistula — urgent imaging and interven |
-| `crohns-ileocaecal-abscess` | mgmt-no-steroids | web | critical | known gap | forbidden management item present in web.protocol.medications: "budesonide 9 mg po (oral) od (once daily) - ileal disease flare - less systemic side effec..." (+1 more) [known gap: The crohns_disease protocol medications (prednisolone, bude |
-| `crohns-perianal-complex-fistula` | mgmt-eua-seton | web | critical | known gap | no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Asses |
-| `crohns-perianal-complex-fistula` | mgmt-drainage | web | critical | known gap | no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Asses |
-| `dfi-moderate-osteomyelitis` | inv-mri-or-bone-sample | web | quality | known gap | no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
-| `dfi-moderate-osteomyelitis` | inv-deep-tissue-culture | web | quality | known gap | no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
-| `dfi-moderate-osteomyelitis` | inv-vascular-assessment | web | quality | known gap | no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
-| `dfi-moderate-osteomyelitis` | mgmt-offloading | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-fo |
-| `dfi-moderate-osteomyelitis` | mgmt-mdt-foot | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-fo |
-| `dfi-moderate-osteomyelitis` | mgmt-antibiotic | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-fo |
-| `dfi-moderate-osteomyelitis` | mgmt-iwgdf-grade | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-fo |
-| `dfi-severe-wet-gangrene-abscess` | inv-vascular-imaging | web | quality | known gap | no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the tria |
-| `dfi-severe-wet-gangrene-abscess` | mgmt-vascular | web | quality | known gap | no management item matched among 26 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
 | `dfu-ischaemic-calcified-abpi` | flag-incompressible | web | quality | known gap | no red flag matched among 20 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ul |
 | `dfu-neuropathic-uninfected` | level-priority-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer;  |
-| `dfu-neuropathic-uninfected` | mgmt-offloading | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
-| `dfu-neuropathic-uninfected` | mgmt-mdt-foot | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
-| `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | web | quality | known gap | no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5– |
-| `diverticulitis-uncomplicated-outpatient` | mgmt-no-routine-antibiotics | web | quality | known gap | forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+1 more) [known gap: Web: '[conservative] Uncomplicated: oral co-amoxiclav 625 mg TDS for 5–7 days' in t |
-| `diverticulitis-uncomplicated-outpatient` | variant-uncomplicated | web | quality | known gap | detected (none) in group Diverticulitis; expected diverticulitis_uncomplicated [known gap: Web: Keyword 'uncomplicated diverticulitis' is not a substring of 'Uncomplicated acute sigmoid diverticulitis'; no variant is selected.] |
-| `dvt-pregnancy-22wk` | inv-no-ddimer-in-pregnancy | web | quality | known gap | forbidden investigation present in web.plan.investigations: "d-dimer (only if pre-test probability low/intermediate)" (+1 more) [known gap: The DVT protocol lists "D-dimer (only if pre-test probability low/intermediate)" without a pregnancy |
-| `dvt-pregnancy-22wk` | mgmt-no-doac-in-pregnancy | web | critical | known gap | forbidden management item present in web.plan: "[conservative] direct oral anticoagulant (doac): rivaroxaban 15 mg bd for 21 days then 20 mg od; or apixaban 10 mg bd for 7 days then 5 mg b..." (+5 more) [known gap: The DVT plan offers rivar |
-| `dvt-pregnancy-22wk` | mgmt-no-warfarin-in-pregnancy | web | critical | known gap | forbidden management item present in web.plan: "[conservative] alternative: lmwh bridging to warfarin (target inr 2-3) if doac contraindicated (severe renal failure, pregnancy)." (+3 more) [known gap: The DVT plan says "LMWH bridging to war |
-| `dvt-wells-likely` | flag-oestrogen | web | quality | known gap | no red flag matched among 12 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The combined oral contraceptive is not flagged. Triage also scores 'Possible cardiac event' a |
-| `dyspepsia-young-no-alarm-test-and-treat` | inv-hpylori-non-invasive | web | quality | known gap | no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K30 (uninvestigated/functional dyspepsia); the GORD management panel (PANE top) lists H. pylori only as a routine investigation, which is n |
-| `dyspepsia-young-no-alarm-test-and-treat` | mgmt-test-and-treat-or-ppi | web | quality | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's GORD protocol; the panel now follows the confirmed d |
-| `dyspepsia-young-no-alarm-test-and-treat` | mgmt-lifestyle | web | quality | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's GORD protocol; the panel now follows the confirmed d |
+| `dvt-pregnancy-22wk` | mgmt-no-warfarin-in-pregnancy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... weeks (mhra 2020); anticoagulation with lmwh, not doacs or warfarin (rcog gtg 37a/b); ultrasound or mri before ionising imaging where it answers th..." [known gap: The DVT plan  |
 | `eoe-young-atopic-recurrent-bolus` | mnm-eoe | web | quality | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Oesophageal Stricture (Benign) \| 3. Hiatus Hernia [known gap: No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture pr |
 | `eoe-young-atopic-recurrent-bolus` | level-priority-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≥ priority, ≤ urgent [known gap: Emergency now: "Systemic red flag symptom" and "Dysphagia" red flags plus a 2-week-wait cancer screen labelled "colorectal" (ca |
-| `eoe-young-atopic-recurrent-bolus` | inv-six-biopsies-two-levels | web | quality | known gap | no investigation matched among 12 (web.pane.seeded, web.clinicalPrompts) [known gap: As inv-oesophageal-biopsies.] |
-| `eoe-young-atopic-recurrent-bolus` | mgmt-eoe-treatment-options | web | quality | known gap | no management item matched among 1 (web.clinicalPrompts) [known gap: No management output at all for K20.0.] |
 | `epididymo-orchitis-sti-young` | mnm-torsion-considered | web | quality | known gap | not in top 3 of web.pane: 1. Epididymo-orchitis \| 2. Acute Pyelonephritis / Upper Urinary Tract Infection \| 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); also in web.symptomInference#2, web.passive#5 [kno |
 | `epididymo-orchitis-sti-young` | level-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≥ priority, ≤ urgent [known gap: Web: Triage "emergency_now" (score 48): fever in the text and the 38.1 °C vital plus a moderate pain score add up past the emer |
 | `epididymo-orchitis-sti-young` | mgmt-no-unconditional-exploration | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency scrotal exploration - do not delay surgery for ultrasound when torsion is suspected (eau 2024); sal..." (+1 more) [known gap: Web: The scrotal-chip torsion prompt always |
-| `fistula-in-ano-complex-anterior-female` | mgmt-seton-or-sparing | web | critical | known gap | no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fis |
-| `fistula-in-ano-complex-anterior-female` | mgmt-no-sphincterotomy | web | critical | known gap | forbidden management item present in web.plan: "[surgical] lateral internal sphincterotomy (lis) - highly effective but 1-2% incontinence risk." (+2 more) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 c |
-| `fistula-in-ano-simple-low` | mgmt-fistulotomy | web | critical | known gap | no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fis |
-| `fistula-in-ano-simple-low` | mgmt-no-fissure-plan | web | critical | known gap | forbidden management item present in web.plan: "[conservative] gtn 0.2% topical bd for 8 weeks or diltiazem 2% bd (less headaches)." (+6 more) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissur |
-| `food-bolus-complete-obstruction` | inv-emergency-ogd | web | critical | known gap | no investigation matched among 8 (web.pane.seeded, web.clinicalPrompts) [known gap: Web 2026-09-25: passed before pane model 1.0.0 only because the wrong PANE top 3 (GORD: "OGD") seeded that protocol's tests; PANE now ranks oesophageal food |
-| `food-bolus-complete-obstruction` | mgmt-biopsies-underlying-cause | web | quality | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: As mgmt-endoscopic-removal.] |
 | `fournier-gangrene` | score-rec-lrinec | web | quality | known gap | lrinec not recommended; recommended: qsofa, gcs, child-pugh, web:wagner, news2, caprini, asa, web:audit, rcri, stop-bang, cfs [known gap: No LRINEC calculator or CDS rule on web (Wagner and AUDIT are suggested instead).] |
-| `gord-alarm-weight-loss-over55` | mgmt-urgent-two-week-ogd | web | quality | known gap | no management item matched among 34 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: GORD protocol OGD line is conditional ("Alarm features, age >55, or 4-week PPI tri |
-| `gyn-ovarian-torsion-premenarchal-11` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.protocol.medications: "ondansetron 4 mg iv (intravenous) tds (three times daily) - antiemetic" (+2 more) [known gap: Web: adult fixed doses with no weight or age adjustment — the ovarian_torsion prot |
-| `h-pylori-penicillin-anaphylaxis` | mgmt-bismuth-quadruple | web | quality | known gap | no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No penicillin-free regimen in any H. pylori protocol.] |
-| `h-pylori-penicillin-anaphylaxis` | mgmt-no-amoxicillin | web | critical | known gap | forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+2 more) [known gap: Gastritis protocol p |
-| `h-pylori-positive-eradication` | mgmt-14-day-or-bismuth | web | quality | known gap | no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Gastritis protocol: "triple therapy (PPI + amoxicillin + clarithromycin × 7 days)" |
-| `h-pylori-positive-eradication` | mgmt-no-7-day-clarithromycin-triple | web | quality | known gap | forbidden management item present in web.plan: "... h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+1 more) [known gap: Gastritis protocol plan line an |
-| `haematuria-anticoagulated-clot-retention` | mgmt-three-way-irrigation | web | quality | known gap | no management item matched among 36 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No three-way catheter or irrigation; a standard Foley is suggested.] |
 | `haemorrhoids-grade3-over-50` | mnm-crc | web | quality | known gap | not in top 3 of web.pane: 1. Rectal Prolapse \| 2. Haemorrhoids \| 3. Anal Cancer (Squamous Cell Carcinoma of the Anus); also in web.symptomInference#4 [known gap: PANE top 3 (haemorrhoids, hernia, fissure) does not keep colorectal cancer v |
-| `haemorrhoids-thrombosed-external-48h` | mgmt-excision-72h | web | quality | known gap | no management item matched among 25 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The haemorrhoids protocol mentions "acutely thrombosed external haemorrhoid (< 72  |
-| `hernia-groin-incarcerated` | inv-lactate | web | quality | known gap | no investigation matched among 13 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The inguinal_hernia protocol lists FBC, U&E only; no lactate/CPK (WSES strangulation markers) anywhere in the web outputs.] |
 | `hernia-incisional-midline-elective` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=34); expected ≤ priority [known gap: Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15); "Hartmann's … reversed" |
-| `hernia-inguinal-elective-minimal-symptoms` | mgmt-watchful-waiting-option | web | quality | known gap | no management item matched among 32 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Neither the inguinal_hernia protocol nor the prompts mention watchful waiting (only "truss for unfit patient |
-| `hernia-obturator-sbo-elderly-woman` | variant-strangulated-or-obstructed | web | quality | known gap | detected (none) in group Hernia; expected hernia_incarcerated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment ("Small bowel obstruction due to left obturator hernia") ha |
-| `hernia-paediatric-incarcerated-infant` | mgmt-no-adult-plan | web | quality | known gap | forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+2 more) [known gap: Adult inguinal protocol and TAPP template for an infant (see the base paedia |
-| `hernia-paediatric-inguinal-infant` | mgmt-no-watchful-waiting | web | critical | known gap | forbidden management item present in web.plan: "[conservative] truss may be offered for unfit patients declining surgery - monitor for strangulation..." (+1 more) [known gap: The inguinal_hernia protocol has no paediatric branch: the plan o |
-| `hernia-paediatric-inguinal-infant` | mgmt-no-adult-mesh-repair | web | critical | known gap | forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+4 more) [known gap: Adult plan for a 4-month-old: "Lichtenstein mesh herniorrhaphy … TEP/TAPP" ( |
 | `hernia-parastomal-symptomatic` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=44); expected ≤ priority [known gap: Triage emergency_now (score 59): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting"); "rectal cancer" history → "Po |
 | `hernia-paraumbilical-incarcerated-obese` | mgmt-no-penicillin | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...rative: • nbm from midnight. consent signed. • antibiotics: co-amoxiclav 1.2g iv at induction (optional - low infection risk if no mesh contamination). ..." [known gap: The recor |
 | `hernia-paraumbilical-incarcerated-obese` | variant-incarcerated-or-worse | web | quality | known gap | detected hernia_strangulated in group Hernia; expected hernia_incarcerated [known gap: Web, since the engine-matching fixes (2026-09): "strangulation not excluded" is a hedge, not a negation, so the strangulated variant is now detected (the |
 | `hernia-umbilical-adult-elective` | mgmt-no-inguinal-template | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic inguinal hernia repair (tapp) - operative plan ───────────────────────────────────────────────────────────── ..." [known gap: computeClinicalPrompts fires the hernia pa |
 | `hernia-umbilical-cirrhosis-ascites` | mgmt-no-standard-day-case-plan | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... male (reduces haematoma). • ice pack to groin prn × 24h. • day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding. ..." [known gap: computeClinic |
-| `hypercalcaemia-malignancy-bone-mets` | mgmt-oncology | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No oncology referral.] |
-| `hypoglycaemia-sulfonylurea-ckd-elderly` | mgmt-review-sulfonylurea | web | quality | known gap | no management item matched among 16 (web.clinicalPrompts) [known gap: Web: Gliclazide is not mentioned in any output.] |
-| `hyponatraemia-elderly-thiazide-ssri` | flag-hypokalaemia | web | quality | known gap | no red flag matched among 12 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt.] |
+| `hyponatraemia-elderly-thiazide-ssri` | flag-hypokalaemia | web | quality | known gap | no red flag matched among 15 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: Web: Potassium 3.1 is not flagged: there is no hypokalaemia prompt. \| |
 | `infective-colitis-bloody-diarrhoea` | mnm-ibd | web | quality | known gap | not in top 3 of web.pane: 1. Acute Gastroenteritis / Infective Colitis \| 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk \| 3. Clostridioides difficile Colitis (C. diff infection); also in web.symptomInference#4, web.p |
-| `lbo-cancer-impending-caecal-perforation` | mgmt-no-stent-with-impending-perforation | web | critical | known gap | forbidden management item present in web.plan: "options: (1) sems bridge to elective resection, (2) emergency hartmann's, (3) defunctioning colos..." (+1 more) [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignanc |
-| `lbo-right-colon-cancer` | mgmt-right-hemicolectomy | web | quality | known gap | no management item matched among 28 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Plan offers the left-sided LBO options only (SEMS, Hartmann's, colostomy); no right colectomy with prim |
-| `lbo-right-colon-cancer` | mgmt-no-left-sided-plan-for-right-lesion | web | quality | known gap | forbidden management item present in web.plan: "options: (1) sems bridge to elective resection, (2) emergency hartmann's, (3) defunctioning colostomy." (+3 more) [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann' |
-| `lgib-angiodysplasia-aspirin` | mgmt-apc | web | quality | known gap | no management item matched among 38 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No endoscopic therapy (argon plasma coagulation) — there is no angiodysplasia prot |
-| `lgib-angiodysplasia-aspirin` | mgmt-no-heparin | web | critical | known gap | forbidden management item present in web.protocol.medications: "heparin weight-based per local protocol iv (intravenous) continuous infusion - mesenter..." [known gap: ICD K55.21 (angiodysplasia of colon with haemorrhage) matches the ischae |
-| `lgib-angiodysplasia-aspirin` | mgmt-no-empirical-antibiotics | web | quality | known gap | forbidden management item present in web.plan: "[immediate] iv fluids, nbm, broad-spectrum iv antibiotics (piperacillin-tazobactam)." (+1 more) [known gap: Same K55 → ischaemic_colitis routing: "broad-spectrum IV antibiotics (piperacillin-t |
+| `lbo-cancer-impending-caecal-perforation` | mgmt-no-stent-with-impending-perforation | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic  |
+| `lbo-right-colon-cancer` | mgmt-no-left-sided-plan-for-right-lesion | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...lignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctionin |
 | `lgib-diverticular-apixaban` | score-rec-oakland | web | quality | known gap | oakland not recommended; recommended: cha2ds2-vasc, news2, rockall, has-bled, cfs [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland |
-| `lgib-diverticular-apixaban` | mgmt-no-diverticulitis-antibiotics | web | quality | known gap | forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+4 more) [known gap: ICD K57.31 (diverticulosis with bleeding) maps to the diverticulitis protocol and d |
 | `lgib-oakland-low-risk-discharge` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ urgent [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → emerg |
 | `lgib-oakland-low-risk-discharge` | score-rec-oakland | web | quality | known gap | oakland not recommended; recommended: news2, rockall [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisSco |
 | `lgib-oakland-low-risk-discharge` | mgmt-no-transfusion | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
-| `lgib-post-polypectomy` | mgmt-endoscopic-haemostasis | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No post-polypectomy bleeding protocol (K91.840 has none); the only plan is the generic GI-bleed prompt without endoscopic haemostasis/clips.] |
 | `lgib-unstable-cta-first` | score-rec-shock-index | web | quality | known gap | web:shockIndex not recommended; recommended: qsofa, news2, rockall, caprini, asa, rcri, cfs [known gap: No shock-index output on web; BSG 2019 defines instability by shock index > 1.] |
-| `lgib-unstable-cta-first` | mgmt-no-terlipressin | web | critical | known gap | forbidden management item present in web.plan: "[immediate] suspected varices: terlipressin 2 mg qds + prophylactic iv ceftriaxone." (+1 more) [known gap: The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed prot |
-| `lgib-unstable-warfarin` | mgmt-restart-anticoag-plan | web | quality | known gap | no management item matched among 54 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output plans when to restart warfarin after the bleed; the only anticoagulant t |
-| `liver-abscess-amoebic` | mgmt-luminal-agent | web | quality | known gap | no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No luminal amoebicide anywhere (the liver_abscess protocol also omits it).] |
-| `liver-abscess-amoebic` | mgmt-no-routine-drainage | web | quality | known gap | forbidden management item present in web.plan: "[surgical] uss-guided percutaneous aspiration / drain insertion (abscess >3 cm)." (+2 more) [known gap: Web, since the engine-matching fixes (2026-09): the Assessment management panel now foll |
 | `mallory-weiss-young-binge` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≤ urgent [known gap: Emergency now (score 120): any "blood"/"bleed" word is an urgent red flag regardless of volume or GBS, and "No chest pain" in the HPI fires |
-| `meningitis-meningococcal-young` | mgmt-dexamethasone | web | quality | known gap | no management item matched among 16 (web.clinicalPrompts) [known gap: Web: No dexamethasone.] |
-| `meningitis-meningococcal-young` | mgmt-public-health | web | quality | known gap | no management item matched among 16 (web.clinicalPrompts) [known gap: Web: No public-health notification.] |
 | `mi-presenting-as-epigastric-pain` | mnm-acs-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. GORD / acid reflux / oesophagitis \| 2. Gallstone pancreatitis \| 3. Acute alcoholic pancreatitis \| 4. Perforated peptic ulcer \| 5. Gastric carcinoma; also in web.pane#1 [known gap: Symptom inferen |
-| `mimic-ectopic-ruptured-shock` | mgmt-no-medical-management-when-ruptured | web | critical | known gap | forbidden management item present in web.plan: "investigation: renal function, lfts (methotrexate suitability) (urgent)" (+1 more) [known gap: Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability test |
 | `mimic-inferior-mi` | mnm-acs-symptom-engine | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute alcoholic pancreatitis \| 2. Gallstone pancreatitis \| 3. Perforated peptic ulcer \| 4. Acute gastroenteritis \| 5. Gastric carcinoma; also in web.pane#1 [known gap: Web: Symptom inference top  |
-| `mscc-pain-only-breast-cancer` | mgmt-oncology | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Web: No oncology referral.] |
-| `nsaid-associated-gastric-ulcer` | mgmt-ppi-8-weeks | web | quality | known gap | no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: peptic_ulcer protocol gives omeprazole 20 mg OD "4–8 weeks" in medications (matche |
 | `nsti-leg-diabetic-sepsis` | score-rec-lrinec | web | quality | known gap | lrinec not recommended; recommended: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang [known gap: getCdsSuggestions has no LRINEC scale (clinical-cds.ts); iOS has one.] |
 | `obs-hyperemesis-gravidarum` | mgmt-no-ct-in-early-pregnancy | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ct chest/abdomen/pelvis - occult malignancy screen (alarm symptoms)." [known gap: Web: the unintentional-weight-loss alarm prompt adds '• CT chest/abdomen/pelvis — occult malignan |
-| `paed-appendicitis-preschool-perforated` | score-rec-pas | web | quality | known gap | pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old.] |
-| `paed-appendicitis-preschool-perforated` | mgmt-no-adult-fixed-doses | web | critical | known gap | forbidden management item present in web.plan: "[immediate] iv antibiotics: co-amoxiclav 1.2 g tds or cefuroxime 750 mg tds + metronidazole 500 mg tds." (+4 more) [known gap: Web: adult fixed doses with no weight or age adjustment — protoco |
-| `paed-appendicitis-preschool-perforated` | variant-abscess | web | quality | known gap | detected appendicitis_uncomplicated in group Acute Appendicitis; expected appendicitis_abscess [known gap: detectDxVariants still picks appendicitis_uncomplicated for 'Perforated appendicitis with periappendiceal abscess … a 3 cm abscess'.] |
-| `paed-intussusception-infant-classic` | mgmt-fluid-resuscitation | web | quality | known gap | no management item matched among 31 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No mL/kg fluid output; fluids appear only as adult volumes ('Hartmann's 500ml bolus, crossmatch 2 units pRBC |
+| `paed-appendicitis-preschool-perforated` | score-rec-pas | web | quality | known gap | pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old. \| iOS CI  |
 | `paed-nai-duodenal-haematoma` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Splenic Laceration \| 2. Blunt Abdominal Trauma \| 3. Acute Pancreatitis [known gap: PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists  |
-| `painless-jaundice-elderly-metastatic` | flag-frailty | web | quality | known gap | no red flag matched among 29 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No frailty/perf |
-| `pancreatitis-alcohol` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
-| `pancreatitis-drug-induced-immunosuppressed` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
-| `pancreatitis-elderly-bisap-heart-failure` | inv-triglycerides | web | quality | known gap | no investigation matched among 33 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No triglycerides in the pancreatitis protocol.] |
-| `pancreatitis-elderly-bisap-heart-failure` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)" for a 79-year-ol |
-| `pancreatitis-gallstone-cholangitis` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
 | `pancreatitis-gallstone-mild` | score-rec-bisap | web | quality | known gap | bisap not recommended; recommended: alvarado, ranson, news2, web:gerdq, asa, stop-bang [known gap: CDS BISAP rule fires only on a "pancreatitis"/"epigastric pain" chip plus an alcohol/gallstone/hyperlipidaemia comorbidity; it ignores the lo |
-| `pancreatitis-gallstone-mild` | inv-triglycerides | web | quality | known gap | no investigation matched among 28 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Pancreatitis protocol investigations have no triglycerides (iOS radiation has them).] |
-| `pancreatitis-gallstone-mild` | inv-no-early-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "cect abdomen (assess pancreatic necrosis) (pancreatitis)" [known gap: HPI completion seeds "CECT abdomen (assess pancreatic necrosis)" as an urgent order, dropping the protocol's conditio |
-| `pancreatitis-gallstone-mild` | mgmt-early-oral-feeding | web | quality | known gap | no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No early oral feeding line: the mild variant (which has one) is not detected (see  |
-| `pancreatitis-gallstone-mild` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab and Assessment panel: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml |
-| `pancreatitis-gallstone-mild` | mgmt-no-routine-nbm | web | quality | known gap | forbidden management item present in web.plan: "[immediate] nbm - enteral feeding via ng/nj if not tolerating po at 48 h." (+1 more) [known gap: Protocol step "NBM — enteral feeding via NG/NJ if not tolerating PO at 48 h"; lipase prompt "NB |
-| `pancreatitis-gallstone-mild` | variant-mild | web | quality | known gap | detected (none) in group Pancreatitis; expected pancreatitis_mild [known gap: Assessment "…No cholangitis…" selects the Cholangitis group by text before the Pancreatitis group is checked; no variant, so the Plan tab shows every phase (inclu |
-| `pancreatitis-hypertriglyceridaemia` | inv-triglycerides | web | quality | known gap | no investigation matched among 30 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No triglycerides in the pancreatitis protocol investigations.] |
-| `pancreatitis-hypertriglyceridaemia` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
-| `pancreatitis-moderately-severe` | variant-moderate | web | quality | known gap | detected (none) in group Pancreatitis; expected pancreatitis_moderate [known gap: "Moderately severe acute pancreatitis" contains "severe acute pancreatitis" → severe variant (ICU prefix, surgical phase) selected.] |
-| `pancreatitis-pregnancy` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "cect abdomen (assess pancreatic necrosis) (pancreatitis)" [known gap: "CECT abdomen (assess pancreatic necrosis)" seeded unconditionally (conditional dropped) at 21 weeks. HpiTab.seedInve |
-| `pancreatitis-pregnancy` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".] |
 | `pancreatitis-severe-organ-failure` | score-rec-bisap | web | quality | known gap | bisap not recommended; recommended: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang [known gap: BISAP not suggested (CDS rule ignores the working diagnosis); 12 other scales are.] |
-| `pancreatitis-severe-organ-failure` | mgmt-abdominal-compartment | web | quality | known gap | no management item matched among 62 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No intra-abdominal pressure monitoring despite a documented bladder pressure of 16 |
-| `pancreatitis-severe-organ-failure` | mgmt-no-aggressive-fluids | web | critical | known gap | forbidden management item present in web.plan: "icu admission. aggressive resuscitation. enteral feeding via ngt/njt within 24-48 h (superior to tpn)." (+3 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 m |
 | `pe-postop-day5` | mgmt-no-ddimer-gate | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: The hypoxia and tachycardia clinical prompts (clinical-inference.ts) add 'CTPA if |
 | `perianal-abscess-diabetic-cellulitis` | mnm-nsti | web | quality | known gap | not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Cellulitis; also in web.symptomInference#1, web.passive#2 [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: peria |
-| `perianal-abscess-hiv` | mnm-anal-neoplasia | web | quality | known gap | not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Anal Fissure; also in web.symptomInference#2, web.passive#2 [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2.] |
-| `perianal-abscess-simple` | mgmt-no-routine-antibiotics | web | quality | known gap | forbidden management item present in web.protocol.medications: "metronidazole 400 mg po (oral) tds (three times daily) - anaerobic cover for fistula tract" [known gap: The perianal_abscess protocol medications include oral metronidazole "an |
+| `perianal-abscess-hiv` | mnm-anal-neoplasia | web | quality | known gap | not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Anal Fissure; also in web.symptomInference#2, web.passive#2 [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2. \| iOS CI  |
 | `periop-abx-clean-mesh-hernia` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.] |
 | `periop-abx-penicillin-anaphylaxis-colectomy` | level-not-urgent | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority [known gap: Triage emergency_now (score 47) for an elective planning visit: 'Systemic red flag symptom' from 'collapse' in the allergy history, and ' |
-| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-prophylaxis-timing | web | quality | known gap | no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No prophylaxis plan for the elective colectomy at all: the diverticulitis protocol |
-| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-non-penicillin-alternative | web | quality | known gap | no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No non-beta-lactam alternative in the documented plan or panel. (The uncomplicated |
-| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-no-penicillin | web | critical | known gap | forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+6 more) [known gap: Penicillins despite recorded penicillin anaphylaxis: Plan tab (dx-variant 'divertic |
 | `periop-anticoag-apixaban-ckd-elderly` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" (+1 more) [known gap: PT/INR and APTT added by anticoag_check and preop_haem for a DOAC patient (PAUSE: not needed with standardised interruption).] |
-| `periop-anticoag-warfarin-af-no-bridging` | mgmt-resume-warfarin | web | quality | known gap | no management item matched among 20 (web.clinicalPrompts) [known gap: No restart plan for warfarin after surgery.] |
-| `periop-diabetes-sglt2-preop-withhold` | mgmt-omit-sulfonylurea | web | quality | known gap | no management item matched among 32 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No sulfonylurea instruction (hypoglycaemia while fasting).] |
-| `periop-diabetes-sglt2-preop-withhold` | mgmt-glucose-monitoring | web | quality | known gap | no management item matched among 32 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No peri-operative capillary glucose monitoring line.] |
-| `periop-diabetes-type1-emergency-surgery` | inv-ketones | web | quality | known gap | no investigation matched among 32 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Ketones appear only as a plan line ('Urine ketones — exclude diabetic ketoacidosis', addToPlan, graded as management), not as an i |
-| `periop-endo-dapt-recent-stent-polypectomy` | mgmt-defer-or-plan | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No deferral or staged plan.] |
 | `periop-endo-polypectomy-clopidogrel` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=31); expected ≤ priority [known gap: Triage same_day_call (score 31) from age, comorbidity and the antiplatelet reason for a booked elective EMR.] |
-| `periop-frailty-elective-dementia` | inv-iron-studies | web | quality | known gap | no investigation matched among 18 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Hb 9.4 g/dL with a caecal cancer: only 'FBC (exclude iron-deficiency anaemia)'; no iron studies or pre-operative iron plan.] |
-| `periop-frailty-elective-dementia` | mgmt-cga | web | quality | known gap | no management item matched among 23 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: CFS is suggested but no comprehensive geriatric assessment or elderly-medicine input.] |
-| `periop-frailty-elective-dementia` | mgmt-delirium-prevention | web | quality | known gap | no management item matched among 23 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No delirium prevention plan.] |
-| `periop-frailty-elective-dementia` | mgmt-shared-decision | web | quality | known gap | no management item matched among 23 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No capacity / shared decision-making prompt with dementia.] |
 | `periop-nela-frail-emergency-laparotomy` | score-rec-p-possum | web | quality | known gap | p-possum not recommended; recommended: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (n |
-| `periop-nela-frail-emergency-laparotomy` | mgmt-mortality-risk | web | quality | known gap | no management item matched among 68 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No documented mortality risk in any output.] |
-| `periop-nela-frail-emergency-laparotomy` | mgmt-geriatric-input | web | quality | known gap | no management item matched among 68 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: CFS is suggested, but no elderly-medicine/geriatric review for an 84-year-old CFS  |
-| `periop-nela-frail-emergency-laparotomy` | mgmt-shared-decision | web | quality | known gap | no management item matched among 68 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No goals-of-care, treatment escalation or resuscitation-status prompt.] |
-| `periop-nela-frail-emergency-laparotomy` | mgmt-doac-plan | web | quality | known gap | no management item matched among 68 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Apixaban taken this morning is covered only by the generic 'hold DOAC 48–72h pre-o |
 | `periop-postop-aki-oliguria` | mgmt-no-insulin-dextrose-mild-k | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• iv insulin-glucose: 10 units soluble insulin with 25 g glucose - shift k⁺ intracellularly; monitor..." (+1 more) [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds ' |
-| `periop-postop-delirium-hypoactive` | mgmt-non-pharmacological | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No non-pharmacological delirium care.] |
 | `periop-postop-fever-day1-early` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=152); expected ≤ urgent [known gap: Triage emergency_now (score 152) for T 38.2, HR 94 on day 1: 'Post-operative concern' (urgent) for any 'post-op' word, 'Post-op fever — so |
-| `periop-postop-fever-day1-early` | mgmt-clinical-source-review | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: No chest physiotherapy/mobilisation/wound review line; the Assessment panel shows the cholecystitis protocol (PANE top).] |
-| `periop-postop-pe-high-risk-shock` | mgmt-no-unqualified-thrombolysis | web | critical | known gap | forbidden management item present in web.protocol.medications: "alteplase 10 mg iv bolus, then 90 mg over 2 hours iv (intravenous) stat (once) - massive ..." (+2 more) [known gap: The pulmonary_embolism protocol management step is qualified |
-| `periop-postop-ssi-organ-space-diabetic` | mgmt-drainage | web | critical | known gap | no management item matched among 51 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The surgical_site_infection protocol management has superficial wound opening and  |
 | `periop-postop-ssi-superficial` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Triage emergency_now (score 88): 'Post-operative concern' (urgent) for 'wound … pus' wording, plus 'Vomiting or possible dehydration' from  |
 | `periop-postop-urinary-retention` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=45); expected ≤ urgent [known gap: Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.] |
-| `periop-postop-urinary-retention` | inv-no-acute-psa | web | quality | known gap | forbidden investigation present in web.plan.investigations: "u&e, egfr, psa (once catheterised)" (+1 more) [known gap: The urinary_retention protocol lists 'U&E, eGFR, PSA (once catheterised)' as an urgent investigation (it also says 'PSA r |
-| `periop-pregnancy-emergency-laparotomy-sbo` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (transition point, ischaemia, closed loop)" (+3 more) [known gap: 'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol inves |
-| `periop-pregnancy-emergency-laparotomy-sbo` | mgmt-left-uterine-displacement | web | quality | known gap | no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No positioning advice.] |
-| `periop-pregnancy-emergency-laparotomy-sbo` | mgmt-antenatal-steroids | web | quality | known gap | no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No antenatal corticosteroid consideration at 29 weeks.] |
+| `periop-pregnancy-emergency-laparotomy-sbo` | inv-no-unqualified-ct | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct abdomen/pelvis with iv contrast (transition point, ischaemia, closed loop) (adhesion_obstruct..." (+1 more) [known gap: 'CT abdomen/pelvis with IV contrast' from the bowel_obstruction  |
 | `periop-preop-asa1-lap-chole` | score-rec-asa | web | quality | known gap | asa not recommended; recommended: asge-cbd, news2 [known gap: getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (P |
 | `periop-preop-asa1-lap-chole` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.] |
 | `periop-preop-asa1-lap-chole` | mgmt-no-fasting-from-midnight | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...────────────────────────────────────────── pre-operative: • nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single..." [known gap: The  |
 | `periop-preop-asa1-lap-chole` | mgmt-no-routine-antibiotic-prophylaxis | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of s..." [kn |
-| `periop-preop-ckd-dialysis-hyperkalaemia` | mgmt-dialysis-timing | web | quality | known gap | no management item matched among 29 (web.clinicalPrompts) [known gap: The hyperkalaemia prompt fires (ECG, calcium not given at 6.2, insulin-dextrose, 'Surgery DEFERRED — K⁺ must be < 5.5') but never mentions dialysis for a haemodialysis pa |
 | `periop-preop-ckd-dialysis-hyperkalaemia` | mgmt-no-unadjusted-lmwh | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...iclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of surgery; ted stockings. • iv access; identify allergy..." [known gap: The la |
-| `periop-preop-latex-allergy` | mgmt-first-on-list | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No 'first on the list' instruction.] |
-| `periop-preop-mh-susceptible` | mgmt-mh-unit-referral | web | quality | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No referral of the untested relative to an MH unit.] |
-| `periop-preop-rcri-high-risk-hemicolectomy` | inv-echocardiography | web | quality | known gap | no investigation matched among 18 (web.plan.investigations, web.clinicalPrompts) [known gap: No echocardiography suggested for known HFrEF (EF 35%) with poor functional capacity before cancer surgery.] |
-| `periop-preop-rcri-high-risk-hemicolectomy` | inv-iron-studies | web | quality | known gap | no investigation matched among 18 (web.plan.investigations, web.clinicalPrompts) [known gap: Hb 10.8 g/dL before major cancer surgery: only 'FBC (exclude iron-deficiency anaemia)' from the colorectal protocol; no ferritin/iron studies or pr |
-| `periop-preop-rcri-high-risk-hemicolectomy` | mgmt-functional-capacity | web | quality | known gap | no management item matched among 32 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Functional capacity (METs / two flights) is never asked for or documented; the colorectal_cancer protocol an |
-| `periop-vte-high-bleeding-risk-mechanical` | mgmt-mechanical-prophylaxis | web | critical | known gap | no management item matched among 40 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No VTE decision at all on post-operative day 1: the plan is the peptic_ulcer proto |
-| `periop-vte-high-bleeding-risk-mechanical` | mgmt-reassess-vte-bleeding | web | quality | known gap | no management item matched among 40 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No daily VTE/bleeding reassessment.] |
-| `pharyngeal-pouch-elderly` | mnm-pouch | web | quality | known gap | not in top 3 of web.pane: 1. Oesophageal Carcinoma \| 2. Oesophageal Stricture (Benign) \| 3. Achalasia [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump.] |
-| `pharyngeal-pouch-elderly` | inv-barium-first | web | quality | known gap | no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K22.5; no output mentions a contrast swallow.] |
-| `pharyngeal-pouch-elderly` | mgmt-pouch-treatment-options | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No protocol for K22.5.] |
-| `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform.] |
-| `ppu-perforated-peptic-ulcer` | inv-no-urgent-ogd-in-perforation | web | quality | known gap | forbidden investigation present in web.plan.investigations: "upper gi endoscopy (ogd)" [known gap: Web: K27.5 maps to the peptic_ulcer protocol and its 'Upper GI endoscopy (OGD) (urgent)' investigation is shown for a free perforation; ICD K |
-| `pyelonephritis-adult-female` | mgmt-ng111-antibiotic | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: The only antibiotic is pip-tazo from the SIRS and peritonism prompts; no NG111 choice.] |
-| `pyelonephritis-pregnant-24wk` | mgmt-ng111-pregnancy-antibiotic | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: Web: The only antibiotic is pip-tazo from the SIRS prompt; no cefalexin or cefuroxime (O23.0 has no protocol).] |
+| `pharyngeal-pouch-elderly` | mnm-pouch | web | quality | known gap | not in top 3 of web.pane: 1. Oesophageal Carcinoma \| 2. Oesophageal Stricture (Benign) \| 3. Achalasia [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump. \| iOS CI 2026-09-25 (r |
+| `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatch |
 | `rectal-bleeding-young-haemorrhoidal` | level-routine-or-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
 | `rectal-bleeding-young-haemorrhoidal` | mgmt-no-resuscitation | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
-| `renal-colic-infected-obstructed` | mgmt-urology | web | quality | known gap | no management item matched among 27 (web.clinicalPrompts) [known gap: Web: No urology referral.] |
-| `renal-colic-pregnant` | inv-no-ct-first | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct kub (non-contrast) - stone size, location, hydronephrosis (renal_colic)" [known gap: Web: PANE seeds "CT KUB (non-contrast)" (renal_colic) and "CT abdomen/pelvis with IV contrast" (app |
+| `renal-colic-pregnant` | inv-no-ct-first | web | quality | known gap | forbidden investigation present in web.pane.seeded: "ct kub (or ultrasound) to confirm obstruction (infected_obstructed_kidney)" [known gap: Web: PANE seeds "CT KUB (non-contrast)" (renal_colic) and "CT abdomen/pelvis with IV contrast" (app |
 | `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic pla |
-| `renal-colic-solitary-kidney-anticoagulated` | mgmt-no-nsaid | web | critical | known gap | forbidden management item present in web.plan: "[immediate] analgesia: diclofenac 75 mg im / pr (first-line); opioids if nsaids contraindicated; antiemetic." (+2 more) [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel  |
-| `renal-colic-solitary-kidney-anticoagulated` | mgmt-no-conservative-met | web | quality | known gap | forbidden management item present in web.plan: "[conservative] met (medical expulsive therapy): tamsulosin 0.4 mg od for distal ureteric stone ≤10 mm × 4 weeks." (+3 more) [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric |
-| `sah-thunderclap-headache` | mgmt-nimodipine | web | quality | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: Web: No nimodipine.] |
-| `sbo-gastrografin-failed` | mgmt-surgery-in-documented-plan | web | quality | known gap | no management item matched among 11 (web.plan) [known gap: Web: sbo_adhesional variant (no 'surgical' phase) is selected; the failed contrast challenge is not a variant trigger, so the documented plan stays conservative.] |
-| `sbo-gastrografin-failed` | mgmt-no-repeat-contrast-challenge | web | quality | known gap | forbidden management item present in web.plan: "[conservative] gastrografin challenge at 24 h (100 ml oral / ngt) - if contrast reaches colon in 24 h, >95% resolve without s..." [known gap: Web: Plan text still contains 'water-soluble contr |
-| `sbo-malignant-carcinomatosis` | mgmt-palliative-mdt | web | quality | known gap | no management item matched among 38 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel- |
-| `sbo-malignant-carcinomatosis` | mgmt-medical-mbo | web | quality | known gap | no management item matched among 38 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option.] |
-| `sbo-strangulation` | mgmt-no-nom-trial-with-strangulation | web | critical | known gap | forbidden management item present in web.plan: "[immediate] drip and suck: ngt decompression, iv fluids, catheter (hourly uo), nbm; correct electrolytes." [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Dr |
 | `sbo-virgin-abdomen` | mnm-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Obturator Hernia \| 3. Small Bowel Obstruction — Adhesions [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no sma |
-| `sbo-virgin-abdomen` | mgmt-no-adhesion-label-in-plan | web | quality | known gap | forbidden management item present in web.plan: "[conservative] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h..." [known gap: Web: Variant 'sbo_adhesional' is chosen from the words 'small bowel  |
 | `screen-crc-fhx-sister-48-lynch-features` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'can |
-| `screen-post-splenectomy-vaccination` | mgmt-meningococcal | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal.] |
-| `sigmoid-volvulus-base` | mgmt-endoscopic-decompression | web | critical | known gap | no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a headi |
-| `sigmoid-volvulus-base` | mgmt-same-admission-resection | web | quality | known gap | no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No sigmoid colectomy after decompression.] |
-| `sigmoid-volvulus-base` | mgmt-potassium | web | quality | known gap | no management item matched among 29 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.2.] |
-| `thyroid-post-op-hypocalcaemia` | mgmt-oral-calcium-vitd | web | quality | known gap | no management item matched among 13 (web.clinicalPrompts) [known gap: No oral calcium / alfacalcidol plan.] |
-| `thyroid-post-op-neck-haematoma` | inv-no-imaging-before-decompression | web | quality | known gap | forbidden investigation present in web.plan.investigations: "uss wound (confirm haematoma, guide aspiration of liquefied collections)" [known gap: The generic postop_haematoma investigations include "USS wound (confirm haematoma …)" with no |
-| `thyroid-post-op-neck-haematoma` | mgmt-no-thyroidectomy-prefix | web | quality | known gap | forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: The assessment mentions "thyroidectomy", so detectDxVariants selects thyroid_total and prepends the elective Total Thyroidectomy template to the haem |
-| `thyroid-rapid-enlargement-stridor` | inv-core-biopsy | web | critical | known gap | no investigation matched among 29 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma.] |
-| `tia-transient-weakness-dysarthria` | inv-vascular-imaging | web | quality | known gap | no investigation matched among 13 (web.clinicalPrompts) [known gap: Web: No carotid imaging.] |
-| `tia-transient-weakness-dysarthria` | mgmt-defer-elective-surgery | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: Web: The pending hernia repair is not deferred (no TIA rule).] |
-| `trauma-blunt-polytrauma-class3-shock` | flag-shock-class | web | quality | known gap | no red flag matched among 38 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine names the ATLS haemorrhage class; the protocol u |
-| `trauma-blunt-polytrauma-class3-shock` | mgmt-pelvic-binder | web | quality | known gap | no management item matched among 49 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The blunt abdominal trauma protocol does not mention a pelvic binder for pelvic te |
+| `screen-post-splenectomy-vaccination` | mgmt-meningococcal | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `trauma-elderly-occult-shock-warfarin` | mgmt-no-bridging-advice | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• no routine lmwh bridging for atrial fibrillation (bridge trial; accp 2022); bridging only for high throm..." [known gap: The 'anticoag_check' prompt proposes elective bridging for |
 | `trauma-head-injury-elderly-apixaban` | mgmt-no-elective-bridging-advice | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l bleeding is confirmed (haematology); do not simply hold / bridge" (+2 more) [known gap: The 'anticoag_check' clinical prompt (clinical-inference.ts) always proposes 'hold DOAC  |
-| `trauma-paediatric-nai-bruising` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Rib Fractures \| 2. Traumatic Brain Injury \| 3. Intussusception [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis.] |
-| `trauma-pregnancy-30wk-rtc` | mgmt-anti-d | web | quality | known gap | no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is be |
-| `trauma-splenic-injury-unstable` | inv-no-ct-unstable | web | quality | known gap | forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (aast grading)" (+1 more) [known gap: The splenic protocol lists "CT abdomen/pelvis with IV contrast (AAST grading)" without "if stable" in the  |
-| `trauma-tension-pneumothorax` | mgmt-adult-site-not-2nd-ics | web | critical | known gap | forbidden management item present in web.plan: "...te] tension pneumothorax: needle decompression (14g cannula 2nd ics mcl) → immediate clinical improvement → proceed to icd." (+2 more) [known gap: The pneumothorax protocol says "needle dec |
-| `uc-acute-severe-truelove-witts` | score-rec-truelove-witts | web | quality | known gap | truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson.] |
-| `uc-acute-severe-truelove-witts` | mgmt-truelove-criteria-correct | web | quality | known gap | forbidden management item present in web.managementPanel.keyPoints: "...ts criteria classify acute severe uc: hr >90, temp >37.8°c, wbc >10.5, >6 stools/day." [known gap: The ulcerative_colitis protocol key point reads "Truelove-Witts crite |
-| `uc-asuc-day3-nonresponse` | inv-cmv | web | quality | known gap | no investigation matched among 30 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No CMV testing anywhere (UC protocol investigations: bloods, AXR, stool C&S + C. difficile, sigmoidoscopy/colonoscopy, CT).] |
-| `uc-asuc-day3-nonresponse` | mgmt-joint-review | web | quality | known gap | no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only on the appendicec |
-| `uc-flare-cdiff` | mgmt-cdi-treatment | web | critical | known gap | no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management pr |
-| `uc-steroid-refractory-cmv` | inv-cmv | web | critical | known gap | no investigation matched among 32 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The CMV-positive biopsy result is not read and no output mentions CMV.] |
-| `uc-steroid-refractory-cmv` | mgmt-antiviral | web | critical | known gap | no management item matched among 44 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No antiviral (ganciclovir) anywhere; the UC plan escalates immunosuppression (infl |
-| `uc-toxic-megacolon` | inv-no-colonoscopy | web | critical | known gap | forbidden investigation present in web.plan.investigations: "flexible sigmoidoscopy / colonoscopy + biopsies" (+1 more) [known gap: The ulcerative_colitis protocol lists "Flexible sigmoidoscopy / colonoscopy + biopsies" as an urgent investi |
-| `ugib-cvd-dual-antiplatelet` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |
-| `ugib-elderly-doac-pre-endoscopy-rockall` | mgmt-transfusion-threshold-8 | web | quality | known gap | no management item matched among 37 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Only the generic "transfuse to Hb 70–90 g/L" line; heart failure does not change t |
-| `ugib-elderly-doac-pre-endoscopy-rockall` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |
-| `ugib-melaena-only-woman` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |
-| `ugib-nonvariceal-gbs-high` | mgmt-stop-nsaid | web | quality | known gap | no management item matched among 40 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The upper_gi_bleed protocol only says "PPI long-term if NSAID cannot be stopped";  |
-| `ugib-nonvariceal-gbs-high` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |
-| `ugib-nonvariceal-gbs-low-outpatient` | mgmt-outpatient | web | quality | known gap | no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output says the patient can be managed as an outpatient; the GI-bleed prompt ad |
-| `ugib-nonvariceal-gbs-low-outpatient` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |
+| `trauma-paediatric-nai-bruising` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Rib Fractures \| 2. Traumatic Brain Injury \| 3. Intussusception [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in |
+| `uc-acute-severe-truelove-witts` | score-rec-truelove-witts | web | quality | known gap | truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. \| iOS |
 | `ugib-nonvariceal-gbs-low-outpatient` | mgmt-no-transfusion | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: gi_bleed_panel prompt fires on any haematemesis/melaena symptom and adds "2 × large-bore  |
-| `ugib-nonvariceal-unstable-shock` | mgmt-critical-care | web | quality | known gap | no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No HDU/ICU/critical-care line in the protocol, prompts or dx variant; the only var |
-| `ugib-nonvariceal-unstable-shock` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |
-| `ugib-on-warfarin-high-inr` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |
-| `urosepsis-elderly-immunosuppressed-catheter` | inv-urine-from-new-catheter | web | quality | known gap | no investigation matched among 12 (web.plan.investigations, web.clinicalPrompts) [known gap: Web: The UTI protocol asks for "MSU C&S (mid-stream urine)" in a catheterised man; the catheter change appears only as plan text ("CAUTI: remove or |
-| `urosepsis-elderly-immunosuppressed-catheter` | mgmt-hold-methotrexate | web | quality | known gap | no management item matched among 47 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: Methotrexate is not mentioned.] |
-| `variceal-bleed-known-cirrhosis` | mgmt-restrictive-transfusion-varices | web | quality | known gap | no management item matched among 49 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed c |
-| `variceal-bleed-known-cirrhosis` | mgmt-no-liberal-transfusion-varices | web | critical | known gap | forbidden management item present in web.plan: "...uid resuscitation (crystalloid); transfuse to hb 70-90 g/l (80-100 in varices)." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because no protocol l |
-| `variceal-bleed-unrecognised-cirrhosis` | mgmt-no-liberal-transfusion-varices | web | critical | known gap | forbidden management item present in web.plan: "...uid resuscitation (crystalloid); transfuse to hb 70-90 g/l (80-100 in varices)." (+1 more) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because no protocol l |

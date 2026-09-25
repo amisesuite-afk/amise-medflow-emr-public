@@ -130,9 +130,6 @@
           "k": 3,
           "guidelineRefs": [
             "eupsa-paed-hernia-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -141,10 +138,7 @@
       "emergencyLevel": {
         "id": "level-not-emergency",
         "severity": "quality",
-        "atMost": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "urgent"
       }
     },
     "management": {
@@ -159,9 +153,6 @@
           ],
           "guidelineRefs": [
             "eupsa-paed-hernia-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -178,10 +169,11 @@
             "eupsa-paed-hernia-2022"
           ],
           "note": "Watchful waiting is an adult option; infants have the highest incarceration risk.",
-          "unverified": [
+          "proposedFix": "Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...- refer to a paediatric surgeon for herniotomy (no mesh, no truss); infants need early repair because of the incarceration risk.\""
         },
         {
           "id": "mgmt-no-adult-mesh-repair",
@@ -200,9 +192,6 @@
             "eupsa-paed-hernia-2022"
           ],
           "note": "Paediatric inguinal hernia is treated by herniotomy (high ligation of the sac), not adult mesh repair; adult pre-op items are wrong for an infant.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Age-gate the hernia protocol and prompt (paediatric herniotomy template; suppress adult pre-op items such as PSA/ECG)."
         }
       ]

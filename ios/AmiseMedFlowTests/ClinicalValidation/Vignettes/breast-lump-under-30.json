@@ -131,9 +131,6 @@
           "k": 3,
           "guidelineRefs": [
             "abs-best-practice-2010"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -147,9 +144,6 @@
           "nice-ng12"
         ],
         "note": "Under 30 with a clinically benign lump: non-urgent referral (NICE NG12). Same-day escalation is over-triage.",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -172,9 +166,10 @@
             "nccn-breast-dx-2025"
           ],
           "note": "Imaging is part of triple assessment at every age; ultrasound is the modality under 30.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ],
       "mustExclude": [
@@ -197,10 +192,7 @@
             "nccn-breast-dx-2025",
             "abs-best-practice-2010"
           ],
-          "note": "Mammography is not first-line under 30 (dense tissue, radiation); an age-conditional mention is acceptable.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Mammography is not first-line under 30 (dense tissue, radiation); an age-conditional mention is acceptable."
         },
         {
           "id": "inv-no-unrelated-seeded-orders",
@@ -234,9 +226,6 @@
           ],
           "guidelineRefs": [
             "abs-best-practice-2010"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Map N63 (unspecified breast lump) to a \"breast lump — triple assessment\" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts."
         }

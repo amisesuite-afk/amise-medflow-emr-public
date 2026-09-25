@@ -138,9 +138,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -154,10 +151,7 @@
           "nice-cg184"
         ],
         "note": "The HPI lists alarm features as absent (\"no difficulty swallowing, no weight loss…\"); negated features must not escalate.",
-        "proposedFix": "adaptive-triage: strip negated clauses (\"no/denies/without X\") before RED_FLAGS, GI_BLEED_TERMS and vomiting rules.",
-        "unverified": [
-          "ios"
-        ]
+        "proposedFix": "adaptive-triage: strip negated clauses (\"no/denies/without X\") before RED_FLAGS, GI_BLEED_TERMS and vomiting rules."
       },
       "mustNotAlarm": [
         {
@@ -173,10 +167,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "Any alarm that fires here comes from reading a negated feature as present.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Any alarm that fires here comes from reading a negated feature as present."
         }
       ]
     },
@@ -193,9 +184,6 @@
           ],
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -215,9 +203,6 @@
           ],
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -232,9 +217,6 @@
           ],
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

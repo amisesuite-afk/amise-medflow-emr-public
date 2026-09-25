@@ -269,7 +269,6 @@
           "guidelineRefs": ["wses-2020"],
           "note": "WSES 2020: no routine postoperative antibiotics after appendicectomy for uncomplicated appendicitis.",
           "knownGap": ["web"],
-          "unverified": ["ios"],
           "knownGapNote": "Web appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis."
         }
       ]

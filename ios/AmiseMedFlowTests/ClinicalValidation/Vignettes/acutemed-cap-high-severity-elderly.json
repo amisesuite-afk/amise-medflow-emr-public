@@ -167,9 +167,6 @@
           ],
           "guidelineRefs": [
             "nice-ng250"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -183,9 +180,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -198,9 +192,6 @@
         "guidelineRefs": [
           "bts-cap-2009",
           "ssc-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -216,9 +207,6 @@
           "guidelineRefs": [
             "ssc-2021",
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -233,9 +221,6 @@
           ],
           "guidelineRefs": [
             "bts-o2-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -248,9 +233,6 @@
           "score": "curb65",
           "guidelineRefs": [
             "bts-cap-2009"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -260,9 +242,6 @@
           "guidelineRefs": [
             "rcp-news2-2017",
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -278,10 +257,7 @@
           "guidelineRefs": [
             "sepsis3-2016"
           ],
-          "equals": 3,
-          "unverified": [
-            "ios"
-          ]
+          "equals": 3
         },
         {
           "id": "score-qsofa-autofill",
@@ -295,10 +271,7 @@
             "sepsis3-2016"
           ],
           "note": "RR 32, SBP 86 and AVPU C are all on the record; auto-fill reads vitals.",
-          "min": 2,
-          "unverified": [
-            "ios"
-          ]
+          "min": 2
         }
       ]
     },
@@ -314,9 +287,6 @@
             "bts-cap-2009",
             "ssc-2021"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Protocols for the PANE nodes pneumonia and sepsis (BTS CAP / NICE NG51: blood cultures before antibiotics), or a sepsis prompt that adds blood cultures as an investigation."
         },
         {
@@ -331,9 +301,6 @@
           ],
           "guidelineRefs": [
             "nice-ng250"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -344,9 +311,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -381,9 +345,6 @@
           "guidelineRefs": [
             "nice-ng250",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -400,10 +361,7 @@
           "guidelineRefs": [
             "bts-cap-2009"
           ],
-          "note": "CURB65 3-5: assess for critical care.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "CURB65 3-5: assess for critical care."
         },
         {
           "id": "mgmt-oxygen",
@@ -415,9 +373,6 @@
           ],
           "guidelineRefs": [
             "bts-o2-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

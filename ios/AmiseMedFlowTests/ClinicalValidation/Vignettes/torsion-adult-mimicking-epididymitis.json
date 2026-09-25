@@ -151,9 +151,6 @@
           "guidelineRefs": [
             "eau-paed-2024",
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -170,10 +167,7 @@
             "eau-paed-2024",
             "iusti-eo-2016"
           ],
-          "note": "Sudden onset, horizontal lie, absent cremasteric reflex and a clear urine should put torsion above epididymo-orchitis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Sudden onset, horizontal lie, absent cremasteric reflex and a clear urine should put torsion above epididymo-orchitis."
         }
       ]
     },
@@ -185,9 +179,6 @@
         "guidelineRefs": [
           "eau-paed-2024",
           "iusti-eo-2016"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -203,9 +194,6 @@
           "guidelineRefs": [
             "eau-paed-2024",
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -225,9 +213,6 @@
           "guidelineRefs": [
             "eau-paed-2024",
             "iusti-eo-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -239,9 +224,6 @@
           ],
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -256,10 +238,7 @@
           "guidelineRefs": [
             "iusti-eo-2016"
           ],
-          "note": "An epididymo-orchitis antibiotic plan for a torsed testis loses the testis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "An epididymo-orchitis antibiotic plan for a torsed testis loses the testis."
         },
         {
           "id": "mgmt-no-doppler-delay",
@@ -277,9 +256,6 @@
           ],
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

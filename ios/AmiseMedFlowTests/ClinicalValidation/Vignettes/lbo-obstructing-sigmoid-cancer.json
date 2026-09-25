@@ -236,9 +236,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-lbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -265,10 +262,7 @@
           "guidelineRefs": [
             "wses-lbo-2018"
           ],
-          "note": "WSES 2018: CT to confirm the level and cause and exclude perforation.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2018: CT to confirm the level and cause and exclude perforation."
         },
         {
           "id": "inv-staging-chest",
@@ -280,9 +274,6 @@
           ],
           "guidelineRefs": [
             "wses-lbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -290,9 +281,6 @@
           "severity": "quality",
           "match": [
             "cea"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -313,9 +301,6 @@
           ],
           "guidelineRefs": [
             "wses-lbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -327,10 +312,7 @@
           "guidelineRefs": [
             "wses-lbo-2018"
           ],
-          "note": "WSES 2018: resection with primary anastomosis (± covering stoma) is preferred in suitable patients; Hartmann's for high-risk patients; SEMS bridge in selected high-risk cases.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2018: resection with primary anastomosis (± covering stoma) is preferred in suitable patients; Hartmann's for high-risk patients; SEMS bridge in selected high-risk cases."
         },
         {
           "id": "mgmt-mdt",
@@ -341,9 +323,6 @@
           ],
           "guidelineRefs": [
             "wses-lbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -351,10 +330,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     },
     "dxVariant": {
       "id": "variant-lbo-malignant",

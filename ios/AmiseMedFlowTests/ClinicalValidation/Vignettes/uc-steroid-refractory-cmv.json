@@ -192,10 +192,11 @@
             "ecco-infections-2021"
           ],
           "note": "CMV must be looked for (biopsy immunohistochemistry/PCR) in steroid-refractory colitis before further immunosuppression.",
-          "unverified": [
+          "proposedFix": "Read biopsy/IHC results for CMV in UC; steroid-refractory UC → CMV testing prompt (ECCO 2021).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Read biopsy/IHC results for CMV in UC; steroid-refractory UC → CMV testing prompt (ECCO 2021)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 9 (ios.pipeline.voi, ios.radiation)"
         }
       ]
     },
@@ -213,10 +214,11 @@
             "ecco-infections-2021"
           ],
           "note": "ECCO 2021: antiviral therapy for CMV colitis in steroid-refractory UC with high-density CMV on biopsy.",
-          "unverified": [
+          "proposedFix": "Add a CMV-colitis branch: CMV on biopsy in steroid-refractory UC → IV ganciclovir, review immunomodulators (ECCO 2021).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a CMV-colitis branch: CMV on biopsy in steroid-refractory UC → IV ganciclovir, review immunomodulators (ECCO 2021)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-colectomy-option",
@@ -226,9 +228,6 @@
           ],
           "guidelineRefs": [
             "ecco-uc-surg-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

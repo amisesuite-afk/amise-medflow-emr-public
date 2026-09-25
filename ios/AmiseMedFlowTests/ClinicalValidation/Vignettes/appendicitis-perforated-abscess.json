@@ -214,9 +214,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -242,9 +239,6 @@
           ],
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -256,9 +250,10 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)"
         }
       ]
     },
@@ -281,10 +276,7 @@
           "guidelineRefs": [
             "wses-2020"
           ],
-          "note": "Complicated appendicitis with abscess always needs therapeutic antibiotics.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Complicated appendicitis with abscess always needs therapeutic antibiotics."
         },
         {
           "id": "mgmt-percutaneous-drainage",
@@ -299,10 +291,11 @@
             "wses-2020"
           ],
           "note": "WSES 2020: non-operative management with antibiotics and percutaneous drainage (if available) is reasonable for a periappendiceal abscess; laparoscopic surgery in experienced hands is an alternative. Quality because both are acceptable.",
-          "unverified": [
+          "proposedFix": "When the confirmed ICD is K35.3x or the assessment names an abscess/phlegmon, use the appendix_mass protocol for the Plan tab instead of the converged PANE disease.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "When the confirmed ICD is K35.3x or the assessment names an abscess/phlegmon, use the appendix_mass protocol for the Plan tab instead of the converged PANE disease."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-interval-colon-evaluation",
@@ -316,9 +309,10 @@
             "wses-2020"
           ],
           "note": "WSES 2020: after non-operative management in patients over 40, interval colonoscopy/imaging because of the neoplasm rate.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     },

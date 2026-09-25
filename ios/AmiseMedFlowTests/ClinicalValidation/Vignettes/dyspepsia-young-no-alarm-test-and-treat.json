@@ -147,9 +147,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-cg184"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -163,10 +160,7 @@
           "nice-cg184"
         ],
         "note": "No alarm features: routine primary/secondary care management.",
-        "proposedFix": "adaptive-triage: negation handling (see gord-no-alarm-empirical-ppi).",
-        "unverified": [
-          "ios"
-        ]
+        "proposedFix": "adaptive-triage: negation handling (see gord-no-alarm-empirical-ppi)."
       },
       "mustNotAlarm": [
         {
@@ -179,9 +173,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -202,9 +193,10 @@
             "maastricht-6"
           ],
           "proposedFix": "Add a dyspepsia (K30/R10.13) protocol: CG184 test-and-treat or 4-week PPI; NG12 alarm check.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ],
       "mustExclude": [
@@ -220,9 +212,6 @@
           "guidelineRefs": [
             "nice-cg184",
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -245,9 +234,10 @@
             "nice-cg184",
             "maastricht-6"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-lifestyle",
@@ -262,9 +252,10 @@
           "guidelineRefs": [
             "nice-cg184"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

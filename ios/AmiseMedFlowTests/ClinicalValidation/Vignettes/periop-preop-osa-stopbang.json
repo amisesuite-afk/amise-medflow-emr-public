@@ -165,10 +165,7 @@
             "sasm-2016",
             "asa-osa-2014"
           ],
-          "note": "Undiagnosed OSA raises the risk of post-operative respiratory events with opioids and sedation; it must be visible to the anaesthetist.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Undiagnosed OSA raises the risk of post-operative respiratory events with opioids and sedation; it must be visible to the anaesthetist."
         }
       ]
     },
@@ -181,9 +178,6 @@
           "guidelineRefs": [
             "stopbang-2008",
             "sasm-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -192,9 +186,6 @@
           "score": "asa",
           "guidelineRefs": [
             "asa-ps-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -220,9 +211,10 @@
             "asa-osa-2014"
           ],
           "note": "Risk-mitigation plan: anaesthetic awareness, opioid-sparing analgesia, post-operative monitoring; consider sleep study/CPAP where systemic disease is uncontrolled.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -238,10 +230,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

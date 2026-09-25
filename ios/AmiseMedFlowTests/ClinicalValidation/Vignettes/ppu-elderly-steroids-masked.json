@@ -239,9 +239,10 @@
           "guidelineRefs": [
             "wses-ppu-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Acute Kidney Injury | 3. Acute Coronary Syndrome | 4. Obturator Hernia | 5. Perforated Peptic Ulcer"
         }
       ]
     },
@@ -253,9 +254,6 @@
         "guidelineRefs": [
           "wses-ppu-2020",
           "ssc-2021"
-        ],
-        "knownGap": [
-          "ios"
         ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal discomfort and new confusion' gives 'routine'."
       },
@@ -271,9 +269,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -287,10 +282,7 @@
             "ssc-2021",
             "sepsis-3"
           ],
-          "note": "Afebrile with normal WBC, but qSOFA 3 (confusion, RR 22, SBP 96), lactate 3.1 and AKI with a known source: sepsis. Steroids and age remove fever and leucocytosis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Afebrile with normal WBC, but qSOFA 3 (confusion, RR 22, SBP 96), lactate 3.1 and AKI with a known source: sepsis. Steroids and age remove fever and leucocytosis."
         }
       ],
       "redFlags": [
@@ -302,10 +294,7 @@
             "prednisolone",
             "immunosupp"
           ],
-          "note": "Long-term steroids mask peritonism and fever; the flag should be visible.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Long-term steroids mask peritonism and fever; the flag should be visible."
         }
       ]
     },
@@ -318,9 +307,10 @@
           "guidelineRefs": [
             "sepsis-3"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: (none)"
         }
       ],
       "values": [
@@ -335,9 +325,6 @@
           ],
           "guidelineRefs": [
             "sepsis-3"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -353,9 +340,10 @@
             "sepsis-3"
           ],
           "note": "RR 22 and SBP 96 are recorded; Sepsis-3 thresholds are RR ≥22 and SBP ≤100.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for sepsis / deterioration)"
         }
       ]
     },
@@ -369,9 +357,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -391,9 +376,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -413,9 +395,6 @@
           "guidelineRefs": [
             "wses-ppu-2020",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -427,9 +406,10 @@
             "steroid cover"
           ],
           "note": "Peri-operative steroid cover for a patient on long-term prednisolone (adrenal suppression). Quality: not in the WSES PPU guideline.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)"
         },
         {
           "id": "mgmt-stop-nsaid",
@@ -443,9 +423,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

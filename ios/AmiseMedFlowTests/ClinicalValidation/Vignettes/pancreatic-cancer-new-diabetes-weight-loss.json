@@ -218,10 +218,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "NICE NG12 names exactly this combination (≥60, weight loss, back/abdominal pain, new-onset diabetes).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE NG12 names exactly this combination (≥60, weight loss, back/abdominal pain, new-onset diabetes)."
         }
       ]
     },
@@ -233,10 +230,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Urgent (2-week) CT; must not be booked routinely. iOS (predicted, not observed): priority — \"weight loss\" in the CC.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Urgent (2-week) CT; must not be booked routinely. iOS (predicted, not observed): priority — \"weight loss\" in the CC."
       },
       "redFlags": [
         {
@@ -254,9 +248,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -273,10 +264,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "NICE NG12: urgent direct-access CT (within 2 weeks), or urgent ultrasound if CT unavailable.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE NG12: urgent direct-access CT (within 2 weeks), or urgent ultrasound if CT unavailable."
         }
       ]
     },
@@ -294,10 +282,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

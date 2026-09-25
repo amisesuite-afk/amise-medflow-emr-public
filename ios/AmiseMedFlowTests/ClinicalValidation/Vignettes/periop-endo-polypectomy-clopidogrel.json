@@ -139,9 +139,6 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -153,9 +150,6 @@
           "web"
         ],
         "knownGapNote": "Triage same_day_call (score 31) from age, comorbidity and the antiplatelet reason for a booked elective EMR.",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter."
       }
     },
@@ -172,9 +166,10 @@
             "bsg-esge-2021-anticoag"
           ],
           "note": "High-risk procedure, low thrombotic risk: stop clopidogrel 7 days before (BSG/ESGE 2021).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -197,9 +192,10 @@
             "esc-ncs-2022"
           ],
           "note": "No heparin bridging for antiplatelet interruption.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...ocedural plan below when the patient takes one - no routine bridging\""
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -213,10 +209,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

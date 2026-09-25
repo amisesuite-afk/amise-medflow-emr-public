@@ -184,9 +184,10 @@
           "guidelineRefs": [
             "atls-10-abdomen"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Community-Acquired Pneumonia | 3. Bacterial Meningitis / Meningococcal Sepsis | 4. Ischaemic Colitis | 5. Acute Kidney Injury"
         }
       ]
     },
@@ -198,9 +199,6 @@
         "guidelineRefs": [
           "atls-10-initial",
           "atls-10-shock"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -216,9 +214,6 @@
           ],
           "guidelineRefs": [
             "atls-10-shock"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -235,9 +230,6 @@
           "guidelineRefs": [
             "atls-10-shock"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add an ATLS class estimate (HR, BP, pulse pressure, RR, GCS, base deficit) to the trauma red flags."
         }
       ]
@@ -252,9 +244,6 @@
           ],
           "guidelineRefs": [
             "atls-10-abdomen"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -264,9 +253,6 @@
             "crossmatch",
             "cross-match",
             "group and"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -287,9 +273,6 @@
           ],
           "guidelineRefs": [
             "atls-10-initial"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -308,9 +291,6 @@
           "guidelineRefs": [
             "atls-10-shock",
             "nice-ng39"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -325,10 +305,7 @@
           "guidelineRefs": [
             "atls-10-abdomen"
           ],
-          "note": "Unstable with a positive FAST → laparotomy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Unstable with a positive FAST → laparotomy."
         },
         {
           "id": "mgmt-txa",
@@ -340,9 +317,6 @@
           "guidelineRefs": [
             "crash-2",
             "nice-ng39"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -356,10 +330,11 @@
           "guidelineRefs": [
             "nice-ng39"
           ],
-          "unverified": [
+          "proposedFix": "Add \"pelvic binder if pelvic injury suspected with haemodynamic instability\" to the blunt trauma protocol immediate phase.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add \"pelvic binder if pelvic injury suspected with haemodynamic instability\" to the blunt trauma protocol immediate phase."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -376,9 +351,6 @@
           ],
           "guidelineRefs": [
             "atls-10-abdomen"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -405,20 +377,14 @@
           "guidelineRefs": [
             "atls-10-shock"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

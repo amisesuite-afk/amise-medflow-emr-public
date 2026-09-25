@@ -232,9 +232,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-sis-ssti-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -248,10 +245,7 @@
           "wses-sis-ssti-2018",
           "ssc-2021"
         ],
-        "note": "Suspected NSTI with sepsis: immediate surgical assessment and resuscitation.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Suspected NSTI with sepsis: immediate surgical assessment and resuscitation."
       },
       "mustAlarm": [
         {
@@ -268,9 +262,6 @@
           "guidelineRefs": [
             "ssc-2021",
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -287,10 +278,7 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "note": "The engine must name NSTI (or its hallmark) as a red flag, not only generic sepsis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The engine must name NSTI (or its hallmark) as a red flag, not only generic sepsis."
         },
         {
           "id": "flag-diabetes",
@@ -299,10 +287,7 @@
             "diabet",
             "hyperglyc"
           ],
-          "note": "Diabetes is a major NSTI risk factor; glucose 16.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Diabetes is a major NSTI risk factor; glucose 16."
         }
       ]
     },
@@ -319,10 +304,7 @@
           "knownGap": [
             "web"
           ],
-          "knownGapNote": "getCdsSuggestions has no LRINEC scale (clinical-cds.ts); iOS has one.",
-          "unverified": [
-            "ios"
-          ]
+          "knownGapNote": "getCdsSuggestions has no LRINEC scale (clinical-cds.ts); iOS has one."
         },
         {
           "id": "score-rec-qsofa",
@@ -330,9 +312,6 @@
           "score": "qsofa",
           "guidelineRefs": [
             "sepsis-3"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -349,10 +328,7 @@
           "guidelineRefs": [
             "sepsis-3"
           ],
-          "note": "RR ≥22 and SBP ≤100.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "RR ≥22 and SBP ≤100."
         }
       ]
     },
@@ -366,9 +342,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -379,9 +352,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -401,10 +371,7 @@
             "wses-sis-ssti-2018",
             "idsa-ssti-2014"
           ],
-          "note": "Source control by urgent surgical debridement is the determinant of survival.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Source control by urgent surgical debridement is the determinant of survival."
         },
         {
           "id": "mgmt-clindamycin",
@@ -416,10 +383,7 @@
             "wses-sis-ssti-2018",
             "idsa-ssti-2014"
           ],
-          "note": "Anti-toxin agent as part of the empirical regimen.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Anti-toxin agent as part of the empirical regimen."
         },
         {
           "id": "mgmt-broad-spectrum",
@@ -435,9 +399,6 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018",
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -451,9 +412,6 @@
           ],
           "guidelineRefs": [
             "wses-sis-ssti-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -473,20 +431,14 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "note": "Imaging must not delay surgery when NSTI is clinically suspected.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Imaging must not delay surgery when NSTI is clinically suspected."
         }
       ]
     },
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

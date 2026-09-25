@@ -150,10 +150,7 @@
           "guidelineRefs": [
             "herniasurge-2018"
           ],
-          "note": "Reducible groin lump with cough impulse above the pubic tubercle.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Reducible groin lump with cough impulse above the pubic tubercle."
         }
       ]
     },
@@ -166,9 +163,6 @@
           "herniasurge-2018"
         ],
         "note": "Minimally symptomatic reducible hernia: routine elective pathway. Over-triage is a quality issue only.",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       },
       "mustNotAlarm": [
@@ -179,10 +173,7 @@
             "emergency now",
             "strangulat"
           ],
-          "note": "No strangulation features; an emergency alarm would be noise.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No strangulation features; an emergency alarm would be noise."
         },
         {
           "id": "no-strangulation-prompt",
@@ -216,10 +207,7 @@
           "guidelineRefs": [
             "herniasurge-2018"
           ],
-          "note": "HerniaSurge: mesh-based repair (Lichtenstein or laparoscopic) is recommended when repair is chosen.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "HerniaSurge: mesh-based repair (Lichtenstein or laparoscopic) is recommended when repair is chosen."
         },
         {
           "id": "mgmt-watchful-waiting-option",
@@ -233,10 +221,11 @@
             "herniasurge-2018"
           ],
           "note": "HerniaSurge: watchful waiting is an acceptable option in men with minimally symptomatic or asymptomatic inguinal hernias.",
-          "unverified": [
+          "proposedFix": "Add the HerniaSurge watchful-waiting option for minimally symptomatic men to the inguinal_hernia protocol (conservative phase).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add the HerniaSurge watchful-waiting option for minimally symptomatic men to the inguinal_hernia protocol (conservative phase)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -250,10 +239,7 @@
             "if ",
             "strangulated hernia: resuscitate"
           ],
-          "note": "An emergency operative plan for a reducible minimally symptomatic hernia would be wrong.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "An emergency operative plan for a reducible minimally symptomatic hernia would be wrong."
         }
       ]
     },

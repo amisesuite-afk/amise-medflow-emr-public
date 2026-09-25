@@ -130,10 +130,7 @@
         "guidelineRefs": [
           "sfe-hypocalcaemia-2016"
         ],
-        "note": "Symptomatic hypocalcaemia with QT prolongation needs immediate treatment.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Symptomatic hypocalcaemia with QT prolongation needs immediate treatment."
       },
       "redFlags": [
         {
@@ -146,9 +143,6 @@
           ],
           "guidelineRefs": [
             "sfe-hypocalcaemia-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -164,9 +158,6 @@
           ],
           "guidelineRefs": [
             "sfe-hypocalcaemia-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -177,9 +168,6 @@
           ],
           "guidelineRefs": [
             "sfe-hypocalcaemia-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -196,10 +184,7 @@
           "guidelineRefs": [
             "sfe-hypocalcaemia-2016"
           ],
-          "note": "SfE: symptomatic or severe acute hypocalcaemia is treated with IV calcium gluconate under cardiac monitoring.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SfE: symptomatic or severe acute hypocalcaemia is treated with IV calcium gluconate under cardiac monitoring."
         },
         {
           "id": "mgmt-oral-calcium-vitd",
@@ -212,9 +197,6 @@
           ],
           "guidelineRefs": [
             "sfe-hypocalcaemia-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

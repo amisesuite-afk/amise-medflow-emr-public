@@ -205,10 +205,7 @@
       "emergencyLevel": {
         "id": "level-at-least-priority",
         "severity": "quality",
-        "atLeast": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "priority"
       },
       "redFlags": [
         {
@@ -225,10 +222,7 @@
             "easl-cirrhosis-2018",
             "ehs-ahs-umbilical-2020"
           ],
-          "note": "Thin shiny skin over an umbilical hernia with tense ascites: rupture risk must be surfaced.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Thin shiny skin over an umbilical hernia with tense ascites: rupture risk must be surfaced."
         },
         {
           "id": "flag-liver-disease",
@@ -239,10 +233,7 @@
             "liver disease",
             "meld"
           ],
-          "note": "Peri-operative mortality depends on liver function; the risk must be visible.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Peri-operative mortality depends on liver function; the risk must be visible."
         }
       ]
     },
@@ -251,18 +242,12 @@
         {
           "id": "score-rec-child-pugh",
           "severity": "quality",
-          "score": "child-pugh",
-          "unverified": [
-            "ios"
-          ]
+          "score": "child-pugh"
         },
         {
           "id": "score-rec-meld",
           "severity": "quality",
-          "score": "meld",
-          "unverified": [
-            "ios"
-          ]
+          "score": "meld"
         }
       ]
     },
@@ -284,9 +269,10 @@
             "ehs-ahs-umbilical-2020"
           ],
           "note": "Repair without controlling ascites risks leak, recurrence and peritonitis; hepatology co-management is standard.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -298,9 +284,6 @@
             "day case"
           ],
           "note": "Day-case repair is inappropriate in decompensated cirrhosis.",
-          "unverified": [
-            "ios"
-          ],
           "knownGap": [
             "web"
           ],

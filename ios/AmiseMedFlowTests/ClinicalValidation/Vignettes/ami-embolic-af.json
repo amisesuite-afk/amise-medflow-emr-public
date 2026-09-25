@@ -238,10 +238,7 @@
             "esvs-2017",
             "wses-ami-2022"
           ],
-          "note": "Pain out of proportion + AF off anticoagulation: AMI must be on the displayed differential.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Pain out of proportion + AF off anticoagulation: AMI must be on the displayed differential."
         },
         {
           "id": "mnm-mesenteric-ischaemia-symptom-engine",
@@ -272,9 +269,6 @@
           "wses-ami-2022"
         ],
         "note": "Suspected AMI: immediate CTA and treatment; bowel viability is lost within hours.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe central abdominal pain' gives 'routine'."
       },
       "mustAlarm": [
@@ -290,9 +284,6 @@
           "guidelineRefs": [
             "esvs-2017",
             "wses-ami-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -315,10 +306,7 @@
             "esvs-2017",
             "wses-ami-2022"
           ],
-          "note": "Immediate CT angiography (arterial and portal venous phases) — not a routine portal-venous CT.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Immediate CT angiography (arterial and portal venous phases) — not a routine portal-venous CT."
         },
         {
           "id": "inv-lactate",
@@ -329,10 +317,7 @@
           "guidelineRefs": [
             "wses-ami-2022"
           ],
-          "note": "Supportive only; a normal value must not exclude AMI.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Supportive only; a normal value must not exclude AMI."
         }
       ]
     },
@@ -358,10 +343,7 @@
             "esvs-2017",
             "wses-ami-2022"
           ],
-          "note": "Immediate systemic heparin unless contraindicated.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Immediate systemic heparin unless contraindicated."
         },
         {
           "id": "mgmt-revascularisation",
@@ -378,10 +360,7 @@
             "esvs-2017",
             "wses-ami-2022"
           ],
-          "note": "Embolic SMA occlusion: urgent revascularisation (endovascular or open embolectomy) with vascular surgery.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Embolic SMA occlusion: urgent revascularisation (endovascular or open embolectomy) with vascular surgery."
         },
         {
           "id": "mgmt-antibiotics",
@@ -399,9 +378,6 @@
           ],
           "guidelineRefs": [
             "wses-ami-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -409,10 +385,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

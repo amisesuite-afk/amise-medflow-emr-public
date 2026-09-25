@@ -214,9 +214,10 @@
           "guidelineRefs": [
             "ecco-cd-surg-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Appendicitis | 2. Skin Abscess | 3. Typhoid Fever | 4. Infective Endocarditis | 5. Acute Pancreatitis"
         }
       ]
     },
@@ -227,9 +228,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "ecco-cd-surg-2020"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustNotAlarm": [
@@ -249,9 +247,6 @@
             "ecco-cd-surg-2020"
           ],
           "note": "The CT report says \"No free gas\"; a pneumoperitoneum/emergency-laparotomy alarm is a false positive from negated text.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add negation handling to hasRadResult (no/without/absent … free gas/free air)."
         }
       ],
@@ -268,9 +263,10 @@
           "guidelineRefs": [
             "ecco-cd-surg-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert)"
         }
       ]
     },
@@ -290,9 +286,6 @@
             "ecco-cd-surg-2020"
           ],
           "note": "ECCO 2020: intra-abdominal abscess → antibiotics and percutaneous drainage where feasible, then elective resection.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Add \"intra-abdominal abscess: IV antibiotics + percutaneous drainage, then delayed resection; wean steroids\" to the crohns_disease protocol (ECCO 2020)."
         },
         {
@@ -322,10 +315,7 @@
           "guidelineRefs": [
             "ecco-cd-surg-2020"
           ],
-          "note": "Systemic (IV) antibiotics for the abscess in the documented plan for the confirmed diagnosis; oral metronidazole for perianal disease suppression does not count, nor does the appendicitis panel shown because PANE ranks appendicitis first.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Systemic (IV) antibiotics for the abscess in the documented plan for the confirmed diagnosis; oral metronidazole for perianal disease suppression does not count, nor does the appendicitis panel shown because PANE ranks appendicitis first."
         },
         {
           "id": "mgmt-resection-plan",
@@ -339,9 +329,10 @@
           "guidelineRefs": [
             "ecco-cd-surg-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -362,10 +353,7 @@
           "guidelineRefs": [
             "ecco-cd-surg-2020"
           ],
-          "note": "A Crohn’s ileocaecal abscess is drained, then resected electively (ileocaecal resection); an emergency appendicectomy is the wrong operation.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A Crohn’s ileocaecal abscess is drained, then resected electively (ileocaecal resection); an emergency appendicectomy is the wrong operation."
         },
         {
           "id": "mgmt-no-steroids",
@@ -394,9 +382,6 @@
             "ecco-cd-surg-2020"
           ],
           "note": "Systemic corticosteroids with an undrained intra-abdominal abscess increase septic and post-operative complications (ECCO 2020).",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Condition the Crohn’s steroid medications on \"no abscess/sepsis\" and add an explicit caution (ECCO 2020)."
         }
       ]

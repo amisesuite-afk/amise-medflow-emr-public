@@ -142,9 +142,6 @@
           "guidelineRefs": [
             "nap6-2018",
             "jtf-drug-allergy-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -156,9 +153,6 @@
           "web"
         ],
         "knownGapNote": "Triage emergency_now (score 47) for an elective planning visit: 'Systemic red flag symptom' from 'collapse' in the allergy history, and 'Post-operative or recent-procedure concern' from 'drained percutaneously'.",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter."
       }
     },
@@ -177,9 +171,6 @@
             "if generalised peritonitis"
           ],
           "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
         },
         {
@@ -209,9 +200,6 @@
             "nice-ng125"
           ],
           "note": "Penicillin anaphylaxis: no penicillin-containing prophylaxis or treatment regimen.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Allergy-aware plan generation: filter or substitute every drug line against the allergy record (penicillin class includes co-amoxiclav, pip-tazo, flucloxacillin, amoxicillin) and show the substitution."
         }
       ],
@@ -231,10 +219,11 @@
             "ashp-2013",
             "nice-ng125"
           ],
-          "unverified": [
+          "proposedFix": "Add a surgical-prophylaxis prompt keyed on the planned procedure class (clean-contaminated colorectal → single IV dose within 60 min before incision, repeat for long cases) that reads the allergy record.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a surgical-prophylaxis prompt keyed on the planned procedure class (clean-contaminated colorectal → single IV dose within 60 min before incision, repeat for long cases) that reads the allergy record."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-non-penicillin-alternative",
@@ -254,10 +243,11 @@
             "ashp-2013",
             "jtf-drug-allergy-2022"
           ],
-          "unverified": [
+          "proposedFix": "When a penicillin allergy is recorded, substitute the allergy alternative in every antibiotic line (ASHP 2013 table) and suppress penicillin lines.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "When a penicillin allergy is recorded, substitute the allergy alternative in every antibiotic line (ASHP 2013 table) and suppress penicillin lines."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

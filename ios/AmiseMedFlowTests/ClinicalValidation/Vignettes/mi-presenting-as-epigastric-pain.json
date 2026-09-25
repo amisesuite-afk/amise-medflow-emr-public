@@ -169,9 +169,10 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease | 2. Peptic ulcer disease | 3. Functional dyspepsia | 4. Acute Pancreatitis | 5. Diabetic Ketoacidosis; also in ios.pipeline#5"
         },
         {
           "id": "mnm-acs-symptom-inference",
@@ -203,10 +204,7 @@
         "guidelineRefs": [
           "esc-acs-2023"
         ],
-        "note": "Suspected ACS in an outpatient setting: emergency services/ED.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Suspected ACS in an outpatient setting: emergency services/ED."
       },
       "mustAlarm": [
         {
@@ -221,9 +219,6 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -241,9 +236,6 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -254,9 +246,6 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -278,10 +267,7 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "note": "A dyspepsia plan without cardiac exclusion is the failure mode.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A dyspepsia plan without cardiac exclusion is the failure mode."
         }
       ]
     }

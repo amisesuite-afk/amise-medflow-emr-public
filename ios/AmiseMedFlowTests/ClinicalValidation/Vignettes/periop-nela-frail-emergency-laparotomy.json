@@ -229,9 +229,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-iai-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -243,9 +240,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "ssc-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -260,9 +254,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -277,9 +268,10 @@
             "cpoc-bgs-frailty-2021",
             "nela-standards"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews"
         },
         {
           "id": "score-rec-p-possum",
@@ -291,12 +283,10 @@
           ],
           "note": "The web P-POSSUM CDS rule needs procedureData.preop or an endoscopy record, which the harness does not set.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists in the CDS list.",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists in the CDS list. | iOS CI 2026-09-25 (run 36169134350, database mode): p-possum not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews",
           "proposedFix": "Suggest P-POSSUM/NELA risk on a locked emergency-surgery diagnosis (perforation, peritonitis, obstruction) and on the emergency-surgery visit type."
         }
       ]
@@ -321,9 +311,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -339,9 +326,6 @@
           "guidelineRefs": [
             "wses-iai-2017",
             "nela-standards"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -357,10 +341,7 @@
             "rcs-highrisk-2011",
             "nela-standards"
           ],
-          "note": "Predicted mortality well above 5%: post-operative critical care.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Predicted mortality well above 5%: post-operative critical care."
         },
         {
           "id": "mgmt-mortality-risk",
@@ -376,10 +357,11 @@
             "rcs-highrisk-2011",
             "nela-standards"
           ],
-          "unverified": [
+          "proposedFix": "See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-geriatric-input",
@@ -394,10 +376,11 @@
             "cpoc-bgs-frailty-2021",
             "nela-standards"
           ],
-          "unverified": [
+          "proposedFix": "Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-shared-decision",
@@ -414,10 +397,11 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "unverified": [
+          "proposedFix": "Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-doac-plan",
@@ -430,10 +414,11 @@
             "esc-ncs-2022"
           ],
           "note": "Apixaban taken this morning: document timing and the haemostatic plan for emergency surgery.",
-          "unverified": [
+          "proposedFix": "Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -449,10 +434,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },

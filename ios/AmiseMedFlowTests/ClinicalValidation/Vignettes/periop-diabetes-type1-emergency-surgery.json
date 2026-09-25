@@ -194,10 +194,7 @@
           "match": [
             "append"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -205,10 +202,7 @@
       "emergencyLevel": {
         "id": "level-at-least-urgent",
         "severity": "critical",
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       }
     },
     "investigations": {
@@ -222,10 +216,11 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "unverified": [
+          "proposedFix": "Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)"
         }
       ]
     },
@@ -244,9 +239,10 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-continue-basal-insulin",
@@ -261,9 +257,10 @@
             "cpoc-diabetes-2022"
           ],
           "note": "Type 1 diabetes: never omit basal insulin (DKA risk); continue it, usually reduced, alongside VRIII.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -283,9 +280,6 @@
           ],
           "guidelineRefs": [
             "cpoc-diabetes-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

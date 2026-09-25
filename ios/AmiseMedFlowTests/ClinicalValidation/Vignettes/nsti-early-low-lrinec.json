@@ -180,9 +180,10 @@
             "fernando-2019"
           ],
           "note": "A LRINEC of 0 must not remove NSTI from the list when the clinical picture fits.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Cellulitis | 2. Skin Abscess | 3. Femoral Hernia | 4. Acute Kidney Injury | 5. Diabetic Foot Infection / Osteomyelitis"
         }
       ]
     },
@@ -193,9 +194,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-sis-ssti-2018"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -210,9 +208,6 @@
           ],
           "guidelineRefs": [
             "wses-sis-ssti-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -227,9 +222,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -248,10 +240,7 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "note": "Clinical suspicion → surgical exploration (finger test / incision), not observation.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Clinical suspicion → surgical exploration (finger test / incision), not observation."
         },
         {
           "id": "mgmt-clindamycin",
@@ -262,9 +251,6 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018",
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -287,10 +273,7 @@
             "wses-sis-ssti-2018",
             "fernando-2019"
           ],
-          "note": "A low LRINEC must not be presented as reassurance. The iOS LRINEC calculator is not driven by this harness; see the findings report.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A low LRINEC must not be presented as reassurance. The iOS LRINEC calculator is not driven by this harness; see the findings report."
         },
         {
           "id": "mgmt-no-oral-cellulitis-plan",
@@ -304,10 +287,7 @@
             "ios.radiation.plan",
             "ios.soap.plan"
           ],
-          "note": "The documented plan must not be an oral cellulitis regimen.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The documented plan must not be an oral cellulitis regimen."
         },
         {
           "id": "mgmt-no-antithrombotic-plan",
@@ -333,10 +313,7 @@
           "guidelineRefs": [
             "wses-sis-ssti-2018"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     }

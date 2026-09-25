@@ -154,9 +154,6 @@
           "web"
         ],
         "knownGapNote": "Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer; the negated 'no fever' also scores as 'Systemic red flag symptom'.",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Grade the diabetic-foot red flag: ulcer alone → priority; infection, ischaemia, gangrene or fever → urgent. Handle negation."
       },
       "mustNotAlarm": [
@@ -166,9 +163,6 @@
           "match": [
             "sepsis",
             "septic"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -190,9 +184,10 @@
           "guidelineRefs": [
             "iwgdf-2023-pad"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -211,10 +206,11 @@
           "guidelineRefs": [
             "iwgdf-2023-offloading"
           ],
-          "unverified": [
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-mdt-foot",
@@ -230,10 +226,11 @@
           "guidelineRefs": [
             "nice-ng19"
           ],
-          "unverified": [
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -266,10 +263,7 @@
           "guidelineRefs": [
             "iwgdf-2023-infection"
           ],
-          "note": "IWGDF/IDSA 2023: do not treat an uninfected ulcer with antibiotics.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "IWGDF/IDSA 2023: do not treat an uninfected ulcer with antibiotics."
         }
       ]
     }

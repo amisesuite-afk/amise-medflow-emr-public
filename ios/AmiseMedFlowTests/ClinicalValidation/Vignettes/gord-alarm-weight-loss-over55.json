@@ -168,9 +168,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -184,10 +181,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Urgent (2-week) OGD; red flag, not an emergency.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Urgent (2-week) OGD; red flag, not an emergency."
       },
       "redFlags": [
         {
@@ -203,9 +197,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags)"
         }
       ]
     },
@@ -222,9 +217,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -246,9 +238,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

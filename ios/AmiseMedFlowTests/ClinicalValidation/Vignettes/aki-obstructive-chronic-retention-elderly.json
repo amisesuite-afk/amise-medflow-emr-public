@@ -165,9 +165,6 @@
             "kdigo-aki-2012",
             "eau-luts-2024",
             "nice-cg97"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -182,9 +179,6 @@
           "kdigo-aki-2012",
           "eau-luts-2024",
           "nice-cg97"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -200,9 +194,6 @@
           "guidelineRefs": [
             "nice-ng148",
             "kdigo-aki-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -216,9 +207,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -236,9 +224,10 @@
             "nice-ng148",
             "eau-luts-2024"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-post-obstructive-diuresis",
@@ -253,9 +242,10 @@
             "eau-luts-2024"
           ],
           "note": "After decompressing high-pressure chronic retention, diuresis can cause hypovolaemia and electrolyte loss.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-urology",
@@ -265,9 +255,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: Nephrology only; no urology referral.",
           "proposedFix": "As mgmt-catheterise."
@@ -281,11 +268,11 @@
           "guidelineRefs": [
             "eau-luts-2024"
           ],
-          "unverified": [
+          "knownGapNote": "Web: Amitriptyline is not recognised as a retention precipitant. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Add anticholinergic drugs to a retention precipitant check.",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: Amitriptyline is not recognised as a retention precipitant.",
-          "proposedFix": "Add anticholinergic drugs to a retention precipitant check."
+          ]
         }
       ],
       "mustExclude": [
@@ -299,10 +286,7 @@
           "guidelineRefs": [
             "nice-cg97"
           ],
-          "note": "High-pressure chronic retention: catheter until urological assessment; an early TWOC risks recurrent obstructive AKI (surgeon to confirm).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "High-pressure chronic retention: catheter until urological assessment; an early TWOC risks recurrent obstructive AKI (surgeon to confirm)."
         }
       ]
     }

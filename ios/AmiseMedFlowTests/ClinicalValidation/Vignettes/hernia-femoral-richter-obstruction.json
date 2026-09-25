@@ -219,10 +219,7 @@
             "wses-asbo-2017",
             "wses-hernia-2017"
           ],
-          "note": "SBO without previous surgery: an external hernia (femoral in elderly women) must be on the differential.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SBO without previous surgery: an external hernia (femoral in elderly women) must be on the differential."
         },
         {
           "id": "mnm-bowel-obstruction",
@@ -230,9 +227,6 @@
           "match": [
             "obstruct",
             "icd:K56"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -244,9 +238,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-hernia-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -260,9 +251,6 @@
           ],
           "guidelineRefs": [
             "wses-asbo-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -274,10 +262,7 @@
             "anticoag",
             "apixaban"
           ],
-          "note": "DOAC before emergency surgery.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DOAC before emergency surgery."
         }
       ]
     },
@@ -294,10 +279,7 @@
           "guidelineRefs": [
             "wses-asbo-2017"
           ],
-          "note": "CT defines the cause and ischaemia, provided it does not delay surgery in obvious strangulation.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "CT defines the cause and ischaemia, provided it does not delay surgery in obvious strangulation."
         },
         {
           "id": "inv-lactate",
@@ -307,9 +289,6 @@
           ],
           "guidelineRefs": [
             "wses-hernia-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -329,9 +308,10 @@
           "guidelineRefs": [
             "wses-hernia-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-ng-decompression",
@@ -340,9 +320,6 @@
             "nasogastric",
             "re:\\bng\\b",
             "drip and suck"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -364,9 +341,10 @@
             "wses-asbo-2017"
           ],
           "note": "A trial of non-operative (adhesional-SBO) management is wrong for a strangulated hernia.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic\" (+1 more)"
         }
       ]
     },

@@ -151,9 +151,6 @@
           ],
           "match": [
             "pylor"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -180,10 +177,7 @@
           "pyloric-review-2012"
         ],
         "note": "Dehydrated infant: same-day admission. Surgery itself is not an emergency.",
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       }
     },
     "investigations": {
@@ -197,9 +191,6 @@
           "match": [
             "re:(ultrasound|uss|\\bus\\b)[^\\n]{0,30}pylor",
             "re:pylor[^\\n]{0,40}(ultrasound|uss)"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -216,9 +207,6 @@
             "re:\\babg\\b",
             "capillary gas",
             "bicarbonate"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -237,9 +225,6 @@
             "before pyloromyotomy",
             "prior to pyloromyotomy",
             "re:before (surgery|anaesthe)"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -251,9 +236,6 @@
           "match": [
             "pyloromyotomy",
             "ramstedt"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -282,9 +264,6 @@
             "over 50 kg",
             "age ≥ 12",
             "microgram/kg"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -296,9 +275,6 @@
           "note": "Pyloromyotomy is scheduled after resuscitation, not as an emergency.",
           "match": [
             "re:(emergency|immediate|urgent) (pyloromyotomy|surgery|laparotomy)"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -327,9 +303,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -184,9 +184,10 @@
             "nice-cg141"
           ],
           "note": "Post-endoscopy, the complete Rockall score is the relevant score (web suggests the pre-endoscopy Rockall key).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): rockall not recommended; recommended: (none)"
         },
         {
           "id": "score-rec-forrest",
@@ -213,10 +214,7 @@
             "esge-2021",
             "maastricht-6"
           ],
-          "note": "Test at index endoscopy; repeat if negative in the acute setting.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Test at index endoscopy; repeat if negative in the acute setting."
         }
       ]
     },
@@ -234,10 +232,7 @@
             "esge-2021",
             "nice-cg141"
           ],
-          "note": "High-dose PPI for 72 h after endoscopic haemostasis of a high-risk ulcer reduces rebleeding.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "High-dose PPI for 72 h after endoscopic haemostasis of a high-risk ulcer reduces rebleeding."
         },
         {
           "id": "mgmt-hpylori-eradication",
@@ -248,9 +243,6 @@
           "guidelineRefs": [
             "esge-2021",
             "maastricht-6"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -263,9 +255,10 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -280,10 +273,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "ESGE: routine second-look endoscopy is not recommended.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESGE: routine second-look endoscopy is not recommended."
         },
         {
           "id": "mgmt-no-tranexamic-acid",
@@ -295,9 +285,6 @@
           "guidelineRefs": [
             "esge-2021",
             "halt-it-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

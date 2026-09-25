@@ -233,9 +233,6 @@
           ],
           "guidelineRefs": [
             "iwgdf-2023-infection"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -249,10 +246,7 @@
           "guidelineRefs": [
             "iwgdf-2023-infection"
           ],
-          "note": "Soft-tissue gas and crepitus.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Soft-tissue gas and crepitus."
         }
       ]
     },
@@ -264,9 +258,6 @@
         "guidelineRefs": [
           "iwgdf-2023-infection",
           "nice-ng19"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -283,9 +274,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -300,9 +288,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -320,10 +305,11 @@
           "guidelineRefs": [
             "iwgdf-2023-pad"
           ],
-          "unverified": [
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 9 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
         }
       ]
     },
@@ -343,10 +329,7 @@
           "guidelineRefs": [
             "iwgdf-2023-infection"
           ],
-          "note": "IWGDF/IDSA: urgent surgery for deep abscess, gas and extensive wet gangrene.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "IWGDF/IDSA: urgent surgery for deep abscess, gas and extensive wet gangrene."
         },
         {
           "id": "mgmt-iv-broad-spectrum",
@@ -361,9 +344,6 @@
           ],
           "guidelineRefs": [
             "iwgdf-2023-infection"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -382,10 +362,11 @@
             "iwgdf-2023-pad"
           ],
           "note": "Absent pedal pulses: vascular assessment and revascularisation planning after source control.",
-          "unverified": [
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-glycaemic",
@@ -397,9 +378,10 @@
             "vrii",
             "sliding scale"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

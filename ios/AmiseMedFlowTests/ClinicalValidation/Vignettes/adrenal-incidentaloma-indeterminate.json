@@ -126,10 +126,7 @@
       "emergencyLevel": {
         "id": "level-not-emergency",
         "severity": "quality",
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "investigations": {
@@ -146,9 +143,10 @@
             "es-phaeo-2014"
           ],
           "note": "ESE 2023: metanephrines are required for masses >10 HU; an unrecognised phaeochromocytoma is lethal at surgery or biopsy.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
         },
         {
           "id": "inv-dst",
@@ -161,9 +159,10 @@
           "guidelineRefs": [
             "ese-adrenal-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
         },
         {
           "id": "inv-arr",
@@ -175,10 +174,7 @@
           "guidelineRefs": [
             "ese-adrenal-2023"
           ],
-          "note": "Hypertension with hypokalaemia: aldosterone/renin ratio.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Hypertension with hypokalaemia: aldosterone/renin ratio."
         },
         {
           "id": "inv-further-imaging",
@@ -191,9 +187,10 @@
           "guidelineRefs": [
             "ese-adrenal-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
         }
       ],
       "mustExclude": [
@@ -214,10 +211,7 @@
           "guidelineRefs": [
             "ese-adrenal-2023"
           ],
-          "note": "ESE 2023: adrenal biopsy is not part of the routine work-up and must never precede exclusion of phaeochromocytoma.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESE 2023: adrenal biopsy is not part of the routine work-up and must never precede exclusion of phaeochromocytoma."
         }
       ]
     }

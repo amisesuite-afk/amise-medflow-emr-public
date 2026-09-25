@@ -153,9 +153,6 @@
           "guidelineRefs": [
             "nice-ng240",
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -183,9 +180,6 @@
         "guidelineRefs": [
           "nice-ng240",
           "nice-ng51"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -197,9 +191,6 @@
           ],
           "guidelineRefs": [
             "nice-ng240"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -211,9 +202,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -230,10 +218,7 @@
             "nice-ng240",
             "nice-ng51"
           ],
-          "note": "Graded as management because the web sepsis prompt adds blood cultures as a plan line; the seeded investigation lists come from unrelated PANE protocols.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Graded as management because the web sepsis prompt adds blood cultures as a plan line; the seeded investigation lists come from unrelated PANE protocols."
         },
         {
           "id": "mgmt-ceftriaxone-now",
@@ -245,9 +230,6 @@
           ],
           "guidelineRefs": [
             "nice-ng240"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -258,9 +240,6 @@
           ],
           "guidelineRefs": [
             "nice-ng240"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: No dexamethasone.",
           "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
@@ -274,9 +253,6 @@
           ],
           "guidelineRefs": [
             "nice-ng240"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: No public-health notification.",
           "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."

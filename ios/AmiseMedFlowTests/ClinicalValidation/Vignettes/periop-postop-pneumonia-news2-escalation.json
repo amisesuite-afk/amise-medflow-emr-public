@@ -214,9 +214,6 @@
           ],
           "guidelineRefs": [
             "nice-ng139"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -228,9 +225,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "rcp-news2-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -246,9 +240,6 @@
           "guidelineRefs": [
             "rcp-news2-2017",
             "bts-oxygen-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -261,9 +252,6 @@
           "score": "news2",
           "guidelineRefs": [
             "rcp-news2-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -280,9 +268,6 @@
           ],
           "guidelineRefs": [
             "bts-oxygen-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -294,9 +279,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -317,9 +299,6 @@
           ],
           "guidelineRefs": [
             "rcp-news2-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -341,9 +320,6 @@
           "guidelineRefs": [
             "nice-ng139",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -357,9 +333,6 @@
           ],
           "guidelineRefs": [
             "bts-oxygen-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -377,10 +350,7 @@
           "guidelineRefs": [
             "bts-oxygen-2017"
           ],
-          "note": "COPD: target 88–92% until blood gases are known (hypercapnic risk). Quality because hypercapnia is not yet established.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "COPD: target 88–92% until blood gases are known (hypercapnic risk). Quality because hypercapnia is not yet established."
         },
         {
           "id": "mgmt-no-emergency-laparotomy",
@@ -395,9 +365,6 @@
             "if generalised peritonitis"
           ],
           "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
         },
         {
@@ -412,20 +379,14 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

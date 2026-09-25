@@ -163,9 +163,6 @@
           ],
           "guidelineRefs": [
             "atls-10-pregnancy"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -177,9 +174,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "atls-10-pregnancy"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -191,9 +185,6 @@
           ],
           "guidelineRefs": [
             "atls-10-pregnancy"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -211,9 +202,6 @@
           ],
           "guidelineRefs": [
             "atls-10-pregnancy"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -227,9 +215,6 @@
           "guidelineRefs": [
             "atls-10-pregnancy",
             "green-top-anti-d-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -243,10 +228,7 @@
             "beta-hcg",
             "b-hcg"
           ],
-          "note": "A known 30-week pregnancy does not need a pregnancy test; the prompt should adapt.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A known 30-week pregnancy does not need a pregnancy test; the prompt should adapt."
         }
       ]
     },
@@ -264,9 +246,6 @@
           ],
           "guidelineRefs": [
             "atls-10-pregnancy"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -280,9 +259,6 @@
           ],
           "guidelineRefs": [
             "atls-10-pregnancy"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -294,9 +270,6 @@
           "guidelineRefs": [
             "atls-10-pregnancy",
             "green-top-anti-d-2014"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes."
         }
@@ -326,20 +299,14 @@
           "guidelineRefs": [
             "atls-10-pregnancy"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

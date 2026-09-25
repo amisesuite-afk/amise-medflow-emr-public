@@ -153,9 +153,10 @@
           "guidelineRefs": [
             "maastricht-6"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-14-day-or-bismuth",
@@ -171,9 +172,10 @@
           ],
           "note": "Maastricht VI: 14 days; bismuth quadruple first-line where clarithromycin resistance is >15% or unknown.",
           "proposedFix": "Gastritis / peptic_ulcer / gastric_carcinoma protocols: align H. pylori regimens with Maastricht VI (14 days; bismuth quadruple first-line where clarithromycin resistance is high or unknown). The three protocols currently disagree (7, 7–14 and 14 days).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-test-of-cure",
@@ -187,9 +189,10 @@
           "guidelineRefs": [
             "maastricht-6"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -204,10 +207,7 @@
             "maastricht-6"
           ],
           "note": "A 7-day clarithromycin triple regimen is below the 14 days Maastricht VI recommends, and the patient had prior clarithromycin exposure (resistance risk).",
-          "proposedFix": "As mgmt-14-day-or-bismuth.",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "As mgmt-14-day-or-bismuth."
         }
       ]
     }

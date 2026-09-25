@@ -140,9 +140,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -155,10 +152,7 @@
         "guidelineRefs": [
           "nice-ng158"
         ],
-        "note": "NICE NG158: ultrasound within 4 h, or interim anticoagulation — same-day care.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "NICE NG158: ultrasound within 4 h, or interim anticoagulation — same-day care."
       },
       "redFlags": [
         {
@@ -170,10 +164,11 @@
             "contracept",
             "pill"
           ],
-          "unverified": [
+          "proposedFix": "Handle negation in scanRedFlags; flag oestrogen-containing medication as a VTE risk factor.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Handle negation in scanRedFlags; flag oestrogen-containing medication as a VTE risk factor."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote)"
         }
       ]
     },
@@ -186,9 +181,6 @@
           "guidelineRefs": [
             "nice-ng158",
             "wells-dvt-2003"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -205,9 +197,6 @@
           ],
           "guidelineRefs": [
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -227,10 +216,7 @@
           "guidelineRefs": [
             "nice-ng158"
           ],
-          "note": "Interim anticoagulation if the scan cannot be done within 4 h; treatment if confirmed.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Interim anticoagulation if the scan cannot be done within 4 h; treatment if confirmed."
         }
       ]
     }

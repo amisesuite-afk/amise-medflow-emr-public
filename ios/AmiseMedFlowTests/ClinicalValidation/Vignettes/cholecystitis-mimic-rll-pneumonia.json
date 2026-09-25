@@ -236,10 +236,7 @@
           "guidelineRefs": [
             "nice-cg191"
           ],
-          "note": "Pleuritic RUQ pain, productive cough, hypoxia and right basal signs with a normal gallbladder.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Pleuritic RUQ pain, productive cough, hypoxia and right basal signs with a normal gallbladder."
         }
       ]
     },
@@ -251,10 +248,7 @@
         "guidelineRefs": [
           "nice-cg191"
         ],
-        "note": "Hypoxic (SpO₂ 91%), RR 26: same-day treatment.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Hypoxic (SpO₂ 91%), RR 26: same-day treatment."
       },
       "mustAlarm": [
         {
@@ -268,9 +262,6 @@
             "saturation",
             "tachypn",
             "respiratory rate"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -283,9 +274,6 @@
           "score": "curb65",
           "guidelineRefs": [
             "nice-cg191"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -305,10 +293,7 @@
           "guidelineRefs": [
             "nice-cg191"
           ],
-          "note": "The single test that makes the diagnosis; NICE CG191 recommends a chest X-ray to confirm pneumonia.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The single test that makes the diagnosis; NICE CG191 recommends a chest X-ray to confirm pneumonia."
         },
         {
           "id": "inv-blood-cultures",
@@ -318,9 +303,6 @@
           ],
           "guidelineRefs": [
             "nice-cg191"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -340,10 +322,7 @@
             "not indicated",
             "no role"
           ],
-          "note": "The gallbladder is normal on ultrasound: a cholecystectomy suggestion is a wrong-diagnosis operative plan.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The gallbladder is normal on ultrasound: a cholecystectomy suggestion is a wrong-diagnosis operative plan."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -358,9 +337,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
         }
       ]

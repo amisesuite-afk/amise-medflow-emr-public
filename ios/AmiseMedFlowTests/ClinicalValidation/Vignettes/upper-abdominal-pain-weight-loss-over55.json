@@ -185,9 +185,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -200,10 +197,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect."
       },
       "redFlags": [
         {
@@ -219,9 +213,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage)"
         }
       ]
     },
@@ -239,9 +234,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
         },
         {
           "id": "inv-fbc",
@@ -253,9 +249,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
         }
       ]
     },
@@ -276,9 +273,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

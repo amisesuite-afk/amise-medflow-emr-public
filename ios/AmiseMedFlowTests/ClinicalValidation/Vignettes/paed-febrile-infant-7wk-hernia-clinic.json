@@ -101,9 +101,6 @@
             "urinary tract",
             "re:\\buti\\b",
             "bacterial infection"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -116,10 +113,7 @@
           "nice-ng143"
         ],
         "note": "Fever at < 3 months is a NICE red feature: same-day urgent paediatric assessment.",
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       }
     },
     "investigations": {
@@ -132,9 +126,6 @@
           ],
           "match": [
             "blood culture"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "A febrile-infant pathway / protocol for the PANE nodes sepsis and meningitis (NICE NG143: blood culture, urine, LP in infants under 3 months)."
         },
@@ -149,9 +140,10 @@
             "re:\\blp\\b",
             "csf"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi)"
         }
       ]
     },
@@ -176,9 +168,10 @@
             "suprapubic aspirate",
             "catheter specimen"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-urgent-paediatric",
@@ -191,9 +184,10 @@
             "re:paediatric[^\\n]{0,30}(team|review|assessment|admission|emergency)",
             "re:pediatric[^\\n]{0,30}(team|review|assessment|admission|emergency)"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-parenteral-antibiotics",
@@ -207,9 +201,6 @@
             "parenteral antibiotic",
             "re:\\biv antibiotic",
             "amoxicillin"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -238,9 +229,6 @@
             "over 50 kg",
             "age ≥ 12",
             "microgram/kg"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -254,9 +242,6 @@
             "re:emergency (laparoscopic )?(inguinal )?hernia repair",
             "re:emergency theatre[^\\n]{0,40}(irreducible|strangulated)",
             "tapp"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

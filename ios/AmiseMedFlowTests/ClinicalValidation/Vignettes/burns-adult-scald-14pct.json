@@ -126,9 +126,6 @@
         "atMost": "urgent",
         "guidelineRefs": [
           "burns-fluid-threshold"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -153,10 +150,7 @@
             "aba-referral",
             "nnbc-2012"
           ],
-          "note": "ABA: partial-thickness burns >10% TBSA; knees (major joints) involved.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ABA: partial-thickness burns >10% TBSA; knees (major joints) involved."
         },
         {
           "id": "mgmt-dressings",
@@ -167,9 +161,6 @@
           ],
           "guidelineRefs": [
             "isbi-2016"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
         }
@@ -194,19 +185,17 @@
             "burns-fluid-threshold"
           ],
           "note": "Formal IV resuscitation below the threshold risks over-resuscitation.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"... resuscitation from 15% tbsa in adults and 10% in children: parkland 4 ml/kg/%tbsa over 24 h from the time of burn, half in the first 8 h - subtract fluid already given and time e"
         }
       ]
     },
     "pathway": {
       "id": "pathway-burns",
       "severity": "quality",
-      "equals": "burns",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "burns"
     }
   },
   "guideline": [

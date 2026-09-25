@@ -143,9 +143,6 @@
           "guidelineRefs": [
             "accp-2012-gould",
             "nice-ng89"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -174,9 +171,10 @@
             "accp-2012-gould"
           ],
           "note": "High VTE risk, low bleeding risk: LMWH prophylaxis.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-extended-prophylaxis",
@@ -194,9 +192,10 @@
             "accp-2012-gould"
           ],
           "note": "NICE NG89: extend pharmacological prophylaxis to 28 days after major abdominal/pelvic cancer surgery.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-mechanical-prophylaxis",
@@ -215,9 +214,10 @@
             "nice-ng89",
             "accp-2012-gould"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

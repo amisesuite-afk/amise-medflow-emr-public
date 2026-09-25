@@ -250,9 +250,6 @@
           "k": 3,
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -265,10 +262,7 @@
         "guidelineRefs": [
           "tg18-mgmt-cholecystitis"
         ],
-        "note": "Gangrenous change in an immunosuppressed patient: perforation risk; same-day surgical decision. iOS (predicted, not observed): routine.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Gangrenous change in an immunosuppressed patient: perforation risk; same-day surgical decision. iOS (predicted, not observed): routine."
       },
       "redFlags": [
         {
@@ -281,10 +275,7 @@
             "prednisolone",
             "tacrolimus"
           ],
-          "note": "Immunosuppression masks fever, pain and leucocytosis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Immunosuppression masks fever, pain and leucocytosis."
         }
       ]
     },
@@ -299,10 +290,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "Marked local inflammation (gangrenous cholecystitis) is on its own a Grade II criterion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Marked local inflammation (gangrenous cholecystitis) is on its own a Grade II criterion."
         }
       ]
     },
@@ -316,9 +304,6 @@
           ],
           "guidelineRefs": [
             "tg18-antimicrobial"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -341,9 +326,6 @@
           ],
           "guidelineRefs": [
             "tg18-mgmt-cholecystitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -365,9 +347,6 @@
           ],
           "guidelineRefs": [
             "tg18-antimicrobial"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -382,9 +361,10 @@
           "guidelineRefs": [
             "steroid-periop-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)"
         },
         {
           "id": "mgmt-transplant-liaison",
@@ -395,9 +375,10 @@
             "nephrolog",
             "tacrolimus level"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -414,9 +395,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
         }
       ]

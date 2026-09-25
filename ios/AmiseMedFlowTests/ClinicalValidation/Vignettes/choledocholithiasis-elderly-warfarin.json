@@ -246,9 +246,6 @@
           "k": 3,
           "guidelineRefs": [
             "asge-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -267,12 +264,10 @@
           ],
           "note": "Age 79 with obstructive jaundice: malignancy must stay in the differential.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cause for obstructive jaundice at 79 (symptom inference #4 has one).",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cause for obstructive jaundice at 79 (symptom inference #4 has one). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Choledocholithiasis | 2. Ascending Cholangitis | 3. Liver Cirrhosis (Decompensated) | 4. Acute Pancreatitis | 5. Acute Appendicitis",
           "proposedFix": "PANE: age modifier for pancreatic/biliary malignancy with jaundice; recalibrate the inguinal hernia prior (0.15) that fills the top 3 in unrelated presentations."
         }
       ]
@@ -284,9 +279,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "asge-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -301,10 +293,7 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
           ],
-          "note": "Therapeutic INR before a high-bleeding-risk sphincterotomy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Therapeutic INR before a high-bleeding-risk sphincterotomy."
         }
       ]
     },
@@ -321,9 +310,6 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -339,9 +325,6 @@
           ],
           "guidelineRefs": [
             "asge-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -359,10 +342,7 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
           ],
-          "note": "BSG/ESGE 2021: ERCP with sphincterotomy is a high-risk procedure — stop warfarin 5 days before and check INR <1.5 (bridging not needed for AF without other high-risk features). Proceeding with INR 2.6 risks post-sphincterotomy haemorrhage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "BSG/ESGE 2021: ERCP with sphincterotomy is a high-risk procedure — stop warfarin 5 days before and check INR <1.5 (bridging not needed for AF without other high-risk features). Proceeding with INR 2.6 risks post-sphincterotomy haemorrhage."
         }
       ],
       "mustExclude": [
@@ -378,10 +358,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

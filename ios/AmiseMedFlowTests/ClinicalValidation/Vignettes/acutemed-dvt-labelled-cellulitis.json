@@ -143,9 +143,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -178,10 +175,7 @@
         "guidelineRefs": [
           "nice-ng158"
         ],
-        "note": "NICE NG158: ultrasound within 4 hours (interim anticoagulation if delayed).",
-        "unverified": [
-          "ios"
-        ]
+        "note": "NICE NG158: ultrasound within 4 hours (interim anticoagulation if delayed)."
       }
     },
     "scores": {
@@ -192,9 +186,6 @@
           "score": "wells-dvt",
           "guidelineRefs": [
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -213,9 +204,6 @@
           ],
           "guidelineRefs": [
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -237,9 +225,6 @@
           ],
           "guidelineRefs": [
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

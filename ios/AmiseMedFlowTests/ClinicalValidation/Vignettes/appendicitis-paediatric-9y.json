@@ -221,9 +221,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -252,9 +249,6 @@
           "wses-2020"
         ],
         "note": "Suspected appendicitis in a child: same-day surgical assessment.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Tummy pain and vomiting' gives 'routine'."
       }
     },
@@ -270,12 +264,10 @@
           ],
           "note": "WSES 2020: in children, PAS (or AIR) with ultrasound; Alvarado alone is less reliable.",
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old."
+          "knownGapNote": "Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. | iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews"
         }
       ],
       "values": [
@@ -288,10 +280,7 @@
           "guidelineRefs": [
             "alvarado-1986"
           ],
-          "note": "All eight items present = 10.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "All eight items present = 10."
         }
       ]
     },
@@ -307,10 +296,7 @@
           "guidelineRefs": [
             "wses-2020"
           ],
-          "note": "WSES 2020: ultrasound first in children.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2020: ultrasound first in children."
         }
       ],
       "mustExclude": []
@@ -326,9 +312,6 @@
           ],
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -347,9 +330,6 @@
           ],
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -374,12 +354,10 @@
           ],
           "note": "Ultrasound has already confirmed appendicitis; CT (radiation) is not indicated in a child unless US is inconclusive.",
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads 'Investigation: CT abdomen/pelvis with IV contrast (urgent)' for a child whose ultrasound already confirmed appendicitis; the prompt strip adds 'CT abdomen/pelvis — appendix calibre'.",
+          "knownGapNote": "Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads 'Investigation: CT abdomen/pelvis with IV contrast (urgent)' for a child whose ultrasound already confirmed appendicitis; the prompt strip adds 'CT abdomen/pelvis — appendix calibre'. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: \"investigations: fbc, β-hcg (females), urinalysis / msu, ct abdomen/pelvis with iv contrast, uss abdomen.\"",
           "proposedFix": "Keep the investigation 'conditional' text in PlanTab.buildPlanText and add a paediatric qualifier (US first; CT only if US non-diagnostic)."
         },
         {
@@ -400,9 +378,6 @@
             "age ≥ 12"
           ],
           "note": "Weight 30 kg. Paracetamol 1 g QDS (133 mg/kg/day), ibuprofen 400 mg (13 mg/kg/dose), piperacillin-tazobactam 4.5 g (150 mg/kg) and co-amoxiclav 1.2 g are adult fixed doses; a child needs weight-based (mg/kg) dosing. Quality of prescribing is a patient-safety issue, so critical.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: Protocol steps, protocol medications and the appendicectomy prompt carry adult fixed doses (co-amoxiclav 1.2 g TDS, paracetamol 1 g, ibuprofen 400 mg TDS, pip-tazo 4.5 g) with no weight or age adjustment for a 30 kg child.",
           "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg with adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg."
         },
@@ -420,9 +395,6 @@
           "knownGap": [
             "web"
           ],
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: Appendicectomy operative-plan prompt prescribes IV then oral co-amoxiclav for 5 days after simple appendicitis."
         }
       ]
@@ -430,10 +402,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     },
     "dxVariant": {
       "id": "variant-uncomplicated",

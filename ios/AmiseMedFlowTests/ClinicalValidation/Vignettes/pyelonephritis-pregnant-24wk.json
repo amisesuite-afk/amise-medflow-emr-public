@@ -178,9 +178,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng111"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -192,9 +189,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "nice-ng111"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -214,9 +208,6 @@
           ],
           "guidelineRefs": [
             "nice-ng111"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -237,10 +228,7 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "note": "Any effective antibiotic that is compatible with pregnancy (broad-spectrum sepsis cover counts here, as in the base vignette).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Any effective antibiotic that is compatible with pregnancy (broad-spectrum sepsis cover counts here, as in the base vignette)."
         },
         {
           "id": "mgmt-ng111-pregnancy-antibiotic",
@@ -253,9 +241,6 @@
             "nice-ng111"
           ],
           "note": "The NICE NG111 pregnancy choices.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: The only antibiotic is pip-tazo from the SIRS prompt; no cefalexin or cefuroxime (O23.0 has no protocol).",
           "proposedFix": "Map O23.0/N10 to a pyelonephritis protocol with an NG111 pregnancy branch."
         },
@@ -273,9 +258,6 @@
           ],
           "guidelineRefs": [
             "nice-ng111"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -298,9 +280,10 @@
             "nice-ng111"
           ],
           "note": "NICE NG111 lists cefalexin (oral) or cefuroxime (IV) in pregnancy; quinolones are avoided.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"⚠ pregnancy: fluoroquinolone / tetracycline removed (bnf) - e.g. cefalexin for pyelonephritis in pregnancy (...\""
         },
         {
           "id": "mgmt-no-nitrofurantoin",
@@ -318,9 +301,10 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)\""
         },
         {
           "id": "mgmt-no-trimethoprim",
@@ -339,9 +323,10 @@
             "nice-ng111"
           ],
           "note": "Not a NICE NG111 option for pyelonephritis in pregnancy.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"or trimethoprim 200 mg bd × 7 days (if low resistance)\""
         },
         {
           "id": "mgmt-no-nsaid-pregnancy",
@@ -364,9 +349,6 @@
           ],
           "guidelineRefs": [
             "fda-nsaid-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -379,10 +361,7 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "note": "No biliary indication: a gallbladder plan for pyelonephritis in pregnancy is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No biliary indication: a gallbladder plan for pyelonephritis in pregnancy is a wrong-procedure suggestion."
         },
         {
           "id": "mgmt-no-laparotomy",
@@ -394,9 +373,6 @@
           ],
           "guidelineRefs": [
             "nice-ng111"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

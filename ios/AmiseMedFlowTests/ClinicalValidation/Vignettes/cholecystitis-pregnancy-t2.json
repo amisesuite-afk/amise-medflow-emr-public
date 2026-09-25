@@ -235,9 +235,6 @@
           "k": 3,
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -250,10 +247,7 @@
         "guidelineRefs": [
           "sages-2017"
         ],
-        "note": "Same-day surgical and obstetric assessment. iOS (predicted, not observed): routine — the CC has no urgent keyword and \"right upper\" selects the biliary pathway, which only escalates for jaundice/cholangitis.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Same-day surgical and obstetric assessment. iOS (predicted, not observed): routine — the CC has no urgent keyword and \"right upper\" selects the biliary pathway, which only escalates for jaundice/cholangitis."
       },
       "redFlags": [
         {
@@ -265,10 +259,7 @@
           "guidelineRefs": [
             "acog-co723-2017"
           ],
-          "note": "Pregnancy must be surfaced before imaging, drugs or theatre.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Pregnancy must be surfaced before imaging, drugs or theatre."
         }
       ]
     },
@@ -283,10 +274,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "WBC 14.8 is below the Grade II threshold (and partly physiological in pregnancy).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WBC 14.8 is below the Grade II threshold (and partly physiological in pregnancy)."
         }
       ]
     },
@@ -308,10 +296,7 @@
           "guidelineRefs": [
             "acog-co723-2017"
           ],
-          "note": "US (and MRI/MRCP if needed) preferred; CT is not contraindicated but should not be the unqualified default.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "US (and MRI/MRCP if needed) preferred; CT is not contraindicated but should not be the unqualified default."
         }
       ]
     },
@@ -329,10 +314,7 @@
           "guidelineRefs": [
             "sages-2017"
           ],
-          "note": "SAGES 2017: laparoscopic cholecystectomy is safe in any trimester and reduces recurrence and fetal loss compared with conservative management.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SAGES 2017: laparoscopic cholecystectomy is safe in any trimester and reduces recurrence and fetal loss compared with conservative management."
         },
         {
           "id": "mgmt-obstetric-involvement",
@@ -348,9 +330,6 @@
           "guidelineRefs": [
             "sages-2017",
             "acog-co775-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -372,9 +351,6 @@
           ],
           "guidelineRefs": [
             "tg18-antimicrobial"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -399,9 +375,10 @@
             "fda-2020-nsaid"
           ],
           "note": "NSAIDs should be avoided from 20 weeks’ gestation.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ...\""
         },
         {
           "id": "mgmt-no-teratogenic-antibiotic",
@@ -416,9 +393,6 @@
             "avoid",
             "not in pregnan",
             "contraindicated"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -427,10 +401,7 @@
           "match": [
             "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
           ],
-          "note": "The patient is pregnant; templates must not assert a negative pregnancy test.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The patient is pregnant; templates must not assert a negative pregnancy test."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -444,10 +415,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

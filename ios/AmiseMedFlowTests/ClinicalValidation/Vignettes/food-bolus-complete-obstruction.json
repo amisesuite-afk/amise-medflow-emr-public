@@ -130,10 +130,7 @@
         "guidelineRefs": [
           "esge-fb-2016"
         ],
-        "note": "Cannot handle saliva: aspiration risk; the app's own APCQ grades \"cannot swallow saliva\" as emergency.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Cannot handle saliva: aspiration risk; the app's own APCQ grades \"cannot swallow saliva\" as emergency."
       },
       "redFlags": [
         {
@@ -147,9 +144,6 @@
           ],
           "guidelineRefs": [
             "esge-fb-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -169,10 +163,11 @@
             "esge-fb-2016",
             "wses-2019"
           ],
-          "unverified": [
+          "proposedFix": "A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions)"
         }
       ]
     },
@@ -189,9 +184,10 @@
           "guidelineRefs": [
             "esge-fb-2016"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-biopsies-underlying-cause",
@@ -203,9 +199,10 @@
             "esge-fb-2016",
             "bsg-eoe-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -218,10 +215,7 @@
           "guidelineRefs": [
             "esge-fb-2016"
           ],
-          "note": "ESGE recommends against barium swallow in suspected food bolus (aspiration, impairs endoscopy).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESGE recommends against barium swallow in suspected food bolus (aspiration, impairs endoscopy)."
         }
       ]
     }

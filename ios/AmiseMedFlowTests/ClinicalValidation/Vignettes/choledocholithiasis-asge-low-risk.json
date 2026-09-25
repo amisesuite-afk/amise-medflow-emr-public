@@ -189,9 +189,6 @@
         "id": "level-not-emergency",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
       },
       "mustNotAlarm": [
@@ -202,10 +199,7 @@
             "dilated common bile duct",
             "dilated cbd"
           ],
-          "note": "CBD 4 mm (normal).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "CBD 4 mm (normal)."
         }
       ]
     },
@@ -230,9 +224,6 @@
             "asge-2019"
           ],
           "note": "ASGE low risk: no further CBD evaluation before cholecystectomy. Quality (cost and delay).",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "HpiTab.seedInvestigationsFromPane: keep protocol conditionals (\"if CBD dilated/LFTs abnormal\") instead of seeding unconditionally."
         }
       ]
@@ -252,9 +243,10 @@
             "asge-2019",
             "nice-cg188"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -283,10 +275,7 @@
           "guidelineRefs": [
             "asge-2019"
           ],
-          "note": "ERCP has no role at ASGE low risk; an unconditional ERCP suggestion exposes the patient to post-ERCP pancreatitis without benefit.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ERCP has no role at ASGE low risk; an unconditional ERCP suggestion exposes the patient to post-ERCP pancreatitis without benefit."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -300,10 +289,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

@@ -209,9 +209,6 @@
           "guidelineRefs": [
             "acg-ci-2015",
             "esvs-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -223,9 +220,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "esvs-2017"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -244,10 +238,7 @@
             "acg-ci-2015",
             "esvs-2017"
           ],
-          "note": "ACG 2015: isolated right colon ischaemia warrants CT angiography to exclude occlusive SMA disease; ESVS 2017: CTA for suspected AMI.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ACG 2015: isolated right colon ischaemia warrants CT angiography to exclude occlusive SMA disease; ESVS 2017: CTA for suspected AMI."
         }
       ]
     },
@@ -264,9 +255,6 @@
           ],
           "guidelineRefs": [
             "esvs-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

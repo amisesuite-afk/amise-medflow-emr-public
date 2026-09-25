@@ -215,10 +215,7 @@
           "guidelineRefs": [
             "nice-cg188"
           ],
-          "note": "The index diagnosis. Quality: labelling biliary colic as cholecystitis over-treats but does not miss a dangerous condition.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The index diagnosis. Quality: labelling biliary colic as cholecystitis over-treats but does not miss a dangerous condition."
         }
       ]
     },
@@ -230,10 +227,7 @@
         "guidelineRefs": [
           "nice-cg188"
         ],
-        "note": "Pain-free outpatient with normal observations and bloods: elective pathway. Over-triage to emergency is noise, not harm.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Pain-free outpatient with normal observations and bloods: elective pathway. Over-triage to emergency is noise, not harm."
       },
       "mustNotAlarm": [
         {
@@ -244,10 +238,7 @@
             "septic",
             "emergency now"
           ],
-          "note": "Afebrile, normal WBC/CRP, pain-free.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Afebrile, normal WBC/CRP, pain-free."
         },
         {
           "id": "no-dilated-cbd-alarm",
@@ -256,10 +247,7 @@
             "dilated common bile duct",
             "dilated cbd"
           ],
-          "note": "The CBD measures 4 mm (normal). A \"dilated CBD\" alarm here is a false positive that drives MRCP/ERCP.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The CBD measures 4 mm (normal). A \"dilated CBD\" alarm here is a false positive that drives MRCP/ERCP."
         },
         {
           "id": "no-cholangitis-alarm",
@@ -272,9 +260,6 @@
             "nice-cg188"
           ],
           "note": "Afebrile, anicteric, pain-free: the HPI records \"No fever, no jaundice\". A Charcot/cholangitis alarm here comes from negated words.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
         }
       ],
@@ -290,10 +275,7 @@
           "guidelineRefs": [
             "nice-cg188"
           ],
-          "note": "Safety-netting: fever, jaundice or persistent pain should prompt urgent return.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Safety-netting: fever, jaundice or persistent pain should prompt urgent return."
         }
       ]
     },
@@ -307,9 +289,10 @@
             "asge-2019"
           ],
           "note": "ASGE 2019 risk stratification for CBD stones (here: low risk) before cholecystectomy.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholecystitis, tg18-cholangitis, news2, rcri, asa, mews"
         }
       ]
     },
@@ -325,9 +308,6 @@
           ],
           "guidelineRefs": [
             "nice-cg188"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -339,9 +319,6 @@
           ],
           "guidelineRefs": [
             "nice-cg188"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -360,10 +337,7 @@
           "guidelineRefs": [
             "nice-cg188"
           ],
-          "note": "NICE CG188: offer laparoscopic cholecystectomy for symptomatic gallbladder stones.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE CG188: offer laparoscopic cholecystectomy for symptomatic gallbladder stones."
         }
       ],
       "mustExclude": [
@@ -397,9 +371,6 @@
             "web"
           ],
           "knownGapNote": "Assessment panel shows the cholecystitis protocol (PANE top) with IV co-amoxiclav/pip-tazo; the Murphy's-sign prompt (fired by \"Murphy's sign negative\") adds IV co-amoxiclav.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
         },
         {
@@ -415,9 +386,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
         }
       ]

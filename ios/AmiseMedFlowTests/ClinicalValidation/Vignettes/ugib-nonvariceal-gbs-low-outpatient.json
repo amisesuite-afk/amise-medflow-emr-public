@@ -178,9 +178,6 @@
           "k": 3,
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -194,10 +191,7 @@
           "esge-2021",
           "acg-2021"
         ],
-        "note": "GBS 0–1: very low risk; ESGE and ACG support outpatient management without early endoscopy. \"Emergency now\" is over-triage.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "GBS 0–1: very low risk; ESGE and ACG support outpatient management without early endoscopy. \"Emergency now\" is over-triage."
       }
     },
     "scores": {
@@ -209,9 +203,6 @@
           "guidelineRefs": [
             "esge-2021",
             "blatchford-2000"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -230,10 +221,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "Outpatient (not urgent inpatient) endoscopy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Outpatient (not urgent inpatient) endoscopy."
         }
       ]
     },
@@ -257,10 +245,7 @@
             "bsg-2020"
           ],
           "note": "The plan should say the patient can be managed as an outpatient (GBS ≤1). Generic words such as \"post-discharge\" do not count.",
-          "proposedFix": "upper_gi_bleed protocol / gi_bleed_panel prompt: add \"GBS ≤1 — outpatient endoscopy, no admission (ESGE 2021, ACG 2021)\" keyed on the calculated GBS.",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "upper_gi_bleed protocol / gi_bleed_panel prompt: add \"GBS ≤1 — outpatient endoscopy, no admission (ESGE 2021, ACG 2021)\" keyed on the calculated GBS."
         }
       ],
       "mustExclude": [
@@ -276,9 +261,10 @@
             "halt-it-2020"
           ],
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
         },
         {
           "id": "mgmt-no-transfusion",
@@ -295,10 +281,7 @@
             "web"
           ],
           "knownGapNote": "gi_bleed_panel prompt fires on any haematemesis/melaena symptom and adds \"2 × large-bore IV cannulae, Hartmann's 500 ml bolus, crossmatch 2 units pRBC\" regardless of Hb (14.6) or GBS (0).",
-          "proposedFix": "gi_bleed_panel: make the resuscitation/crossmatch line conditional on instability, Hb or GBS.",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "gi_bleed_panel: make the resuscitation/crossmatch line conditional on instability, Hb or GBS."
         }
       ]
     }

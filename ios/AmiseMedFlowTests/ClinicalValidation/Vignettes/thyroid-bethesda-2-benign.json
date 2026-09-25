@@ -154,9 +154,6 @@
           "guidelineRefs": [
             "bethesda-2023",
             "ata-2015"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -171,10 +168,7 @@
             "bethesda-2023",
             "ata-2015"
           ],
-          "note": "A total thyroidectomy plan for benign cytology without compression is over-treatment that exposes the patient to permanent hypoparathyroidism and nerve injury.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A total thyroidectomy plan for benign cytology without compression is over-treatment that exposes the patient to permanent hypoparathyroidism and nerve injury."
         }
       ]
     },
@@ -183,9 +177,6 @@
         "id": "level-not-emergency",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       }
     }

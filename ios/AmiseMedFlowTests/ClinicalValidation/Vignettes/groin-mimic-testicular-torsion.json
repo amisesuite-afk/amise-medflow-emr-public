@@ -138,9 +138,6 @@
           ],
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -155,9 +152,6 @@
           "k": 3,
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -169,9 +163,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "eau-paed-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -183,9 +174,6 @@
           ],
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -201,9 +189,6 @@
           ],
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -218,9 +203,10 @@
             "herniorrhaphy"
           ],
           "note": "The mother's label (\"hernia\") and the groin template must not produce a hernia plan.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics...\" (+1 more)"
         }
       ]
     }

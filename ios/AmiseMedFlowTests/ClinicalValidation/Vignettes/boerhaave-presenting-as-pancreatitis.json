@@ -201,9 +201,6 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -215,9 +212,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -233,9 +227,6 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -252,9 +243,6 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

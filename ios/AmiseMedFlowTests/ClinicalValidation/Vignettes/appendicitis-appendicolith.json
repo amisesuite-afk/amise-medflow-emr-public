@@ -186,9 +186,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -215,10 +212,7 @@
           "guidelineRefs": [
             "wses-2020"
           ],
-          "note": "With an appendicolith, appendicectomy is the recommended treatment.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "With an appendicolith, appendicectomy is the recommended treatment."
         },
         {
           "id": "mgmt-appendicolith-caution",
@@ -232,10 +226,10 @@
             "coda-2020"
           ],
           "note": "WSES 2020 / CODA: an appendicolith predicts failure of antibiotics-first treatment and more complications; the plan should say so when antibiotics are discussed.",
-          "unverified": [
+          "knownGapNote": "Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure."
+          ]
         }
       ],
       "mustExclude": [
@@ -261,9 +255,6 @@
           "guidelineRefs": [
             "coda-2020",
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -279,9 +270,6 @@
           "note": "WSES 2020: no postoperative antibiotics after appendicectomy for uncomplicated appendicitis.",
           "knownGap": [
             "web"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: Appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis."
         }

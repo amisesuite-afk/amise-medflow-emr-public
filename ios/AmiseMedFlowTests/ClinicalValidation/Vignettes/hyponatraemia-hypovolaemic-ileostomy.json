@@ -157,9 +157,6 @@
         "guidelineRefs": [
           "eur-hypona-2014",
           "nice-ng148"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -172,9 +169,6 @@
           ],
           "guidelineRefs": [
             "eur-hypona-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -189,9 +183,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -215,9 +206,10 @@
             "nice-ng148"
           ],
           "note": "Hypovolaemic hyponatraemia: restore volume with isotonic crystalloid.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -236,10 +228,7 @@
           "guidelineRefs": [
             "eur-hypona-2014"
           ],
-          "note": "Fluid restriction offered without a volume assessment worsens hypovolaemia and AKI.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Fluid restriction offered without a volume assessment worsens hypovolaemia and AKI."
         }
       ]
     }

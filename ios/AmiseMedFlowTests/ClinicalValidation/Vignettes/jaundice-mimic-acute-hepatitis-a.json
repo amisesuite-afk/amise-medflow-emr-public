@@ -245,10 +245,7 @@
           "guidelineRefs": [
             "acg-2017-lft"
           ],
-          "note": "Hepatocellular pattern (ALT ≫ ALP), normal duct, outbreak context.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Hepatocellular pattern (ALT ≫ ALP), normal duct, outbreak context."
         }
       ]
     },
@@ -260,10 +257,7 @@
         "guidelineRefs": [
           "easl-2017-alf"
         ],
-        "note": "Bilirubin 118 with INR 1.4: same-day assessment to exclude evolving liver failure.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Bilirubin 118 with INR 1.4: same-day assessment to exclude evolving liver failure."
       },
       "redFlags": [
         {
@@ -278,9 +272,10 @@
           "guidelineRefs": [
             "easl-2017-alf"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.pipeline.alert)"
         }
       ]
     },
@@ -300,9 +295,10 @@
           "guidelineRefs": [
             "acg-2017-lft"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)"
         },
         {
           "id": "inv-inr",
@@ -316,9 +312,10 @@
             "easl-2017-alf"
           ],
           "note": "INR is the marker that separates acute liver injury from acute liver failure.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)"
         }
       ]
     },
@@ -343,10 +340,7 @@
           "guidelineRefs": [
             "acg-2017-lft"
           ],
-          "note": "No duct dilatation and a hepatocellular pattern: ERCP would add risk (pancreatitis, bleeding with INR 1.4) without benefit.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No duct dilatation and a hepatocellular pattern: ERCP would add risk (pancreatitis, bleeding with INR 1.4) without benefit."
         },
         {
           "id": "mgmt-no-cholecystectomy",
@@ -361,10 +355,7 @@
             "not indicated",
             "no role"
           ],
-          "note": "Gallbladder wall thickening in acute hepatitis is reactive; operating on it is a recognised error.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Gallbladder wall thickening in acute hepatitis is reactive; operating on it is a recognised error."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -378,10 +369,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ],
       "mustInclude": [
@@ -395,9 +383,10 @@
             "household"
           ],
           "note": "Hepatitis A is notifiable; contact vaccination.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

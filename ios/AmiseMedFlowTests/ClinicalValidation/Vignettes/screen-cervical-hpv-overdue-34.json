@@ -89,9 +89,10 @@
           "match": [
             "hpv"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
         }
       ]
     },
@@ -110,9 +111,10 @@
             "cytology",
             "hpv"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     },
@@ -127,9 +129,6 @@
           "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
           "match": [
             "emergency now"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -137,10 +136,7 @@
     "pathway": {
       "id": "pathway-wellness",
       "severity": "quality",
-      "equals": "wellness",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wellness"
     }
   },
   "guideline": [

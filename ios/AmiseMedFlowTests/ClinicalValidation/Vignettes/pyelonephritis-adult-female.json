@@ -191,9 +191,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng111"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -205,9 +202,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "nice-ng111"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -227,9 +221,6 @@
           ],
           "guidelineRefs": [
             "nice-ng111"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -240,9 +231,6 @@
           ],
           "guidelineRefs": [
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -264,10 +252,7 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "note": "Any antibiotic that treats upper-tract infection (broad-spectrum sepsis cover counts here).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Any antibiotic that treats upper-tract infection (broad-spectrum sepsis cover counts here)."
         },
         {
           "id": "mgmt-ng111-antibiotic",
@@ -284,9 +269,6 @@
             "nice-ng111"
           ],
           "note": "An NG111 pyelonephritis choice rather than generic sepsis cover.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: The only antibiotic is pip-tazo from the SIRS and peritonism prompts; no NG111 choice.",
           "proposedFix": "Pyelonephritis protocol with NG111 options."
         }
@@ -303,10 +285,7 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "note": "No surgical abdomen in pyelonephritis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No surgical abdomen in pyelonephritis."
         },
         {
           "id": "mgmt-no-nitrofurantoin",
@@ -325,9 +304,10 @@
             "nice-ng111"
           ],
           "note": "NICE NG111: nitrofurantoin does not reach adequate renal tissue levels.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)\""
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -339,9 +319,6 @@
           ],
           "guidelineRefs": [
             "nice-ng111"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

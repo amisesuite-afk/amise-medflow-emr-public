@@ -196,9 +196,10 @@
           "guidelineRefs": [
             "isrec-2010"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia | 2. Sepsis | 3. Acute Appendicitis | 4. Pulmonary Embolism | 5. Anastomotic Leak; also in ios.ccEarly#2"
         }
       ]
     },
@@ -209,9 +210,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "ssc-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -225,9 +223,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -241,9 +236,10 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: caprini, news2, mews"
         }
       ]
     },
@@ -259,9 +255,6 @@
           "guidelineRefs": [
             "wses-iai-2017",
             "isrec-2010"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -287,9 +280,6 @@
           "guidelineRefs": [
             "ssc-2021",
             "wses-iai-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -307,9 +297,10 @@
             "isrec-2010",
             "wses-iai-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 (ios.pipeline.decisions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -325,20 +316,14 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

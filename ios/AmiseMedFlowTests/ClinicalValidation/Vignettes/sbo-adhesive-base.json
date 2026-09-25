@@ -247,9 +247,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -273,9 +270,6 @@
             "perforated viscus"
           ],
           "note": "The exam text says 'No guarding, no rebound, no peritonism'; an alarm for generalised peritonism is a negation error that leads to an emergency-laparotomy prompt.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Negation-aware exam() matching ('no peritonism', 'no guarding', 'no rigidity')."
         }
       ]
@@ -292,10 +286,7 @@
           "guidelineRefs": [
             "wses-sbo-2018"
           ],
-          "note": "Bologna: CT with IV contrast to confirm the diagnosis and look for strangulation (the finding that changes management).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Bologna: CT with IV contrast to confirm the diagnosis and look for strangulation (the finding that changes management)."
         },
         {
           "id": "inv-lactate",
@@ -305,9 +296,6 @@
           ],
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -318,9 +306,6 @@
             "urea",
             "electrolyte",
             "potassium"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -338,9 +323,6 @@
           ],
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -357,9 +339,6 @@
           ],
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -372,9 +351,6 @@
           ],
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -388,10 +364,7 @@
           "guidelineRefs": [
             "wses-sbo-2018"
           ],
-          "note": "Bologna: operate when NOM fails (no resolution by 72 h) or strangulation develops.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Bologna: operate when NOM fails (no resolution by 72 h) or strangulation develops."
         },
         {
           "id": "mgmt-potassium",
@@ -401,9 +374,10 @@
             "re:\\bkcl\\b"
           ],
           "note": "K 3.3 mmol/L with ongoing losses.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -414,20 +388,14 @@
             "appendicectomy",
             "re:emergency laparotomy consent"
           ],
-          "note": "No appendicitis or peritonitis here: an appendicectomy or emergency-laparotomy template can only come from misread negatives ('no guarding, no rebound').",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No appendicitis or peritonitis here: an appendicectomy or emergency-laparotomy template can only come from misread negatives ('no guarding, no rebound')."
         }
       ]
     },
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     },
     "dxVariant": {
       "id": "variant-sbo-adhesional",

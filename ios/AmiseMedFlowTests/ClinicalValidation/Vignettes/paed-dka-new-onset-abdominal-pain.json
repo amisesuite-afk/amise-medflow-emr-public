@@ -213,9 +213,6 @@
             "ketoacidosis",
             "dka",
             "diabet"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -242,10 +239,7 @@
         "guidelineRefs": [
           "bsped-dka-2021"
         ],
-        "atLeast": "emergency",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "emergency"
       },
       "mustAlarm": [
         {
@@ -258,9 +252,6 @@
             "dka",
             "ketoacidosis",
             "hyperglyc"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -278,9 +269,6 @@
             "blood gas",
             "re:\\bvbg\\b",
             "re:\\babg\\b"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -296,9 +284,6 @@
           ],
           "match": [
             "insulin"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -315,9 +300,6 @@
             "neurological observation",
             "neuro obs",
             "cerebral injury"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -337,9 +319,6 @@
             "not indicated",
             "no role",
             "exclude appendicitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -354,9 +333,6 @@
           "unless": [
             "if ",
             "persist"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -384,9 +360,10 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy...\""
         },
         {
           "id": "mgmt-no-antithrombotic-plan",
@@ -414,9 +391,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

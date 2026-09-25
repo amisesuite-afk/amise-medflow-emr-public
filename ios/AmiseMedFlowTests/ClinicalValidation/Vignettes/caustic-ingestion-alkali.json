@@ -141,9 +141,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -159,9 +156,6 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -177,9 +171,6 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -199,10 +190,7 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "note": "CT (and/or endoscopy within 12–48 h) to grade necrosis and decide on surgery.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "CT (and/or endoscopy within 12–48 h) to grade necrosis and decide on surgery."
         },
         {
           "id": "inv-airway-assessment",
@@ -217,9 +205,10 @@
             "wses-2019"
           ],
           "proposedFix": "Add a caustic-ingestion protocol/prompt (WSES 2019: airway first, no emesis/neutralisation/blind NG tube, CT ± endoscopy, psychiatry).",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions)"
         }
       ]
     },
@@ -236,9 +225,10 @@
             "wses-2019"
           ],
           "proposedFix": "As inv-airway-assessment.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-nil-by-mouth",
@@ -251,9 +241,10 @@
             "wses-2019"
           ],
           "proposedFix": "As inv-airway-assessment.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -277,9 +268,6 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -296,9 +284,6 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

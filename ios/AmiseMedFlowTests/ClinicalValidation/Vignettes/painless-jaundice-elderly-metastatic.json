@@ -224,9 +224,6 @@
           "k": 3,
           "guidelineRefs": [
             "esmo-2023-pancreas"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -242,9 +239,6 @@
             "elderly",
             "performance status",
             "ecog"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "clinical-inference.ts or VisitRisk equivalent: flag frailty (CFS ≥5, housebound, age ≥80) against operative templates."
         }
@@ -268,9 +262,10 @@
             "nice-ng85"
           ],
           "note": "SEMS for palliation of malignant distal biliary obstruction (jaundice, pruritus, cholangitis risk). Quality because best supportive care without drainage is a valid shared decision in a frail patient.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-palliative-care",
@@ -284,9 +279,10 @@
           "guidelineRefs": [
             "esmo-2023-pancreas"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-mdt",
@@ -299,9 +295,10 @@
           "guidelineRefs": [
             "nice-ng85"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -325,10 +322,7 @@
             "esmo-2023-pancreas",
             "nice-ng85"
           ],
-          "note": "Metastatic, SMA-encased disease in a frail 84-year-old: resection is not an option; an unconditional Whipple line is a harmful plan.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Metastatic, SMA-encased disease in a frail 84-year-old: resection is not an option; an unconditional Whipple line is a harmful plan."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -342,10 +336,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

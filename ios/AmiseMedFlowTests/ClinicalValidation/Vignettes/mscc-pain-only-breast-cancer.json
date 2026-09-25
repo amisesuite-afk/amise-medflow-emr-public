@@ -134,9 +134,6 @@
           ],
           "guidelineRefs": [
             "nice-ng234"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -149,10 +146,7 @@
         "guidelineRefs": [
           "nice-ng234"
         ],
-        "note": "NICE NG234: MRI within 1 week without neurological symptoms; immediate if they develop.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "NICE NG234: MRI within 1 week without neurological symptoms; immediate if they develop."
       }
     },
     "investigations": {
@@ -165,9 +159,6 @@
           ],
           "guidelineRefs": [
             "nice-ng234"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -186,9 +177,10 @@
             "nice-ng234"
           ],
           "note": "NICE NG234: tell the patient which symptoms of MSCC need immediate help.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-oncology",
@@ -199,9 +191,6 @@
           ],
           "guidelineRefs": [
             "nice-ng234"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: No oncology referral.",
           "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."

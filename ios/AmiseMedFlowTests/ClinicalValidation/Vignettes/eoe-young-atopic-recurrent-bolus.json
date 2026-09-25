@@ -147,13 +147,11 @@
             "bsg-eoe-2022"
           ],
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture protocol).",
-          "proposedFix": "Add an EoE node (young, atopy, intermittent solid dysphagia, bolus episodes) and a K20.0 protocol (≥6 biopsies from ≥2 levels; PPI / budesonide / diet; dilatation).",
-          "unverified": [
+            "web",
             "ios"
-          ]
+          ],
+          "knownGapNote": "No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture protocol). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease | 2. Oesophageal / Gastric Carcinoma | 3. Upper GI Bleeding (Peptic Ulcer) | 4. Oesophageal Web / Plummer-Vinson Syndrome | 5. Acute Coronary Syndrome",
+          "proposedFix": "Add an EoE node (young, atopy, intermittent solid dysphagia, bolus episodes) and a K20.0 protocol (≥6 biopsies from ≥2 levels; PPI / budesonide / diet; dilatation)."
         }
       ]
     },
@@ -171,10 +169,7 @@
           "web"
         ],
         "knownGapNote": "Emergency now: \"Systemic red flag symptom\" and \"Dysphagia\" red flags plus a 2-week-wait cancer screen labelled \"colorectal\" (cancer-screening.ts operator-precedence bug; see findings).",
-        "proposedFix": "cancer-screening.ts: parenthesise the colorectal cancerType condition (c.met && (… || … )); dysphagia should give priority, not emergency_now, when the patient is swallowing.",
-        "unverified": [
-          "ios"
-        ]
+        "proposedFix": "cancer-screening.ts: parenthesise the colorectal cancerType condition (c.met && (… || … )); dysphagia should give priority, not emergency_now, when the patient is swallowing."
       },
       "redFlags": [
         {
@@ -185,9 +180,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -206,9 +198,6 @@
           "guidelineRefs": [
             "bsg-eoe-2022",
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -221,9 +210,10 @@
             "bsg-eoe-2022"
           ],
           "note": "EoE is a histological diagnosis; a normal-looking oesophagus without biopsies misses it.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)"
         },
         {
           "id": "inv-six-biopsies-two-levels",
@@ -236,9 +226,10 @@
           "guidelineRefs": [
             "bsg-eoe-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)"
         }
       ]
     },
@@ -257,9 +248,6 @@
           ],
           "guidelineRefs": [
             "bsg-eoe-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -158,9 +158,6 @@
           "guidelineRefs": [
             "nice-ng125",
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -177,9 +174,6 @@
           "web"
         ],
         "knownGapNote": "Triage emergency_now (score 88): 'Post-operative concern' (urgent) for 'wound … pus' wording, plus 'Vomiting or possible dehydration' from the negated 'no vomiting'.",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria."
       }
     },
@@ -194,9 +188,6 @@
           ],
           "guidelineRefs": [
             "nice-ng125"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -216,9 +207,6 @@
           ],
           "guidelineRefs": [
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -244,9 +232,10 @@
             "idsa-ssti-2014"
           ],
           "note": "No broad-spectrum IV antibiotics for a superficial SSI without systemic signs.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"iv antibiotics: tazobactam/piperacillin 4.5 g 8-hourly (broad spectrum)\" (+1 more)"
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -260,10 +249,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

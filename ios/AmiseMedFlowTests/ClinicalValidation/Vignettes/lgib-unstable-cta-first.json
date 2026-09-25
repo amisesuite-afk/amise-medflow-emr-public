@@ -196,9 +196,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "bsg-lgib-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -213,9 +210,6 @@
           ],
           "guidelineRefs": [
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -255,10 +249,7 @@
             "bsg-lgib-2019",
             "acg-lgib-2023"
           ],
-          "note": "BSG 2019: in unstable patients, CT angiography is the first investigation, followed by catheter angiography/embolisation within 60 minutes if positive. ACG 2023: CTA as the initial test in ongoing haemodynamically significant bleeding.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "BSG 2019: in unstable patients, CT angiography is the first investigation, followed by catheter angiography/embolisation within 60 minutes if positive. ACG 2023: CTA as the initial test in ongoing haemodynamically significant bleeding."
         },
         {
           "id": "inv-upper-source",
@@ -274,9 +265,10 @@
             "bsg-lgib-2019"
           ],
           "note": "BSG 2019: consider an upper GI source (OGD) in unstable haematochezia, especially if CTA is negative.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.radiation)"
         },
         {
           "id": "inv-group-crossmatch",
@@ -288,9 +280,6 @@
           ],
           "guidelineRefs": [
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -308,9 +297,6 @@
           ],
           "guidelineRefs": [
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -324,9 +310,6 @@
           ],
           "guidelineRefs": [
             "bsg-lgib-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -351,9 +334,6 @@
             "bsg-lgib-2019"
           ],
           "note": "No cirrhosis or varices: a variceal (upper GI) plan is wrong for this lower GI bleed, and terlipressin causes ischaemia in patients with vascular disease.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Remove K92 from the upper_gi_bleed protocol/dx-variant ICD prefixes (or require upper-GI words) and route lower GI bleeding to its own protocol."
         }
       ]

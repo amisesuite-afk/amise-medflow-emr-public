@@ -175,9 +175,6 @@
           ],
           "guidelineRefs": [
             "sfe-hypercalcaemia-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -189,9 +186,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "sfe-hypercalcaemia-2016"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -204,9 +198,6 @@
           ],
           "guidelineRefs": [
             "sfe-hypercalcaemia-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -226,9 +217,10 @@
           "guidelineRefs": [
             "sfe-hypercalcaemia-2016"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-bisphosphonate",
@@ -241,9 +233,10 @@
           "guidelineRefs": [
             "sfe-hypercalcaemia-2016"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-stop-calcium-thiazide",
@@ -254,10 +247,7 @@
           "guidelineRefs": [
             "sfe-hypercalcaemia-2016"
           ],
-          "note": "Thiazide and calcium/vitamin D supplements must be stopped.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Thiazide and calcium/vitamin D supplements must be stopped."
         }
       ],
       "mustExclude": [
@@ -292,10 +282,7 @@
           "guidelineRefs": [
             "sfe-hypercalcaemia-2016"
           ],
-          "note": "Loop diuretics only after rehydration (or for fluid overload).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Loop diuretics only after rehydration (or for fluid overload)."
         }
       ]
     }

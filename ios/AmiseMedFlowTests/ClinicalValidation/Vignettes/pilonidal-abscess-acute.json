@@ -141,9 +141,10 @@
           "guidelineRefs": [
             "ascrs-pilonidal-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Skin Abscess | 2. Inguinal Hernia | 3. Incisional Hernia | 4. Deep Vein Thrombosis | 5. Incarcerated / Strangulated Hernia"
         }
       ]
     },
@@ -154,9 +155,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "ascrs-pilonidal-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -174,10 +172,7 @@
           "guidelineRefs": [
             "ascrs-pilonidal-2019"
           ],
-          "note": "ASCRS 2019: acute pilonidal abscess → incision and drainage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ASCRS 2019: acute pilonidal abscess → incision and drainage."
         }
       ],
       "mustExclude": [
@@ -207,9 +202,10 @@
           "guidelineRefs": [
             "ascrs-pilonidal-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"excision with limberg flap or karydakis procedure - best outcomes, low recurrence\""
         }
       ]
     }

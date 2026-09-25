@@ -132,9 +132,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "east-penetrating-2010"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -149,9 +146,6 @@
           ],
           "guidelineRefs": [
             "east-penetrating-2010"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -170,10 +164,7 @@
           "guidelineRefs": [
             "east-penetrating-2010"
           ],
-          "note": "SNOM is safe only with serial examination by a surgeon.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SNOM is safe only with serial examination by a surgeon."
         }
       ],
       "mustExclude": [
@@ -189,9 +180,6 @@
           ],
           "guidelineRefs": [
             "east-penetrating-2010"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -218,20 +206,14 @@
           "guidelineRefs": [
             "east-penetrating-2010"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

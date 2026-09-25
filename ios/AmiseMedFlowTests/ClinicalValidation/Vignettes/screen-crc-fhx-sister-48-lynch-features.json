@@ -89,10 +89,7 @@
           "web"
         ],
         "knownGapNote": "Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'cancer' also counts as a higher-risk comorbidity → same_day_call for an asymptomatic screening consultation.",
-        "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation).",
-        "unverified": [
-          "ios"
-        ]
+        "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation)."
       }
     },
     "management": {
@@ -107,9 +104,6 @@
           "note": "One FDR with CRC < 60: colonoscopy from 40 (or 10 years before the youngest case), 5-yearly. Web harness limit: the web runner passes familyHistory: [] to computeClinicalPrompts (the vignette schema has no family-history field). Calling computeClinicalPrompts directly with the dashboard's 'Colorectal cancer' family-history chip at 41 produces 'Arrange colonoscopy — FHx CRC, early surveillance criterion', so the dashboard would pass when that chip is ticked. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified.",
           "match": [
             "colonoscopy"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -128,19 +122,17 @@
             "microsatellite",
             "msi"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     },
     "pathway": {
       "id": "pathway-firstvisit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

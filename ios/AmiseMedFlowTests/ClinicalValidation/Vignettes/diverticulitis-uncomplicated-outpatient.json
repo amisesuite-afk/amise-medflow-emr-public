@@ -191,9 +191,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -210,9 +207,6 @@
           "ascrs-diverticulitis-2020"
         ],
         "note": "Same-day assessment, but an emergency redirect is over-triage for CT-confirmed uncomplicated disease in a well patient.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal pain' gives 'routine'."
       }
     },
@@ -227,9 +221,6 @@
           ],
           "guidelineRefs": [
             "wses-diverticulitis-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -255,11 +246,11 @@
             "ascrs-diverticulitis-2020"
           ],
           "note": "WSES 2020 / AGA 2021 / ASCRS 2020: in immunocompetent patients with mild uncomplicated diverticulitis antibiotics can be omitted (selective use); outpatient care.",
-          "unverified": [
+          "knownGapNote": "Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5–7 days. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Update the uncomplicated step to WSES 2020 / AGA 2021: antibiotics selectively; observation without antibiotics in immunocompetent patients without systemic features.",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5–7 days.",
-          "proposedFix": "Update the uncomplicated step to WSES 2020 / AGA 2021: antibiotics selectively; observation without antibiotics in immunocompetent patients without systemic features."
+          ]
         }
       ],
       "mustExclude": [
@@ -282,9 +273,6 @@
             "aga-2021",
             "ascrs-diverticulitis-2020"
           ],
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: '[conservative] Uncomplicated: oral co-amoxiclav 625 mg TDS for 5–7 days' in the documented plan."
         }
       ]
@@ -292,10 +280,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     },
     "dxVariant": {
       "id": "variant-uncomplicated",

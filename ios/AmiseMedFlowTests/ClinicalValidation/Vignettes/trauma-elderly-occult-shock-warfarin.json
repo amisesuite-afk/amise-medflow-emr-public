@@ -185,10 +185,7 @@
           "atls-10-geriatric",
           "atls-10-shock"
         ],
-        "note": "Relative hypotension and lactate 4.2 in a beta-blocked, anticoagulated older adult is shock.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Relative hypotension and lactate 4.2 in a beta-blocked, anticoagulated older adult is shock."
       },
       "redFlags": [
         {
@@ -201,9 +198,6 @@
           ],
           "guidelineRefs": [
             "atls-10-geriatric"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -220,9 +214,10 @@
             "atls-10-geriatric",
             "atls-10-shock"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 17 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity)"
         }
       ]
     },
@@ -236,9 +231,6 @@
           ],
           "guidelineRefs": [
             "atls-10-geriatric"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -257,9 +249,6 @@
           ],
           "guidelineRefs": [
             "atls-10-geriatric"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -274,9 +263,6 @@
           ],
           "guidelineRefs": [
             "atls-10-geriatric"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -292,12 +278,10 @@
             "atls-10-geriatric"
           ],
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K).",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K). | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no lmwh bridging for most atrial fibrillation (bridge; accp 2022) - bridge only for high thrombo...\"",
           "proposedFix": "Make the anticoag_check prompt context-aware (trauma/bleeding → reversal)."
         },
         {
@@ -324,20 +308,14 @@
           "guidelineRefs": [
             "atls-10-geriatric"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     },
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

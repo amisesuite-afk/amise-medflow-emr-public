@@ -129,7 +129,6 @@
           "match": ["appendic"],
           "k": 5,
           "guidelineRefs": ["wses-elderly-2019"],
-          "unverified": ["ios"],
           "note": "Appendicitis in the elderly presents atypically and perforates more often; it must stay on the visible differential."
         }
       ],
@@ -156,7 +155,6 @@
           "id": "mnm-diverticulitis",
           "severity": "quality",
           "match": ["diverticul"],
-          "unverified": ["ios"],
           "knownGap": ["web"],
           "knownGapNote": "Not in PANE top 3."
         }
@@ -169,7 +167,6 @@
         "atLeast": "urgent",
         "guidelineRefs": ["wses-elderly-2019"],
         "note": "Localised peritonism with CRP 145 in a 78-year-old: same-day surgical assessment.",
-        "knownGap": ["ios"],
         "knownGapNote": "iOS ClinicalPathwayEngine reads only the CC text; 'Lower abdominal pain' matches no pathway and stays routine."
       },
       "redFlags": [
@@ -231,8 +228,9 @@
           "severity": "quality",
           "match": ["lactate", "ct angiogra", "cta"],
           "guidelineRefs": ["esvs-2017"],
-          "unverified": ["ios"],
-          "note": "ESVS 2017: CT angiography when mesenteric ischaemia is suspected; lactate is supportive but not sensitive."
+          "note": "ESVS 2017: CT angiography when mesenteric ischaemia is suspected; lactate is supportive but not sensitive.",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
         }
       ],
       "mustExclude": []
@@ -243,7 +241,6 @@
           "id": "mgmt-anticoagulant-plan",
           "severity": "quality",
           "match": ["apixaban", "anticoag", "doac"],
-          "unverified": ["ios"],
           "note": "Peri-operative DOAC plan (timing of last dose, renal function, hold/bridge) must be part of the operative plan."
         },
         {

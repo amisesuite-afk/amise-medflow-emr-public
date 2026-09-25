@@ -83,9 +83,6 @@
           "nice-cg164"
         ],
         "note": "Asymptomatic: not an urgent or suspected-cancer referral.",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -106,9 +103,10 @@
             "nice-cg164"
           ],
           "note": "NICE CG164: one first-degree relative with breast cancer <40 (plus ovarian cancer in the family, Jewish ancestry) meets referral criteria.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -122,10 +120,7 @@
             "vacuum-assisted biopsy",
             "core (needle )?biopsy"
           ],
-          "note": "No lump: biopsy is not indicated.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No lump: biopsy is not indicated."
         }
       ]
     }

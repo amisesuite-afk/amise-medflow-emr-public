@@ -238,10 +238,7 @@
           "guidelineRefs": [
             "esc-2023-acs"
           ],
-          "note": "Epigastric pain with diaphoresis, bradycardia and hypotension in a diabetic smoker is ACS until an ECG says otherwise.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Epigastric pain with diaphoresis, bradycardia and hypotension in a diabetic smoker is ACS until an ECG says otherwise."
         }
       ]
     },
@@ -253,10 +250,7 @@
         "guidelineRefs": [
           "esc-2023-acs"
         ],
-        "note": "Suspected ACS with hypotension and bradycardia: immediate ECG and cardiology. iOS (predicted from ClinicalPathwayEngine keywords, not yet observed): routine — no keyword in the CC.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Suspected ACS with hypotension and bradycardia: immediate ECG and cardiology. iOS (predicted from ClinicalPathwayEngine keywords, not yet observed): routine — no keyword in the CC."
       },
       "mustAlarm": [
         {
@@ -279,9 +273,6 @@
             "web"
           ],
           "knownGapNote": "Only the generic \"Emergency now\" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "See mnm-acs."
         }
       ]
@@ -300,10 +291,7 @@
           "guidelineRefs": [
             "esc-2023-acs"
           ],
-          "note": "ESC 2023: 12-lead ECG within 10 minutes of first medical contact.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESC 2023: 12-lead ECG within 10 minutes of first medical contact."
         },
         {
           "id": "inv-troponin",
@@ -313,9 +301,6 @@
           ],
           "guidelineRefs": [
             "esc-2023-acs"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -338,9 +323,6 @@
           ],
           "guidelineRefs": [
             "esc-2023-acs"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -362,9 +344,6 @@
             "once recovered"
           ],
           "note": "A cholecystectomy plan for a patient with an evolving STEMI is a wrong-diagnosis operative plan.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
         },
         {
@@ -380,9 +359,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
         }
       ]

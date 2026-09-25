@@ -207,9 +207,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -240,11 +237,11 @@
             "mascc-mbo-2021"
           ],
           "note": "Individualised decision with oncology/palliative care and the patient's goals.",
-          "unverified": [
+          "knownGapNote": "Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel-obstruction protocol. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Add a malignant-SBO variant (carcinomatosis, multiple transition points) with palliative/oncology MDT and MASCC medical management.",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel-obstruction protocol.",
-          "proposedFix": "Add a malignant-SBO variant (carcinomatosis, multiple transition points) with palliative/oncology MDT and MASCC medical management."
+          ]
         },
         {
           "id": "mgmt-medical-mbo",
@@ -260,10 +257,10 @@
             "mascc-mbo-2021"
           ],
           "note": "MASCC 2021: antisecretory, antiemetic and corticosteroid options; venting gastrostomy.",
-          "unverified": [
+          "knownGapNote": "Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option."
+          ]
         }
       ],
       "mustExclude": [
@@ -281,10 +278,7 @@
           "guidelineRefs": [
             "mascc-mbo-2021"
           ],
-          "note": "Multiple transition points with carcinomatosis: surgery is rarely beneficial; not a default operative plan.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Multiple transition points with carcinomatosis: surgery is rarely beneficial; not a default operative plan."
         }
       ]
     }

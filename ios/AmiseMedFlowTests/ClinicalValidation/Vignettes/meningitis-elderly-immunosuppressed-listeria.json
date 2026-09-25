@@ -157,9 +157,6 @@
           "guidelineRefs": [
             "nice-ng240",
             "uk-meningitis-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -172,9 +169,6 @@
         "guidelineRefs": [
           "nice-ng240",
           "uk-meningitis-2016"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -187,9 +181,6 @@
           "guidelineRefs": [
             "nice-ng240",
             "uk-meningitis-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -206,10 +197,7 @@
             "nice-ng240",
             "uk-meningitis-2016"
           ],
-          "note": "Graded as management because the web sepsis prompt adds blood cultures as a plan line; the seeded investigation lists come from unrelated PANE protocols.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Graded as management because the web sepsis prompt adds blood cultures as a plan line; the seeded investigation lists come from unrelated PANE protocols."
         },
         {
           "id": "mgmt-ceftriaxone",
@@ -221,9 +209,6 @@
           "guidelineRefs": [
             "nice-ng240",
             "uk-meningitis-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -236,10 +221,7 @@
           "guidelineRefs": [
             "uk-meningitis-2016"
           ],
-          "note": "Age >60 and immunosuppression: add amoxicillin for Listeria.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Age >60 and immunosuppression: add amoxicillin for Listeria."
         },
         {
           "id": "mgmt-steroid-cover",
@@ -253,9 +235,6 @@
           ],
           "guidelineRefs": [
             "sfe-steroid-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -130,9 +130,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -144,9 +141,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "bass-sbns-ces-2018"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -159,9 +153,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -176,9 +167,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -197,9 +185,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -210,9 +195,6 @@
           ],
           "guidelineRefs": [
             "bass-sbns-ces-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -232,10 +214,7 @@
           "guidelineRefs": [
             "bass-sbns-ces-2018"
           ],
-          "note": "Treating painless retention with saddle anaesthesia as prostatic/idiopathic retention delays the MRI.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Treating painless retention with saddle anaesthesia as prostatic/idiopathic retention delays the MRI."
         }
       ]
     }

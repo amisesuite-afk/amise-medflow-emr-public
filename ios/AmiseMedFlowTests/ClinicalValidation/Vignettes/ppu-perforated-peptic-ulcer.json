@@ -244,10 +244,7 @@
           "guidelineRefs": [
             "wses-ppu-2020"
           ],
-          "note": "PANE has no separate perforation node; 'Peptic Ulcer Disease' in the top 3 counts.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "PANE has no separate perforation node; 'Peptic Ulcer Disease' in the top 3 counts."
         }
       ]
     },
@@ -258,9 +255,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "wses-ppu-2020"
-        ],
-        "knownGap": [
-          "ios"
         ],
         "knownGapNote": "Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal|belly|stomach)? pain' because of the word 'upper'; HR 112 is below the >120 vital flag; rigidity/free air are not read by triage. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe upper abdominal pain' gives 'routine'.",
         "proposedFix": "Broaden the 'Acute abdominal pain' red flag to allow a site word ('severe upper/lower/central abdominal pain') and add 'sudden severe', 'rigid', 'board-like' and imaging 'free air' as emergency triggers."
@@ -277,9 +271,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -294,9 +285,10 @@
           "guidelineRefs": [
             "wses-ppu-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity)"
         }
       ]
     },
@@ -312,12 +304,10 @@
           ],
           "note": "WSES 2020 suggests Boey or PULP for risk stratification. No platform has either.",
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: No Boey or PULP score on either platform."
+          "knownGapNote": "Web: No Boey or PULP score on either platform. | iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews"
         }
       ]
     },
@@ -332,9 +322,6 @@
             "group & screen",
             "crossmatch",
             "blood group"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -347,9 +334,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -366,9 +350,6 @@
             "wses-ppu-2020"
           ],
           "note": "Urgent diagnostic OGD is not part of the work-up of a free perforation (insufflation); follow-up OGD for gastric ulcers is appropriate.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: K27.5 maps to the peptic_ulcer protocol and its 'Upper GI endoscopy (OGD) (urgent)' investigation is shown for a free perforation; ICD K25–K28 also routes the dx-variant group to 'Upper GI Bleed'.",
           "proposedFix": "Add a perforated-ulcer variant (K25–K28 .1/.2/.5/.6) to a peptic-ulcer group separate from 'Upper GI Bleed'; defer OGD to follow-up."
         }
@@ -389,9 +370,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -411,10 +389,7 @@
           "guidelineRefs": [
             "wses-ppu-2020"
           ],
-          "note": "WSES 2020: broad-spectrum antibiotics for perforated peptic ulcer with peritonitis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "WSES 2020: broad-spectrum antibiotics for perforated peptic ulcer with peritonitis."
         },
         {
           "id": "mgmt-ppi",
@@ -427,9 +402,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -444,9 +416,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -457,9 +426,6 @@
           ],
           "guidelineRefs": [
             "wses-ppu-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -467,10 +433,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

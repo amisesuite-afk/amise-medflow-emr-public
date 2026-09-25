@@ -125,9 +125,6 @@
           ],
           "guidelineRefs": [
             "sign158-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -139,9 +136,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "sign158-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -161,9 +155,6 @@
           ],
           "guidelineRefs": [
             "sign158-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -179,10 +170,7 @@
           "guidelineRefs": [
             "sign158-2019"
           ],
-          "note": "Oral and inhaled steroids should not be withheld in pregnancy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Oral and inhaled steroids should not be withheld in pregnancy."
         }
       ],
       "mustExclude": [
@@ -194,9 +182,6 @@
           ],
           "guidelineRefs": [
             "sign158-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

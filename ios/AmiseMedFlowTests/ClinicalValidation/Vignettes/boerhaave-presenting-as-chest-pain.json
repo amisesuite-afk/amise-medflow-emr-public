@@ -200,9 +200,10 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Coronary Syndrome | 2. Stable Angina | 3. Community-Acquired Pneumonia | 4. Acute Pancreatitis | 5. Pulmonary Embolism"
         }
       ]
     },
@@ -214,9 +215,6 @@
         "guidelineRefs": [
           "wses-2019",
           "esc-acs-2023"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -234,9 +232,10 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         },
         {
           "id": "inv-ct-oral-contrast",
@@ -248,9 +247,6 @@
           ],
           "guidelineRefs": [
             "wses-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -268,10 +264,7 @@
             "esc-acs-2023",
             "wses-2019"
           ],
-          "note": "ACS anticoagulation before perforation (and dissection) is excluded would be harmful.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ACS anticoagulation before perforation (and dissection) is excluded would be harmful."
         }
       ]
     }

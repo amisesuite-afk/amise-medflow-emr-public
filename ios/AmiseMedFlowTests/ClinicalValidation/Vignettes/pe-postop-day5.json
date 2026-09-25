@@ -179,9 +179,6 @@
           "guidelineRefs": [
             "nice-ng158",
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -195,10 +192,7 @@
             "atelectasis",
             "sepsis"
           ],
-          "note": "Post-operative tachycardia and hypoxia: leak and chest infection are the alternatives.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Post-operative tachycardia and hypoxia: leak and chest infection are the alternatives."
         }
       ]
     },
@@ -209,9 +203,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "nice-ng158"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -226,9 +217,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -242,9 +230,6 @@
           "guidelineRefs": [
             "nice-ng158",
             "wells-pe-2000"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -262,9 +247,6 @@
           "guidelineRefs": [
             "nice-ng158",
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -281,9 +263,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -301,10 +280,7 @@
             "nice-ng158",
             "esc-pe-2019"
           ],
-          "note": "Interim therapeutic anticoagulation if CTPA is delayed, weighed against post-operative bleeding risk.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Interim therapeutic anticoagulation if CTPA is delayed, weighed against post-operative bleeding risk."
         }
       ],
       "mustExclude": [
@@ -323,9 +299,6 @@
             "web"
           ],
           "knownGapNote": "The hypoxia and tachycardia clinical prompts (clinical-inference.ts) add 'CTPA if Wells score ≥ 2 and D-dimer positive' and 'CTPA if Wells score ≥ 2' — the DVT cut-off and a D-dimer gate for a Wells-likely patient.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Use the two-level Wells PE: >4 → CTPA (interim anticoagulation if delayed); ≤4 → D-dimer, or PERC when clinical probability is low."
         }
       ]
@@ -333,10 +306,7 @@
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

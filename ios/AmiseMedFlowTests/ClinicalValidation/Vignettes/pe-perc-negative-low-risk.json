@@ -129,9 +129,6 @@
         "atMost": "urgent",
         "guidelineRefs": [
           "perc-2004"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -153,10 +150,7 @@
             "perc-2004",
             "nice-ng158"
           ],
-          "note": "PERC negative in a low-probability patient: no further PE testing.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "PERC negative in a low-probability patient: no further PE testing."
         }
       ]
     }

@@ -128,9 +128,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "atls-10-burns"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -141,9 +138,6 @@
             "chemical",
             "alkali",
             "corrosive"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -161,10 +155,11 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "unverified": [
+          "proposedFix": "Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)"
         }
       ]
     },
@@ -181,9 +176,6 @@
           "guidelineRefs": [
             "atls-10-burns",
             "bba-first-aid-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -198,9 +190,10 @@
             "atls-10-burns",
             "bba-first-aid-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-ophthalmology",
@@ -211,9 +204,6 @@
           ],
           "guidelineRefs": [
             "atls-10-burns"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -234,9 +224,6 @@
           "guidelineRefs": [
             "aba-referral",
             "nnbc-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -259,9 +246,10 @@
             "bba-first-aid-2018",
             "atls-10-burns"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"chemical burns: copious irrigation, no neutralisation; eye involvement → ophthalmology\""
         }
       ]
     },
@@ -269,9 +257,10 @@
       "id": "pathway-burns",
       "severity": "quality",
       "equals": "burns",
-      "unverified": [
+      "knownGap": [
         "ios"
-      ]
+      ],
+      "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected burns"
     }
   },
   "guideline": [

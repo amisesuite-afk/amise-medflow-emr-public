@@ -162,9 +162,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "nice-ng145-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -181,10 +178,7 @@
           "guidelineRefs": [
             "nice-ng145-2019"
           ],
-          "note": "Tracheal narrowing with positional dyspnoea is a red flag that must be surfaced.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Tracheal narrowing with positional dyspnoea is a red flag that must be surfaced."
         }
       ]
     },
@@ -198,9 +192,10 @@
             "thyroid function",
             "re:\\btfts?\\b"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-ct",
@@ -211,9 +206,10 @@
           "guidelineRefs": [
             "nice-ng145-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -229,9 +225,10 @@
             "nice-ng145-2019"
           ],
           "note": "Surgery is the treatment for a compressive retrosternal goitre.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-airway-planning",
@@ -242,9 +239,10 @@
             "sternotomy",
             "cardiothoracic"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

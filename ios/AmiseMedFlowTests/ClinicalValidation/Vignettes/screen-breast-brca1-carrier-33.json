@@ -97,10 +97,7 @@
         "guidelineRefs": [
           "nice-cg164"
         ],
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "investigations": {
@@ -117,9 +114,10 @@
             "re:breast[^\\n]{0,30}\\bmri\\b",
             "re:annual mri"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ],
       "mustExclude": [
@@ -134,9 +132,6 @@
             "core biopsy",
             "fnac",
             "fine needle"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -157,9 +152,10 @@
             "salpingo-oophorectomy",
             "rrso"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-high-risk-service",
@@ -173,9 +169,10 @@
             "high-risk",
             "high risk"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

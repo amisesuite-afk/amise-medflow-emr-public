@@ -226,9 +226,6 @@
           "k": 3,
           "guidelineRefs": [
             "ecco-uc-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -249,10 +246,7 @@
           "guidelineRefs": [
             "bsg-ibd-2019"
           ],
-          "note": "Infection (C. difficile, enteric pathogens) is excluded in every flare.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Infection (C. difficile, enteric pathogens) is excluded in every flare."
         }
       ]
     },
@@ -264,10 +258,7 @@
         "guidelineRefs": [
           "bsg-ibd-2019"
         ],
-        "note": "Acute severe UC is a medical emergency needing admission.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Acute severe UC is a medical emergency needing admission."
       }
     },
     "scores": {
@@ -279,13 +270,11 @@
           "guidelineRefs": [
             "bsg-ibd-2019"
           ],
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson.",
+          "knownGapNote": "No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. | iOS CI 2026-09-25 (run 36169134350, database mode): truelove-witts not recommended; recommended: ios:trueloveWitts",
           "proposedFix": "Add Truelove and Witts (≥ 6 bloody stools + HR > 90, T > 37.8, Hb < 10.5 g/dL, ESR > 30) and the Oxford day-3 rule (> 8 stools, or 3–8 with CRP > 45) to clinical-scales with a CDS trigger on UC."
         }
       ]
@@ -305,9 +294,6 @@
           "guidelineRefs": [
             "bsg-ibd-2019",
             "ecco-infections-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -321,9 +307,6 @@
           ],
           "guidelineRefs": [
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -337,9 +320,10 @@
             "ecco-infections-2021"
           ],
           "note": "Unprepared flexible sigmoidoscopy with biopsies (including for CMV) within 72 h.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
         },
         {
           "id": "inv-axr",
@@ -353,9 +337,10 @@
           "guidelineRefs": [
             "bsg-ibd-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
         }
       ]
     },
@@ -375,9 +360,6 @@
           "guidelineRefs": [
             "ecco-uc-2022",
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -395,10 +377,7 @@
           "guidelineRefs": [
             "bsg-ibd-2019"
           ],
-          "note": "BSG 2019: pharmacological VTE prophylaxis for all inpatients with ASUC, despite rectal bleeding.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "BSG 2019: pharmacological VTE prophylaxis for all inpatients with ASUC, despite rectal bleeding."
         },
         {
           "id": "mgmt-day3-assessment",
@@ -415,9 +394,6 @@
           "guidelineRefs": [
             "travis-1996",
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -440,9 +416,6 @@
             "bsg-ibd-2019"
           ],
           "note": "ASUC without peritonism: an emergency appendicectomy plan is a contraindicated operation. The exam text records \"no guarding or peritonism\".",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words \"guarding\"/\"rebound\"; add negation handling (no/without/absent) to exam() matching."
         },
         {
@@ -480,10 +453,7 @@
           "guidelineRefs": [
             "bsg-ibd-2019"
           ],
-          "note": "Antimotility agents, opioids, anticholinergics and NSAIDs can precipitate toxic megacolon in ASUC.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Antimotility agents, opioids, anticholinergics and NSAIDs can precipitate toxic megacolon in ASUC."
         },
         {
           "id": "mgmt-truelove-criteria-correct",

@@ -193,9 +193,6 @@
           "k": 3,
           "guidelineRefs": [
             "eau-urolith-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -207,9 +204,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "eau-urolith-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -226,9 +220,6 @@
           ],
           "guidelineRefs": [
             "eau-urolith-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -241,9 +232,6 @@
           ],
           "guidelineRefs": [
             "eau-urolith-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -257,9 +245,6 @@
           ],
           "guidelineRefs": [
             "eau-urolith-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -279,10 +264,7 @@
           "guidelineRefs": [
             "eau-urolith-2024"
           ],
-          "note": "EAU: NSAIDs first-line for renal colic when not contraindicated.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "EAU: NSAIDs first-line for renal colic when not contraindicated."
         },
         {
           "id": "mgmt-met-alpha-blocker",
@@ -295,9 +277,6 @@
           ],
           "guidelineRefs": [
             "eau-urolith-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -312,9 +291,6 @@
           ],
           "guidelineRefs": [
             "eau-urolith-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -328,10 +304,7 @@
           "guidelineRefs": [
             "eau-urolith-2024"
           ],
-          "note": "Afebrile renal colic with a soft abdomen: no laparotomy or peritonitis antibiotics.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Afebrile renal colic with a soft abdomen: no laparotomy or peritonitis antibiotics."
         }
       ]
     }

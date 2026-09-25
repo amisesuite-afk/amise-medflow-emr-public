@@ -201,9 +201,10 @@
             "nice-ng126"
           ],
           "note": "Woman of reproductive age before CT and theatre.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
         }
       ]
     },
@@ -223,9 +224,6 @@
             "ascrs-volvulus-2021"
           ],
           "note": "ASCRS 2021: operative management (resection) for caecal volvulus.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowel-obstruction steps.",
           "proposedFix": "Separate caecal-volvulus variant with right hemicolectomy/ileocaecal resection (ASCRS 2021)."
         }
@@ -250,9 +248,10 @@
             "ascrs-volvulus-2021"
           ],
           "note": "ASCRS 2021: endoscopic reduction of caecal volvulus is not recommended.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...operative management - right hemicolectomy (ascrs 2021); no endoscopic detorsion\""
         }
       ]
     },

@@ -215,9 +215,6 @@
           ],
           "guidelineRefs": [
             "jbds-dka-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -254,9 +251,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "jbds-dka-2023"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -274,9 +268,6 @@
           "guidelineRefs": [
             "jbds-dka-2023",
             "mhra-sglt2-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -292,9 +283,6 @@
           "guidelineRefs": [
             "jbds-dka-2023",
             "mhra-sglt2-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -310,9 +298,10 @@
           "guidelineRefs": [
             "mhra-sglt2-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-insulin",
@@ -330,10 +319,7 @@
           "guidelineRefs": [
             "jbds-dka-2023"
           ],
-          "note": "JBDS: fixed-rate IV insulin (with glucose once below 14 mmol/L) for DKA; a variable-rate regimen is the wrong protocol.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "JBDS: fixed-rate IV insulin (with glucose once below 14 mmol/L) for DKA; a variable-rate regimen is the wrong protocol."
         }
       ],
       "mustExclude": [
@@ -346,10 +332,7 @@
           "guidelineRefs": [
             "jbds-dka-2023"
           ],
-          "note": "Wrong procedure: medical cause of abdominal pain.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Wrong procedure: medical cause of abdominal pain."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -363,9 +346,6 @@
             "jbds-dka-2023"
           ],
           "note": "Wrong procedure.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Assessment panel follows the PANE top (appendicitis 0.261) instead of the confirmed E11.10; \"no guarding, no peritonism\" fires the generalised-peritonism prompt (negation). Prefer the locked working diagnosis and a negation-aware exam matcher."
         }
       ]

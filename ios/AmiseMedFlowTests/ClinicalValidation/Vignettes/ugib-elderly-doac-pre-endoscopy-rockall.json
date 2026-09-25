@@ -198,9 +198,6 @@
           "k": 3,
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -212,9 +209,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "esge-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -233,9 +227,6 @@
           ],
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -249,9 +240,6 @@
           "guidelineRefs": [
             "esge-2021",
             "blatchford-2000"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -262,10 +250,7 @@
             "rockall-1996",
             "nice-cg141"
           ],
-          "note": "NICE CG141 uses the pre-endoscopy (admission) Rockall score as well as the Blatchford score.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE CG141 uses the pre-endoscopy (admission) Rockall score as well as the Blatchford score."
         }
       ]
     },
@@ -283,10 +268,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "DOAC clearance depends on renal function.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DOAC clearance depends on renal function."
         },
         {
           "id": "inv-group-save",
@@ -302,9 +284,6 @@
           ],
           "guidelineRefs": [
             "bsg-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -324,9 +303,6 @@
           "guidelineRefs": [
             "esge-2021",
             "nice-cg141"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -342,10 +318,7 @@
             "esge-2021"
           ],
           "note": "Heart failure is cardiovascular disease: threshold 8 g/dL.",
-          "proposedFix": "upper_gi_bleed protocol: add the ESGE cardiovascular threshold (Hb ≤8 g/dL, target ≥10) and key it on cardiac comorbidity.",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "upper_gi_bleed protocol: add the ESGE cardiovascular threshold (Hb ≤8 g/dL, target ≥10) and key it on cardiac comorbidity."
         }
       ],
       "mustExclude": [
@@ -357,9 +330,6 @@
           ],
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -374,9 +344,10 @@
             "halt-it-2020"
           ],
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
         }
       ]
     }

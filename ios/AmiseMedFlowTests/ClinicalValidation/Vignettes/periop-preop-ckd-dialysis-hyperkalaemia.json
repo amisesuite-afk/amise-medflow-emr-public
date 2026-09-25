@@ -192,9 +192,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -207,9 +204,6 @@
           "score": "rcri",
           "guidelineRefs": [
             "rcri-1999"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -227,9 +221,10 @@
             "ukka-hyperk-2020"
           ],
           "note": "Potassium 6.2 mmol/L must be corrected (dialysis) before anaesthesia.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-dialysis-timing",
@@ -241,10 +236,11 @@
             "ukka-hyperk-2020"
           ],
           "note": "Dialysis patients: dialysis is the definitive treatment of hyperkalaemia; schedule dialysis before surgery.",
-          "unverified": [
+          "proposedFix": "In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -265,9 +261,6 @@
             "web"
           ],
           "knownGapNote": "The lap chole template orders 'LMWH (Enoxaparin 40mg SC) night before + day of surgery' with no renal qualification for a dialysis patient.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Operative templates: 'LMWH dose-adjusted for renal function (UFH if eGFR <30 or dialysis per local protocol)' when creatinine/eGFR or dialysis is recorded."
         },
         {
@@ -287,9 +280,10 @@
             "nice-ng203"
           ],
           "note": "NSAIDs harm residual renal function in dialysis patients. The lap chole template qualifies ibuprofen \"(if eGFR normal)\", which counts as qualified.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ...\""
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -303,10 +297,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

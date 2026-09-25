@@ -147,7 +147,6 @@
         "atLeast": "urgent",
         "guidelineRefs": ["tg18-mgmt-cholecystitis"],
         "note": "Acute cholecystitis needs admission and surgical assessment the same day.",
-        "knownGap": ["ios"],
         "knownGapNote": "iOS ClinicalPathwayEngine: 'Right upper quadrant pain' selects the Biliary pathway but leaves acuity routine."
       },
       "mustNotAlarm": [
@@ -155,7 +154,6 @@
           "id": "no-sepsis-alarm-grade1",
           "severity": "quality",
           "match": ["sepsis"],
-          "unverified": ["ios"],
           "note": "No hypotension, tachypnoea or organ dysfunction: a sepsis alarm here is noise (alert fatigue)."
         }
       ]
@@ -245,7 +243,6 @@
           "severity": "quality",
           "match": ["cholecystostomy", "gallbladder drainage", "ptgbd"],
           "unless": ["if high", "high surgical risk", "unfit", "grade iii", "not fit", "if not responding", "fails"],
-          "unverified": ["ios"],
           "note": "Gallbladder drainage is not first-line for Grade I in a fit patient."
         }
       ]

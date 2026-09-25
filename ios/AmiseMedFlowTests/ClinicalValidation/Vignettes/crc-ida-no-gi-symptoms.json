@@ -171,9 +171,6 @@
           "guidelineRefs": [
             "bsg-ida-2021",
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -192,9 +189,6 @@
           "guidelineRefs": [
             "bsg-ida-2021",
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -210,9 +204,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -228,10 +219,7 @@
           "guidelineRefs": [
             "bsg-ida-2021"
           ],
-          "note": "BSG 2021: bidirectional endoscopy in post-menopausal women with IDA (gastric cancer is the other must-not-miss).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "BSG 2021: bidirectional endoscopy in post-menopausal women with IDA (gastric cancer is the other must-not-miss)."
         },
         {
           "id": "inv-coeliac",
@@ -244,9 +232,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -266,9 +251,6 @@
           ],
           "guidelineRefs": [
             "bsg-ida-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

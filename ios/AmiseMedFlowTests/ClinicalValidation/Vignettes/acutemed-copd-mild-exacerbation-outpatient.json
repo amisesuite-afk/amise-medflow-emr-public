@@ -120,9 +120,6 @@
           ],
           "guidelineRefs": [
             "gold-2025"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -136,9 +133,6 @@
           "gold-2025"
         ],
         "note": "Mild exacerbation: home management.",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -163,9 +157,6 @@
           "guidelineRefs": [
             "gold-2025"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
         }
       ],
@@ -184,9 +175,6 @@
           ],
           "guidelineRefs": [
             "bts-o2-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -200,9 +188,6 @@
           ],
           "guidelineRefs": [
             "gold-2025"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -173,9 +173,10 @@
           "guidelineRefs": [
             "ascrs-prolapse-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Fournier's Gangrene | 2. Perianal Abscess | 3. Skin Abscess | 4. Femoral Hernia | 5. Non-Occlusive Mesenteric Ischaemia (NOMI)"
         }
       ]
     },
@@ -187,10 +188,7 @@
         "guidelineRefs": [
           "ascrs-prolapse-2017"
         ],
-        "note": "Incarcerated prolapse with a dusky segment: strangulation must be assumed; same-day surgical care.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Incarcerated prolapse with a dusky segment: strangulation must be assumed; same-day surgical care."
       },
       "redFlags": [
         {
@@ -205,9 +203,6 @@
           ],
           "guidelineRefs": [
             "ascrs-prolapse-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -227,9 +222,10 @@
           "guidelineRefs": [
             "ascrs-prolapse-2017"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

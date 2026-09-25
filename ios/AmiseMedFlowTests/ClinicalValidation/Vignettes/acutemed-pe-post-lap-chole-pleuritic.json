@@ -159,9 +159,6 @@
           "guidelineRefs": [
             "esc-pe-2019",
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -175,13 +172,11 @@
             "anastomotic"
           ],
           "note": "Post-cholecystectomy alternative: bile leak / subphrenic collection.",
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) | 2. Acute Cholecystitis | 3. Pulmonary Embolism. PANE ranked surgical site infection first because the \"Post-op follow-up\" CC template hint sets wound_erythema and wound_discharge to present.",
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) | 2. Acute Cholecystitis | 3. Pulmonary Embolism. PANE ranked surgical site infection first because the \"Post-op follow-up\" CC template hint sets wound_erythema and wound_discharge to present. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Stable Angina | 2. Pneumothorax | 3. Surgical Site Infection | 4. Pulmonary Embolism | 5. Atrial Fibrillation",
           "proposedFix": "Do not infer wound_erythema/wound_discharge from a \"post-op\" CC template; derive them from the wound exam."
         }
       ]
@@ -193,9 +188,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "nice-ng158"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -214,13 +206,11 @@
             "esc-pe-2019"
           ],
           "note": "SpO2 94% and HR 106 sit just inside the web alarm thresholds (SpO2 <94, HR >110); no guideline sets an alarm cut-off, so quality only.",
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment.",
+          "knownGapNote": "Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. | iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 1 (ios.acuity)",
           "proposedFix": "Optional: a NEWS2-based alarm (aggregate >=5) rather than single-parameter cut-offs."
         }
       ]
@@ -233,9 +223,6 @@
           "score": "wells-pe",
           "guidelineRefs": [
             "nice-ng158"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -255,9 +242,6 @@
           "guidelineRefs": [
             "nice-ng158",
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

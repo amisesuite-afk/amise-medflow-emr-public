@@ -216,9 +216,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -232,9 +229,6 @@
           "wses-2020"
         ],
         "note": "Immunosuppression blunts the signs; perforated appendicitis needs same-day surgical care.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Mild right-sided abdominal pain for 2 days' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom, Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=12: no triage rule covers this presentation."
       },
       "redFlags": [
@@ -247,10 +241,7 @@
             "steroid",
             "tacrolimus"
           ],
-          "note": "Immunosuppression should be surfaced as a risk factor (masked signs, higher complication rate).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Immunosuppression should be surfaced as a risk factor (masked signs, higher complication rate)."
         }
       ]
     },
@@ -266,10 +257,7 @@
           "guidelineRefs": [
             "wses-2020"
           ],
-          "note": "Low threshold for CT when immunosuppression masks the clinical picture.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Low threshold for CT when immunosuppression masks the clinical picture."
         }
       ]
     },
@@ -291,9 +279,6 @@
           ],
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -306,9 +291,6 @@
           ],
           "guidelineRefs": [
             "wses-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -321,9 +303,10 @@
             "peri-operative steroid"
           ],
           "note": "Patient on long-term prednisolone: peri-operative steroid cover. Quality: no single appendicitis-guideline statement.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

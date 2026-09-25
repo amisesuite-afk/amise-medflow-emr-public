@@ -156,10 +156,7 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "note": "Pulsatile expansile groin mass with AAA: femoral aneurysm must be on the differential.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Pulsatile expansile groin mass with AAA: femoral aneurysm must be on the differential."
         }
       ]
     },
@@ -175,9 +172,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -197,9 +191,6 @@
           "guidelineRefs": [
             "esvs-aaa-2024",
             "herniasurge-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -218,10 +209,7 @@
           "guidelineRefs": [
             "herniasurge-2018"
           ],
-          "note": "A hernia operative plan on a femoral aneurysm is dangerous.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A hernia operative plan on a femoral aneurysm is dangerous."
         }
       ],
       "mustInclude": [
@@ -233,9 +221,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

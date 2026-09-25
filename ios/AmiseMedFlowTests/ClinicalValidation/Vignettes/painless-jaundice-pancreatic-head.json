@@ -260,9 +260,6 @@
           "guidelineRefs": [
             "nice-ng12",
             "nice-ng85"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -277,9 +274,10 @@
             "biliary stricture"
           ],
           "note": "Other malignant causes of distal biliary obstruction.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Pancreatic Carcinoma | 2. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) | 3. Hepatitis B (Chronic Active) | 4. Ascending Cholangitis | 5. Acute Pancreatitis"
         }
       ]
     },
@@ -291,10 +289,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "NICE NG12: jaundice at ≥40 → suspected cancer pathway referral. Must not be routine. iOS (predicted, not observed): urgent (\"jaundice\" in the CC).",
-        "unverified": [
-          "ios"
-        ]
+        "note": "NICE NG12: jaundice at ≥40 → suspected cancer pathway referral. Must not be routine. iOS (predicted, not observed): urgent (\"jaundice\" in the CC)."
       },
       "redFlags": [
         {
@@ -310,10 +305,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "Painless jaundice, weight loss, new diabetes and a Courvoisier gallbladder.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Painless jaundice, weight loss, new diabetes and a Courvoisier gallbladder."
         }
       ],
       "mustNotAlarm": [
@@ -324,10 +316,7 @@
             "sepsis",
             "septic"
           ],
-          "note": "Afebrile, normal WBC/CRP.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Afebrile, normal WBC/CRP."
         }
       ]
     },
@@ -348,9 +337,10 @@
             "esmo-2023-pancreas"
           ],
           "note": "NICE NG85: pancreatic-protocol CT for obstructive jaundice with suspected pancreatic cancer — before any stent.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-ca199",
@@ -364,9 +354,10 @@
           "guidelineRefs": [
             "esmo-2023-pancreas"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-eus-tissue",
@@ -381,9 +372,10 @@
           "guidelineRefs": [
             "nice-ng85"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-coagulation",
@@ -395,9 +387,10 @@
             "vitamin k"
           ],
           "note": "Cholestatic coagulopathy (INR 1.3) before any procedure.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -416,9 +409,10 @@
             "nice-ng12"
           ],
           "note": "Specialist pancreatic MDT via the suspected cancer pathway.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -443,10 +437,7 @@
             "nice-ng85",
             "esge-2018-stenting"
           ],
-          "note": "Routine pre-operative biliary drainage increases complications (DROP); reserve it for cholangitis, delayed surgery or neoadjuvant therapy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Routine pre-operative biliary drainage increases complications (DROP); reserve it for cholangitis, delayed surgery or neoadjuvant therapy."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -460,10 +451,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

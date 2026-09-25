@@ -137,9 +137,10 @@
           "guidelineRefs": [
             "ehs-parastomal-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Inguinal Hernia | 2. Incisional Hernia | 3. Umbilical / Paraumbilical Hernia | 4. Femoral Hernia | 5. Incarcerated / Strangulated Hernia"
         }
       ]
     },
@@ -148,9 +149,6 @@
         "id": "level-routine",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "knownGap": [
           "web"
         ],
@@ -170,9 +168,10 @@
           "guidelineRefs": [
             "ehs-parastomal-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -189,9 +188,10 @@
           "guidelineRefs": [
             "ehs-parastomal-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-stoma-nurse",
@@ -204,9 +204,10 @@
           "guidelineRefs": [
             "ehs-parastomal-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ]
     }

@@ -209,9 +209,10 @@
             "esvs-graft-2020"
           ],
           "note": "Any bleed after aortic graft surgery is an aorto-enteric fistula until proven otherwise.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Upper GI Bleeding (Peptic Ulcer) | 2. Acute Appendicitis | 3. Acute Pancreatitis | 4. Small Bowel Obstruction | 5. Acute Kidney Injury; also in ios.ccEarly#3"
         }
       ]
     },
@@ -223,10 +224,7 @@
         "guidelineRefs": [
           "esvs-graft-2020"
         ],
-        "note": "A herald bleed precedes exsanguination; immediate assessment.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "A herald bleed precedes exsanguination; immediate assessment."
       },
       "redFlags": [
         {
@@ -241,9 +239,6 @@
           ],
           "guidelineRefs": [
             "esvs-graft-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -262,9 +257,6 @@
           ],
           "guidelineRefs": [
             "esvs-graft-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -276,9 +268,10 @@
           "guidelineRefs": [
             "esvs-graft-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         }
       ]
     },
@@ -295,9 +288,10 @@
           "guidelineRefs": [
             "esvs-graft-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -311,9 +305,10 @@
           "guidelineRefs": [
             "halt-it-2020"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
         }
       ]
     }

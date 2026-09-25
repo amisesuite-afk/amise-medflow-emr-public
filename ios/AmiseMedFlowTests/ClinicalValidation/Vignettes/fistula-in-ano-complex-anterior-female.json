@@ -133,9 +133,10 @@
             "ascrs-abscess-2022"
           ],
           "note": "Complex/anterior fistula in a woman: MRI (or endoanal ultrasound) before any division of sphincter.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -153,9 +154,10 @@
           "guidelineRefs": [
             "ascrs-abscess-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -184,9 +186,6 @@
           ],
           "guidelineRefs": [
             "ascrs-abscess-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -207,9 +206,6 @@
           ],
           "guidelineRefs": [
             "ascrs-abscess-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

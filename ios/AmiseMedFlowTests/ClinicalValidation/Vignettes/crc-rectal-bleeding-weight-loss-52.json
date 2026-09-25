@@ -183,9 +183,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -197,9 +194,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "nice-ng12"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -217,9 +211,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -249,9 +240,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -274,9 +262,10 @@
             "nice-ng12",
             "nice-dg56"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

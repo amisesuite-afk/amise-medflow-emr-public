@@ -219,9 +219,6 @@
           "match": [
             "hyperemesis",
             "pregnan"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -234,10 +231,7 @@
           "rcog-gtg69-2016"
         ],
         "note": "Unable to keep fluids down with ketonuria and > 5% weight loss: admission.",
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       },
       "redFlags": [
         {
@@ -248,9 +242,6 @@
           ],
           "match": [
             "pregnan"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -268,9 +259,6 @@
             "dating scan",
             "early pregnancy scan",
             "transvaginal"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -284,9 +272,6 @@
             "urea & electrolytes",
             "electrolytes",
             "potassium"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -304,9 +289,6 @@
             "thiamine",
             "pabrinex",
             "vitamin b1"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -319,9 +301,6 @@
             "re:(saline|sodium chloride)[^\\n]{0,40}potassium",
             "re:potassium[^\\n]{0,40}(saline|replace|kcl)",
             "kcl"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -337,9 +316,6 @@
             "dalteparin",
             "thromboprophylaxis",
             "vte prophylaxis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -362,9 +338,6 @@
             "not indicated",
             "if persistent",
             "if atypical"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -388,10 +361,7 @@
             "web"
           ],
           "knownGapNote": "Web: the unintentional-weight-loss alarm prompt adds '• CT chest/abdomen/pelvis — occult malignancy screen (alarm symptoms)' (and an upper GI endoscopy line) for a woman recorded at 10 weeks whose weight loss is from vomiting.",
-          "proposedFix": "Suppress the occult-malignancy CT when pregnancy is recorded (or require an explicit clinical question); prefer ultrasound/MRI (ACOG CO 723).",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "Suppress the occult-malignancy CT when pregnancy is recorded (or require an explicit clinical question); prefer ultrasound/MRI (ACOG CO 723)."
         },
         {
           "id": "mgmt-no-antithrombotic-plan",
@@ -419,9 +389,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

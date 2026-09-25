@@ -228,9 +228,6 @@
           "k": 3,
           "guidelineRefs": [
             "asge-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -249,12 +246,10 @@
           ],
           "note": "Malignant obstruction is the alternative cause of a dilated duct.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE top 3: cholecystitis, choledocholithiasis, pancreatitis (symptom inference #4 has cholangiocarcinoma).",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "PANE top 3: cholecystitis, choledocholithiasis, pancreatitis (symptom inference #4 has cholangiocarcinoma). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Choledocholithiasis | 2. Biliary Colic | 3. Acute Cholecystitis | 4. Ascending Cholangitis | 5. Acute Pancreatitis",
           "proposedFix": "PANE: keep one malignant obstruction node in the displayed list when jaundice is present (or display top 5)."
         }
       ]
@@ -267,10 +262,7 @@
         "guidelineRefs": [
           "asge-2019"
         ],
-        "note": "Obstructive jaundice from a CBD stone needs admission-level care (cholangitis risk); must not be routine. iOS (predicted, not observed): urgent — \"jaundice\" in the CC is an urgent keyword.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Obstructive jaundice from a CBD stone needs admission-level care (cholangitis risk); must not be routine. iOS (predicted, not observed): urgent — \"jaundice\" in the CC is an urgent keyword."
       }
     },
     "scores": {
@@ -282,9 +274,10 @@
           "guidelineRefs": [
             "asge-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystitis, qsofa, sofa, news2, mews"
         }
       ]
     },
@@ -302,10 +295,7 @@
           "guidelineRefs": [
             "asge-2019"
           ],
-          "note": "Before ERCP/sphincterotomy.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Before ERCP/sphincterotomy."
         }
       ],
       "mustExclude": [
@@ -328,10 +318,11 @@
             "asge-2019"
           ],
           "note": "ASGE high risk: proceed directly to ERCP; confirmatory MRCP/EUS delays therapy. Quality (over-investigation, not harm).",
-          "unverified": [
+          "proposedFix": "Choledocholithiasis protocol: make MRCP/EUS conditional on ASGE intermediate risk; high risk → ERCP directly.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Choledocholithiasis protocol: make MRCP/EUS conditional on ASGE intermediate risk; high risk → ERCP directly."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.radiation: \"mrcp - gold standard non-invasive cbd stone detection\""
         }
       ]
     },
@@ -348,10 +339,7 @@
             "asge-2019",
             "esge-2019-cbds"
           ],
-          "note": "ASGE high risk → ERCP with sphincterotomy and stone extraction.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ASGE high risk → ERCP with sphincterotomy and stone extraction."
         },
         {
           "id": "mgmt-cholecystectomy-after-ercp",
@@ -365,10 +353,7 @@
           "guidelineRefs": [
             "bsg-2017-cbds"
           ],
-          "note": "Cholecystectomy after duct clearance (same admission or within 2 weeks).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Cholecystectomy after duct clearance (same admission or within 2 weeks)."
         }
       ],
       "mustExclude": [
@@ -385,9 +370,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
         }
       ]

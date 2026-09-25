@@ -227,10 +227,7 @@
           "guidelineRefs": [
             "esvs-2024-aaa"
           ],
-          "note": "Epigastric/back pain with collapse and hypotension in an elderly smoker is a ruptured AAA until proven otherwise; amylase can be mildly raised.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Epigastric/back pain with collapse and hypotension in an elderly smoker is a ruptured AAA until proven otherwise; amylase can be mildly raised."
         }
       ]
     },
@@ -242,10 +239,7 @@
         "guidelineRefs": [
           "esvs-2024-aaa"
         ],
-        "note": "iOS (predicted, not observed): routine — no emergency keyword (\"collapse\" is not in the list).",
-        "unverified": [
-          "ios"
-        ]
+        "note": "iOS (predicted, not observed): routine — no emergency keyword (\"collapse\" is not in the list)."
       },
       "mustAlarm": [
         {
@@ -262,9 +256,6 @@
           ],
           "guidelineRefs": [
             "esvs-2024-aaa"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -285,9 +276,6 @@
           ],
           "guidelineRefs": [
             "esvs-2024-aaa"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -306,9 +294,6 @@
           ],
           "guidelineRefs": [
             "esvs-2024-aaa"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "See inv-aortic-imaging."
         }
@@ -331,9 +316,10 @@
             "esvs-2024-aaa"
           ],
           "note": "Ruptured AAA: permissive hypotension until proximal control. A pancreatitis-style \"aggressive fluid\" instruction can precipitate further bleeding.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...asopressors if fluid-unresponsive; icu/hdu now; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia...\""
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -347,10 +333,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

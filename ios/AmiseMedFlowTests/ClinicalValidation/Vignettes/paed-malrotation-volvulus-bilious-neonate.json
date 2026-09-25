@@ -129,9 +129,6 @@
           "match": [
             "malrotation",
             "volvulus"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -159,10 +156,7 @@
           "langer-malrotation-2017",
           "acr-vomiting-infants-2020"
         ],
-        "atLeast": "emergency",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "emergency"
       }
     },
     "investigations": {
@@ -181,9 +175,6 @@
             "re:\\bugi\\b",
             "contrast meal",
             "upper gi series"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -201,9 +192,6 @@
             "re:pediatric surg",
             "paediatric surgeon",
             "pediatric surgeon"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -217,9 +205,6 @@
             "ng tube",
             "re:\\bng\\b",
             "orogastric"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -248,9 +233,6 @@
             "over 50 kg",
             "age ≥ 12",
             "microgram/kg"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -266,9 +248,6 @@
             "omeprazole",
             "thickened feed",
             "antacid"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -297,9 +276,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

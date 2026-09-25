@@ -215,9 +215,6 @@
           "k": 3,
           "guidelineRefs": [
             "wses-sbo-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -236,12 +233,10 @@
           ],
           "note": "Weight loss and a virgin abdomen: small bowel or colonic neoplasm must be on the list.",
           "knownGap": [
-            "web"
-          ],
-          "unverified": [
+            "web",
             "ios"
           ],
-          "knownGapNote": "Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neoplasm node (colorectal cancer only), and the trigger answer 'After meals' is read as fatty_food_trigger, which lifts cholecystitis."
+          "knownGapNote": "Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neoplasm node (colorectal cancer only), and the trigger answer 'After meals' is read as fatty_food_trigger, which lifts cholecystitis. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction | 2. Gastric Outlet Obstruction | 3. Renal / Ureteric Colic | 4. Obturator Hernia | 5. Acute Kidney Injury"
         },
         {
           "id": "mnm-hernia",
@@ -249,10 +244,7 @@
           "match": [
             "hernia"
           ],
-          "note": "Occult femoral/obturator hernia is a classic cause in thin elderly women.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Occult femoral/obturator hernia is a classic cause in thin elderly women."
         }
       ]
     },
@@ -263,9 +255,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "wses-sbo-2018"
-        ],
-        "knownGap": [
-          "ios"
         ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Colicky abdominal pain and vomiting' gives 'routine'."
       }
@@ -282,10 +271,7 @@
           "guidelineRefs": [
             "wses-sbo-2018"
           ],
-          "note": "Bologna: without previous surgery adhesions are less likely; CT is needed to find the cause (hernia, neoplasm, internal hernia, gallstone ileus).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Bologna: without previous surgery adhesions are less likely; CT is needed to find the cause (hernia, neoplasm, internal hernia, gallstone ileus)."
         }
       ]
     },
@@ -311,9 +297,10 @@
           "guidelineRefs": [
             "wses-sbo-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [

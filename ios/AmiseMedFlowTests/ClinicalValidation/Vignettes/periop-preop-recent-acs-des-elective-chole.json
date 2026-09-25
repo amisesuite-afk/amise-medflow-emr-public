@@ -185,9 +185,6 @@
           ],
           "guidelineRefs": [
             "esc-ncs-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -197,9 +194,6 @@
         "atMost": "priority",
         "guidelineRefs": [
           "esc-ncs-2022"
-        ],
-        "unverified": [
-          "ios"
         ],
         "proposedFix": "adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter."
       }
@@ -219,9 +213,10 @@
             "accp-2022"
           ],
           "note": "ESC 2022: delay elective non-cardiac surgery until 12 months after ACS (6 months after elective PCI); quiescent biliary colic is not time-sensitive.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-cardiology-liaison",
@@ -232,10 +227,7 @@
           "guidelineRefs": [
             "esc-ncs-2022"
           ],
-          "note": "Any interruption of P2Y12 inhibition early after a stent is a joint decision with the cardiologist (stent thrombosis risk).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Any interruption of P2Y12 inhibition early after a stent is a joint decision with the cardiologist (stent thrombosis risk)."
         }
       ],
       "mustExclude": [
@@ -251,9 +243,6 @@
           "guidelineRefs": [
             "esc-ncs-2022",
             "accp-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -268,10 +257,7 @@
           "guidelineRefs": [
             "esc-ncs-2022"
           ],
-          "note": "Stopping the P2Y12 inhibitor 3 months after ACS without cardiology input risks stent thrombosis.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Stopping the P2Y12 inhibitor 3 months after ACS without cardiology input risks stent thrombosis."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -285,10 +271,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

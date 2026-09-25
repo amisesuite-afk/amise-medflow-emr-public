@@ -176,9 +176,6 @@
           "guidelineRefs": [
             "nice-ng51",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -195,9 +192,10 @@
           "guidelineRefs": [
             "nice-ng51"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Sepsis | 2. Acute Kidney Injury | 3. Delirium (Acute Confusional State) | 4. Community-Acquired Pneumonia | 5. Bacterial Meningitis / Meningococcal Sepsis; also in ios.ccEarly#3"
         }
       ]
     },
@@ -210,10 +208,7 @@
           "nice-ng51",
           "rcp-news2-2017"
         ],
-        "note": "NEWS2 >=7: emergency response.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "NEWS2 >=7: emergency response."
       },
       "mustAlarm": [
         {
@@ -228,9 +223,6 @@
           "guidelineRefs": [
             "nice-ng51",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -244,9 +236,6 @@
           "guidelineRefs": [
             "rcp-news2-2017",
             "nice-ng51"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -256,10 +245,7 @@
           "guidelineRefs": [
             "sepsis3-2016"
           ],
-          "note": "SSC 2021 recommends against qSOFA alone for screening; suggesting it alongside NEWS2 is still reasonable.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SSC 2021 recommends against qSOFA alone for screening; suggesting it alongside NEWS2 is still reasonable."
         }
       ],
       "values": [
@@ -274,10 +260,7 @@
           "guidelineRefs": [
             "sepsis3-2016"
           ],
-          "equals": 3,
-          "unverified": [
-            "ios"
-          ]
+          "equals": 3
         },
         {
           "id": "score-qsofa-autofill",
@@ -290,10 +273,7 @@
           "guidelineRefs": [
             "sepsis3-2016"
           ],
-          "min": 2,
-          "unverified": [
-            "ios"
-          ]
+          "min": 2
         }
       ]
     },
@@ -309,9 +289,6 @@
             "ssc-2021",
             "nice-ng51"
           ],
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "A protocol for the PANE node sepsis (NICE NG51: blood cultures, lactate), or a physiology-based sepsis prompt that adds blood cultures."
         },
         {
@@ -322,9 +299,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -360,10 +334,7 @@
             "ssc-2021",
             "nice-ng51"
           ],
-          "note": "Antimicrobials within 1 hour for sepsis with hypoperfusion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Antimicrobials within 1 hour for sepsis with hypoperfusion."
         },
         {
           "id": "mgmt-iv-fluids",
@@ -380,9 +351,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -398,10 +366,7 @@
           "guidelineRefs": [
             "nice-ng51"
           ],
-          "note": "The parastomal hernia is documented as reducible; the tenderness is suprapubic (urinary source). An emergency hernia operation is a wrong-procedure output.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The parastomal hernia is documented as reducible; the tenderness is suprapubic (urinary source). An emergency hernia operation is a wrong-procedure output."
         }
       ]
     }

@@ -160,9 +160,6 @@
           "k": 3,
           "guidelineRefs": [
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -178,12 +175,10 @@
           ],
           "note": "A groin \"abscess\" at an injection site can be an infected femoral pseudoaneurysm; incising it causes catastrophic haemorrhage. Duplex before drainage. Vascular surgical practice with no guideline statement cited here, so quality until the surgeon decides the severity.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin site chip adds groin_swelling).",
-          "unverified": [
+            "web",
             "ios"
-          ]
+          ],
+          "knownGapNote": "No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin site chip adds groin_swelling). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess | 2. Incarcerated / Strangulated Hernia | 3. Inguinal Hernia | 4. Deep Vein Thrombosis | 5. Femoral Hernia"
         }
       ]
     },
@@ -194,9 +189,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "idsa-ssti-2014"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -209,9 +201,10 @@
             "iv drug",
             "pwid"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags)"
         }
       ]
     },
@@ -226,9 +219,10 @@
             "ct angiogra"
           ],
           "note": "Imaging of the femoral vessels before incising a groin injection-site swelling. No guideline statement cited; quality until the surgeon decides the severity.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         },
         {
           "id": "inv-mrsa-culture",
@@ -241,9 +235,6 @@
           ],
           "guidelineRefs": [
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -255,9 +246,10 @@
             "blood-borne",
             "bbv"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)"
         }
       ]
     },
@@ -273,9 +265,6 @@
           ],
           "guidelineRefs": [
             "idsa-ssti-2014"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
         },
@@ -295,10 +284,11 @@
             "idsa-ssti-2014"
           ],
           "note": "IDSA: abscess with SIRS → antibiotic active against MRSA in addition to drainage.",
-          "unverified": [
+          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

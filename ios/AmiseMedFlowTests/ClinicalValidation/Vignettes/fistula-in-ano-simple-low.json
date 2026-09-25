@@ -126,9 +126,10 @@
           "guidelineRefs": [
             "ascrs-abscess-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Skin Abscess | 2. Perianal Abscess | 3. Anxiety Disorder | 4. Fournier's Gangrene | 5. Femoral Hernia"
         }
       ]
     },
@@ -147,10 +148,11 @@
             "ascrs-abscess-2022"
           ],
           "note": "ASCRS 2022: fistulotomy for simple fistulas with low risk of incontinence.",
-          "unverified": [
+          "proposedFix": "Add a fistula-in-ano protocol keyed to K60.3–K60.5 (simple → fistulotomy; complex → MRI, loose seton, sphincter-preserving repair; Parks classification) and narrow anal_fissure to K60.0–K60.2.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a fistula-in-ano protocol keyed to K60.3–K60.5 (simple → fistulotomy; complex → MRI, loose seton, sphincter-preserving repair; Parks classification) and narrow anal_fissure to K60.0–K60.2."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -173,10 +175,7 @@
           "guidelineRefs": [
             "ascrs-abscess-2022"
           ],
-          "note": "A fistula-in-ano plan must not be an anal-fissure plan (chemical/surgical sphincterotomy).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A fistula-in-ano plan must not be an anal-fissure plan (chemical/surgical sphincterotomy)."
         }
       ]
     }

@@ -133,9 +133,6 @@
           "guidelineRefs": [
             "bcsh-asplenia-2011",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -148,9 +145,6 @@
         "guidelineRefs": [
           "bcsh-asplenia-2011",
           "ssc-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -165,9 +159,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -183,9 +174,6 @@
           ],
           "guidelineRefs": [
             "bcsh-asplenia-2011"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -200,9 +188,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -237,9 +222,6 @@
           "guidelineRefs": [
             "bcsh-asplenia-2011",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -257,9 +239,6 @@
           ],
           "guidelineRefs": [
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

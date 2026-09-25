@@ -135,9 +135,6 @@
           ],
           "guidelineRefs": [
             "esh-esc-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -151,9 +148,6 @@
           ],
           "guidelineRefs": [
             "esc-he-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -166,9 +160,6 @@
         "guidelineRefs": [
           "esh-esc-2018",
           "esc-he-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -180,9 +171,6 @@
           ],
           "guidelineRefs": [
             "esh-esc-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -200,9 +188,6 @@
           ],
           "guidelineRefs": [
             "esc-he-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -219,9 +204,10 @@
             "esc-he-2019"
           ],
           "note": "Encephalopathy: brain imaging to exclude stroke/haemorrhage.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
         }
       ]
     },
@@ -245,9 +231,10 @@
             "esc-he-2019"
           ],
           "note": "IV labetalol or nicardipine in a monitored setting.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-controlled-reduction",
@@ -258,9 +245,10 @@
           "guidelineRefs": [
             "esh-esc-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-critical-care",
@@ -276,9 +264,10 @@
           "guidelineRefs": [
             "esc-he-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -291,9 +280,6 @@
           ],
           "guidelineRefs": [
             "esc-he-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

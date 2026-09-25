@@ -140,9 +140,6 @@
           ],
           "guidelineRefs": [
             "esvs-venous-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -154,9 +151,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "esvs-venous-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -172,10 +166,7 @@
           "guidelineRefs": [
             "esvs-venous-2021"
           ],
-          "note": "Thrombus near the SFJ carries DVT/PE risk and changes treatment.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Thrombus near the SFJ carries DVT/PE risk and changes treatment."
         }
       ]
     },
@@ -189,9 +180,6 @@
           ],
           "guidelineRefs": [
             "esvs-venous-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -213,10 +201,7 @@
           "guidelineRefs": [
             "esvs-venous-2021"
           ],
-          "note": "ESVS 2021: within 3 cm of the SFJ → therapeutic anticoagulation; ≥5 cm elsewhere → fondaparinux 2.5 mg for 45 days.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESVS 2021: within 3 cm of the SFJ → therapeutic anticoagulation; ≥5 cm elsewhere → fondaparinux 2.5 mg for 45 days."
         }
       ],
       "mustExclude": [
@@ -234,10 +219,7 @@
             "ios.radiation.plan",
             "ios.soap.plan"
           ],
-          "note": "Sterile inflammation, not infection.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Sterile inflammation, not infection."
         }
       ]
     }

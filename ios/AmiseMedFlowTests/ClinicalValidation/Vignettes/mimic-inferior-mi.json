@@ -179,10 +179,7 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "note": "Epigastric pain + diaphoresis + bradycardia/hypotension in a diabetic smoker: inferior MI must be on the displayed differential.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Epigastric pain + diaphoresis + bradycardia/hypotension in a diabetic smoker: inferior MI must be on the displayed differential."
         },
         {
           "id": "mnm-acs-symptom-engine",
@@ -215,9 +212,6 @@
           "esc-acs-2023"
         ],
         "note": "Web passed on 2026-09-25 only because the negative 'No chest pain described' matches the cardiac red-flag regex (no negation handling); the pass is fragile — see findings/gi-emergencies.md.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Epigastric pain and sweating' gives 'routine'."
       }
     },
@@ -233,10 +227,7 @@
           "guidelineRefs": [
             "esc-acs-2023"
           ],
-          "note": "ESC 2023: 12-lead ECG within 10 minutes of first contact.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESC 2023: 12-lead ECG within 10 minutes of first contact."
         },
         {
           "id": "inv-troponin",
@@ -246,9 +237,6 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -268,9 +256,6 @@
           ],
           "guidelineRefs": [
             "esc-acs-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -278,10 +263,7 @@
     "pathway": {
       "id": "pathway-first-visit",
       "severity": "quality",
-      "equals": "firstVisit",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "firstVisit"
     }
   },
   "guideline": [

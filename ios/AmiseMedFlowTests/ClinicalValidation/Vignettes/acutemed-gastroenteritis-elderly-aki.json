@@ -215,9 +215,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -230,10 +227,7 @@
         "guidelineRefs": [
           "nice-ng148"
         ],
-        "note": "AKI with postural hypotension and hyperkalaemia in an 84-year-old: same-day hospital assessment.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "AKI with postural hypotension and hyperkalaemia in an 84-year-old: same-day hospital assessment."
       },
       "redFlags": [
         {
@@ -248,9 +242,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -270,9 +261,6 @@
           ],
           "guidelineRefs": [
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -295,10 +283,7 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "note": "Hypovolaemic AKI: IV fluids.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Hypovolaemic AKI: IV fluids."
         },
         {
           "id": "mgmt-hold-nephrotoxic",
@@ -309,9 +294,10 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -335,10 +321,7 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "note": "NSAIDs in AKI are contraindicated (NICE NG148).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NSAIDs in AKI are contraindicated (NICE NG148)."
         }
       ]
     }

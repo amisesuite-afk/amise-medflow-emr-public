@@ -262,9 +262,6 @@
         "guidelineRefs": [
           "tg18-mgmt-cholecystitis"
         ],
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "iOS ClinicalPathwayEngine leaves RUQ pain + fever at routine."
       },
       "redFlags": [
@@ -304,9 +301,6 @@
             "tg18-dx-cholecystitis"
           ],
           "note": "TG18: a palpable tender mass in the RUQ is on its own a Grade II criterion. Under-grading to Grade I changes the management flowchart (Grade II: early cholecystectomy only in an experienced centre if fit; otherwise antibiotics ± gallbladder drainage; blood cultures).",
-          "knownGap": [
-            "ios"
-          ],
           "knownGapNote": "Neither calculator has a \"palpable tender RUQ mass\" Grade II criterion (iOS folds it into Grade I local signs; web grades II only on WBC >18)."
         }
       ]
@@ -333,9 +327,10 @@
             "blood sugar",
             "cbg"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation)"
         }
       ],
       "mustExclude": []
@@ -392,10 +387,11 @@
             "glycaemic",
             "diabet"
           ],
-          "unverified": [
+          "note": "Peri-operative glycaemic and metformin plan.",
+          "knownGap": [
             "ios"
           ],
-          "note": "Peri-operative glycaemic and metformin plan."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)"
         }
       ],
       "mustExclude": []

@@ -196,9 +196,6 @@
           "k": 3,
           "guidelineRefs": [
             "idsa-diarrhoea-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -213,9 +210,6 @@
           ],
           "guidelineRefs": [
             "idsa-diarrhoea-2017"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGap": [
             "web"
@@ -242,9 +236,10 @@
             "idsa-diarrhoea-2017"
           ],
           "note": "IDSA 2017: bloody diarrhoea with fever → stool testing including STEC; results change antibiotic decisions.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -268,9 +263,6 @@
             "idsa-diarrhoea-2017"
           ],
           "note": "Infective colitis is not a surgical abdomen: an emergency appendicectomy plan is a contraindicated operation. The exam text records \"no guarding\".",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words \"guarding\"/\"rebound\"; add negation handling (no/without/absent) to exam() matching."
         },
         {
@@ -302,10 +294,7 @@
           "guidelineRefs": [
             "idsa-diarrhoea-2017"
           ],
-          "note": "Antimotility agents are avoided in bloody/inflammatory diarrhoea (toxic megacolon; HUS with STEC).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Antimotility agents are avoided in bloody/inflammatory diarrhoea (toxic megacolon; HUS with STEC)."
         },
         {
           "id": "mgmt-no-empirical-antibiotics-stec",
@@ -333,10 +322,7 @@
           "guidelineRefs": [
             "idsa-diarrhoea-2017"
           ],
-          "note": "IDSA 2017: avoid antibiotics when STEC is possible (increased HUS risk).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "IDSA 2017: avoid antibiotics when STEC is possible (increased HUS risk)."
         }
       ]
     }

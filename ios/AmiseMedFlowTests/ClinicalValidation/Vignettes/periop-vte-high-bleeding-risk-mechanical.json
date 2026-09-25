@@ -143,9 +143,6 @@
           ],
           "guidelineRefs": [
             "nice-ng89"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -170,10 +167,11 @@
             "accp-2012-gould"
           ],
           "note": "Pharmacological prophylaxis contraindicated by active bleeding risk: mechanical prophylaxis, reassess daily.",
-          "unverified": [
+          "proposedFix": "See periop-vte-caprini-high-cancer-surgery; when bleeding risk outweighs VTE risk, suggest mechanical prophylaxis and a daily reassessment.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See periop-vte-caprini-high-cancer-surgery; when bleeding risk outweighs VTE risk, suggest mechanical prophylaxis and a daily reassessment."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-reassess-vte-bleeding",
@@ -188,10 +186,11 @@
           "guidelineRefs": [
             "nice-ng89"
           ],
-          "unverified": [
+          "proposedFix": "See mgmt-mechanical-prophylaxis.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "See mgmt-mechanical-prophylaxis."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -215,10 +214,7 @@
           "guidelineRefs": [
             "nice-ng89"
           ],
-          "note": "No unqualified LMWH on post-operative day 1 with ongoing melaena and platelets 68.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No unqualified LMWH on post-operative day 1 with ongoing melaena and platelets 68."
         }
       ]
     }

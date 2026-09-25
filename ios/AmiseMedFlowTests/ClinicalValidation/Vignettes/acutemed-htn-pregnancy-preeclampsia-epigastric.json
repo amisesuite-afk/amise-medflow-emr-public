@@ -192,9 +192,6 @@
           ],
           "guidelineRefs": [
             "nice-ng133"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -206,9 +203,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "nice-ng133"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -222,9 +216,6 @@
           ],
           "guidelineRefs": [
             "nice-ng133"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -245,10 +236,7 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "note": "Same-day obstetric assessment/admission (NICE NG133).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Same-day obstetric assessment/admission (NICE NG133)."
         }
       ],
       "mustExclude": [
@@ -261,10 +249,7 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "note": "Wrong procedure: HELLP mimicking biliary pain.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Wrong procedure: HELLP mimicking biliary pain."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -278,9 +263,6 @@
             "nice-ng133"
           ],
           "note": "Wrong procedure.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Gate the appendicectomy cascade on the working diagnosis; negation-aware exam matching (\"no guarding\")."
         },
         {
@@ -298,9 +280,10 @@
             "nice-ng133"
           ],
           "note": "ACE inhibitors/ARBs are contraindicated in pregnancy.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...y - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers the question.\" (+2 more)"
         },
         {
           "id": "mgmt-no-nsaid",
@@ -319,9 +302,6 @@
             "nice-ng133"
           ],
           "note": "NSAIDs after 20 weeks and with thrombocytopenia/HELLP are contraindicated.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Strip NSAIDs from operative templates from 20 weeks of gestation (HPB findings gap 6), and suppress operative templates here altogether."
         },
         {
@@ -334,10 +314,7 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "note": "NICE NG133 first-line agents are labetalol, nifedipine or methyldopa.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "NICE NG133 first-line agents are labetalol, nifedipine or methyldopa."
         }
       ]
     }

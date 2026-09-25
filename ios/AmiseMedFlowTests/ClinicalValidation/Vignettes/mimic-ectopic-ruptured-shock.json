@@ -182,9 +182,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -196,9 +193,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "nice-ng126"
-        ],
-        "knownGap": [
-          "ios"
         ],
         "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden lower abdominal pain and collapse' gives 'routine'."
       },
@@ -214,9 +208,6 @@
           ],
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -228,9 +219,6 @@
           ],
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -250,9 +238,6 @@
           ],
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -269,9 +254,6 @@
           ],
           "guidelineRefs": [
             "nice-ng126"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -295,9 +277,6 @@
             "nice-ng126"
           ],
           "note": "Methotrexate or expectant management is contraindicated in a ruptured ectopic with shock.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability tests and the methotrexate/expectant steps appear for a shocked patient (no ectopic dx-variant group).",
           "proposedFix": "Add ectopic dx-variants (ruptured/unstable → immediate + surgical; unruptured stable → conservative options)."
         }

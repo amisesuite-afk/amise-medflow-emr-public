@@ -129,9 +129,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -143,9 +140,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "esc-pe-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -157,9 +151,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -178,9 +169,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -199,9 +187,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -217,9 +202,6 @@
           ],
           "guidelineRefs": [
             "esc-pe-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -243,9 +225,6 @@
             "esc-pe-2019"
           ],
           "note": "NOACs are not recommended in pregnancy and VKAs cross the placenta (ESC 2019, class III): a plan offering them without a pregnancy caveat is contraindicated.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Pregnancy-aware PE protocol: LMWH (weight-adjusted) instead of DOACs/warfarin when pregnancyPossible; add CUS first if leg symptoms, then CTPA or V/Q; obstetric involvement."
         }
       ]

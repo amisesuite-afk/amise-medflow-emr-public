@@ -203,10 +203,7 @@
           "match": [
             "torsion"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },
@@ -218,10 +215,7 @@
           "acog-co783-2019"
         ],
         "note": "Ovarian viability is time-dependent: surgical emergency.",
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       }
     },
     "management": {
@@ -234,9 +228,6 @@
           ],
           "match": [
             "laparoscop"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -252,9 +243,6 @@
             "conserv",
             "ovarian-sparing",
             "ovary-sparing"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -266,9 +254,6 @@
           "match": [
             "gynaecolog",
             "gynecolog"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -288,9 +273,6 @@
             "not indicated",
             "no role",
             "exclude appendicitis"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

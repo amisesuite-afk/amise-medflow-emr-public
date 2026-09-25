@@ -169,9 +169,6 @@
           "k": 3,
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -185,9 +182,6 @@
           "eau-paed-2024"
         ],
         "note": "Salvage falls sharply after 6 hours.",
-        "knownGap": [
-          "ios"
-        ],
         "knownGapNote": "Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.",
         "proposedFix": "Add a triage red flag: male + sudden testicular/scrotal pain (or scrotal-swelling chip) → emergency."
       },
@@ -203,9 +197,6 @@
           ],
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -224,9 +215,6 @@
           ],
           "guidelineRefs": [
             "eau-paed-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -247,10 +235,7 @@
           "guidelineRefs": [
             "eau-paed-2024"
           ],
-          "note": "Imaging must not delay exploration when torsion is clinically likely.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Imaging must not delay exploration when torsion is clinically likely."
         }
       ]
     }

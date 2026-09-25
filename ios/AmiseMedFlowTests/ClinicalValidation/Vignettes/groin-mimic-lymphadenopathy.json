@@ -143,10 +143,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "Non-reducible groin lumps without a cough impulse plus B symptoms: lymphadenopathy/lymphoma must be on the list.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Non-reducible groin lumps without a cough impulse plus B symptoms: lymphadenopathy/lymphoma must be on the list."
         }
       ]
     },
@@ -157,9 +154,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "nice-ng12"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -176,9 +170,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -197,9 +188,10 @@
             "nice-ng12",
             "herniasurge-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.decisions)"
         },
         {
           "id": "inv-ldh",
@@ -211,9 +203,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.decisions)"
         }
       ]
     },
@@ -232,9 +225,10 @@
             "herniasurge-2018"
           ],
           "note": "The referral label (\"hernia\") must not drive a hernia repair plan once the examination says lymph nodes.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics...\" (+1 more)"
         }
       ]
     }

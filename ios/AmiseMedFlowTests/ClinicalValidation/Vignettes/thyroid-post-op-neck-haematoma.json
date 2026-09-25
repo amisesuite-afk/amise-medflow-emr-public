@@ -157,9 +157,10 @@
           "guidelineRefs": [
             "das-baets-haematoma-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia | 2. Pulmonary Embolism | 3. Acute Coronary Syndrome | 4. Atrial Fibrillation | 5. Sepsis"
         }
       ]
     },
@@ -170,9 +171,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "das-baets-haematoma-2022"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -190,10 +188,7 @@
           "guidelineRefs": [
             "das-baets-haematoma-2022"
           ],
-          "note": "Any emergency alarm counts here (the generic triage alarm included).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Any emergency alarm counts here (the generic triage alarm included)."
         },
         {
           "id": "alarm-airway-specific",
@@ -208,10 +203,7 @@
           "guidelineRefs": [
             "das-baets-haematoma-2022"
           ],
-          "note": "An alarm that names the neck haematoma / airway, so the response is SCOOP rather than generic resuscitation.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "An alarm that names the neck haematoma / airway, so the response is SCOOP rather than generic resuscitation."
         }
       ]
     },
@@ -232,9 +224,10 @@
             "das-baets-haematoma-2022"
           ],
           "note": "DAS/BAETS 2022: immediate bedside decompression (SCOOP) when a post-thyroidectomy haematoma compromises the airway.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-return-to-theatre",
@@ -247,9 +240,10 @@
           "guidelineRefs": [
             "das-baets-haematoma-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -267,10 +261,7 @@
           "guidelineRefs": [
             "das-baets-haematoma-2022"
           ],
-          "note": "Conservative care of a small wound haematoma must not be offered for a neck haematoma with stridor.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Conservative care of a small wound haematoma must not be offered for a neck haematoma with stridor."
         },
         {
           "id": "mgmt-no-thyroidectomy-prefix",

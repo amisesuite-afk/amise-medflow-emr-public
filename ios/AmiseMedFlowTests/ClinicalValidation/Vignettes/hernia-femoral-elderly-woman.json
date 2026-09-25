@@ -155,10 +155,7 @@
           "guidelineRefs": [
             "herniasurge-2018"
           ],
-          "note": "Lump below and lateral to the pubic tubercle in an elderly woman.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Lump below and lateral to the pubic tubercle in an elderly woman."
         }
       ]
     },
@@ -170,10 +167,7 @@
         "guidelineRefs": [
           "herniasurge-2018"
         ],
-        "note": "Not an emergency today, but must not sit on a routine list.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Not an emergency today, but must not sit on a routine list."
       },
       "redFlags": [
         {
@@ -187,9 +181,6 @@
           ],
           "guidelineRefs": [
             "herniasurge-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -211,9 +202,10 @@
             "herniasurge-2018"
           ],
           "note": "HerniaSurge: femoral hernias should be repaired urgently/early; laparoscopic repair suggested where expertise exists.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -232,10 +224,7 @@
           "guidelineRefs": [
             "herniasurge-2018"
           ],
-          "note": "Watchful waiting or a truss is inappropriate for a femoral hernia.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Watchful waiting or a truss is inappropriate for a femoral hernia."
         }
       ]
     },

@@ -213,9 +213,6 @@
           "k": 3,
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -227,9 +224,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "esge-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -245,10 +239,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "Stopping DAPT within months of a drug-eluting stent risks stent thrombosis; continuing it risks rebleeding. The record must surface it for a clinician (and cardiology) decision.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Stopping DAPT within months of a drug-eluting stent risks stent thrombosis; continuing it risks rebleeding. The record must surface it for a clinician (and cardiology) decision."
         }
       ]
     },
@@ -260,9 +251,6 @@
           "score": "glasgow-blatchford",
           "guidelineRefs": [
             "esge-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -283,9 +271,6 @@
           ],
           "guidelineRefs": [
             "bsg-2020"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -305,10 +290,7 @@
             "esge-2021",
             "bsg-2020"
           ],
-          "note": "ESGE: with acute or chronic cardiovascular disease, transfuse at Hb ≤8 g/dL, target ≥10 g/dL.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "ESGE: with acute or chronic cardiovascular disease, transfuse at Hb ≤8 g/dL, target ≥10 g/dL."
         },
         {
           "id": "mgmt-cardiology-antiplatelet-decision",
@@ -320,9 +302,10 @@
             "esge-2021"
           ],
           "note": "ESGE: do not interrupt aspirin for secondary prevention; P2Y12 inhibitor decisions with cardiology.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-ogd-within-24h",
@@ -337,9 +320,6 @@
           "guidelineRefs": [
             "esge-2021",
             "nice-cg141"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -359,10 +339,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "Unqualified advice to stop aspirin after a recent stent is contraindicated (ESGE: continue low-dose aspirin for secondary prevention; if interrupted, resume within 3–5 days).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Unqualified advice to stop aspirin after a recent stent is contraindicated (ESGE: continue low-dose aspirin for secondary prevention; if interrupted, resume within 3–5 days)."
         },
         {
           "id": "mgmt-no-patient-hold-advice",
@@ -373,10 +350,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "Patient-directed stop/hold instructions are forbidden (hazard H-10); patient-facing text is linted separately (lint:patient-instructions).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Patient-directed stop/hold instructions are forbidden (hazard H-10); patient-facing text is linted separately (lint:patient-instructions)."
         },
         {
           "id": "mgmt-no-tranexamic-acid",
@@ -390,9 +364,10 @@
             "halt-it-2020"
           ],
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
         }
       ]
     }

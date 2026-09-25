@@ -232,9 +232,6 @@
           "guidelineRefs": [
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -247,9 +244,6 @@
         "guidelineRefs": [
           "sfe-hypercalc-2016",
           "endo-hcm-2023"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -263,9 +257,6 @@
           "guidelineRefs": [
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -282,9 +273,6 @@
           "guidelineRefs": [
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -305,10 +293,7 @@
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
           ],
-          "note": "SfE 2016: IV 0.9% sodium chloride rehydration. Generic fluid lines from other prompts (obstruction resuscitation, AKI fluid challenge) do not count.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "SfE 2016: IV 0.9% sodium chloride rehydration. Generic fluid lines from other prompts (obstruction resuscitation, AKI fluid challenge) do not count."
         },
         {
           "id": "mgmt-antiresorptive",
@@ -322,9 +307,6 @@
           "guidelineRefs": [
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -335,9 +317,6 @@
           ],
           "guidelineRefs": [
             "sfe-hypercalc-2016"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -348,9 +327,6 @@
           ],
           "guidelineRefs": [
             "endo-hcm-2023"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: No oncology referral.",
           "proposedFix": "As flag-hypercalcaemia."
@@ -372,10 +348,7 @@
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
           ],
-          "note": "PTH is suppressed: a parathyroid operation is the wrong treatment.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "PTH is suppressed: a parathyroid operation is the wrong treatment."
         },
         {
           "id": "mgmt-no-laparotomy",
@@ -389,10 +362,7 @@
             "sfe-hypercalc-2016",
             "endo-hcm-2023"
           ],
-          "note": "Vomiting and constipation from hypercalcaemia must not drive an operative plan.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Vomiting and constipation from hypercalcaemia must not drive an operative plan."
         }
       ]
     }

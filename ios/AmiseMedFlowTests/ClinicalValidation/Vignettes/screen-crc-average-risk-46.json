@@ -82,10 +82,7 @@
           "uspstf-crc-2021"
         ],
         "note": "Asymptomatic screening request: routine.",
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       },
       "mustNotAlarm": [
         {
@@ -97,9 +94,6 @@
           "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
           "match": [
             "emergency now"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -122,9 +116,6 @@
             "colonoscopy",
             "colorectal cancer screening",
             "crc screening"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -143,19 +134,17 @@
             "mdt referral",
             "stoma nurse"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"mdt referral - colorectal oncology\" (+3 more)"
         }
       ]
     },
     "pathway": {
       "id": "pathway-wellness",
       "severity": "quality",
-      "equals": "wellness",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wellness"
     }
   },
   "guideline": [

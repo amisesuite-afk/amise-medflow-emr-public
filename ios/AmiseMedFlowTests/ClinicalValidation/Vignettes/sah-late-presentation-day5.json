@@ -123,9 +123,6 @@
           ],
           "guidelineRefs": [
             "nice-ng228"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -138,10 +135,7 @@
         "guidelineRefs": [
           "nice-ng228"
         ],
-        "note": "Five days on, still a same-day investigation: a sentinel bleed precedes a larger one.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Five days on, still a same-day investigation: a sentinel bleed precedes a larger one."
       },
       "mustAlarm": [
         {
@@ -154,9 +148,6 @@
           ],
           "guidelineRefs": [
             "nice-ng228"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -179,9 +170,6 @@
           ],
           "guidelineRefs": [
             "nice-ng228"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -197,9 +185,6 @@
           ],
           "guidelineRefs": [
             "nice-ng228"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

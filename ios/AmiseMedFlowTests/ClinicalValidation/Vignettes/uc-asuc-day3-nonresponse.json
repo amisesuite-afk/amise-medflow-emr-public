@@ -213,9 +213,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "bsg-ibd-2019"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -231,10 +228,11 @@
           "guidelineRefs": [
             "ecco-infections-2021"
           ],
-          "unverified": [
+          "proposedFix": "Add \"flexible sigmoidoscopy with biopsies incl. CMV (IHC/PCR)\" to the ASUC/steroid-refractory steps (ECCO 2021).",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add \"flexible sigmoidoscopy with biopsies incl. CMV (IHC/PCR)\" to the ASUC/steroid-refractory steps (ECCO 2021)."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
         }
       ]
     },
@@ -251,9 +249,6 @@
           "guidelineRefs": [
             "ecco-uc-2022",
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -265,9 +260,6 @@
           "guidelineRefs": [
             "ecco-uc-surg-2022",
             "bsg-ibd-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -282,9 +274,10 @@
           "guidelineRefs": [
             "bsg-ibd-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

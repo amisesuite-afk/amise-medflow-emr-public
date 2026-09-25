@@ -165,9 +165,6 @@
           "guidelineRefs": [
             "esc-hf-2021",
             "crest-2005"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -199,9 +196,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "esc-hf-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -217,9 +211,10 @@
           "guidelineRefs": [
             "esc-hf-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 10 (ios.pipeline.decisions, ios.radiation)"
         }
       ]
     },
@@ -238,9 +233,10 @@
           "guidelineRefs": [
             "esc-hf-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -257,9 +253,10 @@
             "nice-ng141"
           ],
           "note": "Bilateral symmetrical erythema with normal inflammatory markers is rarely cellulitis; escalating to IV antibiotics is the failure mode.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"flucloxacillin 2 g iv 6-hourly\""
         }
       ]
     }

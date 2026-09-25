@@ -139,9 +139,6 @@
           "k": 3,
           "guidelineRefs": [
             "eupsa-paed-hernia-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -153,9 +150,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "eupsa-paed-hernia-2022"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -167,9 +161,6 @@
             "incarcerat",
             "strangulat",
             "complicated hernia"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -185,9 +176,6 @@
           ],
           "guidelineRefs": [
             "eupsa-paed-hernia-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -200,10 +188,7 @@
             "psa if male",
             "re:ecg \\(if"
           ],
-          "note": "Adult pre-operative checks and mesh templates are wrong for an infant.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Adult pre-operative checks and mesh templates are wrong for an infant."
         }
       ]
     }

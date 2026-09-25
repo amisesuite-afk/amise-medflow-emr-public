@@ -144,9 +144,6 @@
           "guidelineRefs": [
             "nice-ng128",
             "jbds-hypo-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -159,9 +156,6 @@
         "guidelineRefs": [
           "nice-ng128",
           "jbds-hypo-2023"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -174,9 +168,6 @@
           "guidelineRefs": [
             "nice-ng128",
             "jbds-hypo-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -202,9 +193,6 @@
           "guidelineRefs": [
             "nice-ng128",
             "jbds-hypo-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -227,10 +215,7 @@
           "guidelineRefs": [
             "nice-ng128"
           ],
-          "note": "Thrombolysis for a hypoglycaemic stroke mimic is a serious harm.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Thrombolysis for a hypoglycaemic stroke mimic is a serious harm."
         }
       ]
     }

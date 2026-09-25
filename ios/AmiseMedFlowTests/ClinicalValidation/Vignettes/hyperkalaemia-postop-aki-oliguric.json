@@ -186,9 +186,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "ukka-hyperk-2023"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -201,9 +198,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -218,9 +212,6 @@
           "guidelineRefs": [
             "kdigo-aki-2012",
             "nice-ng148"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -238,10 +229,7 @@
           "guidelineRefs": [
             "ukka-hyperk-2023"
           ],
-          "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order."
         },
         {
           "id": "mgmt-urinalysis",
@@ -254,9 +242,10 @@
             "nice-ng148"
           ],
           "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-iv-calcium",
@@ -268,10 +257,7 @@
           "guidelineRefs": [
             "ukka-hyperk-2023"
           ],
-          "note": "Peaked T waves are an ECG change: IV calcium.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Peaked T waves are an ECG change: IV calcium."
         },
         {
           "id": "mgmt-insulin-glucose",
@@ -282,9 +268,6 @@
           ],
           "guidelineRefs": [
             "ukka-hyperk-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -296,9 +279,6 @@
           "guidelineRefs": [
             "nice-ng148",
             "kdigo-aki-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -314,9 +294,6 @@
           "guidelineRefs": [
             "nice-ng148",
             "kdigo-aki-2012"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -340,10 +317,7 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "note": "Any NSAID suggestion in AKI is harmful, even \"if eGFR normal\".",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Any NSAID suggestion in AKI is harmful, even \"if eGFR normal\"."
         }
       ]
     }

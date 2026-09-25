@@ -157,10 +157,7 @@
         "guidelineRefs": [
           "nice-ng232"
         ],
-        "note": "CT within 8 h of injury: same-day, not a routine booking.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "CT within 8 h of injury: same-day, not a routine booking."
       },
       "redFlags": [
         {
@@ -176,9 +173,6 @@
           "guidelineRefs": [
             "nice-ng232",
             "atls-10-geriatric"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -196,10 +190,7 @@
           "guidelineRefs": [
             "nice-ng232"
           ],
-          "note": "Anticoagulant alone is an indication for CT head (within 8 h) in NICE NG232.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Anticoagulant alone is an indication for CT head (within 8 h) in NICE NG232."
         },
         {
           "id": "inv-falls-ecg",
@@ -213,9 +204,10 @@
           "guidelineRefs": [
             "atls-10-geriatric"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)"
         }
       ]
     },
@@ -235,10 +227,7 @@
             "atls-10-geriatric",
             "atls-10-head"
           ],
-          "note": "Reversal ready if CT shows haemorrhage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Reversal ready if CT shows haemorrhage."
         }
       ],
       "mustExclude": [
@@ -258,9 +247,6 @@
             "web"
           ],
           "knownGapNote": "The 'anticoag_check' clinical prompt (clinical-inference.ts) always proposes 'hold DOAC 48–72 h pre-op; warfarin — bridge with LMWH', including after a head injury on apixaban.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Make the anticoag_check prompt context-aware: trauma/bleeding/head injury → reversal and CT; elective procedure → bridging plan."
         },
         {
@@ -278,9 +264,6 @@
           ],
           "guidelineRefs": [
             "nice-ng232"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -289,9 +272,10 @@
       "id": "pathway-trauma",
       "severity": "quality",
       "equals": "trauma",
-      "unverified": [
+      "knownGap": [
         "ios"
-      ]
+      ],
+      "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma"
     }
   },
   "guideline": [

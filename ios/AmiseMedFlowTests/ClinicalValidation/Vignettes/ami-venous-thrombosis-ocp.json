@@ -217,9 +217,6 @@
           ],
           "guidelineRefs": [
             "esvs-2017"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -231,9 +228,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "esvs-2017"
-        ],
-        "knownGap": [
-          "ios"
         ],
         "knownGapNote": "Web: adaptiveTriage: 'priority_24_48h' (score 20); the only reasons are 'Pregnancy mentioned' (from 'pregnancy test negative') and pain score. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain for five days' gives 'routine'.",
         "proposedFix": "Let triage read resulted imaging (thrombosis, ischaemia) and D-dimer; do not treat 'pregnancy test negative' as a pregnancy mention (negation)."
@@ -251,9 +245,10 @@
           "guidelineRefs": [
             "nice-ng126"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.decisions)"
         },
         {
           "id": "inv-thrombophilia",
@@ -265,9 +260,6 @@
           ],
           "guidelineRefs": [
             "esvs-2017"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: No thrombophilia work-up."
         }
@@ -295,9 +287,10 @@
             "esvs-2017"
           ],
           "note": "ESVS 2017: immediate therapeutic anticoagulation for mesenteric venous thrombosis.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-stop-cocp",
@@ -314,10 +307,10 @@
           "guidelineRefs": [
             "esvs-2017"
           ],
-          "unverified": [
+          "knownGapNote": "Web: No prompt to stop the oestrogen-containing pill. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)",
+          "knownGap": [
             "ios"
-          ],
-          "knownGapNote": "Web: No prompt to stop the oestrogen-containing pill."
+          ]
         }
       ],
       "mustExclude": [
@@ -338,10 +331,7 @@
           "guidelineRefs": [
             "esvs-2017"
           ],
-          "note": "Without peritonitis or infarction, MVT is treated with anticoagulation; resection is reserved for non-viable bowel.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Without peritonitis or infarction, MVT is treated with anticoagulation; resection is reserved for non-viable bowel."
         }
       ]
     }

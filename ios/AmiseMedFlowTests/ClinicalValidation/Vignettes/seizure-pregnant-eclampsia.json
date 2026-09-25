@@ -151,9 +151,6 @@
           ],
           "guidelineRefs": [
             "nice-ng133"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -165,9 +162,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "nice-ng133"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -182,9 +176,6 @@
           ],
           "guidelineRefs": [
             "nice-ng133"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -201,9 +192,6 @@
           ],
           "guidelineRefs": [
             "nice-ng133"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -216,9 +204,6 @@
           ],
           "guidelineRefs": [
             "nice-ng133"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -237,9 +222,6 @@
           ],
           "guidelineRefs": [
             "nice-ng133"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -260,10 +242,7 @@
           "guidelineRefs": [
             "nice-ng133"
           ],
-          "note": "Magnesium sulfate, not antiepileptic drugs, treats eclampsia.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Magnesium sulfate, not antiepileptic drugs, treats eclampsia."
         }
       ]
     }

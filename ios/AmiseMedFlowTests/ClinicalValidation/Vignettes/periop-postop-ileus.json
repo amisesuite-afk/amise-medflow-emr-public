@@ -204,9 +204,10 @@
           "guidelineRefs": [
             "vather-poi-2013"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Small Bowel Obstruction | 2. Surgical Site Infection | 3. Functional dyspepsia | 4. Anastomotic Leak | 5. Acute Kidney Injury"
         }
       ],
       "mustNotMiss": [
@@ -221,9 +222,6 @@
           ],
           "guidelineRefs": [
             "eras-colorectal-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -241,9 +239,6 @@
           ],
           "guidelineRefs": [
             "eras-colorectal-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -256,10 +251,7 @@
           "guidelineRefs": [
             "eras-colorectal-2019"
           ],
-          "note": "CT when ileus does not settle or there are signs of sepsis, to exclude leak or mechanical obstruction.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "CT when ileus does not settle or there are signs of sepsis, to exclude leak or mechanical obstruction."
         }
       ]
     },
@@ -276,9 +268,6 @@
           ],
           "guidelineRefs": [
             "eras-colorectal-2019"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -291,9 +280,10 @@
           "guidelineRefs": [
             "eras-colorectal-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-correct-electrolytes",
@@ -306,9 +296,10 @@
           "guidelineRefs": [
             "eras-colorectal-2019"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -325,9 +316,6 @@
             "if generalised peritonitis"
           ],
           "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
         },
         {
@@ -342,10 +330,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

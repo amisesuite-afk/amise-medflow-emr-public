@@ -137,9 +137,6 @@
           ],
           "guidelineRefs": [
             "esc-af-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -151,9 +148,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "esc-af-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -167,9 +161,6 @@
           ],
           "guidelineRefs": [
             "esc-af-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -182,9 +173,6 @@
           "score": "cha2ds2-vasc",
           "guidelineRefs": [
             "esc-af-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -202,9 +190,6 @@
           ],
           "guidelineRefs": [
             "esc-af-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -223,10 +208,7 @@
           "guidelineRefs": [
             "esc-af-2024"
           ],
-          "note": "Emergency electrical cardioversion for haemodynamically unstable AF (ESC 2024, class I).",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Emergency electrical cardioversion for haemodynamically unstable AF (ESC 2024, class I)."
         }
       ]
     }

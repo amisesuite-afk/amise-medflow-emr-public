@@ -148,9 +148,6 @@
           ],
           "guidelineRefs": [
             "atls-10-thorax"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -162,9 +159,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "atls-10-thorax"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -183,9 +177,6 @@
           ],
           "guidelineRefs": [
             "atls-10-thorax"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -201,10 +192,7 @@
           "guidelineRefs": [
             "atls-10-thorax"
           ],
-          "note": "The engine must name tension physiology, not only \"pneumothorax\".",
-          "unverified": [
-            "ios"
-          ]
+          "note": "The engine must name tension physiology, not only \"pneumothorax\"."
         }
       ]
     },
@@ -222,9 +210,6 @@
           ],
           "guidelineRefs": [
             "atls-10-thorax"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -241,9 +226,6 @@
           ],
           "guidelineRefs": [
             "atls-10-thorax"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -266,9 +248,6 @@
             "atls-10-thorax"
           ],
           "note": "ATLS 10 moved adult needle decompression to the 4th/5th intercostal space anterior to the mid-axillary line (chest wall too thick at the 2nd ICS mid-clavicular line in many adults). Surgeon to confirm the site the practice teaches.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Change the adult site to the 4th/5th ICS just anterior to the mid-axillary line (2nd ICS MCL for children); surgeon to confirm."
         }
       ]
@@ -276,10 +255,7 @@
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

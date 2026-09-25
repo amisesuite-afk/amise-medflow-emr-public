@@ -148,9 +148,6 @@
           ],
           "guidelineRefs": [
             "nice-ng234"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -162,9 +159,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "nice-ng234"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -178,9 +172,6 @@
           ],
           "guidelineRefs": [
             "nice-ng234"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -195,9 +186,6 @@
           ],
           "guidelineRefs": [
             "nice-ng234"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -213,9 +201,6 @@
           ],
           "guidelineRefs": [
             "nice-ng234"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -229,9 +214,6 @@
           ],
           "guidelineRefs": [
             "nice-ng234"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

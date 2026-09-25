@@ -220,9 +220,10 @@
             "tg18-dx-cholecystitis"
           ],
           "note": "A sedated patient cannot give SOCRATES; the diagnosis rests on fever, a palpable gallbladder and ultrasound.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Community-Acquired Pneumonia | 3. Ascending Cholangitis | 4. Bacterial Meningitis / Meningococcal Sepsis | 5. Infective Endocarditis"
         }
       ]
     },
@@ -234,9 +235,6 @@
         "guidelineRefs": [
           "tg18-mgmt-cholecystitis",
           "ssc-2021"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -250,10 +248,7 @@
           "guidelineRefs": [
             "ssc-2021"
           ],
-          "note": "New fever with a rising vasopressor requirement is septic shock until proven otherwise.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "New fever with a rising vasopressor requirement is septic shock until proven otherwise."
         }
       ]
     },
@@ -268,10 +263,7 @@
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ],
-          "note": "Cardiovascular dysfunction (any noradrenaline) = Grade III.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Cardiovascular dysfunction (any noradrenaline) = Grade III."
         }
       ]
     },
@@ -286,9 +278,6 @@
           "guidelineRefs": [
             "ssc-2021",
             "tg18-antimicrobial"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -309,10 +298,7 @@
             "tg18-gb-drainage",
             "tg18-mgmt-cholecystitis"
           ],
-          "note": "Source control in a critically ill patient with acalculous cholecystitis: percutaneous gallbladder drainage.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Source control in a critically ill patient with acalculous cholecystitis: percutaneous gallbladder drainage."
         },
         {
           "id": "mgmt-antibiotics",
@@ -334,9 +320,6 @@
           "guidelineRefs": [
             "tg18-antimicrobial",
             "ssc-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -359,9 +342,6 @@
             "tg18-gb-drainage"
           ],
           "note": "Early LC is not the default for an unstable ventilated patient; an unqualified early-LC line is noise that competes with drainage.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Cholecystitis protocol key points: qualify early LC by grade and fitness (TG18: CCI/ASA-PS; drainage for Grade III/unfit/acalculous critically ill)."
         },
         {
@@ -376,20 +356,14 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     },
     "dxVariant": {
       "id": "variant-grade3",

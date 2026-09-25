@@ -217,9 +217,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -232,10 +229,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Suspected cancer pathway: seen within 2 weeks. \"priority\" or above.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Suspected cancer pathway: seen within 2 weeks. \"priority\" or above."
       },
       "redFlags": [
         {
@@ -252,9 +246,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -284,9 +275,10 @@
             "bsg-acpgbi-fit-2022"
           ],
           "note": "FIT ≥ 10 µg Hb/g is the NICE DG56 threshold for a suspected cancer referral; the result should be read and surfaced.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote)"
         }
       ]
     },
@@ -302,9 +294,6 @@
           "guidelineRefs": [
             "nice-ng12",
             "bsg-acpgbi-fit-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -315,9 +304,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -340,9 +326,10 @@
             "nice-ng12",
             "nice-dg56"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-iron",
@@ -358,9 +345,10 @@
           "guidelineRefs": [
             "bsg-ida-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         }
       ]
     }

@@ -156,9 +156,6 @@
           "guidelineRefs": [
             "nice-ng12",
             "ascrs-anal-scc-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -170,9 +167,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "nice-ng12"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -186,9 +180,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -208,9 +199,10 @@
             "ascrs-anal-scc-2018"
           ],
           "note": "Tissue diagnosis of the anal lesion itself (EUA and biopsy); a colonoscopy biopsy does not sample it.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-mri-pelvis",
@@ -223,9 +215,10 @@
           "guidelineRefs": [
             "ascrs-anal-scc-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-hiv-test",
@@ -236,9 +229,10 @@
           "guidelineRefs": [
             "ascrs-anal-scc-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -256,9 +250,10 @@
           "guidelineRefs": [
             "ascrs-anal-scc-2018"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -286,9 +281,6 @@
           ],
           "guidelineRefs": [
             "ascrs-anal-scc-2018"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -254,10 +254,7 @@
           "guidelineRefs": [
             "jbds-dka-2023"
           ],
-          "note": "Euglycaemic DKA: the glucose is normal, so a glucose-driven rule will not find it.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Euglycaemic DKA: the glucose is normal, so a glucose-driven rule will not find it."
         },
         {
           "id": "mnm-bile-leak-or-collection",
@@ -270,9 +267,10 @@
             "surgical site"
           ],
           "note": "Day 2 after cholecystectomy with abdominal pain: bile leak remains in the differential.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Diabetic Ketoacidosis | 2. Community-Acquired Pneumonia | 3. Pulmonary Embolism | 4. Acute Appendicitis | 5. Atrial Fibrillation; also in ios.ccEarly#2"
         }
       ]
     },
@@ -283,9 +281,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "jbds-dka-2023"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -300,9 +295,6 @@
           ],
           "guidelineRefs": [
             "jbds-dka-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -321,9 +313,6 @@
           ],
           "guidelineRefs": [
             "jbds-dka-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -342,9 +331,6 @@
           "guidelineRefs": [
             "jbds-dka-2023",
             "cpoc-diabetes-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -360,10 +346,7 @@
           "guidelineRefs": [
             "jbds-dka-2023"
           ],
-          "note": "Fixed-rate IV insulin with 10% glucose alongside because the glucose is not high.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Fixed-rate IV insulin with 10% glucose alongside because the glucose is not high."
         }
       ],
       "mustExclude": [
@@ -379,10 +362,7 @@
             "if peritonitis",
             "if generalised peritonitis"
           ],
-          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -396,10 +376,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

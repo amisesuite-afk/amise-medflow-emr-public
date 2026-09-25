@@ -223,9 +223,6 @@
             "wses-lbo-2018"
           ],
           "note": "WSES 2018: right-sided obstruction — right colectomy with primary anastomosis; stents are not routinely recommended for right-sided lesions.",
-          "unverified": [
-            "ios"
-          ],
           "knownGapNote": "Web: Plan offers the left-sided LBO options only (SEMS, Hartmann's, colostomy); no right colectomy with primary anastomosis.",
           "proposedFix": "Split lbo_malignant into left- and right-sided variants; right-sided = right colectomy with primary anastomosis."
         }
@@ -251,9 +248,6 @@
           ],
           "knownGap": [
             "web"
-          ],
-          "unverified": [
-            "ios"
           ],
           "knownGapNote": "Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctioning colostomy') is applied to a hepatic-flexure tumour."
         }

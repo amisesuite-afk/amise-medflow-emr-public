@@ -186,9 +186,6 @@
           "match": [
             "eclampsia",
             "hellp"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -201,10 +198,7 @@
           "nice-ng133",
           "acog-pb222-2020"
         ],
-        "atLeast": "urgent",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "urgent"
       }
     },
     "management": {
@@ -221,9 +215,6 @@
             "enalapril",
             "amlodipine",
             "antihypertensive"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -238,9 +229,6 @@
             "obstetrician",
             "maternity",
             "o&g"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -252,9 +240,6 @@
           "note": "Consider for postpartum pre-eclampsia with severe features / neurological symptoms.",
           "match": [
             "magnesium"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -278,9 +263,6 @@
             "elective",
             "after recovery",
             "once recovered"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

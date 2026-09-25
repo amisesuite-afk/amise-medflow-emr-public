@@ -152,9 +152,10 @@
           "guidelineRefs": [
             "bethesda-2023"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -166,9 +167,6 @@
           ],
           "guidelineRefs": [
             "bethesda-2023"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -178,9 +176,6 @@
         "id": "level-not-emergency",
         "severity": "quality",
         "atMost": "priority",
-        "unverified": [
-          "ios"
-        ],
         "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
       }
     },

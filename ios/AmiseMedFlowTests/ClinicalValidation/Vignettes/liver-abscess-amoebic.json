@@ -209,9 +209,6 @@
           "k": 3,
           "guidelineRefs": [
             "review-amoebiasis-2003"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -223,9 +220,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "review-amoebiasis-2003"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -237,10 +231,7 @@
           "match": [
             "blood culture"
           ],
-          "note": "Exclude a pyogenic (or mixed) abscess.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Exclude a pyogenic (or mixed) abscess."
         }
       ]
     },
@@ -258,9 +249,6 @@
             "review-amoebiasis-2003"
           ],
           "note": "Amoebicidal metronidazole (e.g. 750–800 mg TDS). A generic anaerobic-cover metronidazole in a sepsis or peritonism bundle does not count.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "lib/pane-engine management index: map A06.4 to the liver_abscess protocol (amoebic branch: metronidazole 750–800 mg TDS 7–10 days then a luminal agent) and see mgmt-no-appendicectomy."
         },
         {
@@ -276,9 +264,6 @@
             "review-amoebiasis-2003"
           ],
           "note": "A luminal amoebicide after metronidazole prevents relapse and onward transmission.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "liver_abscess protocol: add paromomycin or diloxanide furoate after metronidazole for amoebic abscess."
         }
       ],
@@ -305,9 +290,10 @@
             "review-amoebiasis-2003"
           ],
           "note": "Uncomplicated amoebic abscess responds to metronidazole; aspiration is for non-response at 3–5 days, left-lobe abscess or imminent rupture.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"pyogenic: iv antibiotics (biliary/enteric cover) + percutaneous drainage of large abscesses; find the source (biliary, colonic)\""
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -322,9 +308,6 @@
             "exclude appendicitis"
           ],
           "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol."
         }
       ]

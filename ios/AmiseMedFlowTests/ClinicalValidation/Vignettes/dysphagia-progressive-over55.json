@@ -201,9 +201,6 @@
           "k": 3,
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -216,10 +213,7 @@
         "guidelineRefs": [
           "nice-ng12"
         ],
-        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect.",
-        "unverified": [
-          "ios"
-        ]
+        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect."
       },
       "redFlags": [
         {
@@ -234,9 +228,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -248,9 +239,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote)"
         }
       ]
     },
@@ -267,9 +259,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -281,10 +270,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "note": "Staging after histology; quality only.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Staging after histology; quality only."
         }
       ]
     },
@@ -304,9 +290,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -325,10 +308,7 @@
           "guidelineRefs": [
             "nice-cg184"
           ],
-          "note": "Alarm features: endoscopy, not an empirical PPI trial.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Alarm features: endoscopy, not an empirical PPI trial."
         }
       ]
     }

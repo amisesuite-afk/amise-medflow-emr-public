@@ -137,9 +137,6 @@
           ],
           "guidelineRefs": [
             "accp-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -153,9 +150,6 @@
           ],
           "guidelineRefs": [
             "esc-valve-2021"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -172,9 +166,10 @@
           "guidelineRefs": [
             "accp-2022"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },
@@ -193,9 +188,10 @@
             "esc-valve-2021"
           ],
           "note": "Mechanical mitral valve: interrupt warfarin with therapeutic heparin bridging.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         },
         {
           "id": "mgmt-specialist-input",
@@ -208,9 +204,10 @@
           "guidelineRefs": [
             "esc-valve-2021"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
         }
       ],
       "mustExclude": [
@@ -223,10 +220,7 @@
           "guidelineRefs": [
             "esc-valve-2021"
           ],
-          "note": "DOACs are contraindicated with mechanical valves.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "DOACs are contraindicated with mechanical valves."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -240,10 +234,7 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     }

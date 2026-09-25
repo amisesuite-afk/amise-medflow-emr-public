@@ -214,9 +214,6 @@
           "guidelineRefs": [
             "jbds-hhs-2022",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -246,9 +243,6 @@
         "guidelineRefs": [
           "jbds-hhs-2022",
           "ada-hhc-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "mustAlarm": [
@@ -263,9 +257,6 @@
           "guidelineRefs": [
             "jbds-hhs-2022",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -283,10 +274,7 @@
             "jbds-hhs-2022",
             "ada-hhc-2024"
           ],
-          "note": "JBDS HHS: osmolality is measured or calculated repeatedly; the rate of fall guides treatment.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "JBDS HHS: osmolality is measured or calculated repeatedly; the rate of fall guides treatment."
         }
       ]
     },
@@ -302,10 +290,7 @@
             "jbds-hhs-2022",
             "ada-hhc-2024"
           ],
-          "note": "Distinguishes HHS from DKA / mixed states. Graded as management because the web prompt adds this test as a plan line, not an investigation order.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Distinguishes HHS from DKA / mixed states. Graded as management because the web prompt adds this test as a plan line, not an investigation order."
         },
         {
           "id": "mgmt-saline-first",
@@ -320,10 +305,7 @@
             "jbds-hhs-2022",
             "ada-hhc-2024"
           ],
-          "note": "JBDS HHS: 0.9% sodium chloride is the first-line fluid.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "JBDS HHS: 0.9% sodium chloride is the first-line fluid."
         },
         {
           "id": "mgmt-vte-prophylaxis",
@@ -340,9 +322,6 @@
           "guidelineRefs": [
             "jbds-hhs-2022",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -357,9 +336,6 @@
           "guidelineRefs": [
             "jbds-hhs-2022",
             "ada-hhc-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -370,9 +346,6 @@
           ],
           "guidelineRefs": [
             "jbds-hhs-2022"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -393,10 +366,7 @@
             "jbds-hhs-2022",
             "ada-hhc-2024"
           ],
-          "note": "JBDS HHS: fluids first; insulin (0.05 units/kg/h) only when glucose stops falling with fluids alone, unless significantly ketotic. A DKA-dose infusion at presentation risks a rapid osmolality fall.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "JBDS HHS: fluids first; insulin (0.05 units/kg/h) only when glucose stops falling with fluids alone, unless significantly ketotic. A DKA-dose infusion at presentation risks a rapid osmolality fall."
         }
       ]
     }

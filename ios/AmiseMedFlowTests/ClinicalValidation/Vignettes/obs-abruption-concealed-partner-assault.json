@@ -184,9 +184,6 @@
           ],
           "match": [
             "abruption"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -199,10 +196,7 @@
           "atls-10-pregnancy",
           "rcog-gtg63-2011"
         ],
-        "atLeast": "emergency",
-        "unverified": [
-          "ios"
-        ]
+        "atLeast": "emergency"
       },
       "redFlags": [
         {
@@ -213,9 +207,6 @@
           ],
           "match": [
             "pregnan"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -233,9 +224,10 @@
             "abuse",
             "violence"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)"
         }
       ]
     },
@@ -253,9 +245,6 @@
             "cardiotocograph",
             "fetal monitor",
             "fetal heart"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -269,9 +258,6 @@
             "coagulation",
             "clotting",
             "coag screen"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -285,9 +271,6 @@
             "cross-match",
             "group and",
             "group & "
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -306,9 +289,6 @@
             "obstetrician",
             "maternity",
             "o&g"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -323,9 +303,6 @@
             "uterine displacement",
             "displace the uterus",
             "wedge"
-          ],
-          "unverified": [
-            "ios"
           ]
         },
         {
@@ -341,9 +318,6 @@
             "safeguard",
             "safety plan",
             "idva"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -374,9 +348,6 @@
             "web.plan",
             "web.protocol",
             "web.managementPanel"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -384,10 +355,7 @@
     "pathway": {
       "id": "pathway-trauma",
       "severity": "quality",
-      "equals": "trauma",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "trauma"
     }
   },
   "guideline": [

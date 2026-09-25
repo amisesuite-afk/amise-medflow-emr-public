@@ -141,9 +141,6 @@
           "k": 3,
           "guidelineRefs": [
             "rcog-gtg37b"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -155,9 +152,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "rcog-gtg37b"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -170,10 +164,7 @@
           "guidelineRefs": [
             "rcog-gtg37b"
           ],
-          "note": "Pregnancy changes the investigation and the drug choice.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Pregnancy changes the investigation and the drug choice."
         }
       ]
     },
@@ -189,9 +180,6 @@
           ],
           "guidelineRefs": [
             "rcog-gtg37b"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -211,10 +199,11 @@
           "guidelineRefs": [
             "rcog-gtg37b"
           ],
-          "unverified": [
+          "proposedFix": "Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: \"d-dimer: high sensitivity (~96%), low specificity - use to rule out only\" (+1 more)"
         }
       ]
     },
@@ -232,9 +221,6 @@
           ],
           "guidelineRefs": [
             "rcog-gtg37b"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -259,9 +245,6 @@
             "rcog-gtg37b"
           ],
           "note": "DOACs are not recommended in pregnancy.",
-          "unverified": [
-            "ios"
-          ],
           "proposedFix": "Make the DVT/PE plans pregnancy-aware (pregnancy → LMWH only; hide DOAC and warfarin lines) and add a dx-variant or plan prefix for VTE in pregnancy."
         },
         {
@@ -282,12 +265,10 @@
           ],
           "note": "Warfarin is teratogenic and not used antenatally.",
           "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The DVT plan says \"LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)\" and lists \"Warfarin 5 mg OD — if DOAC contraindicated\": read literally, it proposes warfarin in pregnancy.",
-          "unverified": [
+            "web",
             "ios"
           ],
+          "knownGapNote": "The DVT plan says \"LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)\" and lists \"Warfarin 5 mg OD — if DOAC contraindicated\": read literally, it proposes warfarin in pregnancy. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers...\" (+5 more)",
           "proposedFix": "Rewrite the DVT protocol line: pregnancy → treatment-dose LMWH throughout pregnancy; warfarin is contraindicated antenatally."
         }
       ]

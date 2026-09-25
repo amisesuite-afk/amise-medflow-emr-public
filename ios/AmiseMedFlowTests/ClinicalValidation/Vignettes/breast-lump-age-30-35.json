@@ -119,9 +119,6 @@
         "atLeast": "priority",
         "guidelineRefs": [
           "nice-ng12"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -137,10 +134,11 @@
             "nice-ng12"
           ],
           "note": "NICE NG12: aged 30 and over with an unexplained breast lump with or without pain → suspected cancer pathway referral.",
-          "unverified": [
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen.",
+          "knownGap": [
             "ios"
           ],
-          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)"
         }
       ]
     },
@@ -159,9 +157,10 @@
             "abs-best-practice-2010",
             "nccn-breast-dx-2025"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         },
         {
           "id": "inv-core-biopsy",
@@ -177,9 +176,10 @@
             "abs-best-practice-2010"
           ],
           "note": "Tissue diagnosis completes triple assessment.",
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
         }
       ]
     },

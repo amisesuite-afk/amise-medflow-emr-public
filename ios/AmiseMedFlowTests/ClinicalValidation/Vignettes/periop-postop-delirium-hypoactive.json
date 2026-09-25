@@ -178,9 +178,6 @@
           ],
           "guidelineRefs": [
             "nice-cg103"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -199,9 +196,6 @@
           "guidelineRefs": [
             "nice-cg103",
             "sign-157"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -223,9 +217,6 @@
           ],
           "guidelineRefs": [
             "nice-cg103"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -245,9 +236,10 @@
           "guidelineRefs": [
             "nice-cg103"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
         },
         {
           "id": "mgmt-non-pharmacological",
@@ -262,9 +254,6 @@
           ],
           "guidelineRefs": [
             "nice-cg103"
-          ],
-          "unverified": [
-            "ios"
           ],
           "proposedFix": "See flag-delirium."
         }
@@ -287,10 +276,7 @@
           "guidelineRefs": [
             "sign-157"
           ],
-          "note": "Benzodiazepines worsen delirium; not used except in alcohol/benzodiazepine withdrawal.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Benzodiazepines worsen delirium; not used except in alcohol/benzodiazepine withdrawal."
         },
         {
           "id": "mgmt-no-routine-antipsychotic",
@@ -311,10 +297,7 @@
           "guidelineRefs": [
             "nice-cg103"
           ],
-          "note": "Hypoactive delirium: no antipsychotic.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Hypoactive delirium: no antipsychotic."
         },
         {
           "id": "mgmt-no-emergency-laparotomy",
@@ -328,10 +311,7 @@
             "if peritonitis",
             "if generalised peritonitis"
           ],
-          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion."
         },
         {
           "id": "mgmt-no-appendicectomy",
@@ -345,20 +325,14 @@
             "no role",
             "exclude appendicitis"
           ],
-          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
         }
       ]
     },
     "pathway": {
       "id": "pathway-ward-review",
       "severity": "quality",
-      "equals": "wardReview",
-      "unverified": [
-        "ios"
-      ]
+      "equals": "wardReview"
     }
   },
   "guideline": [

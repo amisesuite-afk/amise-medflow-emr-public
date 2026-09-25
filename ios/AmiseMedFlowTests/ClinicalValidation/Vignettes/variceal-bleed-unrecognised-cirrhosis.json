@@ -196,9 +196,6 @@
           "k": 3,
           "guidelineRefs": [
             "baveno-7"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -215,9 +212,6 @@
           ],
           "guidelineRefs": [
             "baveno-7"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -229,9 +223,6 @@
         "atLeast": "emergency",
         "guidelineRefs": [
           "baveno-7"
-        ],
-        "unverified": [
-          "ios"
         ]
       },
       "redFlags": [
@@ -247,9 +238,6 @@
           ],
           "guidelineRefs": [
             "baveno-7"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -263,9 +251,10 @@
           "guidelineRefs": [
             "baveno-7"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): child-pugh not recommended; recommended: glasgow-blatchford, rockall, aims65, ios:forrest"
         }
       ]
     },
@@ -281,9 +270,6 @@
           ],
           "guidelineRefs": [
             "baveno-7"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -304,10 +290,7 @@
             "nice-cg141"
           ],
           "note": "Start as soon as variceal bleeding is suspected, before endoscopy.",
-          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time."
         },
         {
           "id": "mgmt-antibiotic-prophylaxis",
@@ -321,10 +304,7 @@
           "guidelineRefs": [
             "baveno-7"
           ],
-          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time."
         },
         {
           "id": "mgmt-band-ligation",
@@ -338,10 +318,7 @@
           "guidelineRefs": [
             "baveno-7"
           ],
-          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
-          "unverified": [
-            "ios"
-          ]
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time."
         }
       ],
       "mustExclude": [
@@ -355,9 +332,6 @@
           "guidelineRefs": [
             "baveno-7",
             "villanueva-2013"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

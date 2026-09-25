@@ -94,9 +94,10 @@
             "ogtt",
             "glucose tolerance"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
         }
       ]
     },
@@ -107,10 +108,7 @@
         "guidelineRefs": [
           "ada-2024"
         ],
-        "atMost": "priority",
-        "unverified": [
-          "ios"
-        ]
+        "atMost": "priority"
       }
     },
     "management": {
@@ -126,9 +124,6 @@
             "diabetic nephropathy",
             "diabetes monitoring",
             "diabetic foot exam"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

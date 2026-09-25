@@ -166,10 +166,7 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "note": "New \"renal colic\" over 60 without a stone history: AAA must be on the list.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "New \"renal colic\" over 60 without a stone history: AAA must be on the list."
         }
       ]
     },
@@ -180,9 +177,6 @@
         "atLeast": "urgent",
         "guidelineRefs": [
           "esvs-aaa-2024"
-        ],
-        "unverified": [
-          "ios"
         ]
       }
     },
@@ -199,9 +193,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]
@@ -222,9 +213,6 @@
           ],
           "guidelineRefs": [
             "esvs-aaa-2024"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ],
@@ -236,10 +224,7 @@
             "re:discharge[^.;]{0,40}(analgesi|nsaid|diclofenac)",
             "re:(diclofenac|nsaid)[^.;]{0,40}discharge"
           ],
-          "note": "Discharging with NSAIDs as renal colic is the classic fatal error.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "Discharging with NSAIDs as renal colic is the classic fatal error."
         },
         {
           "id": "mgmt-no-antithrombotic-plan",
@@ -265,10 +250,7 @@
           "guidelineRefs": [
             "esvs-aaa-2024"
           ],
-          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
-          "unverified": [
-            "ios"
-          ]
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
         }
       ]
     }
