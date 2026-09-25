@@ -68,6 +68,9 @@ jobs:
   unit-tests:
     name: Unit tests (simulator)
     runs-on: macos-15
+    # Write only for the step that saves the clinical validation results to the branch.
+    permissions:
+      contents: write
     timeout-minutes: 45
 
     steps:
@@ -139,3 +142,30 @@ jobs:
           path: ios/clinval-ios.jsonl
           if-no-files-found: warn
           retention-days: 30
+
+      # Saves the results on this branch as docs/clinical-validation/results/ios-latest.jsonl, where
+      # clinval:report reads them (artifact downloads are not reachable from every environment).
+      # A GITHUB_TOKEN push never starts another workflow run, so this cannot loop. Only on a push to
+      # a claude/** branch, only when the file changed, and it never fails the job.
+      - name: Save clinical validation results to the branch
+        if: always() && github.event_name == 'push'
+        continue-on-error: true
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          [ -s ios/clinval-ios.jsonl ] || { echo "No results to save."; exit 0; }
+          cp ios/clinval-ios.jsonl "$RUNNER_TEMP/ios-latest.jsonl"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch --depth=1 origin "$BRANCH"
+            git checkout -q -B clinval-save FETCH_HEAD
+            mkdir -p docs/clinical-validation/results
+            cp "$RUNNER_TEMP/ios-latest.jsonl" docs/clinical-validation/results/ios-latest.jsonl
+            git add docs/clinical-validation/results/ios-latest.jsonl
+            if git diff --cached --quiet; then echo "Results unchanged."; exit 0; fi
+            git commit -q -m "clinval: iOS results from run ${{ github.run_id }} (${GITHUB_SHA::7})"
+            if git push -q origin "HEAD:$BRANCH"; then echo "Saved."; exit 0; fi
+            sleep $((attempt * 5))
+          done
+          echo "Could not save the results (branch moved); the artifact still has them."
