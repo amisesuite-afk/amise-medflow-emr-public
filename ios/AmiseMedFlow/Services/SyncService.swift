@@ -191,6 +191,7 @@ final class SyncService: ObservableObject {
         guard !isSyncing else { return }
         isSyncing = true
         syncError = nil
+        SyncSkipLog.reset()   // reasons for records left pending, noted afresh by this sync
         defer { isSyncing = false }
 
         // The launch fetch may have failed (offline): try again, so the role-dependent push

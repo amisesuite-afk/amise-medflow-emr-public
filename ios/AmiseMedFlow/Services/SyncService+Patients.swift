@@ -472,6 +472,7 @@ extension SyncService {
                     // as it is (the duplicate review shows both); nothing is inserted.
                     let claimed = Set(try context.fetch(FetchDescriptor<Patient>()).compactMap(\.remoteId))
                     if claimed.contains(link.id) {
+                        SyncSkipLog.note(localId, .duplicateBooking)
                         CrashReporting.breadcrumb("Sync: booking patient already held by another local record",
                                                   category: "sync")
                         continue

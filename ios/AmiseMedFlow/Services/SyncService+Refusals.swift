@@ -134,6 +134,7 @@ extension SyncService {
             CrashReporting.breadcrumb("Sync: \(kind.rawValue) change not permitted (0 rows)",
                                       category: "sync")
         case .rowGone:
+            SyncSkipLog.note(id, .serverRowMissing)
             CrashReporting.breadcrumb("Sync: \(kind.rawValue) update matched no row", category: "sync")
         case .applied, .retryLater:
             break
@@ -150,6 +151,7 @@ extension SyncService {
             return false
         }
         if markIfRefused(error, id: id, kind: kind) { return true }
+        SyncSkipLog.note(id, .sendFailed, detail: error.localizedDescription)
         CrashReporting.breadcrumb("Sync: \(kind.rawValue) push failed", category: "sync")
         if firstError == nil { firstError = error }
         return true

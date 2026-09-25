@@ -62,10 +62,16 @@ struct SettingsView: View {
                             }
                         }
                     } else if sync.pendingCount > 0 {
-                        LabeledContent("Pending") {
-                            Text("\(sync.pendingCount) record\(sync.pendingCount == 1 ? "" : "s")")
-                                .foregroundStyle(.orange)
+                        // Tap for each pending record and why it has not gone up yet.
+                        NavigationLink {
+                            PendingSyncDetailView()
+                        } label: {
+                            LabeledContent("Pending") {
+                                Text("\(sync.pendingCount) record\(sync.pendingCount == 1 ? "" : "s")")
+                                    .foregroundStyle(.orange)
+                            }
                         }
+                        .accessibilityIdentifier("settings.pendingDetail")
                     }
 
                     if let last = sync.lastSyncedAt {
