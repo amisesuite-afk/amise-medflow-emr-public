@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useAppContext, type ActiveDiagnosis, type WorkingDiagnosis } from '@/context/AppContext';
 import { detectPathognomonic } from '@/lib/transcript-dx-mapper';
 import { diagnosisSuggestion, confirmDiagnosisSuggestion, isConfirmedDiagnosis } from '@/lib/diagnosis-suggestion';
+import { managementPanelSource } from '@/lib/management-panel-source';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
@@ -598,13 +599,18 @@ export default function AssessmentTab() {
     pearl: ccMatrix.pearl,
   } : null;
 
-  // Show ManagementPanel when PANE top disease exceeds 20% posterior probability.
-  // 0.85 convergence threshold was never met with 136 diseases (max prior ~3.6%).
-  // After SOCRATES seeding a clear leader typically rises to 30–60%.
-  const activeDiseaseId = (paneTop[0]?.probability ?? 0) >= 0.20
-    ? paneTop[0]!.disease.id
-    : null;
-  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
+  // ManagementPanel: the clinician-confirmed diagnosis (locked working diagnosis or recorded
+  // ICD-10 code) when there is one; the PANE leader (posterior ≥ 20%) only when nothing is
+  // confirmed. It used to follow the PANE leader even over a confirmed diagnosis
+  // (lib/management-panel-source.ts). 0.85 convergence was never met with 136 diseases (max
+  // prior ~3.6%); after SOCRATES seeding a clear leader typically rises to 30–60%.
+  const panelSource = managementPanelSource(
+    workingDiagnosis,
+    icdCodes,
+    paneTop[0] ? { diseaseId: paneTop[0].disease.id, probability: paneTop[0].probability } : null,
+  );
+  const activeDiseaseId = panelSource.diseaseId;
+  const activeIcdCode = panelSource.icdCode;
 
   // Investigations are not ordered from the differential here any more: the leading
   // differentials' protocol tests are SUGGESTIONS on the Labs / Imaging steps, ordered only

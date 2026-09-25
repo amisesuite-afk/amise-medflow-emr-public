@@ -30,6 +30,7 @@ import { computeRankedDifferentials } from '../../../artifacts/dashboard/src/lib
 import { getCdsSuggestions } from '../../../artifacts/dashboard/src/lib/clinical-cds';
 import type { CdsContext } from '../../../artifacts/dashboard/src/lib/clinical-cds';
 import { detectDxVariants } from '../../../artifacts/dashboard/src/lib/dx-variants';
+import { managementPanelSource } from '../../../artifacts/dashboard/src/lib/management-panel-source';
 import { computeClinicalPrompts } from '../../../artifacts/dashboard/src/lib/clinical-inference';
 import type { InferenceInput as PromptInput } from '../../../artifacts/dashboard/src/lib/clinical-inference';
 import {
@@ -255,13 +256,20 @@ export function runWeb(v: Vignette): EngineOutputs {
   const dx = inp.confirmedDiagnosis;
   const icd = dx?.icd10 ?? null;
   const assessment = dx?.assessmentText ?? dx?.name ?? '';
-  // AssessmentTab: activeDiseaseId when PANE top ≥ 0.20, else the ICD code.
-  const assessDiseaseId = (paneTop[0]?.probability ?? 0) >= 0.20 ? paneTop[0].disease.id : null;
-  const panelProtocol = (assessDiseaseId ? getProtocol(assessDiseaseId) : null) ?? (icd ? getProtocolByIcd(icd) : null);
+  // AssessmentTab ManagementPanel (managementPanelSource): the confirmed diagnosis — locked working
+  // diagnosis (paneDiseaseId) or recorded ICD-10 code — else the PANE top when ≥ 0.20.
+  const panelSource = managementPanelSource(
+    dx?.paneDiseaseId ? { diseaseId: dx.paneDiseaseId, icdCode: icd, locked: true } : null,
+    icd ? [icd] : [],
+    paneTop[0] ? { diseaseId: paneTop[0].disease.id, probability: paneTop[0].probability } : null,
+  );
+  const assessDiseaseId = panelSource.source === 'pane' ? panelSource.diseaseId : null;
+  const panelProtocol = (panelSource.diseaseId ? getProtocol(panelSource.diseaseId) : null)
+    ?? (panelSource.icdCode ? getProtocolByIcd(panelSource.icdCode) : null);
   // PlanTab: PANE converged (≥0.85) disease, else ICD (icdCodes[0] ?? workingDiagnosis.icdCode).
   const planDiseaseId = (paneTop[0]?.probability ?? 0) >= 0.85 ? paneTop[0].disease.id : null;
   const planProtocol = planDiseaseId ? getProtocol(planDiseaseId) : (icd ? getProtocolByIcd(icd) : null);
-  notes.push(`AssessmentTab ManagementPanel protocol: ${panelProtocol?.diseaseId ?? '(none)'}${assessDiseaseId ? ' (from PANE top)' : ' (from ICD)'}`);
+  notes.push(`AssessmentTab ManagementPanel protocol: ${panelProtocol?.diseaseId ?? '(none)'}${assessDiseaseId ? ' (from PANE top)' : ' (from the confirmed diagnosis)'}`);
   notes.push(`PlanTab protocol: ${planProtocol?.diseaseId ?? '(none)'}${planDiseaseId ? ' (PANE converged)' : ' (from ICD)'}`);
   const variant = detectDxVariants(assessment, icd ?? undefined, planDiseaseId ?? dx?.paneDiseaseId ?? undefined);
   const dxVariant = { value: variant?.detectedVariant?.id ?? null, group: variant?.group.baseDiagnosis ?? null };
