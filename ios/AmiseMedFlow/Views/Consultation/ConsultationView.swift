@@ -162,13 +162,14 @@ struct ConsultationView: View {
             if !embeddedInNav { completenessBar(progress) }
             tabBar(filled: filled)
             Divider()
+            // Last step: what Save snapshot and Complete each do. Under the step bar, not in the
+            // footer, so it stays on screen while the keyboard is up (walkthrough run 36195058935
+            // did not find it: the Plan editor had the keyboard up and the footer was hidden).
+            visitActionsExplanation
             lastVisitCard
             tabContent
                 .frame(maxHeight: .infinity)
-            if !keyboardVisible {
-                visitActionsExplanation
-                stepFooter
-            }
+            if !keyboardVisible { stepFooter }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
             keyboardVisible = true

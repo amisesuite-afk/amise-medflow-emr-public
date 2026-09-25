@@ -179,6 +179,10 @@ struct PatientDetailPadView: View {
                             .lineLimit(1)
                     }
                 }
+                // Whose record: stays above the embedded consultation on every step, so the
+                // consultation does not repeat it (the Tools and Complete sheets show it again).
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("patient.header.identity")
                 // Safety strip (UX review M3): NEWS2 with band colour and age, every allergy (not
                 // only severe ones), the antithrombotic — text, not 11-pt icons.
                 RecordSafetyStrip(patient: patient)

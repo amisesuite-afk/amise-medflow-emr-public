@@ -91,17 +91,19 @@ struct TodayDashboardView: View {
                             }
                             // ── Normal sections ─────────────────────────
                             if !board.readyForDoctor.isEmpty { waitingSection(board.readyForDoctor) }
+                            // Walk-ins added today with no appointment date (UX review M9). Near the
+                            // top: the patient just added is the one about to be seen, and on an
+                            // iPhone a group at the end of the list was below the fold.
+                            if !board.addedToday.isEmpty {
+                                clinicSection(board.addedToday, title: "Added today",
+                                              systemImage: "person.crop.circle.badge.plus")
+                            }
                             if !board.highAcuityWard.isEmpty { alertSection(board) }
                             if !board.withNewResults.isEmpty { resultsSection(board) }
                             if !board.ward.isEmpty           { wardSection(board.ward) }
                             if !board.theatre.isEmpty   { theatreSection(board.theatre) }
                             if !board.endoscopy.isEmpty { endoscopySection(board.endoscopy) }
                             if !board.clinic.isEmpty    { clinicSection(board.clinic) }
-                            // Walk-ins added today with no appointment date (UX review M9).
-                            if !board.addedToday.isEmpty {
-                                clinicSection(board.addedToday, title: "Added today",
-                                              systemImage: "person.crop.circle.badge.plus")
-                            }
                             if !board.calendarEvents.isEmpty { calendarSection(board.calendarEvents) }
                         }
                     }
@@ -241,6 +243,9 @@ struct TodayDashboardView: View {
                 }
                 if !board.readyForDoctor.isEmpty {
                     summaryTile(count: board.readyForDoctor.count, label: "Waiting", icon: "person.fill.checkmark", color: .orange)
+                }
+                if !board.addedToday.isEmpty {
+                    summaryTile(count: board.addedToday.count, label: "Added", icon: "person.crop.circle.badge.plus", color: .blue)
                 }
                 if !board.highAcuityWard.isEmpty {
                     summaryTile(count: board.highAcuityWard.count, label: "Alerts", icon: "exclamationmark.triangle.fill", color: .red)

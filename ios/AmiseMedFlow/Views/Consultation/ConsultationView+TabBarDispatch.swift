@@ -237,6 +237,7 @@ extension ConsultationView {
                 .padding(.horizontal, 14).padding(.vertical, 6)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(.bar)
+                .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("consult.actionsExplanation")
         }
     }
