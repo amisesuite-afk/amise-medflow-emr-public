@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "id": "ugib-post-endoscopy-rockall",
+  "condition": "Acute upper GI bleeding (non-variceal)",
+  "category": "upper-gi",
+  "permutationOf": "ugib-nonvariceal-gbs-high",
+  "permutationLabel": "Post-endoscopy: duodenal ulcer Forrest IIa treated endoscopically — complete Rockall 6",
+  "summary": "66-year-old man with ischaemic heart disease after OGD: duodenal ulcer with a non-bleeding visible vessel (Forrest IIa) treated with adrenaline and clips. Complete Rockall 6. High-dose PPI for 72 h, H. pylori testing, no routine second-look.",
+  "tags": [
+    "gi-bleed",
+    "post-endoscopy",
+    "rockall",
+    "forrest",
+    "ppi"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 66,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Review after endoscopy for black stools",
+    "hpi": "Admitted overnight with melaena. OGD this morning: 12 mm posterior duodenal bulb ulcer with a non-bleeding visible vessel (Forrest IIa), treated with adrenaline injection and two haemoclips. Rapid urease test taken. Known ischaemic heart disease (angina). Not on antiplatelets.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Melaena"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "melaena"
+    ],
+    "negatives": [
+      "haematemesis"
+    ],
+    "exam": {
+      "general": "Comfortable. Pulse 96/min, BP 124/78.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 12.4,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 90,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 250,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.1,
+        "unit": "",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "OGD",
+        "modality": "Endoscopy",
+        "region": "Upper GI",
+        "result": "Posterior duodenal bulb ulcer 12 mm with a non-bleeding visible vessel (Forrest IIa). Adrenaline 1:10,000 injection and two haemoclips — haemostasis achieved. Rapid urease test taken. No varices.",
+        "minutesAgo": 180
+      }
+    ],
+    "comorbidities": [
+      "Ischaemic heart disease (stable angina)",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Isosorbide mononitrate",
+        "dose": "30 mg",
+        "frequency": "OD",
+        "indication": "Angina"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Works as a mechanic. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Bleeding duodenal ulcer, Forrest IIa, endoscopic haemostasis",
+      "icd10": "K26.4",
+      "paneDiseaseId": "peptic_ulcer",
+      "assessmentText": "Duodenal ulcer bleed — Forrest IIa non-bleeding visible vessel, endoscopic haemostasis with adrenaline and clips. Complete Rockall 6 (age 1, IHD 2, diagnosis 1, stigmata 2)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Upper GI bleed (haematemesis / melaena)",
+        "symptoms": [
+          "black stool",
+          "melaena"
+        ],
+        "symptomDetails": {
+          "black stool": [
+            "Tarry / melaena"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 1,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-rockall",
+          "severity": "quality",
+          "score": "rockall",
+          "guidelineRefs": [
+            "rockall-1996",
+            "nice-cg141"
+          ],
+          "note": "Post-endoscopy, the complete Rockall score is the relevant score (web suggests the pre-endoscopy Rockall key).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-rec-forrest",
+          "severity": "quality",
+          "score": "forrest",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "esge-2021"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-hpylori",
+          "severity": "quality",
+          "match": [
+            "pylori"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "maastricht-6"
+          ],
+          "note": "Test at index endoscopy; repeat if negative in the acute setting.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-high-dose-ppi-72h",
+          "severity": "critical",
+          "match": [
+            "re:(ppi|omeprazole|esomeprazole|pantoprazole)[^\\n]{0,120}72 ?h",
+            "re:72 ?h[^\\n]{0,60}(ppi|omeprazole|esomeprazole|pantoprazole)",
+            "re:8 ?mg/h"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "nice-cg141"
+          ],
+          "note": "High-dose PPI for 72 h after endoscopic haemostasis of a high-risk ulcer reduces rebleeding.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-hpylori-eradication",
+          "severity": "quality",
+          "match": [
+            "pylori"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "maastricht-6"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-oral-ppi-continuation",
+          "severity": "quality",
+          "match": [
+            "re:(oral|po)[^\\n]{0,40}(ppi|omeprazole|esomeprazole|pantoprazole)",
+            "re:(ppi|omeprazole|esomeprazole)[^\\n]{0,60}(po|oral)"
+          ],
+          "guidelineRefs": [
+            "esge-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-second-look",
+          "severity": "quality",
+          "match": [
+            "routine second-look",
+            "routine second look",
+            "re:second.look (ogd|endoscopy) (at|in) 24"
+          ],
+          "guidelineRefs": [
+            "esge-2021"
+          ],
+          "note": "ESGE: routine second-look endoscopy is not recommended.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-tranexamic-acid",
+          "severity": "critical",
+          "match": [
+            "tranexamic",
+            "re:\\btxa\\b"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "halt-it-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-nonvariceal",
+      "severity": "quality",
+      "equals": "ugib_nonvariceal_stable",
+      "guidelineRefs": [
+        "esge-2021"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esge-2021",
+      "name": "ESGE Guideline — endoscopic diagnosis and management of nonvariceal upper gastrointestinal haemorrhage (NVUGIH), update 2021",
+      "year": 2021,
+      "section": "High-dose PPI (e.g. 80 mg IV bolus then 8 mg/h, or intermittent bolus) for 72 h after endoscopic haemostasis; Forrest classification of stigmata; no routine second-look endoscopy; H. pylori testing and eradication",
+      "citation": "Gralnek IM, Stanley AJ, Morris AJ, et al. Endoscopy. 2021;53:300–332.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg141",
+      "name": "NICE CG141 — Acute upper gastrointestinal bleeding in over 16s: management",
+      "year": 2012,
+      "section": "Complete Rockall score after endoscopy; PPI after endoscopy to patients with stigmata of recent haemorrhage",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG141. London: NICE; 2012 (last updated 2016).",
+      "verified": false
+    },
+    {
+      "id": "rockall-1996",
+      "name": "Rockall score — derivation",
+      "year": 1996,
+      "section": "Complete score adds diagnosis (all diagnoses other than Mallory-Weiss/no lesion → 1; malignancy → 2) and stigmata (visible vessel → 2)",
+      "citation": "Rockall TA, Logan RF, Devlin HB, Northfield TC. Risk assessment after acute upper gastrointestinal haemorrhage. Gut. 1996;38:316–321.",
+      "verified": false
+    },
+    {
+      "id": "maastricht-6",
+      "name": "Maastricht VI/Florence consensus report — management of Helicobacter pylori infection",
+      "year": 2022,
+      "section": "H. pylori eradication in bleeding peptic ulcer; confirm eradication",
+      "citation": "Malfertheiner P, Megraud F, Rokkas T, et al. Gut. 2022;71:1724–1762.",
+      "verified": false
+    },
+    {
+      "id": "halt-it-2020",
+      "name": "HALT-IT randomised trial — tranexamic acid in gastrointestinal bleeding",
+      "year": 2020,
+      "section": "Tranexamic acid: no benefit, more venous thromboembolism",
+      "citation": "HALT-IT Trial Collaborators. Effects of a high-dose 24-h infusion of tranexamic acid on death and thromboembolic events in patients with acute gastrointestinal bleeding (HALT-IT). Lancet. 2020;395:1927–1936.",
+      "verified": false
+    }
+  ],
+  "rationale": "Post-endoscopy stage of the non-variceal bleed. The complete Rockall score and the Forrest class drive the post-endoscopy plan: 72 h high-dose PPI, H. pylori test-and-treat, and no routine second look.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "id": "iron-deficiency-anaemia-over60",
+  "condition": "Iron-deficiency anaemia (occult GI blood loss)",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "72-year-old man with tiredness and exertional breathlessness: Hb 9.1, MCV 72, ferritin 6, no GI symptoms. BSG 2021: bidirectional endoscopy (OGD + colonoscopy) and coeliac serology; NG12: urgent referral at ≥60 with IDA.",
+  "tags": [
+    "anaemia",
+    "cancer-red-flag",
+    "ng12",
+    "bsg"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 72,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Tiredness and breathless on exertion",
+    "hpi": "Four months of tiredness and breathlessness climbing hills. GP bloods show iron-deficiency anaemia. Bowels regular. Diet normal, eats meat. Takes no anti-inflammatories.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "fatigue",
+      "exertional breathlessness"
+    ],
+    "negatives": [
+      "melaena",
+      "rectal bleeding",
+      "change in bowel habit",
+      "weight loss",
+      "dyspepsia",
+      "dysphagia"
+    ],
+    "exam": {
+      "general": "Pale conjunctivae. Pulse 88/min regular.",
+      "abdomen": "Soft, non-tender, no masses. PR: brown stool, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 88,
+        "systolicBp": 132,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.5,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.1,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "mcv",
+        "name": "MCV",
+        "value": 72,
+        "unit": "fL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "ferritin",
+        "name": "Ferritin",
+        "value": 6,
+        "unit": "µg/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 420,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 5,
+        "unit": "mmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired farmer. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Iron-deficiency anaemia",
+      "icd10": "D50.9",
+      "assessmentText": "Iron-deficiency anaemia (Hb 9.1, MCV 72, ferritin 6) in a 72-year-old man — occult GI blood loss / GI malignancy to be excluded: bidirectional endoscopy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fatigue",
+          "dyspnoea on exertion"
+        ],
+        "symptomDetails": {},
+        "examFindings": {
+          "general": [
+            "Pale"
+          ]
+        },
+        "durationDays": 120,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-gi-malignancy",
+          "severity": "quality",
+          "match": [
+            "carcinoma",
+            "malignan",
+            "cancer",
+            "icd:C15",
+            "icd:C16",
+            "icd:C18"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12",
+          "bsg-ida-2021"
+        ],
+        "note": "IDA at ≥60 is a suspected-cancer (urgent) referral criterion. Web passes today for the wrong reason: \"breathless\" in the CC matches the post-operative red-flag rule (Post-operative concern → emergency_now); the anaemia itself raises nothing.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-ida",
+          "severity": "critical",
+          "match": [
+            "iron deficiency",
+            "iron-deficiency",
+            "anaemia",
+            "anemia"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021",
+            "nice-ng12"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Nothing reads the anaemia indices: severe_anaemia prompt needs Hb <8; the NG12 IDA criterion in cancer-screening needs the words \"anaemia/pale/unusually tired\" in the symptom chips. Hb 9.1 / MCV 72 / ferritin 6 raise nothing.",
+          "proposedFix": "clinical-inference.ts: add an IDA prompt from labs (low Hb for sex + low ferritin or MCV) → \"BSG 2021: bidirectional endoscopy, coeliac serology; NG12 ≥60 urgent referral\".",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ogd",
+          "severity": "critical",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-colonoscopy",
+          "severity": "critical",
+          "match": [
+            "colonoscop",
+            "ct colonograph"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021",
+            "nice-ng12"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No protocol for D50.9 and no IDA prompt; colonoscopy never suggested.",
+          "proposedFix": "Same IDA prompt.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-coeliac-serology",
+          "severity": "quality",
+          "match": [
+            "coeliac",
+            "celiac",
+            "ttg",
+            "tissue transglutaminase"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Same as inv-colonoscopy.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-urinalysis",
+          "severity": "quality",
+          "match": [
+            "urinalysis",
+            "urine dip"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Same as inv-colonoscopy.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iron-replacement",
+          "severity": "quality",
+          "match": [
+            "oral iron",
+            "ferrous",
+            "iron replacement",
+            "iv iron",
+            "intravenous iron"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Same as inv-colonoscopy.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-ida-2021",
+      "name": "BSG guidelines — management of iron deficiency anaemia in adults",
+      "year": 2021,
+      "section": "Men and post-menopausal women with IDA: bidirectional endoscopy (OGD + colonoscopy, CT colonography if unfit); coeliac serology; urinalysis; iron replacement",
+      "citation": "Snook J, Bhala N, Beales ILP, et al. Gut. 2021;70:2030–2051.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "Refer adults aged ≥60 with iron-deficiency anaemia using a suspected cancer pathway (colorectal)",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Occult blood loss without any GI symptom. The only signals are the anaemia indices, age and sex. Engines that key on symptoms (not labs) will under-triage; the guideline action is urgent bidirectional endoscopy.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

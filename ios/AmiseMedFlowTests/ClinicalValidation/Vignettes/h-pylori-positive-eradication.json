@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "id": "h-pylori-positive-eradication",
+  "condition": "Helicobacter pylori infection (dyspepsia)",
+  "category": "upper-gi",
+  "permutationOf": "dyspepsia-young-no-alarm-test-and-treat",
+  "permutationLabel": "Stool antigen positive — eradication regimen and test of cure",
+  "summary": "Same patient: H. pylori stool antigen positive. Maastricht VI: 14-day regimen (bismuth quadruple first-line where clarithromycin resistance is high or unknown; clarithromycin triple only if susceptibility is known) and a test of cure ≥4 weeks after treatment.",
+  "tags": [
+    "dyspepsia",
+    "h-pylori",
+    "eradication"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 32,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 163,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Follow-up of upper abdominal burning — stool test result",
+    "hpi": "Review with the result of the H. pylori stool antigen test sent at the last visit (positive). Still has post-prandial burning. No alarm features. Had a course of clarithromycin for a chest infection last year. No drug allergies.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Post-prandial",
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Antacids"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "bloating",
+      "belching"
+    ],
+    "negatives": [
+      "weight loss",
+      "dysphagia",
+      "vomiting",
+      "haematemesis",
+      "melaena",
+      "anaemia",
+      "NSAID use"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, mild epigastric tenderness, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 72,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.4,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "hpyloriStoolAntigen",
+        "name": "H. pylori stool antigen",
+        "resultText": "Positive",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nurse. Non-smoker. Coffee 4 cups a day. Alcohol occasional.",
+    "confirmedDiagnosis": {
+      "name": "Helicobacter pylori gastritis",
+      "icd10": "K29.70",
+      "paneDiseaseId": "gastritis",
+      "assessmentText": "H. pylori-positive dyspepsia (stool antigen positive) — eradication therapy and test of cure."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "epigastric pain",
+          "indigestion",
+          "bloating",
+          "belching"
+        ],
+        "symptomDetails": {},
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "durationDays": 90,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-eradication",
+          "severity": "quality",
+          "match": [
+            "eradication",
+            "amoxicillin",
+            "bismuth",
+            "quadruple",
+            "triple therapy"
+          ],
+          "guidelineRefs": [
+            "maastricht-6"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-14-day-or-bismuth",
+          "severity": "quality",
+          "match": [
+            "bismuth",
+            "quadruple",
+            "14 days",
+            "14-day"
+          ],
+          "guidelineRefs": [
+            "maastricht-6"
+          ],
+          "note": "Maastricht VI: 14 days; bismuth quadruple first-line where clarithromycin resistance is >15% or unknown.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Gastritis protocol: \"triple therapy (PPI + amoxicillin + clarithromycin × 7 days)\"; no bismuth quadruple option, no 14-day course.",
+          "proposedFix": "Gastritis / peptic_ulcer / gastric_carcinoma protocols: align H. pylori regimens with Maastricht VI (14 days; bismuth quadruple first-line where clarithromycin resistance is high or unknown). The three protocols currently disagree (7, 7–14 and 14 days).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-test-of-cure",
+          "severity": "quality",
+          "match": [
+            "confirm eradication",
+            "test of cure",
+            "re:(re-?test|repeat)[^.;\\n]{0,40}(breath|stool|pylori)",
+            "confirm h. pylori eradication"
+          ],
+          "guidelineRefs": [
+            "maastricht-6"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-7-day-clarithromycin-triple",
+          "severity": "quality",
+          "match": [
+            "re:clarithromycin[^\\n]{0,80}(× ?7 days|x 7 days|7 days)",
+            "re:triple therapy[^\\n]{0,80}× ?7 days"
+          ],
+          "guidelineRefs": [
+            "maastricht-6"
+          ],
+          "note": "A 7-day clarithromycin triple regimen is below the 14 days Maastricht VI recommends, and the patient had prior clarithromycin exposure (resistance risk).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Gastritis protocol plan line and medications prescribe clarithromycin triple therapy for 7 days (patient also had prior clarithromycin).",
+          "proposedFix": "As mgmt-14-day-or-bismuth.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "maastricht-6",
+      "name": "Maastricht VI/Florence consensus report — management of Helicobacter pylori infection",
+      "year": 2022,
+      "section": "First-line: bismuth quadruple therapy for 14 days where clarithromycin resistance is high (>15%) or unknown; PPI-clarithromycin triple therapy only with known susceptibility, 14 days; avoid clarithromycin after prior macrolide exposure; confirm eradication (UBT or stool antigen) at least 4 weeks after therapy",
+      "citation": "Malfertheiner P, Megraud F, Rokkas T, et al. Gut. 2022;71:1724–1762.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg184",
+      "name": "NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
+      "year": 2014,
+      "section": "Offer eradication therapy to H. pylori-positive dyspepsia; retest only if indicated",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: result-driven follow-up. Tests the regimen against Maastricht VI (duration, bismuth, prior macrolide) and the test of cure.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

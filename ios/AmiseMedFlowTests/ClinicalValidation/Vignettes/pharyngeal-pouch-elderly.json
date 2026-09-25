@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "id": "pharyngeal-pouch-elderly",
+  "condition": "Pharyngeal pouch (Zenker's diverticulum)",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "76-year-old man with high dysphagia in the neck, gurgling, regurgitation of undigested food hours after eating, halitosis and nocturnal cough. Dysphagia is a red flag at any age; contrast (barium) swallow before endoscopy when a pouch is suspected.",
+  "tags": [
+    "dysphagia",
+    "pharyngeal-pouch",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Food sticking in the throat",
+    "hpi": "Eighteen months of food catching high in the neck, a gurgling noise when swallowing, and regurgitating undigested food, sometimes hours after meals. Bad breath. Wakes coughing at night. Lost 3 kg. No hoarseness.",
+    "socrates": {
+      "onset": [
+        "Over a year",
+        "Gradual"
+      ],
+      "site": [
+        "Upper neck",
+        "Throat"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Regurgitation",
+        "Aspiration",
+        "Weight loss"
+      ],
+      "timing": [
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Solids"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "high dysphagia",
+      "regurgitation of undigested food",
+      "halitosis",
+      "nocturnal cough",
+      "gurgling"
+    ],
+    "negatives": [
+      "hoarseness",
+      "haematemesis",
+      "neck lump"
+    ],
+    "exam": {
+      "general": "Well. Halitosis.",
+      "other": "Neck: soft fullness on the left that gurgles on palpation after drinking. No lymphadenopathy.",
+      "respiratory": "Occasional crackles right base.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 78,
+        "systolicBp": 146,
+        "diastolicBp": 84,
+        "respiratoryRate": 16,
+        "temperatureC": 36.7,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.6,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 36,
+        "unit": "g/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected pharyngeal pouch (Zenker's diverticulum)",
+      "icd10": "K22.5",
+      "assessmentText": "High dysphagia with gurgling, regurgitation of undigested food and halitosis — suspected pharyngeal pouch. Barium swallow before endoscopy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Dysphagia",
+        "symptoms": [
+          "dysphagia",
+          "regurgitation",
+          "cough"
+        ],
+        "symptomDetails": {
+          "dysphagia": [
+            "Solids only",
+            "Progressive",
+            "Regurgitation",
+            "Coughing on eating"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 540,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pouch",
+          "severity": "quality",
+          "match": [
+            "pouch",
+            "zenker",
+            "diverticul",
+            "icd:K22.5"
+          ],
+          "guidelineRefs": [
+            "esge-zenker-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No pharyngeal pouch / Zenker node in PANE or symptom inference; site \"Upper neck\" maps to neck_lump.",
+          "proposedFix": "Add a pharyngeal pouch node (high dysphagia, regurgitation of undigested food, halitosis, gurgling, aspiration) and a K22.5 protocol.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Dysphagia (any age) with weight loss aged ≥55: urgent assessment.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-dysphagia",
+          "severity": "critical",
+          "match": [
+            "dysphagia"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-imaging-or-endoscopy",
+          "severity": "critical",
+          "match": [
+            "barium",
+            "contrast swallow",
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy",
+            "nasendoscop"
+          ],
+          "guidelineRefs": [
+            "nice-ng12",
+            "esge-zenker-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-barium-first",
+          "severity": "quality",
+          "match": [
+            "barium",
+            "contrast swallow"
+          ],
+          "guidelineRefs": [
+            "esge-zenker-2020"
+          ],
+          "note": "Contrast swallow defines the pouch and lowers the risk of intubating (and perforating) it blindly.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No protocol for K22.5; no output mentions a contrast swallow.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-pouch-treatment-options",
+          "severity": "quality",
+          "match": [
+            "myotomy",
+            "diverticulotomy",
+            "stapl",
+            "z-poem",
+            "cricopharyngeal"
+          ],
+          "guidelineRefs": [
+            "esge-zenker-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No protocol for K22.5.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esge-zenker-2020",
+      "name": "ESGE Guideline — endoscopic management of gastrointestinal motility disorders, part 2 (Zenker's diverticulum)",
+      "year": 2020,
+      "section": "Zenker's diverticulum: diagnosis by contrast swallow/endoscopy; treatment of symptomatic pouches by flexible endoscopic or rigid (stapled) septotomy / cricopharyngeal myotomy",
+      "citation": "Weusten BLAM, Barret M, Bredenoord AJ, et al. Endoscopy. 2020;52:600–614.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "Dysphagia at any age: urgent assessment",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "High (oropharyngeal) dysphagia with the classic pouch triad. Tests that the dysphagia red flag fires for neck-level dysphagia and that the work-up is a contrast swallow/endoscopy; PANE has no pouch node, so this measures coverage.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

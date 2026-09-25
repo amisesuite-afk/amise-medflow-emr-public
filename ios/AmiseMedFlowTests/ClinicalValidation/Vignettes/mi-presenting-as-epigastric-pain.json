@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "id": "mi-presenting-as-epigastric-pain",
+  "condition": "Acute myocardial infarction presenting as epigastric pain",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "68-year-old diabetic woman with 3 hours of epigastric \"indigestion\", nausea and sweating; ex-smoker, hypertensive. No chest pain words. ESC 2023: ECG within 10 minutes and hs-troponin before any GI label.",
+  "tags": [
+    "mimic",
+    "acs",
+    "must-not-miss",
+    "diabetes",
+    "women"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Indigestion and feeling sick",
+    "hpi": "Three hours of heavy upper abdominal discomfort like bad indigestion, with nausea and sweating; came on while hanging out washing. Antacid did not help. Feels weak. Type 2 diabetes for 15 years, high blood pressure, ex-smoker.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "nausea",
+      "sweating",
+      "weakness"
+    ],
+    "negatives": [
+      "vomiting",
+      "melaena",
+      "jaundice"
+    ],
+    "exam": {
+      "general": "Pale and sweaty. Pulse 98/min, BP 150/88, SpO₂ 96%.",
+      "cardiovascular": "Heart sounds normal.",
+      "abdomen": "Soft, minimal epigastric tenderness, no guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 98,
+        "systolicBp": 150,
+        "diastolicBp": 88,
+        "respiratoryRate": 18,
+        "temperatureC": 36.6,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension",
+      "Hypercholesterolaemia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Losartan",
+        "dose": "50 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker (30 pack-years). Retired.",
+    "confirmedDiagnosis": {
+      "name": "Acute myocardial infarction (inferior)",
+      "icd10": "I21.1",
+      "assessmentText": "Epigastric pain with sweating in a diabetic woman — acute coronary syndrome until ECG and troponin exclude it."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "epigastric pain",
+          "nausea",
+          "indigestion",
+          "generalised weakness"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "< 6 hours",
+            "Constant",
+            "Moderate (4–6)",
+            "Nausea"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Pale",
+            "Diaphoretic"
+          ]
+        },
+        "durationDays": 0.1,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-acs",
+          "severity": "critical",
+          "match": [
+            "coronary",
+            "myocardial",
+            "acs",
+            "stemi",
+            "infarct",
+            "icd:I21"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no cardiac disease; top 3 cholecystitis, peptic ulcer, GORD.",
+          "proposedFix": "Add an ACS \"must-not-miss\" node or a cross-check prompt for epigastric pain + diaphoresis + cardiovascular risk (diabetes, age, smoking).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mnm-acs-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "coronary",
+            "myocardial",
+            "acs"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Symptom inference needs the chip \"chest pain\"; with epigastric pain + nausea it ranks GORD, pancreatitis, perforated ulcer."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-acs-2023"
+        ],
+        "note": "Suspected ACS in an outpatient setting: emergency services/ED.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Same-day call only (score 33): CHEST_PAIN_TERMS and the cardiac red flag need the words \"chest pain/crushing/left arm/jaw\"; epigastric pain with sweating in a diabetic scores age and comorbidity only.",
+        "proposedFix": "rules.ts: add an atypical-ACS rule (epigastric pain/indigestion + sweating/diaphoresis, or + diabetes/age ≥50) → urgent with \"ECG now\".",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-cardiac",
+          "severity": "critical",
+          "match": [
+            "cardiac",
+            "coronary",
+            "acs",
+            "myocardial",
+            "ecg"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Safety prompts fired are \"Appendicitis — emergency surgical indication\" (from \"Acute abdominal pain\" CC) and \"Acute abdominal presentation\"; nothing cardiac.",
+          "proposedFix": "As level-emergency.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No ECG in any output.",
+          "proposedFix": "As level-emergency; chest-pain/ACS prompt with ECG + troponin.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-troponin",
+          "severity": "critical",
+          "match": [
+            "troponin"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No troponin in any output.",
+          "proposedFix": "As inv-ecg.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-gi-only-plan",
+          "severity": "quality",
+          "match": [
+            "re:(empirical|trial of) ppi",
+            "urea breath test",
+            "gaviscon"
+          ],
+          "unless": [
+            "ecg",
+            "troponin"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "note": "A dyspepsia plan without cardiac exclusion is the failure mode.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-acs-2023",
+      "name": "2023 ESC Guidelines for the management of acute coronary syndromes",
+      "year": 2023,
+      "section": "Suspected ACS: 12-lead ECG within 10 minutes of first medical contact; hs-troponin 0 h/1 h (or 0 h/2 h) algorithm; atypical presentations (epigastric pain, nausea, diaphoresis) are more common in women, older people and people with diabetes",
+      "citation": "Byrne RA, Rossello X, Coughlan JJ, et al. Eur Heart J. 2023;44:3720–3826.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic: an inferior MI in a diabetic woman described only as indigestion. Keyword engines that need the words \"chest pain\" will route her to dyspepsia; the guideline response is an immediate ECG and troponin.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 1,
+  "id": "mallory-weiss-young-binge",
+  "condition": "Mallory-Weiss tear",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "24-year-old man after an alcohol binge: repeated retching, then a streak of fresh blood in the vomit; normal observations, Hb 14.8, urea 5.2 (GBS 0). Most tears stop spontaneously; outpatient management.",
+  "tags": [
+    "gi-bleed",
+    "mallory-weiss",
+    "low-risk"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 182,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Blood in vomit after retching",
+    "hpi": "Heavy drinking last night. Vomited repeatedly this morning; after several episodes of forceful retching there were streaks of fresh red blood in the vomit, about a teaspoon. No further vomiting for 3 hours. Stools normal. No chest pain, no breathlessness. No medications.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Alcohol"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "haematemesis",
+      "vomiting",
+      "retching"
+    ],
+    "negatives": [
+      "melaena",
+      "chest pain",
+      "syncope",
+      "subcutaneous emphysema"
+    ],
+    "exam": {
+      "general": "Well, hydrated. Pulse 88/min, BP 126/80. No surgical emphysema.",
+      "abdomen": "Soft, mild epigastric tenderness. PR: brown stool."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 88,
+        "systolicBp": 126,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.8,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 84,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 250,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1,
+        "unit": "",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Binge drinking at weekends. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Mallory-Weiss tear",
+      "icd10": "K22.6",
+      "paneDiseaseId": "mallory_weiss",
+      "assessmentText": "Probable Mallory-Weiss tear after retching; small-volume haematemesis, Glasgow-Blatchford 0."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Upper GI bleed (haematemesis / melaena)",
+        "symptoms": [
+          "haematemesis",
+          "vomiting",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Blood",
+            "Multiple episodes daily"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "toxicHabits": [
+          "alcohol"
+        ],
+        "durationDays": 1,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-mallory-weiss-top3",
+          "severity": "quality",
+          "match": [
+            "mallory"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esge-2021"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: appendicitis, peptic ulcer, pancreatitis — no haematemesis/vomiting_effortless features reach PANE (see UGIB gap).",
+          "proposedFix": "socrates-to-features.ts: add ASSOC/CC rules haematemesis|vomiting blood|coffee.?ground → haematemesis and melaena|black|tarry → melaena; also seed PANE from SmartSymptomPicker chips (HpiTab.reseedPane), not only the SOCRATES answers.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "dx-ugib-top3",
+          "severity": "critical",
+          "match": [
+            "upper gi",
+            "haemorrhage",
+            "hemorrhage",
+            "icd:K92",
+            "peptic ulcer",
+            "icd:K25",
+            "icd:K26",
+            "icd:K27",
+            "mallory"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esge-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "esge-2021",
+          "acg-2021"
+        ],
+        "note": "GBS 0: outpatient management.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Emergency now (score 120): any \"blood\"/\"bleed\" word is an urgent red flag regardless of volume or GBS, and \"No chest pain\" in the HPI fires \"Possible cardiac event\" (adaptiveTriage reads CC+HPI free text without negation).",
+        "proposedFix": "adaptive-triage: grade GI bleeding by haemodynamics/GBS instead of the word; add negation handling (\"no …\", \"denies …\") before RED_FLAGS matching.",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-gbs",
+          "severity": "quality",
+          "score": "glasgow-blatchford",
+          "guidelineRefs": [
+            "esge-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-outpatient",
+          "severity": "quality",
+          "match": [
+            "outpatient endoscopy",
+            "outpatient ogd",
+            "outpatient management",
+            "resolve spontaneously",
+            "stop spontaneously",
+            "discharge with",
+            "without admission"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "acg-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-tranexamic-acid",
+          "severity": "critical",
+          "match": [
+            "tranexamic",
+            "re:\\btxa\\b"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "halt-it-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esge-2021",
+      "name": "ESGE Guideline — endoscopic diagnosis and management of nonvariceal upper gastrointestinal haemorrhage (NVUGIH), update 2021",
+      "year": 2021,
+      "section": "GBS ≤1: outpatient management without early endoscopy; endoscopic haemostasis only for actively bleeding Mallory-Weiss tears; tranexamic acid not recommended",
+      "citation": "Gralnek IM, Stanley AJ, Morris AJ, et al. Endoscopy. 2021;53:300–332.",
+      "verified": false
+    },
+    {
+      "id": "acg-2021",
+      "name": "ACG Clinical Guideline — upper gastrointestinal and ulcer bleeding",
+      "year": 2021,
+      "section": "GBS 0–1: discharge with outpatient follow-up",
+      "citation": "Laine L, Barkun AN, Saltzman JR, Martel M, Leontiadis GI. Am J Gastroenterol. 2021;116:899–917.",
+      "verified": false
+    },
+    {
+      "id": "halt-it-2020",
+      "name": "HALT-IT randomised trial — tranexamic acid in gastrointestinal bleeding",
+      "year": 2020,
+      "section": "Tranexamic acid: no benefit, more venous thromboembolism",
+      "citation": "HALT-IT Trial Collaborators. Effects of a high-dose 24-h infusion of tranexamic acid on death and thromboembolic events in patients with acute gastrointestinal bleeding (HALT-IT). Lancet. 2020;395:1927–1936.",
+      "verified": false
+    }
+  ],
+  "rationale": "Classic low-risk Mallory-Weiss tear. Tests that the specific diagnosis is offered, that the bleed is not escalated to \"emergency now\", and that the plan stays supportive. The absent chest pain and surgical emphysema separate it from Boerhaave (see boerhaave-* vignettes).",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

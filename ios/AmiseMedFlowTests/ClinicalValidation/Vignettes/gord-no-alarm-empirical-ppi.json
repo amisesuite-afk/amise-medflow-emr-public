@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "id": "gord-no-alarm-empirical-ppi",
+  "condition": "Gastro-oesophageal reflux disease (no alarm features)",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "36-year-old man with 4 months of heartburn and acid regurgitation, worse lying down, relieved by antacids; no alarm features. NICE CG184: lifestyle advice and full-dose PPI for 4 (–8) weeks; no endoscopy.",
+  "tags": [
+    "gord",
+    "no-alarm",
+    "over-triage",
+    "negation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 36,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 96
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Heartburn and acid coming up",
+    "hpi": "Four months of burning behind the breastbone after meals and acid coming up into the throat, worse lying flat and after late meals and beer. Antacids help. No difficulty swallowing, no weight loss, no vomiting, no black stools.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Epigastric",
+        "Chest"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "Chest"
+      ],
+      "associations": [
+        "Heartburn"
+      ],
+      "timing": [
+        "Post-prandial",
+        "Nocturnal"
+      ],
+      "exacerbating": [
+        "Lying flat",
+        "Eating",
+        "Alcohol"
+      ],
+      "relieving": [
+        "Antacids"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "heartburn",
+      "acid regurgitation"
+    ],
+    "negatives": [
+      "dysphagia",
+      "weight loss",
+      "vomiting",
+      "melaena",
+      "haematemesis",
+      "anaemia"
+    ],
+    "exam": {
+      "general": "Well. BMI 30.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 74,
+        "systolicBp": 132,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Accountant. Smokes 5/day. Beer at weekends.",
+    "confirmedDiagnosis": {
+      "name": "Gastro-oesophageal reflux disease",
+      "icd10": "K21.9",
+      "paneDiseaseId": "gord",
+      "assessmentText": "Typical GORD without alarm features, age 36 — empirical full-dose PPI for 4 weeks and lifestyle measures."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "GORD / heartburn",
+        "symptoms": [
+          "heartburn",
+          "regurgitation"
+        ],
+        "symptomDetails": {},
+        "examFindings": {},
+        "toxicHabits": [
+          "smoking",
+          "alcohol"
+        ],
+        "durationDays": 120,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-gord-top3",
+          "severity": "quality",
+          "match": [
+            "gord",
+            "reflux",
+            "icd:K21"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-cg184"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "nice-cg184"
+        ],
+        "note": "The HPI lists alarm features as absent (\"no difficulty swallowing, no weight loss…\"); negated features must not escalate.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Emergency now (score 65): adaptiveTriage reads CC+HPI free text without negation — \"no weight loss\" → Possible malignancy, \"no vomiting\" → vomiting, \"no black stools\" → Possible GI bleeding.",
+        "proposedFix": "adaptive-triage: strip negated clauses (\"no/denies/without X\") before RED_FLAGS, GI_BLEED_TERMS and vomiting rules.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-cancer-alarm",
+          "severity": "quality",
+          "match": [
+            "2-week",
+            "two-week",
+            "malignan",
+            "weight loss",
+            "dysphagia"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "Any alarm that fires here comes from reading a negated feature as present.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-urgent-ogd",
+          "severity": "quality",
+          "match": [
+            "urgent ogd",
+            "2-week",
+            "two-week",
+            "urgent upper gi endoscopy"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-empirical-ppi",
+          "severity": "quality",
+          "match": [
+            "ppi",
+            "omeprazole",
+            "esomeprazole",
+            "pantoprazole",
+            "lansoprazole",
+            "proton pump"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-lifestyle",
+          "severity": "quality",
+          "match": [
+            "lifestyle",
+            "weight loss",
+            "head-of-bed",
+            "late meals",
+            "smoking cessation"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg184",
+      "name": "NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
+      "year": 2014,
+      "section": "GORD without alarm features: lifestyle advice; full-dose PPI for 4 (or 8) weeks; refer for endoscopy only per NG12 or if symptoms persist",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019).",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "No NG12 criterion met",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base GORD case with alarm features explicitly absent in the HPI. Tests over-triage caused by negation (\"no weight loss\" read as weight loss). The web CC template name contains \"GORD\" (the only heartburn template), so the differential expectation is partly circular and kept quality.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

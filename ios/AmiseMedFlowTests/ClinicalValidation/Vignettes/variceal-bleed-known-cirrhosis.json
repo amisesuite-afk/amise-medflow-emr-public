@@ -1,0 +1,604 @@
+{
+  "schemaVersion": 1,
+  "id": "variceal-bleed-known-cirrhosis",
+  "condition": "Acute variceal bleeding in cirrhosis",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "52-year-old man with alcohol-related cirrhosis (Child-Pugh C 11) and known oesophageal varices: large haematemesis, HR 118, SBP 94, Hb 8.1, platelets 68, INR 1.7. Baveno VII: vasoactive drug + antibiotic prophylaxis now, restrictive transfusion (Hb 7–8), endoscopy with band ligation within 12 h.",
+  "tags": [
+    "gi-bleed",
+    "variceal",
+    "cirrhosis",
+    "baveno"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Vomiting blood",
+    "hpi": "Known alcohol-related cirrhosis with oesophageal varices on a previous endoscopy; missed his propranolol for two weeks. Two large vomits of fresh blood in the last two hours and black stools since last night. Abdomen more swollen recently. Still drinking.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Bloating"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Melaena",
+        "Jaundice"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "haematemesis",
+      "melaena",
+      "abdominal distension"
+    ],
+    "negatives": [
+      "confusion"
+    ],
+    "exam": {
+      "general": "Jaundiced, pale. Spider naevi, palmar erythema. Pulse 118/min, BP 94/58. Alert and orientated, no asterixis.",
+      "abdomen": "Distended with shifting dullness (moderate ascites). Splenomegaly. Non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 94,
+        "diastolicBp": 58,
+        "respiratoryRate": 22,
+        "temperatureC": 36.9,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 8.1,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 9.1,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 96,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 68,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.7,
+        "unit": "",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 48,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 26,
+        "unit": "g/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Alcohol-related liver cirrhosis",
+      "Oesophageal varices",
+      "Portal hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Propranolol",
+        "dose": "40 mg",
+        "frequency": "BD",
+        "indication": "Varices (not taken for 2 weeks)"
+      },
+      {
+        "drug": "Spironolactone",
+        "dose": "100 mg",
+        "frequency": "OD",
+        "indication": "Ascites"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Drinks about 60 units a week. Smoker 20/day. Lives alone.",
+    "confirmedDiagnosis": {
+      "name": "Acute variceal haemorrhage",
+      "icd10": "I85.11",
+      "paneDiseaseId": "upper_gi_bleed",
+      "assessmentText": "Acute variceal haemorrhage from oesophageal varices, with haematemesis, in Child-Pugh C (11) alcohol-related cirrhosis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Upper GI bleed (haematemesis / melaena)",
+        "symptoms": [
+          "haematemesis",
+          "melaena",
+          "black stool",
+          "jaundice",
+          "abdominal distension"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Blood"
+          ],
+          "black stool": [
+            "Tarry / melaena",
+            "Alcohol"
+          ],
+          "jaundice": [
+            "Alcohol use",
+            "Known liver disease"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Ascites",
+            "Splenomegaly"
+          ],
+          "general": [
+            "Jaundiced",
+            "Pale"
+          ]
+        },
+        "toxicHabits": [
+          "alcohol"
+        ],
+        "durationDays": 1,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ugib-top3",
+          "severity": "critical",
+          "match": [
+            "upper gi",
+            "haemorrhage",
+            "hemorrhage",
+            "icd:K92",
+            "peptic ulcer",
+            "icd:K25",
+            "icd:K26",
+            "icd:K27"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: inguinal hernia, GORD, appendicitis. PANE never receives haematemesis/melaena: socrates-to-features has no answer rule for melaena, haematemesis, \"vomiting blood\" or coffee-ground vomit, and the \"Upper GI bleed\" CC hint sets only nausea_vomiting. With only epigastric_pain + nausea_vomiting, the male ×5 (×1.8 at ≥50) inguinal-hernia prior modifier or the cholecystitis/GORD priors win. Symptom inference and triageSurgical rank the bleed #1. PANE also has no variceal node.",
+          "proposedFix": "socrates-to-features.ts: add ASSOC/CC rules haematemesis|vomiting blood|coffee.?ground → haematemesis and melaena|black|tarry → melaena; also seed PANE from SmartSymptomPicker chips (HpiTab.reseedPane), not only the SOCRATES answers.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-variceal",
+          "severity": "quality",
+          "match": [
+            "varic",
+            "portal hypertens",
+            "icd:I85"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no variceal/portal-hypertension disease; symptom inference ranks \"Portal hypertension / oesophageal varices\" #2.",
+          "proposedFix": "Add a variceal haemorrhage node to pane-engine (features: haematemesis, known cirrhosis/alcohol, ascites, splenomegaly, jaundice).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "baveno-7"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-haemodynamic",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock",
+            "tachycardia",
+            "emergency now"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-cirrhosis",
+          "severity": "quality",
+          "match": [
+            "cirrho",
+            "liver disease",
+            "portal hypertens",
+            "varic"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-child-pugh",
+          "severity": "quality",
+          "score": "child-pugh",
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "note": "Child-Pugh class selects pre-emptive TIPS candidates.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-rec-gbs",
+          "severity": "quality",
+          "score": "glasgow-blatchford",
+          "guidelineRefs": [
+            "nice-cg141"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-group-crossmatch",
+          "severity": "critical",
+          "match": [
+            "group & save",
+            "group and save",
+            "crossmatch",
+            "cross-match",
+            "group & screen",
+            "group & type",
+            "blood group"
+          ],
+          "guidelineRefs": [
+            "nice-cg141"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-inr-lfts",
+          "severity": "quality",
+          "match": [
+            "inr",
+            "lft",
+            "liver function"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vasoactive",
+          "severity": "critical",
+          "match": [
+            "terlipressin",
+            "octreotide",
+            "somatostatin",
+            "vasoactive"
+          ],
+          "guidelineRefs": [
+            "baveno-7",
+            "nice-cg141"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).",
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotic-prophylaxis",
+          "severity": "critical",
+          "match": [
+            "ceftriaxone",
+            "antibiotic prophylaxis",
+            "prophylactic antibiotic",
+            "prophylactic iv ceftriaxone"
+          ],
+          "guidelineRefs": [
+            "baveno-7",
+            "nice-cg141"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).",
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-endoscopy-12h",
+          "severity": "critical",
+          "match": [
+            "re:(\\bogd\\b|endoscop)[^.;\\n]{0,40}12 ?h",
+            "re:12 ?h[^.;\\n]{0,40}(\\bogd\\b|endoscop)",
+            "within 12"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).",
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-band-ligation",
+          "severity": "critical",
+          "match": [
+            "band ligation",
+            "variceal ligation",
+            "re:\\bevl\\b",
+            "banding"
+          ],
+          "guidelineRefs": [
+            "baveno-7",
+            "nice-cg141"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).",
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-restrictive-transfusion-varices",
+          "severity": "quality",
+          "match": [
+            "re:7.{0,3}8 ?g/dl",
+            "re:70.{0,3}80 ?g/l",
+            "re:hb[^.;\\n]{0,30}\\b7\\b"
+          ],
+          "guidelineRefs": [
+            "baveno-7",
+            "villanueva-2013"
+          ],
+          "note": "Baveno VII: transfuse at Hb ~7 g/dL, target 7–8 g/dL.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).",
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-pre-emptive-tips",
+          "severity": "quality",
+          "match": [
+            "tips",
+            "transjugular"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "note": "Child-Pugh C 10–13 (or B >7 with active bleeding): pre-emptive TIPS within 72 h, ideally 24 h.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan). The variceal dx variant (not selected, see variant-variceal) mentions TIPS only as rescue.",
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-liberal-transfusion-varices",
+          "severity": "critical",
+          "match": [
+            "re:80.{0,3}100 in varices",
+            "re:(target|to) hb[^.;\\n]{0,15}\\b(10|100)\\b[^.;\\n]{0,20}varic",
+            "re:varic[^.;\\n]{0,40}\\b(80.{0,3}100 ?g/l|8.{0,3}10 ?g/dl)"
+          ],
+          "guidelineRefs": [
+            "baveno-7",
+            "villanueva-2013"
+          ],
+          "note": "Over-transfusion raises portal pressure and increases rebleeding and mortality in variceal bleeding (Villanueva 2013). Web passes today only because no protocol loads for I85 (see mgmt-vasoactive); the upper_gi_bleed protocol, if it loaded, says \"transfuse to Hb 70–90 g/L (80–100 in varices)\" and would fail this.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-tranexamic-acid",
+          "severity": "quality",
+          "match": [
+            "tranexamic",
+            "re:\\btxa\\b"
+          ],
+          "guidelineRefs": [
+            "halt-it-2020"
+          ],
+          "note": "HALT-IT (half the participants had liver disease): no benefit, more venous thromboembolism.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-variceal",
+      "severity": "quality",
+      "equals": "ugib_variceal",
+      "guidelineRefs": [
+        "baveno-7"
+      ],
+      "knownGap": [
+        "web"
+      ],
+      "knownGapNote": "dx-variants checks ugib_nonvariceal_stable first and its keywords include \"haematemesis\", \"upper gi bleed\" and \"melaena\", so a variceal assessment that mentions haematemesis gets the non-variceal plan prefix (PPI, no terlipressin).",
+      "proposedFix": "dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step."
+    }
+  },
+  "guideline": [
+    {
+      "id": "baveno-7",
+      "name": "Baveno VII — Renewing consensus in portal hypertension",
+      "year": 2022,
+      "section": "Acute variceal bleeding: restrictive transfusion (threshold ~7 g/dL, target 7–8); vasoactive drug (terlipressin, somatostatin or octreotide) as soon as suspected, continued 2–5 days; antibiotic prophylaxis (ceftriaxone 1 g/24 h) up to 7 days; endoscopy within 12 h of presentation once stable; EVL for oesophageal varices; pre-emptive TIPS in Child-Pugh C 10–13 or B >7 with active bleeding",
+      "citation": "de Franchis R, Bosch J, Garcia-Tsao G, Reiberger T, Ripoll C; Baveno VII Faculty. J Hepatol. 2022;76:959–974.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg141",
+      "name": "NICE CG141 — Acute upper gastrointestinal bleeding in over 16s: management",
+      "year": 2012,
+      "section": "Terlipressin and prophylactic antibiotics at presentation in suspected variceal bleeding; band ligation for oesophageal varices",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG141. London: NICE; 2012 (last updated 2016).",
+      "verified": false
+    },
+    {
+      "id": "villanueva-2013",
+      "name": "Restrictive vs liberal transfusion in acute upper GI bleeding (RCT)",
+      "year": 2013,
+      "section": "Restrictive transfusion (Hb 7 g/dL) improved survival and reduced rebleeding, particularly in Child-Pugh A/B cirrhosis",
+      "citation": "Villanueva C, Colomo A, Bosch A, et al. Transfusion strategies for acute upper gastrointestinal bleeding. N Engl J Med. 2013;368:11–21.",
+      "verified": false
+    },
+    {
+      "id": "halt-it-2020",
+      "name": "HALT-IT randomised trial — tranexamic acid in gastrointestinal bleeding",
+      "year": 2020,
+      "section": "Tranexamic acid: no benefit, more venous thromboembolism",
+      "citation": "HALT-IT Trial Collaborators. Effects of a high-dose 24-h infusion of tranexamic acid on death and thromboembolic events in patients with acute gastrointestinal bleeding (HALT-IT). Lancet. 2020;395:1927–1936.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base variceal case: known cirrhosis and varices, decompensated (ascites, jaundice), haemodynamically compromised. Every Baveno VII element is testable: vasoactive drug, antibiotic prophylaxis, endoscopy with band ligation within 12 h, restrictive transfusion, and pre-emptive TIPS consideration. Over-transfusion is a harm, not a quality issue.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

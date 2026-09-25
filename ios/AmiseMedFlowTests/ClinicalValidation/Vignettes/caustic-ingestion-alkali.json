@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "id": "caustic-ingestion-alkali",
+  "condition": "Caustic (alkali) ingestion",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "29-year-old woman 2 hours after deliberately drinking drain cleaner (sodium hydroxide): drooling, odynophagia, oral burns, hoarse voice. Airway assessment, no induced vomiting or neutralisation, nil by mouth, CT/endoscopy to grade injury, psychiatric assessment.",
+  "tags": [
+    "caustic",
+    "emergency",
+    "self-harm",
+    "airway"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "unknown"
+      },
+      "heightCm": 165,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Swallowed drain cleaner",
+    "hpi": "Drank about a mouthful of liquid drain cleaner (sodium hydroxide) two hours ago after an argument, intending self-harm. Burning in the mouth and throat, painful swallowing, drooling, hoarse voice. Vomited once. Chest discomfort.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Throat",
+        "Mid-chest"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Odynophagia",
+        "Voice change",
+        "Vomiting"
+      ],
+      "timing": [],
+      "exacerbating": [
+        "Both solids and liquids"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "odynophagia",
+      "drooling",
+      "hoarse voice",
+      "oral burns",
+      "chest pain"
+    ],
+    "negatives": [
+      "stridor",
+      "haematemesis"
+    ],
+    "exam": {
+      "general": "Distressed, drooling. Hoarse voice, no stridor. Pulse 108/min, BP 128/80, SpO₂ 98%. Oral mucosal burns and sloughing on the tongue and soft palate.",
+      "respiratory": "Chest clear.",
+      "abdomen": "Mild epigastric tenderness, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 108,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 20,
+        "temperatureC": 37,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Depression"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Sertraline",
+        "dose": "50 mg",
+        "frequency": "OD",
+        "indication": "Depression"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with partner. Previous overdose 2 years ago.",
+    "confirmedDiagnosis": {
+      "name": "Caustic (alkali) ingestion — deliberate self-harm",
+      "icd10": "T54.3",
+      "assessmentText": "Deliberate ingestion of sodium hydroxide drain cleaner with oropharyngeal burns, odynophagia and hoarse voice — airway at risk; grade oesophagogastric injury."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "odynophagia",
+          "hoarse voice",
+          "dysphagia",
+          "chest pain",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "dysphagia": [
+            "Liquids too",
+            "Painful (odynophagia)",
+            "Hoarse voice"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 0.1,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-2019"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-caustic-airway",
+          "severity": "critical",
+          "match": [
+            "caustic",
+            "corrosive",
+            "airway",
+            "stridor",
+            "emergency now"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-self-harm",
+          "severity": "critical",
+          "match": [
+            "self-harm",
+            "self harm",
+            "suicid",
+            "mental health"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-or-endoscopy",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b",
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ],
+          "note": "CT (and/or endoscopy within 12–48 h) to grade necrosis and decide on surgery.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-airway-assessment",
+          "severity": "quality",
+          "match": [
+            "laryngoscop",
+            "nasendoscop",
+            "airway assessment",
+            "anaesthet"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No caustic-ingestion protocol or prompt; nothing mentions airway assessment.",
+          "proposedFix": "Add a caustic-ingestion protocol/prompt (WSES 2019: airway first, no emesis/neutralisation/blind NG tube, CT ± endoscopy, psychiatry).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-psychiatric-assessment",
+          "severity": "quality",
+          "match": [
+            "psychiatr",
+            "mental health"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Only the triage reason \"Mental health crisis\"; no plan line.",
+          "proposedFix": "As inv-airway-assessment.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-nil-by-mouth",
+          "severity": "quality",
+          "match": [
+            "nbm",
+            "nil by mouth"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No plan output at all for T54.3.",
+          "proposedFix": "As inv-airway-assessment.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-emesis-or-neutralisation",
+          "severity": "critical",
+          "match": [
+            "induce vomiting",
+            "ipecac",
+            "emetic",
+            "neutralis",
+            "neutraliz",
+            "activated charcoal"
+          ],
+          "unless": [
+            "do not",
+            "don't",
+            "avoid",
+            "contraindicated",
+            "never"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-blind-ng-tube",
+          "severity": "quality",
+          "match": [
+            "re:(insert|pass|place)[^.;\\n]{0,15}(nasogastric|ng tube|ngt)"
+          ],
+          "unless": [
+            "do not",
+            "avoid",
+            "endoscopic",
+            "under vision"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2019",
+      "name": "WSES guidelines — esophageal emergencies (perforation, caustic ingestion, foreign bodies)",
+      "year": 2019,
+      "section": "Caustic ingestion: airway assessment first; no induced emesis, neutralisation or blind NG tube; CT to assess transmural necrosis and need for emergency resection; endoscopy for grading in stable patients; psychiatric evaluation after intentional ingestion",
+      "citation": "Chirica M, Kelly MD, Siboni S, et al. World J Emerg Surg. 2019;14:26.",
+      "verified": false
+    }
+  ],
+  "rationale": "Deliberate alkali ingestion with airway warning signs (drooling, hoarse voice). The engines must escalate, surface the self-harm context, and never propose emesis, neutralisation or a blind NG tube.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

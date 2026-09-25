@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 1,
+  "id": "gord-alarm-weight-loss-over55",
+  "condition": "Gastro-oesophageal reflux disease (no alarm features)",
+  "category": "upper-gi",
+  "permutationOf": "gord-no-alarm-empirical-ppi",
+  "permutationLabel": "Age 63 with new weight loss (alarm feature)",
+  "summary": "63-year-old woman with a year of reflux, now 6 kg unintentional weight loss. NG12: aged ≥55 with weight loss and reflux → urgent OGD within 2 weeks, not an empirical PPI trial.",
+  "tags": [
+    "gord",
+    "alarm-features",
+    "ng12",
+    "cancer-red-flag"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 57
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Heartburn and acid coming up",
+    "hpi": "A year of heartburn and acid regurgitation, now more frequent despite over-the-counter omeprazole. Lost 6 kg in three months without trying and eating less. Swallowing normal so far.",
+    "socrates": {
+      "onset": [
+        "Over a year"
+      ],
+      "site": [
+        "Epigastric",
+        "Chest"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "Chest"
+      ],
+      "associations": [
+        "Heartburn",
+        "Weight loss",
+        "Anorexia"
+      ],
+      "timing": [
+        "Post-prandial",
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Lying flat",
+        "Eating"
+      ],
+      "relieving": [
+        "Antacids"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "heartburn",
+      "acid regurgitation",
+      "weight loss",
+      "anorexia"
+    ],
+    "negatives": [
+      "dysphagia",
+      "melaena",
+      "haematemesis"
+    ],
+    "exam": {
+      "general": "Thin. No lymphadenopathy.",
+      "abdomen": "Soft, mild epigastric tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 80,
+        "systolicBp": 138,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.6,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 430,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Omeprazole",
+        "dose": "20 mg",
+        "frequency": "OD (over the counter)",
+        "indication": "Reflux"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired. Never smoked.",
+    "confirmedDiagnosis": {
+      "name": "Reflux with alarm features",
+      "icd10": "K21.9",
+      "paneDiseaseId": "gord",
+      "assessmentText": "Reflux symptoms with new 6 kg weight loss aged 63 — alarm features; oesophagogastric malignancy to be excluded by urgent 2-week-wait OGD."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "GORD / heartburn",
+        "symptoms": [
+          "heartburn",
+          "regurgitation",
+          "weight loss",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "weight loss": [
+            "5–10 kg",
+            "Unintentional",
+            "1–3 months"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "durationDays": 365,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-malignancy",
+          "severity": "critical",
+          "match": [
+            "carcinoma",
+            "malignan",
+            "cancer",
+            "icd:C15",
+            "icd:C16"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: GORD, hiatus hernia, peptic ulcer (the \"GORD / heartburn\" template hint pushes GORD; weight loss does not lift a carcinoma into the top 3). Symptom inference lists gastric carcinoma #3.",
+          "proposedFix": "pane-engine modifiers: age ≥55 multiplier for oesophageal/gastric carcinoma; weight_loss + age ≥55 should surface a malignancy.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Urgent (2-week) OGD; red flag, not an emergency.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-weight-loss-cancer",
+          "severity": "critical",
+          "match": [
+            "weight loss",
+            "malignan",
+            "cancer",
+            "2-week",
+            "two-week"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ogd",
+          "severity": "critical",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-urgent-two-week-ogd",
+          "severity": "quality",
+          "match": [
+            "2-week",
+            "two-week",
+            "two week",
+            "2 week",
+            "urgent ogd",
+            "urgent direct access",
+            "urgent upper gi endoscopy"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "GORD protocol OGD line is conditional (\"Alarm features, age >55, or 4-week PPI trial failed\") and not urgent; no 2-week-wait wording. The triage reason \"Cancer screening triggered\" is present but labelled \"colorectal\".",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "Urgent direct-access OGD within 2 weeks for people aged ≥55 with weight loss and any of upper abdominal pain, reflux or dyspepsia",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "nice-cg184",
+      "name": "NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
+      "year": 2014,
+      "section": "Alarm features: refer under NG12 rather than empirical PPI",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019).",
+      "verified": false
+    }
+  ],
+  "rationale": "Alarm-feature permutation of GORD: the same reflux story becomes a 2-week-wait OGD because of age and weight loss.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

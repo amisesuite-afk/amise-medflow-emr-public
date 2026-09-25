@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "id": "achalasia-pseudoachalasia-elderly",
+  "condition": "Pseudoachalasia (gastric cardia carcinoma)",
+  "category": "upper-gi",
+  "permutationOf": "achalasia-young",
+  "permutationLabel": "Age 71, short history, rapid weight loss — pseudoachalasia (cardia cancer)",
+  "summary": "71-year-old man with 4 months of dysphagia to solids and liquids, regurgitation and 10 kg weight loss. Short history + age + weight loss = pseudoachalasia from a cardia cancer until proven otherwise.",
+  "tags": [
+    "dysphagia",
+    "achalasia",
+    "pseudoachalasia",
+    "cancer-red-flag",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 62
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Difficulty swallowing solids and liquids",
+    "hpi": "Four months of food and fluids sticking at the lower end of the chest, with regurgitation of undigested food. Lost 10 kg. Ex-smoker. No previous reflux symptoms.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Lower chest / epigastric"
+      ],
+      "character": [],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Regurgitation",
+        "Weight loss"
+      ],
+      "timing": [
+        "Progressive",
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Both solids and liquids"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "dysphagia to solids and liquids",
+      "regurgitation",
+      "weight loss"
+    ],
+    "negatives": [
+      "haematemesis",
+      "heartburn"
+    ],
+    "exam": {
+      "general": "Cachectic. No palpable lymph nodes.",
+      "abdomen": "Soft, non-tender, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 80,
+        "systolicBp": 134,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.4,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 31,
+        "unit": "g/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 440,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired. Ex-smoker (40 pack-years).",
+    "confirmedDiagnosis": {
+      "name": "Suspected pseudoachalasia — cardia carcinoma",
+      "icd10": "C16.0",
+      "paneDiseaseId": "gastric_carcinoma",
+      "assessmentText": "Achalasia-type dysphagia with a 4-month history and 10 kg weight loss aged 71 — pseudoachalasia from a cardia carcinoma until proven otherwise. Urgent OGD with retroflexed views and CT."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Dysphagia",
+        "symptoms": [
+          "dysphagia",
+          "regurgitation",
+          "weight loss"
+        ],
+        "symptomDetails": {
+          "dysphagia": [
+            "Liquids too",
+            "Progressive",
+            "Weight loss",
+            "Regurgitation"
+          ],
+          "weight loss": [
+            "> 10 kg",
+            "Unintentional",
+            "3–6 months"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 120,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-malignancy",
+          "severity": "critical",
+          "match": [
+            "carcinoma",
+            "malignan",
+            "cancer",
+            "icd:C15",
+            "icd:C16"
+          ],
+          "guidelineRefs": [
+            "achalasia-2020",
+            "nice-ng12"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifier; no dysphagia feature). Symptom inference ranks occult malignancy and oesophageal/gastric carcinoma #1–2.",
+          "proposedFix": "socrates-to-features.ts: CC hint /dysphag|swallow/ → dysphagia_progressive.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-dysphagia-cancer",
+          "severity": "critical",
+          "match": [
+            "dysphagia",
+            "malignan",
+            "cancer",
+            "2-week",
+            "two-week"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ogd",
+          "severity": "critical",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "achalasia-2020",
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b",
+            "eus",
+            "endoscopic us"
+          ],
+          "guidelineRefs": [
+            "achalasia-2020"
+          ],
+          "note": "Cross-sectional imaging / EUS when pseudoachalasia is suspected.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-myotomy-before-malignancy-excluded",
+          "severity": "quality",
+          "match": [
+            "botulinum",
+            "pneumatic",
+            "poem",
+            "heller"
+          ],
+          "unless": [
+            "exclude",
+            "after",
+            "once"
+          ],
+          "guidelineRefs": [
+            "achalasia-2020"
+          ],
+          "note": "Achalasia treatments before cancer is excluded would delay a cancer diagnosis.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "achalasia-2020",
+      "name": "European guidelines on achalasia — UEG and ESNM recommendations",
+      "year": 2020,
+      "section": "Pseudoachalasia: suspect with older age, short symptom duration and marked weight loss; endoscopy (with retroflexion) and cross-sectional imaging/EUS before achalasia treatment",
+      "citation": "Oude Nijhuis RAB, Zaninotto G, Roman S, et al. United European Gastroenterol J. 2020;8:13–33.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "Dysphagia (any age) or age ≥55 with weight loss: urgent OGD",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Elderly permutation: same achalasia pattern, but age, short history and heavy weight loss make malignant pseudoachalasia the must-not-miss diagnosis.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}
