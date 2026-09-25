@@ -13,7 +13,9 @@
  *   Scale suggestions   AssessmentTab / ScalesTab: getCdsSuggestions(ctx)
  *   Clinical prompts    ClinicalPromptsStrip: computeClinicalPrompts(input)
  *   Management          AssessmentTab ManagementPanel (all phases) and PlanTab buildPlanText
- *                       (phases filtered by the detected dx variant); HpiTab seeded investigations
+ *                       (lib/plan-builder.ts: confirmed diagnosis → resolveProtocol, adapted to the
+ *                       patient on record, phases filtered by the detected dx variant);
+ *                       PrescriptionsTab protocol medicines; HpiTab seeded investigations
  *   Calculators         ScalesTab (clinical-scales.ts) and ClinicalScoresPanel (clinical-scores.ts)
  *
  * The dashboard code itself is not modified or wrapped; if a call site changes, update the
@@ -21,7 +23,7 @@
  */
 
 import {
-  DISEASES, FEATURES, applyModifiers, getProtocol, getProtocolByIcd, initPaneState, topDiagnoses, updatePosterior,
+  DISEASES, FEATURES, adaptProtocolForPatient, applyModifiers, getProtocol, initPaneState, topDiagnoses, updatePosterior,
 } from '../../../lib/pane-engine/src/index';
 import type { ManagementProtocol, PaneState } from '../../../lib/pane-engine/src/index';
 import { RULES_VERSION, adaptiveTriage, matchPathways } from '../../../lib/triage-engine/src/index';
@@ -33,6 +35,8 @@ import { getCdsSuggestions } from '../../../artifacts/dashboard/src/lib/clinical
 import type { CdsContext } from '../../../artifacts/dashboard/src/lib/clinical-cds';
 import { detectDxVariants } from '../../../artifacts/dashboard/src/lib/dx-variants';
 import { managementPanelSource } from '../../../artifacts/dashboard/src/lib/management-panel-source';
+import { buildPlanSections, planPatientContext, planProtocolFor, safetyLines } from '../../../artifacts/dashboard/src/lib/plan-builder';
+import type { PlanPatientContext } from '../../../lib/pane-engine/src/index';
 import { computeClinicalPrompts } from '../../../artifacts/dashboard/src/lib/clinical-inference';
 import type { InferenceInput as PromptInput } from '../../../artifacts/dashboard/src/lib/clinical-inference';
 import {
@@ -185,17 +189,34 @@ const LEVEL_FROM_ACTION: Record<string, Level> = {
   emergency_now: 'emergency', same_day_call: 'urgent', priority_24_48h: 'priority', routine_booking: 'routine', admin_review: 'routine',
 };
 
-/** PlanTab.buildPlanText, reduced to the plan lines (surgeon/admission header omitted). */
-function planLines(protocol: ManagementProtocol, allowedPhases?: string[], planPrefix?: string): string[] {
-  const lines: string[] = [];
-  if (planPrefix) lines.push(...planPrefix.split('\n').filter(l => l.trim()));
-  for (const step of protocol.management) {
-    if (allowedPhases && !allowedPhases.includes(step.phase)) continue;
-    lines.push(`[${step.phase}] ${step.step}`);
-  }
-  for (const inv of protocol.investigations) lines.push(`Investigation: ${inv.label} (${inv.urgency})`);
-  if (protocol.referral) lines.push(`Referral: ${protocol.referral}`);
+/**
+ * PlanTab "Insert suggested plan" (lib/plan-builder.ts buildPlanText), reduced to the plan lines
+ * (surgeon/admission header omitted): variant prefix, patient-specific safety checks, the adapted
+ * protocol steps, investigations and referral.
+ */
+function planLines(protocol: ManagementProtocol, patient: PlanPatientContext, allowedPhases?: string[], planPrefix?: string): string[] {
+  const sec = buildPlanSections(protocol, patient, { allowedPhases, planPrefix });
+  const lines: string[] = [...sec.prefix, ...safetyLines(sec.safety)];
+  for (const p of sec.phases) for (const step of p.steps) lines.push(`[${p.phase}] ${step}`);
+  for (const inv of sec.investigations) lines.push(`Investigation: ${inv.label} (${inv.urgency})`);
+  if (sec.referral) lines.push(`Referral: ${sec.referral}`);
   return lines;
+}
+
+/** usePlanPatientContext: the AppContext fields the plan-safety filters read. */
+function webPlanPatient(v: Vignette, age: number, sex: string, pregnancyPossibleTick: boolean, assessment: string): PlanPatientContext {
+  const inp = v.inputs;
+  const egfr = (inp.labs ?? []).find(l => /egfr|creatinine clearance|crcl/i.test(`${l.analyte} ${l.name}`) && typeof l.value === 'number');
+  return planPatientContext({
+    age, sex, pregnancyPossible: pregnancyPossibleTick,
+    allergies: (inp.allergies ?? []).map(a => (a.reaction ? `${a.name} (${a.reaction})` : a.name)),
+    medications: (inp.medications ?? []).map(m => m.drug),
+    comorbidities: inp.comorbidities ?? [],
+    hpiNotes: [inp.chiefComplaint, inp.hpi].filter(Boolean).join('. '),
+    surgicalHistory: inp.surgicalHistory ?? [],
+    assessment,
+    extractedLabs: egfr ? { egfr: egfr.value ?? null } : {},
+  });
 }
 
 export function runWeb(v: Vignette): EngineOutputs {
@@ -308,36 +329,42 @@ export function runWeb(v: Vignette): EngineOutputs {
     paneTop[0] ? { diseaseId: paneTop[0].disease.id, probability: paneTop[0].probability } : null,
   );
   const assessDiseaseId = panelSource.source === 'pane' ? panelSource.diseaseId : null;
-  const panelProtocol = (panelSource.diseaseId ? getProtocol(panelSource.diseaseId) : null)
-    ?? (panelSource.icdCode ? getProtocolByIcd(panelSource.icdCode) : null);
-  // PlanTab: confirmedPlanSource(workingDiagnosis, icdCodes) (lib/diagnosis-suggestion.ts, UX C4) —
-  // only a confirmed diagnosis (locked working diagnosis, else the recorded ICD-10 code), never an
-  // unconfirmed PANE convergence. (Mirrored inline: that module's AppContext type import does not
-  // resolve under the scripts tsconfig.) Before 2026-09-25 this mirror still used the PANE leader
-  // at ≥ 0.85, which PlanTab stopped doing in cd375f0.
-  const planDiseaseId = dx?.paneDiseaseId ?? null;
-  const planIcd = icd;
-  const planProtocol = (planDiseaseId ? getProtocol(planDiseaseId) : null) ?? (planIcd ? getProtocolByIcd(planIcd) : null);
+  // usePlanPatientContext (PlanTab, ManagementPanel, PrescriptionsTab): the plan is adapted to it.
+  const planPatient = webPlanPatient(v, age, sex, pregnancyPossible(v), assessment);
+  // ManagementPanel: resolveProtocol(diseaseId, icd), adapted to the patient on record.
+  const panelBase = planProtocolFor(panelSource.diseaseId, panelSource.icdCode);
+  const panelProtocol = panelBase ? adaptProtocolForPatient(panelBase, planPatient) : null;
+  // PlanTab / PrescriptionsTab: the CONFIRMED diagnosis only (confirmedPlanSource: locked working
+  // diagnosis, else the recorded ICD-10 code) → resolveProtocol.
+  // (diagnosis-suggestion.ts confirmedPlanSource, inlined: that module imports the dashboard's '@/'
+  // alias. Recorded ICD code first, else the locked working diagnosis's code; disease id from the
+  // locked working diagnosis.) Before 2026-09-25 this mirror still used the PANE leader at ≥ 0.85,
+  // which PlanTab stopped doing in cd375f0.
+  const planSource = { diseaseId: dx?.paneDiseaseId ?? null, icdCode: icd };
+  const planProtocol = planProtocolFor(planSource.diseaseId, planSource.icdCode);
   notes.push(`AssessmentTab ManagementPanel protocol: ${panelProtocol?.diseaseId ?? '(none)'}${assessDiseaseId ? ' (from PANE top)' : ' (from the confirmed diagnosis)'}`);
   notes.push(`PlanTab protocol: ${planProtocol?.diseaseId ?? '(none)'} (from the confirmed diagnosis)`);
-  const variant = detectDxVariants(assessment, planIcd ?? undefined, planDiseaseId ?? undefined);
+  const variant = detectDxVariants(assessment, planSource.icdCode ?? undefined, planSource.diseaseId ?? undefined);
   const dxVariant = { value: variant?.detectedVariant?.id ?? null, group: variant?.group.baseDiagnosis ?? null };
 
   const investigations: SourcedText[] = [];
   const management: SourcedText[] = [];
   if (planProtocol) {
     const sv = variant?.detectedVariant;
-    for (const l of planLines(planProtocol, sv?.allowedPhases, sv?.planPrefix)) management.push({ source: 'web.plan', text: l });
-    for (const inv of planProtocol.investigations) {
+    for (const l of planLines(planProtocol, planPatient, sv?.allowedPhases, sv?.planPrefix)) management.push({ source: 'web.plan', text: l });
+    const adapted = adaptProtocolForPatient(planProtocol, planPatient);
+    for (const inv of adapted.investigations) {
       investigations.push({ source: 'web.plan.investigations', text: `${inv.label}${inv.conditional ? ` — ${inv.conditional}` : ''}` });
     }
-    for (const m of planProtocol.medications ?? []) {
+    // PrescriptionsTab "Suggested — <protocol>" (adapted: withheld drugs are not offered).
+    for (const m of adapted.medications ?? []) {
       management.push({ source: 'web.protocol.medications', text: `${m.drugName} ${m.dose} ${m.route} ${m.frequency} — ${m.indication}` });
     }
-    for (const f of planProtocol.redFlags) redFlags.push({ source: 'web.protocol.redFlags', text: f });
+    for (const f of adapted.redFlags) redFlags.push({ source: 'web.protocol.redFlags', text: f });
     if (sv?.urgencyNote) redFlags.push({ source: 'web.dxVariant.urgencyNote', text: sv.urgencyNote });
   }
   if (panelProtocol) {
+    for (const n of panelProtocol.safetyNotes) management.push({ source: 'web.managementPanel', text: `[for this patient] ${n.text}` });
     for (const s of panelProtocol.management) management.push({ source: 'web.managementPanel', text: `[${s.phase}] ${s.step}` });
     for (const p of panelProtocol.keyPoints) management.push({ source: 'web.managementPanel.keyPoints', text: p });
   }
