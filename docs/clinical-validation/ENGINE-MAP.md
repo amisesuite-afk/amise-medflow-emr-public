@@ -104,8 +104,14 @@ its `@/context/AppContext` type import does not resolve under the scripts tsconf
   everything with a fever/vomiting/jaundice/cholangitis pattern as `emergency_now`.
 - **Pregnancy**: web has `pregnancyPossible` (triage, prompts); the iOS `Patient` has no pregnancy
   field, and `VisitRiskAssessment` asks "Could be pregnant?" only on trauma/burns/procedure pathways.
-- **Negation**: `ClinicalTextParser` and the web symptom text matching have no negation handling
-  ("No confusion" fires the iOS sepsis alarm; "Murphy's sign negative" is a pathognomonic hit on web).
+- **Negation** (fixed 2026-09-25): free-text matching on both platforms goes through one rule,
+  `lib/triage-engine/src/negation.ts` (web: triage red flags, prompts, PANE mapping, dx variants) and its
+  Swift twin `ios/AmiseMedFlow/Services/NegationMatcher.swift` (iOS: `ClinicalTextParser`, pathway red
+  flags, PMH/risk flags, Bayesian scoring, `ConsultPathway`). A negation cue within 5 words in the same
+  clause cancels a finding; when uncertain ("cannot be excluded", "?") the finding is kept.
+  `scripts/src/negation-parity.test.ts` keeps the two test-vector lists identical. Not yet routed on
+  iOS: the ~40 `PatientScoreAutoPopulator+*` functions and the Bayesian route choice (investigation
+  text appended to the chief complaint).
 - **TG18 grading**: iOS cholangitis counts one Grade II criterion as Grade II (TG18 needs two); web
   `clinical-scales.ts` does the same (and treats fever ≥ 38 °C as the criterion instead of ≥ 39 °C);
   web `clinical-scores.ts` needs two but omits the WBC criterion. Neither cholecystitis calculator
