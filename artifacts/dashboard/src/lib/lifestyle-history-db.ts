@@ -17,6 +17,7 @@
  *
  * Record shape and rules: @workspace/triage-engine/lifestyle-practices.
  */
+import { withPathwayDataLock } from './pathway-data-lock';
 import { supabase } from './supabase';
 import { logClinicalSave } from './db';
 import { isMissingColumnError } from './vitals-news2-fields';
@@ -58,30 +59,32 @@ export async function loadLifestyleHistory(patientId: string): Promise<Lifestyle
   return { lifestyle: parseLifestyleHistory(blob.lifestyle), available: true, error: null };
 }
 
-export async function saveLifestyleHistory(patientId: string, lifestyle: LifestyleHistory): Promise<LifestyleSaveResult> {
-  if (!supabase) return { available: false, error: 'Supabase not configured' };
-  const { data, error } = await supabase
-    .from('patients')
-    .select(PATHWAY_DATA_COLUMN)
-    .eq('id', patientId)
-    .maybeSingle();
-  if (error) {
-    if (isMissingColumnError(error, [PATHWAY_DATA_COLUMN])) return { available: false, error: null };
-    return { available: true, error: error.message };
-  }
-  const text = (data as Record<string, unknown> | null)?.[PATHWAY_DATA_COLUMN];
-  const blob = parsePathwayBlob(typeof text === 'string' ? text : null);
-  if (!blob) return { available: true, error: 'Stored pathway data is not valid JSON — lifestyle history not saved' };
-  const { error: updateError } = await supabase
-    .from('patients')
-    .update({ [PATHWAY_DATA_COLUMN]: JSON.stringify(mergeLifestyleIntoBlob(blob, lifestyle)) })
-    .eq('id', patientId);
-  if (updateError) {
-    if (isMissingColumnError(updateError, [PATHWAY_DATA_COLUMN])) return { available: false, error: null };
-    console.error('[lifestyle] save:', updateError.message);
-    return { available: true, error: updateError.message };
-  }
-  // Fixed labels only (no free text): which parts are recorded.
-  logClinicalSave('autosave_lifestyle_history', 'patients', patientId, { recorded: isLifestyleRecorded(lifestyle) });
-  return { available: true, error: null };
+export function saveLifestyleHistory(patientId: string, lifestyle: LifestyleHistory): Promise<LifestyleSaveResult> {
+  return withPathwayDataLock(patientId, async () => {
+    if (!supabase) return { available: false, error: 'Supabase not configured' };
+    const { data, error } = await supabase
+      .from('patients')
+      .select(PATHWAY_DATA_COLUMN)
+      .eq('id', patientId)
+      .maybeSingle();
+    if (error) {
+      if (isMissingColumnError(error, [PATHWAY_DATA_COLUMN])) return { available: false, error: null };
+      return { available: true, error: error.message };
+    }
+    const text = (data as Record<string, unknown> | null)?.[PATHWAY_DATA_COLUMN];
+    const blob = parsePathwayBlob(typeof text === 'string' ? text : null);
+    if (!blob) return { available: true, error: 'Stored pathway data is not valid JSON — lifestyle history not saved' };
+    const { error: updateError } = await supabase
+      .from('patients')
+      .update({ [PATHWAY_DATA_COLUMN]: JSON.stringify(mergeLifestyleIntoBlob(blob, lifestyle)) })
+      .eq('id', patientId);
+    if (updateError) {
+      if (isMissingColumnError(updateError, [PATHWAY_DATA_COLUMN])) return { available: false, error: null };
+      console.error('[lifestyle] save:', updateError.message);
+      return { available: true, error: updateError.message };
+    }
+    // Fixed labels only (no free text): which parts are recorded.
+    logClinicalSave('autosave_lifestyle_history', 'patients', patientId, { recorded: isLifestyleRecorded(lifestyle) });
+    return { available: true, error: null };
+  });
 }

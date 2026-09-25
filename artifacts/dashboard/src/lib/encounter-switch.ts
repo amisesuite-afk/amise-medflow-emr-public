@@ -44,7 +44,7 @@ export const PATIENT_SCOPED_FIELDS = [
   // Standing history
   'comorbidities', 'pmhNotes', 'familyHistory', 'familyHistoryNotes',
   'surgicalHistory', 'surgicalNotes', 'recentSurgeryDate',
-  'allergies', 'toxicHabits', 'lifestyleHistory',
+  'allergies', 'toxicHabits', 'lifestyleHistory', 'supplementHistory',
   'problems', 'recentEncounters', 'recentEncountersPatientId',
 ] as const;
 

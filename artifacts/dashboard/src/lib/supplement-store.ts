@@ -11,6 +11,7 @@
  * the local draft and the error is returned for the caller (outbox) to retry; nothing throws.
  * Dates are written with second precision (iOS `.iso8601` decoding rejects milliseconds).
  */
+import { withPathwayDataLock } from './pathway-data-lock';
 import { supabase } from './supabase';
 import {
   mergeSupplementsIntoPathwayJson, normaliseSupplementHistory, parsePathwayJson, type SupplementHistory,
@@ -33,14 +34,16 @@ export async function loadSupplementHistory(patientId: string): Promise<Suppleme
 }
 
 /** Save the history into pathway_data_json, keeping the other keys. */
-export async function saveSupplementHistory(patientId: string, history: SupplementHistory): Promise<{ error: string | null }> {
-  if (!supabase) return { error: 'Supabase not configured' };
-  const { data, error: readErr } = await supabase
-    .from('patients').select(PATHWAY_DATA_COLUMN).eq('id', patientId).maybeSingle();
-  if (readErr) return { error: readErr.message };
-  if (!data) return { error: 'patient not found' };
-  const json = mergeSupplementsIntoPathwayJson((data as Record<string, unknown>)[PATHWAY_DATA_COLUMN], history);
-  const { error } = await supabase.from('patients').update({ [PATHWAY_DATA_COLUMN]: json }).eq('id', patientId);
-  if (error) return { error: error.message };
-  return { error: null };
+export function saveSupplementHistory(patientId: string, history: SupplementHistory): Promise<{ error: string | null }> {
+  return withPathwayDataLock(patientId, async () => {
+    if (!supabase) return { error: 'Supabase not configured' };
+    const { data, error: readErr } = await supabase
+      .from('patients').select(PATHWAY_DATA_COLUMN).eq('id', patientId).maybeSingle();
+    if (readErr) return { error: readErr.message };
+    if (!data) return { error: 'patient not found' };
+    const json = mergeSupplementsIntoPathwayJson((data as Record<string, unknown>)[PATHWAY_DATA_COLUMN], history);
+    const { error } = await supabase.from('patients').update({ [PATHWAY_DATA_COLUMN]: json }).eq('id', patientId);
+    if (error) return { error: error.message };
+    return { error: null };
+  });
 }
