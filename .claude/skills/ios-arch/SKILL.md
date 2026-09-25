@@ -228,7 +228,7 @@ View extensions: `.amCard()` (card background + border + shadow),
 |---|---|
 | `SOAPDraftEngine` | Deterministic SOAP pre-fill. No network. Safe always. `SOAPDraftEngine.draft(patient:) -> SOAPDraft` with `.s/.o/.a/.p: String` |
 | `AIService` | **ALL methods throw `AIError.disabled`** — HIPAA BAA not in place. `clinicalContext(_ patient:) -> String` is the only working method (pure, local). Do NOT re-enable without BAA. |
-| `BayesianDiagnosisEngine` | Differential diagnosis. `DiagnosticDatabase.json` (v2.0.0: 162 pools, 1,353 candidates, 29 presentations) decodes; the built-in lists (`+*Candidates.swift`) are the fallback if it ever fails. Settings → Diagnostics shows which one (`DiagnosticDatabaseInfo`). `BayesianDecisionEngine` = max-rule/utility decisions on top. Registry and plan: `clinical-content/registry.json`, `docs/CLINICAL-CONTENT-UPGRADES.md` |
+| `BayesianDiagnosisEngine` | Differential diagnosis. `DiagnosticDatabase.json` (v2.1.0, 29 presentations) decodes; the built-in lists (`+*Candidates.swift`) are the fallback if it ever fails. Settings → Diagnostics shows which one (`DiagnosticDatabaseInfo`). `BayesianDecisionEngine` = max-rule/utility decisions on top. Registry and plan: `clinical-content/registry.json`, `docs/CLINICAL-CONTENT-UPGRADES.md` |
 | `ClinicalScoringEngine` | NEWS2, Alvarado, Glasgow Pancreatitis, Ranson, Tokyo, Rockall, Blatchford, Wells DVT/PE, ABCD², LRINEC, qSOFA |
 | `BiometricAuthService` | Face ID / Touch ID app lock. `@StateObject bioAuth`, screen blurred when `bioAuth.isLocked` |
 | `MRNGenerator` | Auto-generates MRN on patient creation |
