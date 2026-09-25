@@ -21,6 +21,23 @@ struct CalEntry: Identifiable {
     let label: String
     let color: Color
     var patient: Patient?
+    /// Investigation badge for a scheduled patient (day and week blocks), worked out once per
+    /// render by ScheduleView instead of by every block (which decoded the investigations JSON
+    /// up to three times each, on every re-render).
+    var labBadge: CalLabBadge? = nil
+}
+
+enum CalLabBadge {
+    case criticalLabs, pending, resulted
+
+    /// Same precedence as before: critical values, else ordered/pending, else a recorded result.
+    static func badge(for patient: Patient) -> CalLabBadge? {
+        let investigations = patient.investigations
+        if LabPanel.parse(from: investigations).hasCriticalValues { return .criticalLabs }
+        if investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) { return .pending }
+        if investigations.contains(where: { $0.status == .resulted && !$0.result.isEmpty }) { return .resulted }
+        return nil
+    }
 }
 
 private enum CalMode: String, CaseIterable {
@@ -63,11 +80,14 @@ struct ScheduleView: View {
                 subtitle: p.appointmentType ?? p.workingDiagnosis ?? p.chiefComplaint,
                 start: s, end: s.addingTimeInterval(7200), label: lb, color: c, patient: p))
         }
-        for e in calSvc.events {
+        for (ordinal, e) in calSvc.events.enumerated() {
             guard let s = e.startDate else { continue }
             let end = e.endDate ?? s.addingTimeInterval(3600)
             out.append(CalEntry(
-                id: "K\(e.eventIdentifier ?? UUID().uuidString)",
+                // Stable across renders (an event without an identifier used to get a fresh
+                // UUID each render, so its block was torn down and rebuilt every time).
+                id: ListPerf.calendarEntryID(eventIdentifier: e.eventIdentifier, title: e.title,
+                                             start: s, ordinal: ordinal),
                 title: e.title ?? "Event",
                 subtitle: e.calendar?.title,
                 start: s, end: end,
@@ -90,12 +110,23 @@ struct ScheduleView: View {
         }
     }
 
+    /// Day/week entries with their investigation badges (only the visible patients' JSON is decoded).
+    private func withLabBadges(_ entries: [CalEntry]) -> [CalEntry] {
+        entries.map { entry in
+            guard let p = entry.patient, p.isLive else { return entry }
+            var e = entry
+            e.labBadge = CalLabBadge.badge(for: p)
+            return e
+        }
+    }
+
     private func step(_ n: Int) {
         let comp: Calendar.Component = mode == .day ? .day : mode == .week ? .weekOfYear : .month
         anchor = cal.date(byAdding: comp, value: n, to: anchor) ?? anchor
     }
 
     var body: some View {
+        let entries = allEntries
         VStack(spacing: 0) {
             // ── Header ─────────────────────────────────────────────
             HStack(spacing: 12) {
@@ -161,20 +192,24 @@ struct ScheduleView: View {
             switch mode {
             case .day:
                 DayCalView(date: anchor,
-                    entries: allEntries.filter { cal.isDate($0.start, inSameDayAs: anchor) }
+                    entries: withLabBadges(entries.filter { cal.isDate($0.start, inSameDayAs: anchor) })
                 ) { entry in
                     if let p = entry.patient { selectedPatient = p }
                     else { selectedEntry = entry }
                 }
 
             case .week:
-                WeekCalView(weekStart: weekStart, entries: allEntries) { entry in
+                let start = weekStart
+                let days = (0..<7).compactMap { cal.date(byAdding: .day, value: $0, to: start) }
+                WeekCalView(weekStart: start,
+                            entries: withLabBadges(ListPerf.onDays(entries, days: days,
+                                                                   date: { $0.start }, calendar: cal))) { entry in
                     if let p = entry.patient { selectedPatient = p }
                     else { selectedEntry = entry }
                 }
 
             case .month:
-                MonthCalView(monthDate: anchor, entries: allEntries) { d in
+                MonthCalView(monthDate: anchor, entries: entries) { d in
                     anchor = d; mode = .day
                 }
             }
@@ -196,7 +231,11 @@ struct ScheduleView: View {
             }
         }
         .task { await calSvc.sync() }
-        .onAppear { anchor = cal.startOfDay(for: .now) }
+        .onAppear {
+            CrashReporting.breadcrumb("Opened schedule")
+            let today = cal.startOfDay(for: .now)
+            if anchor != today { anchor = today }
+        }
         .sheet(isPresented: $showAdd) { AppointmentSchedulerView() }
         .patientRecordPresentation(item: $selectedPatient)
         .sheet(item: $selectedEntry) { entry in

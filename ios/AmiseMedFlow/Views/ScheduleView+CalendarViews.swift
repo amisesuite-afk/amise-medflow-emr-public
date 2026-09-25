@@ -31,11 +31,11 @@ struct MonthCalView: View {
         return out
     }
 
-    private func dayEntries(_ date: Date) -> [CalEntry] {
-        entries.filter { cal.isDate($0.start, inSameDayAs: date) }
-    }
-
     var body: some View {
+        // Once per render: `cells` was rebuilt twice per day cell (~84 times, 31 calendar
+        // additions each), and every cell filtered all entries with a calendar comparison.
+        let cells = self.cells
+        let byDay = ListPerf.groupedByDay(entries, date: { $0.start }, calendar: cal)
         VStack(spacing: 0) {
             // Weekday labels
             HStack(spacing: 0) {
@@ -58,7 +58,7 @@ struct MonthCalView: View {
                                 let cell: Date? = idx < cells.count ? cells[idx] : nil
                                 MonthDayCell(
                                     date: cell,
-                                    entries: cell.map { dayEntries($0) } ?? [],
+                                    entries: cell.map { byDay[cal.startOfDay(for: $0)] ?? [] } ?? [],
                                     onTap: { if let d = cell { onSelectDay(d) } }
                                 )
                             }
@@ -156,7 +156,7 @@ struct WeekCalView: View {
             Divider()
             CalTimeline(
                 days: days,
-                entries: entries.filter { e in days.contains { cal.isDate(e.start, inSameDayAs: $0) } },
+                entries: ListPerf.onDays(entries, days: days, date: { $0.start }, calendar: cal),
                 onTap: onTap
             )
         }
@@ -312,22 +312,22 @@ private struct CalEventBlock: View {
                         .font(.system(size: 8))
                         .foregroundStyle(entry.color.opacity(0.7))
                     Spacer(minLength: 0)
-                    // Investigation status badges for scheduled patients
-                    if let p = entry.patient {
-                        let critLabs = LabPanel.parse(from: p.investigations)
-                        if critLabs.hasCriticalValues {
-                            Image(systemName: "flask.fill")
-                                .font(.system(size: 7, weight: .bold))
-                                .foregroundStyle(.red)
-                        } else if p.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
-                            Image(systemName: "clock.badge.exclamationmark")
-                                .font(.system(size: 7))
-                                .foregroundStyle(.orange)
-                        } else if p.investigations.contains(where: { $0.status == .resulted && !$0.result.isEmpty }) {
-                            Image(systemName: "flask")
-                                .font(.system(size: 7))
-                                .foregroundStyle(.teal)
-                        }
+                    // Investigation status badges for scheduled patients (worked out by ScheduleView)
+                    switch entry.labBadge {
+                    case .criticalLabs:
+                        Image(systemName: "flask.fill")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(.red)
+                    case .pending:
+                        Image(systemName: "clock.badge.exclamationmark")
+                            .font(.system(size: 7))
+                            .foregroundStyle(.orange)
+                    case .resulted:
+                        Image(systemName: "flask")
+                            .font(.system(size: 7))
+                            .foregroundStyle(.teal)
+                    case nil:
+                        EmptyView()
                     }
                 }
                 Text(entry.title)
