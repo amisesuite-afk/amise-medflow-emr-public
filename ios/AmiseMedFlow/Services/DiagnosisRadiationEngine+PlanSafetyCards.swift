@@ -172,7 +172,9 @@ extension DiagnosisRadiationEngine {
 - Treatment options: PPI (high dose 8 weeks), topical steroid (budesonide orodispersible or swallowed fluticasone) or an elimination diet with a dietitian (BSG 2022)
 - Stricture: endoscopic dilatation after treatment starts
 - Food bolus obstruction: emergency OGD (see food bolus pathway)
-""", followUp: "Repeat OGD with biopsies after 8–12 weeks of treatment.",
+""", redFlags: ["Progressive dysphagia → exclude carcinoma urgently (OGD within 2 weeks)",
+                "Food bolus with inability to swallow saliva → emergency OGD (ESGE 2016)"],
+             followUp: "Repeat OGD with biopsies after 8–12 weeks of treatment.",
              ref: "BSG guideline on eosinophilic oesophagitis (2022)"),
 
         psCard(["food bolus", "bolus obstruction"], "Oesophageal Food Bolus Obstruction", icd: "T18.1",

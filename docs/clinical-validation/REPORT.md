@@ -1,8 +1,8 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-25T19:01:32.008Z.
+Generated 2026-09-25T19:44:30.486Z.
 
-- iOS: 397 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T18:58:11Z).
+- iOS: 397 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T19:36:29Z).
 - iOS differential engine mode: database (BayesianDiagnosisEngine used DiagnosticDatabase.json).
 - Web: 397 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T19:01:21.899Z, clinval-web/1).
 
@@ -14,209 +14,37 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| ios | 397 | 3087 | 2384 | 587 | 116 | 194 | 0 | 587 | 0 | 2 |
+| ios | 397 | 3087 | 2714 | 257 | 116 | 22 | 1 | 255 | 0 | 166 |
 | web | 397 | 3087 | 2871 | 124 | 92 | 5 | 0 | 122 | 0 | 0 |
 
 ## Blocking failures
 
-None.
+- `eoe-young-atopic-recurrent-bolus` / **flag-dysphagia** (ios, FAIL — BLOCKING): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)
 
 ## All critical failures (including known gaps and unverified)
 
-- `abscess-recurrent-mrsa-pwid` / **mgmt-mrsa-active-antibiotic** (ios, FAIL (known gap)): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `achalasia-pseudoachalasia-elderly` / **inv-ogd** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `achalasia-young` / **inv-ogd** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
 - `acutemed-acs-atypical-diabetic-woman` / **mnm-acs** (ios, FAIL (known gap)): not in top 5 of ios.bayes: 1. Acute Kidney Injury \| 2. Atrial Fibrillation \| 3. COPD Exacerbation \| 4. Diabetic Ketoacidosis \| 5. Asthma (Acute Exacerbation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Kidney Injury \| 2. Atrial Fibrillation \| 3. COPD Exacerbation \| 4. Diabetic Ketoacidosis \| 5. Asthma (Acute Exacerbation)]
-- `acutemed-htn-emergency-encephalopathy` / **mgmt-iv-antihypertensive** (ios, FAIL (known gap)): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `acutemed-htn-pregnancy-preeclampsia-epigastric` / **mgmt-no-ace-arb** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "...y - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers the question." (+2 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...y - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers the question." (+2 more)]
 - `acutemed-pe-high-risk-shock` / **dx-pe-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Sepsis \| 3. Acute Heart Failure / Pulmonary Oedema \| 4. Community-Acquired Pneumonia \| 5. Pulmonary Embolism; also in ios.pipeline#4 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Sepsis \| 3. Acute Heart Failure / Pulmonary Oedema \| 4. Community-Acquired Pneumonia \| 5. Pulmonary Embolism; also in ios.pipeline#4]
-- `adrenal-incidentaloma-indeterminate` / **inv-metanephrines** (ios, FAIL (known gap)): no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)]
-- `adrenal-suspected-phaeochromocytoma` / **inv-metanephrines** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `adrenal-suspected-phaeochromocytoma` / **mgmt-alpha-blockade** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `aki-obstructive-chronic-retention-elderly` / **mgmt-catheterise** (ios, FAIL (known gap)): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `aki-obstructive-chronic-retention-elderly` / **mgmt-post-obstructive-diuresis** (ios, FAIL (known gap)): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `aki-prerenal-diarrhoea-acei-nsaid` / **mgmt-stop-acei** (ios, FAIL (known gap)): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `ami-venous-thrombosis-ocp` / **inv-pregnancy-test** (ios, FAIL (known gap)): no investigation matched among 5 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.decisions)]
-- `ami-venous-thrombosis-ocp` / **mgmt-anticoagulation** (ios, FAIL (known gap)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- `anal-cancer-red-flags` / **inv-biopsy** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `anal-fissure-atypical-lateral-hiv` / **mgmt-no-sphincterotomy** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "if chronic / failed medical: lateral internal sphincterotomy" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "if chronic / failed medical: lateral internal sphincterotomy"]
 - `aortoenteric-fistula-herald-bleed` / **mnm-aortoenteric-fistula** (ios, FAIL (known gap)): not in top 5 of ios.bayes: 1. Upper GI Bleeding (Peptic Ulcer) \| 2. Acute Appendicitis \| 3. Acute Pancreatitis \| 4. Small Bowel Obstruction \| 5. Acute Kidney Injury; also in ios.ccEarly#3 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Upper GI Bleeding (Peptic Ulcer) \| 2. Acute Appendicitis \| 3. Acute Pancreatitis \| 4. Small Bowel Obstruction \| 5. Acute Kidney Injury; also in ios.ccEarly#3]
-- `aortoenteric-fistula-herald-bleed` / **mgmt-vascular-surgery** (ios, FAIL (known gap)): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 - `appendicitis-elderly-atypical` / **mnm-mesenteric-ischaemia** (ios, FAIL (known gap)): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Small Bowel Obstruction \| 3. Acute Diverticulitis \| 4. Perforated Peptic Ulcer \| 5. Clostridioides difficile Colitis; also in ios.pipeline#5 [known gap: PANE top 3 (cholecystitis, appendicitis, appendix mass) omits it; symptom inference ranks it #3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
-- `appendicitis-generalised-peritonitis-sepsis` / **inv-blood-cultures** (ios, FAIL (known gap)): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)]
-- `appendicitis-pregnant-t2` / **inv-mri-after-inconclusive-us** (ios, FAIL (known gap)): no investigation matched among 16 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
-- `appendicitis-score-low-band` / **inv-pregnancy-test** (ios, FAIL (known gap)): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)]
 - `boerhaave-classic-mackler` / **dx-perforation-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Acute Coronary Syndrome \| 3. Sepsis \| 4. Acute Appendicitis \| 5. Oesophageal Perforation (Boerhaave) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Acute Coronary Syndrome \| 3. Sepsis \| 4. Acute Appendicitis \| 5. Oesophageal Perforation (Boerhaave)]
 - `boerhaave-presenting-as-chest-pain` / **mnm-perforation** (ios, FAIL (known gap)): not in top 5 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Stable Angina \| 3. Community-Acquired Pneumonia \| 4. Acute Pancreatitis \| 5. Pulmonary Embolism [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Stable Angina \| 3. Community-Acquired Pneumonia \| 4. Acute Pancreatitis \| 5. Pulmonary Embolism]
-- `boerhaave-presenting-as-chest-pain` / **inv-ecg** (ios, FAIL (known gap)): no investigation matched among 5 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
-- `breast-abscess-lactational` / **inv-uss** (ios, FAIL (known gap)): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
-- `breast-abscess-non-lactational-smoker` / **inv-uss** (ios, FAIL (known gap)): no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)]
-- `breast-inflammatory-cancer` / **mgmt-no-bcs-or-slnb** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy" [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"]
-- `breast-lump-age-30-35` / **flag-2ww** (ios, FAIL (known gap)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)]
-- `breast-lump-age-30-35` / **inv-uss** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `breast-lump-age-30-35` / **inv-core-biopsy** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `breast-lump-over-35-suspicious` / **inv-core-biopsy** (ios, FAIL (known gap)): no investigation matched among 2 (ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `breast-lump-pregnant` / **flag-2ww** (ios, FAIL (known gap)): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)]
-- `breast-lump-pregnant` / **mgmt-no-tamoxifen** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "adjuvant: endocrine therapy if er+ (tamoxifen / aromatase inhibitor), herceptin if her2+" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "adjuvant: endocrine therapy if er+ (tamoxifen / aromatase inhibitor), herceptin if her2+"]
-- `breast-lump-under-30` / **inv-uss** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `breast-male-cancer` / **inv-core-biopsy** (ios, FAIL (known gap)): no investigation matched among 2 (ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `burns-inhalation-enclosed-space` / **mgmt-early-intubation** (ios, FAIL (known gap)): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `caecal-volvulus` / **inv-pregnancy-test** (ios, FAIL (known gap)): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
-- `cdiff-fulminant-colitis` / **mgmt-vancomycin-metronidazole** (ios, FAIL (known gap)): no management item matched among 9 (ios.pipeline.decisions, ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.decisions, ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan)]
 - `cellulitis-sepsis-elderly-diabetic` / **dx-cellulitis-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Community-Acquired Pneumonia \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State); also in ios.ccEarly#3 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Community-Acquired Pneumonia \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State); also in ios.ccEarly#3]
 - `cellulitis-sepsis-elderly-diabetic` / **mnm-nsti** (ios, FAIL (known gap)): not in top 5 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Community-Acquired Pneumonia \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Community-Acquired Pneumonia \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State)]
-- `charcot-foot-cellulitis-mimic` / **mgmt-immobilise-offload** (ios, FAIL (known gap)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
-- `cholangitis-tg18-grade3-reynolds` / **score-tg18-autofill** (ios, FAIL (known gap)): expected = 3; got ios.autofill.tg18-cholangitis=2 (Tokyo Grade II — Moderate acute cholangitis; early biliary d) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 - `cholecystitis-acalculous-icu` / **dx-cholecystitis-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Ascending Cholangitis \| 4. Bacterial Meningitis / Meningococcal Sepsis \| 5. Infective Endocarditis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Ascending Cholangitis \| 4. Bacterial Meningitis / Meningococcal Sepsis \| 5. Infective Endocarditis]
-- `cholecystitis-pregnancy-t2` / **mgmt-no-nsaid-after-20-weeks** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."]
-- `cholecystitis-tg18-grade3-organ-dysfunction` / **score-tg18-autofill** (ios, FAIL (known gap)): expected = 3; got ios.autofill.tg18-cholecystitis=2 (Tokyo Grade II — Moderate acute cholecystitis; early laparos) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
-- `cholecystitis-tg18-grade3-organ-dysfunction` / **mgmt-no-penicillin-in-anaphylaxis** (ios, FAIL (known gap)): forbidden management item present in ios.scoreCalculator.tg18-cholecystitis: "iv antibiotics (piperacillin-tazobactam or meropenem)" [known gap: Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penicillin anaphylaxis.]
-- `choledocholithiasis-asge-intermediate` / **mgmt-no-unconditional-ercp** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "ercp ± sphincterotomy + stone extraction (primary intervention)" (+3 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "ercp ± sphincterotomy + stone extraction (primary intervention)" (+3 more)]
 - `crc-fit-positive-abdominal-pain` / **level-at-least-priority** (ios, FAIL (known gap)): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ p]
-- `crc-lynch-surveillance-overdue` / **flag-lynch** (ios, FAIL (known gap)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)]
-- `crc-lynch-surveillance-overdue` / **inv-colonoscopy** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `crohns-perianal-complex-fistula` / **inv-mri-pelvis** (ios, FAIL (known gap)): no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)]
-- `crohns-perianal-complex-fistula` / **mgmt-eua-seton** (ios, FAIL (known gap)): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `dfi-moderate-osteomyelitis` / **inv-foot-xray** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `dfu-ischaemic-calcified-abpi` / **inv-toe-pressure-or-imaging** (ios, FAIL (known gap)): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions)]
-- `dfu-ischaemic-calcified-abpi` / **mgmt-vascular-referral** (ios, FAIL (known gap)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
-- `diverticulitis-abscess-drainage` / **mgmt-drainage** (ios, FAIL (known gap)): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `diverticulitis-purulent-peritonitis` / **alarm-perforation** (ios, FAIL (known gap)): no alarm matched among 4 (ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 4 (ios.pipeline.alert, ios.acuity)]
-- `dvt-pregnancy-22wk` / **mgmt-no-warfarin-in-pregnancy** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more) [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more)]
-- `dysphagia-progressive-under55` / **inv-ogd** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `eoe-young-atopic-recurrent-bolus` / **inv-oesophageal-biopsies** (ios, FAIL (known gap)): no investigation matched among 5 (ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)]
-- `fistula-in-ano-complex-anterior-female` / **inv-mri-pelvis** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `fistula-in-ano-complex-anterior-female` / **mgmt-seton-or-sparing** (ios, FAIL (known gap)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
-- `fistula-in-ano-simple-low` / **mgmt-fistulotomy** (ios, FAIL (known gap)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
-- `food-bolus-complete-obstruction` / **inv-emergency-ogd** (ios, FAIL (known gap)): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions)]
-- `food-bolus-complete-obstruction` / **mgmt-endoscopic-removal** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- `eoe-young-atopic-recurrent-bolus` / **flag-dysphagia** (ios, FAIL — BLOCKING): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)
 - `gastric-outlet-obstruction-elderly` / **dx-goo-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Gastroenteritis \| 3. Acute Pancreatitis \| 4. Acute Appendicitis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Gastroenteritis \| 3. Acute Pancreatitis \| 4. Acute Appendicitis \| 5. Acute Kidney Injury]
-- `gastric-outlet-obstruction-elderly` / **inv-ogd** (ios, FAIL (known gap)): no investigation matched among 17 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 17 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)]
-- `gastric-outlet-obstruction-elderly` / **mgmt-iv-saline-potassium** (ios, FAIL (known gap)): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- `gord-alarm-weight-loss-over55` / **flag-weight-loss-cancer** (ios, FAIL (known gap)): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags)]
-- `groin-mimic-lymphadenopathy` / **inv-uss-or-biopsy** (ios, FAIL (known gap)): no investigation matched among 2 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.decisions)]
-- `groin-mimic-lymphadenopathy` / **mgmt-no-hernia-repair** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more)]
-- `groin-mimic-testicular-torsion` / **mgmt-no-hernia-repair** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more)]
-- `gyn-ovarian-torsion-premenarchal-11` / **mgmt-no-adult-fixed-doses** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..."]
 - `gyn-pid-tubo-ovarian-abscess-sepsis` / **dx-pid-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Ectopic Pregnancy \| 2. Acute Appendicitis \| 3. Sepsis \| 4. Community-Acquired Pneumonia \| 5. Liver Abscess (Pyogenic / Amoebic) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Ectopic Pregnancy \| 2. Acute Appendicitis \| 3. Sepsis \| 4. Community-Acquired Pneumonia \| 5. Liver Abscess (Pyogenic / Amoebic)]
-- `gyn-ruptured-haemorrhagic-cyst-apixaban` / **mgmt-anticoagulant-reversal** (ios, FAIL (known gap)): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- `haematuria-anticoagulated-clot-retention` / **inv-cystoscopy** (ios, FAIL (known gap)): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
-- `hernia-femoral-elderly-woman` / **mgmt-early-repair** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `hernia-femoral-richter-obstruction` / **mgmt-emergency-surgery** (ios, FAIL (known gap)): no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `hernia-femoral-richter-obstruction` / **mgmt-no-conservative-sbo-trial** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" (+1 more)]
-- `hernia-groin-strangulated` / **mgmt-emergency-surgery** (ios, FAIL (known gap)): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)]
-- `hernia-obturator-sbo-elderly-woman` / **mgmt-emergency-surgery** (ios, FAIL (known gap)): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 26 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `hernia-obturator-sbo-elderly-woman` / **mgmt-no-gastrografin-trial** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic"]
-- `hernia-paediatric-inguinal-infant` / **mgmt-no-watchful-waiting** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "...- refer to a paediatric surgeon for herniotomy (no mesh, no truss); infants need early repair because of the incarceration risk." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...- refer to a paediatric surgeon for herniotomy (no mesh, no truss); infants need early repair because of the incarceration risk."]
-- `hernia-umbilical-cirrhosis-ascites` / **mgmt-ascites-control** (ios, FAIL (known gap)): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `hypercalcaemia-myeloma-aki-elderly` / **inv-myeloma-screen** (ios, FAIL (known gap)): no investigation matched among 11 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
-- `hyponatraemia-hypovolaemic-ileostomy` / **mgmt-isotonic-volume** (ios, FAIL (known gap)): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `infective-colitis-bloody-diarrhoea` / **inv-stool-culture** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `jaundice-mimic-acute-hepatitis-a` / **inv-inr** (ios, FAIL (known gap)): no investigation matched among 2 (ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)]
-- `lbo-cancer-impending-caecal-perforation` / **mgmt-emergency-surgery** (ios, FAIL (known gap)): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `lbo-cancer-impending-caecal-perforation` / **mgmt-no-stent-with-impending-perforation** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)" [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated'). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)"]
-- `lgib-diverticular-apixaban` / **mgmt-hold-doac** (ios, FAIL (known gap)): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `liver-abscess-elderly-biliary-septic` / **mgmt-organ-support** (ios, FAIL (known gap)): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `mallory-weiss-young-binge` / **mgmt-no-tranexamic-acid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
 - `mi-presenting-as-epigastric-pain` / **mnm-acs** (ios, FAIL (known gap)): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Peptic ulcer disease \| 3. Functional dyspepsia \| 4. Acute Pancreatitis \| 5. Diabetic Ketoacidosis; also in ios.pipeline#5 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Peptic ulcer disease \| 3. Functional dyspepsia \| 4. Acute Pancreatitis \| 5. Diabetic Ketoacidosis; also in ios.pipeline#5]
-- `mscc-pain-only-breast-cancer` / **mgmt-mscc-safety-net** (ios, FAIL (known gap)): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `nsaid-associated-gastric-ulcer` / **flag-nsaid** (ios, FAIL (known gap)): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.pipeline.alert)]
-- `nsaid-associated-gastric-ulcer` / **mgmt-no-blanket-stop-aspirin** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "stop nsaids + aspirin if possible; use paracetamol instead" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "stop nsaids + aspirin if possible; use paracetamol instead"]
 - `nsti-early-low-lrinec` / **mnm-nsti** (ios, FAIL (known gap)): not in top 5 of ios.bayes: 1. Cellulitis \| 2. Skin Abscess \| 3. Femoral Hernia \| 4. Acute Kidney Injury \| 5. Diabetic Foot Infection / Osteomyelitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Cellulitis \| 2. Skin Abscess \| 3. Femoral Hernia \| 4. Acute Kidney Injury \| 5. Diabetic Foot Infection / Osteomyelitis]
-- `nsti-postop-abdominal-wall` / **mgmt-clindamycin** (ios, FAIL (known gap)): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - `obs-abruption-concealed-partner-assault` / **flag-domestic-abuse** (ios, FAIL (known gap)): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)]
-- `paed-appendicitis-preschool-perforated` / **mgmt-no-adult-fixed-doses** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..."]
-- `paed-dka-new-onset-abdominal-pain` / **mgmt-no-adult-fixed-doses** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..."]
-- `paed-febrile-infant-7wk-hernia-clinic` / **mgmt-urgent-paediatric** (ios, FAIL (known gap)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- `paed-hsp-abdominal-pain` / **mgmt-no-adult-fixed-doses** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..."]
-- `painless-jaundice-pancreatic-head` / **inv-ct-pancreas-protocol** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `painless-jaundice-pancreatic-head` / **mgmt-hpb-mdt** (ios, FAIL (known gap)): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
-- `pancreatitis-alcohol` / **mgmt-thiamine** (ios, FAIL (known gap)): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `pancreatitis-alcohol` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
-- `pancreatitis-drug-induced-immunosuppressed` / **mgmt-stop-azathioprine** (ios, FAIL (known gap)): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `pancreatitis-drug-induced-immunosuppressed` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
-- `pancreatitis-elderly-bisap-heart-failure` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
-- `pancreatitis-elderly-bisap-heart-failure` / **mgmt-no-routine-ercp** (ios, FAIL (known gap)): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp."]
-- `pancreatitis-gallstone-cholangitis` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 2.1 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 2.1 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..."]
-- `pancreatitis-gallstone-mild` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
-- `pancreatitis-gallstone-mild` / **mgmt-no-routine-ercp** (ios, FAIL (known gap)): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp."]
-- `pancreatitis-hypertriglyceridaemia` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...o₃, osmolality; variable rate insulin infusion; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...o₃, osmolality; variable rate insulin infusion; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
-- `pancreatitis-mimic-ruptured-aaa` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...asopressors if fluid-unresponsive; icu/hdu now; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...asopressors if fluid-unresponsive; icu/hdu now; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
-- `pancreatitis-pregnancy` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
 - `pancreatitis-severe-organ-failure` / **dx-pancreatitis-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Pulmonary Embolism; also in ios.pipeline#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Pulmonary Embolism; also in ios.pipeline#2]
-- `pancreatitis-severe-organ-failure` / **mgmt-no-aggressive-fluids** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 3.4 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 3.4 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..."]
-- `pancreatitis-severe-organ-failure` / **mgmt-no-prophylactic-antibiotics** (ios, FAIL (known gap)): forbidden management item present in ios.pipeline.decisions: "...sepsis - initiate 1-hour bundle - blood cultures × 2 before antibiotics; iv antibiotics within 1 hour (broad-spectrum; narrow when cultures return); i..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...sepsis - initiate 1-hour bundle - blood cultures × 2 before antibiotics; iv antibiotics within 1 hour (broad-spectrum; narrow when cultures return); i..."]
-- `pancreatitis-severe-organ-failure` / **mgmt-no-routine-ercp** (ios, FAIL (known gap)): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, uss abdomen, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, uss abdomen, mrcp, ercp."]
-- `parathyroid-hypercalcaemic-crisis` / **mgmt-iv-saline** (ios, FAIL (known gap)): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `perianal-abscess-diabetic-cellulitis` / **mgmt-drainage** (ios, FAIL (known gap)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `periop-anticoag-apixaban-ckd-elderly` / **inv-renal-function** (ios, FAIL (known gap)): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation)]
-- `periop-anticoag-apixaban-ckd-elderly` / **mgmt-doac-interrupt** (ios, FAIL (known gap)): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `periop-anticoag-warfarin-af-no-bridging` / **inv-inr** (ios, FAIL (known gap)): no investigation matched among 13 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 13 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
-- `periop-anticoag-warfarin-af-no-bridging` / **mgmt-stop-warfarin-5-days** (ios, FAIL (known gap)): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `periop-anticoag-warfarin-mechanical-mitral-bridging` / **inv-inr** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `periop-anticoag-warfarin-mechanical-mitral-bridging` / **mgmt-bridging** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `periop-diabetes-sglt2-preop-withhold` / **mgmt-withhold-sglt2** (ios, FAIL (known gap)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `periop-diabetes-type1-emergency-surgery` / **mgmt-vriii** (ios, FAIL (known gap)): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `periop-diabetes-type1-emergency-surgery` / **mgmt-continue-basal-insulin** (ios, FAIL (known gap)): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `periop-endo-ercp-sphincterotomy-apixaban` / **mgmt-doac-interrupt** (ios, FAIL (known gap)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `periop-endo-polypectomy-clopidogrel` / **mgmt-stop-clopidogrel** (ios, FAIL (known gap)): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `periop-postop-aki-oliguria` / **mgmt-no-nsaid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "...or solitary kidney → emergency decompression (eau 2024); no nsaids in aki" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...or solitary kidney → emergency decompression (eau 2024); no nsaids in aki"]
 - `periop-postop-anastomotic-leak-day5` / **dx-leak-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Pulmonary Embolism \| 5. Anastomotic Leak; also in ios.ccEarly#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Pulmonary Embolism \| 5. Anastomotic Leak; also in ios.ccEarly#2]
-- `periop-postop-anastomotic-leak-occult-elderly` / **inv-ct** (ios, FAIL (known gap)): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)]
 - `periop-postop-pe-high-risk-shock` / **dx-pe-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Acute Coronary Syndrome \| 4. Community-Acquired Pneumonia \| 5. Pulmonary Embolism; also in ios.pipeline#5 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Acute Coronary Syndrome \| 4. Community-Acquired Pneumonia \| 5. Pulmonary Embolism; also in ios.pipeline#5]
-- `periop-postop-urinary-retention` / **mgmt-catheterise** (ios, FAIL (known gap)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `periop-preop-ckd-dialysis-hyperkalaemia` / **mgmt-correct-k-before-surgery** (ios, FAIL (known gap)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- `periop-preop-latex-allergy` / **mgmt-latex-free** (ios, FAIL (known gap)): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- `periop-preop-long-term-steroids` / **mgmt-steroid-cover** (ios, FAIL (known gap)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- `periop-preop-mh-susceptible` / **mgmt-trigger-free-anaesthesia** (ios, FAIL (known gap)): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- `periop-preop-rcri-high-risk-hemicolectomy` / **mgmt-ecg** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `periop-preop-recent-acs-des-elective-chole` / **mgmt-defer-elective-surgery** (ios, FAIL (known gap)): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - `periop-preop-suxamethonium-apnoea` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ u]
-- `periop-preop-suxamethonium-apnoea` / **mgmt-avoid-suxamethonium-mivacurium** (ios, FAIL (known gap)): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `periop-vte-caprini-high-cancer-surgery` / **mgmt-pharmacological-prophylaxis** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `periop-vte-high-bleeding-risk-mechanical` / **mgmt-mechanical-prophylaxis** (ios, FAIL (known gap)): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `pharyngeal-pouch-elderly` / **flag-dysphagia** (ios, FAIL (known gap)): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage)]
-- `pharyngeal-pouch-elderly` / **inv-imaging-or-endoscopy** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
 - `ppu-elderly-steroids-masked` / **dx-perforation-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Kidney Injury \| 3. Acute Coronary Syndrome \| 4. Obturator Hernia \| 5. Perforated Peptic Ulcer [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Kidney Injury \| 3. Acute Coronary Syndrome \| 4. Obturator Hernia \| 5. Perforated Peptic Ulcer]
-- `ppu-septic-shock-delayed` / **mgmt-source-control** (ios, FAIL (known gap)): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `pyelonephritis-adult-female` / **mgmt-no-nitrofurantoin** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)"]
-- `pyelonephritis-pregnant-24wk` / **mgmt-no-quinolone** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "⚠ pregnancy: fluoroquinolone / tetracycline removed (bnf) - e.g. cefalexin for pyelonephritis in pregnancy (..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "⚠ pregnancy: fluoroquinolone / tetracycline removed (bnf) - e.g. cefalexin for pyelonephritis in pregnancy (..."]
-- `pyelonephritis-pregnant-24wk` / **mgmt-no-nitrofurantoin** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)"]
-- `rectal-prolapse-incarcerated` / **mgmt-emergency-perineal** (ios, FAIL (known gap)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
-- `renal-colic-infected-obstructed` / **mgmt-no-definitive-stone-treatment** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "5-10 mm: met + urology follow-up; eswl if no spontaneous passage at 4 weeks" (+2 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "5-10 mm: met + urology follow-up; eswl if no spontaneous passage at 4 weeks" (+2 more)]
-- `renal-colic-pregnant` / **inv-ultrasound-first** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `renal-colic-solitary-kidney-anticoagulated` / **mgmt-no-nsaid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "diclofenac 75 mg im or pr (nsaid - first line, reduces ureteric spasm)" [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "diclofenac 75 mg im or pr (nsaid - first line, reduces ureteric spasm)"]
-- `sbo-strangulation` / **mgmt-no-nom-trial-with-strangulation** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic"]
-- `screen-post-splenectomy-vaccination` / **mgmt-pneumococcal** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `seizure-first-unprovoked-adult` / **mgmt-ecg** (ios, FAIL (known gap)): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `seizure-first-unprovoked-adult` / **mgmt-first-seizure-referral** (ios, FAIL (known gap)): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `sigmoid-volvulus-gangrenous` / **mgmt-emergency-resection** (ios, FAIL (known gap)): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `sigmoid-volvulus-gangrenous` / **mgmt-no-endoscopic-detorsion-with-gangrene** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "sigmoid volvulus without ischaemia: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission; gangrene or..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "sigmoid volvulus without ischaemia: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission; gangrene or..."]
-- `stroke-anticoagulated-apixaban-elderly` / **mgmt-no-thrombolysis-on-doac** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "thrombolysis (iv alteplase 0.9 mg/kg max 90 mg):" (+4 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "thrombolysis (iv alteplase 0.9 mg/kg max 90 mg):" (+4 more)]
-- `thyroid-bethesda-5-suspicious` / **mgmt-surgery** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `thyroid-bethesda-6-papillary-cn1b` / **mgmt-total-thyroidectomy** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `thyroid-bethesda-6-papillary-cn1b` / **mgmt-lateral-neck-dissection** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `thyroid-nodule-euthyroid-tirads4` / **inv-tsh** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `thyroid-nodule-euthyroid-tirads4` / **mgmt-us-fna-recommended** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 - `thyroid-post-op-neck-haematoma` / **dx-haematoma-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Pulmonary Embolism \| 3. Acute Coronary Syndrome \| 4. Atrial Fibrillation \| 5. Sepsis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Pulmonary Embolism \| 3. Acute Coronary Syndrome \| 4. Atrial Fibrillation \| 5. Sepsis]
-- `thyroid-post-op-neck-haematoma` / **mgmt-bedside-decompression** (ios, FAIL (known gap)): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- `thyroid-rapid-enlargement-stridor` / **inv-core-biopsy** (ios, FAIL (known gap)): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- `thyroid-rapid-enlargement-stridor` / **mgmt-airway** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `thyroid-retrosternal-goitre-compression` / **mgmt-thyroidectomy** (ios, FAIL (known gap)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- `uc-flare-cdiff` / **mgmt-cdi-treatment** (ios, FAIL (known gap)): no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `uc-steroid-refractory-cmv` / **inv-cmv** (ios, FAIL (known gap)): no investigation matched among 9 (ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 9 (ios.pipeline.voi, ios.radiation)]
-- `uc-steroid-refractory-cmv` / **mgmt-antiviral** (ios, FAIL (known gap)): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- `uc-toxic-megacolon` / **inv-no-colonoscopy** (ios, FAIL (known gap)): forbidden investigation present in ios.radiation: "colonoscopy + biopsy - gold standard diagnosis - extent and pattern" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.radiation: "colonoscopy + biopsy - gold standard diagnosis - extent and pattern"]
-- `ugib-cvd-dual-antiplatelet` / **mgmt-no-tranexamic-acid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
-- `ugib-elderly-doac-pre-endoscopy-rockall` / **mgmt-no-tranexamic-acid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
-- `ugib-melaena-only-woman` / **mgmt-no-tranexamic-acid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
-- `ugib-nonvariceal-gbs-high` / **mgmt-no-tranexamic-acid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
-- `ugib-nonvariceal-gbs-low-outpatient` / **mgmt-no-tranexamic-acid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
-- `ugib-nonvariceal-unstable-shock` / **mgmt-no-tranexamic-acid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
-- `ugib-on-warfarin-high-inr` / **inv-inr** (ios, FAIL (known gap)): no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)]
-- `ugib-on-warfarin-high-inr` / **mgmt-no-tranexamic-acid** (ios, FAIL (known gap)): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
-- `upper-abdominal-pain-weight-loss-over55` / **inv-ogd** (ios, FAIL (known gap)): no investigation matched among 3 (ios.pipeline.voi, ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)]
-- `urosepsis-elderly-immunosuppressed-catheter` / **mgmt-steroid-cover** (ios, FAIL (known gap)): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - `breast-inflammatory-cancer` / **mgmt-no-bcs-or-slnb** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"]
 - `cholangitis-tg18-grade3-reynolds` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 - `cholecystitis-tg18-grade3-organ-dysfunction` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
@@ -258,7 +86,7 @@ Permutation of `abscess-thigh-adult`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-abscess-top3 | mustRankTopK | critical | PASS | PASS | IDSA practice guideline 2014 |  |
-| mgmt-mrsa-active-antibiotic | managementInclude | critical | FAIL (known gap) | PASS | IDSA practice guideline 2014 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+| mgmt-mrsa-active-antibiotic | managementInclude | critical | PASS | PASS | IDSA practice guideline 2014 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
 | mnm-pseudoaneurysm | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) |  |  |
 | level-at-least-urgent | emergencyLevel | quality | PASS | PASS | IDSA practice guideline 2014 |  |
 | flag-ivdu | redFlags | quality | FAIL (known gap) | PASS |  |  |
@@ -273,7 +101,6 @@ Failure details:
 - **flag-ivdu** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags)]
 - **inv-duplex-before-drainage** (ios): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
 - **inv-bbv** (ios): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
-- **mgmt-mrsa-active-antibiotic** (ios): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mnm-pseudoaneurysm** (web): not in top 3 of web.pane: 1. Skin Abscess / Furuncle \| 2. Cellulitis \| 3. Perianal Abscess / Fistula [known gap: No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin site chip adds groin_swelling). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Incarcerated / Strangulated Hernia \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Femoral Hernia]
 
 Guidelines:
@@ -311,14 +138,13 @@ Permutation of `achalasia-young`.
 | mnm-malignancy | mustNotMiss | critical | PASS | PASS | European guidelines on achalasia 2020; NICE NG12 2015 |  |
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-dysphagia-cancer | redFlags | critical | PASS | PASS | NICE NG12 2015 |  |
-| inv-ogd | investigationInclude | critical | FAIL (known gap) | PASS | European guidelines on achalasia 2020; NICE NG12 2015 |  |
-| inv-ct | investigationInclude | quality | FAIL (known gap) | PASS | European guidelines on achalasia 2020 |  |
+| inv-ogd | investigationInclude | critical | PASS | PASS | European guidelines on achalasia 2020; NICE NG12 2015 |  |
+| inv-ct | investigationInclude | quality | PASS (gap resolved) | PASS | European guidelines on achalasia 2020 |  |
 | mgmt-no-myotomy-before-malignancy-excluded | managementExclude | quality | PASS | PASS | European guidelines on achalasia 2020 |  |
 
 Failure details:
 
-- **inv-ogd** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-ct** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
+- **inv-ct** (ios): investigation found in ios.radiation: "ct chest/abdomen (or eus) if age > 55, short history or weight loss - pseudoachala..."
 
 Guidelines:
 
@@ -335,18 +161,17 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-dysphagia | redFlags | critical | PASS | PASS | NICE NG12 2015 |  |
-| inv-ogd | investigationInclude | critical | FAIL (known gap) | PASS | European guidelines on achalasia 2020; NICE NG12 2015 |  |
+| inv-ogd | investigationInclude | critical | PASS | PASS | European guidelines on achalasia 2020; NICE NG12 2015 |  |
 | dx-achalasia-top3 | mustRankTopK | quality | PASS | PASS | European guidelines on achalasia 2020 |  |
-| inv-manometry | investigationInclude | quality | FAIL (known gap) | PASS | European guidelines on achalasia 2020 |  |
-| inv-barium-swallow | investigationInclude | quality | FAIL (known gap) | PASS | European guidelines on achalasia 2020 |  |
-| mgmt-definitive-options | managementInclude | quality | FAIL (known gap) | PASS | European guidelines on achalasia 2020 |  |
+| inv-manometry | investigationInclude | quality | PASS (gap resolved) | PASS | European guidelines on achalasia 2020 |  |
+| inv-barium-swallow | investigationInclude | quality | PASS (gap resolved) | PASS | European guidelines on achalasia 2020 |  |
+| mgmt-definitive-options | managementInclude | quality | PASS (gap resolved) | PASS | European guidelines on achalasia 2020 |  |
 
 Failure details:
 
-- **inv-ogd** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-manometry** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-barium-swallow** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-definitive-options** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-manometry** (ios): investigation found in ios.radiation: "high-resolution oesophageal manometry - diagnosis and chicago subtype"
+- **inv-barium-swallow** (ios): investigation found in ios.radiation: "barium (contrast) swallow - timed - bird's beak, emptying"
+- **mgmt-definitive-options** (ios): management item found in ios.radiation.plan: "definitive treatment once pseudoachalasia is excluded: poem, laparoscopic heller myotomy with partial fundoplication or pneumatic dilatatio..."
 
 Guidelines:
 
@@ -512,7 +337,7 @@ Permutation of `acutemed-ahf-pulmonary-oedema`.
 Failure details:
 
 - **inv-natriuretic-peptide** (ios): no investigation matched among 10 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 10 (ios.pipeline.decisions, ios.radiation)]
-- **mgmt-diuretic** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-diuretic** (ios): no management item matched among 22 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mgmt-no-iv-antibiotics** (ios): forbidden management item present in ios.radiation.plan: "flucloxacillin 2 g iv 6-hourly" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "flucloxacillin 2 g iv 6-hourly"]
 
 Guidelines:
@@ -543,7 +368,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-niv** (ios): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-niv** (ios): no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mgmt-no-fluid-challenge** (web): forbidden management item present in web.clinicalPrompts: "• no iv fluid challenge - heart-failure signs or suspected pe recorded (esc 2021; esc 2019)." [known gap: Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: "• iv fluid challenge 500ml if hypovolaemia likely - reassess hr at 30 min.".]
 
 Guidelines:
@@ -591,7 +416,7 @@ Permutation of `acutemed-anaphylaxis-adult-amoxicillin`.
 
 Failure details:
 
-- **mgmt-adrenaline-im-dose-child** (ios): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-adrenaline-im-dose-child** (ios): no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -733,11 +558,11 @@ Permutation of `acutemed-cap-low-severity`.
 | inv-cxr | investigationInclude | critical | PASS | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 | A protocol for the PANE node pneumonia with CXR (NICE NG138 / BTS CAP), or a respiratory prompt that adds CXR as an investigation. |
 | rf-immunosuppression | redFlags | quality | PASS | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 |  |
-| mgmt-pcp-or-pneumonitis | managementInclude | quality | FAIL (known gap) | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 | Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis). |
+| mgmt-pcp-or-pneumonitis | managementInclude | quality | PASS (gap resolved) | PASS | Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement 2020 | Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis). |
 
 Failure details:
 
-- **mgmt-pcp-or-pneumonitis** (ios): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-pcp-or-pneumonitis** (ios): management item found in ios.radiation.plan: "[warning] immunosuppressed (methotrexate, prednisolone, immunosuppressed): fever, peritonism and a raised white cell cou..."
 
 Guidelines:
 
@@ -879,11 +704,11 @@ Guidelines:
 | mgmt-no-nsaid | managementExclude | critical | PASS | PASS | NICE NG148 - Acute kidney injury: prevention, detection and management 2019 |  |
 | mnm-gastroenteritis | mustNotMiss | quality | PASS | PASS | NICE NG148 - Acute kidney injury: prevention, detection and management 2019 |  |
 | inv-ue | investigationInclude | quality | PASS | PASS | NICE NG148 - Acute kidney injury: prevention, detection and management 2019 |  |
-| mgmt-hold-nephrotoxic | managementInclude | quality | FAIL (known gap) | PASS | NICE NG148 - Acute kidney injury: prevention, detection and management 2019 |  |
+| mgmt-hold-nephrotoxic | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG148 - Acute kidney injury: prevention, detection and management 2019 |  |
 
 Failure details:
 
-- **mgmt-hold-nephrotoxic** (ios): no management item matched among 29 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-hold-nephrotoxic** (ios): management item found in ios.radiation.plan: "stop / withhold nsaids, ace inhibitors, arbs, diuretics and metformin during aki; restart when renal function recovers (nic..."
 
 Guidelines:
 
@@ -911,7 +736,7 @@ Permutation of `acutemed-gastroenteritis-elderly-aki`.
 
 Failure details:
 
-- **mgmt-stop-sglt2** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-stop-sglt2** (ios): no management item matched among 20 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mnm-dka-symptom-inference** (web): not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Gallstone pancreatitis \| 3. Acute cholecystitis \| 4. Perforated peptic ulcer \| 5. Acute alcoholic pancreatitis; also in web.pane#1 [known gap: Web run 2026-09-25: not in top 5 of web.symptomInference: 1. Acute appendicitis (paediatric) \| 2. Gallstone pancreatitis \| 3. Acute cholecystitis \| 4. Acute alcoholic pancreatitis \| 5. Acute appendicitis.]
 
 Guidelines:
@@ -930,20 +755,19 @@ Guidelines:
 | mnm-hypertensive-emergency | mustNotMiss | critical | PASS | PASS | 2018 ESC/ESH Guidelines for the management of arterial hypertension 2018 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | 2018 ESC/ESH Guidelines for the management of arterial hypertension 2018; ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
 | alarm-hypertension | mustAlarm | critical | PASS | PASS | 2018 ESC/ESH Guidelines for the management of arterial hypertension 2018 |  |
-| mgmt-iv-antihypertensive | managementInclude | critical | FAIL (known gap) | PASS | 2018 ESC/ESH Guidelines for the management of arterial hypertension 2018; ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
+| mgmt-iv-antihypertensive | managementInclude | critical | PASS | PASS | 2018 ESC/ESH Guidelines for the management of arterial hypertension 2018; ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
 | mnm-stroke-or-haemorrhage | mustNotMiss | quality | PASS | PASS | ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
 | inv-ecg | investigationInclude | quality | PASS | PASS | ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
-| inv-ct-head | investigationInclude | quality | FAIL (known gap) | PASS | ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
-| mgmt-controlled-reduction | managementInclude | quality | FAIL (known gap) | PASS | 2018 ESC/ESH Guidelines for the management of arterial hypertension 2018 |  |
-| mgmt-critical-care | managementInclude | quality | FAIL (known gap) | PASS | ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
+| inv-ct-head | investigationInclude | quality | PASS (gap resolved) | PASS | ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
+| mgmt-controlled-reduction | managementInclude | quality | PASS (gap resolved) | PASS | 2018 ESC/ESH Guidelines for the management of arterial hypertension 2018 |  |
+| mgmt-critical-care | managementInclude | quality | PASS (gap resolved) | PASS | ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
 | mgmt-no-sublingual-nifedipine | managementExclude | quality | PASS | PASS | ESC Council on Hypertension position document on the management of hypertensive emergencies 2019 |  |
 
 Failure details:
 
-- **inv-ct-head** (ios): no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)]
-- **mgmt-iv-antihypertensive** (ios): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-controlled-reduction** (ios): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-critical-care** (ios): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **inv-ct-head** (ios): investigation found in ios.radiation: "ct head (brain imaging) - haemorrhage / pres"
+- **mgmt-controlled-reduction** (ios): management item found in ios.radiation.plan: "controlled reduction: mean arterial pressure by 20-25% over the first hour, then cautiously - never to normal quickly (except aortic d..."
+- **mgmt-critical-care** (ios): management item found in ios.radiation.plan: "iv antihypertensive in a monitored setting (critical care / hdu): labetalol, nicardipine or clevidipine; gtn infusion if pulmonary oedema or ac..."
 
 Guidelines:
 
@@ -966,13 +790,9 @@ Permutation of `acutemed-htn-emergency-encephalopathy`.
 | mgmt-obstetric | managementInclude | critical | PASS | PASS | NICE NG133 - Hypertension in pregnancy: diagnosis and management 2019 |  |
 | mgmt-no-cholecystectomy | managementExclude | critical | PASS | PASS | NICE NG133 - Hypertension in pregnancy: diagnosis and management 2019 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS | NICE NG133 - Hypertension in pregnancy: diagnosis and management 2019 | Gate the appendicectomy cascade on the working diagnosis; negation-aware exam matching ("no guarding"). |
-| mgmt-no-ace-arb | managementExclude | critical | FAIL (known gap) | PASS | NICE NG133 - Hypertension in pregnancy: diagnosis and management 2019 |  |
+| mgmt-no-ace-arb | managementExclude | critical | PASS | PASS | NICE NG133 - Hypertension in pregnancy: diagnosis and management 2019 |  |
 | mgmt-no-nsaid | managementExclude | critical | PASS | PASS | NICE NG133 - Hypertension in pregnancy: diagnosis and management 2019 | Strip NSAIDs from operative templates from 20 weeks of gestation (HPB findings gap 6), and suppress operative templates here altogether. |
 | mgmt-no-amlodipine-first-line | managementExclude | quality | PASS | PASS | NICE NG133 - Hypertension in pregnancy: diagnosis and management 2019 |  |
-
-Failure details:
-
-- **mgmt-no-ace-arb** (ios): forbidden management item present in ios.radiation.plan: "...y - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers the question." (+2 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...y - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers the question." (+2 more)]
 
 Guidelines:
 
@@ -995,7 +815,7 @@ Permutation of `acutemed-htn-emergency-encephalopathy`.
 
 Failure details:
 
-- **mgmt-defer-elective-surgery** (ios): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-defer-elective-surgery** (ios): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -1229,7 +1049,7 @@ Permutation of `acutemed-syncope-exertional-high-risk`.
 
 Failure details:
 
-- **mgmt-hold-rate-limiting** (ios): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-hold-rate-limiting** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -1286,18 +1106,17 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| inv-metanephrines | investigationInclude | critical | FAIL (known gap) | PASS | ESE/ENSAT guidelines 2023; Endocrine Society guideline 2014 |  |
+| inv-metanephrines | investigationInclude | critical | PASS | PASS | ESE/ENSAT guidelines 2023; Endocrine Society guideline 2014 |  |
 | inv-no-adrenal-biopsy | investigationExclude | critical | PASS | PASS | ESE/ENSAT guidelines 2023 |  |
 | level-not-emergency | emergencyLevel | quality | PASS | PASS |  |  |
-| inv-dst | investigationInclude | quality | FAIL (known gap) | PASS | ESE/ENSAT guidelines 2023 |  |
+| inv-dst | investigationInclude | quality | PASS (gap resolved) | PASS | ESE/ENSAT guidelines 2023 |  |
 | inv-arr | investigationInclude | quality | PASS | PASS | ESE/ENSAT guidelines 2023 |  |
-| inv-further-imaging | investigationInclude | quality | FAIL (known gap) | PASS | ESE/ENSAT guidelines 2023 |  |
+| inv-further-imaging | investigationInclude | quality | PASS (gap resolved) | PASS | ESE/ENSAT guidelines 2023 |  |
 
 Failure details:
 
-- **inv-metanephrines** (ios): no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)]
-- **inv-dst** (ios): no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)]
-- **inv-further-imaging** (ios): no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)]
+- **inv-dst** (ios): investigation found in ios.radiation: "1 mg overnight dexamethasone suppression test - autonomous cortisol secretion"
+- **inv-further-imaging** (ios): investigation found in ios.radiation: "...determinate on unenhanced ct (> 10 hu): adrenal-protocol ct washout, mri (chemical shift) or fdg-pet - ese/ensat 2023"
 
 Guidelines:
 
@@ -1316,15 +1135,10 @@ Permutation of `adrenal-incidentaloma-indeterminate`.
 |---|---|---|---|---|---|---|
 | mnm-phaeochromocytoma | mustNotMiss | critical | PASS | PASS | Endocrine Society guideline 2014; ESE/ENSAT guidelines 2023 |  |
 | flag-phaeo | redFlags | critical | PASS | PASS | Endocrine Society guideline 2014 |  |
-| inv-metanephrines | investigationInclude | critical | FAIL (known gap) | PASS | Endocrine Society guideline 2014; ESE/ENSAT guidelines 2023 |  |
+| inv-metanephrines | investigationInclude | critical | PASS | PASS | Endocrine Society guideline 2014; ESE/ENSAT guidelines 2023 |  |
 | inv-no-adrenal-biopsy | investigationExclude | critical | PASS | PASS | ESE/ENSAT guidelines 2023; Endocrine Society guideline 2014 |  |
-| mgmt-alpha-blockade | managementInclude | critical | FAIL (known gap) | PASS | Endocrine Society guideline 2014 |  |
+| mgmt-alpha-blockade | managementInclude | critical | PASS | PASS | Endocrine Society guideline 2014 |  |
 | mgmt-no-beta-blocker-first | managementExclude | critical | PASS | PASS | Endocrine Society guideline 2014 |  |
-
-Failure details:
-
-- **inv-metanephrines** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-alpha-blockade** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -1344,8 +1158,8 @@ Permutation of `aki-prerenal-diarrhoea-acei-nsaid`.
 | mnm-retention | mustNotMiss | critical | PASS | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
 | level-urgent | emergencyLevel | critical | PASS | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024; NICE CG97 2010 |  |
 | alarm-aki | mustAlarm | critical | PASS | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012 |  |
-| mgmt-catheterise | managementInclude | critical | FAIL (known gap) | PASS | NICE NG148 2019; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
-| mgmt-post-obstructive-diuresis | managementInclude | critical | FAIL (known gap) | PASS | NICE CG97 2010; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
+| mgmt-catheterise | managementInclude | critical | PASS | PASS | NICE NG148 2019; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
+| mgmt-post-obstructive-diuresis | managementInclude | critical | PASS | PASS | NICE CG97 2010; EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
 | flag-hyperkalaemia | redFlags | quality | PASS | PASS | NICE NG148 2019 |  |
 | mgmt-urology | managementInclude | quality | PASS | PASS | NICE NG148 2019 | As mgmt-catheterise. |
 | mgmt-stop-anticholinergic | managementInclude | quality | FAIL (known gap) | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | Add anticholinergic drugs to a retention precipitant check. |
@@ -1353,9 +1167,7 @@ Permutation of `aki-prerenal-diarrhoea-acei-nsaid`.
 
 Failure details:
 
-- **mgmt-catheterise** (ios): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-post-obstructive-diuresis** (ios): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-stop-anticholinergic** (ios): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Amitriptyline is not recognised as a retention precipitant. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-stop-anticholinergic** (ios): no management item matched among 32 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Amitriptyline is not recognised as a retention precipitant. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -1375,20 +1187,19 @@ Guidelines:
 | mnm-aki | mustNotMiss | critical | PASS | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
 | level-urgent | emergencyLevel | critical | PASS | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
 | alarm-aki | mustAlarm | critical | PASS | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
-| mgmt-stop-acei | managementInclude | critical | FAIL (known gap) | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
+| mgmt-stop-acei | managementInclude | critical | PASS | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
 | mgmt-stop-nsaid | managementInclude | critical | PASS | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
 | mgmt-iv-fluids | managementInclude | critical | PASS | PASS | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 |  |
 | mnm-aki-symptom-engine | mustNotMiss | quality | n/a | FAIL (known gap) | KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012; NICE NG148 2019 | Feed creatinine against baseline into symptom inference. |
-| mgmt-urinalysis | managementInclude | quality | FAIL (known gap) | PASS | NICE NG148 2019 |  |
-| mgmt-stop-diuretic | managementInclude | quality | FAIL (known gap) | PASS | NICE NG148 2019 | Add diuretics to the AKI hold list (NICE NG148). |
-| mgmt-hold-metformin | managementInclude | quality | FAIL (known gap) | PASS | NICE NG148 2019 |  |
+| mgmt-urinalysis | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG148 2019 |  |
+| mgmt-stop-diuretic | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG148 2019 | Add diuretics to the AKI hold list (NICE NG148). |
+| mgmt-hold-metformin | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG148 2019 |  |
 
 Failure details:
 
-- **mgmt-urinalysis** (ios): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-stop-acei** (ios): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-stop-diuretic** (ios): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: The AKI prompt holds "NSAIDs, ACE-I, ARBs, metformin" but not diuretics (furosemide continues). \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-hold-metformin** (ios): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-urinalysis** (ios): management item found in ios.radiation.plan: "...ing aki; restart when renal function recovers (nice ng148); urinalysis (dipstick) for every patient with aki"
+- **mgmt-stop-diuretic** (ios): management item found in ios.radiation.plan: "stop / withhold nsaids, ace inhibitors, arbs, diuretics and metformin during aki; restart when renal function recovers (nice ng148); u..."
+- **mgmt-hold-metformin** (ios): management item found in ios.radiation.plan: "stop / withhold nsaids, ace inhibitors, arbs, diuretics and metformin during aki; restart when renal function recovers (nice ng148); urinalysis (dips..."
 - **mnm-aki-symptom-engine** (web): not in top 5 of web.symptomInference: 1. Acute gastroenteritis \| 2. Acute cholecystitis \| 3. BPPV / labyrinthitis / vestibular neuritis \| 4. DKA / hyperglycaemic hyperosmolar state \| 5. Acute mesenteric ischaemia; also in web.pane#1 [known gap: Web: Symptom inference ranks gastroenteritis, pyloric stenosis, cholecystitis, BPPV and DKA; AKI is not in its top 5 (it reads chips, not creatinine).]
 
 Guidelines:
@@ -1500,17 +1311,15 @@ Permutation of `ami-embolic-af`.
 |---|---|---|---|---|---|---|
 | mnm-mesenteric | mustNotMiss | critical | PASS | PASS | ESVS clinical practice guidelines 2017 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ESVS clinical practice guidelines 2017 | Let triage read resulted imaging (thrombosis, ischaemia) and D-dimer; do not treat 'pregnancy test negative' as a pregnancy mention (negation). |
-| inv-pregnancy-test | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG126 2019 |  |
-| mgmt-anticoagulation | managementInclude | critical | FAIL (known gap) | PASS | ESVS clinical practice guidelines 2017 |  |
+| inv-pregnancy-test | investigationInclude | critical | PASS | PASS | NICE NG126 2019 |  |
+| mgmt-anticoagulation | managementInclude | critical | PASS | PASS | ESVS clinical practice guidelines 2017 |  |
 | inv-thrombophilia | investigationInclude | quality | PASS | PASS | ESVS clinical practice guidelines 2017 |  |
-| mgmt-stop-cocp | managementInclude | quality | FAIL (known gap) | PASS | ESVS clinical practice guidelines 2017 |  |
+| mgmt-stop-cocp | managementInclude | quality | PASS (gap resolved) | PASS | ESVS clinical practice guidelines 2017 |  |
 | mgmt-no-laparotomy-without-peritonitis | managementExclude | quality | PASS | PASS | ESVS clinical practice guidelines 2017 |  |
 
 Failure details:
 
-- **inv-pregnancy-test** (ios): no investigation matched among 5 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.decisions)]
-- **mgmt-anticoagulation** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-stop-cocp** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: Web: No prompt to stop the oestrogen-containing pill. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-stop-cocp** (ios): management item found in ios.radiation.plan: "oestrogen-containing contraception / hrt: stop the combined oral contraceptive (vte risk factor - fsrh/ukmec)"
 
 Guidelines:
 
@@ -1528,18 +1337,17 @@ Guidelines:
 | mnm-anal-cancer | mustNotMiss | critical | PASS | PASS | NICE NG12 2023; ASCRS clinical practice guidelines 2018 |  |
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2023 |  |
 | flag-malignancy | redFlags | critical | PASS | PASS | NICE NG12 2023 |  |
-| inv-biopsy | investigationInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2018 |  |
+| inv-biopsy | investigationInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2018 |  |
 | mgmt-no-haemorrhoid-treatment | managementExclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2018 |  |
-| inv-mri-pelvis | investigationInclude | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2018 |  |
-| inv-hiv-test | investigationInclude | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2018 |  |
-| mgmt-chemoradiotherapy | managementInclude | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2018 |  |
+| inv-mri-pelvis | investigationInclude | quality | PASS (gap resolved) | PASS | ASCRS clinical practice guidelines 2018 |  |
+| inv-hiv-test | investigationInclude | quality | PASS (gap resolved) | PASS | ASCRS clinical practice guidelines 2018 |  |
+| mgmt-chemoradiotherapy | managementInclude | quality | PASS (gap resolved) | PASS | ASCRS clinical practice guidelines 2018 |  |
 
 Failure details:
 
-- **inv-biopsy** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-mri-pelvis** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-hiv-test** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-chemoradiotherapy** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-mri-pelvis** (ios): investigation found in ios.radiation: "mri pelvis - local staging"
+- **inv-hiv-test** (ios): investigation found in ios.radiation: "hiv test - risk factor; affects treatment"
+- **mgmt-chemoradiotherapy** (ios): management item found in ios.radiation.plan: "treatment is chemoradiotherapy (nigro regimen) with oncology - surgery is reserved for residual or recurrent d..."
 
 Guidelines:
 
@@ -1583,13 +1391,12 @@ Permutation of `anal-fissure-acute-posterior`.
 | mnm-anal-cancer | mustNotMiss | critical | PASS | PASS | ASCRS clinical practice guidelines 2023; ASCRS clinical practice guidelines 2018 |  |
 | flag-atypical | redFlags | critical | PASS | PASS | ASCRS clinical practice guidelines 2023 |  |
 | inv-eua-biopsy | investigationInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2023; ASCRS clinical practice guidelines 2018 | Add an "atypical fissure" dx-variant (lateral, multiple, painless, indurated, HIV/IBD) that replaces the treatment phases with EUA + biopsy, syphilis/HSV/HIV/TB testing and Crohn’s assessment (ASCRS 2023). |
-| mgmt-no-sphincterotomy | managementExclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2023 |  |
+| mgmt-no-sphincterotomy | managementExclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2023 |  |
 | mnm-sti-crohn | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) | ASCRS clinical practice guidelines 2023 |  |
 
 Failure details:
 
 - **mnm-sti-crohn** (ios): not in top 5 of ios.bayes: 1. Perianal Abscess \| 2. Anal Carcinoma \| 3. Inguinal Hernia \| 4. Fournier's Gangrene \| 5. Femoral Hernia [known gap: Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions them). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Perianal Abscess \| 2. Anal Carcinoma \| 3. Inguinal Hernia \| 4. Fournier's Gangrene \| 5. Femoral Hernia]
-- **mgmt-no-sphincterotomy** (ios): forbidden management item present in ios.radiation.plan: "if chronic / failed medical: lateral internal sphincterotomy" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "if chronic / failed medical: lateral internal sphincterotomy"]
 - **mnm-sti-crohn** (web): not in top 3 of web.pane: 1. Anal Cancer (Squamous Cell Carcinoma of the Anus) \| 2. Anal Fissure \| 3. Ulcerative Colitis [known gap: Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions them). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Perianal Abscess \| 2. Anal Carcinoma \| 3. Inguinal Hernia \| 4. Fournier's Gangrene \| 5. Femoral Hernia]
 
 Guidelines:
@@ -1612,7 +1419,7 @@ Permutation of `anal-fissure-acute-posterior`.
 
 Failure details:
 
-- **mgmt-continence-assessment** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-continence-assessment** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -1654,16 +1461,15 @@ Guidelines:
 | level-emergency | emergencyLevel | critical | PASS | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
 | flag-aortic-graft | redFlags | critical | PASS | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
 | inv-ct-angiography | investigationInclude | critical | PASS | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
-| mgmt-vascular-surgery | managementInclude | critical | FAIL (known gap) | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
+| mgmt-vascular-surgery | managementInclude | critical | PASS | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
 | inv-blood-cultures | investigationInclude | quality | FAIL (known gap) | PASS | ESVS 2020 Clinical Practice Guidelines 2020 |  |
-| mgmt-no-tranexamic-acid | managementExclude | quality | FAIL (known gap) | PASS | HALT-IT randomised trial 2020 |  |
+| mgmt-no-tranexamic-acid | managementExclude | quality | PASS (gap resolved) | PASS | HALT-IT randomised trial 2020 |  |
 
 Failure details:
 
 - **mnm-aortoenteric-fistula** (ios): not in top 5 of ios.bayes: 1. Upper GI Bleeding (Peptic Ulcer) \| 2. Acute Appendicitis \| 3. Acute Pancreatitis \| 4. Small Bowel Obstruction \| 5. Acute Kidney Injury; also in ios.ccEarly#3 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Upper GI Bleeding (Peptic Ulcer) \| 2. Acute Appendicitis \| 3. Acute Pancreatitis \| 4. Small Bowel Obstruction \| 5. Acute Kidney Injury; also in ios.ccEarly#3]
 - **inv-blood-cultures** (ios): no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
-- **mgmt-vascular-surgery** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
+- **mgmt-no-tranexamic-acid** (ios): none of 21 management items matched
 
 Guidelines:
 
@@ -1729,7 +1535,7 @@ Permutation of `appendicitis-adult-typical`.
 
 Failure details:
 
-- **mgmt-antibiotics-first-option** (ios): no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendicitis; the protocol's only non-operative step is for an appendix mass. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan)]
+- **mgmt-antibiotics-first-option** (ios): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendicitis; the protocol's only non-operative step is for an appendix mass. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan)]
 - **mnm-gynaecological** (web): not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Mesenteric adenitis \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Typhoid fever [known gap: Web: Symptom inference top 5: appendicitis ×2, alcoholic pancreatitis, gastroenteritis, typhoid; no gynaecological cause for a 28-year-old woman.]
 
 Guidelines:
@@ -1756,7 +1562,7 @@ Permutation of `appendicitis-adult-typical`.
 
 Failure details:
 
-- **mgmt-appendicolith-caution** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-appendicolith-caution** (ios): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mgmt-no-routine-postop-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo 4.5g tds + metronidazole 500mg tds × 5 ..." [known gap: Web: Appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis.]
 
 Guidelines:
@@ -1784,7 +1590,7 @@ Permutation of `appendicitis-adult-typical`.
 | flag-elderly-atypical | redFlags | quality | PASS | PASS |  |  |
 | score-rec-alvarado | scoreRecommended | quality | PASS | PASS |  |  |
 | inv-renal-function | investigationInclude | quality | PASS | PASS |  |  |
-| inv-lactate-or-cta | investigationInclude | quality | FAIL (known gap) | PASS | ESVS clinical practice guidelines 2017 |  |
+| inv-lactate-or-cta | investigationInclude | quality | PASS (gap resolved) | PASS | ESVS clinical practice guidelines 2017 |  |
 | mgmt-anticoagulant-plan | managementInclude | quality | PASS | PASS |  |  |
 | mgmt-lap-appendicectomy | managementInclude | quality | PASS | PASS | SIFIPAC/WSES/SICG/SIMEU guidelines 2020 |  |
 | mgmt-no-discharge-on-low-score | managementExclude | quality | FAIL (known gap) | PASS |  |  |
@@ -1795,7 +1601,7 @@ Failure details:
 
 - **mnm-mesenteric-ischaemia** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Small Bowel Obstruction \| 3. Acute Diverticulitis \| 4. Perforated Peptic Ulcer \| 5. Clostridioides difficile Colitis; also in ios.pipeline#5 [known gap: PANE top 3 (cholecystitis, appendicitis, appendix mass) omits it; symptom inference ranks it #3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **mnm-caecal-neoplasm** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Small Bowel Obstruction \| 3. Acute Diverticulitis \| 4. Perforated Peptic Ulcer \| 5. Clostridioides difficile Colitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
-- **inv-lactate-or-cta** (ios): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
+- **inv-lactate-or-cta** (ios): investigation found in ios.radiation: "blood cultures and lactate (septic or generalised peritonitis) - sepsis (nice ng51)"
 - **mgmt-no-discharge-on-low-score** (ios): forbidden management item present in ios.scoreCalculator.air: "...appendicitis unlikely. consider observation, analgesia, and discharge with safety-net advice. d/w senior if clinical picture worsens." (+1 more) [known gap: iOS AIR calculator (4 = low) recommends 'active observation or discharge' with no age caveat.]
 - **mnm-caecal-neoplasm** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Mesenteric Ischaemia \| 3. Perforated Peptic Ulcer / Perforated Viscus [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **mnm-diverticulitis** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Mesenteric Ischaemia \| 3. Perforated Peptic Ulcer / Perforated Viscus [known gap: Not in PANE top 3.]
@@ -1818,20 +1624,19 @@ Permutation of `appendicitis-adult-typical`.
 | dx-appendicitis-top3 | mustRankTopK | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES Jerusalem guidelines 2020; Surviving Sepsis Campaign 2021 |  |
 | alarm-sepsis | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| inv-blood-cultures | investigationInclude | critical | FAIL (known gap) | PASS | Surviving Sepsis Campaign 2021 | Blood cultures in the appendicitis protocol for the generalised-peritonitis / septic variant (WSES 2020), or a sepsis protocol for the PANE node sepsis. |
+| inv-blood-cultures | investigationInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021 | Blood cultures in the appendicitis protocol for the generalised-peritonitis / septic variant (WSES 2020), or a sepsis protocol for the PANE node sepsis. |
 | mgmt-emergency-source-control | managementInclude | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | WSES Jerusalem guidelines 2020; Surviving Sepsis Campaign 2021 |  |
 | score-qsofa-calculator | scoreValue | quality | PASS | n/a | Third international consensus definitions for sepsis and septic shock (Sepsis-3) 2016 |  |
-| inv-lactate | investigationInclude | quality | FAIL (known gap) | PASS | Surviving Sepsis Campaign 2021 |  |
+| inv-lactate | investigationInclude | quality | PASS (gap resolved) | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-fluids | managementInclude | quality | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-postop-antibiotics-short-course | managementInclude | quality | FAIL (known gap) | PASS | WSES Jerusalem guidelines 2020 |  |
+| mgmt-postop-antibiotics-short-course | managementInclude | quality | PASS (gap resolved) | PASS | WSES Jerusalem guidelines 2020 |  |
 | variant-generalised-peritonitis | dxVariant | quality | n/a | PASS | WSES Jerusalem guidelines 2020 | Same as the abscess fix: specific-first ordering; uncomplicated as fallback. |
 
 Failure details:
 
-- **inv-blood-cultures** (ios): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)]
-- **inv-lactate** (ios): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)]
-- **mgmt-postop-antibiotics-short-course** (ios): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)]
+- **inv-lactate** (ios): investigation found in ios.radiation: "blood cultures and lactate (septic or generalised peritonitis) - sepsis (nice ng51)"
+- **mgmt-postop-antibiotics-short-course** (ios): management item found in ios.radiation.plan: "...gangrenous) appendicitis: post-operative iv antibiotics for 3-5 days only (wses 2020; stop-it); no routine antibiotics after simple appendicitis"
 
 Guidelines:
 
@@ -1853,11 +1658,11 @@ Permutation of `appendicitis-adult-typical`.
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | flag-immunosuppression | redFlags | quality | PASS | PASS |  |  |
 | mgmt-surgery | managementInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| mgmt-steroid-cover | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 
 Failure details:
 
-- **mgmt-steroid-cover** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-steroid-cover** (ios): management item found in ios.radiation.plan: "...isolone (or equivalent) for > 4 weeks, give steroid cover - hydrocortisone 100 mg iv at induction or at the start of the acute illness, then 200 mg/24 h (..."
 
 Guidelines:
 
@@ -1911,16 +1716,16 @@ Permutation of `appendicitis-adult-typical`.
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | inv-ct | investigationInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
-| inv-blood-cultures | investigationInclude | quality | FAIL (known gap) | PASS | Surviving Sepsis Campaign 2021 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS (gap resolved) | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-percutaneous-drainage | managementInclude | quality | FAIL (known gap) | PASS | WSES Jerusalem guidelines 2020 | When the confirmed ICD is K35.3x or the assessment names an abscess/phlegmon, use the appendix_mass protocol for the Plan tab instead of the converged PANE disease. |
 | mgmt-interval-colon-evaluation | managementInclude | quality | FAIL (known gap) | PASS | WSES Jerusalem guidelines 2020 |  |
 | variant-abscess | dxVariant | quality | n/a | PASS | WSES Jerusalem guidelines 2020 | Order the appendicitis variants from most to least specific (generalised peritonitis, abscess, phlegmon, localised peritonitis, uncomplicated) and remove the bare 'appendicitis' keyword from the uncomplicated variant (make it the fallback when no other variant matches). |
 
 Failure details:
 
-- **inv-blood-cultures** (ios): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)]
-- **mgmt-percutaneous-drainage** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-interval-colon-evaluation** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **inv-blood-cultures** (ios): investigation found in ios.radiation: "blood cultures and lactate (septic or generalised peritonitis) - sepsis (nice ng51)"
+- **mgmt-percutaneous-drainage** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-interval-colon-evaluation** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -1938,7 +1743,7 @@ Permutation of `appendicitis-adult-typical`.
 | dx-appendicitis-top3 | mustRankTopK | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | flag-pregnancy | redFlags | critical | PASS | PASS | ACOG Committee Opinion No. 723 2017 |  |
-| inv-mri-after-inconclusive-us | investigationInclude | critical | FAIL (known gap) | PASS | WSES Jerusalem guidelines 2020; ACOG Committee Opinion No. 723 2017 |  |
+| inv-mri-after-inconclusive-us | investigationInclude | critical | PASS | PASS | WSES Jerusalem guidelines 2020; ACOG Committee Opinion No. 723 2017 |  |
 | mgmt-no-nsaid-after-20-weeks | managementExclude | critical | PASS | PASS | US FDA Drug Safety Communication 2020 |  |
 | mnm-obstetric-cause | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) |  |  |
 | mnm-pyelonephritis | mustNotMiss | quality | PASS | FAIL (known gap) |  |  |
@@ -1954,8 +1759,7 @@ Permutation of `appendicitis-adult-typical`.
 Failure details:
 
 - **mnm-obstetric-cause** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Urinary Tract Infection (Cystitis) \| 3. Small Bowel Obstruction \| 4. Ectopic Pregnancy \| 5. Acute Pyelonephritis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
-- **inv-mri-after-inconclusive-us** (ios): no investigation matched among 16 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
-- **inv-no-unqualified-ct** (ios): forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%..." (+2 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.]
+- **inv-no-unqualified-ct** (ios): forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%..." (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.]
 - **mnm-obstetric-cause** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **mnm-pyelonephritis** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 
@@ -2006,7 +1810,7 @@ Permutation of `appendicitis-adult-typical`.
 |---|---|---|---|---|---|---|
 | score-alvarado-calculator | scoreValue | critical | PASS | PASS | Alvarado score (MANTRELS) 1986 |  |
 | score-air-calculator | scoreValue | critical | PASS | n/a | Appendicitis Inflammatory Response (AIR) score 2008 |  |
-| inv-pregnancy-test | investigationInclude | critical | FAIL (known gap) | PASS | WSES Jerusalem guidelines 2020; NICE NG126 2019 |  |
+| inv-pregnancy-test | investigationInclude | critical | PASS | PASS | WSES Jerusalem guidelines 2020; NICE NG126 2019 |  |
 | mnm-gynaecological | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) |  |  |
 | level-not-emergency | emergencyLevel | quality | PASS | PASS | WSES Jerusalem guidelines 2020 | Add negation handling to scanRedFlags (skip matches preceded within a few words by 'no', 'denies', 'without', 'negative'). |
 | score-rec-air | scoreRecommended | quality | FAIL (known gap) | FAIL (known gap) | WSES Jerusalem guidelines 2020; Appendicitis Inflammatory Response (AIR) score 2008 |  |
@@ -2017,7 +1821,6 @@ Failure details:
 
 - **mnm-gynaecological** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Gastroenteritis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Perforated Peptic Ulcer [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Gastroenteritis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Perforated Peptic Ulcer]
 - **score-rec-air** (ios): air not recommended; recommended: news2, mews [known gap: Web: Web CDS has no AIR rule. \| iOS CI 2026-09-25 (run 36169134350, database mode): air not recommended; recommended: news2, mews]
-- **inv-pregnancy-test** (ios): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)]
 - **mnm-gynaecological** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pyelonephritis / Upper Urinary Tract Infection [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Gastroenteritis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Perforated Peptic Ulcer]
 - **score-rec-air** (web): air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule. \| iOS CI 2026-09-25 (run 36169134350, database mode): air not recommended; recommended: news2, mews]
 
@@ -2104,7 +1907,7 @@ Permutation of `biliary-colic-uncomplicated`.
 
 Failure details:
 
-- **mgmt-histology** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-histology** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -2176,14 +1979,13 @@ Permutation of `boerhaave-classic-mackler`.
 |---|---|---|---|---|---|---|
 | mnm-perforation | mustNotMiss | critical | FAIL (known gap) | PASS | WSES guidelines 2019 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES guidelines 2019; 2023 ESC Guidelines for the management of acute coronary syndromes 2023 |  |
-| inv-ecg | investigationInclude | critical | FAIL (known gap) | PASS | 2023 ESC Guidelines for the management of acute coronary syndromes 2023 |  |
+| inv-ecg | investigationInclude | critical | PASS | PASS | 2023 ESC Guidelines for the management of acute coronary syndromes 2023 |  |
 | inv-ct-oral-contrast | investigationInclude | critical | PASS | PASS | WSES guidelines 2019 |  |
 | mgmt-no-anticoagulation-before-ct | managementExclude | quality | PASS | PASS | 2023 ESC Guidelines for the management of acute coronary syndromes 2023; WSES guidelines 2019 |  |
 
 Failure details:
 
 - **mnm-perforation** (ios): not in top 5 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Stable Angina \| 3. Community-Acquired Pneumonia \| 4. Acute Pancreatitis \| 5. Pulmonary Embolism [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Stable Angina \| 3. Community-Acquired Pneumonia \| 4. Acute Pancreatitis \| 5. Pulmonary Embolism]
-- **inv-ecg** (ios): no investigation matched among 5 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
 
 Guidelines:
 
@@ -2216,17 +2018,16 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-abscess-top3 | mustRankTopK | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
-| inv-uss | investigationInclude | critical | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-uss | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | mgmt-aspiration | managementInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | level-at-least-urgent | emergencyLevel | quality | PASS | PASS |  |  |
 | inv-pus-culture | investigationInclude | quality | PASS | PASS |  |  |
-| mgmt-continue-breastfeeding | managementInclude | quality | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| mgmt-continue-breastfeeding | managementInclude | quality | PASS (gap resolved) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | mgmt-no-stop-breastfeeding | managementExclude | quality | PASS | PASS |  |  |
 
 Failure details:
 
-- **inv-uss** (ios): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
-- **mgmt-continue-breastfeeding** (ios): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-continue-breastfeeding** (ios): management item found in ios.radiation.plan: "...l): flucloxacillin (clarithromycin if penicillin-allergic); continue breastfeeding or expressing from the affected breast (abs; nice cks)"
 
 Guidelines:
 
@@ -2242,20 +2043,19 @@ Permutation of `breast-abscess-lactational`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| inv-uss | investigationInclude | critical | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-uss | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | mgmt-aspiration | managementInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | dx-abscess-top3 | mustRankTopK | quality | PASS | PASS |  |  |
-| mgmt-anaerobic-cover | managementInclude | quality | FAIL (known gap) | PASS |  |  |
-| mgmt-smoking-cessation | managementInclude | quality | FAIL (known gap) | PASS |  |  |
-| mgmt-exclude-malignancy | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| mgmt-anaerobic-cover | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
+| mgmt-smoking-cessation | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
+| mgmt-exclude-malignancy | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 | mgmt-no-breastfeeding-advice | managementExclude | quality | PASS | PASS |  |  |
 
 Failure details:
 
-- **inv-uss** (ios): no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)]
-- **mgmt-anaerobic-cover** (ios): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-smoking-cessation** (ios): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-exclude-malignancy** (ios): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-anaerobic-cover** (ios): management item found in ios.radiation.plan: "non-lactational / periductal mastitis: co-amoxiclav (or metronidazole plus an anti-staphylococcal agent) for anaerobic cover; smoki..."
+- **mgmt-smoking-cessation** (ios): management item found in ios.radiation.plan: "...ole plus an anti-staphylococcal agent) for anaerobic cover; smoking cessation (smoking is the main risk factor)"
+- **mgmt-exclude-malignancy** (ios): management item found in ios.radiation.plan: "non-lactational abscess: exclude underlying carcinoma once settled - imaging (mammogram if age ≥ 40 or suspicious) and triple assessm..."
 
 Guidelines:
 
@@ -2294,14 +2094,13 @@ Guidelines:
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-inflammatory | redFlags | critical | PASS | PASS | NCCN Guidelines 2025 |  |
 | inv-core-biopsy | investigationInclude | critical | PASS | PASS | NCCN Guidelines 2025 |  |
-| mgmt-no-bcs-or-slnb | managementExclude | critical | FAIL (known gap) | FAIL (known gap) | NCCN Guidelines 2025 | Add an inflammatory-breast-cancer variant (C50 + "inflammatory"/"peau d'orange"): neoadjuvant systemic therapy then modified radical mastectomy; exclude BCS and SLNB. |
+| mgmt-no-bcs-or-slnb | managementExclude | critical | PASS | FAIL (known gap) | NCCN Guidelines 2025 | Add an inflammatory-breast-cancer variant (C50 + "inflammatory"/"peau d'orange"): neoadjuvant systemic therapy then modified radical mastectomy; exclude BCS and SLNB. |
 | inv-staging | investigationInclude | quality | PASS | PASS | NCCN Guidelines 2025 |  |
 | mgmt-neoadjuvant | managementInclude | quality | PASS | PASS | NCCN Guidelines 2025 |  |
 | mgmt-no-further-antibiotics-only | managementExclude | quality | PASS | PASS |  |  |
 
 Failure details:
 
-- **mgmt-no-bcs-or-slnb** (ios): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy" [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"]
 - **mgmt-no-bcs-or-slnb** (web): forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"]
 
 Guidelines:
@@ -2320,17 +2119,15 @@ Permutation of `breast-lump-under-30`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| flag-2ww | redFlags | critical | FAIL (known gap) | PASS | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
-| inv-uss | investigationInclude | critical | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 |  |
-| inv-core-biopsy | investigationInclude | critical | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| flag-2ww | redFlags | critical | PASS (gap resolved) | PASS | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
+| inv-uss | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 |  |
+| inv-core-biopsy | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | level-at-least-priority | emergencyLevel | quality | PASS | PASS | NICE NG12 2015 |  |
 | variant-triple-assessment | dxVariant | quality | n/a | PASS |  |  |
 
 Failure details:
 
-- **flag-2ww** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)]
-- **inv-uss** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-core-biopsy** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
+- **flag-2ww** (ios): red flag found in ios.radiation.redFlags: "suspected cancer: urgent 2-week suspected cancer referral for a breast lump at age ≥ 30, skin changes, nipple retraction or bloody discharge (nice ng1..."
 
 Guidelines:
 
@@ -2353,18 +2150,17 @@ Permutation of `breast-lump-under-30`.
 | flag-2ww | redFlags | critical | PASS | PASS | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
 | inv-mammogram | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 |  |
 | inv-uss | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
-| inv-core-biopsy | investigationInclude | critical | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-core-biopsy | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | flag-suspicious | redFlags | quality | PASS | PASS |  |  |
-| inv-axilla | investigationInclude | quality | FAIL (known gap) | PASS | NCCN Guidelines 2025 |  |
-| mgmt-mdt | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| inv-axilla | investigationInclude | quality | PASS (gap resolved) | PASS | NCCN Guidelines 2025 |  |
+| mgmt-mdt | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 | mgmt-no-surgery-before-histology | managementExclude | quality | PASS | PASS |  |  |
 | variant-triple-assessment | dxVariant | quality | n/a | PASS |  |  |
 
 Failure details:
 
-- **inv-core-biopsy** (ios): no investigation matched among 2 (ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-axilla** (ios): no investigation matched among 2 (ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-mdt** (ios): no management item matched among 4 (ios.pipeline.actions, ios.ng12.plan, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-axilla** (ios): investigation found in ios.radiation: "breast ultrasound (and axillary ultrasound) - first line under 40 and in pregnancy - nice ng12; abs 2019"
+- **mgmt-mdt** (ios): management item found in ios.radiation.plan: "results discussed at the breast mdt before any operation"
 
 Guidelines:
 
@@ -2382,17 +2178,16 @@ Permutation of `breast-lump-under-30`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| flag-2ww | redFlags | critical | FAIL (known gap) | PASS | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
+| flag-2ww | redFlags | critical | PASS (gap resolved) | PASS | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
 | inv-uss | investigationInclude | critical | PASS | PASS | RCOG Green-top Guideline No. 12 2011; NCCN Guidelines 2025 |  |
 | inv-core-biopsy | investigationInclude | critical | PASS | PASS | RCOG Green-top Guideline No. 12 2011 |  |
-| mgmt-no-tamoxifen | managementExclude | critical | FAIL (known gap) | PASS | RCOG Green-top Guideline No. 12 2011; NCCN Guidelines 2025 |  |
+| mgmt-no-tamoxifen | managementExclude | critical | PASS | PASS | RCOG Green-top Guideline No. 12 2011; NCCN Guidelines 2025 |  |
 | mgmt-no-deferral | managementExclude | critical | PASS | PASS | RCOG Green-top Guideline No. 12 2011 |  |
 | flag-pregnancy | redFlags | quality | PASS | PASS |  |  |
 
 Failure details:
 
-- **flag-2ww** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)]
-- **mgmt-no-tamoxifen** (ios): forbidden management item present in ios.radiation.plan: "adjuvant: endocrine therapy if er+ (tamoxifen / aromatase inhibitor), herceptin if her2+" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "adjuvant: endocrine therapy if er+ (tamoxifen / aromatase inhibitor), herceptin if her2+"]
+- **flag-2ww** (ios): red flag found in ios.radiation.redFlags: "suspected cancer: urgent 2-week suspected cancer referral for a breast lump at age ≥ 30, skin changes, nipple retraction or bloody discharge (nice ng1..."
 
 Guidelines:
 
@@ -2408,7 +2203,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| inv-uss | investigationInclude | critical | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 |  |
+| inv-uss | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 |  |
 | dx-fibroadenoma-top3 | mustRankTopK | quality | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | level-not-urgent | emergencyLevel | quality | PASS | FAIL (known gap) | NICE NG12 2015 |  |
 | inv-no-first-line-mammogram | investigationExclude | quality | PASS | PASS | NCCN Guidelines 2025; Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
@@ -2418,7 +2213,6 @@ Guidelines:
 
 Failure details:
 
-- **inv-uss** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
 - **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "breast lump" RED_FLAG is priority ("Possible malignancy") regardless of age, and the adaptive action maps priority to a same-day call.]
 
 Guidelines:
@@ -2440,14 +2234,13 @@ Permutation of `breast-male-gynaecomastia`.
 | mnm-carcinoma | mustNotMiss | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-2ww | redFlags | critical | PASS | PASS | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
 | inv-imaging | investigationInclude | critical | PASS | PASS | NICE NG12 2015; Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
-| inv-core-biopsy | investigationInclude | critical | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-core-biopsy | investigationInclude | critical | PASS | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 | mgmt-no-gynaecomastia-treatment | managementExclude | critical | PASS | PASS |  |  |
-| mgmt-genetics | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| mgmt-genetics | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 
 Failure details:
 
-- **inv-core-biopsy** (ios): no investigation matched among 2 (ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-genetics** (ios): no management item matched among 4 (ios.pipeline.actions, ios.ng12.plan, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-genetics** (ios): management item found in ios.radiation.plan: "...ss: triple assessment; confirmed cancer → genetic referral (brca2)"
 
 Guidelines:
 
@@ -2493,11 +2286,11 @@ Guidelines:
 | inv-uss | investigationInclude | critical | PASS | PASS | NCCN Guidelines 2025 |  |
 | mgmt-no-reassurance-only | managementExclude | critical | PASS | PASS |  |  |
 | level-at-least-priority | emergencyLevel | quality | PASS | PASS |  |  |
-| mgmt-duct-excision | managementInclude | quality | FAIL (known gap) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| mgmt-duct-excision | managementInclude | quality | PASS (gap resolved) | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
 
 Failure details:
 
-- **mgmt-duct-excision** (ios): no management item matched among 4 (ios.pipeline.actions, ios.ng12.plan, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-duct-excision** (ios): management item found in ios.radiation.plan: "...ody single-duct nipple discharge: mammography + ultrasound; microdochectomy (duct excision) or ductoscopy for diagnosis"
 
 Guidelines:
 
@@ -2674,7 +2467,7 @@ Permutation of `burns-adult-flame-27pct`.
 
 Failure details:
 
-- **mgmt-maintenance-fluid** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-maintenance-fluid** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -2702,7 +2495,7 @@ Permutation of `burns-adult-flame-27pct`.
 
 Failure details:
 
-- **mgmt-elevation** (ios): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-elevation** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -2755,7 +2548,7 @@ Permutation of `burns-adult-flame-27pct`.
 | level-emergency | emergencyLevel | critical | PASS | PASS | ATLS 10th edition 2018 |  |
 | flag-inhalation | redFlags | critical | PASS | PASS | ATLS 10th edition 2018 |  |
 | inv-cohb | investigationInclude | critical | PASS | PASS | ATLS 10th edition 2018 |  |
-| mgmt-early-intubation | managementInclude | critical | FAIL (known gap) | PASS | ATLS 10th edition 2018; ISBI Practice Guidelines for Burn Care 2016 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
+| mgmt-early-intubation | managementInclude | critical | PASS | PASS | ATLS 10th edition 2018; ISBI Practice Guidelines for Burn Care 2016 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
 | mgmt-100-oxygen | managementInclude | critical | PASS | PASS | ATLS 10th edition 2018 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
 | mgmt-burns-referral | managementInclude | critical | PASS | PASS | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 |  |
 | dx-burn-top3 | mustRankTopK | quality | FAIL (known gap) | PASS | ATLS 10th edition 2018 |  |
@@ -2766,7 +2559,6 @@ Permutation of `burns-adult-flame-27pct`.
 Failure details:
 
 - **dx-burn-top3** (ios): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Sepsis \| 3. Bacterial Meningitis / Meningococcal Sepsis \| 4. Acute Kidney Injury \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Sepsis \| 3. Bacterial Meningitis / Meningococcal Sepsis \| 4. Acute Kidney Injury \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI)]
-- **mgmt-early-intubation** (ios): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -2788,14 +2580,13 @@ Permutation of `sigmoid-volvulus-base`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ASCRS clinical practice guidelines 2021 |  |
-| inv-pregnancy-test | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG126 2019 |  |
+| inv-pregnancy-test | investigationInclude | critical | PASS | PASS | NICE NG126 2019 |  |
 | mgmt-resection | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2021 | Separate caecal-volvulus variant with right hemicolectomy/ileocaecal resection (ASCRS 2021). |
 | mgmt-no-endoscopic-reduction-caecal | managementExclude | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2021 |  |
 | variant-lbo-volvulus | dxVariant | quality | n/a | PASS | ASCRS clinical practice guidelines 2021 |  |
 
 Failure details:
 
-- **inv-pregnancy-test** (ios): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
 - **mgmt-no-endoscopic-reduction-caecal** (ios): forbidden management item present in ios.radiation.plan: "...operative management - right hemicolectomy (ascrs 2021); no endoscopic detorsion" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...operative management - right hemicolectomy (ascrs 2021); no endoscopic detorsion"]
 
 Guidelines:
@@ -2886,14 +2677,10 @@ Permutation of `infective-colitis-bloody-diarrhoea`.
 | mnm-cdiff | mustNotMiss | critical | PASS | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018 |  |
 | alarm-sepsis | mustAlarm | critical | PASS | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018 |  |
-| mgmt-vancomycin-metronidazole | managementInclude | critical | FAIL (known gap) | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
+| mgmt-vancomycin-metronidazole | managementInclude | critical | PASS | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
 | mgmt-surgical-consult | managementInclude | critical | PASS | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018; WSES guidelines 2019 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
 | mgmt-no-antimotility | managementExclude | critical | PASS | PASS | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018 |  |
 | score-qsofa-calculator | scoreValue | quality | PASS | n/a | IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) 2018 |  |
-
-Failure details:
-
-- **mgmt-vancomycin-metronidazole** (ios): no management item matched among 9 (ios.pipeline.decisions, ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.decisions, ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan)]
 
 Guidelines:
 
@@ -2982,15 +2769,14 @@ Permutation of `dfi-moderate-osteomyelitis`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | mnm-charcot | mustNotMiss | critical | PASS | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 |  |
-| mgmt-immobilise-offload | managementInclude | critical | FAIL (known gap) | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-immobilise-offload | managementInclude | critical | PASS | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | level-priority | emergencyLevel | quality | PASS | PASS | NICE NG19 2015 |  |
-| inv-mri | investigationInclude | quality | FAIL (known gap) | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-mri | investigationInclude | quality | PASS (gap resolved) | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | mgmt-no-escalated-antibiotics | managementExclude | quality | PASS | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 |  |
 
 Failure details:
 
-- **inv-mri** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-immobilise-offload** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-mri** (ios): investigation found in ios.radiation: "mri foot - bone marrow oedema - active charcot vs osteomyelitis"
 
 Guidelines:
 
@@ -3091,7 +2877,7 @@ Permutation of `cholangitis-tg18-charcot-sepsis`.
 | alarm-sepsis | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | alarm-haemodynamic | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | score-tg18-calculator | scoreValue | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| score-tg18-autofill | scoreValue | critical | FAIL (known gap) | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-autofill | scoreValue | critical | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
 | inv-blood-cultures | investigationInclude | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021; Tokyo Guidelines 2018 2018 |  |
 | mgmt-urgent-biliary-drainage | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018; Tokyo Guidelines 2018 2018 |  |
 | mgmt-organ-support | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign guidelines 2021 2021 |  |
@@ -3111,7 +2897,6 @@ Permutation of `cholangitis-tg18-charcot-sepsis`.
 
 Failure details:
 
-- **score-tg18-autofill** (ios): expected = 3; got ios.autofill.tg18-cholangitis=2 (Tokyo Grade II — Moderate acute cholangitis; early biliary d) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 - **score-tg18-autofill** (web): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 
 Guidelines:
@@ -3214,14 +2999,14 @@ Permutation of `cholecystitis-tg18-grade1`.
 | score-tg18-autofill | scoreValue | quality | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 | clinical-scores.ts: derive the TG18 imaging criterion from the radiology result text (wall thickening, pericholecystic fluid, sonographic Murphy's) and local signs from exam chips. |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| mgmt-glycaemic-plan | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| mgmt-glycaemic-plan | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 | mgmt-no-nsaid-ckd | managementExclude | quality | FAIL (known gap) | FAIL (known gap) |  | Operative-plan templates: omit NSAIDs when comorbidities include CKD or age ≥75, rather than a free-text "if eGFR normal" caveat. |
 | variant-grade2 | dxVariant | quality | n/a | PASS | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I, and remove the bare "cholecystitis" keyword from Grade I. |
 
 Failure details:
 
 - **mnm-mesenteric-ischaemia** (ios): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Small Bowel Obstruction \| 4. Acute Pancreatitis \| 5. Ascending Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Small Bowel Obstruction \| 4. Acute Pancreatitis \| 5. Ascending Cholangitis]
-- **mgmt-glycaemic-plan** (ios): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)]
+- **mgmt-glycaemic-plan** (ios): management item found in ios.radiation.plan: "[warning] insulin-treated diabetes: continue basal (long-acting) insulin - never omit it; give 80..."
 - **mgmt-no-nsaid-ckd** (ios): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." [known gap: Lap chole operative-plan post-op orders: "Ibuprofen 400mg TDS (if eGFR normal)" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."]
 - **mnm-mesenteric-ischaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Small Bowel Obstruction \| 4. Acute Pancreatitis \| 5. Ascending Cholangitis]
 - **score-tg18-autofill** (web): expected ≥ 2; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: clinical-scores auto-derived grade = 0 "criteria not met" despite WBC 19.4 and a characteristic US report (needs manual imaging ticks).]
@@ -3280,14 +3065,14 @@ Permutation of `cholecystitis-tg18-grade1`.
 | flag-immunosuppression | redFlags | quality | PASS | PASS |  |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) | PASS | AAGBI/RCP/Society for Endocrinology guideline 2020 |  |
+| mgmt-steroid-cover | managementInclude | quality | PASS (gap resolved) | PASS | AAGBI/RCP/Society for Endocrinology guideline 2020 |  |
 | mgmt-transplant-liaison | managementInclude | quality | FAIL (known gap) | PASS |  |  |
 | variant-grade2 | dxVariant | quality | n/a | PASS | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I and move "gangrenous cholecystitis" to Grade II (TG18 marked local inflammation), keeping Grade III for organ dysfunction. |
 
 Failure details:
 
-- **mgmt-steroid-cover** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)]
-- **mgmt-transplant-liaison** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)]
+- **mgmt-steroid-cover** (ios): management item found in ios.radiation.plan: "...isolone (or equivalent) for > 4 weeks, give steroid cover - hydrocortisone 100 mg iv at induction or at the start of the acute illness, then 200 mg/24 h (..."
+- **mgmt-transplant-liaison** (ios): no management item matched among 28 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)]
 
 Guidelines:
 
@@ -3309,17 +3094,13 @@ Permutation of `cholecystitis-tg18-grade1`.
 | flag-pregnancy | redFlags | critical | PASS | PASS | ACOG Committee Opinion No. 723 2017 |  |
 | score-tg18-calculator | scoreValue | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-lap-chole | managementInclude | critical | PASS | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
-| mgmt-no-nsaid-after-20-weeks | managementExclude | critical | FAIL (known gap) | PASS | US FDA Drug Safety Communication 2020 |  |
+| mgmt-no-nsaid-after-20-weeks | managementExclude | critical | PASS | PASS | US FDA Drug Safety Communication 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | inv-no-unqualified-ct | investigationExclude | quality | PASS | PASS | ACOG Committee Opinion No. 723 2017 |  |
 | mgmt-obstetric-involvement | managementInclude | quality | PASS | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017; ACOG Committee Opinion No. 775 2019 |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-no-teratogenic-antibiotic | managementExclude | quality | PASS | PASS |  |  |
 | mgmt-no-bhcg-negative-assumption | managementExclude | quality | PASS | PASS |  |  |
-
-Failure details:
-
-- **mgmt-no-nsaid-after-20-weeks** (ios): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."]
 
 Guidelines:
 
@@ -3348,14 +3129,14 @@ Permutation of `cholecystitis-tg18-grade1`.
 | inv-glucose | investigationInclude | quality | FAIL (known gap) | PASS |  |  |
 | mgmt-gb-drainage-option | managementInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| mgmt-diabetes-plan | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| mgmt-diabetes-plan | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 | pathway-first-visit | pathway | quality | PASS | n/a |  |  |
 | variant-grade2 | dxVariant | quality | n/a | PASS | Tokyo Guidelines 2018 2018 |  |
 
 Failure details:
 
 - **inv-glucose** (ios): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation)]
-- **mgmt-diabetes-plan** (ios): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)]
+- **mgmt-diabetes-plan** (ios): management item found in ios.radiation.plan: "[info] metformin: continue if only one meal is missed; omit if more than one meal will be missed..."
 - **score-rec-tg18-cholecystitis** (web): tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, web:wagner, news2, caprini, asa, rcri [known gap: No TG18 cholecystitis CDS rule on web.]
 
 Guidelines:
@@ -3378,11 +3159,11 @@ Permutation of `cholecystitis-tg18-grade1`.
 | alarm-haemodynamic | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
 | flag-penicillin-allergy | redFlags | critical | PASS | PASS |  |  |
 | score-tg18-calculator | scoreValue | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| score-tg18-autofill | scoreValue | critical | FAIL (known gap) | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-autofill | scoreValue | critical | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
 | inv-blood-cultures | investigationInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021; Tokyo Guidelines 2018 2018 |  |
 | mgmt-gb-drainage | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-organ-support | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign 2021 |  |
-| mgmt-no-penicillin-in-anaphylaxis | managementExclude | critical | FAIL (known gap) | PASS |  |  |
+| mgmt-no-penicillin-in-anaphylaxis | managementExclude | critical | PASS | PASS |  |  |
 | mnm-cholangitis | mustNotMiss | quality | FAIL (known gap) | PASS |  |  |
 | flag-organ-support | redFlags | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | score-rec-tg18-cholecystitis | scoreRecommended | quality | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
@@ -3399,10 +3180,8 @@ Permutation of `cholecystitis-tg18-grade1`.
 Failure details:
 
 - **mnm-cholangitis** (ios): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Acute Coronary Syndrome \| 5. Community-Acquired Pneumonia; also in ios.pipeline#4, ios.triage#4 [known gap: iOS: fallback mode (DiagnosticDatabase.json does not decode): the gallstone ultrasound text is appended to the CC for routing and selects the biliaryColic pool, which has no built-in list (`?? []`), so the differential is empty.]
-- **score-tg18-autofill** (ios): expected = 3; got ios.autofill.tg18-cholecystitis=2 (Tokyo Grade II — Moderate acute cholecystitis; early laparos) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
 - **inv-coagulation** (ios): no investigation matched among 18 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 18 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
 - **mgmt-gb-drainage-in-generated-plan** (ios): no management item matched among 11 (ios.radiation.plan) [known gap: iOS radiation plan text has no drainage step (only an IR referral chip); web PlanTab selects the Grade I variant, which filters out the conservative-phase cholecystostomy line.]
-- **mgmt-no-penicillin-in-anaphylaxis** (ios): forbidden management item present in ios.scoreCalculator.tg18-cholecystitis: "iv antibiotics (piperacillin-tazobactam or meropenem)" [known gap: Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penicillin anaphylaxis.]
 - **mgmt-no-early-cholecystectomy-in-shock** (ios): forbidden management item present in ios.scoreCalculator.tg18-cholecystitis: "early urgent cholecystostomy or emergency cholecystectomy" [known gap: iOS TG18 Grade III recommendation offers 'emergency cholecystectomy' as an equal alternative; web key points recommend early cholecystectomy without grade qualification.]
 - **score-rec-tg18-cholecystitis** (web): tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs [known gap: No TG18 cholecystitis CDS rule on web.]
 - **score-tg18-autofill** (web): expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
@@ -3513,13 +3292,13 @@ Permutation of `choledocholithiasis-asge-high-risk`.
 | mgmt-no-nsaid-after-20-weeks | managementExclude | critical | PASS | PASS | US FDA Drug Safety Communication 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
 | inv-no-unqualified-ct | investigationExclude | quality | PASS | PASS | ACOG Committee Opinion No. 723 2017 |  |
-| mgmt-fluoroscopy-minimised | managementInclude | quality | FAIL (known gap) | PASS | ASGE guideline 2012 | Choledocholithiasis protocol: pregnancy branch per ASGE 2012 (therapeutic ERCP, minimal fluoroscopy, obstetric input). |
+| mgmt-fluoroscopy-minimised | managementInclude | quality | PASS (gap resolved) | PASS | ASGE guideline 2012 | Choledocholithiasis protocol: pregnancy branch per ASGE 2012 (therapeutic ERCP, minimal fluoroscopy, obstetric input). |
 | mgmt-obstetric-involvement | managementInclude | quality | PASS | PASS | ASGE guideline 2012; ACOG Committee Opinion No. 775 2019 |  |
 | mgmt-no-bhcg-negative-assumption | managementExclude | quality | PASS | PASS |  | clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace "β-HCG confirmed negative" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT. |
 
 Failure details:
 
-- **mgmt-fluoroscopy-minimised** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-fluoroscopy-minimised** (ios): management item found in ios.radiation.plan: "... ± sphincterotomy and stone extraction [pregnancy: minimise fluoroscopy time and shield the fetus; obstetric involvement (asge 2012 endoscopy in pregna..."
 
 Guidelines:
 
@@ -3541,7 +3320,7 @@ Permutation of `choledocholithiasis-asge-high-risk`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | inv-mrcp-or-eus | investigationInclude | critical | PASS | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019; BSG updated guideline on the management of common bile duct stones 2017 |  |
-| mgmt-no-unconditional-ercp | managementExclude | critical | FAIL (known gap) | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | Choledocholithiasis protocol and dx-variants: add ASGE 2019 risk variants (high → ERCP; intermediate → EUS/MRCP or IOC/LCBDE, ERCP only if a stone is confirmed; low → LC ± IOC), fed by the existing asgeCbd scale. |
+| mgmt-no-unconditional-ercp | managementExclude | critical | PASS | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 | Choledocholithiasis protocol and dx-variants: add ASGE 2019 risk variants (high → ERCP; intermediate → EUS/MRCP or IOC/LCBDE, ERCP only if a stone is confirmed; low → LC ± IOC), fed by the existing asgeCbd scale. |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-asge-cbd | scoreRecommended | quality | FAIL (known gap) | PASS | ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
 | mgmt-cholecystectomy | managementInclude | quality | PASS | PASS | NICE CG188 2014; ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis 2019 |  |
@@ -3549,7 +3328,6 @@ Permutation of `choledocholithiasis-asge-high-risk`.
 Failure details:
 
 - **score-rec-asge-cbd** (ios): asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystitis, qsofa, sofa, news2, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystitis, qsofa, sofa, news2, mews]
-- **mgmt-no-unconditional-ercp** (ios): forbidden management item present in ios.radiation.plan: "ercp ± sphincterotomy + stone extraction (primary intervention)" (+3 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "ercp ± sphincterotomy + stone extraction (primary intervention)" (+3 more)]
 
 Guidelines:
 
@@ -3665,17 +3443,16 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| flag-lynch | redFlags | critical | FAIL (known gap) | PASS | BSG/ACPGBI/UKCGG guidelines 2020 |  |
-| inv-colonoscopy | investigationInclude | critical | FAIL (known gap) | PASS | BSG/ACPGBI/UKCGG guidelines 2020 |  |
-| mgmt-2-yearly | managementInclude | quality | FAIL (known gap) | PASS | BSG/ACPGBI/UKCGG guidelines 2020 |  |
-| mgmt-aspirin-discussion | managementInclude | quality | FAIL (known gap) | PASS | BSG/ACPGBI/UKCGG guidelines 2020 |  |
+| flag-lynch | redFlags | critical | PASS (gap resolved) | PASS | BSG/ACPGBI/UKCGG guidelines 2020 |  |
+| inv-colonoscopy | investigationInclude | critical | PASS | PASS | BSG/ACPGBI/UKCGG guidelines 2020 |  |
+| mgmt-2-yearly | managementInclude | quality | PASS (gap resolved) | PASS | BSG/ACPGBI/UKCGG guidelines 2020 |  |
+| mgmt-aspirin-discussion | managementInclude | quality | PASS (gap resolved) | PASS | BSG/ACPGBI/UKCGG guidelines 2020 |  |
 
 Failure details:
 
-- **flag-lynch** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)]
-- **inv-colonoscopy** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-2-yearly** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-aspirin-discussion** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)]
+- **flag-lynch** (ios): red flag found in ios.radiation.redFlags: "lynch syndrome (hereditary colorectal cancer risk) - overdue surveillance needs booki..."
+- **mgmt-2-yearly** (ios): management item found in ios.radiation.plan: "colonoscopic surveillance every 2 years (mlh1 / msh2 from age 25; msh6 / pms2 from 35) (bsg/acpgbi/ukcgg 2019)"
+- **mgmt-aspirin-discussion** (ios): management item found in ios.radiation.plan: "aspirin: discuss daily aspirin for colorectal cancer prevention (nice ng151; capp2)"
 
 Guidelines:
 
@@ -3795,7 +3572,7 @@ Failure details:
 
 - **dx-crohn-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis]
 - **flag-immunosuppressed** (ios): no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert)]
-- **mgmt-resection-plan** (ios): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-resection-plan** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -3813,19 +3590,17 @@ Permutation of `crohns-ileocaecal-abscess`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-same-day | emergencyLevel | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
-| inv-mri-pelvis | investigationInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
-| mgmt-eua-seton | managementInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
+| inv-mri-pelvis | investigationInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
+| mgmt-eua-seton | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
 | mgmt-drainage | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-no-fistulotomy | managementExclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022; BSG consensus guidelines 2019 |  |
 | mgmt-no-sphincterotomy | managementExclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | dx-perianal-sepsis-top3 | mustRankTopK | quality | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
-| mgmt-biologic | managementInclude | quality | FAIL (known gap) | PASS | BSG consensus guidelines 2019 |  |
+| mgmt-biologic | managementInclude | quality | PASS (gap resolved) | PASS | BSG consensus guidelines 2019 |  |
 
 Failure details:
 
-- **inv-mri-pelvis** (ios): no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)]
-- **mgmt-eua-seton** (ios): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-biologic** (ios): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-biologic** (ios): management item found in ios.radiation.plan: "...rianal crohn's: mri, eua + drainage + seton, then anti-tnf (infliximab / adalimumab) with gastroenterology (ecco 2022)"
 
 Guidelines:
 
@@ -3841,28 +3616,27 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | mnm-osteomyelitis | mustNotMiss | critical | PASS | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
-| inv-foot-xray | investigationInclude | critical | FAIL (known gap) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
+| inv-foot-xray | investigationInclude | critical | PASS | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
 | level-at-least-urgent | emergencyLevel | quality | PASS | PASS | NICE NG19 2015 |  |
 | flag-diabetic-foot | redFlags | quality | PASS | PASS |  |  |
-| inv-mri-or-bone-sample | investigationInclude | quality | FAIL (known gap) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| inv-deep-tissue-culture | investigationInclude | quality | FAIL (known gap) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| inv-vascular-assessment | investigationInclude | quality | FAIL (known gap) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-offloading | managementInclude | quality | FAIL (known gap) | PASS | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-mdt-foot | managementInclude | quality | FAIL (known gap) | PASS | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-antibiotic | managementInclude | quality | FAIL (known gap) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-iwgdf-grade | managementInclude | quality | FAIL (known gap) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023; IWGDF guidelines on the classification of foot ulcers in people with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-mri-or-bone-sample | investigationInclude | quality | PASS (gap resolved) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-deep-tissue-culture | investigationInclude | quality | PASS (gap resolved) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-vascular-assessment | investigationInclude | quality | PASS (gap resolved) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-offloading | managementInclude | quality | PASS (gap resolved) | PASS | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-mdt-foot | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-antibiotic | managementInclude | quality | PASS (gap resolved) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-iwgdf-grade | managementInclude | quality | PASS (gap resolved) | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023; IWGDF guidelines on the classification of foot ulcers in people with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | pathway-first-visit | pathway | quality | PASS | n/a |  |  |
 
 Failure details:
 
-- **inv-foot-xray** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-mri-or-bone-sample** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-deep-tissue-culture** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-vascular-assessment** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-offloading** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-mdt-foot** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-antibiotic** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-iwgdf-grade** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-mri-or-bone-sample** (ios): investigation found in ios.radiation: "mri foot or bone biopsy / bone culture if osteomyelitis is uncertain - iwgdf/idsa 2..."
+- **inv-deep-tissue-culture** (ios): investigation found in ios.radiation: "mri foot or bone biopsy / bone culture if osteomyelitis is uncertain - iwgdf/idsa 2023"
+- **inv-vascular-assessment** (ios): investigation found in ios.radiation: "vascular assessment: abpi, toe pressure / tbi, doppler waveforms - ischaemia (calcified vessels give fals..."
+- **mgmt-offloading** (ios): management item found in ios.radiation.plan: "offloading (non-removable device where possible); debridement"
+- **mgmt-mdt-foot** (ios): management item found in ios.radiation.plan: "same-day referral to the multidisciplinary foot care service (foot protection team / podiatry) (nice ng19)"
+- **mgmt-antibiotic** (ios): management item found in ios.radiation.plan: "...moderate / severe); moderate infection with osteomyelitis → antibiotic per local policy for 6 weeks (or shorter after resection), guided by bone cultu..."
+- **mgmt-iwgdf-grade** (ios): management item found in ios.radiation.plan: "classify the infection (iwgdf/idsa 2023: mild / moderate / severe); moderate infection with osteomyelitis → a..."
 
 Guidelines:
 
@@ -3889,15 +3663,15 @@ Permutation of `dfi-moderate-osteomyelitis`.
 | mgmt-urgent-surgery | managementInclude | critical | PASS | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
 | mgmt-iv-broad-spectrum | managementInclude | critical | PASS | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
 | mnm-nsti | mustNotMiss | quality | PASS | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
-| inv-vascular-imaging | investigationInclude | quality | FAIL (known gap) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-vascular | managementInclude | quality | FAIL (known gap) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-glycaemic | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| inv-vascular-imaging | investigationInclude | quality | PASS (gap resolved) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-vascular | managementInclude | quality | PASS (gap resolved) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-glycaemic | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 
 Failure details:
 
-- **inv-vascular-imaging** (ios): no investigation matched among 9 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 9 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
-- **mgmt-vascular** (ios): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-glycaemic** (ios): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **inv-vascular-imaging** (ios): investigation found in ios.radiation: "vascular assessment: abpi, toe pressure / tbi, doppler waveforms - ischaemia (calcified vessels give false abpi)"
+- **mgmt-vascular** (ios): management item found in ios.radiation.plan: "ischaemia or absent pulses: vascular referral (duplex / angiography for revascularisation)"
+- **mgmt-glycaemic** (ios): management item found in ios.radiation.plan: "glycaemic control (variable-rate insulin if severe or not eating)"
 
 Guidelines:
 
@@ -3918,8 +3692,8 @@ Permutation of `dfi-moderate-osteomyelitis`.
 |---|---|---|---|---|---|---|
 | mnm-limb-ischaemia | mustNotMiss | critical | PASS | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023; NICE NG19 2015 |  |
-| inv-toe-pressure-or-imaging | investigationInclude | critical | FAIL (known gap) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
-| mgmt-vascular-referral | managementInclude | critical | FAIL (known gap) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
+| inv-toe-pressure-or-imaging | investigationInclude | critical | PASS | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
+| mgmt-vascular-referral | managementInclude | critical | PASS | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
 | mgmt-no-compression | managementExclude | critical | PASS | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
 | flag-incompressible | redFlags | quality | FAIL (known gap) | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
 | mgmt-no-antibiotics-uninfected | managementExclude | quality | PASS | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
@@ -3927,8 +3701,6 @@ Permutation of `dfi-moderate-osteomyelitis`.
 Failure details:
 
 - **flag-incompressible** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity)]
-- **inv-toe-pressure-or-imaging** (ios): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions)]
-- **mgmt-vascular-referral** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
 - **flag-incompressible** (web): no red flag matched among 22 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity)]
 
 Guidelines:
@@ -3949,16 +3721,16 @@ Permutation of `dfi-moderate-osteomyelitis`.
 |---|---|---|---|---|---|---|
 | level-priority-not-emergency | emergencyLevel | quality | PASS | FAIL (known gap) | NICE NG19 2015 | Grade the diabetic-foot red flag: ulcer alone → priority; infection, ischaemia, gangrene or fever → urgent. Handle negation. |
 | no-sepsis-alarm | mustNotAlarm | quality | PASS | PASS |  |  |
-| inv-vascular-assessment | investigationInclude | quality | FAIL (known gap) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
-| mgmt-offloading | managementInclude | quality | FAIL (known gap) | PASS | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
-| mgmt-mdt-foot | managementInclude | quality | FAIL (known gap) | PASS | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-vascular-assessment | investigationInclude | quality | PASS (gap resolved) | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
+| mgmt-offloading | managementInclude | quality | PASS (gap resolved) | PASS | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-mdt-foot | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
 | mgmt-no-antibiotics | managementExclude | quality | PASS | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
 
 Failure details:
 
-- **inv-vascular-assessment** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-offloading** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-mdt-foot** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-vascular-assessment** (ios): investigation found in ios.radiation: "vascular assessment: abpi with toe pressure / toe-brachial index (tbi) and doppler waveforms - calcified ..."
+- **mgmt-offloading** (ios): management item found in ios.radiation.plan: "offloading (non-removable knee-high device), debridement and wound care; multidisciplin..."
+- **mgmt-mdt-foot** (ios): management item found in ios.radiation.plan: "...on-removable knee-high device), debridement and wound care; multidisciplinary foot care service (nice ng19)"
 - **level-priority-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer; the negated 'no fever' also scores as 'Systemic red flag symptom'.]
 
 Guidelines:
@@ -3986,7 +3758,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-selective-antibiotics** (ios): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5–7 days. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-selective-antibiotics** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5–7 days. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -4005,16 +3777,15 @@ Permutation of `diverticulitis-uncomplicated-outpatient`.
 | dx-diverticulitis-top3 | mustRankTopK | critical | PASS | PASS | WSES guidelines 2020 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
 | mgmt-iv-antibiotics | managementInclude | critical | PASS | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
-| mgmt-drainage | managementInclude | critical | FAIL (known gap) | PASS | WSES guidelines 2020; ASCRS clinical practice guidelines 2020 |  |
+| mgmt-drainage | managementInclude | critical | PASS | PASS | WSES guidelines 2020; ASCRS clinical practice guidelines 2020 |  |
 | mgmt-drainage-in-documented-plan | managementInclude | critical | n/a | PASS | WSES guidelines 2020 | Use the modified Hinchey scale in dx-variants: move 'hinchey ib' to the abscess variant, use word-boundary matching (so 'hinchey i' does not match 'hinchey ii/iii/iv') and check peritonitis → abscess → uncomplicated. |
-| inv-blood-cultures | investigationInclude | quality | FAIL (known gap) | PASS |  |  |
+| inv-blood-cultures | investigationInclude | quality | PASS (gap resolved) | PASS |  |  |
 | inv-colonoscopy-after | investigationInclude | quality | PASS | PASS | WSES guidelines 2020; AGA clinical practice update 2021 |  |
 | variant-abscess | dxVariant | quality | n/a | PASS | WSES guidelines 2020; Modified Hinchey classification 1999 |  |
 
 Failure details:
 
-- **inv-blood-cultures** (ios): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation)]
-- **mgmt-drainage** (ios): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **inv-blood-cultures** (ios): investigation found in ios.radiation: "fbc, crp, u&e, lactate; blood cultures if septic - severity"
 
 Guidelines:
 
@@ -4080,7 +3851,7 @@ Permutation of `diverticulitis-uncomplicated-outpatient`.
 | dx-diverticulitis-top3 | mustRankTopK | critical | PASS | PASS | WSES guidelines 2020 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
 | alarm-sepsis | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| alarm-perforation | mustAlarm | critical | FAIL (known gap) | PASS | WSES guidelines 2020 |  |
+| alarm-perforation | mustAlarm | critical | PASS (gap resolved) | PASS | WSES guidelines 2020 |  |
 | mgmt-emergency-surgery | managementInclude | critical | PASS | PASS | WSES guidelines 2020 |  |
 | mgmt-emergency-surgery-in-documented-plan | managementInclude | critical | n/a | PASS | WSES guidelines 2020 | Word-boundary Hinchey matching and specific-first variant order (peritonitis before abscess). |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | WSES guidelines 2020 |  |
@@ -4090,7 +3861,7 @@ Permutation of `diverticulitis-uncomplicated-outpatient`.
 
 Failure details:
 
-- **alarm-perforation** (ios): no alarm matched among 4 (ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 4 (ios.pipeline.alert, ios.acuity)]
+- **alarm-perforation** (ios): alarm found in ios.textParser: "pneumoperitoneum - perforation - free intraperitoneal gas confirmed on imaging action: emergency..."
 
 Guidelines:
 
@@ -4182,7 +3953,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-continue-basal-insulin** (ios): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-continue-basal-insulin** (ios): no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -4205,13 +3976,12 @@ Permutation of `dvt-wells-likely`.
 | inv-compression-duplex | investigationInclude | critical | PASS | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 | mgmt-lmwh | managementInclude | critical | PASS | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 | mgmt-no-doac-in-pregnancy | managementExclude | critical | PASS | PASS | RCOG Green-top Guideline No. 37b 2015 | Make the DVT/PE plans pregnancy-aware (pregnancy → LMWH only; hide DOAC and warfarin lines) and add a dx-variant or plan prefix for VTE in pregnancy. |
-| mgmt-no-warfarin-in-pregnancy | managementExclude | critical | FAIL (known gap) | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Rewrite the DVT protocol line: pregnancy → treatment-dose LMWH throughout pregnancy; warfarin is contraindicated antenatally. |
+| mgmt-no-warfarin-in-pregnancy | managementExclude | critical | PASS | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Rewrite the DVT protocol line: pregnancy → treatment-dose LMWH throughout pregnancy; warfarin is contraindicated antenatally. |
 | inv-no-ddimer-in-pregnancy | investigationExclude | quality | FAIL (known gap) | PASS | RCOG Green-top Guideline No. 37b 2015 | Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy. |
 
 Failure details:
 
 - **inv-no-ddimer-in-pregnancy** (ios): forbidden investigation present in ios.pipeline.decisions: "d-dimer: high sensitivity (~96%), low specificity - use to rule out only" (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: "d-dimer: high sensitivity (~96%), low specificity - use to rule out only" (+1 more)]
-- **mgmt-no-warfarin-in-pregnancy** (ios): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more) [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more)]
 - **mgmt-no-warfarin-in-pregnancy** (web): forbidden management item present in web.clinicalPrompts: "... weeks (mhra 2020); anticoagulation with lmwh, not doacs or warfarin (rcog gtg 37a/b); ultrasound or mri before ionising imaging where it answers th..." [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more)]
 
 Guidelines:
@@ -4309,14 +4079,10 @@ Permutation of `dysphagia-progressive-over55`.
 |---|---|---|---|---|---|---|
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-dysphagia | redFlags | critical | PASS | PASS | NICE NG12 2015 |  |
-| inv-ogd | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG12 2015 |  |
+| inv-ogd | investigationInclude | critical | PASS | PASS | NICE NG12 2015 |  |
 | dx-stricture-or-gord-top3 | mustRankTopK | quality | PASS | PASS | NICE CG184 2014 |  |
 | mnm-malignancy | mustNotMiss | quality | PASS | PASS | NICE NG12 2015 |  |
 | mgmt-no-age-gated-ogd | managementExclude | quality | PASS | PASS | NICE NG12 2015 |  |
-
-Failure details:
-
-- **inv-ogd** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
 
 Guidelines:
 
@@ -4333,19 +4099,19 @@ Permutation of `food-bolus-complete-obstruction`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| flag-dysphagia | redFlags | critical | PASS | PASS | NICE NG12 2015 |  |
+| flag-dysphagia | redFlags | critical | **FAIL — BLOCKING** | PASS | NICE NG12 2015 |  |
 | inv-ogd | investigationInclude | critical | PASS | PASS | BSG/BSPGHAN joint consensus guidelines 2022; NICE NG12 2015 |  |
-| inv-oesophageal-biopsies | investigationInclude | critical | FAIL (known gap) | PASS | BSG/BSPGHAN joint consensus guidelines 2022 |  |
+| inv-oesophageal-biopsies | investigationInclude | critical | PASS | PASS | BSG/BSPGHAN joint consensus guidelines 2022 |  |
 | mnm-eoe | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) | BSG/BSPGHAN joint consensus guidelines 2022 | Add an EoE node (young, atopy, intermittent solid dysphagia, bolus episodes) and a K20.0 protocol (≥6 biopsies from ≥2 levels; PPI / budesonide / diet; dilatation). |
 | level-priority-not-emergency | emergencyLevel | quality | PASS | FAIL (known gap) | NICE NG12 2015 | cancer-screening.ts: parenthesise the colorectal cancerType condition (c.met && (… \|\| … )); dysphagia should give priority, not emergency_now, when the patient is swallowing. |
-| inv-six-biopsies-two-levels | investigationInclude | quality | FAIL (known gap) | PASS | BSG/BSPGHAN joint consensus guidelines 2022 |  |
+| inv-six-biopsies-two-levels | investigationInclude | quality | PASS (gap resolved) | PASS | BSG/BSPGHAN joint consensus guidelines 2022 |  |
 | mgmt-eoe-treatment-options | managementInclude | quality | PASS | PASS | BSG/BSPGHAN joint consensus guidelines 2022 |  |
 
 Failure details:
 
 - **mnm-eoe** (ios): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Oesophageal / Gastric Carcinoma \| 3. Upper GI Bleeding (Peptic Ulcer) \| 4. Oesophageal Web / Plummer-Vinson Syndrome \| 5. Acute Coronary Syndrome [known gap: No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture protocol). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Oesophageal / Gastric Carcinoma \| 3. Upper GI Bleeding (Peptic Ulcer) \| 4. Oesophageal Web / Plummer-Vinson Syndrome \| 5. Acute Coronary Syndrome]
-- **inv-oesophageal-biopsies** (ios): no investigation matched among 5 (ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)]
-- **inv-six-biopsies-two-levels** (ios): no investigation matched among 5 (ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)]
+- **flag-dysphagia** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)
+- **inv-six-biopsies-two-levels** (ios): investigation found in ios.radiation: "ogd with at least six oesophageal biopsies from two levels (proximal and distal) - ≥ 15 eosinophils per high-power fiel..."
 - **mnm-eoe** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Oesophageal Stricture (Benign) \| 3. Hiatus Hernia [known gap: No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture protocol). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Oesophageal / Gastric Carcinoma \| 3. Upper GI Bleeding (Peptic Ulcer) \| 4. Oesophageal Web / Plummer-Vinson Syndrome \| 5. Acute Coronary Syndrome]
 - **level-priority-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≥ priority, ≤ urgent [known gap: Emergency now: "Systemic red flag symptom" and "Dysphagia" red flags plus a 2-week-wait cancer screen labelled "colorectal" (cancer-screening.ts operator-precedence bug; see findings).]
 
@@ -4397,15 +4163,10 @@ Permutation of `fistula-in-ano-simple-low`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| inv-mri-pelvis | investigationInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022 |  |
-| mgmt-seton-or-sparing | managementInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022 |  |
+| inv-mri-pelvis | investigationInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
+| mgmt-seton-or-sparing | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-no-primary-fistulotomy | managementExclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-no-sphincterotomy | managementExclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
-
-Failure details:
-
-- **inv-mri-pelvis** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-seton-or-sparing** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -4419,14 +4180,13 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-fistulotomy | managementInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022 | Add a fistula-in-ano protocol keyed to K60.3–K60.5 (simple → fistulotomy; complex → MRI, loose seton, sphincter-preserving repair; Parks classification) and narrow anal_fissure to K60.0–K60.2. |
+| mgmt-fistulotomy | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 | Add a fistula-in-ano protocol keyed to K60.3–K60.5 (simple → fistulotomy; complex → MRI, loose seton, sphincter-preserving repair; Parks classification) and narrow anal_fissure to K60.0–K60.2. |
 | mgmt-no-fissure-plan | managementExclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | dx-fistula-top3 | mustRankTopK | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022 |  |
 
 Failure details:
 
 - **dx-fistula-top3** (ios): not in top 3 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Anxiety Disorder \| 4. Fournier's Gangrene \| 5. Femoral Hernia [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Anxiety Disorder \| 4. Fournier's Gangrene \| 5. Femoral Hernia]
-- **mgmt-fistulotomy** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -4441,17 +4201,15 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-emergency | emergencyLevel | critical | PASS | PASS | ESGE Clinical Guideline 2016 |  |
-| inv-emergency-ogd | investigationInclude | critical | FAIL (known gap) | PASS | ESGE Clinical Guideline 2016; WSES guidelines 2019 | A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies). |
-| mgmt-endoscopic-removal | managementInclude | critical | FAIL (known gap) | PASS | ESGE Clinical Guideline 2016 |  |
+| inv-emergency-ogd | investigationInclude | critical | PASS | PASS | ESGE Clinical Guideline 2016; WSES guidelines 2019 | A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies). |
+| mgmt-endoscopic-removal | managementInclude | critical | PASS | PASS | ESGE Clinical Guideline 2016 |  |
 | flag-complete-obstruction | redFlags | quality | PASS | PASS | ESGE Clinical Guideline 2016 |  |
-| mgmt-biopsies-underlying-cause | managementInclude | quality | FAIL (known gap) | PASS | ESGE Clinical Guideline 2016; BSG/BSPGHAN joint consensus guidelines 2022 |  |
+| mgmt-biopsies-underlying-cause | managementInclude | quality | PASS (gap resolved) | PASS | ESGE Clinical Guideline 2016; BSG/BSPGHAN joint consensus guidelines 2022 |  |
 | mgmt-no-barium | managementExclude | quality | PASS | PASS | ESGE Clinical Guideline 2016 |  |
 
 Failure details:
 
-- **inv-emergency-ogd** (ios): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions)]
-- **mgmt-endoscopic-removal** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-biopsies-underlying-cause** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-biopsies-underlying-cause** (ios): management item found in ios.radiation.plan: "oesophageal biopsies at the index endoscopy to find the cause (eosinophilic oesophagitis, strictu..."
 
 Guidelines:
 
@@ -4514,20 +4272,17 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | dx-goo-top3 | mustRankTopK | critical | FAIL (known gap) | PASS | NICE NG12 2015 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
-| inv-ogd | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG12 2015 |  |
+| inv-ogd | investigationInclude | critical | PASS | PASS | NICE NG12 2015 |  |
 | mgmt-ng-decompression | managementInclude | critical | PASS | PASS | NICE NG12 2015 |  |
-| mgmt-iv-saline-potassium | managementInclude | critical | FAIL (known gap) | PASS | NICE NG12 2015 |  |
+| mgmt-iv-saline-potassium | managementInclude | critical | PASS | PASS | NICE NG12 2015 |  |
 | mnm-malignancy | mustNotMiss | quality | FAIL (known gap) | PASS | NICE NG12 2015 |  |
-| flag-electrolytes | redFlags | quality | PASS (gap resolved) | PASS | NICE NG12 2015 |  |
+| flag-electrolytes | redFlags | quality | PASS | PASS | NICE NG12 2015 |  |
 | inv-ct | investigationInclude | quality | PASS | PASS | NICE NG12 2015 |  |
 
 Failure details:
 
 - **dx-goo-top3** (ios): not in top 3 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Gastroenteritis \| 3. Acute Pancreatitis \| 4. Acute Appendicitis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Gastroenteritis \| 3. Acute Pancreatitis \| 4. Acute Appendicitis \| 5. Acute Kidney Injury]
 - **mnm-malignancy** (ios): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Gastroenteritis \| 3. Acute Pancreatitis \| 4. Acute Appendicitis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Gastroenteritis \| 3. Acute Pancreatitis \| 4. Acute Appendicitis \| 5. Acute Kidney Injury]
-- **flag-electrolytes** (ios): red flag found in ios.visitRisk: "note: low potassium or sodium, dehydration or chronic constipation - ask about detox teas and clean..."
-- **inv-ogd** (ios): no investigation matched among 17 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 17 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)]
-- **mgmt-iv-saline-potassium** (ios): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -4563,13 +4318,13 @@ Permutation of `gord-no-alarm-empirical-ppi`.
 |---|---|---|---|---|---|---|
 | mnm-malignancy | mustNotMiss | critical | PASS | PASS | NICE NG12 2015 |  |
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
-| flag-weight-loss-cancer | redFlags | critical | FAIL (known gap) | PASS | NICE NG12 2015 |  |
+| flag-weight-loss-cancer | redFlags | critical | PASS (gap resolved) | PASS | NICE NG12 2015 |  |
 | inv-ogd | investigationInclude | critical | PASS | PASS | NICE NG12 2015 |  |
 | mgmt-urgent-two-week-ogd | managementInclude | quality | FAIL (known gap) | PASS | NICE NG12 2015 |  |
 
 Failure details:
 
-- **flag-weight-loss-cancer** (ios): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags)]
+- **flag-weight-loss-cancer** (ios): red flag found in ios.radiation.redFlags: "weight loss, anaemia or age ≥ 55 with weight loss → suspected upper gi cancer: urgent 2-wee..."
 - **mgmt-urgent-two-week-ogd** (ios): no management item matched among 10 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
@@ -4606,16 +4361,14 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | mnm-lymphoma-or-nodes | mustNotMiss | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-malignancy | redFlags | critical | PASS | PASS | NICE NG12 2015 |  |
-| inv-uss-or-biopsy | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG12 2015; HerniaSurge 2018 |  |
-| mgmt-no-hernia-repair | managementExclude | critical | FAIL (known gap) | PASS | HerniaSurge 2018 |  |
+| inv-uss-or-biopsy | investigationInclude | critical | PASS | PASS | NICE NG12 2015; HerniaSurge 2018 |  |
+| mgmt-no-hernia-repair | managementExclude | critical | PASS | PASS | HerniaSurge 2018 |  |
 | level-at-least-priority | emergencyLevel | quality | PASS | PASS | NICE NG12 2015 |  |
-| inv-ldh | investigationInclude | quality | FAIL (known gap) | PASS | NICE NG12 2015 |  |
+| inv-ldh | investigationInclude | quality | PASS (gap resolved) | PASS | NICE NG12 2015 |  |
 
 Failure details:
 
-- **inv-uss-or-biopsy** (ios): no investigation matched among 2 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.decisions)]
-- **inv-ldh** (ios): no investigation matched among 2 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.decisions)]
-- **mgmt-no-hernia-repair** (ios): forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more)]
+- **inv-ldh** (ios): investigation found in ios.radiation: "fbc, film, ldh, esr, hiv test - lymphoma / infection"
 
 Guidelines:
 
@@ -4635,11 +4388,7 @@ Guidelines:
 | level-emergency | emergencyLevel | critical | PASS | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
 | alarm-torsion | mustAlarm | critical | PASS | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
 | mgmt-exploration | managementInclude | critical | PASS | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
-| mgmt-no-hernia-repair | managementExclude | critical | FAIL (known gap) | PASS |  |  |
-
-Failure details:
-
-- **mgmt-no-hernia-repair** (ios): forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more)]
+| mgmt-no-hernia-repair | managementExclude | critical | PASS | PASS |  |  |
 
 Guidelines:
 
@@ -4678,13 +4427,9 @@ Permutation of `gyn-ovarian-torsion-dermoid`.
 | dx-torsion-top3 | mustRankTopK | critical | PASS | PASS | ACOG Committee Opinion No. 783 2019 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ACOG Committee Opinion No. 783 2019 |  |
 | mgmt-laparoscopy | managementInclude | critical | PASS | PASS | ACOG Committee Opinion No. 783 2019 |  |
-| mgmt-no-adult-fixed-doses | managementExclude | critical | FAIL (known gap) | PASS |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | PASS | PASS |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
 | mgmt-ovarian-conservation | managementInclude | quality | PASS | PASS | ACOG Committee Opinion No. 783 2019 |  |
 | mgmt-no-default-oophorectomy | managementExclude | quality | PASS | PASS | ACOG Committee Opinion No. 783 2019 |  |
-
-Failure details:
-
-- **mgmt-no-adult-fixed-doses** (ios): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..."]
 
 Guidelines:
 
@@ -4755,18 +4500,17 @@ Permutation of `gyn-ovarian-torsion-dermoid`.
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
 | flag-anticoagulant | redFlags | critical | PASS | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
 | inv-crossmatch | investigationInclude | critical | PASS | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
-| mgmt-anticoagulant-reversal | managementInclude | critical | FAIL (known gap) | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
+| mgmt-anticoagulant-reversal | managementInclude | critical | PASS | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS | ACOG Practice Bulletin No. 174 2016 |  |
 | mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
 | dx-ovarian-cyst-top3 | mustRankTopK | quality | PASS | PASS | ACOG Practice Bulletin No. 174 2016 |  |
-| mgmt-stop-apixaban | managementInclude | quality | FAIL (known gap) | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
+| mgmt-stop-apixaban | managementInclude | quality | PASS (gap resolved) | PASS | 2020 ACC expert consensus decision pathway 2020 |  |
 | mgmt-gynaecology | managementInclude | quality | FAIL (known gap) | PASS | ACOG Practice Bulletin No. 174 2016 |  |
 
 Failure details:
 
-- **mgmt-anticoagulant-reversal** (ios): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-stop-apixaban** (ios): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-gynaecology** (ios): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-stop-apixaban** (ios): management item found in ios.soap.plan: "- [critical] anticoagulant-associated bleeding (apixaban): withhold apixaban; record the time of the last dose and check renal function. major or life-threa..."
+- **mgmt-gynaecology** (ios): no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -4831,17 +4575,16 @@ Permutation of `haematuria-visible-smoker-2ww`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-urgent | emergencyLevel | critical | PASS | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
-| inv-cystoscopy | investigationInclude | critical | FAIL (known gap) | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
+| inv-cystoscopy | investigationInclude | critical | PASS | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
 | mgmt-catheterise | managementInclude | critical | PASS | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 |  |
-| inv-fbc-group | investigationInclude | quality | FAIL (known gap) | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
+| inv-fbc-group | investigationInclude | quality | PASS (gap resolved) | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
 | mgmt-three-way-irrigation | managementInclude | quality | PASS | PASS | EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention) 2024 | As inv-cystoscopy. |
 | mgmt-anticoagulant-review | managementInclude | quality | PASS | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
 | mgmt-urology-referral | managementInclude | quality | PASS | PASS | NICE NG12 2015 |  |
 
 Failure details:
 
-- **inv-cystoscopy** (ios): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
-- **inv-fbc-group** (ios): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
+- **inv-fbc-group** (ios): investigation found in ios.radiation: "fbc, u&e, group and save; urine culture - blood loss; infection"
 
 Guidelines:
 
@@ -4862,12 +4605,12 @@ Guidelines:
 | inv-cystoscopy | investigationInclude | critical | PASS | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
 | mgmt-suspected-cancer-referral | managementInclude | critical | PASS | PASS | NICE NG12 2015 |  |
 | inv-upper-tract-imaging | investigationInclude | quality | PASS | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
-| mgmt-smoking-cessation | managementInclude | quality | FAIL (known gap) | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
+| mgmt-smoking-cessation | managementInclude | quality | PASS (gap resolved) | PASS | EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis) 2024 |  |
 | mgmt-no-antibiotics-only | managementExclude | quality | PASS | PASS | NICE NG12 2015 |  |
 
 Failure details:
 
-- **mgmt-smoking-cessation** (ios): no management item matched among 4 (ios.pipeline.actions, ios.ng12.plan, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-smoking-cessation** (ios): management item found in ios.radiation.plan: "smoking cessation (main risk factor for bladder cancer)"
 
 Guidelines:
 
@@ -4886,12 +4629,12 @@ Permutation of `haemorrhoids-grade3-over-50`.
 |---|---|---|---|---|---|---|
 | flag-warfarin | redFlags | critical | PASS | PASS | ASCRS clinical practice guidelines 2024 |  |
 | inv-colonic-evaluation | investigationInclude | critical | PASS | PASS | NICE NG12 2023; ASCRS clinical practice guidelines 2024 |  |
-| inv-inr | investigationInclude | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2024 |  |
+| inv-inr | investigationInclude | quality | PASS (gap resolved) | PASS | ASCRS clinical practice guidelines 2024 |  |
 | mgmt-anticoag-plan | managementInclude | quality | PASS | PASS | ASCRS clinical practice guidelines 2024 |  |
 
 Failure details:
 
-- **inv-inr** (ios): no investigation matched among 7 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 7 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
+- **inv-inr** (ios): investigation found in ios.radiation: "inr (warfarin) - reversal decision (bsh; bsg/esge 2021)"
 
 Guidelines:
 
@@ -4938,7 +4681,7 @@ Permutation of `haemorrhoids-grade3-over-50`.
 Failure details:
 
 - **dx-haemorrhoids-top3** (ios): not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Perianal Abscess \| 3. Skin Abscess \| 4. Deep Vein Thrombosis \| 5. Fournier's Gangrene [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Perianal Abscess \| 3. Skin Abscess \| 4. Deep Vein Thrombosis \| 5. Fournier's Gangrene]
-- **mgmt-excision-72h** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-excision-72h** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -4953,15 +4696,11 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-femoral-top3 | mustRankTopK | critical | PASS | PASS | HerniaSurge 2018 |  |
-| mgmt-early-repair | managementInclude | critical | FAIL (known gap) | PASS | HerniaSurge 2018 |  |
+| mgmt-early-repair | managementInclude | critical | PASS | PASS | HerniaSurge 2018 |  |
 | mgmt-no-watchful-waiting | managementExclude | critical | PASS | PASS | HerniaSurge 2018 |  |
 | level-at-least-priority | emergencyLevel | quality | PASS | PASS | HerniaSurge 2018 |  |
 | flag-strangulation-risk | redFlags | quality | PASS | PASS | HerniaSurge 2018 |  |
 | variant-incarcerated | dxVariant | quality | n/a | PASS |  |  |
-
-Failure details:
-
-- **mgmt-early-repair** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -4981,19 +4720,14 @@ Permutation of `hernia-femoral-elderly-woman`.
 | mnm-hernia-cause | mustNotMiss | critical | PASS | PASS | Bologna guidelines 2018; WSES guidelines 2017 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES guidelines 2017 |  |
 | alarm-obstruction | mustAlarm | critical | PASS | PASS | Bologna guidelines 2018 |  |
-| mgmt-emergency-surgery | managementInclude | critical | FAIL (known gap) | PASS | WSES guidelines 2017 |  |
-| mgmt-no-conservative-sbo-trial | managementExclude | critical | FAIL (known gap) | PASS | Bologna guidelines 2018 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS | PASS | WSES guidelines 2017 |  |
+| mgmt-no-conservative-sbo-trial | managementExclude | critical | PASS | PASS | Bologna guidelines 2018 |  |
 | variant-strangulated | dxVariant | critical | n/a | PASS |  |  |
 | mnm-bowel-obstruction | mustNotMiss | quality | PASS | PASS |  |  |
 | flag-anticoagulant | redFlags | quality | PASS | PASS |  |  |
 | inv-ct | investigationInclude | quality | PASS | PASS | Bologna guidelines 2018 |  |
 | inv-lactate | investigationInclude | quality | PASS | PASS | WSES guidelines 2017 |  |
 | mgmt-ng-decompression | managementInclude | quality | PASS | PASS |  |  |
-
-Failure details:
-
-- **mgmt-emergency-surgery** (ios): no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-conservative-sbo-trial** (ios): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" (+1 more)]
 
 Guidelines:
 
@@ -5021,7 +4755,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-mesh-clean-field** (ios): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)]
+- **mgmt-mesh-clean-field** (ios): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)]
 
 Guidelines:
 
@@ -5042,19 +4776,18 @@ Permutation of `hernia-groin-incarcerated`.
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES guidelines 2017 |  |
 | alarm-strangulation-or-sepsis | mustAlarm | critical | PASS | PASS | WSES guidelines 2017 |  |
 | score-qsofa-calculator | scoreValue | critical | PASS | n/a |  |  |
-| mgmt-emergency-surgery | managementInclude | critical | FAIL (known gap) | PASS | WSES guidelines 2017 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS | PASS | WSES guidelines 2017 |  |
 | mgmt-no-manual-reduction | managementExclude | critical | PASS | PASS | WSES guidelines 2017 |  |
 | variant-strangulated | dxVariant | critical | n/a | PASS |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
 | mnm-strangulation-or-obstruction | mustNotMiss | quality | n/a | PASS |  |  |
 | score-rec-qsofa | scoreRecommended | quality | PASS | PASS |  |  |
 | inv-lactate | investigationInclude | quality | PASS | PASS | WSES guidelines 2017 |  |
-| mgmt-bowel-viability | managementInclude | quality | FAIL (known gap) | PASS | WSES guidelines 2017 |  |
+| mgmt-bowel-viability | managementInclude | quality | PASS (gap resolved) | PASS | WSES guidelines 2017 |  |
 | mgmt-resuscitation | managementInclude | quality | PASS | PASS |  |  |
 
 Failure details:
 
-- **mgmt-emergency-surgery** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)]
-- **mgmt-bowel-viability** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)]
+- **mgmt-bowel-viability** (ios): management item found in ios.radiation.plan: "... surgery - emergency hernia repair with assessment of bowel viability ± resection; do not attempt reduction if strangulation is suspected (wses ..."
 
 Guidelines:
 
@@ -5070,15 +4803,15 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | dx-incisional-top3 | mustRankTopK | critical | PASS | PASS | EHS midline incisional hernia guidelines 2023 |  |
 | level-routine | emergencyLevel | quality | PASS | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
-| inv-ct | investigationInclude | quality | FAIL (known gap) | PASS | EHS midline incisional hernia guidelines 2023 |  |
-| mgmt-prehab | managementInclude | quality | FAIL (known gap) | PASS | EHS midline incisional hernia guidelines 2023 |  |
-| mgmt-mesh | managementInclude | quality | FAIL (known gap) | PASS | EHS midline incisional hernia guidelines 2023 |  |
+| inv-ct | investigationInclude | quality | PASS (gap resolved) | PASS | EHS midline incisional hernia guidelines 2023 |  |
+| mgmt-prehab | managementInclude | quality | PASS (gap resolved) | PASS | EHS midline incisional hernia guidelines 2023 |  |
+| mgmt-mesh | managementInclude | quality | PASS (gap resolved) | PASS | EHS midline incisional hernia guidelines 2023 |  |
 
 Failure details:
 
-- **inv-ct** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-prehab** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-mesh** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-ct** (ios): investigation found in ios.radiation: "ct abdomen (defect size, loss of domain) before repair of a large or complex herni..."
+- **mgmt-prehab** (ios): management item found in ios.radiation.plan: "... w2 4-10 cm, w3 > 10 cm); optimise before elective repair - smoking cessation, weight (bmi < 35 where possible), diabetes control (ehs/ahs 2020)"
+- **mgmt-mesh** (ios): management item found in ios.radiation.plan: "elective mesh repair (open sublay or laparoscopic) for symptomatic hernias; watchful waiting ..."
 - **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=34); expected ≤ priority [known gap: Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15); "Hartmann's … reversed" counted as post-operative concern.]
 
 Guidelines:
@@ -5104,7 +4837,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-watchful-waiting-option** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-watchful-waiting-option** (ios): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -5128,7 +4861,7 @@ Permutation of `hernia-inguinal-elective-minimal-symptoms`.
 
 Failure details:
 
-- **mgmt-laparoscopic** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-laparoscopic** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -5146,16 +4879,11 @@ Guidelines:
 | level-emergency | emergencyLevel | critical | PASS | PASS | Bologna guidelines 2018 |  |
 | alarm-obstruction | mustAlarm | critical | PASS | PASS | Bologna guidelines 2018 |  |
 | inv-ct | investigationInclude | critical | PASS | PASS | Bologna guidelines 2018 |  |
-| mgmt-emergency-surgery | managementInclude | critical | FAIL (known gap) | PASS | Bologna guidelines 2018 |  |
-| mgmt-no-gastrografin-trial | managementExclude | critical | FAIL (known gap) | PASS | Bologna guidelines 2018 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS | PASS | Bologna guidelines 2018 |  |
+| mgmt-no-gastrografin-trial | managementExclude | critical | PASS | PASS | Bologna guidelines 2018 |  |
 | dx-obstruction-top3 | mustRankTopK | quality | PASS | PASS |  |  |
 | mnm-hernia-any | mustNotMiss | quality | PASS | PASS |  |  |
 | variant-strangulated-or-obstructed | dxVariant | quality | n/a | PASS |  |  |
-
-Failure details:
-
-- **mgmt-emergency-surgery** (ios): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 26 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-gastrografin-trial** (ios): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic"]
 
 Guidelines:
 
@@ -5192,14 +4920,10 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-inguinal-top3 | mustRankTopK | critical | PASS | PASS | EUPSA guideline 2022 |  |
-| mgmt-no-watchful-waiting | managementExclude | critical | FAIL (known gap) | PASS | EUPSA guideline 2022 | Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16. |
+| mgmt-no-watchful-waiting | managementExclude | critical | PASS | PASS | EUPSA guideline 2022 | Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16. |
 | mgmt-no-adult-mesh-repair | managementExclude | critical | PASS | PASS | EUPSA guideline 2022 | Age-gate the hernia protocol and prompt (paediatric herniotomy template; suppress adult pre-op items such as PSA/ECG). |
 | level-not-emergency | emergencyLevel | quality | PASS | PASS |  |  |
 | mgmt-prompt-repair | managementInclude | quality | PASS | PASS | EUPSA guideline 2022 |  |
-
-Failure details:
-
-- **mgmt-no-watchful-waiting** (ios): forbidden management item present in ios.radiation.plan: "...- refer to a paediatric surgeon for herniotomy (no mesh, no truss); infants need early repair because of the incarceration risk." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...- refer to a paediatric surgeon for herniotomy (no mesh, no truss); infants need early repair because of the incarceration risk."]
 
 Guidelines:
 
@@ -5215,16 +4939,16 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | dx-parastomal-top3 | mustRankTopK | quality | FAIL (known gap) | PASS | EHS guidelines 2018 |  |
 | level-routine | emergencyLevel | quality | PASS | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
-| inv-ct | investigationInclude | quality | FAIL (known gap) | PASS | EHS guidelines 2018 |  |
-| mgmt-mesh-repair | managementInclude | quality | FAIL (known gap) | PASS | EHS guidelines 2018 |  |
-| mgmt-stoma-nurse | managementInclude | quality | FAIL (known gap) | PASS | EHS guidelines 2018 |  |
+| inv-ct | investigationInclude | quality | PASS (gap resolved) | PASS | EHS guidelines 2018 |  |
+| mgmt-mesh-repair | managementInclude | quality | PASS (gap resolved) | PASS | EHS guidelines 2018 |  |
+| mgmt-stoma-nurse | managementInclude | quality | PASS (gap resolved) | PASS | EHS guidelines 2018 |  |
 
 Failure details:
 
 - **dx-parastomal-top3** (ios): not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Incisional Hernia \| 3. Umbilical / Paraumbilical Hernia \| 4. Femoral Hernia \| 5. Incarcerated / Strangulated Hernia [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Incisional Hernia \| 3. Umbilical / Paraumbilical Hernia \| 4. Femoral Hernia \| 5. Incarcerated / Strangulated Hernia]
-- **inv-ct** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-mesh-repair** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-stoma-nurse** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-ct** (ios): investigation found in ios.radiation: "ct abdomen (defect size, loss of domain) before repair of a large or complex herni..."
+- **mgmt-mesh-repair** (ios): management item found in ios.radiation.plan: "elective mesh repair (open sublay or laparoscopic) for symptomatic hernias; watchful waiting ..."
+- **mgmt-stoma-nurse** (ios): management item found in ios.radiation.plan: "parastomal hernia: stoma nurse, support belt; repair (sugarbaker / keyhole mesh) if symptomatic or obstructing"
 - **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=44); expected ≤ priority [known gap: Triage emergency_now (score 59): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting"); "rectal cancer" history → "Possible malignancy".]
 
 Guidelines:
@@ -5276,7 +5000,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-smoking** (ios): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-smoking** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mgmt-no-inguinal-template** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic inguinal hernia repair (tapp) - operative plan ───────────────────────────────────────────────────────────── ..." [known gap: computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan. Here also "EMERGENCY" because "non-tender" matches "tender".]
 
 Guidelines:
@@ -5295,7 +5019,7 @@ Permutation of `hernia-umbilical-adult-elective`.
 |---|---|---|---|---|---|---|
 | flag-rupture-risk | redFlags | critical | PASS | PASS | EASL Clinical Practice Guidelines 2018; EHS/AHS guidelines 2020 |  |
 | flag-liver-disease | redFlags | critical | PASS | PASS |  |  |
-| mgmt-ascites-control | managementInclude | critical | FAIL (known gap) | PASS | EASL Clinical Practice Guidelines 2018; EHS/AHS guidelines 2020 |  |
+| mgmt-ascites-control | managementInclude | critical | PASS | PASS | EASL Clinical Practice Guidelines 2018; EHS/AHS guidelines 2020 |  |
 | level-at-least-priority | emergencyLevel | quality | PASS | PASS |  |  |
 | score-rec-child-pugh | scoreRecommended | quality | PASS | PASS |  |  |
 | score-rec-meld | scoreRecommended | quality | PASS | PASS |  |  |
@@ -5303,7 +5027,6 @@ Permutation of `hernia-umbilical-adult-elective`.
 
 Failure details:
 
-- **mgmt-ascites-control** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mgmt-no-standard-day-case-plan** (web): forbidden management item present in web.clinicalPrompts: "... male (reduces haematoma). • ice pack to groin prn × 24h. • day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding. ..." [known gap: computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan. Its post-operative orders include day-case discharge.]
 
 Guidelines:
@@ -5372,14 +5095,10 @@ Permutation of `hypercalcaemia-malignancy-bone-mets`.
 |---|---|---|---|---|---|---|
 | level-urgent | emergencyLevel | critical | PASS | PASS | Society for Endocrinology 2016; NICE NG35 2016; NICE NG148 2019 |  |
 | flag-hypercalcaemia | redFlags | critical | PASS | PASS | Society for Endocrinology 2016 |  |
-| inv-myeloma-screen | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG35 2016 |  |
+| inv-myeloma-screen | investigationInclude | critical | PASS | PASS | NICE NG35 2016 |  |
 | mgmt-iv-saline | managementInclude | critical | PASS | PASS | Society for Endocrinology 2016 |  |
 | mgmt-stop-nsaid-acei | managementInclude | critical | PASS | PASS | NICE NG148 2019 |  |
 | mgmt-no-nsaid | managementExclude | critical | PASS | PASS | NICE NG148 2019 |  |
-
-Failure details:
-
-- **inv-myeloma-screen** (ios): no investigation matched among 11 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
 
 Guidelines:
 
@@ -5405,12 +5124,12 @@ Permutation of `hyperkalaemia-severe-ckd-acei`.
 | mgmt-insulin-glucose | managementInclude | critical | PASS | PASS | UK Kidney Association 2023 |  |
 | mgmt-stop-nephrotoxins | managementInclude | critical | PASS | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012 |  |
 | mgmt-no-nsaid-in-aki | managementExclude | critical | PASS | PASS | NICE NG148 2019 |  |
-| mgmt-urinalysis | managementInclude | quality | FAIL (known gap) | PASS | NICE NG148 2019 |  |
+| mgmt-urinalysis | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG148 2019 |  |
 | mgmt-fluid-assessment | managementInclude | quality | PASS | PASS | NICE NG148 2019; KDIGO Clinical Practice Guideline for Acute Kidney Injury 2012 |  |
 
 Failure details:
 
-- **mgmt-urinalysis** (ios): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-urinalysis** (ios): management item found in ios.radiation.plan: "...ing aki; restart when renal function recovers (nice ng148); urinalysis (dipstick) for every patient with aki"
 
 Guidelines:
 
@@ -5435,8 +5154,12 @@ Guidelines:
 | mgmt-glucose-monitoring | managementInclude | critical | PASS | PASS | UK Kidney Association 2023 |  |
 | mgmt-iv-calcium-dose | managementInclude | quality | PASS | PASS | UK Kidney Association 2023 |  |
 | mgmt-salbutamol | managementInclude | quality | PASS | PASS | UK Kidney Association 2023 |  |
-| mgmt-stop-causative-drugs | managementInclude | quality | PASS | PASS | UK Kidney Association 2023 |  |
+| mgmt-stop-causative-drugs | managementInclude | quality | FAIL | PASS | UK Kidney Association 2023 |  |
 | mgmt-renal-referral | managementInclude | quality | PASS | PASS | UK Kidney Association 2023 |  |
+
+Failure details:
+
+- **mgmt-stop-causative-drugs** (ios): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
 
 Guidelines:
 
@@ -5497,15 +5220,14 @@ Permutation of `hyponatraemia-severe-postop-seizure`.
 | alarm-hyponatraemia | mustAlarm | critical | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | mgmt-stop-thiazide | managementInclude | critical | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | mgmt-correction-limit | managementInclude | critical | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
-| flag-hypokalaemia | redFlags | quality | PASS (gap resolved) | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | Add a hypokalaemia prompt, and warn that correcting potassium raises sodium. |
+| flag-hypokalaemia | redFlags | quality | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 | Add a hypokalaemia prompt, and warn that correcting potassium raises sodium. |
 | mgmt-osmolality-urine-sodium | managementInclude | quality | FAIL (known gap) | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | mgmt-stop-ssri | managementInclude | quality | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | mgmt-single-hypertonic-150 | managementInclude | quality | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 
 Failure details:
 
-- **flag-hypokalaemia** (ios): red flag found in ios.visitRisk: "note: low potassium or sodium, dehydration or chronic constipation - ask about detox teas and clean..."
-- **mgmt-osmolality-urine-sodium** (ios): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-osmolality-urine-sodium** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -5523,13 +5245,9 @@ Permutation of `hyponatraemia-severe-postop-seizure`.
 |---|---|---|---|---|---|---|
 | level-urgent | emergencyLevel | critical | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014; NICE NG148 2019 |  |
 | alarm-hyponatraemia | mustAlarm | critical | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
-| mgmt-isotonic-volume | managementInclude | critical | FAIL (known gap) | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014; NICE NG148 2019 |  |
+| mgmt-isotonic-volume | managementInclude | critical | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014; NICE NG148 2019 |  |
 | mgmt-no-fluid-restriction | managementExclude | critical | PASS | PASS | European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP) 2014 |  |
 | flag-aki | redFlags | quality | PASS | PASS | NICE NG148 2019 |  |
-
-Failure details:
-
-- **mgmt-isotonic-volume** (ios): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -5565,7 +5283,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| inv-stool-culture | investigationInclude | critical | FAIL (known gap) | PASS | IDSA clinical practice guidelines 2017 |  |
+| inv-stool-culture | investigationInclude | critical | PASS | PASS | IDSA clinical practice guidelines 2017 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS | IDSA clinical practice guidelines 2017 | Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words "guarding"/"rebound"; add negation handling (no/without/absent) to exam() matching. |
 | mgmt-no-antimotility | managementExclude | critical | PASS | PASS | IDSA clinical practice guidelines 2017 |  |
 | dx-infective-top3 | mustRankTopK | quality | PASS | PASS | IDSA clinical practice guidelines 2017 |  |
@@ -5574,7 +5292,6 @@ Guidelines:
 
 Failure details:
 
-- **inv-stool-culture** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
 - **mnm-ibd** (web): not in top 3 of web.pane: 1. Acute Gastroenteritis / Infective Colitis \| 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk \| 3. Clostridioides difficile Colitis (C. diff infection); also in web.symptomInference#4, web.passive#4 [known gap: IBD is not in the PANE top 3 (the "Change in bowel habit" template has no CC hint).]
 
 Guidelines:
@@ -5659,21 +5376,20 @@ Permutation of `painless-jaundice-pancreatic-head`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-hepatitis-top3 | mustRankTopK | critical | PASS | PASS | ACG Clinical Guideline 2017 |  |
-| inv-inr | investigationInclude | critical | FAIL (known gap) | PASS | EASL Clinical Practice Guidelines on the management of acute (fulminant) liver failure 2017 |  |
+| inv-inr | investigationInclude | critical | PASS | PASS | EASL Clinical Practice Guidelines on the management of acute (fulminant) liver failure 2017 |  |
 | mgmt-no-ercp | managementExclude | critical | PASS | PASS | ACG Clinical Guideline 2017 |  |
 | mgmt-no-cholecystectomy | managementExclude | critical | PASS | PASS |  |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | level-at-least-urgent | emergencyLevel | quality | PASS | PASS | EASL Clinical Practice Guidelines on the management of acute (fulminant) liver failure 2017 |  |
 | flag-liver-failure-watch | redFlags | quality | FAIL (known gap) | PASS | EASL Clinical Practice Guidelines on the management of acute (fulminant) liver failure 2017 |  |
-| inv-viral-serology | investigationInclude | quality | FAIL (known gap) | PASS | ACG Clinical Guideline 2017 |  |
-| mgmt-public-health | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| inv-viral-serology | investigationInclude | quality | PASS (gap resolved) | PASS | ACG Clinical Guideline 2017 |  |
+| mgmt-public-health | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 
 Failure details:
 
 - **flag-liver-failure-watch** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.pipeline.alert)]
-- **inv-viral-serology** (ios): no investigation matched among 2 (ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)]
-- **inv-inr** (ios): no investigation matched among 2 (ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)]
-- **mgmt-public-health** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-viral-serology** (ios): investigation found in ios.radiation: "viral hepatitis serology: hepatitis a igm, hbsag, anti-hbc igm, anti-hcv (± hepatitis e igm) - cause"
+- **mgmt-public-health** (ios): management item found in ios.radiation.plan: "notify public health (notifiable); household contacts offered vaccination / post-expo..."
 
 Guidelines:
 
@@ -5713,14 +5429,12 @@ Permutation of `lbo-obstructing-sigmoid-cancer`.
 |---|---|---|---|---|---|---|
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES guidelines 2018 |  |
 | alarm-sepsis | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-emergency-surgery | managementInclude | critical | FAIL (known gap) | PASS | WSES guidelines 2018 |  |
-| mgmt-no-stent-with-impending-perforation | managementExclude | critical | FAIL (known gap) | FAIL (known gap) | WSES guidelines 2018 | State the stent contraindications in the prompt and the lbo_malignant prefix (perforation, peritonitis, caecal ischaemia/pneumatosis, closed loop ≥12 cm with tenderness) and suppress the stent option when they are present. |
+| mgmt-emergency-surgery | managementInclude | critical | PASS | PASS | WSES guidelines 2018 |  |
+| mgmt-no-stent-with-impending-perforation | managementExclude | critical | PASS | FAIL (known gap) | WSES guidelines 2018 | State the stent contraindications in the prompt and the lbo_malignant prefix (perforation, peritonitis, caecal ischaemia/pneumatosis, closed loop ≥12 cm with tenderness) and suppress the stent option when they are present. |
 | variant-lbo-malignant | dxVariant | quality | n/a | PASS | WSES guidelines 2018 |  |
 
 Failure details:
 
-- **mgmt-emergency-surgery** (ios): no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-stent-with-impending-perforation** (ios): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)" [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated'). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)"]
 - **mgmt-no-stent-with-impending-perforation** (web): forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated'). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)"]
 
 Guidelines:
@@ -5772,7 +5486,7 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 Failure details:
 
 - **mnm-angiodysplasia** (ios): not in top 5 of ios.bayes: 1. Iron Deficiency Anaemia \| 2. Acute Kidney Injury \| 3. Colorectal Carcinoma \| 4. Ischaemic Colitis \| 5. Upper GI Bleeding (Peptic Ulcer) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Iron Deficiency Anaemia \| 2. Acute Kidney Injury \| 3. Colorectal Carcinoma \| 4. Ischaemic Colitis \| 5. Upper GI Bleeding (Peptic Ulcer)]
-- **mgmt-apc** (ios): no management item matched among 26 (ios.pipeline.actions, ios.ng12.plan, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-apc** (ios): no management item matched among 30 (ios.pipeline.actions, ios.ng12.plan, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -5792,7 +5506,7 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 |---|---|---|---|---|---|---|
 | level-admit | emergencyLevel | critical | PASS | PASS | BSG guideline 2019 |  |
 | flag-doac | redFlags | critical | PASS | PASS | BSG guideline 2019 |  |
-| mgmt-hold-doac | managementInclude | critical | FAIL (known gap) | PASS | BSG guideline 2019 |  |
+| mgmt-hold-doac | managementInclude | critical | PASS | PASS | BSG guideline 2019 |  |
 | mnm-crc | mustNotMiss | quality | FAIL (known gap) | FAIL | BSG guideline 2019 |  |
 | score-rec-oakland | scoreRecommended | quality | FAIL (known gap) | FAIL (known gap) | Oakland score 2017; BSG guideline 2019 |  |
 | inv-colonoscopy | investigationInclude | quality | PASS | PASS | BSG guideline 2019 |  |
@@ -5802,7 +5516,6 @@ Failure details:
 
 - **mnm-crc** (ios): not in top 5 of ios.bayes: 1. Acute Diverticulitis \| 2. Inguinal Hernia \| 3. Perianal Abscess \| 4. Ischaemic Colitis \| 5. Upper GI Bleeding (Peptic Ulcer) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Diverticulitis \| 2. Inguinal Hernia \| 3. Perianal Abscess \| 4. Ischaemic Colitis \| 5. Upper GI Bleeding (Peptic Ulcer)]
 - **score-rec-oakland** (ios): oakland not recommended; recommended: ios:oakland, hinchey, rockall, qsofa, ios:mpi, news2, mews [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for "lower gi bleed"). \| iOS CI 2026-09-25 (run 36169134350, database mode): oakland not recommended; recommended: ios:oakland, hinchey, rockall, qsofa, ios:mpi, news2, mews]
-- **mgmt-hold-doac** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 - **mnm-crc** (web): not in top 3 of web.pane: 1. Lower GI Haemorrhage (Diverticular / Angiodysplasia) \| 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal) \| 3. Acute Mesenteric Ischaemia; also in web.symptomInference#2, web.passive#5
 - **score-rec-oakland** (web): oakland not recommended; recommended: cha2ds2-vasc, news2, rockall, has-bled, cfs [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for "lower gi bleed"). \| iOS CI 2026-09-25 (run 36169134350, database mode): oakland not recommended; recommended: ios:oakland, hinchey, rockall, qsofa, ios:mpi, news2, mews]
 
@@ -5853,11 +5566,11 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 | mgmt-repeat-colonoscopy | managementInclude | critical | PASS | PASS | ESGE guideline 2017; BSG guideline 2019 |  |
 | flag-antiplatelet | redFlags | quality | PASS | PASS | BSG guideline 2019 |  |
 | mgmt-endoscopic-haemostasis | managementInclude | quality | PASS | PASS | ESGE guideline 2017 | Add a post-polypectomy bleed rule (post-procedure + rectal bleeding): repeat colonoscopy with endoscopic haemostasis (ESGE). |
-| mgmt-antiplatelet-plan | managementInclude | quality | FAIL (known gap) | PASS | BSG guideline 2019 |  |
+| mgmt-antiplatelet-plan | managementInclude | quality | PASS (gap resolved) | PASS | BSG guideline 2019 |  |
 
 Failure details:
 
-- **mgmt-antiplatelet-plan** (ios): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-antiplatelet-plan** (ios): management item found in ios.radiation.plan: "[warning] antiplatelet therapy (clopidogrel) with bleeding: aspirin for secondary prevention should not be stopped routinel..."
 
 Guidelines:
 
@@ -5908,11 +5621,11 @@ Permutation of `lgib-unstable-cta-first`.
 | flag-warfarin | redFlags | critical | PASS | PASS | BSG guideline 2019 |  |
 | inv-cta-first | investigationInclude | critical | PASS | PASS | BSG guideline 2019 |  |
 | mgmt-reverse-warfarin | managementInclude | critical | PASS | PASS | BSG guideline 2019 |  |
-| mgmt-restart-anticoag-plan | managementInclude | quality | FAIL (known gap) | PASS | BSG guideline 2019 |  |
+| mgmt-restart-anticoag-plan | managementInclude | quality | PASS (gap resolved) | PASS | BSG guideline 2019 |  |
 
 Failure details:
 
-- **mgmt-restart-anticoag-plan** (ios): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-restart-anticoag-plan** (ios): management item found in ios.radiation.plan: "...2021). no heparin substitution while bleeding. plan when to restart warfarin with the specialist once haemostasis is secure (bsg/esge 2021: about 7 days aft..."
 
 Guidelines:
 
@@ -5961,14 +5674,10 @@ Permutation of `liver-abscess-pyogenic`.
 | alarm-haemodynamic | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | inv-blood-cultures | investigationInclude | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021; Tokyo Guidelines 2018 2018 |  |
-| mgmt-organ-support | managementInclude | critical | FAIL (known gap) | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-organ-support | managementInclude | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | mgmt-biliary-drainage | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018; Hepatic abscess: diagnosis and management (narrative review 2015 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | mnm-sepsis | mustNotMiss | quality | PASS | PASS |  |  |
-
-Failure details:
-
-- **mgmt-organ-support** (ios): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -6023,7 +5732,7 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-ugib-top3 | mustRankTopK | critical | PASS | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 |  |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 |  |
 | dx-mallory-weiss-top3 | mustRankTopK | quality | FAIL (known gap) | PASS | ESGE Guideline 2021 |  |
 | level-not-emergency | emergencyLevel | quality | PASS | FAIL (known gap) | ESGE Guideline 2021; ACG Clinical Guideline 2021 | adaptive-triage: grade GI bleeding by haemodynamics/GBS instead of the word; add negation handling ("no …", "denies …") before RED_FLAGS matching. |
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021 |  |
@@ -6032,7 +5741,6 @@ Guidelines:
 Failure details:
 
 - **dx-mallory-weiss-top3** (ios): not in top 3 of ios.bayes: 1. Acute Pancreatitis \| 2. Upper GI Bleeding (Peptic Ulcer) \| 3. Oesophageal Variceal Bleeding \| 4. Acute Kidney Injury \| 5. Small Bowel Obstruction [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Pancreatitis \| 2. Upper GI Bleeding (Peptic Ulcer) \| 3. Oesophageal Variceal Bleeding \| 4. Acute Kidney Injury \| 5. Small Bowel Obstruction]
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≤ urgent [known gap: Emergency now (score 120): any "blood"/"bleed" word is an urgent red flag regardless of volume or GBS, and "No chest pain" in the HPI fires "Possible cardiac event" (adaptiveTriage reads CC+HPI free text without negation).]
 
 Guidelines:
@@ -6297,12 +6005,8 @@ Permutation of `mscc-prostate-cancer-weakness`.
 | mnm-spinal-metastases | mustNotMiss | critical | PASS | PASS | NICE NG234 2023 |  |
 | level-priority | emergencyLevel | critical | PASS | PASS | NICE NG234 2023 |  |
 | inv-mri-spine | investigationInclude | critical | PASS | PASS | NICE NG234 2023 |  |
-| mgmt-mscc-safety-net | managementInclude | critical | FAIL (known gap) | PASS | NICE NG234 2023 |  |
+| mgmt-mscc-safety-net | managementInclude | critical | PASS | PASS | NICE NG234 2023 |  |
 | mgmt-oncology | managementInclude | quality | PASS | PASS | NICE NG234 2023 | Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator). |
-
-Failure details:
-
-- **mgmt-mscc-safety-net** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -6335,9 +6039,9 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| flag-nsaid | redFlags | critical | FAIL (known gap) | PASS | NICE CG184 2014 |  |
+| flag-nsaid | redFlags | critical | PASS (gap resolved) | PASS | NICE CG184 2014 |  |
 | mgmt-stop-nsaid | managementInclude | critical | PASS | PASS | NICE CG184 2014 |  |
-| mgmt-no-blanket-stop-aspirin | managementExclude | critical | FAIL (known gap) | PASS | NICE CG184 2014 |  |
+| mgmt-no-blanket-stop-aspirin | managementExclude | critical | PASS | PASS | NICE CG184 2014 |  |
 | level-not-emergency | emergencyLevel | quality | PASS | PASS | NICE CG184 2014 | Negation handling in adaptive-triage and computeClinicalPrompts exam-text rules. |
 | inv-hpylori | investigationInclude | quality | PASS | PASS | NICE CG184 2014; Maastricht VI/Florence consensus report 2022 |  |
 | mgmt-ppi-8-weeks | managementInclude | quality | PASS | PASS | NICE CG184 2014 |  |
@@ -6346,8 +6050,7 @@ Guidelines:
 
 Failure details:
 
-- **flag-nsaid** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.pipeline.alert)]
-- **mgmt-no-blanket-stop-aspirin** (ios): forbidden management item present in ios.radiation.plan: "stop nsaids + aspirin if possible; use paracetamol instead" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "stop nsaids + aspirin if possible; use paracetamol instead"]
+- **flag-nsaid** (ios): red flag found in ios.radiation.redFlags: "nsaid use (including over-the-counter ibuprofen / diclofenac) - stop it; bleeding and..."
 
 Guidelines:
 
@@ -6466,7 +6169,7 @@ Permutation of `nsti-leg-diabetic-sepsis`.
 | alarm-sepsis-shock | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | inv-blood-cultures | investigationInclude | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | mgmt-return-to-theatre | managementInclude | critical | PASS | PASS | WSES/SIS-E consensus conference 2018 |  |
-| mgmt-clindamycin | managementInclude | critical | FAIL (known gap) | PASS | WSES/SIS-E consensus conference 2018 |  |
+| mgmt-clindamycin | managementInclude | critical | PASS | PASS | WSES/SIS-E consensus conference 2018 |  |
 | mnm-anastomotic-or-collection | mustNotMiss | quality | FAIL (known gap) | PASS |  |  |
 | flag-penicillin-allergy | redFlags | quality | PASS | PASS |  |  |
 | mgmt-not-simple-ssi | managementExclude | quality | PASS | PASS |  |  |
@@ -6475,7 +6178,6 @@ Permutation of `nsti-leg-diabetic-sepsis`.
 Failure details:
 
 - **mnm-anastomotic-or-collection** (ios): not in top 5 of ios.bayes: 1. Sepsis \| 2. Surgical Site Infection \| 3. Necrotising Soft Tissue Infection (Necrotising Fasciitis) \| 4. Pulmonary Embolism \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Sepsis \| 2. Surgical Site Infection \| 3. Necrotising Soft Tissue Infection (Necrotising Fasciitis) \| 4. Pulmonary Embolism \| 5. Acute Kidney Injury]
-- **mgmt-clindamycin** (ios): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -6533,12 +6235,12 @@ Permutation of `appendicitis-pregnant-t2`.
 | mgmt-no-nsaid-after-20-weeks | managementExclude | critical | PASS | PASS | FDA drug safety communication 2020 |  |
 | mgmt-no-assumed-negative-hcg | managementExclude | critical | PASS | PASS | ACOG Committee Opinion No. 775 2019 |  |
 | mgmt-lap-appendicectomy | managementInclude | quality | PASS | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017; WSES Jerusalem guidelines 2020 |  |
-| mgmt-left-lateral | managementInclude | quality | FAIL (known gap) | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
+| mgmt-left-lateral | managementInclude | quality | PASS (gap resolved) | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
 | variant-uncomplicated | dxVariant | quality | n/a | PASS |  |  |
 
 Failure details:
 
-- **mgmt-left-lateral** (ios): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.alvarado, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.alvarado, ios.soap.plan)]
+- **mgmt-left-lateral** (ios): management item found in ios.radiation.plan: "...am advises (from viability, about 24 weeks). from 20 weeks: left lateral tilt or manual uterine displacement whenever supine (aortocaval compression); n..."
 
 Guidelines:
 
@@ -6664,7 +6366,7 @@ Permutation of `appendicitis-paediatric-9y`.
 | dx-appendicitis-top3 | mustRankTopK | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES Jerusalem guidelines 2020; NICE NG143 2019 |  |
 | mgmt-iv-antibiotics | managementInclude | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-no-adult-fixed-doses | managementExclude | critical | FAIL (known gap) | PASS |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | PASS | PASS |  | Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts. |
 | score-rec-pas | scoreRecommended | quality | FAIL (known gap) | FAIL (known gap) | Pediatric Appendicitis Score (PAS) 2002 | Add PAS to the scales and suggest it (instead of adult scores) when age < 16 with RLQ pain. |
 | mgmt-appendicectomy | managementInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-no-gastroenteritis-discharge | managementExclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
@@ -6673,7 +6375,6 @@ Permutation of `appendicitis-paediatric-9y`.
 Failure details:
 
 - **score-rec-pas** (ios): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews]
-- **mgmt-no-adult-fixed-doses** (ios): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..."]
 - **score-rec-pas** (web): pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews]
 
 Guidelines:
@@ -6700,13 +6401,9 @@ Permutation of `mimic-dka-abdominal-pain`.
 | mgmt-cerebral-oedema | managementInclude | critical | PASS | PASS | BSPED guideline 2021; ISPAD clinical practice consensus guidelines 2022 2022 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS | BSPED guideline 2021 |  |
 | mgmt-no-laparotomy | managementExclude | critical | PASS | PASS | ISPAD clinical practice consensus guidelines 2022 2022 |  |
-| mgmt-no-adult-fixed-doses | managementExclude | critical | FAIL (known gap) | PASS |  |  |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | PASS | PASS |  |  |
 | mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | PASS | BSPED guideline 2021 |  |
 | dx-dka-symptom-engine | mustRankTopK | quality | n/a | PASS |  |  |
-
-Failure details:
-
-- **mgmt-no-adult-fixed-doses** (ios): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..."]
 
 Guidelines:
 
@@ -6723,19 +6420,18 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | NICE NG143 2019 |  |
 | inv-blood-culture | investigationInclude | critical | PASS | PASS | NICE NG143 2019 | A febrile-infant pathway / protocol for the PANE nodes sepsis and meningitis (NICE NG143: blood culture, urine, LP in infants under 3 months). |
-| mgmt-urgent-paediatric | managementInclude | critical | FAIL (known gap) | PASS | NICE NG143 2019 |  |
+| mgmt-urgent-paediatric | managementInclude | critical | PASS | PASS | NICE NG143 2019 |  |
 | mgmt-no-adult-fixed-doses | managementExclude | critical | PASS | PASS |  |  |
 | mgmt-no-emergency-hernia-repair | managementExclude | critical | PASS | PASS | NICE NG143 2019 |  |
 | mnm-serious-infection | mustNotMiss | quality | PASS | PASS | NICE NG143 2019 |  |
-| inv-lumbar-puncture | investigationInclude | quality | FAIL (known gap) | PASS | NICE NG143 2019 |  |
-| mgmt-urine-sample | managementInclude | quality | FAIL (known gap) | PASS | NICE NG143 2019 |  |
+| inv-lumbar-puncture | investigationInclude | quality | PASS (gap resolved) | PASS | NICE NG143 2019 |  |
+| mgmt-urine-sample | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG143 2019 |  |
 | mgmt-parenteral-antibiotics | managementInclude | quality | PASS | PASS | NICE NG143 2019 |  |
 
 Failure details:
 
-- **inv-lumbar-puncture** (ios): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi)]
-- **mgmt-urine-sample** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-urgent-paediatric** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
+- **inv-lumbar-puncture** (ios): investigation found in ios.radiation: "lumbar puncture (csf) in infants under 1 month and in unwell infants 1-3 months - nice ng143"
+- **mgmt-urine-sample** (ios): management item found in ios.radiation.plan: "urine sample and blood tests; iv antibiotics as the paediatric team directs (weight-based - ..."
 
 Guidelines:
 
@@ -6750,7 +6446,7 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | inv-ultrasound-intussusception | investigationInclude | critical | PASS | PASS | SHARE initiative 2019 |  |
-| mgmt-no-adult-fixed-doses | managementExclude | critical | FAIL (known gap) | PASS |  |  |
+| mgmt-no-adult-fixed-doses | managementExclude | critical | PASS | PASS |  |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS | SHARE initiative 2019 |  |
 | mgmt-no-laparotomy | managementExclude | critical | PASS | PASS | SHARE initiative 2019 |  |
 | dx-hsp-symptom-engine | mustRankTopK | quality | n/a | PASS |  |  |
@@ -6760,7 +6456,6 @@ Guidelines:
 Failure details:
 
 - **mnm-igav** (ios): not in top 5 of ios.bayes: 1. Renal / Ureteric Colic \| 2. Acute Appendicitis \| 3. Acute Gastroenteritis \| 4. Small Bowel Obstruction \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Renal / Ureteric Colic \| 2. Acute Appendicitis \| 3. Acute Gastroenteritis \| 4. Small Bowel Obstruction \| 5. Acute Pancreatitis]
-- **mgmt-no-adult-fixed-doses** (ios): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..."]
 
 Guidelines:
 
@@ -6787,7 +6482,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-fluid-resuscitation** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-fluid-resuscitation** (ios): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -6886,7 +6581,7 @@ Permutation of `trauma-paediatric-nai-bruising`.
 Failure details:
 
 - **mnm-nai** (ios): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State) [known gap: PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists malrotation and intussusception. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State)]
-- **mgmt-non-operative-duodenal** (ios): no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-non-operative-duodenal** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **pathway-trauma** (ios): recommended firstVisit (No previous visits on record); expected trauma [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma]
 - **mnm-nai** (web): not in top 3 of web.pane: 1. Splenic Laceration \| 2. Blunt Abdominal Trauma \| 3. Acute Pancreatitis [known gap: PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists malrotation and intussusception. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State)]
 
@@ -6930,24 +6625,22 @@ Guidelines:
 | dx-pancreatic-cancer-top3 | mustRankTopK | critical | PASS | PASS | NICE NG12 2015; NICE NG85 2018 |  |
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-malignancy | redFlags | critical | PASS | PASS | NICE NG12 2015 |  |
-| inv-ct-pancreas-protocol | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG85 2018; ESMO Clinical Practice Guideline 2023 |  |
-| mgmt-hpb-mdt | managementInclude | critical | FAIL (known gap) | PASS | NICE NG85 2018; NICE NG12 2015 |  |
+| inv-ct-pancreas-protocol | investigationInclude | critical | PASS | PASS | NICE NG85 2018; ESMO Clinical Practice Guideline 2023 |  |
+| mgmt-hpb-mdt | managementInclude | critical | PASS | PASS | NICE NG85 2018; NICE NG12 2015 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | mnm-cholangiocarcinoma-ampullary | mustNotMiss | quality | FAIL (known gap) | PASS |  |  |
 | no-sepsis-alarm | mustNotAlarm | quality | PASS | PASS |  |  |
-| inv-ca199 | investigationInclude | quality | FAIL (known gap) | PASS | ESMO Clinical Practice Guideline 2023 |  |
-| inv-eus-tissue | investigationInclude | quality | FAIL (known gap) | PASS | NICE NG85 2018 |  |
-| inv-coagulation | investigationInclude | quality | FAIL (known gap) | PASS |  |  |
+| inv-ca199 | investigationInclude | quality | PASS (gap resolved) | PASS | ESMO Clinical Practice Guideline 2023 |  |
+| inv-eus-tissue | investigationInclude | quality | PASS (gap resolved) | PASS | NICE NG85 2018 |  |
+| inv-coagulation | investigationInclude | quality | PASS (gap resolved) | PASS |  |  |
 | mgmt-no-routine-preop-drainage | managementExclude | quality | PASS | PASS | DROP trial 2010; NICE NG85 2018; ESGE Clinical Guideline 2018 |  |
 
 Failure details:
 
 - **mnm-cholangiocarcinoma-ampullary** (ios): not in top 5 of ios.bayes: 1. Pancreatic Carcinoma \| 2. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) \| 3. Hepatitis B (Chronic Active) \| 4. Ascending Cholangitis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Pancreatic Carcinoma \| 2. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) \| 3. Hepatitis B (Chronic Active) \| 4. Ascending Cholangitis \| 5. Acute Pancreatitis]
-- **inv-ct-pancreas-protocol** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-ca199** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-eus-tissue** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-coagulation** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-hpb-mdt** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-ca199** (ios): investigation found in ios.radiation: "ca 19-9 (after biliary decompression) - baseline tumour marker"
+- **inv-eus-tissue** (ios): investigation found in ios.radiation: "eus with fine-needle biopsy (tissue) if tissue is needed - histology before non-sur..."
+- **inv-coagulation** (ios): investigation found in ios.radiation: "lfts, coagulation screen (inr) - vitamin k if prolonged - cholestatic coagulopathy"
 
 Guidelines:
 
@@ -6969,15 +6662,15 @@ Permutation of `painless-jaundice-pancreatic-head`.
 | mgmt-no-resection | managementExclude | critical | PASS | PASS | ESMO Clinical Practice Guideline 2023; NICE NG85 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | flag-frailty | redFlags | quality | PASS | PASS |  | clinical-inference.ts or VisitRisk equivalent: flag frailty (CFS ≥5, housebound, age ≥80) against operative templates. |
-| mgmt-palliative-biliary-drainage | managementInclude | quality | FAIL (known gap) | PASS | ESGE Clinical Guideline 2018; NICE NG85 2018 |  |
-| mgmt-palliative-care | managementInclude | quality | FAIL (known gap) | PASS | ESMO Clinical Practice Guideline 2023 |  |
-| mgmt-mdt | managementInclude | quality | FAIL (known gap) | PASS | NICE NG85 2018 |  |
+| mgmt-palliative-biliary-drainage | managementInclude | quality | PASS (gap resolved) | PASS | ESGE Clinical Guideline 2018; NICE NG85 2018 |  |
+| mgmt-palliative-care | managementInclude | quality | PASS (gap resolved) | PASS | ESMO Clinical Practice Guideline 2023 |  |
+| mgmt-mdt | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG85 2018 |  |
 
 Failure details:
 
-- **mgmt-palliative-biliary-drainage** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-palliative-care** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-mdt** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-palliative-biliary-drainage** (ios): management item found in ios.radiation.plan: "...ctable with jaundice: surgery without routine pre-operative biliary drainage; drain (ercp stent) only if cholangitis, surgery is delayed or neoadjuvant ther..."
+- **mgmt-palliative-care** (ios): management item found in ios.radiation.plan: "unresectable: palliative biliary stenting, oncology and palliative care"
+- **mgmt-mdt** (ios): management item found in ios.radiation.plan: "refer to the specialist hpb mdt (pancreatic cancer multidisciplinary team) before any treatment decision (nice ..."
 
 Guidelines:
 
@@ -7018,13 +6711,13 @@ Permutation of `pancreatitis-gallstone-mild`.
 |---|---|---|---|---|---|---|
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ACG Guideline 2024 |  |
-| mgmt-thiamine | managementInclude | critical | FAIL (known gap) | PASS | NICE CG100 2010 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-thiamine | managementInclude | critical | PASS | PASS | NICE CG100 2010 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | flag-alcohol | redFlags | quality | PASS | PASS | NICE CG100 2010 |  |
 | score-rec-bisap | scoreRecommended | quality | PASS | PASS | BISAP score 2008; ACG Guideline 2024 |  |
-| mgmt-withdrawal | managementInclude | quality | FAIL (known gap) | PASS | NICE CG100 2010 |  |
+| mgmt-withdrawal | managementInclude | quality | PASS (gap resolved) | PASS | NICE CG100 2010 |  |
 | mgmt-alcohol-intervention | managementInclude | quality | PASS | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-early-oral-feeding | managementInclude | quality | PASS | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-cholecystectomy | managementExclude | quality | PASS | PASS | ACG Guideline 2024 |  |
@@ -7032,9 +6725,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 
 Failure details:
 
-- **mgmt-thiamine** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-withdrawal** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
+- **mgmt-withdrawal** (ios): management item found in ios.radiation.plan: "... before glucose-containing fluids; assess and treat alcohol withdrawal (ciwa-ar; nice cg100)"
 
 Guidelines:
 
@@ -7059,20 +6750,18 @@ Permutation of `pancreatitis-gallstone-mild`.
 |---|---|---|---|---|---|---|
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ACG Guideline 2024 |  |
-| mgmt-stop-azathioprine | managementInclude | critical | FAIL (known gap) | PASS | ACG Guideline 2024 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-stop-azathioprine | managementInclude | critical | PASS | PASS | ACG Guideline 2024 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | flag-immunosuppression | redFlags | quality | PASS | PASS |  |  |
-| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) | PASS | AAGBI/RCP/Society for Endocrinology guideline 2020 |  |
+| mgmt-steroid-cover | managementInclude | quality | PASS (gap resolved) | PASS | AAGBI/RCP/Society for Endocrinology guideline 2020 |  |
 | mgmt-no-cholecystectomy | managementExclude | quality | PASS | PASS |  |  |
 | variant-mild | dxVariant | quality | n/a | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 
 Failure details:
 
-- **mgmt-stop-azathioprine** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-steroid-cover** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
+- **mgmt-steroid-cover** (ios): management item found in ios.radiation.plan: "... if ≥ 5 mg prednisolone (or equivalent) for > 4 weeks, give steroid cover - hydrocortisone 100 mg iv at induction or at the start of the acute illness, t..."
 
 Guidelines:
 
@@ -7095,9 +6784,9 @@ Guidelines:
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ACG Guideline 2024 |  |
 | mgmt-same-admission-cholecystectomy | managementInclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; PONCHO trial 2015 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
-| mgmt-no-routine-ercp | managementExclude | critical | FAIL (known gap) | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
+| mgmt-no-routine-ercp | managementExclude | critical | PASS | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-bisap | scoreRecommended | quality | PASS | FAIL (known gap) | BISAP score 2008; ACG Guideline 2024 | clinical-cds.ts bisap rule: also trigger on workingDiagnosis.diseaseId === "pancreatitis" or lipase/amylase ≥3 × ULN. |
 | inv-ultrasound | investigationInclude | quality | PASS | PASS | ACG Guideline 2024 |  |
@@ -7111,8 +6800,6 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
-- **mgmt-no-routine-ercp** (ios): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp."]
 - **mgmt-no-routine-nbm** (ios): forbidden management item present in ios.pipeline.decisions: "...ine - ignore old advice); anti-emetic: ondansetron 4 mg iv; nil by mouth initially (clear fluids once pain improves - within 24-48 h in mild cases); oxy..." (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...ine - ignore old advice); anti-emetic: ondansetron 4 mg iv; nil by mouth initially (clear fluids once pain improves - within 24-48 h in mild cases); oxy..." (+1 more)]
 - **score-rec-bisap** (web): bisap not recommended; recommended: alvarado, ranson, news2, web:gerdq, asa, stop-bang [known gap: CDS BISAP rule fires only on a "pancreatitis"/"epigastric pain" chip plus an alcohol/gallstone/hyperlipidaemia comorbidity; it ignores the locked working diagnosis and the lipase result.]
 
@@ -7139,9 +6826,9 @@ Permutation of `pancreatitis-gallstone-mild`.
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ACG Guideline 2024; BISAP score 2008 |  |
 | mgmt-hdu-level-care | managementInclude | critical | PASS | PASS | ACG Guideline 2024; BISAP score 2008 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
-| mgmt-no-routine-ercp | managementExclude | critical | FAIL (known gap) | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
+| mgmt-no-routine-ercp | managementExclude | critical | PASS | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | flag-heart-failure | redFlags | quality | PASS | PASS | WATERFALL trial 2022 |  |
 | flag-anticoagulant | redFlags | quality | PASS | PASS |  |  |
@@ -7149,11 +6836,6 @@ Permutation of `pancreatitis-gallstone-mild`.
 | inv-triglycerides | investigationInclude | quality | PASS | PASS | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides and calcium. |
 | mgmt-moderate-fluids | managementInclude | quality | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 |  |
 | mgmt-same-admission-cholecystectomy | managementInclude | quality | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; PONCHO trial 2015 |  |
-
-Failure details:
-
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
-- **mgmt-no-routine-ercp** (ios): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp."]
 
 Guidelines:
 
@@ -7205,7 +6887,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ACG Guideline 2024 |  |
 | flag-pregnancy | redFlags | critical | PASS | PASS | ACOG Committee Opinion No. 723 2017 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
 | mgmt-no-routine-ercp | managementExclude | critical | PASS | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-nsaid-after-20-weeks | managementExclude | critical | PASS | PASS | US FDA Drug Safety Communication 2020 |  |
@@ -7215,10 +6897,6 @@ Permutation of `pancreatitis-gallstone-mild`.
 | mgmt-cholecystectomy-in-pregnancy | managementInclude | quality | PASS | PASS | SAGES guidelines for the use of laparoscopy during pregnancy 2017 |  |
 | mgmt-no-bhcg-negative-assumption | managementExclude | quality | PASS | PASS |  |  |
 | variant-mild | dxVariant | quality | n/a | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 | dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today "No cholangitis"/"no pancreatitis" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. |
-
-Failure details:
-
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
 
 Guidelines:
 
@@ -7246,9 +6924,9 @@ Permutation of `pancreatitis-gallstone-mild`.
 | level-emergency | emergencyLevel | critical | PASS | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012; ACG Guideline 2024 |  |
 | alarm-organ-failure | mustAlarm | critical | PASS | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | mgmt-critical-care | managementInclude | critical | PASS | PASS | ACG Guideline 2024; Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
-| mgmt-no-prophylactic-antibiotics | managementExclude | critical | FAIL (known gap) | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
-| mgmt-no-routine-ercp | managementExclude | critical | FAIL (known gap) | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
+| mgmt-no-routine-ercp | managementExclude | critical | PASS | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-bisap | scoreRecommended | quality | PASS | FAIL (known gap) | BISAP score 2008; ACG Guideline 2024 | clinical-cds.ts bisap rule: trigger on the working diagnosis. |
 | mgmt-enteral-nutrition | managementInclude | quality | PASS | PASS | ACG Guideline 2024; NICE NG104 2018 |  |
@@ -7260,10 +6938,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 Failure details:
 
 - **dx-pancreatitis-top3** (ios): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Pulmonary Embolism; also in ios.pipeline#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Pulmonary Embolism; also in ios.pipeline#2]
-- **mgmt-abdominal-compartment** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 3.4 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 3.4 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..."]
-- **mgmt-no-prophylactic-antibiotics** (ios): forbidden management item present in ios.pipeline.decisions: "...sepsis - initiate 1-hour bundle - blood cultures × 2 before antibiotics; iv antibiotics within 1 hour (broad-spectrum; narrow when cultures return); i..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...sepsis - initiate 1-hour bundle - blood cultures × 2 before antibiotics; iv antibiotics within 1 hour (broad-spectrum; narrow when cultures return); i..."]
-- **mgmt-no-routine-ercp** (ios): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, uss abdomen, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, uss abdomen, mrcp, ercp."]
+- **mgmt-abdominal-compartment** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 - **score-rec-bisap** (web): bisap not recommended; recommended: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang [known gap: BISAP not suggested (CDS rule ignores the working diagnosis); 12 other scales are.]
 
 Guidelines:
@@ -7296,14 +6971,10 @@ Permutation of `pancreatitis-gallstone-mild`.
 | mgmt-ercp-urgent | managementInclude | critical | PASS | PASS | ACG Guideline 2024; Tokyo Guidelines 2018 2018 |  |
 | mgmt-ercp-within-24h | managementInclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; Tokyo Guidelines 2018 2018 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | alarm-sepsis | mustAlarm | quality | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | score-rec-tg18-cholangitis | scoreRecommended | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-
-Failure details:
-
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 2.1 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 2.1 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..."]
 
 Guidelines:
 
@@ -7329,7 +7000,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 | dx-pancreatitis-top3 | mustRankTopK | critical | PASS | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ACG Guideline 2024 |  |
 | flag-hypertriglyceridaemia | redFlags | critical | PASS | PASS | ACG Guideline 2024; Endocrine Society clinical practice guideline 2012 |  |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | WATERFALL trial 2022; ACG Guideline 2024 | lib/pane-engine management protocol "pancreatitis" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace "aggressive … 250–500 ml/h" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine "acute pancreatitis" planTemplate. |
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-bisap | scoreRecommended | quality | PASS | PASS | BISAP score 2008; ACG Guideline 2024 |  |
@@ -7337,10 +7008,6 @@ Permutation of `pancreatitis-gallstone-mild`.
 | mgmt-tg-lowering | managementInclude | quality | PASS | PASS | Endocrine Society clinical practice guideline 2012; ACG Guideline 2024 |  |
 | mgmt-no-cholecystectomy | managementExclude | quality | PASS | PASS |  | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
 | variant-mild | dxVariant | quality | n/a | PASS | Revised Atlanta classification of acute pancreatitis (2012) 2012 |  |
-
-Failure details:
-
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "...o₃, osmolality; variable rate insulin infusion; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...o₃, osmolality; variable rate insulin infusion; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
 
 Guidelines:
 
@@ -7368,12 +7035,8 @@ Permutation of `pancreatitis-gallstone-mild`.
 | alarm-haemodynamic | mustAlarm | critical | PASS | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
 | inv-aortic-imaging | investigationInclude | critical | PASS | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
 | mgmt-vascular-emergency | managementInclude | critical | PASS | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | See inv-aortic-imaging. |
-| mgmt-no-aggressive-fluids | managementExclude | critical | FAIL (known gap) | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
+| mgmt-no-aggressive-fluids | managementExclude | critical | PASS | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
-
-Failure details:
-
-- **mgmt-no-aggressive-fluids** (ios): forbidden management item present in ios.pipeline.decisions: "...asopressors if fluid-unresponsive; icu/hdu now; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...asopressors if fluid-unresponsive; icu/hdu now; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..."]
 
 Guidelines:
 
@@ -7393,16 +7056,15 @@ Permutation of `parathyroid-primary-hpt-surgical-indications`.
 | mnm-hypercalcaemia | mustNotMiss | critical | PASS | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | flag-severe-hypercalcaemia | redFlags | critical | PASS | PASS | Society for Endocrinology emergency guidance 2016 |  |
-| mgmt-iv-saline | managementInclude | critical | FAIL (known gap) | PASS | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-iv-saline | managementInclude | critical | PASS | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | mgmt-stop-calcium-thiazide | managementInclude | critical | PASS | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | mgmt-no-thyroidectomy-template | managementExclude | critical | n/a | PASS |  | Add a Parathyroid dx-variant group ahead of Thyroid; word-boundary matching. |
-| mgmt-bisphosphonate | managementInclude | quality | FAIL (known gap) | PASS | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-bisphosphonate | managementInclude | quality | PASS (gap resolved) | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | mgmt-no-early-loop-diuretic | managementExclude | quality | PASS | PASS | Society for Endocrinology emergency guidance 2016 |  |
 
 Failure details:
 
-- **mgmt-iv-saline** (ios): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-bisphosphonate** (ios): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-bisphosphonate** (ios): management item found in ios.radiation.plan: "... fluids - 0.9% saline rehydration - then iv bisphosphonate (zoledronic acid or pamidronate) once rehydrated; urgent medical review (society for endo..."
 
 Guidelines:
 
@@ -7494,7 +7156,7 @@ Permutation of `perianal-abscess-simple`.
 |---|---|---|---|---|---|---|
 | dx-abscess-top3 | mustRankTopK | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | level-same-day | emergencyLevel | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
-| mgmt-drainage | managementInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022 |  |
+| mgmt-drainage | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mnm-nsti | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) | WSES/SIS-E consensus 2018 |  |
 | flag-diabetes | redFlags | quality | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
@@ -7503,7 +7165,6 @@ Permutation of `perianal-abscess-simple`.
 Failure details:
 
 - **mnm-nsti** (ios): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Infective Endocarditis \| 5. Acute Pyelonephritis [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal abscess, hernia, pilonidal); symptom inference ranks Fournier’s #1. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Infective Endocarditis \| 5. Acute Pyelonephritis]
-- **mgmt-drainage** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mnm-nsti** (web): not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Cellulitis; also in web.symptomInference#1, web.passive#2 [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal abscess, hernia, pilonidal); symptom inference ranks Fournier’s #1. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Infective Endocarditis \| 5. Acute Pyelonephritis]
 
 Guidelines:
@@ -7527,12 +7188,12 @@ Permutation of `perianal-abscess-simple`.
 | mgmt-drainage | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mnm-anal-neoplasia | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) | ASCRS clinical practice guidelines 2018 |  |
-| inv-pus-culture | investigationInclude | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022 |  |
+| inv-pus-culture | investigationInclude | quality | PASS (gap resolved) | PASS | ASCRS clinical practice guidelines 2022 |  |
 
 Failure details:
 
 - **mnm-anal-neoplasia** (ios): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Incarcerated / Strangulated Hernia [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Incarcerated / Strangulated Hernia]
-- **inv-pus-culture** (ios): no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)]
+- **inv-pus-culture** (ios): investigation found in ios.radiation: "fbc, crp, u&e; blood cultures if systemically unwell - sepsis"
 - **mnm-anal-neoplasia** (web): not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Anal Fissure; also in web.symptomInference#2, web.passive#2 [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Incarcerated / Strangulated Hernia]
 
 Guidelines:
@@ -7551,11 +7212,11 @@ Guidelines:
 | dx-abscess-top3 | mustRankTopK | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | level-same-day | emergencyLevel | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mgmt-drainage | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2022 |  |
-| mgmt-no-routine-antibiotics | managementExclude | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2022 |  |
+| mgmt-no-routine-antibiotics | managementExclude | quality | PASS (gap resolved) | PASS | ASCRS clinical practice guidelines 2022 |  |
 
 Failure details:
 
-- **mgmt-no-routine-antibiotics** (ios): forbidden management item present in ios.radiation.plan: "do not prescribe antibiotics without drainage - ineffective alone" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "do not prescribe antibiotics without drainage - ineffective alone"]
+- **mgmt-no-routine-antibiotics** (ios): none of 10 management items matched
 
 Guidelines:
 
@@ -7580,7 +7241,7 @@ Permutation of `periop-abx-penicillin-anaphylaxis-colectomy`.
 
 Failure details:
 
-- **mgmt-single-dose-prophylaxis** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-single-dose-prophylaxis** (ios): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 - **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.]
 
 Guidelines:
@@ -7607,8 +7268,8 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-prophylaxis-timing** (ios): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-non-penicillin-alternative** (ios): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-prophylaxis-timing** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-non-penicillin-alternative** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 - **level-not-urgent** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority [known gap: Triage emergency_now (score 47) for an elective planning visit: 'Systemic red flag symptom' from 'collapse' in the allergy history, and 'Post-operative or recent-procedure concern' from 'drained percutaneously'.]
 
 Guidelines:
@@ -7630,8 +7291,8 @@ Permutation of `periop-anticoag-warfarin-af-no-bridging`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-anticoagulant | redFlags | critical | PASS | PASS | ACCP guideline 2022 |  |
-| inv-renal-function | investigationInclude | critical | FAIL (known gap) | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
-| mgmt-doac-interrupt | managementInclude | critical | FAIL (known gap) | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
+| inv-renal-function | investigationInclude | critical | PASS | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
+| mgmt-doac-interrupt | managementInclude | critical | PASS | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-cfs | scoreRecommended | quality | FAIL (known gap) | PASS | CPOC/BGS guideline 2021 |  |
 | inv-no-routine-coag | investigationExclude | quality | PASS | FAIL (known gap) | PAUSE study 2019; ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
@@ -7640,8 +7301,6 @@ Permutation of `periop-anticoag-warfarin-af-no-bridging`.
 Failure details:
 
 - **score-rec-cfs** (ios): cfs not recommended; recommended: asa, rcri, dasi, stop-bang, ios:ariscat, caprini, ios:nrs2002 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: asa, rcri, dasi, stop-bang, ios:ariscat, caprini, ios:nrs2002]
-- **inv-renal-function** (ios): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation)]
-- **mgmt-doac-interrupt** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" (+1 more) [known gap: PT/INR and APTT added by anticoag_check and preop_haem for a DOAC patient (PAUSE: not needed with standardised interruption).]
 
 Guidelines:
@@ -7659,19 +7318,17 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-anticoagulant | redFlags | critical | PASS | PASS | ACCP guideline 2022 |  |
-| inv-inr | investigationInclude | critical | FAIL (known gap) | PASS | ACCP guideline 2022 |  |
-| mgmt-stop-warfarin-5-days | managementInclude | critical | FAIL (known gap) | PASS | ACCP guideline 2022; 2017 ACC expert consensus decision pathway 2017 |  |
+| inv-inr | investigationInclude | critical | PASS | PASS | ACCP guideline 2022 |  |
+| mgmt-stop-warfarin-5-days | managementInclude | critical | PASS | PASS | ACCP guideline 2022; 2017 ACC expert consensus decision pathway 2017 |  |
 | mgmt-no-bridging | managementExclude | critical | PASS | PASS | BRIDGE trial 2015; ACCP guideline 2022; 2017 ACC expert consensus decision pathway 2017 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-cha2ds2-vasc | scoreRecommended | quality | FAIL (known gap) | PASS | 2017 ACC expert consensus decision pathway 2017 |  |
-| mgmt-resume-warfarin | managementInclude | quality | FAIL (known gap) | PASS | ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+| mgmt-resume-warfarin | managementInclude | quality | PASS (gap resolved) | PASS | ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
 
 Failure details:
 
 - **score-rec-cha2ds2-vasc** (ios): cha2ds2-vasc not recommended; recommended: tg18-cholecystitis, dasi, stop-bang, news2, ios:ariscat, rcri, caprini, asa, ios:nrs2002 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cha2ds2-vasc not recommended; recommended: tg18-cholecystitis, dasi, stop-bang, news2, ios:ariscat, rcri, caprini, asa, ios:nrs2002]
-- **inv-inr** (ios): no investigation matched among 13 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 13 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
-- **mgmt-stop-warfarin-5-days** (ios): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-resume-warfarin** (ios): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-resume-warfarin** (ios): management item found in ios.radiation.plan: "...onths or a high-risk thrombophilia, with specialist advice. resume warfarin the evening of the procedure or the next day at the usual dose if haemostasis i..."
 
 Guidelines:
 
@@ -7690,18 +7347,16 @@ Permutation of `periop-anticoag-warfarin-af-no-bridging`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-anticoagulant | redFlags | critical | PASS | PASS | ACCP guideline 2022 |  |
-| inv-inr | investigationInclude | critical | FAIL (known gap) | PASS | ACCP guideline 2022 |  |
-| mgmt-bridging | managementInclude | critical | FAIL (known gap) | PASS | ACCP guideline 2022; 2021 ESC/EACTS guidelines 2021 |  |
+| inv-inr | investigationInclude | critical | PASS | PASS | ACCP guideline 2022 |  |
+| mgmt-bridging | managementInclude | critical | PASS | PASS | ACCP guideline 2022; 2021 ESC/EACTS guidelines 2021 |  |
 | mgmt-no-doac-switch | managementExclude | critical | PASS | PASS | 2021 ESC/EACTS guidelines 2021 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | flag-mechanical-valve | redFlags | quality | PASS | PASS | 2021 ESC/EACTS guidelines 2021 |  |
-| mgmt-specialist-input | managementInclude | quality | FAIL (known gap) | PASS | 2021 ESC/EACTS guidelines 2021 |  |
+| mgmt-specialist-input | managementInclude | quality | PASS (gap resolved) | PASS | 2021 ESC/EACTS guidelines 2021 |  |
 
 Failure details:
 
-- **inv-inr** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-bridging** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-specialist-input** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-specialist-input** (ios): management item found in ios.radiation.plan: "...ose) or ufh is indicated for a mechanical valve - plan with cardiology/haematology (acc/aha 2020 valvular heart disease; bsg/esge 2021). check the in..."
 
 Guidelines:
 
@@ -7745,21 +7400,20 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-withhold-sglt2 | managementInclude | critical | FAIL (known gap) | PASS | CPOC guideline 2022; FDA labelling change 2020 |  |
+| mgmt-withhold-sglt2 | managementInclude | critical | PASS | PASS | CPOC guideline 2022; FDA labelling change 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | level-not-urgent | emergencyLevel | quality | PASS | PASS |  |  |
 | inv-hba1c | investigationInclude | quality | FAIL (known gap) | PASS | CPOC guideline 2022 |  |
-| mgmt-omit-sulfonylurea | managementInclude | quality | FAIL (known gap) | PASS | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
-| mgmt-ketone-check | managementInclude | quality | FAIL (known gap) | PASS | CPOC guideline 2022 |  |
-| mgmt-glucose-monitoring | managementInclude | quality | FAIL (known gap) | PASS | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
+| mgmt-omit-sulfonylurea | managementInclude | quality | PASS (gap resolved) | PASS | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
+| mgmt-ketone-check | managementInclude | quality | PASS (gap resolved) | PASS | CPOC guideline 2022 |  |
+| mgmt-glucose-monitoring | managementInclude | quality | PASS (gap resolved) | PASS | CPOC guideline 2022 | See mgmt-withhold-sglt2. |
 
 Failure details:
 
 - **inv-hba1c** (ios): no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)]
-- **mgmt-withhold-sglt2** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-omit-sulfonylurea** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-ketone-check** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-glucose-monitoring** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-omit-sulfonylurea** (ios): management item found in ios.radiation.plan: "[info] sulfonylurea (gliclazide): omit on the day of the procedure; capillary glucose monitoring, target 6-12 mmol/l (..."
+- **mgmt-ketone-check** (ios): management item found in ios.radiation.plan: "...days, 4 for ertugliflozin - surgeon to choose); check blood ketones before and after, even if glucose is normal; restart when eating and drinking ..."
+- **mgmt-glucose-monitoring** (ios): management item found in ios.radiation.plan: "...ulfonylurea (gliclazide): omit on the day of the procedure; capillary glucose monitoring, target 6-12 mmol/l (cpoc 2021)."
 
 Guidelines:
 
@@ -7777,17 +7431,15 @@ Permutation of `periop-diabetes-sglt2-preop-withhold`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS |  |  |
-| mgmt-vriii | managementInclude | critical | FAIL (known gap) | PASS | CPOC guideline 2022 |  |
-| mgmt-continue-basal-insulin | managementInclude | critical | FAIL (known gap) | PASS | CPOC guideline 2022 |  |
+| mgmt-vriii | managementInclude | critical | PASS | PASS | CPOC guideline 2022 |  |
+| mgmt-continue-basal-insulin | managementInclude | critical | PASS | PASS | CPOC guideline 2022 |  |
 | mgmt-no-stop-insulin | managementExclude | critical | PASS | PASS | CPOC guideline 2022 |  |
 | dx-appendicitis-top3 | mustRankTopK | quality | PASS | PASS |  |  |
-| inv-ketones | investigationInclude | quality | FAIL (known gap) | PASS | CPOC guideline 2022 | Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt. |
+| inv-ketones | investigationInclude | quality | PASS (gap resolved) | PASS | CPOC guideline 2022 | Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt. |
 
 Failure details:
 
-- **inv-ketones** (ios): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)]
-- **mgmt-vriii** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-continue-basal-insulin** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **inv-ketones** (ios): investigation found in ios.radiation: "capillary blood glucose and blood ketones - insulin-treated diabetes - cpoc 2021"
 
 Guidelines:
 
@@ -7828,14 +7480,14 @@ Permutation of `periop-endo-polypectomy-clopidogrel`.
 | flag-anticoagulant | redFlags | critical | PASS | PASS | BSG/ESGE guideline 2021 |  |
 | mgmt-no-bridging | managementExclude | critical | PASS | PASS | BSG/ESGE guideline 2021; BRIDGE trial 2015 |  |
 | mgmt-no-inr-reversal | managementExclude | critical | PASS | PASS | BSG/ESGE guideline 2021 |  |
-| inv-inr | investigationInclude | quality | FAIL (known gap) | PASS | BSG/ESGE guideline 2021 |  |
-| mgmt-continue-warfarin | managementInclude | quality | FAIL (known gap) | PASS | BSG/ESGE guideline 2021 |  |
+| inv-inr | investigationInclude | quality | PASS (gap resolved) | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-continue-warfarin | managementInclude | quality | PASS (gap resolved) | PASS | BSG/ESGE guideline 2021 |  |
 | mgmt-no-deferral-for-inr | managementExclude | quality | PASS | PASS | BSG/ESGE guideline 2021 |  |
 
 Failure details:
 
-- **inv-inr** (ios): no investigation matched among 30 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 30 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
-- **mgmt-continue-warfarin** (ios): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **inv-inr** (ios): investigation found in ios.radiation: "inr (warfarin) - day before the procedure - proceed when < 1.5 (bsg/esge 2021; accp..."
+- **mgmt-continue-warfarin** (ios): management item found in ios.radiation.plan: "[warning] warfarin and this low-risk endoscopic procedure: continue warfarin; check the inr in the week before and, if above the therapeutic range, reduce t..."
 
 Guidelines:
 
@@ -7853,15 +7505,11 @@ Permutation of `periop-endo-polypectomy-clopidogrel`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-anticoagulant | redFlags | critical | PASS | PASS | BSG/ESGE guideline 2021 |  |
-| mgmt-doac-interrupt | managementInclude | critical | FAIL (known gap) | PASS | BSG/ESGE guideline 2021; PAUSE study 2019 |  |
+| mgmt-doac-interrupt | managementInclude | critical | PASS | PASS | BSG/ESGE guideline 2021; PAUSE study 2019 |  |
 | mgmt-ercp | managementInclude | critical | PASS | PASS | ASGE guideline 2019 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | dx-cbd-stone-top3 | mustRankTopK | quality | PASS | PASS | ASGE guideline 2019 |  |
 | mgmt-no-bridging | managementExclude | quality | PASS | PASS | BSG/ESGE guideline 2021 |  |
-
-Failure details:
-
-- **mgmt-doac-interrupt** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -7878,14 +7526,13 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-antiplatelet | redFlags | critical | PASS | PASS | BSG/ESGE guideline 2021 |  |
-| mgmt-stop-clopidogrel | managementInclude | critical | FAIL (known gap) | PASS | BSG/ESGE guideline 2021 |  |
+| mgmt-stop-clopidogrel | managementInclude | critical | PASS | PASS | BSG/ESGE guideline 2021 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | level-not-urgent | emergencyLevel | quality | PASS | FAIL (known gap) |  | adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter. |
 | mgmt-no-bridging | managementExclude | quality | FAIL (known gap) | PASS | BSG/ESGE guideline 2021; 2022 ESC guidelines 2022 |  |
 
 Failure details:
 
-- **mgmt-stop-clopidogrel** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **mgmt-no-bridging** (ios): forbidden management item present in ios.radiation.plan: "...ocedural plan below when the patient takes one - no routine bridging" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...ocedural plan below when the patient takes one - no routine bridging"]
 - **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=31); expected ≤ priority [known gap: Triage same_day_call (score 31) from age, comorbidity and the antiplatelet reason for a booked elective EMR.]
 
@@ -7908,17 +7555,17 @@ Permutation of `periop-nela-frail-emergency-laparotomy`.
 | flag-delirium-risk | redFlags | quality | PASS | PASS | NICE CG103 2023; CPOC/BGS guideline 2021 |  |
 | score-rec-cfs | scoreRecommended | quality | FAIL (known gap) | PASS | CPOC/BGS guideline 2021 |  |
 | inv-iron-studies | investigationInclude | quality | FAIL (known gap) | PASS | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | See periop-preop-rcri-high-risk-hemicolectomy/inv-iron-studies. |
-| mgmt-cga | managementInclude | quality | FAIL (known gap) | PASS | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input. |
-| mgmt-delirium-prevention | managementInclude | quality | FAIL (known gap) | PASS | NICE CG103 2023; CPOC/BGS guideline 2021 | See flag-delirium-risk. |
-| mgmt-shared-decision | managementInclude | quality | FAIL (known gap) | PASS | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision. |
+| mgmt-cga | managementInclude | quality | PASS (gap resolved) | PASS | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input. |
+| mgmt-delirium-prevention | managementInclude | quality | PASS (gap resolved) | PASS | NICE CG103 2023; CPOC/BGS guideline 2021 | See flag-delirium-risk. |
+| mgmt-shared-decision | managementInclude | quality | PASS (gap resolved) | PASS | CPOC/BGS guideline 2021 | See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision. |
 
 Failure details:
 
 - **score-rec-cfs** (ios): cfs not recommended; recommended: caprini [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: ios:abcd2, ios:nihss, ios:mrs, caprini]
 - **inv-iron-studies** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-cga** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-delirium-prevention** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-shared-decision** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-cga** (ios): management item found in ios.soap.plan: "...ge 82): delirium prevention and 4at screening (nice cg103); comprehensive geriatric assessment and elderly-medicine (geriatric) input; shared decision-making with ..."
+- **mgmt-delirium-prevention** (ios): management item found in ios.soap.plan: "- [warning] frailty / delirium risk (frail, age 82): delirium prevention and 4at screening (nice cg103); comprehensive geriatric assessment and elderly-..."
+- **mgmt-shared-decision** (ios): management item found in ios.soap.plan: "...eriatric assessment and elderly-medicine (geriatric) input; shared decision-making with goals of care and a treatment-escalation plan documented (cpoc 2021..."
 
 Guidelines:
 
@@ -7944,19 +7591,19 @@ Guidelines:
 | variant-peritonitis | dxVariant | critical | n/a | PASS | WSES guidelines 2017 | Match Hinchey keywords on word boundaries (\bhinchey (i\|1)\b) and check the peritonitis variant first (dx-variants.ts diverticulitis group); add a vector to lint:dx-phases. |
 | score-rec-cfs | scoreRecommended | quality | FAIL (known gap) | PASS | CPOC/BGS guideline 2021; National Emergency Laparotomy Audit (NELA) 2023 |  |
 | score-rec-p-possum | scoreRecommended | quality | FAIL (known gap) | FAIL (known gap) | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 | Suggest P-POSSUM/NELA risk on a locked emergency-surgery diagnosis (perforation, peritonitis, obstruction) and on the emergency-surgery visit type. |
-| mgmt-mortality-risk | managementInclude | quality | FAIL (known gap) | PASS | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 | See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing). |
-| mgmt-geriatric-input | managementInclude | quality | FAIL (known gap) | PASS | CPOC/BGS guideline 2021; National Emergency Laparotomy Audit (NELA) 2023 | Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021). |
-| mgmt-shared-decision | managementInclude | quality | FAIL (known gap) | PASS | CPOC/BGS guideline 2021 | Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery. |
-| mgmt-doac-plan | managementInclude | quality | FAIL (known gap) | PASS | 2022 ESC guidelines 2022 | Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022). |
+| mgmt-mortality-risk | managementInclude | quality | PASS (gap resolved) | PASS | RCS England / DH 2011; National Emergency Laparotomy Audit (NELA) 2023 | See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing). |
+| mgmt-geriatric-input | managementInclude | quality | PASS (gap resolved) | PASS | CPOC/BGS guideline 2021; National Emergency Laparotomy Audit (NELA) 2023 | Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021). |
+| mgmt-shared-decision | managementInclude | quality | PASS (gap resolved) | PASS | CPOC/BGS guideline 2021 | Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery. |
+| mgmt-doac-plan | managementInclude | quality | PASS (gap resolved) | PASS | 2022 ESC guidelines 2022 | Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022). |
 
 Failure details:
 
 - **score-rec-cfs** (ios): cfs not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews]
 - **score-rec-p-possum** (ios): p-possum not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists in the CDS list. \| iOS CI 2026-09-25 (run 36169134350, database mode): p-possum not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews]
-- **mgmt-mortality-risk** (ios): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-geriatric-input** (ios): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-shared-decision** (ios): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-doac-plan** (ios): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-mortality-risk** (ios): management item found in ios.radiation.plan: "...ted mortality risk pre-operatively (nela risk calculator or p-possum); if ≥ 5%, consultant surgeon and anaesthetist present and planned post-operati..."
+- **mgmt-geriatric-input** (ios): management item found in ios.radiation.plan: "...um prevention and 4at screening (nice cg103); comprehensive geriatric assessment and elderly-medicine (geriatric) input; shared decision-making with ..."
+- **mgmt-shared-decision** (ios): management item found in ios.radiation.plan: "...rly-medicine (geriatric) input; shared decision-making with goals of care and a treatment-escalation plan documented (cpoc 2021 perioperative care for pe..."
+- **mgmt-doac-plan** (ios): management item found in ios.radiation.plan: "[critical] emergency surgery on apixaban: record the time of the last dose and renal function, and send an anti-xa level where available; if surgery canno..."
 - **score-rec-p-possum** (web): p-possum not recommended; recommended: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists in the CDS list. \| iOS CI 2026-09-25 (run 36169134350, database mode): p-possum not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews]
 
 Guidelines:
@@ -7979,18 +7626,17 @@ Guidelines:
 | flag-aki | redFlags | critical | PASS | PASS | KDIGO clinical practice guideline 2012; NICE NG148 2019 |  |
 | inv-potassium | investigationInclude | critical | PASS | PASS | NICE NG148 2019 |  |
 | mgmt-stop-nephrotoxics | managementInclude | critical | PASS | PASS | KDIGO clinical practice guideline 2012; NICE NG148 2019 |  |
-| mgmt-no-nsaid | managementExclude | critical | FAIL (known gap) | PASS | KDIGO clinical practice guideline 2012; NICE NG148 2019 |  |
+| mgmt-no-nsaid | managementExclude | critical | PASS | PASS | KDIGO clinical practice guideline 2012; NICE NG148 2019 |  |
 | mgmt-no-emergency-laparotomy | managementExclude | critical | PASS | PASS |  |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
-| mgmt-urinalysis | managementInclude | quality | FAIL (known gap) | PASS | NICE NG148 2019 |  |
+| mgmt-urinalysis | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG148 2019 |  |
 | mgmt-volume-assessment | managementInclude | quality | PASS | PASS | KDIGO clinical practice guideline 2012 |  |
 | mgmt-no-insulin-dextrose-mild-k | managementExclude | quality | FAIL (known gap) | FAIL (known gap) | UK Kidney Association 2020 | Grade the hyperkalaemia prompt by UKKA 2020 bands: mild 5.5–5.9 → treat the cause and recheck; moderate/severe → insulin-glucose (±calcium with ECG changes). |
 | pathway-ward-review | pathway | quality | PASS | n/a |  |  |
 
 Failure details:
 
-- **mgmt-urinalysis** (ios): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-nsaid** (ios): forbidden management item present in ios.radiation.plan: "...or solitary kidney → emergency decompression (eau 2024); no nsaids in aki" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...or solitary kidney → emergency decompression (eau 2024); no nsaids in aki"]
+- **mgmt-urinalysis** (ios): management item found in ios.radiation.plan: "...ing aki; restart when renal function recovers (nice ng148); urinalysis (dipstick) for every patient with aki"
 - **mgmt-no-insulin-dextrose-mild-k** (ios): forbidden management item present in ios.radiation.plan: "insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1..." [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1..."]
 - **mgmt-no-insulin-dextrose-mild-k** (web): forbidden management item present in web.clinicalPrompts: "• iv insulin-glucose: 10 units soluble insulin with 25 g glucose - shift k⁺ intracellularly; monitor..." (+1 more) [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1..."]
 
@@ -8017,14 +7663,14 @@ Permutation of `periop-postop-fever-day1-early`.
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2017 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-qsofa | scoreRecommended | quality | FAIL (known gap) | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-source-control | managementInclude | quality | FAIL (known gap) | PASS | ISREC definition and grading of anastomotic leakage after anterior resection 2010; WSES guidelines 2017 |  |
+| mgmt-source-control | managementInclude | quality | PASS (gap resolved) | PASS | ISREC definition and grading of anastomotic leakage after anterior resection 2010; WSES guidelines 2017 |  |
 | pathway-ward-review | pathway | quality | PASS | n/a |  |  |
 
 Failure details:
 
 - **dx-leak-top3** (ios): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Pulmonary Embolism \| 5. Anastomotic Leak; also in ios.ccEarly#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Pulmonary Embolism \| 5. Anastomotic Leak; also in ios.ccEarly#2]
 - **score-rec-qsofa** (ios): qsofa not recommended; recommended: caprini, news2, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: caprini, news2, mews]
-- **mgmt-source-control** (ios): no management item matched among 2 (ios.pipeline.decisions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 (ios.pipeline.decisions, ios.soap.plan)]
+- **mgmt-source-control** (ios): management item found in ios.radiation.plan: "contained collection: image-guided percutaneous drainage + antibiotics"
 
 Guidelines:
 
@@ -8044,15 +7690,14 @@ Permutation of `periop-postop-anastomotic-leak-day5`.
 |---|---|---|---|---|---|---|
 | mnm-leak | mustNotMiss | critical | PASS | PASS | ISREC definition and grading of anastomotic leakage after anterior resection 2010 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | WSES guidelines 2017 |  |
-| inv-ct | investigationInclude | critical | FAIL (known gap) | PASS | WSES guidelines 2017; ISREC definition and grading of anastomotic leakage after anterior resection 2010 |  |
+| inv-ct | investigationInclude | critical | PASS | PASS | WSES guidelines 2017; ISREC definition and grading of anastomotic leakage after anterior resection 2010 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
 | flag-new-confusion | redFlags | quality | PASS | PASS | NICE CG103 2023 |  |
-| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) | PASS | AAGBI/RCP/SfE guideline 2020 |  |
+| mgmt-steroid-cover | managementInclude | quality | PASS (gap resolved) | PASS | AAGBI/RCP/SfE guideline 2020 |  |
 
 Failure details:
 
-- **inv-ct** (ios): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)]
-- **mgmt-steroid-cover** (ios): no management item matched among 4 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-steroid-cover** (ios): management item found in ios.radiation.plan: "...isolone (or equivalent) for > 4 weeks, give steroid cover - hydrocortisone 100 mg iv at induction or at the start of the acute illness, then 200 mg/24 h (..."
 
 Guidelines:
 
@@ -8171,7 +7816,7 @@ Permutation of `pe-postop-day5`.
 Failure details:
 
 - **dx-pe-top3** (ios): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Acute Coronary Syndrome \| 4. Community-Acquired Pneumonia \| 5. Pulmonary Embolism; also in ios.pipeline#5 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Acute Coronary Syndrome \| 4. Community-Acquired Pneumonia \| 5. Pulmonary Embolism; also in ios.pipeline#5]
-- **mgmt-ufh** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-ufh** (ios): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -8223,12 +7868,12 @@ Permutation of `periop-postop-ssi-superficial`.
 | mgmt-iv-antibiotics | managementInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2017 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-glycaemic-control | managementInclude | quality | FAIL (known gap) | PASS | CPOC guideline 2022 |  |
+| mgmt-glycaemic-control | managementInclude | quality | PASS (gap resolved) | PASS | CPOC guideline 2022 |  |
 | mgmt-no-emergency-laparotomy | managementExclude | quality | PASS | PASS |  | Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis. |
 
 Failure details:
 
-- **mgmt-glycaemic-control** (ios): no management item matched among 34 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 34 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-glycaemic-control** (ios): management item found in ios.radiation.plan: "...ve 80% of the usual dose the evening before and on the day; variable-rate iv insulin if more than one meal will be missed; capillary glucose and ketone m..."
 
 Guidelines:
 
@@ -8273,16 +7918,15 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-retention-top3 | mustRankTopK | critical | PASS | PASS | Postoperative urinary retention 2009 |  |
-| mgmt-catheterise | managementInclude | critical | FAIL (known gap) | PASS | Postoperative urinary retention 2009; EAU guidelines 2023 |  |
+| mgmt-catheterise | managementInclude | critical | PASS | PASS | Postoperative urinary retention 2009; EAU guidelines 2023 |  |
 | level-not-emergency | emergencyLevel | quality | PASS | FAIL (known gap) |  | Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria. |
 | inv-no-acute-psa | investigationExclude | quality | PASS | PASS | PHE Prostate Cancer Risk Management Programme 2016 | Remove PSA from the acute retention investigations; keep 'PSA at ≥6 weeks if indicated' in follow-up. |
-| mgmt-alpha-blocker-twoc | managementInclude | quality | FAIL (known gap) | PASS | EAU guidelines 2023 |  |
+| mgmt-alpha-blocker-twoc | managementInclude | quality | PASS (gap resolved) | PASS | EAU guidelines 2023 |  |
 | pathway-ward-review | pathway | quality | PASS | n/a |  |  |
 
 Failure details:
 
-- **mgmt-catheterise** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-alpha-blocker-twoc** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-alpha-blocker-twoc** (ios): management item found in ios.radiation.plan: "alpha-blocker (tamsulosin) before a trial without catheter (twoc) in men (eau)"
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=45); expected ≤ urgent [known gap: Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.]
 
 Guidelines:
@@ -8309,14 +7953,14 @@ Permutation of `periop-nela-frail-emergency-laparotomy`.
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | inv-no-unqualified-ct | investigationExclude | quality | FAIL (known gap) | PASS | ACOG Committee Opinion 775 2019 | When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6). |
 | mgmt-vte-prophylaxis | managementInclude | quality | PASS | PASS | RCOG Green-top Guideline 37a 2015; SAGES guidelines 2017 |  |
-| mgmt-left-uterine-displacement | managementInclude | quality | FAIL (known gap) | PASS | SAGES guidelines 2017 | See mgmt-obstetric-involvement. |
-| mgmt-antenatal-steroids | managementInclude | quality | FAIL (known gap) | PASS | NICE NG25 2022 | See mgmt-obstetric-involvement. |
+| mgmt-left-uterine-displacement | managementInclude | quality | PASS (gap resolved) | PASS | SAGES guidelines 2017 | See mgmt-obstetric-involvement. |
+| mgmt-antenatal-steroids | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG25 2022 | See mgmt-obstetric-involvement. |
 
 Failure details:
 
 - **inv-no-unqualified-ct** (ios): forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast (defines level, cause, strangulation - sensitivity 94%)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast (defines level, cause, strangulation - sensitivity 94%)"]
-- **mgmt-left-uterine-displacement** (ios): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-antenatal-steroids** (ios): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-left-uterine-displacement** (ios): management item found in ios.radiation.plan: "...am advises (from viability, about 24 weeks). from 20 weeks: left lateral tilt or manual uterine displacement whenever supine (aortocaval compression); n..."
+- **mgmt-antenatal-steroids** (ios): management item found in ios.radiation.plan: "...reterm delivery is possible, the obstetric team to consider antenatal corticosteroids. (acog committee opinions 775 (2019) and 723 (2017); rcog green-top 37a.)"
 
 Guidelines:
 
@@ -8337,7 +7981,7 @@ Guidelines:
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | level-not-urgent | emergencyLevel | quality | PASS | PASS | NICE NG45 2016 |  |
 | score-rec-asa | scoreRecommended | quality | PASS | FAIL (known gap) | ASA Physical Status Classification System 2020 | Trigger ASA on encounter type (pre-operative assessment / elective surgery visit) and on a confirmed operative plan, not only on symptom words. |
-| inv-pregnancy-status | investigationInclude | quality | FAIL (known gap) | PASS | NICE NG45 2016 |  |
+| inv-pregnancy-status | investigationInclude | quality | PASS (gap resolved) | PASS | NICE NG45 2016 |  |
 | inv-no-routine-coag | investigationExclude | quality | PASS | FAIL (known gap) | NICE NG45 2016 | preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt. |
 | inv-no-routine-ecg | investigationExclude | quality | PASS | PASS | NICE NG45 2016 |  |
 | mgmt-no-fasting-from-midnight | managementExclude | quality | PASS | FAIL (known gap) | ESA guideline 2011 | Replace with 'Solids until 6 h and clear fluids until 2 h before anaesthesia' (ESA 2011) in the lap chole, appendicectomy and hernia templates. |
@@ -8345,7 +7989,7 @@ Guidelines:
 
 Failure details:
 
-- **inv-pregnancy-status** (ios): no investigation matched among 7 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 7 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)]
+- **inv-pregnancy-status** (ios): investigation found in ios.radiation: "pregnancy test (urine or serum β-hcg) - result required - before surgery or ionising im..."
 - **score-rec-asa** (web): asa not recommended; recommended: asge-cbd, news2 [known gap: getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (Perioperative tab) is not set by the harness, so this may pass in the app once that tab is filled.]
 - **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.]
 - **mgmt-no-fasting-from-midnight** (web): forbidden management item present in web.clinicalPrompts: "...────────────────────────────────────────── pre-operative: • nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single..." [known gap: The lap_chole_pathway operative template starts 'NBM from midnight (or ≥ 6h solids / 2h clear fluids)'.]
@@ -8369,18 +8013,17 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-hyperkalaemia | redFlags | critical | PASS | PASS | UK Kidney Association 2020 |  |
-| mgmt-correct-k-before-surgery | managementInclude | critical | FAIL (known gap) | PASS | UK Kidney Association 2020 |  |
+| mgmt-correct-k-before-surgery | managementInclude | critical | PASS | PASS | UK Kidney Association 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-rcri | scoreRecommended | quality | PASS | PASS | Revised Cardiac Risk Index (Lee) 1999 |  |
-| mgmt-dialysis-timing | managementInclude | quality | FAIL (known gap) | PASS | UK Kidney Association 2020 | In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'. |
+| mgmt-dialysis-timing | managementInclude | quality | PASS (gap resolved) | PASS | UK Kidney Association 2020 | In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'. |
 | mgmt-no-unadjusted-lmwh | managementExclude | quality | PASS | FAIL (known gap) | NICE NG89 2018 | Operative templates: 'LMWH dose-adjusted for renal function (UFH if eGFR <30 or dialysis per local protocol)' when creatinine/eGFR or dialysis is recorded. |
-| mgmt-no-nsaid | managementExclude | quality | FAIL (known gap) | PASS | NICE NG203 2021 |  |
+| mgmt-no-nsaid | managementExclude | quality | PASS (gap resolved) | PASS | NICE NG203 2021 |  |
 
 Failure details:
 
-- **mgmt-correct-k-before-surgery** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-dialysis-timing** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-no-nsaid** (ios): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."]
+- **mgmt-dialysis-timing** (ios): management item found in ios.radiation.plan: "... 6.0 mmol/l defer elective surgery until corrected; on haemodialysis - dialysis the day before surgery and recheck k⁺"
+- **mgmt-no-nsaid** (ios): none of 20 management items matched
 - **mgmt-no-unadjusted-lmwh** (web): forbidden management item present in web.clinicalPrompts: "...iclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of surgery; ted stockings. • iv access; identify allergy..." [known gap: The lap chole template orders 'LMWH (Enoxaparin 40mg SC) night before + day of surgery' with no renal qualification for a dialysis patient.]
 
 Guidelines:
@@ -8401,14 +8044,13 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-latex-allergy | redFlags | critical | PASS | PASS | RCoA NAP6 2018 |  |
-| mgmt-latex-free | managementInclude | critical | FAIL (known gap) | PASS | AAGBI safety guideline 2009; RCoA NAP6 2018 |  |
+| mgmt-latex-free | managementInclude | critical | PASS | PASS | AAGBI safety guideline 2009; RCoA NAP6 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
-| mgmt-first-on-list | managementInclude | quality | FAIL (known gap) | PASS | AAGBI safety guideline 2009 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| mgmt-first-on-list | managementInclude | quality | PASS (gap resolved) | PASS | AAGBI safety guideline 2009 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
 
 Failure details:
 
-- **mgmt-latex-free** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-first-on-list** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-first-on-list** (ios): management item found in ios.radiation.plan: "...x allergy: latex-free theatre, ward and equipment; schedule first on the list; alert the theatre team and anaesthetist (nap6 2018)."
 
 Guidelines:
 
@@ -8425,14 +8067,10 @@ Permutation of `periop-preop-asa1-lap-chole`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-steroid-cover | managementInclude | critical | FAIL (known gap) | PASS | AAGBI/RCP/SfE guideline 2020 |  |
+| mgmt-steroid-cover | managementInclude | critical | PASS | PASS | AAGBI/RCP/SfE guideline 2020 |  |
 | mgmt-no-stop-steroid | managementExclude | critical | PASS | PASS | AAGBI/RCP/SfE guideline 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | flag-steroid-adrenal | redFlags | quality | PASS | PASS | AAGBI/RCP/SfE guideline 2020 |  |
-
-Failure details:
-
-- **mgmt-steroid-cover** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -8449,16 +8087,15 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-mh | redFlags | critical | PASS | PASS | Association of Anaesthetists guideline 2021 |  |
-| mgmt-trigger-free-anaesthesia | managementInclude | critical | FAIL (known gap) | PASS | Association of Anaesthetists guideline 2021 |  |
+| mgmt-trigger-free-anaesthesia | managementInclude | critical | PASS | PASS | Association of Anaesthetists guideline 2021 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
-| mgmt-dantrolene | managementInclude | quality | FAIL (known gap) | PASS | Association of Anaesthetists guideline 2021 |  |
-| mgmt-mh-unit-referral | managementInclude | quality | FAIL (known gap) | PASS | Association of Anaesthetists guideline 2021 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
+| mgmt-dantrolene | managementInclude | quality | PASS (gap resolved) | PASS | Association of Anaesthetists guideline 2021 |  |
+| mgmt-mh-unit-referral | managementInclude | quality | PASS (gap resolved) | PASS | Association of Anaesthetists guideline 2021 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
 
 Failure details:
 
-- **mgmt-trigger-free-anaesthesia** (ios): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-dantrolene** (ios): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-mh-unit-referral** (ios): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-dantrolene** (ios): management item found in ios.radiation.plan: "...aesthesia - avoid volatile agents and suxamethonium (tiva); dantrolene immediately available; refer to the mh unit for testing if not done (aagbi mali..."
+- **mgmt-mh-unit-referral** (ios): management item found in ios.radiation.plan: "...nium (tiva); dantrolene immediately available; refer to the mh unit for testing if not done (aagbi malignant hyperthermia guideline 2011; emhg 2020..."
 
 Guidelines:
 
@@ -8478,11 +8115,11 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-stop-bang | scoreRecommended | quality | PASS | PASS | STOP-Bang questionnaire 2008; SASM guideline 2016 |  |
 | score-rec-asa | scoreRecommended | quality | PASS | PASS | ASA Physical Status Classification System 2020 |  |
-| mgmt-osa-plan | managementInclude | quality | FAIL (known gap) | PASS | SASM guideline 2016; ASA practice guidelines 2014 |  |
+| mgmt-osa-plan | managementInclude | quality | PASS (gap resolved) | PASS | SASM guideline 2016; ASA practice guidelines 2014 |  |
 
 Failure details:
 
-- **mgmt-osa-plan** (ios): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-osa-plan** (ios): management item found in ios.radiation.plan: "...oor functional capacity: nt-probnp / troponin; cardiology / anaesthetic review before listing if raised (esc/esaic 2022)"
 
 Guidelines:
 
@@ -8501,22 +8138,21 @@ Permutation of `periop-preop-asa1-lap-chole`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-ecg | managementInclude | critical | FAIL (known gap) | PASS | 2022 ESC guidelines 2022 |  |
+| mgmt-ecg | managementInclude | critical | PASS | PASS | 2022 ESC guidelines 2022 |  |
 | mgmt-no-stop-aspirin | managementExclude | critical | PASS | PASS | 2022 ESC guidelines 2022 |  |
 | score-rec-rcri | scoreRecommended | quality | PASS | PASS | 2022 ESC guidelines 2022; Revised Cardiac Risk Index (Lee) 1999 |  |
 | score-rec-asa | scoreRecommended | quality | PASS | PASS | ASA Physical Status Classification System 2020 |  |
-| inv-natriuretic-peptide-or-troponin | investigationInclude | quality | FAIL (known gap) | PASS | 2022 ESC guidelines 2022 |  |
-| inv-echocardiography | investigationInclude | quality | FAIL (known gap) | PASS | 2022 ESC guidelines 2022 | See inv-natriuretic-peptide-or-troponin. |
-| inv-iron-studies | investigationInclude | quality | FAIL (known gap) | PASS | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017). |
-| mgmt-functional-capacity | managementInclude | quality | FAIL (known gap) | PASS | 2022 ESC guidelines 2022 | Add a functional-capacity question to the pre-operative prompt set (ESC 2022). |
+| inv-natriuretic-peptide-or-troponin | investigationInclude | quality | PASS (gap resolved) | PASS | 2022 ESC guidelines 2022 |  |
+| inv-echocardiography | investigationInclude | quality | PASS (gap resolved) | PASS | 2022 ESC guidelines 2022 | See inv-natriuretic-peptide-or-troponin. |
+| inv-iron-studies | investigationInclude | quality | PASS (gap resolved) | PASS | International consensus statement on the perioperative management of anaemia and iron deficiency 2017 | Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017). |
+| mgmt-functional-capacity | managementInclude | quality | PASS (gap resolved) | PASS | 2022 ESC guidelines 2022 | Add a functional-capacity question to the pre-operative prompt set (ESC 2022). |
 
 Failure details:
 
-- **inv-natriuretic-peptide-or-troponin** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-echocardiography** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-iron-studies** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-ecg** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-functional-capacity** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-natriuretic-peptide-or-troponin** (ios): investigation found in ios.radiation: "nt-probnp / bnp and troponin if rcri ≥ 1, age ≥ 65 or poor functional capacity before int..."
+- **inv-echocardiography** (ios): investigation found in ios.radiation: "transthoracic echocardiography only if a murmur, heart failure or unexplained breathlessness - esc/esaic ..."
+- **inv-iron-studies** (ios): investigation found in ios.radiation: "ferritin and transferrin saturation (iron studies) if anaemic or major surgery - treat iron deficiency before surgery"
+- **mgmt-functional-capacity** (ios): management item found in ios.radiation.plan: "functional capacity: mets ≥ 4 (climbs two flights of stairs) or dasi; rcri and asa recorded"
 
 Guidelines:
 
@@ -8536,16 +8172,12 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-antiplatelet-stent | redFlags | critical | PASS | PASS | 2022 ESC guidelines 2022 |  |
-| mgmt-defer-elective-surgery | managementInclude | critical | FAIL (known gap) | PASS | 2022 ESC guidelines 2022; ACCP guideline 2022 |  |
+| mgmt-defer-elective-surgery | managementInclude | critical | PASS | PASS | 2022 ESC guidelines 2022; ACCP guideline 2022 |  |
 | mgmt-cardiology-liaison | managementInclude | critical | PASS | PASS | 2022 ESC guidelines 2022 |  |
 | mgmt-no-stop-aspirin | managementExclude | critical | PASS | PASS | 2022 ESC guidelines 2022; ACCP guideline 2022 |  |
 | mgmt-no-unsupervised-p2y12-stop | managementExclude | critical | PASS | PASS | 2022 ESC guidelines 2022 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | level-not-urgent | emergencyLevel | quality | PASS | PASS | 2022 ESC guidelines 2022 | adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter. |
-
-Failure details:
-
-- **mgmt-defer-elective-surgery** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -8564,13 +8196,12 @@ Permutation of `periop-preop-mh-susceptible`.
 |---|---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | FAIL (known gap) | PASS |  |  |
 | flag-sux-apnoea | redFlags | critical | PASS | PASS | Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review) 2019 |  |
-| mgmt-avoid-suxamethonium-mivacurium | managementInclude | critical | FAIL (known gap) | PASS | Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review) 2019 |  |
+| mgmt-avoid-suxamethonium-mivacurium | managementInclude | critical | PASS | PASS | Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review) 2019 |  |
 | dx-appendicitis-top3 | mustRankTopK | quality | PASS | PASS |  |  |
 
 Failure details:
 
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ u]
-- **mgmt-avoid-suxamethonium-mivacurium** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -8585,16 +8216,15 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-pharmacological-prophylaxis | managementInclude | critical | FAIL (known gap) | PASS | NICE NG89 2018; ACCP 9th edition 2012 |  |
+| mgmt-pharmacological-prophylaxis | managementInclude | critical | PASS | PASS | NICE NG89 2018; ACCP 9th edition 2012 |  |
 | score-rec-caprini | scoreRecommended | quality | PASS | PASS | ACCP 9th edition 2012; NICE NG89 2018 |  |
-| mgmt-extended-prophylaxis | managementInclude | quality | FAIL (known gap) | PASS | NICE NG89 2018; ACCP 9th edition 2012 |  |
-| mgmt-mechanical-prophylaxis | managementInclude | quality | FAIL (known gap) | PASS | NICE NG89 2018; ACCP 9th edition 2012 |  |
+| mgmt-extended-prophylaxis | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG89 2018; ACCP 9th edition 2012 |  |
+| mgmt-mechanical-prophylaxis | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG89 2018; ACCP 9th edition 2012 |  |
 
 Failure details:
 
-- **mgmt-pharmacological-prophylaxis** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-extended-prophylaxis** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-mechanical-prophylaxis** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-extended-prophylaxis** (ios): management item found in ios.soap.plan: "...elvic cancer surgery: extend pharmacological prophylaxis to 28 days after surgery."
+- **mgmt-mechanical-prophylaxis** (ios): management item found in ios.soap.plan: "..., 2018). mechanical prophylaxis (anti-embolism stockings or intermittent pneumatic compression) unless contraindicated (e.g. peripheral arterial disease), plus lm..."
 
 Guidelines:
 
@@ -8612,14 +8242,13 @@ Permutation of `periop-vte-caprini-high-cancer-surgery`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-bleeding | redFlags | critical | PASS | PASS | NICE NG89 2018 |  |
-| mgmt-mechanical-prophylaxis | managementInclude | critical | FAIL (known gap) | PASS | NICE NG89 2018; ACCP 9th edition 2012 | See periop-vte-caprini-high-cancer-surgery; when bleeding risk outweighs VTE risk, suggest mechanical prophylaxis and a daily reassessment. |
+| mgmt-mechanical-prophylaxis | managementInclude | critical | PASS | PASS | NICE NG89 2018; ACCP 9th edition 2012 | See periop-vte-caprini-high-cancer-surgery; when bleeding risk outweighs VTE risk, suggest mechanical prophylaxis and a daily reassessment. |
 | mgmt-no-lmwh-now | managementExclude | critical | PASS | PASS | NICE NG89 2018 |  |
-| mgmt-reassess-vte-bleeding | managementInclude | quality | FAIL (known gap) | PASS | NICE NG89 2018 | See mgmt-mechanical-prophylaxis. |
+| mgmt-reassess-vte-bleeding | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG89 2018 | See mgmt-mechanical-prophylaxis. |
 
 Failure details:
 
-- **mgmt-mechanical-prophylaxis** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-reassess-vte-bleeding** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-reassess-vte-bleeding** (ios): management item found in ios.radiation.plan: "...dose aspirin for secondary prevention: continue (or restart once haemostasis is secure) with ppi cover - decide with cardiology / neurology (bsg/esge 2021; ..."
 
 Guidelines:
 
@@ -8635,19 +8264,18 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
-| flag-dysphagia | redFlags | critical | FAIL (known gap) | PASS | NICE NG12 2015 |  |
-| inv-imaging-or-endoscopy | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG12 2015; ESGE Guideline 2020 |  |
+| flag-dysphagia | redFlags | critical | PASS (gap resolved) | PASS | NICE NG12 2015 |  |
+| inv-imaging-or-endoscopy | investigationInclude | critical | PASS | PASS | NICE NG12 2015; ESGE Guideline 2020 |  |
 | mnm-pouch | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) | ESGE Guideline 2020 | Add a pharyngeal pouch node (high dysphagia, regurgitation of undigested food, halitosis, gurgling, aspiration) and a K22.5 protocol. |
-| inv-barium-first | investigationInclude | quality | FAIL (known gap) | PASS | ESGE Guideline 2020 |  |
-| mgmt-pouch-treatment-options | managementInclude | quality | FAIL (known gap) | PASS | ESGE Guideline 2020 |  |
+| inv-barium-first | investigationInclude | quality | PASS (gap resolved) | PASS | ESGE Guideline 2020 |  |
+| mgmt-pouch-treatment-options | managementInclude | quality | PASS (gap resolved) | PASS | ESGE Guideline 2020 |  |
 
 Failure details:
 
 - **mnm-pouch** (ios): not in top 5 of ios.bayes: 1. Oesophageal / Gastric Carcinoma \| 2. Gastro-oesophageal Reflux Disease \| 3. Pancreatic Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Acute Coronary Syndrome; also in ios.triage#3 [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Oesophageal / Gastric Carcinoma \| 2. Gastro-oesophageal Reflux Disease \| 3. Pancreatic Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Acute Coronary Syndrome; also in ios.triage#3]
-- **flag-dysphagia** (ios): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage)]
-- **inv-imaging-or-endoscopy** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-barium-first** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-pouch-treatment-options** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **flag-dysphagia** (ios): red flag found in ios.radiation.redFlags: "progressive dysphagia, weight loss or aspiration pneumonia → urgent assessment"
+- **inv-barium-first** (ios): investigation found in ios.radiation: "barium / contrast swallow (first-line) - confirms pouch and size"
+- **mgmt-pouch-treatment-options** (ios): management item found in ios.radiation.plan: "...doscopic stapling (diverticulotomy) or open cricopharyngeal myotomy ± excision; flexible endoscopic options (z-poem) in experienced centres (nice i..."
 - **mnm-pouch** (web): not in top 3 of web.pane: 1. Oesophageal Carcinoma \| 2. Oesophageal Stricture (Benign) \| 3. Achalasia [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Oesophageal / Gastric Carcinoma \| 2. Gastro-oesophageal Reflux Disease \| 3. Pancreatic Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Acute Coronary Syndrome; also in ios.triage#3]
 
 Guidelines:
@@ -8719,7 +8347,7 @@ Guidelines:
 
 Failure details:
 
-- **flag-nsaid** (ios): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity)]
+- **flag-nsaid** (ios): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity)]
 - **score-rec-boey** (ios): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews]
 - **score-rec-boey** (web): boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews]
 
@@ -8747,7 +8375,7 @@ Permutation of `ppu-perforated-peptic-ulcer`.
 | score-qsofa-calculator | scoreValue | quality | PASS | n/a | Third international consensus definitions for sepsis and septic shock (Sepsis-3) 2016 |  |
 | score-qsofa-autofill | scoreValue | quality | FAIL (known gap) | n/a | Third international consensus definitions for sepsis and septic shock (Sepsis-3) 2016 |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-steroid-cover | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| mgmt-steroid-cover | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 | mgmt-stop-nsaid | managementInclude | quality | PASS | PASS | WSES guidelines 2020 |  |
 
 Failure details:
@@ -8755,7 +8383,7 @@ Failure details:
 - **dx-perforation-top3** (ios): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Kidney Injury \| 3. Acute Coronary Syndrome \| 4. Obturator Hernia \| 5. Perforated Peptic Ulcer [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Kidney Injury \| 3. Acute Coronary Syndrome \| 4. Obturator Hernia \| 5. Perforated Peptic Ulcer]
 - **score-rec-qsofa** (ios): qsofa not recommended; recommended: (none) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: (none)]
 - **score-qsofa-autofill** (ios): expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for sepsis / deterioration) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for sepsis / deterioration)]
-- **mgmt-steroid-cover** (ios): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)]
+- **mgmt-steroid-cover** (ios): management item found in ios.radiation.plan: "...isolone (or equivalent) for > 4 weeks, give steroid cover - hydrocortisone 100 mg iv at induction or at the start of the acute illness, then 200 mg/24 h (..."
 
 Guidelines:
 
@@ -8780,14 +8408,13 @@ Permutation of `ppu-perforated-peptic-ulcer`.
 | inv-blood-cultures | investigationInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2020 |  |
 | mgmt-fluids-vasopressor | managementInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-source-control | managementInclude | critical | FAIL (known gap) | PASS | WSES guidelines 2020 |  |
+| mgmt-source-control | managementInclude | critical | PASS | PASS | WSES guidelines 2020 |  |
 | inv-lactate | investigationInclude | quality | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-icu | managementInclude | quality | FAIL (known gap) | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-icu | managementInclude | quality | PASS (gap resolved) | PASS | Surviving Sepsis Campaign 2021 |  |
 
 Failure details:
 
-- **mgmt-source-control** (ios): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-icu** (ios): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-icu** (ios): management item found in ios.radiation.plan: "septic shock / organ dysfunction: critical care (icu/hdu) before and after surgery"
 
 Guidelines:
 
@@ -8806,15 +8433,11 @@ Guidelines:
 | inv-urine-culture | investigationInclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | mgmt-antibiotic | managementInclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | mgmt-no-laparotomy | managementExclude | critical | PASS | PASS | NICE NG111 2018 |  |
-| mgmt-no-nitrofurantoin | managementExclude | critical | FAIL (known gap) | PASS | NICE NG111 2018 |  |
+| mgmt-no-nitrofurantoin | managementExclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | level-urgent | emergencyLevel | quality | PASS | PASS | NICE NG111 2018 |  |
 | inv-blood-culture | investigationInclude | quality | PASS | PASS | NICE NG51 2024 |  |
 | mgmt-ng111-antibiotic | managementInclude | quality | PASS | PASS | NICE NG111 2018 | Pyelonephritis protocol with NG111 options. |
-
-Failure details:
-
-- **mgmt-no-nitrofurantoin** (ios): forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)"]
 
 Guidelines:
 
@@ -8836,19 +8459,17 @@ Permutation of `pyelonephritis-adult-female`.
 | inv-urine-culture | investigationInclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | mgmt-pregnancy-safe-antibiotic | managementInclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | mgmt-obstetric | managementInclude | critical | PASS | PASS | NICE NG111 2018 |  |
-| mgmt-no-quinolone | managementExclude | critical | FAIL (known gap) | PASS | NICE NG111 2018 |  |
-| mgmt-no-nitrofurantoin | managementExclude | critical | FAIL (known gap) | PASS | NICE NG111 2018 |  |
+| mgmt-no-quinolone | managementExclude | critical | PASS | PASS | NICE NG111 2018 |  |
+| mgmt-no-nitrofurantoin | managementExclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | mgmt-no-nsaid-pregnancy | managementExclude | critical | PASS | PASS | FDA Drug Safety Communication 2020 |  |
 | mgmt-no-cholecystectomy | managementExclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | mgmt-no-laparotomy | managementExclude | critical | PASS | PASS | NICE NG111 2018 |  |
 | mgmt-ng111-pregnancy-antibiotic | managementInclude | quality | PASS | PASS | NICE NG111 2018 | Map O23.0/N10 to a pyelonephritis protocol with an NG111 pregnancy branch. |
-| mgmt-no-trimethoprim | managementExclude | quality | FAIL (known gap) | PASS | NICE NG111 2018 |  |
+| mgmt-no-trimethoprim | managementExclude | quality | PASS (gap resolved) | PASS | NICE NG111 2018 |  |
 
 Failure details:
 
-- **mgmt-no-quinolone** (ios): forbidden management item present in ios.radiation.plan: "⚠ pregnancy: fluoroquinolone / tetracycline removed (bnf) - e.g. cefalexin for pyelonephritis in pregnancy (..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "⚠ pregnancy: fluoroquinolone / tetracycline removed (bnf) - e.g. cefalexin for pyelonephritis in pregnancy (..."]
-- **mgmt-no-nitrofurantoin** (ios): forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)"]
-- **mgmt-no-trimethoprim** (ios): forbidden management item present in ios.radiation.plan: "or trimethoprim 200 mg bd × 7 days (if low resistance)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "or trimethoprim 200 mg bd × 7 days (if low resistance)"]
+- **mgmt-no-trimethoprim** (ios): none of 24 management items matched
 
 Guidelines:
 
@@ -8918,13 +8539,12 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | level-emergency | emergencyLevel | critical | PASS | PASS | ASCRS clinical practice guidelines 2017 |  |
 | flag-strangulation | redFlags | critical | PASS | PASS | ASCRS clinical practice guidelines 2017 |  |
-| mgmt-emergency-perineal | managementInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2017 |  |
+| mgmt-emergency-perineal | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2017 |  |
 | dx-prolapse-top3 | mustRankTopK | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2017 |  |
 
 Failure details:
 
 - **dx-prolapse-top3** (ios): not in top 3 of ios.bayes: 1. Fournier's Gangrene \| 2. Perianal Abscess \| 3. Skin Abscess \| 4. Femoral Hernia \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Fournier's Gangrene \| 2. Perianal Abscess \| 3. Skin Abscess \| 4. Femoral Hernia \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI)]
-- **mgmt-emergency-perineal** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -8947,13 +8567,9 @@ Permutation of `renal-colic-typical`.
 | inv-cultures | investigationInclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG51 2024 | A protocol for the PANE node infected_obstructed_kidney (EAU Urolithiasis 2024: cultures, antibiotics, urgent decompression). |
 | mgmt-urgent-decompression | managementInclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 |  |
 | mgmt-iv-antibiotics | managementInclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG51 2024 |  |
-| mgmt-no-definitive-stone-treatment | managementExclude | critical | FAIL (known gap) | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| mgmt-no-definitive-stone-treatment | managementExclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-no-laparotomy | managementExclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-urology | managementInclude | quality | PASS | PASS | NICE NG148 2019 | As flag-infected-obstruction. |
-
-Failure details:
-
-- **mgmt-no-definitive-stone-treatment** (ios): forbidden management item present in ios.radiation.plan: "5-10 mm: met + urology follow-up; eswl if no spontaneous passage at 4 weeks" (+2 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "5-10 mm: met + urology follow-up; eswl if no spontaneous passage at 4 weeks" (+2 more)]
 
 Guidelines:
 
@@ -8973,17 +8589,16 @@ Permutation of `renal-colic-typical`.
 |---|---|---|---|---|---|---|
 | dx-renal-colic-top3 | mustRankTopK | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | level-urgent | emergencyLevel | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024 |  |
-| inv-ultrasound-first | investigationInclude | critical | FAIL (known gap) | PASS | EAU Guidelines on Urolithiasis 2024 |  |
+| inv-ultrasound-first | investigationInclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-obstetric | managementInclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-no-nsaid-pregnancy | managementExclude | critical | PASS | PASS | FDA Drug Safety Communication 2020; EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-no-ercp | managementExclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | inv-no-ct-first | investigationExclude | quality | PASS | PASS | EAU Guidelines on Urolithiasis 2024 | Do not seed ionising imaging when pregnant (HpiTab.seedInvestigationsFromPane); prefer the USS KUB line. |
-| mgmt-paracetamol-opioid | managementInclude | quality | FAIL (known gap) | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | Map pregnancy-coded ureteric colic (O26.8 with N20) to the renal colic protocol with a pregnancy branch: paracetamol/opioid, no NSAID, ultrasound first. |
+| mgmt-paracetamol-opioid | managementInclude | quality | PASS (gap resolved) | FAIL (known gap) | EAU Guidelines on Urolithiasis 2024 | Map pregnancy-coded ureteric colic (O26.8 with N20) to the renal colic protocol with a pregnancy branch: paracetamol/opioid, no NSAID, ultrasound first. |
 
 Failure details:
 
-- **inv-ultrasound-first** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-paracetamol-opioid** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-paracetamol-opioid** (ios): management item found in ios.radiation.plan: "...d - nsaids are avoided from 20 weeks (mhra 2020; nice); use paracetamol, opioid if needed."
 - **mgmt-paracetamol-opioid** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
@@ -9004,15 +8619,14 @@ Permutation of `renal-colic-typical`.
 | level-emergency | emergencyLevel | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 |  |
 | alarm-aki | mustAlarm | critical | PASS | PASS | NICE NG148 2019 |  |
 | mgmt-urgent-decompression | managementInclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 |  |
-| mgmt-no-nsaid | managementExclude | critical | FAIL (known gap) | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 | Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded. |
+| mgmt-no-nsaid | managementExclude | critical | PASS | PASS | EAU Guidelines on Urolithiasis 2024; NICE NG148 2019 | Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded. |
 | mgmt-urology | managementInclude | quality | PASS | PASS | NICE NG148 2019 |  |
 | mgmt-anticoagulant-plan | managementInclude | quality | PASS | PASS | EAU Guidelines on Urolithiasis 2024 |  |
 | mgmt-no-conservative-met | managementExclude | quality | FAIL (known gap) | PASS | EAU Guidelines on Urolithiasis 2024 | As mgmt-urgent-decompression. |
 
 Failure details:
 
-- **mgmt-no-nsaid** (ios): forbidden management item present in ios.radiation.plan: "diclofenac 75 mg im or pr (nsaid - first line, reduces ureteric spasm)" [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "diclofenac 75 mg im or pr (nsaid - first line, reduces ureteric spasm)"]
-- **mgmt-no-conservative-met** (ios): forbidden management item present in ios.radiation.plan: "alpha blocker (met - medical expulsive therapy):" (+1 more) [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "alpha blocker (met - medical expulsive therapy):" (+1 more)]
+- **mgmt-no-conservative-met** (ios): forbidden management item present in ios.radiation.plan: "alpha blocker (met - medical expulsive therapy):" [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "alpha blocker (met - medical expulsive therapy):" (+1 more)]
 
 Guidelines:
 
@@ -9108,7 +8722,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-potassium** (ios): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-potassium** (ios): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -9149,8 +8763,8 @@ Permutation of `sbo-adhesive-base`.
 
 Failure details:
 
-- **mgmt-palliative-mdt** (ios): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel-obstruction protocol. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-medical-mbo** (ios): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-palliative-mdt** (ios): no management item matched among 32 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel-obstruction protocol. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-medical-mbo** (ios): no management item matched among 32 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -9191,15 +8805,11 @@ Permutation of `sbo-adhesive-base`.
 | alarm-strangulation | mustAlarm | critical | PASS | PASS | WSES Bologna guidelines 2018 |  |
 | mgmt-emergency-surgery | managementInclude | critical | PASS | PASS | WSES Bologna guidelines 2018 |  |
 | mgmt-emergency-surgery-in-documented-plan | managementInclude | critical | n/a | PASS | WSES Bologna guidelines 2018 | Same ordering fix; the strangulation variant's surgical phase then carries the operation into the documented plan. |
-| mgmt-no-nom-trial-with-strangulation | managementExclude | critical | FAIL (known gap) | PASS | WSES Bologna guidelines 2018 | Check sbo_strangulation before sbo_adhesional (specific-first) and drop the conservative phase whenever strangulation words, lactate > 2 with peritonism, or closed-loop appear. |
+| mgmt-no-nom-trial-with-strangulation | managementExclude | critical | PASS | PASS | WSES Bologna guidelines 2018 | Check sbo_strangulation before sbo_adhesional (specific-first) and drop the conservative phase whenever strangulation words, lactate > 2 with peritonism, or closed-loop appear. |
 | inv-lactate | investigationInclude | quality | PASS | PASS | WSES Bologna guidelines 2018 |  |
 | inv-group-and-save | investigationInclude | quality | PASS | PASS |  |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | PASS | WSES Bologna guidelines 2018 |  |
 | variant-sbo-strangulation | dxVariant | quality | n/a | PASS | WSES Bologna guidelines 2018 |  |
-
-Failure details:
-
-- **mgmt-no-nom-trial-with-strangulation** (ios): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic"]
 
 Guidelines:
 
@@ -9219,13 +8829,13 @@ Permutation of `sbo-adhesive-base`.
 | inv-ct | investigationInclude | critical | PASS | PASS | WSES Bologna guidelines 2018 |  |
 | mnm-neoplasm | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) |  |  |
 | mnm-hernia | mustNotMiss | quality | PASS | PASS |  |  |
-| mgmt-surgical-exploration | managementInclude | quality | FAIL (known gap) | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-surgical-exploration | managementInclude | quality | PASS (gap resolved) | PASS | WSES Bologna guidelines 2018 |  |
 | mgmt-no-adhesion-label-in-plan | managementExclude | quality | n/a | PASS | WSES Bologna guidelines 2018 |  |
 
 Failure details:
 
 - **mnm-neoplasm** (ios): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Gastric Outlet Obstruction \| 3. Renal / Ureteric Colic \| 4. Obturator Hernia \| 5. Acute Kidney Injury [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neoplasm node (colorectal cancer only), and the trigger answer 'After meals' is read as fatty_food_trigger, which lifts cholecystitis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Gastric Outlet Obstruction \| 3. Renal / Ureteric Colic \| 4. Obturator Hernia \| 5. Acute Kidney Injury]
-- **mgmt-surgical-exploration** (ios): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.ng12.plan, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-surgical-exploration** (ios): management item found in ios.radiation.plan: "...l) causing obstruction → emergency surgery (hernia repair ± bowel resection); do not attempt reduction if strangulation is suspected (wses 2017)"
 - **mnm-neoplasm** (web): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Obturator Hernia \| 3. Small Bowel Obstruction — Adhesions [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neoplasm node (colorectal cancer only), and the trigger answer 'After meals' is read as fatty_food_trigger, which lifts cholecystitis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Gastric Outlet Obstruction \| 3. Renal / Ureteric Colic \| 4. Obturator Hernia \| 5. Acute Kidney Injury]
 
 Guidelines:
@@ -9249,8 +8859,8 @@ Permutation of `screen-crc-average-risk-46`.
 
 Failure details:
 
-- **mgmt-aaa-ultrasound** (ios): no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-ldct** (ios): no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-aaa-ultrasound** (ios): no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-ldct** (ios): no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -9302,8 +8912,8 @@ Permutation of `breast-family-history-brca`.
 Failure details:
 
 - **inv-annual-mri** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-risk-reducing-surgery** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-high-risk-service** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-risk-reducing-surgery** (ios): no management item matched among 7 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-high-risk-service** (ios): no management item matched among 7 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -9327,7 +8937,7 @@ Permutation of `screen-crc-average-risk-46`.
 Failure details:
 
 - **inv-hpv-test** (ios): no investigation matched among 1 (ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)]
-- **mgmt-screening-arranged** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-screening-arranged** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -9374,7 +8984,7 @@ Permutation of `screen-crc-average-risk-46`.
 
 Failure details:
 
-- **mgmt-lynch-genetics** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-lynch-genetics** (ios): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 - **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'cancer' also counts as a higher-risk comorbidity → same_day_call for an asymptomatic screening consultation.]
 
 Guidelines:
@@ -9551,7 +9161,7 @@ Permutation of `screen-crc-average-risk-46`.
 
 Failure details:
 
-- **mgmt-individualised-crc** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-individualised-crc** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -9621,8 +9231,8 @@ Permutation of `screen-cervical-hpv-overdue-34`.
 
 Failure details:
 
-- **mgmt-mammogram-due** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-crc-screening-due** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-mammogram-due** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-crc-screening-due** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -9640,22 +9250,21 @@ Permutation of `trauma-splenic-injury-unstable`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-pneumococcal | managementInclude | critical | FAIL (known gap) | PASS | BCSH (BSH) guideline 2011 |  |
+| mgmt-pneumococcal | managementInclude | critical | PASS | PASS | BCSH (BSH) guideline 2011 |  |
 | mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | PASS | BCSH (BSH) guideline 2011 |  |
-| mgmt-meningococcal | managementInclude | quality | FAIL (known gap) | FAIL (known gap) | BCSH (BSH) guideline 2011 | See mgmt-pneumococcal. |
-| mgmt-hib | managementInclude | quality | FAIL (known gap) | PASS | BCSH (BSH) guideline 2011 |  |
-| mgmt-influenza | managementInclude | quality | FAIL (known gap) | PASS | BCSH (BSH) guideline 2011 |  |
-| mgmt-antibiotic-prophylaxis | managementInclude | quality | FAIL (known gap) | PASS | BCSH (BSH) guideline 2011 |  |
-| mgmt-alert-card | managementInclude | quality | FAIL (known gap) | PASS | BCSH (BSH) guideline 2011 |  |
+| mgmt-meningococcal | managementInclude | quality | PASS (gap resolved) | FAIL (known gap) | BCSH (BSH) guideline 2011 | See mgmt-pneumococcal. |
+| mgmt-hib | managementInclude | quality | PASS (gap resolved) | PASS | BCSH (BSH) guideline 2011 |  |
+| mgmt-influenza | managementInclude | quality | PASS (gap resolved) | PASS | BCSH (BSH) guideline 2011 |  |
+| mgmt-antibiotic-prophylaxis | managementInclude | quality | PASS (gap resolved) | PASS | BCSH (BSH) guideline 2011 |  |
+| mgmt-alert-card | managementInclude | quality | PASS (gap resolved) | PASS | BCSH (BSH) guideline 2011 |  |
 
 Failure details:
 
-- **mgmt-pneumococcal** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-meningococcal** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-hib** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-influenza** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-antibiotic-prophylaxis** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-alert-card** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-meningococcal** (ios): management item found in ios.radiation.plan: "...ukhsa green book chapter 7): pneumococcal (pcv then ppv23), meningococcal acwy and b, haemophilus influenzae type b (hib), annual influenza - ideally ..."
+- **mgmt-hib** (ios): management item found in ios.radiation.plan: "...): pneumococcal (pcv then ppv23), meningococcal acwy and b, haemophilus influenzae type b (hib), annual influenza - ideally 2 weeks before elective or ..."
+- **mgmt-influenza** (ios): management item found in ios.radiation.plan: "...cal (pcv then ppv23), meningococcal acwy and b, haemophilus influenzae type b (hib), annual influenza - ideally 2 weeks before elective or after emer..."
+- **mgmt-antibiotic-prophylaxis** (ios): management item found in ios.radiation.plan: "...r at least 1-2 years) antibiotic prophylaxis - phenoxymethylpenicillin (clarithromycin if penicillin-allergic), and a standby course for fever"
+- **mgmt-alert-card** (ios): management item found in ios.radiation.plan: "...ylpenicillin (clarithromycin if penicillin-allergic), and a standby course for fever"
 - **mgmt-meningococcal** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
@@ -9713,17 +9322,12 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | mnm-seizure | mustNotMiss | critical | PASS | PASS | NICE NG217 2022 |  |
-| mgmt-ecg | managementInclude | critical | FAIL (known gap) | PASS | NICE NG217 2022 |  |
-| mgmt-first-seizure-referral | managementInclude | critical | FAIL (known gap) | PASS | NICE NG217 2022 |  |
+| mgmt-ecg | managementInclude | critical | PASS | PASS | NICE NG217 2022 |  |
+| mgmt-first-seizure-referral | managementInclude | critical | PASS | PASS | NICE NG217 2022 |  |
 | mgmt-driving-safety-advice | managementInclude | critical | PASS | PASS | NICE NG217 2022 |  |
 | mnm-seizure-symptom-engine | mustNotMiss | quality | n/a | PASS | NICE NG217 2022 |  |
 | level-priority | emergencyLevel | quality | PASS | PASS | NICE NG217 2022 |  |
 | mgmt-no-aed-before-specialist | managementExclude | quality | PASS | PASS | NICE NG217 2022 |  |
-
-Failure details:
-
-- **mgmt-ecg** (ios): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-first-seizure-referral** (ios): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -9771,7 +9375,7 @@ Guidelines:
 Failure details:
 
 - **mnm-volvulus** (ios): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI); also in ios.triage#4 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI); also in ios.triage#4]
-- **mgmt-potassium** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No potassium replacement despite K 3.2. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-potassium** (ios): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No potassium replacement despite K 3.2. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -9789,18 +9393,16 @@ Permutation of `sigmoid-volvulus-base`.
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES consensus guidelines 2023; Surviving Sepsis Campaign 2021 |  |
 | alarm-sepsis | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
 | alarm-shock | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-emergency-resection | managementInclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
+| mgmt-emergency-resection | managementInclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
 | mgmt-antibiotics | managementInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-no-endoscopic-detorsion-with-gangrene | managementExclude | critical | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
+| mgmt-no-endoscopic-detorsion-with-gangrene | managementExclude | critical | PASS | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-icu | managementInclude | quality | FAIL (known gap) | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-icu | managementInclude | quality | PASS (gap resolved) | PASS | Surviving Sepsis Campaign 2021 |  |
 | variant-lbo-volvulus | dxVariant | quality | n/a | PASS | ASCRS clinical practice guidelines 2021 |  |
 
 Failure details:
 
-- **mgmt-emergency-resection** (ios): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-icu** (ios): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-endoscopic-detorsion-with-gangrene** (ios): forbidden management item present in ios.radiation.plan: "sigmoid volvulus without ischaemia: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission; gangrene or..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "sigmoid volvulus without ischaemia: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission; gangrene or..."]
+- **mgmt-icu** (ios): management item found in ios.radiation.plan: "... resection and end colostomy - no endoscopic decompression; critical care (ascrs 2021; wses 2023)"
 
 Guidelines:
 
@@ -9828,7 +9430,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-swallow-screen** (ios): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-swallow-screen** (ios): no management item matched among 34 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -9847,13 +9449,9 @@ Permutation of `stroke-acute-fast-positive`.
 | level-emergency | emergencyLevel | critical | PASS | PASS | NICE NG128 2019; European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 |  |
 | alarm-stroke | mustAlarm | critical | PASS | PASS | NICE NG128 2019 |  |
 | inv-ct-head | investigationInclude | critical | PASS | PASS | NICE NG128 2019 |  |
-| mgmt-no-thrombolysis-on-doac | managementExclude | critical | FAIL (known gap) | PASS | European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 |  |
+| mgmt-no-thrombolysis-on-doac | managementExclude | critical | PASS | PASS | European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 |  |
 | inv-coagulation | investigationInclude | quality | PASS | PASS | European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 |  |
 | mgmt-thrombectomy-option | managementInclude | quality | PASS | PASS | NICE NG128 2019; European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke 2021 |  |
-
-Failure details:
-
-- **mgmt-no-thrombolysis-on-doac** (ios): forbidden management item present in ios.radiation.plan: "thrombolysis (iv alteplase 0.9 mg/kg max 90 mg):" (+4 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "thrombolysis (iv alteplase 0.9 mg/kg max 90 mg):" (+4 more)]
 
 Guidelines:
 
@@ -9891,11 +9489,11 @@ Permutation of `thyroid-nodule-euthyroid-tirads4`.
 |---|---|---|---|---|---|---|
 | mgmt-no-thyroidectomy-plan | managementExclude | critical | PASS | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
 | level-not-emergency | emergencyLevel | quality | PASS | PASS |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
-| mgmt-repeat-fna | managementInclude | quality | FAIL (known gap) | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
+| mgmt-repeat-fna | managementInclude | quality | PASS (gap resolved) | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
 
 Failure details:
 
-- **mgmt-repeat-fna** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-repeat-fna** (ios): management item found in ios.radiation.plan: "bethesda i (non-diagnostic): repeat fna under ultrasound after 3 months"
 
 Guidelines:
 
@@ -9934,13 +9532,13 @@ Permutation of `thyroid-nodule-euthyroid-tirads4`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-not-emergency | emergencyLevel | quality | PASS | PASS |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
-| mgmt-options | managementInclude | quality | FAIL (known gap) | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
+| mgmt-options | managementInclude | quality | PASS (gap resolved) | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
 | mgmt-no-thyroidectomy-plan | managementExclude | quality | PASS | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
 | variant-thyroid-hemithyroidectomy | dxVariant | quality | n/a | PASS |  |  |
 
 Failure details:
 
-- **mgmt-options** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-options** (ios): management item found in ios.radiation.plan: "...eta-blocker (propranolol) for symptoms, then radioiodine or hemithyroidectomy (ata 2015)"
 
 Guidelines:
 
@@ -9958,13 +9556,13 @@ Permutation of `thyroid-nodule-euthyroid-tirads4`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-not-emergency | emergencyLevel | quality | PASS | PASS |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
-| mgmt-lobectomy | managementInclude | quality | FAIL (known gap) | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
+| mgmt-lobectomy | managementInclude | quality | PASS (gap resolved) | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
 | mgmt-no-thyroidectomy-plan | managementExclude | quality | PASS | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
 | variant-thyroid-hemithyroidectomy | dxVariant | quality | n/a | PASS |  |  |
 
 Failure details:
 
-- **mgmt-lobectomy** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-lobectomy** (ios): management item found in ios.radiation.plan: "...eta-blocker (propranolol) for symptoms, then radioiodine or hemithyroidectomy (ata 2015)"
 
 Guidelines:
 
@@ -9981,13 +9579,9 @@ Permutation of `thyroid-nodule-euthyroid-tirads4`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-surgery | managementInclude | critical | FAIL (known gap) | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023; 2015 American Thyroid Association guidelines 2016 |  |
+| mgmt-surgery | managementInclude | critical | PASS | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023; 2015 American Thyroid Association guidelines 2016 |  |
 | mgmt-no-surveillance-only | managementExclude | critical | PASS | PASS |  |  |
 | level-not-emergency | emergencyLevel | quality | PASS | PASS |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
-
-Failure details:
-
-- **mgmt-surgery** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -10004,16 +9598,11 @@ Permutation of `thyroid-nodule-euthyroid-tirads4`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-total-thyroidectomy | managementInclude | critical | FAIL (known gap) | PASS | 2015 American Thyroid Association guidelines 2016 |  |
-| mgmt-lateral-neck-dissection | managementInclude | critical | FAIL (known gap) | PASS | 2015 American Thyroid Association guidelines 2016 |  |
+| mgmt-total-thyroidectomy | managementInclude | critical | PASS | PASS | 2015 American Thyroid Association guidelines 2016 |  |
+| mgmt-lateral-neck-dissection | managementInclude | critical | PASS | PASS | 2015 American Thyroid Association guidelines 2016 |  |
 | mgmt-no-hemithyroidectomy-prefix | managementExclude | critical | n/a | PASS |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
 | variant-thyroid-total | dxVariant | critical | n/a | PASS |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
 | level-not-emergency | emergencyLevel | quality | PASS | PASS |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
-
-Failure details:
-
-- **mgmt-total-thyroidectomy** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-lateral-neck-dissection** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -10029,20 +9618,18 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-thyroid-top3 | mustRankTopK | critical | PASS | PASS | British Thyroid Association guidelines 2014 |  |
-| inv-tsh | investigationInclude | critical | FAIL (known gap) | PASS | 2015 American Thyroid Association guidelines 2016; British Thyroid Association guidelines 2014 |  |
-| mgmt-us-fna-recommended | managementInclude | critical | FAIL (known gap) | PASS | ACR TI-RADS 2017; British Thyroid Association guidelines 2014 |  |
+| inv-tsh | investigationInclude | critical | PASS | PASS | 2015 American Thyroid Association guidelines 2016; British Thyroid Association guidelines 2014 |  |
+| mgmt-us-fna-recommended | managementInclude | critical | PASS | PASS | ACR TI-RADS 2017; British Thyroid Association guidelines 2014 |  |
 | level-not-urgent | emergencyLevel | quality | PASS | PASS |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
-| inv-us | investigationInclude | quality | FAIL (known gap) | PASS | ACR TI-RADS 2017; British Thyroid Association guidelines 2014 |  |
-| inv-fna | investigationInclude | quality | FAIL (known gap) | PASS | ACR TI-RADS 2017 |  |
+| inv-us | investigationInclude | quality | PASS (gap resolved) | PASS | ACR TI-RADS 2017; British Thyroid Association guidelines 2014 |  |
+| inv-fna | investigationInclude | quality | PASS (gap resolved) | PASS | ACR TI-RADS 2017 |  |
 | inv-no-isotope-scan | investigationExclude | quality | PASS | PASS | 2015 American Thyroid Association guidelines 2016 |  |
 | inv-no-unrelated-seeded-orders | investigationExclude | quality | n/a | PASS |  |  |
 
 Failure details:
 
-- **inv-tsh** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-us** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-fna** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-us-fna-recommended** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-us** (ios): investigation found in ios.radiation: "neck ultrasound with ti-rads / u-score - risk stratification (bta 2014; acr ti-rads)"
+- **inv-fna** (ios): investigation found in ios.radiation: "us-guided fna if tsh is not suppressed and the nodule meets size / ti-rads criteria - bethesd..."
 
 Guidelines:
 
@@ -10061,16 +9648,16 @@ Permutation of `thyroid-nodule-euthyroid-tirads4`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-hyperthyroid-top3 | mustRankTopK | quality | PASS | PASS |  |  |
-| inv-radionuclide-scan | investigationInclude | quality | FAIL (known gap) | PASS | 2015 American Thyroid Association guidelines 2016; 2016 ATA guidelines 2016 |  |
+| inv-radionuclide-scan | investigationInclude | quality | PASS (gap resolved) | PASS | 2015 American Thyroid Association guidelines 2016; 2016 ATA guidelines 2016 |  |
 | inv-no-fna-first | investigationExclude | quality | PASS | PASS | 2015 American Thyroid Association guidelines 2016 |  |
-| mgmt-beta-blocker | managementInclude | quality | FAIL (known gap) | PASS | 2016 ATA guidelines 2016 |  |
-| mgmt-definitive | managementInclude | quality | FAIL (known gap) | PASS | 2016 ATA guidelines 2016 |  |
+| mgmt-beta-blocker | managementInclude | quality | PASS (gap resolved) | PASS | 2016 ATA guidelines 2016 |  |
+| mgmt-definitive | managementInclude | quality | PASS (gap resolved) | PASS | 2016 ATA guidelines 2016 |  |
 
 Failure details:
 
-- **inv-radionuclide-scan** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-beta-blocker** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-definitive** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-radionuclide-scan** (ios): investigation found in ios.radiation: "thyroid radionuclide (technetium) uptake scan if tsh is suppressed - hyperfunctioning (hot) nodule -..."
+- **mgmt-beta-blocker** (ios): management item found in ios.radiation.plan: "... hyperfunctioning (hot) nodule needs no fna - beta-blocker (propranolol) for symptoms, then radioiodine or hemithyroidectomy (ata 2015)"
+- **mgmt-definitive** (ios): management item found in ios.radiation.plan: "...eeds no fna - beta-blocker (propranolol) for symptoms, then radioiodine or hemithyroidectomy (ata 2015)"
 
 Guidelines:
 
@@ -10107,18 +9694,17 @@ Guidelines:
 | dx-haematoma-top3 | mustRankTopK | critical | FAIL (known gap) | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | alarm-emergency | mustAlarm | critical | PASS | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
-| mgmt-bedside-decompression | managementInclude | critical | FAIL (known gap) | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
+| mgmt-bedside-decompression | managementInclude | critical | PASS | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | mgmt-no-conservative-first | managementExclude | critical | PASS | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | alarm-airway-specific | mustAlarm | quality | PASS | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | inv-no-imaging-before-decompression | investigationExclude | quality | n/a | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
-| mgmt-return-to-theatre | managementInclude | quality | FAIL (known gap) | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
+| mgmt-return-to-theatre | managementInclude | quality | PASS (gap resolved) | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
 | mgmt-no-thyroidectomy-prefix | managementExclude | quality | n/a | PASS |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
 
 Failure details:
 
 - **dx-haematoma-top3** (ios): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Pulmonary Embolism \| 3. Acute Coronary Syndrome \| 4. Atrial Fibrillation \| 5. Sepsis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Pulmonary Embolism \| 3. Acute Coronary Syndrome \| 4. Atrial Fibrillation \| 5. Sepsis]
-- **mgmt-bedside-decompression** (ios): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-return-to-theatre** (ios): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-return-to-theatre** (ios): management item found in ios.radiation.plan: "return to theatre for exploration and haemostasis after decompression"
 
 Guidelines:
 
@@ -10135,18 +9721,16 @@ Guidelines:
 | mnm-anaplastic-or-lymphoma | mustNotMiss | critical | PASS | PASS | 2021 ATA guidelines 2021; British Thyroid Association guidelines 2014 |  |
 | level-emergency | emergencyLevel | critical | PASS | PASS | 2021 ATA guidelines 2021; British Thyroid Association guidelines 2014 |  |
 | alarm-emergency | mustAlarm | critical | PASS | PASS | 2021 ATA guidelines 2021 |  |
-| inv-core-biopsy | investigationInclude | critical | FAIL (known gap) | PASS | 2021 ATA guidelines 2021 |  |
-| mgmt-airway | managementInclude | critical | FAIL (known gap) | PASS | 2021 ATA guidelines 2021 |  |
+| inv-core-biopsy | investigationInclude | critical | PASS | PASS | 2021 ATA guidelines 2021 |  |
+| mgmt-airway | managementInclude | critical | PASS | PASS | 2021 ATA guidelines 2021 |  |
 | mnm-thyroid-malignancy | mustNotMiss | quality | PASS | PASS |  |  |
 | alarm-airway-specific | mustAlarm | quality | PASS | PASS | 2021 ATA guidelines 2021 |  |
-| inv-ct-neck-chest | investigationInclude | quality | FAIL (known gap) | PASS | 2021 ATA guidelines 2021 |  |
+| inv-ct-neck-chest | investigationInclude | quality | PASS (gap resolved) | PASS | 2021 ATA guidelines 2021 |  |
 | mgmt-no-elective-thyroidectomy-plan | managementExclude | quality | PASS | PASS | 2021 ATA guidelines 2021 |  |
 
 Failure details:
 
-- **inv-core-biopsy** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-ct-neck-chest** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-airway** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-ct-neck-chest** (ios): investigation found in ios.radiation: "ct neck and chest (non-contrast or after thyroid planning) for retrosternal extension, tracheal c..."
 
 Guidelines:
 
@@ -10162,18 +9746,17 @@ Guidelines:
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | flag-compression | redFlags | critical | PASS | PASS | NICE NG145 2019 |  |
-| mgmt-thyroidectomy | managementInclude | critical | FAIL (known gap) | PASS | NICE NG145 2019 |  |
+| mgmt-thyroidectomy | managementInclude | critical | PASS | PASS | NICE NG145 2019 |  |
 | level-at-least-priority | emergencyLevel | quality | PASS | PASS | NICE NG145 2019 |  |
-| inv-tfts | investigationInclude | quality | FAIL (known gap) | PASS |  |  |
-| inv-ct | investigationInclude | quality | FAIL (known gap) | PASS | NICE NG145 2019 |  |
-| mgmt-airway-planning | managementInclude | quality | FAIL (known gap) | PASS |  |  |
+| inv-tfts | investigationInclude | quality | PASS (gap resolved) | PASS |  |  |
+| inv-ct | investigationInclude | quality | PASS (gap resolved) | PASS | NICE NG145 2019 |  |
+| mgmt-airway-planning | managementInclude | quality | PASS (gap resolved) | PASS |  |  |
 
 Failure details:
 
-- **inv-tfts** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **inv-ct** (ios): no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios]
-- **mgmt-thyroidectomy** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **mgmt-airway-planning** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
+- **inv-tfts** (ios): investigation found in ios.radiation: "tsh (thyroid function) - suppressed tsh → toxic nodule (ata 2015)"
+- **inv-ct** (ios): investigation found in ios.radiation: "ct neck and chest (non-contrast or after thyroid planning) for retrosternal extension, tracheal c..."
+- **mgmt-airway-planning** (ios): management item found in ios.radiation.plan: "rapidly enlarging mass with stridor: airway first - anaesthetic and ent review (awake fibreoptic intubation / tracheostomy ..."
 
 Guidelines:
 
@@ -10198,7 +9781,7 @@ Permutation of `stroke-acute-fast-positive`.
 
 Failure details:
 
-- **mgmt-defer-elective-surgery** (ios): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: The pending hernia repair is not deferred (no TIA rule). \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-defer-elective-surgery** (ios): no management item matched among 33 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: The pending hernia repair is not deferred (no TIA rule). \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -10254,7 +9837,7 @@ Guidelines:
 Failure details:
 
 - **dx-abdominal-trauma-top3** (ios): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Bacterial Meningitis / Meningococcal Sepsis \| 4. Ischaemic Colitis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Bacterial Meningitis / Meningococcal Sepsis \| 4. Ischaemic Colitis \| 5. Acute Kidney Injury]
-- **mgmt-pelvic-binder** (ios): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-pelvic-binder** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -10279,13 +9862,13 @@ Guidelines:
 | flag-beta-blocker-masking | redFlags | quality | FAIL (known gap) | PASS | ATLS 10th edition 2018; ATLS 10th edition 2018 |  |
 | inv-ct-trauma | investigationInclude | quality | PASS | PASS | ATLS 10th edition 2018 |  |
 | mgmt-hdu-analgesia | managementInclude | quality | PASS | PASS | ATLS 10th edition 2018 |  |
-| mgmt-no-bridging-advice | managementExclude | quality | FAIL (known gap) | FAIL (known gap) | ATLS 10th edition 2018 | Make the anticoag_check prompt context-aware (trauma/bleeding → reversal). |
+| mgmt-no-bridging-advice | managementExclude | quality | PASS (gap resolved) | FAIL (known gap) | ATLS 10th edition 2018 | Make the anticoag_check prompt context-aware (trauma/bleeding → reversal). |
 | pathway-trauma | pathway | quality | PASS | n/a |  |  |
 
 Failure details:
 
 - **flag-beta-blocker-masking** (ios): no red flag matched among 17 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 17 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity)]
-- **mgmt-no-bridging-advice** (ios): forbidden management item present in ios.radiation.plan: "no lmwh bridging for most atrial fibrillation (bridge; accp 2022) - bridge only for high thrombo..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no lmwh bridging for most atrial fibrillation (bridge; accp 2022) - bridge only for high thrombo..."]
+- **mgmt-no-bridging-advice** (ios): none of 16 management items matched
 - **mgmt-no-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "• no routine lmwh bridging for atrial fibrillation (bridge trial; accp 2022); bridging only for high throm..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no lmwh bridging for most atrial fibrillation (bridge; accp 2022) - bridge only for high thrombo..."]
 
 Guidelines:
@@ -10314,7 +9897,7 @@ Permutation of `trauma-head-injury-gcs12`.
 
 Failure details:
 
-- **inv-falls-ecg** (ios): no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)]
+- **inv-falls-ecg** (ios): no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)]
 - **pathway-trauma** (ios): recommended firstVisit (No previous visits on record); expected trauma [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma]
 - **mgmt-no-elective-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "...l bleeding is confirmed (haematology); do not simply hold / bridge" (+2 more) [known gap: The 'anticoag_check' clinical prompt (clinical-inference.ts) always proposes 'hold DOAC 48–72 h pre-op; warfarin — bridge with LMWH', including after a head injury on apixaban.]
 
@@ -10483,7 +10066,7 @@ Guidelines:
 Failure details:
 
 - **dx-penetrating-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer \| 3. Community-Acquired Pneumonia \| 4. Sepsis \| 5. Pulmonary Embolism [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer \| 3. Community-Acquired Pneumonia \| 4. Sepsis \| 5. Pulmonary Embolism]
-- **mgmt-tetanus** (ios): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-tetanus** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -10552,16 +10135,16 @@ Guidelines:
 | mnm-infective | mustNotMiss | quality | PASS | PASS | BSG consensus guidelines 2019 |  |
 | score-rec-truelove-witts | scoreRecommended | quality | FAIL (known gap) | FAIL (known gap) | BSG consensus guidelines 2019 | Add Truelove and Witts (≥ 6 bloody stools + HR > 90, T > 37.8, Hb < 10.5 g/dL, ESR > 30) and the Oxford day-3 rule (> 8 stools, or 3–8 with CRP > 45) to clinical-scales with a CDS trigger on UC. |
 | inv-stool-culture | investigationInclude | quality | PASS | PASS | BSG consensus guidelines 2019 |  |
-| inv-flexi-biopsy | investigationInclude | quality | FAIL (known gap) | PASS | BSG consensus guidelines 2019; ECCO guidelines 2021 |  |
-| inv-axr | investigationInclude | quality | FAIL (known gap) | PASS | BSG consensus guidelines 2019 |  |
+| inv-flexi-biopsy | investigationInclude | quality | PASS (gap resolved) | PASS | BSG consensus guidelines 2019; ECCO guidelines 2021 |  |
+| inv-axr | investigationInclude | quality | PASS (gap resolved) | PASS | BSG consensus guidelines 2019 |  |
 | mgmt-day3-assessment | managementInclude | quality | PASS | PASS | Oxford (Travis) criteria 1996; BSG consensus guidelines 2019 |  |
 | mgmt-truelove-criteria-correct | managementExclude | quality | n/a | PASS | BSG consensus guidelines 2019 | Correct the key point in lib/pane-engine management protocols (colorectalHerniaBreast.ts, ulcerative_colitis): "≥ 6 bloody stools/day plus HR > 90, T > 37.8 °C, Hb < 10.5 g/dL or ESR > 30 mm/h". |
 
 Failure details:
 
 - **score-rec-truelove-witts** (ios): truelove-witts not recommended; recommended: ios:trueloveWitts [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. \| iOS CI 2026-09-25 (run 36169134350, database mode): truelove-witts not recommended; recommended: ios:trueloveWitts]
-- **inv-flexi-biopsy** (ios): no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)]
-- **inv-axr** (ios): no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)]
+- **inv-flexi-biopsy** (ios): investigation found in ios.radiation: "unprepared flexible sigmoidoscopy with minimal insufflation and biopsy - colonoscopy contraindicated in acute se..."
+- **inv-axr** (ios): investigation found in ios.radiation: "plain abdominal x-ray daily (colonic diameter) - toxic megacolon > 5.5-6 cm"
 - **score-rec-truelove-witts** (web): truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. \| iOS CI 2026-09-25 (run 36169134350, database mode): truelove-witts not recommended; recommended: ios:trueloveWitts]
 
 Guidelines:
@@ -10584,13 +10167,13 @@ Permutation of `uc-acute-severe-truelove-witts`.
 | level-inpatient | emergencyLevel | critical | PASS | PASS | BSG consensus guidelines 2019 |  |
 | mgmt-rescue-therapy | managementInclude | critical | PASS | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022; BSG consensus guidelines 2019 |  |
 | mgmt-colectomy-option | managementInclude | critical | PASS | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022; BSG consensus guidelines 2019 |  |
-| inv-cmv | investigationInclude | quality | FAIL (known gap) | PASS | ECCO guidelines 2021 | Add "flexible sigmoidoscopy with biopsies incl. CMV (IHC/PCR)" to the ASUC/steroid-refractory steps (ECCO 2021). |
-| mgmt-joint-review | managementInclude | quality | FAIL (known gap) | PASS | BSG consensus guidelines 2019 |  |
+| inv-cmv | investigationInclude | quality | PASS (gap resolved) | PASS | ECCO guidelines 2021 | Add "flexible sigmoidoscopy with biopsies incl. CMV (IHC/PCR)" to the ASUC/steroid-refractory steps (ECCO 2021). |
+| mgmt-joint-review | managementInclude | quality | PASS (gap resolved) | PASS | BSG consensus guidelines 2019 |  |
 
 Failure details:
 
-- **inv-cmv** (ios): no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)]
-- **mgmt-joint-review** (ios): no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **inv-cmv** (ios): investigation found in ios.radiation: "cmv testing - colonic biopsy immunohistochemistry / pcr in steroid-refractory colit..."
+- **mgmt-joint-review** (ios): management item found in ios.radiation.plan: "joint medical-surgical review from admission; day-3 assessment (oxford / travis criteria) → rescue ciclospori..."
 
 Guidelines:
 
@@ -10611,12 +10194,8 @@ Permutation of `uc-acute-severe-truelove-witts`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | mnm-cdiff | mustNotMiss | critical | PASS | PASS | ECCO guidelines 2021; IDSA/SHEA focused update 2021 |  |
-| mgmt-cdi-treatment | managementInclude | critical | FAIL (known gap) | PASS | IDSA/SHEA focused update 2021; ECCO guidelines 2021 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
+| mgmt-cdi-treatment | managementInclude | critical | PASS | PASS | IDSA/SHEA focused update 2021; ECCO guidelines 2021 | Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result. |
 | level-at-least-priority | emergencyLevel | quality | PASS | PASS | IDSA/SHEA focused update 2021 |  |
-
-Failure details:
-
-- **mgmt-cdi-treatment** (ios): no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -10633,14 +10212,9 @@ Permutation of `uc-acute-severe-truelove-witts`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| inv-cmv | investigationInclude | critical | FAIL (known gap) | PASS | ECCO guidelines 2021 | Read biopsy/IHC results for CMV in UC; steroid-refractory UC → CMV testing prompt (ECCO 2021). |
-| mgmt-antiviral | managementInclude | critical | FAIL (known gap) | PASS | ECCO guidelines 2021 | Add a CMV-colitis branch: CMV on biopsy in steroid-refractory UC → IV ganciclovir, review immunomodulators (ECCO 2021). |
+| inv-cmv | investigationInclude | critical | PASS | PASS | ECCO guidelines 2021 | Read biopsy/IHC results for CMV in UC; steroid-refractory UC → CMV testing prompt (ECCO 2021). |
+| mgmt-antiviral | managementInclude | critical | PASS | PASS | ECCO guidelines 2021 | Add a CMV-colitis branch: CMV on biopsy in steroid-refractory UC → IV ganciclovir, review immunomodulators (ECCO 2021). |
 | mgmt-colectomy-option | managementInclude | quality | PASS | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022 |  |
-
-Failure details:
-
-- **inv-cmv** (ios): no investigation matched among 9 (ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 9 (ios.pipeline.voi, ios.radiation)]
-- **mgmt-antiviral** (ios): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -10660,7 +10234,7 @@ Permutation of `uc-acute-severe-truelove-witts`.
 | level-emergency | emergencyLevel | critical | PASS | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022; BSG consensus guidelines 2019 |  |
 | alarm-toxic | mustAlarm | critical | PASS | PASS | BSG consensus guidelines 2019 |  |
 | flag-megacolon | redFlags | critical | PASS | PASS | BSG consensus guidelines 2019 |  |
-| inv-no-colonoscopy | investigationExclude | critical | FAIL (known gap) | PASS | BSG consensus guidelines 2019 | Mark the UC colonoscopy investigation conditional ("not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only") and add a toxic-megacolon dx-variant that drops endoscopy. |
+| inv-no-colonoscopy | investigationExclude | critical | PASS | PASS | BSG consensus guidelines 2019 | Mark the UC colonoscopy investigation conditional ("not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only") and add a toxic-megacolon dx-variant that drops endoscopy. |
 | mgmt-colectomy | managementInclude | critical | PASS | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022 |  |
 | mgmt-no-antimotility | managementExclude | critical | PASS | PASS | BSG consensus guidelines 2019 |  |
 | mnm-perforation | mustNotMiss | quality | FAIL (known gap) | PASS | ECCO guidelines on therapeutics in ulcerative colitis 2022 |  |
@@ -10669,7 +10243,6 @@ Permutation of `uc-acute-severe-truelove-witts`.
 Failure details:
 
 - **mnm-perforation** (ios): not in top 5 of ios.bayes: 1. Inflammatory Bowel Disease \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Community-Acquired Pneumonia \| 5. Small Bowel Obstruction [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inflammatory Bowel Disease \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Community-Acquired Pneumonia \| 5. Small Bowel Obstruction]
-- **inv-no-colonoscopy** (ios): forbidden investigation present in ios.radiation: "colonoscopy + biopsy - gold standard diagnosis - extent and pattern" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.radiation: "colonoscopy + biopsy - gold standard diagnosis - extent and pattern"]
 
 Guidelines:
 
@@ -10690,21 +10263,20 @@ Guidelines:
 | inv-group-save | investigationInclude | critical | PASS | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | inv-ogd | investigationInclude | critical | PASS | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | PASS | ESGE Guideline 2021; NICE CG141 2012; ACG Clinical Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | flag-nsaid | redFlags | quality | FAIL (known gap) | PASS | ESGE Guideline 2021 |  |
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | inv-fbc-urea | investigationInclude | quality | PASS | PASS | NICE CG141 2012 |  |
 | mgmt-restrictive-transfusion | managementInclude | quality | PASS | PASS | ESGE Guideline 2021; BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ppi | managementInclude | quality | PASS | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
-| mgmt-stop-nsaid | managementInclude | quality | FAIL (known gap) | PASS | ESGE Guideline 2021; NICE CG184 2014 |  |
+| mgmt-stop-nsaid | managementInclude | quality | PASS (gap resolved) | PASS | ESGE Guideline 2021; NICE CG184 2014 |  |
 | mgmt-hpylori | managementInclude | quality | PASS | PASS | ESGE Guideline 2021; Maastricht VI/Florence consensus report 2022 |  |
 | variant-nonvariceal | dxVariant | quality | n/a | PASS | ESGE Guideline 2021 |  |
 
 Failure details:
 
 - **flag-nsaid** (ios): no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity)]
-- **mgmt-stop-nsaid** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
+- **mgmt-stop-nsaid** (ios): management item found in ios.radiation.plan: "stop nsaids; dual antiplatelet therapy or a coronary stent: cardiology input before stoppi..."
 
 Guidelines:
 
@@ -10731,16 +10303,15 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | inv-group-save | investigationInclude | critical | PASS | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-no-blanket-stop-aspirin | managementExclude | critical | PASS | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021 |  |
 | mgmt-transfusion-threshold-8 | managementInclude | quality | PASS | PASS | ESGE Guideline 2021; BSG-led multisociety consensus care bundle 2020 |  |
-| mgmt-cardiology-antiplatelet-decision | managementInclude | quality | FAIL (known gap) | PASS | ESGE Guideline 2021 |  |
+| mgmt-cardiology-antiplatelet-decision | managementInclude | quality | PASS (gap resolved) | PASS | ESGE Guideline 2021 |  |
 | mgmt-no-patient-hold-advice | managementExclude | quality | PASS | PASS | ESGE Guideline 2021 |  |
 
 Failure details:
 
-- **mgmt-cardiology-antiplatelet-decision** (ios): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
+- **mgmt-cardiology-antiplatelet-decision** (ios): management item found in ios.radiation.plan: "stop nsaids; dual antiplatelet therapy or a coronary stent: cardiology input before stopping the p2y12 inhibitor (esge 2021)"
 
 Guidelines:
 
@@ -10763,15 +10334,11 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | inv-group-save | investigationInclude | critical | PASS | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-no-lmwh-bridging | managementExclude | critical | PASS | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | score-rec-rockall | scoreRecommended | quality | PASS | PASS | Rockall score 1996; NICE CG141 2012 |  |
 | inv-renal-function | investigationInclude | quality | PASS | PASS | ESGE Guideline 2021 |  |
 | mgmt-transfusion-threshold-8 | managementInclude | quality | PASS | PASS | ESGE Guideline 2021 | upper_gi_bleed protocol: add the ESGE cardiovascular threshold (Hb ≤8 g/dL, target ≥10) and key it on cardiac comorbidity. |
-
-Failure details:
-
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
 
 Guidelines:
 
@@ -10795,13 +10362,9 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | alarm-gi-bleed | mustAlarm | critical | PASS | PASS | ESGE Guideline 2021 |  |
 | inv-ogd | investigationInclude | critical | PASS | PASS | ESGE Guideline 2021 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021 |  |
 | variant-nonvariceal | dxVariant | quality | n/a | PASS | ESGE Guideline 2021 |  |
-
-Failure details:
-
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
 
 Guidelines:
 
@@ -10818,7 +10381,7 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | dx-ugib-top3 | mustRankTopK | critical | PASS | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | level-not-emergency | emergencyLevel | quality | PASS | PASS | ESGE Guideline 2021; ACG Clinical Guideline 2021 |  |
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | inv-ogd | investigationInclude | quality | PASS | PASS | ESGE Guideline 2021 |  |
@@ -10827,7 +10390,6 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 
 Failure details:
 
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
 - **mgmt-no-transfusion** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: gi_bleed_panel prompt fires on any haematemesis/melaena symptom and adds "2 × large-bore IV cannulae, Hartmann's 500 ml bolus, crossmatch 2 units pRBC" regardless of Hb (14.6) or GBS (0).]
 
 Guidelines:
@@ -10854,17 +10416,16 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | mgmt-resuscitation | managementInclude | critical | PASS | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-transfusion | managementInclude | critical | PASS | PASS | ESGE Guideline 2021; BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-endoscopy-after-resus | managementInclude | critical | PASS | PASS | NICE CG141 2012; ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | inv-coagulation | investigationInclude | quality | PASS | PASS | BSG-led multisociety consensus care bundle 2020 |  |
-| mgmt-critical-care | managementInclude | quality | FAIL (known gap) | PASS | BSG-led multisociety consensus care bundle 2020 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
-| mgmt-escalation-ir-surgery | managementInclude | quality | FAIL (known gap) | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
+| mgmt-critical-care | managementInclude | quality | PASS (gap resolved) | PASS | BSG-led multisociety consensus care bundle 2020 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
+| mgmt-escalation-ir-surgery | managementInclude | quality | PASS (gap resolved) | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 
 Failure details:
 
-- **mgmt-critical-care** (ios): no management item matched among 10 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-escalation-ir-surgery** (ios): no management item matched among 10 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
+- **mgmt-critical-care** (ios): management item found in ios.radiation.plan: "unstable despite resuscitation: critical care (icu/hdu); failed endoscopic haemostasis → interventional radiology embolisation or ..."
+- **mgmt-escalation-ir-surgery** (ios): management item found in ios.radiation.plan: "...); failed endoscopic haemostasis → interventional radiology embolisation or surgery (under-running) (esge 2021)"
 
 Guidelines:
 
@@ -10885,20 +10446,15 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | dx-ugib-top3 | mustRankTopK | critical | PASS | PASS | ESGE Guideline 2021 |  |
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | ESGE Guideline 2021 |  |
 | flag-anticoagulant | redFlags | critical | PASS | PASS | ESGE Guideline 2021 |  |
-| inv-inr | investigationInclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021 |  |
+| inv-inr | investigationInclude | critical | PASS | PASS | ESGE Guideline 2021 |  |
 | inv-group-save | investigationInclude | critical | PASS | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | PASS | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-no-lmwh-bridging | managementExclude | critical | PASS | PASS | ESGE Guideline 2021 |  |
-| mgmt-no-tranexamic-acid | managementExclude | critical | FAIL (known gap) | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
+| mgmt-no-tranexamic-acid | managementExclude | critical | PASS | PASS | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | flag-coagulopathy | redFlags | quality | PASS | PASS | ESGE Guideline 2021 |  |
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021 |  |
 | mgmt-reversal-considered | managementInclude | quality | PASS | PASS | ESGE Guideline 2021 |  |
 | mgmt-no-patient-hold-advice | managementExclude | quality | PASS | PASS | ESGE Guideline 2021 |  |
-
-Failure details:
-
-- **inv-inr** (ios): no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)]
-- **mgmt-no-tranexamic-acid** (ios): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)"]
 
 Guidelines:
 
@@ -10949,13 +10505,9 @@ Guidelines:
 | dx-gastric-cancer-top3 | mustRankTopK | critical | PASS | PASS | NICE NG12 2015 |  |
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-cancer-weight-loss | redFlags | critical | PASS | PASS | NICE NG12 2015 |  |
-| inv-ogd | investigationInclude | critical | FAIL (known gap) | PASS | NICE NG12 2015 |  |
+| inv-ogd | investigationInclude | critical | PASS | PASS | NICE NG12 2015 |  |
 | inv-fbc | investigationInclude | quality | PASS | PASS | NICE NG12 2015 |  |
 | mgmt-urgent-two-week-ogd | managementInclude | quality | PASS | PASS | NICE NG12 2015 |  |
-
-Failure details:
-
-- **inv-ogd** (ios): no investigation matched among 3 (ios.pipeline.voi, ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)]
 
 Guidelines:
 
@@ -11001,17 +10553,16 @@ Permutation of `pyelonephritis-adult-female`.
 | inv-blood-culture | investigationInclude | critical | PASS | PASS | NICE NG51 2024 |  |
 | mgmt-iv-antibiotics | managementInclude | critical | PASS | PASS | NICE NG51 2024 |  |
 | mgmt-fluid-bolus | managementInclude | critical | PASS | PASS | NICE NG51 2024 |  |
-| mgmt-steroid-cover | managementInclude | critical | FAIL (known gap) | PASS | Guidance for the prevention and emergency management of adult patients with adrenal insufficiency (Society for Endocrinology / AAGBI / RCP) 2020 |  |
+| mgmt-steroid-cover | managementInclude | critical | PASS | PASS | Guidance for the prevention and emergency management of adult patients with adrenal insufficiency (Society for Endocrinology / AAGBI / RCP) 2020 |  |
 | mgmt-no-laparotomy | managementExclude | critical | PASS | PASS | NICE NG51 2024 |  |
 | score-news2 | scoreRecommended | quality | PASS | PASS | NICE NG51 2024 |  |
 | inv-lactate | investigationInclude | quality | PASS | PASS | NICE NG51 2024 |  |
 | inv-urine-from-new-catheter | investigationInclude | quality | PASS | PASS | NICE NG51 2024 | When a catheter is recorded, ask for a catheter specimen after changing the catheter. |
-| mgmt-hold-methotrexate | managementInclude | quality | FAIL (known gap) | PASS | NICE NG51 2024 | Add immunosuppressant review to the sepsis prompt. |
+| mgmt-hold-methotrexate | managementInclude | quality | PASS (gap resolved) | PASS | NICE NG51 2024 | Add immunosuppressant review to the sepsis prompt. |
 
 Failure details:
 
-- **mgmt-steroid-cover** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-hold-methotrexate** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Methotrexate is not mentioned. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-hold-methotrexate** (ios): management item found in ios.radiation.plan: "... lower threshold for imaging, senior review and escalation. withhold methotrexate during acute infection or aki and restart with the prescribing specialist once ..."
 
 Guidelines:
 
@@ -11095,116 +10646,53 @@ Guidelines:
 | `abscess-recurrent-mrsa-pwid` | flag-ivdu | ios | quality | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage, io |
 | `abscess-recurrent-mrsa-pwid` | inv-duplex-before-drainage | ios | quality | known gap | no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation |
 | `abscess-recurrent-mrsa-pwid` | inv-bbv | ios | quality | known gap | no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation |
-| `abscess-recurrent-mrsa-pwid` | mgmt-mrsa-active-antibiotic | ios | critical | known gap | no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, i |
-| `achalasia-pseudoachalasia-elderly` | inv-ogd | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `achalasia-pseudoachalasia-elderly` | inv-ct | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `achalasia-young` | inv-ogd | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `achalasia-young` | inv-manometry | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `achalasia-young` | inv-barium-swallow | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `achalasia-young` | mgmt-definitive-options | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `acutemed-acs-atypical-diabetic-woman` | mnm-acs | ios | critical | known gap | not in top 5 of ios.bayes: 1. Acute Kidney Injury \| 2. Atrial Fibrillation \| 3. COPD Exacerbation \| 4. Diabetic Ketoacidosis \| 5. Asthma (Acute Exacerbation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 o |
 | `acutemed-af-incidental-preop-elderly` | mnm-af | ios | quality | known gap | not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Femoral Hernia \| 3. Renal / Ureteric Colic \| 4. Incarcerated / Strangulated Hernia \| 5. Obturator Hernia [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis |
 | `acutemed-ahf-bilateral-leg-cellulitis-mimic` | inv-natriuretic-peptide | ios | quality | known gap | no investigation matched among 10 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 10 (ios.pipeline.decisions, ios.radiation)] |
-| `acutemed-ahf-bilateral-leg-cellulitis-mimic` | mgmt-diuretic | ios | quality | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `acutemed-ahf-bilateral-leg-cellulitis-mimic` | mgmt-diuretic | ios | quality | known gap | no management item matched among 22 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `acutemed-ahf-bilateral-leg-cellulitis-mimic` | mgmt-no-iv-antibiotics | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "flucloxacillin 2 g iv 6-hourly" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "flucloxacillin 2 g iv 6-hour |
-| `acutemed-ahf-pulmonary-oedema` | mgmt-niv | ios | quality | known gap | no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, |
-| `acutemed-anaphylaxis-child-peanut` | mgmt-adrenaline-im-dose-child | ios | quality | known gap | no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `acutemed-cap-immunosuppressed` | mgmt-pcp-or-pneumonitis | ios | quality | known gap | no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, |
-| `acutemed-gastroenteritis-elderly-aki` | mgmt-hold-nephrotoxic | ios | quality | known gap | no management item matched among 29 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `acutemed-gastroenteritis-mimic-euglycaemic-dka` | mgmt-stop-sglt2 | ios | quality | known gap | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, |
-| `acutemed-htn-emergency-encephalopathy` | inv-ct-head | ios | quality | known gap | no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)] |
-| `acutemed-htn-emergency-encephalopathy` | mgmt-iv-antihypertensive | ios | critical | known gap | no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, |
-| `acutemed-htn-emergency-encephalopathy` | mgmt-controlled-reduction | ios | quality | known gap | no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, |
-| `acutemed-htn-emergency-encephalopathy` | mgmt-critical-care | ios | quality | known gap | no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, |
-| `acutemed-htn-pregnancy-preeclampsia-epigastric` | mgmt-no-ace-arb | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "...y - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers the question." (+2 more) [known gap: iOS CI |
-| `acutemed-htn-severe-asymptomatic-preop` | mgmt-defer-elective-surgery | ios | quality | known gap | no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
+| `acutemed-ahf-pulmonary-oedema` | mgmt-niv | ios | quality | known gap | no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, |
+| `acutemed-anaphylaxis-child-peanut` | mgmt-adrenaline-im-dose-child | ios | quality | known gap | no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `acutemed-gastroenteritis-mimic-euglycaemic-dka` | mgmt-stop-sglt2 | ios | quality | known gap | no management item matched among 20 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, |
+| `acutemed-htn-severe-asymptomatic-preop` | mgmt-defer-elective-surgery | ios | quality | known gap | no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
 | `acutemed-pe-high-risk-shock` | dx-pe-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Sepsis \| 3. Acute Heart Failure / Pulmonary Oedema \| 4. Community-Acquired Pneumonia \| 5. Pulmonary Embolism; also in ios.pipeline#4 [known gap: iOS CI 2026-09-25 (run 361691343 |
 | `acutemed-pe-high-risk-shock` | mgmt-ufh | ios | quality | known gap | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `acutemed-pe-high-risk-shock` | mgmt-no-large-fluid-bolus | ios | quality | known gap | forbidden management item present in ios.pipeline.decisions: "...road-spectrum; narrow when cultures return); iv crystalloid 30 ml/kg over 3 h if lactate ≥4 or hypotension; vasopressors (noradrenaline) if map <65 ..." [known gap: iOS CI 202 |
 | `acutemed-pe-post-lap-chole-pleuritic` | mnm-postop-collection | ios | quality | known gap | not in top 5 of ios.bayes: 1. Stable Angina \| 2. Pneumothorax \| 3. Surgical Site Infection \| 4. Pulmonary Embolism \| 5. Atrial Fibrillation [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) \| 2. |
 | `acutemed-pe-post-lap-chole-pleuritic` | alarm-hypoxia-or-tachycardia | ios | quality | known gap | no alarm matched among 1 (ios.acuity) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. \| iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 1 (ios.acuity)] |
 | `acutemed-sepsis-afebrile-elderly-urinary` | mnm-urinary-source | ios | quality | known gap | not in top 5 of ios.bayes: 1. Sepsis \| 2. Acute Kidney Injury \| 3. Delirium (Acute Confusional State) \| 4. Community-Acquired Pneumonia \| 5. Bacterial Meningitis / Meningococcal Sepsis; also in ios.ccEarly#3 [known gap: iOS CI 2026-09-2 |
-| `acutemed-syncope-complete-heart-block` | mgmt-hold-rate-limiting | ios | quality | known gap | no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, i |
+| `acutemed-syncope-complete-heart-block` | mgmt-hold-rate-limiting | ios | quality | known gap | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions,  |
 | `acutemed-syncope-vasovagal-low-risk` | inv-no-ctpa | ios | quality | known gap | forbidden investigation present in ios.pipeline.decisions: "ctpa (definitive): if wells pe >4, or d-dimer positive" (+2 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.de |
-| `adrenal-incidentaloma-indeterminate` | inv-metanephrines | ios | critical | known gap | no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)] |
-| `adrenal-incidentaloma-indeterminate` | inv-dst | ios | quality | known gap | no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)] |
-| `adrenal-incidentaloma-indeterminate` | inv-further-imaging | ios | quality | known gap | no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)] |
-| `adrenal-suspected-phaeochromocytoma` | inv-metanephrines | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `adrenal-suspected-phaeochromocytoma` | mgmt-alpha-blockade | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `aki-obstructive-chronic-retention-elderly` | mgmt-catheterise | ios | critical | known gap | no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `aki-obstructive-chronic-retention-elderly` | mgmt-post-obstructive-diuresis | ios | critical | known gap | no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `aki-obstructive-chronic-retention-elderly` | mgmt-stop-anticholinergic | ios | quality | known gap | no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Amitriptyline is not recognised as a retention precipitant. \| iOS CI 2026-09-25  |
-| `aki-prerenal-diarrhoea-acei-nsaid` | mgmt-urinalysis | ios | quality | known gap | no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `aki-prerenal-diarrhoea-acei-nsaid` | mgmt-stop-acei | ios | critical | known gap | no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `aki-prerenal-diarrhoea-acei-nsaid` | mgmt-stop-diuretic | ios | quality | known gap | no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: The AKI prompt holds "NSAIDs, ACE-I, ARBs, metformin" but not diuretics (furosemi |
-| `aki-prerenal-diarrhoea-acei-nsaid` | mgmt-hold-metformin | ios | quality | known gap | no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `ami-venous-thrombosis-ocp` | inv-pregnancy-test | ios | critical | known gap | no investigation matched among 5 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.decisions)] |
-| `ami-venous-thrombosis-ocp` | mgmt-anticoagulation | ios | critical | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.action |
-| `ami-venous-thrombosis-ocp` | mgmt-stop-cocp | ios | quality | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: Web: No prompt to stop the oestrogen-containing pill. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item mat |
-| `anal-cancer-red-flags` | inv-biopsy | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `anal-cancer-red-flags` | inv-mri-pelvis | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `anal-cancer-red-flags` | inv-hiv-test | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `anal-cancer-red-flags` | mgmt-chemoradiotherapy | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
+| `aki-obstructive-chronic-retention-elderly` | mgmt-stop-anticholinergic | ios | quality | known gap | no management item matched among 32 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Amitriptyline is not recognised as a retention precipitant. \| iOS CI 2026-09-25  |
 | `anal-fissure-acute-posterior` | dx-fissure-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Medication Side Effect / Adverse Drug Reaction \| 2. Anxiety Disorder \| 3. Acute Kidney Injury \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency [known gap: iOS CI 2026-09-25 (run 36169134350, da |
 | `anal-fissure-atypical-lateral-hiv` | mnm-sti-crohn | ios | quality | known gap | not in top 5 of ios.bayes: 1. Perianal Abscess \| 2. Anal Carcinoma \| 3. Inguinal Hernia \| 4. Fournier's Gangrene \| 5. Femoral Hernia [known gap: Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red |
-| `anal-fissure-atypical-lateral-hiv` | mgmt-no-sphincterotomy | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "if chronic / failed medical: lateral internal sphincterotomy" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: |
-| `anal-fissure-chronic-refractory` | mgmt-continence-assessment | ios | quality | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
+| `anal-fissure-chronic-refractory` | mgmt-continence-assessment | ios | quality | known gap | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
 | `aortoenteric-fistula-herald-bleed` | mnm-aortoenteric-fistula | ios | critical | known gap | not in top 5 of ios.bayes: 1. Upper GI Bleeding (Peptic Ulcer) \| 2. Acute Appendicitis \| 3. Acute Pancreatitis \| 4. Small Bowel Obstruction \| 5. Acute Kidney Injury; also in ios.ccEarly#3 [known gap: iOS CI 2026-09-25 (run 36169134350,  |
 | `aortoenteric-fistula-herald-bleed` | inv-blood-cultures | ios | quality | known gap | no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.decisions, ios |
-| `aortoenteric-fistula-herald-bleed` | mgmt-vascular-surgery | ios | critical | known gap | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `aortoenteric-fistula-herald-bleed` | mgmt-no-tranexamic-acid | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
 | `appendicitis-adult-typical` | score-alvarado-autofill | ios | quality | known gap | expected ≥ 7; got ios.autofill.alvarado=3 (Score 3/10 — appendicitis unlikely) [known gap: iOS auto-fill reads only temperature and WBC (3/10); history and examination items stay unticked.] |
-| `appendicitis-antibiotics-first-coda` | mgmt-antibiotics-first-option | ios | quality | known gap | no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed un |
-| `appendicitis-appendicolith` | mgmt-appendicolith-caution | ios | quality | known gap | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to  |
+| `appendicitis-antibiotics-first-coda` | mgmt-antibiotics-first-option | ios | quality | known gap | no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed un |
+| `appendicitis-appendicolith` | mgmt-appendicolith-caution | ios | quality | known gap | no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to  |
 | `appendicitis-elderly-atypical` | mnm-mesenteric-ischaemia | ios | critical | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Small Bowel Obstruction \| 3. Acute Diverticulitis \| 4. Perforated Peptic Ulcer \| 5. Clostridioides difficile Colitis; also in ios.pipeline#5 [known gap: PANE top 3 (cholecystitis, ap |
 | `appendicitis-elderly-atypical` | mnm-caecal-neoplasm | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Small Bowel Obstruction \| 3. Acute Diverticulitis \| 4. Perforated Peptic Ulcer \| 5. Clostridioides difficile Colitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in a |
-| `appendicitis-elderly-atypical` | inv-lactate-or-cta | ios | quality | known gap | no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.rad |
 | `appendicitis-elderly-atypical` | mgmt-no-discharge-on-low-score | ios | quality | known gap | forbidden management item present in ios.scoreCalculator.air: "...appendicitis unlikely. consider observation, analgesia, and discharge with safety-net advice. d/w senior if clinical picture worsens." (+1 more) [known gap: iOS AIR calculato |
-| `appendicitis-generalised-peritonitis-sepsis` | inv-blood-cultures | ios | critical | known gap | no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)] |
-| `appendicitis-generalised-peritonitis-sepsis` | inv-lactate | ios | quality | known gap | no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)] |
-| `appendicitis-generalised-peritonitis-sepsis` | mgmt-postop-antibiotics-short-course | ios | quality | known gap | no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no mana |
-| `appendicitis-immunosuppressed-transplant` | mgmt-steroid-cover | ios | quality | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `appendicitis-paediatric-9y` | score-rec-pas | ios | quality | known gap | pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recomme |
 | `appendicitis-paediatric-9y` | mgmt-no-unqualified-ct-child | ios | quality | known gap | forbidden management item present in ios.soap.plan: "investigations: fbc, β-hcg (females), urinalysis / msu, ct abdomen/pelvis with iv contrast, uss abdomen." [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' |
-| `appendicitis-perforated-abscess` | inv-blood-cultures | ios | quality | known gap | no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)] |
-| `appendicitis-perforated-abscess` | mgmt-percutaneous-drainage | ios | quality | known gap | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `appendicitis-perforated-abscess` | mgmt-interval-colon-evaluation | ios | quality | known gap | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `appendicitis-perforated-abscess` | mgmt-percutaneous-drainage | ios | quality | known gap | no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `appendicitis-perforated-abscess` | mgmt-interval-colon-evaluation | ios | quality | known gap | no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `appendicitis-pregnant-t2` | mnm-obstetric-cause | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Urinary Tract Infection (Cystitis) \| 3. Small Bowel Obstruction \| 4. Ectopic Pregnancy \| 5. Acute Pyelonephritis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fa |
-| `appendicitis-pregnant-t2` | inv-mri-after-inconclusive-us | ios | critical | known gap | no investigation matched among 16 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second |
-| `appendicitis-pregnant-t2` | inv-no-unqualified-ct | ios | quality | known gap | forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%..." (+2 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.] |
+| `appendicitis-pregnant-t2` | inv-no-unqualified-ct | ios | quality | known gap | forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%..." (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.] |
 | `appendicitis-score-intermediate-band` | score-rec-aas | ios | quality | known gap | aas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews [known gap: Web: Neither platform implements the Adult Appendicitis Score. \| iOS CI 2026-09-25 (run 36169134350, database mode): aas not recommended; recommend |
 | `appendicitis-score-low-band` | mnm-gynaecological | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Gastroenteritis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Perforated Peptic Ulcer [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaec |
 | `appendicitis-score-low-band` | score-rec-air | ios | quality | known gap | air not recommended; recommended: news2, mews [known gap: Web: Web CDS has no AIR rule. \| iOS CI 2026-09-25 (run 36169134350, database mode): air not recommended; recommended: news2, mews] |
-| `appendicitis-score-low-band` | inv-pregnancy-test | ios | critical | known gap | no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi, io |
 | `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-reassure-safety-net | ios | quality | known gap | no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.action |
-| `biliary-colic-incidental-polyp` | mgmt-histology | ios | quality | known gap | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
+| `biliary-colic-incidental-polyp` | mgmt-histology | ios | quality | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
 | `biliary-colic-uncomplicated` | score-rec-asge-cbd | ios | quality | known gap | asge-cbd not recommended; recommended: tg18-cholecystitis, tg18-cholangitis, news2, rcri, asa, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholecystitis, tg18-cholangitis, |
 | `boerhaave-classic-mackler` | dx-perforation-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Acute Coronary Syndrome \| 3. Sepsis \| 4. Acute Appendicitis \| 5. Oesophageal Perforation (Boerhaave) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in  |
 | `boerhaave-presenting-as-chest-pain` | mnm-perforation | ios | critical | known gap | not in top 5 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Stable Angina \| 3. Community-Acquired Pneumonia \| 4. Acute Pancreatitis \| 5. Pulmonary Embolism [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of i |
-| `boerhaave-presenting-as-chest-pain` | inv-ecg | ios | critical | known gap | no investigation matched among 5 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation |
-| `breast-abscess-lactational` | inv-uss | ios | critical | known gap | no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation |
-| `breast-abscess-lactational` | mgmt-continue-breastfeeding | ios | quality | known gap | no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, i |
-| `breast-abscess-non-lactational-smoker` | inv-uss | ios | critical | known gap | no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)] |
-| `breast-abscess-non-lactational-smoker` | mgmt-anaerobic-cover | ios | quality | known gap | no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, i |
-| `breast-abscess-non-lactational-smoker` | mgmt-smoking-cessation | ios | quality | known gap | no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, i |
-| `breast-abscess-non-lactational-smoker` | mgmt-exclude-malignancy | ios | quality | known gap | no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, i |
 | `breast-family-history-brca` | mgmt-genetics-referral | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `breast-inflammatory-cancer` | mgmt-no-bcs-or-slnb | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy" [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local exc |
-| `breast-lump-age-30-35` | flag-2ww | ios | critical | known gap | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)] |
-| `breast-lump-age-30-35` | inv-uss | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `breast-lump-age-30-35` | inv-core-biopsy | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `breast-lump-over-35-suspicious` | inv-core-biopsy | ios | critical | known gap | no investigation matched among 2 (ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `breast-lump-over-35-suspicious` | inv-axilla | ios | quality | known gap | no investigation matched among 2 (ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `breast-lump-over-35-suspicious` | mgmt-mdt | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.ng12.plan, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `breast-lump-pregnant` | flag-2ww | ios | critical | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visit |
-| `breast-lump-pregnant` | mgmt-no-tamoxifen | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "adjuvant: endocrine therapy if er+ (tamoxifen / aromatase inhibitor), herceptin if her2+" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item pr |
-| `breast-lump-under-30` | inv-uss | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `breast-male-cancer` | inv-core-biopsy | ios | critical | known gap | no investigation matched among 2 (ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `breast-male-cancer` | mgmt-genetics | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.ng12.plan, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `breast-male-gynaecomastia` | dx-gynaecomastia-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Breast Abscess / Mastitis \| 2. Anxiety Disorder \| 3. Medication Side Effect / Adverse Drug Reaction \| 4. Femoral Hernia \| 5. Deep Vein Thrombosis [known gap: iOS CI 2026-09-25 (run 36169134350, database mod |
 | `breast-male-gynaecomastia` | inv-testes | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
 | `breast-male-gynaecomastia` | mgmt-medication-review | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `breast-nipple-discharge-bloody-single-duct` | mgmt-duct-excision | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.ng12.plan, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `breast-pain-cyclical-alone` | mgmt-reassurance | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `burns-adult-flame-27pct` | dx-major-burn-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Community-Acquired Pneumonia \| 3. Atrial Fibrillation \| 4. Necrotising Soft Tissue Infection (Necrotising Fasciitis) \| 5. Acute Limb Ischaemia [known gap: iOS CI 2026- |
 | `burns-adult-scald-14pct` | mgmt-no-formal-iv-resuscitation | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "... resuscitation from 15% tbsa in adults and 10% in children: parkland 4 ml/kg/%tbsa over 24 h from the time of burn, half in the first 8 h - subtract fluid already given and time e |
@@ -11213,289 +10701,124 @@ Guidelines:
 | `burns-chemical-alkali` | mgmt-no-neutralisation | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "chemical burns: copious irrigation, no neutralisation; eye involvement → ophthalmology" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item pres |
 | `burns-chemical-alkali` | pathway-burns | ios | quality | known gap | recommended firstVisit (No previous visits on record); expected burns [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected burns] |
 | `burns-child-immersion-nai` | inv-skeletal-survey | ios | quality | known gap | no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)] |
-| `burns-child-scald-12pct` | mgmt-maintenance-fluid | ios | quality | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
-| `burns-circumferential-forearm-hand` | mgmt-elevation | ios | quality | known gap | no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, |
+| `burns-child-scald-12pct` | mgmt-maintenance-fluid | ios | quality | known gap | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
+| `burns-circumferential-forearm-hand` | mgmt-elevation | ios | quality | known gap | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, |
 | `burns-electrical-high-voltage` | dx-electrical-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Acute Kidney Injury \| 2. Medication Side Effect / Adverse Drug Reaction \| 3. Anxiety Disorder \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency [known gap: iOS CI 2026-09-25 (run 36169134350, da |
 | `burns-inhalation-enclosed-space` | dx-burn-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Sepsis \| 3. Bacterial Meningitis / Meningococcal Sepsis \| 4. Acute Kidney Injury \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI) [known gap: iOS CI 2026-09-25 (run 361691343 |
-| `burns-inhalation-enclosed-space` | mgmt-early-intubation | ios | critical | known gap | no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `caecal-volvulus` | inv-pregnancy-test | ios | critical | known gap | no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios |
 | `caecal-volvulus` | mgmt-no-endoscopic-reduction-caecal | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "...operative management - right hemicolectomy (ascrs 2021); no endoscopic detorsion" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present |
 | `caustic-ingestion-alkali` | inv-airway-assessment | ios | quality | known gap | no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions)] |
 | `caustic-ingestion-alkali` | mgmt-psychiatric-assessment | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `caustic-ingestion-alkali` | mgmt-nil-by-mouth | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `cdiff-fulminant-colitis` | mgmt-vancomycin-metronidazole | ios | critical | known gap | no management item matched among 9 (ios.pipeline.decisions, ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.dec |
 | `cellulitis-leg-adult` | inv-mark-border | ios | quality | known gap | no investigation matched among 10 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 10 (ios.pipeline.decisions, ios.radiation)] |
 | `cellulitis-sepsis-elderly-diabetic` | dx-cellulitis-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Community-Acquired Pneumonia \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State); also in ios.ccEarly#3 [known gap: iOS CI 2026-09-25 (ru |
 | `cellulitis-sepsis-elderly-diabetic` | mnm-nsti | ios | critical | known gap | not in top 5 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Community-Acquired Pneumonia \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State) [known gap: iOS CI 2026-09-25 (run 36169134350, database |
 | `cellulitis-sepsis-elderly-diabetic` | flag-beta-blocker | ios | quality | known gap | no red flag matched among 21 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.scoreCalculator.qsofa, ios.scoreCalculator.sirs, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-2 |
-| `charcot-foot-cellulitis-mimic` | inv-mri | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `charcot-foot-cellulitis-mimic` | mgmt-immobilise-offload | ios | critical | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `cholangitis-tg18-charcot-sepsis` | dx-cholangitis-top1 | ios | quality | known gap | not in top 1 of ios.bayes: 1. Choledocholithiasis \| 2. Sepsis \| 3. Ascending Cholangitis; also in ios.ccEarly#1, ios.pipeline#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 1 of ios.bayes: 1. Choledocholithia |
 | `cholangitis-tg18-charcot-sepsis` | score-qsofa-autofill | ios | quality | known gap | expected = 2; got ios.autofill.qsofa=0 (qSOFA 0/3 — Lower risk, but reassess if clinical status chan) [known gap: iOS qSOFA auto-fill uses RR >22 and SBP <100 instead of Sepsis-3 RR ≥22 and SBP ≤100, so boundary values are missed.] |
 | `cholangitis-tg18-grade1-single-criterion` | score-tg18-autofill | ios | quality | known gap | expected = 1; got ios.autofill.tg18-cholangitis=0 (Charcot's triad not met — consider biliary colic or other he) [known gap: iOS auto-fill: age >75 alone → Grade II; web clinical-scores: criteria not met without manual imaging ticks.] |
-| `cholangitis-tg18-grade3-reynolds` | score-tg18-autofill | ios | critical | known gap | expected = 3; got ios.autofill.tg18-cholangitis=2 (Tokyo Grade II — Moderate acute cholangitis; early biliary d) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web return |
 | `cholecystitis-acalculous-icu` | dx-cholecystitis-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Ascending Cholangitis \| 4. Bacterial Meningitis / Meningococcal Sepsis \| 5. Infective Endocarditis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode |
 | `cholecystitis-elderly-diabetic-atypical` | mnm-mesenteric-ischaemia | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Small Bowel Obstruction \| 4. Acute Pancreatitis \| 5. Ascending Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 ha |
-| `cholecystitis-elderly-diabetic-atypical` | mgmt-glycaemic-plan | ios | quality | known gap | no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run |
 | `cholecystitis-elderly-diabetic-atypical` | mgmt-no-nsaid-ckd | ios | quality | known gap | forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." [known gap: Lap chol |
 | `cholecystitis-high-risk-grade2-drainage` | mgmt-no-unqualified-early-lc | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "consider early laparoscopic cholecystectomy within 72h (grade i-ii tokyo)" (+2 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present |
-| `cholecystitis-immunosuppressed-gangrenous` | mgmt-steroid-cover | ios | quality | known gap | no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run |
-| `cholecystitis-immunosuppressed-gangrenous` | mgmt-transplant-liaison | ios | quality | known gap | no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run |
-| `cholecystitis-pregnancy-t2` | mgmt-no-nsaid-after-20-weeks | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." [known gap: iOS CI 2 |
+| `cholecystitis-immunosuppressed-gangrenous` | mgmt-transplant-liaison | ios | quality | known gap | no management item matched among 28 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run |
 | `cholecystitis-tg18-grade1` | mnm-cbd-stone-or-cholangitis | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Biliary Colic \| 4. Ectopic Pregnancy \| 5. Small Bowel Obstruction; also in ios.triage#3 [known gap: iOS: fallback mode (DiagnosticDatabase.json does not deco |
 | `cholecystitis-tg18-grade1` | score-tg18-autofill | ios | quality | known gap | expected = 1; got ios.autofill.tg18-cholecystitis=0 (Criteria for acute cholecystitis not met — consider biliary ) [known gap: iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads "criteria not m |
 | `cholecystitis-tg18-grade2` | inv-glucose | ios | quality | known gap | no investigation matched among 12 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation)] |
-| `cholecystitis-tg18-grade2` | mgmt-diabetes-plan | ios | quality | known gap | no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run |
 | `cholecystitis-tg18-grade3-organ-dysfunction` | mnm-cholangitis | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Acute Coronary Syndrome \| 5. Community-Acquired Pneumonia; also in ios.pipeline#4, ios.triage#4 [known gap: iOS: fallback mode (DiagnosticDatabas |
-| `cholecystitis-tg18-grade3-organ-dysfunction` | score-tg18-autofill | ios | critical | known gap | expected = 3; got ios.autofill.tg18-cholecystitis=2 (Tokyo Grade II — Moderate acute cholecystitis; early laparos) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238,  |
 | `cholecystitis-tg18-grade3-organ-dysfunction` | inv-coagulation | ios | quality | known gap | no investigation matched among 18 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 18 (ios.pipeline.decisions, ios.pipeline.voi, ios.rad |
 | `cholecystitis-tg18-grade3-organ-dysfunction` | mgmt-gb-drainage-in-generated-plan | ios | quality | known gap | no management item matched among 11 (ios.radiation.plan) [known gap: iOS radiation plan text has no drainage step (only an IR referral chip); web PlanTab selects the Grade I variant, which filters out the conservative-phase cholecystostomy  |
-| `cholecystitis-tg18-grade3-organ-dysfunction` | mgmt-no-penicillin-in-anaphylaxis | ios | critical | known gap | forbidden management item present in ios.scoreCalculator.tg18-cholecystitis: "iv antibiotics (piperacillin-tazobactam or meropenem)" [known gap: Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penici |
 | `cholecystitis-tg18-grade3-organ-dysfunction` | mgmt-no-early-cholecystectomy-in-shock | ios | quality | known gap | forbidden management item present in ios.scoreCalculator.tg18-cholecystitis: "early urgent cholecystostomy or emergency cholecystectomy" [known gap: iOS TG18 Grade III recommendation offers 'emergency cholecystectomy' as an equal alternativ |
 | `choledocholithiasis-asge-high-risk` | mnm-malignant-obstruction | ios | quality | known gap | not in top 5 of ios.bayes: 1. Choledocholithiasis \| 2. Biliary Colic \| 3. Acute Cholecystitis \| 4. Ascending Cholangitis \| 5. Acute Pancreatitis [known gap: PANE top 3: cholecystitis, choledocholithiasis, pancreatitis (symptom inference |
 | `choledocholithiasis-asge-high-risk` | score-rec-asge-cbd | ios | quality | known gap | asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystitis, qsofa, sofa, news2, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystiti |
 | `choledocholithiasis-asge-high-risk` | inv-no-mrcp-before-ercp | ios | quality | known gap | forbidden investigation present in ios.radiation: "mrcp - gold standard non-invasive cbd stone detection" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.radiation: "mrcp - gold standar |
 | `choledocholithiasis-asge-intermediate` | score-rec-asge-cbd | ios | quality | known gap | asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystitis, qsofa, sofa, news2, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystiti |
-| `choledocholithiasis-asge-intermediate` | mgmt-no-unconditional-ercp | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "ercp ± sphincterotomy + stone extraction (primary intervention)" (+3 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.ra |
 | `choledocholithiasis-asge-low-risk` | mgmt-lap-chole | ios | quality | known gap | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.action |
 | `choledocholithiasis-elderly-warfarin` | mnm-malignant-obstruction | ios | quality | known gap | not in top 5 of ios.bayes: 1. Choledocholithiasis \| 2. Ascending Cholangitis \| 3. Liver Cirrhosis (Decompensated) \| 4. Acute Pancreatitis \| 5. Acute Appendicitis [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystiti |
-| `choledocholithiasis-pregnancy` | mgmt-fluoroscopy-minimised | ios | quality | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, |
 | `crc-fit-positive-abdominal-pain` | level-at-least-priority | ios | critical | known gap | ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ p |
-| `crc-lynch-surveillance-overdue` | flag-lynch | ios | critical | known gap | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)] |
-| `crc-lynch-surveillance-overdue` | inv-colonoscopy | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `crc-lynch-surveillance-overdue` | mgmt-2-yearly | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)] |
-| `crc-lynch-surveillance-overdue` | mgmt-aspirin-discussion | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)] |
 | `crc-young-onset-34` | mnm-ibd | ios | quality | known gap | not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Perianal Abscess \| 3. Colorectal Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Ischaemic Colitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of i |
 | `crohns-ileocaecal-abscess` | dx-crohn-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acut |
 | `crohns-ileocaecal-abscess` | flag-immunosuppressed | ios | quality | known gap | no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyB |
-| `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | known gap | no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `crohns-perianal-complex-fistula` | inv-mri-pelvis | ios | critical | known gap | no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)] |
-| `crohns-perianal-complex-fistula` | mgmt-eua-seton | ios | critical | known gap | no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, i |
-| `crohns-perianal-complex-fistula` | mgmt-biologic | ios | quality | known gap | no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, i |
-| `dfi-moderate-osteomyelitis` | inv-foot-xray | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `dfi-moderate-osteomyelitis` | inv-mri-or-bone-sample | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `dfi-moderate-osteomyelitis` | inv-deep-tissue-culture | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `dfi-moderate-osteomyelitis` | inv-vascular-assessment | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `dfi-moderate-osteomyelitis` | mgmt-offloading | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)] |
-| `dfi-moderate-osteomyelitis` | mgmt-mdt-foot | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)] |
-| `dfi-moderate-osteomyelitis` | mgmt-antibiotic | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)] |
-| `dfi-moderate-osteomyelitis` | mgmt-iwgdf-grade | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)] |
-| `dfi-severe-wet-gangrene-abscess` | inv-vascular-imaging | ios | quality | known gap | no investigation matched among 9 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 9 (ios.pipeline.decisions, ios.pipeline.voi, ios.radia |
-| `dfi-severe-wet-gangrene-abscess` | mgmt-vascular | ios | quality | known gap | no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `dfi-severe-wet-gangrene-abscess` | mgmt-glycaemic | ios | quality | known gap | no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | known gap | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `dfu-ischaemic-calcified-abpi` | flag-incompressible | ios | quality | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 ( |
-| `dfu-ischaemic-calcified-abpi` | inv-toe-pressure-or-imaging | ios | critical | known gap | no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi, ios.pipeline.actions)] |
-| `dfu-ischaemic-calcified-abpi` | mgmt-vascular-referral | ios | critical | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
-| `dfu-neuropathic-uninfected` | inv-vascular-assessment | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `dfu-neuropathic-uninfected` | mgmt-offloading | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `dfu-neuropathic-uninfected` | mgmt-mdt-foot | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `diverticulitis-abscess-drainage` | inv-blood-cultures | ios | quality | known gap | no investigation matched among 6 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation)] |
-| `diverticulitis-abscess-drainage` | mgmt-drainage | ios | critical | known gap | no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `diverticulitis-purulent-peritonitis` | alarm-perforation | ios | critical | known gap | no alarm matched among 4 (ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 4 (ios.pipeline.alert, ios.acuity)] |
-| `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | ios | quality | known gap | no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antibiotic-free option; protocol and variant prescribe |
-| `dka-type1-young-typical` | mgmt-continue-basal-insulin | ios | quality | known gap | no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, |
+| `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | ios | quality | known gap | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antibiotic-free option; protocol and variant prescribe |
+| `dka-type1-young-typical` | mgmt-continue-basal-insulin | ios | quality | known gap | no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, |
 | `dvt-pregnancy-22wk` | inv-no-ddimer-in-pregnancy | ios | quality | known gap | forbidden investigation present in ios.pipeline.decisions: "d-dimer: high sensitivity (~96%), low specificity - use to rule out only" (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present  |
-| `dvt-pregnancy-22wk` | mgmt-no-warfarin-in-pregnancy | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more) [known gap: The  |
 | `dvt-wells-likely` | flag-oestrogen | ios | quality | known gap | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 6 (ios.visitRisk, ios.al |
 | `dyspepsia-young-no-alarm-test-and-treat` | inv-hpylori-non-invasive | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
 | `dyspepsia-young-no-alarm-test-and-treat` | mgmt-test-and-treat-or-ppi | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `dyspepsia-young-no-alarm-test-and-treat` | mgmt-lifestyle | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `dysphagia-progressive-over55` | flag-weight-loss | ios | quality | known gap | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.al |
-| `dysphagia-progressive-under55` | inv-ogd | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
 | `eoe-young-atopic-recurrent-bolus` | mnm-eoe | ios | quality | known gap | not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Oesophageal / Gastric Carcinoma \| 3. Upper GI Bleeding (Peptic Ulcer) \| 4. Oesophageal Web / Plummer-Vinson Syndrome \| 5. Acute Coronary Syndrome [known gap: No eosino |
-| `eoe-young-atopic-recurrent-bolus` | inv-oesophageal-biopsies | ios | critical | known gap | no investigation matched among 5 (ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)] |
-| `eoe-young-atopic-recurrent-bolus` | inv-six-biopsies-two-levels | ios | quality | known gap | no investigation matched among 5 (ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)] |
 | `epididymo-orchitis-sti-young` | mnm-torsion-considered | ios | quality | known gap | not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Hydrocele \| 3. Epididymo-orchitis \| 4. Fournier's Gangrene \| 5. Incarcerated / Strangulated Hernia [known gap: Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion |
-| `fistula-in-ano-complex-anterior-female` | inv-mri-pelvis | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `fistula-in-ano-complex-anterior-female` | mgmt-seton-or-sparing | ios | critical | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `fistula-in-ano-simple-low` | dx-fistula-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Anxiety Disorder \| 4. Fournier's Gangrene \| 5. Femoral Hernia [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Skin Absce |
-| `fistula-in-ano-simple-low` | mgmt-fistulotomy | ios | critical | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
-| `food-bolus-complete-obstruction` | inv-emergency-ogd | ios | critical | known gap | no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.pipeline.voi, ios.pipeline.actions)] |
-| `food-bolus-complete-obstruction` | mgmt-endoscopic-removal | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `food-bolus-complete-obstruction` | mgmt-biopsies-underlying-cause | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `gastric-outlet-obstruction-elderly` | dx-goo-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Gastroenteritis \| 3. Acute Pancreatitis \| 4. Acute Appendicitis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of io |
 | `gastric-outlet-obstruction-elderly` | mnm-malignancy | ios | quality | known gap | not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Gastroenteritis \| 3. Acute Pancreatitis \| 4. Acute Appendicitis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of io |
-| `gastric-outlet-obstruction-elderly` | inv-ogd | ios | critical | known gap | no investigation matched among 17 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 17 (ios.pipeline.decisions, ios.pipeline.voi,  |
-| `gastric-outlet-obstruction-elderly` | mgmt-iv-saline-potassium | ios | critical | known gap | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.action |
-| `gord-alarm-weight-loss-over55` | flag-weight-loss-cancer | ios | critical | known gap | no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage, io |
 | `gord-alarm-weight-loss-over55` | mgmt-urgent-two-week-ogd | ios | quality | known gap | no management item matched among 10 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pipeline.actions, |
-| `groin-mimic-lymphadenopathy` | inv-uss-or-biopsy | ios | critical | known gap | no investigation matched among 2 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.decisions)] |
-| `groin-mimic-lymphadenopathy` | inv-ldh | ios | quality | known gap | no investigation matched among 2 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.decisions)] |
-| `groin-mimic-lymphadenopathy` | mgmt-no-hernia-repair | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more) [known gap: iOS CI 2026-09-25 (run 3616 |
-| `groin-mimic-testicular-torsion` | mgmt-no-hernia-repair | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "emergency - act now: emergency hernia repair - suspected strangulation - nbm; iv access; fluid resuscitation; iv antibiotics..." (+1 more) [known gap: iOS CI 2026-09-25 (run 3616 |
-| `gyn-ovarian-torsion-premenarchal-11` | mgmt-no-adult-fixed-doses | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS  |
 | `gyn-pid-tubo-ovarian-abscess-sepsis` | dx-pid-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Ectopic Pregnancy \| 2. Acute Appendicitis \| 3. Sepsis \| 4. Community-Acquired Pneumonia \| 5. Liver Abscess (Pyogenic / Amoebic) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 o |
-| `gyn-ruptured-haemorrhagic-cyst-apixaban` | mgmt-anticoagulant-reversal | ios | critical | known gap | no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.action |
-| `gyn-ruptured-haemorrhagic-cyst-apixaban` | mgmt-stop-apixaban | ios | quality | known gap | no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.action |
-| `gyn-ruptured-haemorrhagic-cyst-apixaban` | mgmt-gynaecology | ios | quality | known gap | no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.action |
+| `gyn-ruptured-haemorrhagic-cyst-apixaban` | mgmt-gynaecology | ios | quality | known gap | no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actio |
 | `h-pylori-penicillin-anaphylaxis` | mgmt-bismuth-quadruple | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `h-pylori-positive-eradication` | mgmt-eradication | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `h-pylori-positive-eradication` | mgmt-14-day-or-bismuth | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `h-pylori-positive-eradication` | mgmt-test-of-cure | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
-| `haematuria-anticoagulated-clot-retention` | inv-cystoscopy | ios | critical | known gap | no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation |
-| `haematuria-anticoagulated-clot-retention` | inv-fbc-group | ios | quality | known gap | no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation |
-| `haematuria-visible-smoker-2ww` | mgmt-smoking-cessation | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.ng12.plan, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `haemorrhoids-bleeding-warfarin-71` | inv-inr | ios | quality | known gap | no investigation matched among 7 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 7 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation |
 | `haemorrhoids-grade3-over-50` | dx-haemorrhoids-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Skin Abscess \| 3. Incisional Hernia \| 4. Incarcerated / Strangulated Hernia \| 5. Femoral Hernia [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes |
 | `haemorrhoids-grade3-over-50` | mnm-crc | ios | quality | known gap | not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Skin Abscess \| 3. Incisional Hernia \| 4. Incarcerated / Strangulated Hernia \| 5. Femoral Hernia [known gap: PANE top 3 (haemorrhoids, hernia, fissure) does not keep colorectal cancer vi |
 | `haemorrhoids-thrombosed-external-48h` | dx-haemorrhoids-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Perianal Abscess \| 3. Skin Abscess \| 4. Deep Vein Thrombosis \| 5. Fournier's Gangrene [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Ingui |
-| `haemorrhoids-thrombosed-external-48h` | mgmt-excision-72h | ios | quality | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
-| `hernia-femoral-elderly-woman` | mgmt-early-repair | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `hernia-femoral-richter-obstruction` | mgmt-emergency-surgery | ios | critical | known gap | no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `hernia-femoral-richter-obstruction` | mgmt-no-conservative-sbo-trial | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item pre |
-| `hernia-groin-incarcerated` | mgmt-mesh-clean-field | ios | quality | known gap | no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, |
-| `hernia-groin-strangulated` | mgmt-emergency-surgery | ios | critical | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no ma |
-| `hernia-groin-strangulated` | mgmt-bowel-viability | ios | quality | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no ma |
-| `hernia-incisional-midline-elective` | inv-ct | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `hernia-incisional-midline-elective` | mgmt-prehab | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
-| `hernia-incisional-midline-elective` | mgmt-mesh | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
-| `hernia-inguinal-elective-minimal-symptoms` | mgmt-watchful-waiting-option | ios | quality | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `hernia-inguinal-female-occult-femoral` | mgmt-laparoscopic | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `hernia-obturator-sbo-elderly-woman` | mgmt-emergency-surgery | ios | critical | known gap | no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `hernia-obturator-sbo-elderly-woman` | mgmt-no-gastrografin-trial | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in io |
-| `hernia-paediatric-inguinal-infant` | mgmt-no-watchful-waiting | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "...- refer to a paediatric surgeon for herniotomy (no mesh, no truss); infants need early repair because of the incarceration risk." [known gap: iOS CI 2026-09-25 (run 36169134350, d |
+| `haemorrhoids-thrombosed-external-48h` | mgmt-excision-72h | ios | quality | known gap | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
+| `hernia-groin-incarcerated` | mgmt-mesh-clean-field | ios | quality | known gap | no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, |
+| `hernia-inguinal-elective-minimal-symptoms` | mgmt-watchful-waiting-option | ios | quality | known gap | no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `hernia-inguinal-female-occult-femoral` | mgmt-laparoscopic | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `hernia-parastomal-symptomatic` | dx-parastomal-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Incisional Hernia \| 3. Umbilical / Paraumbilical Hernia \| 4. Femoral Hernia \| 5. Incarcerated / Strangulated Hernia [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not i |
-| `hernia-parastomal-symptomatic` | inv-ct | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `hernia-parastomal-symptomatic` | mgmt-mesh-repair | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `hernia-parastomal-symptomatic` | mgmt-stoma-nurse | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `hernia-umbilical-adult-elective` | mgmt-smoking | ios | quality | known gap | no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, |
-| `hernia-umbilical-cirrhosis-ascites` | mgmt-ascites-control | ios | critical | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
-| `hypercalcaemia-myeloma-aki-elderly` | inv-myeloma-screen | ios | critical | known gap | no investigation matched among 11 (ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.voi, ios.pipeline.actions, ios.radiati |
-| `hyperkalaemia-postop-aki-oliguric` | mgmt-urinalysis | ios | quality | known gap | no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `hyponatraemia-elderly-thiazide-ssri` | mgmt-osmolality-urine-sodium | ios | quality | known gap | no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, i |
-| `hyponatraemia-hypovolaemic-ileostomy` | mgmt-isotonic-volume | ios | critical | known gap | no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `infective-colitis-bloody-diarrhoea` | inv-stool-culture | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
+| `hernia-umbilical-adult-elective` | mgmt-smoking | ios | quality | known gap | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, |
+| `hyponatraemia-elderly-thiazide-ssri` | mgmt-osmolality-urine-sodium | ios | quality | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions,  |
 | `ischaemic-colitis-left` | inv-colonoscopy-48h | ios | quality | known gap | no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi)] |
 | `ischaemic-colitis-left` | inv-stool-culture | ios | quality | known gap | no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi)] |
 | `jaundice-mimic-acute-hepatitis-a` | flag-liver-failure-watch | ios | quality | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.pi |
-| `jaundice-mimic-acute-hepatitis-a` | inv-viral-serology | ios | quality | known gap | no investigation matched among 2 (ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)] |
-| `jaundice-mimic-acute-hepatitis-a` | inv-inr | ios | critical | known gap | no investigation matched among 2 (ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)] |
-| `jaundice-mimic-acute-hepatitis-a` | mgmt-public-health | ios | quality | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)] |
-| `lbo-cancer-impending-caecal-perforation` | mgmt-emergency-surgery | ios | critical | known gap | no management item matched among 13 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `lbo-cancer-impending-caecal-perforation` | mgmt-no-stent-with-impending-perforation | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)" [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to |
 | `lgib-angiodysplasia-aspirin` | mnm-angiodysplasia | ios | quality | known gap | not in top 5 of ios.bayes: 1. Iron Deficiency Anaemia \| 2. Acute Kidney Injury \| 3. Colorectal Carcinoma \| 4. Ischaemic Colitis \| 5. Upper GI Bleeding (Peptic Ulcer) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in |
-| `lgib-angiodysplasia-aspirin` | mgmt-apc | ios | quality | known gap | no management item matched among 26 (ios.pipeline.actions, ios.ng12.plan, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item  |
+| `lgib-angiodysplasia-aspirin` | mgmt-apc | ios | quality | known gap | no management item matched among 30 (ios.pipeline.actions, ios.ng12.plan, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item  |
 | `lgib-diverticular-apixaban` | mnm-crc | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Diverticulitis \| 2. Inguinal Hernia \| 3. Perianal Abscess \| 4. Ischaemic Colitis \| 5. Upper GI Bleeding (Peptic Ulcer) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of i |
 | `lgib-diverticular-apixaban` | score-rec-oakland | ios | quality | known gap | oakland not recommended; recommended: ios:oakland, hinchey, rockall, qsofa, ios:mpi, news2, mews [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScorin |
-| `lgib-diverticular-apixaban` | mgmt-hold-doac | ios | critical | known gap | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
 | `lgib-oakland-low-risk-discharge` | dx-haemorrhoids-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Perianal Abscess \| 2. Ischaemic Colitis \| 3. Skin Abscess \| 4. Femoral Hernia \| 5. Fournier's Gangrene [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Perianal  |
 | `lgib-oakland-low-risk-discharge` | score-rec-oakland | ios | quality | known gap | oakland not recommended; recommended: glasgow-blatchford, ios:oakland, rockall, aims65, ios:forrest [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalSco |
-| `lgib-post-polypectomy` | mgmt-antiplatelet-plan | ios | quality | known gap | no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `lgib-unstable-cta-first` | inv-upper-source | ios | quality | known gap | no investigation matched among 8 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.radiation)] |
-| `lgib-unstable-warfarin` | mgmt-restart-anticoag-plan | ios | quality | known gap | no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
 | `liver-abscess-amoebic` | mgmt-no-routine-drainage | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "pyogenic: iv antibiotics (biliary/enteric cover) + percutaneous drainage of large abscesses; find the source (biliary, colonic)" [known gap: iOS CI 2026-09-25 (run 36169134350, datab |
-| `liver-abscess-elderly-biliary-septic` | mgmt-organ-support | ios | critical | known gap | no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8  |
 | `liver-abscess-pyogenic` | inv-aspirate-culture | ios | quality | known gap | no investigation matched among 10 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 10 (ios.pipeline.decisions, ios |
 | `liver-abscess-pyogenic` | mgmt-prolonged-course | ios | quality | known gap | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7  |
 | `liver-abscess-pyogenic` | mgmt-glycaemic-control | ios | quality | known gap | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7  |
 | `mallory-weiss-young-binge` | dx-mallory-weiss-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Acute Pancreatitis \| 2. Upper GI Bleeding (Peptic Ulcer) \| 3. Oesophageal Variceal Bleeding \| 4. Acute Kidney Injury \| 5. Small Bowel Obstruction [known gap: iOS CI 2026-09-25 (run 36169134350, database mod |
-| `mallory-weiss-young-binge` | mgmt-no-tranexamic-acid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
 | `mi-presenting-as-epigastric-pain` | mnm-acs | ios | critical | known gap | not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease \| 2. Peptic ulcer disease \| 3. Functional dyspepsia \| 4. Acute Pancreatitis \| 5. Diabetic Ketoacidosis; also in ios.pipeline#5 [known gap: iOS CI 2026-09-25 (run 3616913435 |
 | `mimic-ruptured-aaa` | mgmt-no-large-fluid-bolus | ios | quality | known gap | forbidden management item present in ios.pipeline.decisions: "...road-spectrum; narrow when cultures return); iv crystalloid 30 ml/kg over 3 h if lactate ≥4 or hypotension; vasopressors (noradrenaline) if map <65 ..." [known gap: iOS CI 202 |
-| `mscc-pain-only-breast-cancer` | mgmt-mscc-safety-net | ios | critical | known gap | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `nsaid-associated-gastric-ulcer` | flag-nsaid | ios | critical | known gap | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.ra |
-| `nsaid-associated-gastric-ulcer` | mgmt-no-blanket-stop-aspirin | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "stop nsaids + aspirin if possible; use paracetamol instead" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: " |
 | `nsti-early-low-lrinec` | mnm-nsti | ios | critical | known gap | not in top 5 of ios.bayes: 1. Cellulitis \| 2. Skin Abscess \| 3. Femoral Hernia \| 4. Acute Kidney Injury \| 5. Diabetic Foot Infection / Osteomyelitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bay |
 | `nsti-postop-abdominal-wall` | mnm-anastomotic-or-collection | ios | quality | known gap | not in top 5 of ios.bayes: 1. Sepsis \| 2. Surgical Site Infection \| 3. Necrotising Soft Tissue Infection (Necrotising Fasciitis) \| 4. Pulmonary Embolism \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database m |
-| `nsti-postop-abdominal-wall` | mgmt-clindamycin | ios | critical | known gap | no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `obs-abruption-concealed-partner-assault` | flag-domestic-abuse | ios | critical | known gap | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visit |
-| `obs-appendicitis-pregnancy-t3` | mgmt-left-lateral | ios | quality | known gap | no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.alvarado, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no m |
 | `obs-ectopic-with-ius-stable` | level-at-least-priority | ios | quality | known gap | ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ p |
 | `paed-appendicitis-preschool-perforated` | score-rec-pas | ios | quality | known gap | pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old. \| iOS CI 202 |
-| `paed-appendicitis-preschool-perforated` | mgmt-no-adult-fixed-doses | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS  |
-| `paed-dka-new-onset-abdominal-pain` | mgmt-no-adult-fixed-doses | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS  |
-| `paed-febrile-infant-7wk-hernia-clinic` | inv-lumbar-puncture | ios | quality | known gap | no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.pipeline.voi)] |
-| `paed-febrile-infant-7wk-hernia-clinic` | mgmt-urine-sample | ios | quality | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.action |
-| `paed-febrile-infant-7wk-hernia-clinic` | mgmt-urgent-paediatric | ios | critical | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.action |
 | `paed-hsp-abdominal-pain` | mnm-igav | ios | quality | known gap | not in top 5 of ios.bayes: 1. Renal / Ureteric Colic \| 2. Acute Appendicitis \| 3. Acute Gastroenteritis \| 4. Small Bowel Obstruction \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of |
-| `paed-hsp-abdominal-pain` | mgmt-no-adult-fixed-doses | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...); anti-emetic: ondansetron 4 mg iv; iv fluid: 0.9% nacl or hartmann's 1 l over 2-4 h; nil by mouth; bladder: ensure patient has voided (exclude pregnancy..." [known gap: iOS  |
-| `paed-intussusception-infant-classic` | mgmt-fluid-resuscitation | ios | quality | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
+| `paed-intussusception-infant-classic` | mgmt-fluid-resuscitation | ios | quality | known gap | no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
 | `paed-nai-duodenal-haematoma` | mnm-nai | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Delirium (Acute Confusional State) [known gap: PANE has no child-maltreatment node; top 3: acu |
-| `paed-nai-duodenal-haematoma` | mgmt-non-operative-duodenal | ios | quality | known gap | no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `paed-nai-duodenal-haematoma` | mgmt-non-operative-duodenal | ios | quality | known gap | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `paed-nai-duodenal-haematoma` | pathway-trauma | ios | quality | known gap | recommended firstVisit (No previous visits on record); expected trauma [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma] |
-| `painless-jaundice-elderly-metastatic` | mgmt-palliative-biliary-drainage | ios | quality | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)] |
-| `painless-jaundice-elderly-metastatic` | mgmt-palliative-care | ios | quality | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)] |
-| `painless-jaundice-elderly-metastatic` | mgmt-mdt | ios | quality | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)] |
 | `painless-jaundice-pancreatic-head` | mnm-cholangiocarcinoma-ampullary | ios | quality | known gap | not in top 5 of ios.bayes: 1. Pancreatic Carcinoma \| 2. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) \| 3. Hepatitis B (Chronic Active) \| 4. Ascending Cholangitis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350,  |
-| `painless-jaundice-pancreatic-head` | inv-ct-pancreas-protocol | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `painless-jaundice-pancreatic-head` | inv-ca199 | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `painless-jaundice-pancreatic-head` | inv-eus-tissue | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `painless-jaundice-pancreatic-head` | inv-coagulation | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `painless-jaundice-pancreatic-head` | mgmt-hpb-mdt | ios | critical | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)] |
-| `pancreatitis-alcohol` | mgmt-thiamine | ios | critical | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `pancreatitis-alcohol` | mgmt-withdrawal | ios | quality | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `pancreatitis-alcohol` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run |
-| `pancreatitis-drug-induced-immunosuppressed` | mgmt-stop-azathioprine | ios | critical | known gap | no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `pancreatitis-drug-induced-immunosuppressed` | mgmt-steroid-cover | ios | quality | known gap | no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `pancreatitis-drug-induced-immunosuppressed` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run |
-| `pancreatitis-elderly-bisap-heart-failure` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run |
-| `pancreatitis-elderly-bisap-heart-failure` | mgmt-no-routine-ercp | ios | critical | known gap | forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: l |
-| `pancreatitis-gallstone-cholangitis` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 2.1 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..." [known gap: iOS CI 2 |
-| `pancreatitis-gallstone-mild` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run |
-| `pancreatitis-gallstone-mild` | mgmt-no-routine-ercp | ios | critical | known gap | forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: l |
 | `pancreatitis-gallstone-mild` | mgmt-no-routine-nbm | ios | quality | known gap | forbidden management item present in ios.pipeline.decisions: "...ine - ignore old advice); anti-emetic: ondansetron 4 mg iv; nil by mouth initially (clear fluids once pain improves - within 24-48 h in mild cases); oxy..." (+1 more) [known g |
-| `pancreatitis-hypertriglyceridaemia` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...o₃, osmolality; variable rate insulin infusion; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2 |
-| `pancreatitis-mimic-ruptured-aaa` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...asopressors if fluid-unresponsive; icu/hdu now; iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2 |
-| `pancreatitis-pregnancy` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "urgent (< 4 h): acute pancreatitis - iv access + aggressive iv fluid resuscitation: hartmann's or 0.9% nacl 250-500 ml/h × 4-6 h; analgesia..." [known gap: iOS CI 2026-09-25 (run |
 | `pancreatitis-severe-organ-failure` | dx-pancreatitis-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Pulmonary Embolism; also in ios.pipeline#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): |
-| `pancreatitis-severe-organ-failure` | mgmt-abdominal-compartment | ios | quality | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among |
-| `pancreatitis-severe-organ-failure` | mgmt-no-aggressive-fluids | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...e pancreatitis - lactate 3.4 mmol/l: tissue hypoperfusion - aggressive iv resuscitation, reassess in 2 h; iv access + aggressive iv fluid resuscitatio..." [known gap: iOS CI 2 |
-| `pancreatitis-severe-organ-failure` | mgmt-no-prophylactic-antibiotics | ios | critical | known gap | forbidden management item present in ios.pipeline.decisions: "...sepsis - initiate 1-hour bundle - blood cultures × 2 before antibiotics; iv antibiotics within 1 hour (broad-spectrum; narrow when cultures return); i..." [known gap: iOS CI 2 |
-| `pancreatitis-severe-organ-failure` | mgmt-no-routine-ercp | ios | critical | known gap | forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, uss abdomen, mrcp, ercp." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "inve |
-| `parathyroid-hypercalcaemic-crisis` | mgmt-iv-saline | ios | critical | known gap | no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, |
-| `parathyroid-hypercalcaemic-crisis` | mgmt-bisphosphonate | ios | quality | known gap | no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, |
+| `pancreatitis-severe-organ-failure` | mgmt-abdominal-compartment | ios | quality | known gap | no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
 | `parathyroid-primary-hpt-surgical-indications` | dx-hyperparathyroid-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Hypercalcaemia \| 2. Obstructive Sleep Apnoea \| 3. Iron Deficiency Anaemia \| 4. Acute Kidney Injury \| 5. Malignant Hypercalcaemia; also in ios.pipeline#1 [known gap: iOS CI 2026-09-25 (run 36169134350, datab |
 | `perianal-abscess-diabetic-cellulitis` | mnm-nsti | ios | quality | known gap | not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Infective Endocarditis \| 5. Acute Pyelonephritis [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: peria |
-| `perianal-abscess-diabetic-cellulitis` | mgmt-drainage | ios | critical | known gap | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.actions, |
 | `perianal-abscess-hiv` | mnm-anal-neoplasia | ios | quality | known gap | not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Incarcerated / Strangulated Hernia [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2.  |
-| `perianal-abscess-hiv` | inv-pus-culture | ios | quality | known gap | no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)] |
-| `perianal-abscess-simple` | mgmt-no-routine-antibiotics | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "do not prescribe antibiotics without drainage - ineffective alone" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation. |
-| `periop-abx-clean-mesh-hernia` | mgmt-single-dose-prophylaxis | ios | quality | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-prophylaxis-timing | ios | quality | known gap | no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-non-penicillin-alternative | ios | quality | known gap | no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `periop-abx-clean-mesh-hernia` | mgmt-single-dose-prophylaxis | ios | quality | known gap | no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-prophylaxis-timing | ios | quality | known gap | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `periop-abx-penicillin-anaphylaxis-colectomy` | mgmt-non-penicillin-alternative | ios | quality | known gap | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `periop-anticoag-apixaban-ckd-elderly` | score-rec-cfs | ios | quality | known gap | cfs not recommended; recommended: asa, rcri, dasi, stop-bang, ios:ariscat, caprini, ios:nrs2002 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: asa, rcri, dasi, stop-bang, ios:ariscat, capri |
-| `periop-anticoag-apixaban-ckd-elderly` | inv-renal-function | ios | critical | known gap | no investigation matched among 6 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation)] |
-| `periop-anticoag-apixaban-ckd-elderly` | mgmt-doac-interrupt | ios | critical | known gap | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `periop-anticoag-warfarin-af-no-bridging` | score-rec-cha2ds2-vasc | ios | quality | known gap | cha2ds2-vasc not recommended; recommended: tg18-cholecystitis, dasi, stop-bang, news2, ios:ariscat, rcri, caprini, asa, ios:nrs2002 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cha2ds2-vasc not recommended; recommended: t |
-| `periop-anticoag-warfarin-af-no-bridging` | inv-inr | ios | critical | known gap | no investigation matched among 13 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 13 (ios.pipeline.decisions, ios.pipeline.voi, ios.rad |
-| `periop-anticoag-warfarin-af-no-bridging` | mgmt-stop-warfarin-5-days | ios | critical | known gap | no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-anticoag-warfarin-af-no-bridging` | mgmt-resume-warfarin | ios | quality | known gap | no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-anticoag-warfarin-mechanical-mitral-bridging` | inv-inr | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `periop-anticoag-warfarin-mechanical-mitral-bridging` | mgmt-bridging | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `periop-anticoag-warfarin-mechanical-mitral-bridging` | mgmt-specialist-input | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `periop-diabetes-sglt2-euglycaemic-dka-postop` | mnm-bile-leak-or-collection | ios | quality | known gap | not in top 5 of ios.bayes: 1. Diabetic Ketoacidosis \| 2. Community-Acquired Pneumonia \| 3. Pulmonary Embolism \| 4. Acute Appendicitis \| 5. Atrial Fibrillation; also in ios.ccEarly#2 [known gap: iOS CI 2026-09-25 (run 36169134350, databa |
 | `periop-diabetes-sglt2-preop-withhold` | inv-hba1c | ios | quality | known gap | no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)] |
-| `periop-diabetes-sglt2-preop-withhold` | mgmt-withhold-sglt2 | ios | critical | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-diabetes-sglt2-preop-withhold` | mgmt-omit-sulfonylurea | ios | quality | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-diabetes-sglt2-preop-withhold` | mgmt-ketone-check | ios | quality | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-diabetes-sglt2-preop-withhold` | mgmt-glucose-monitoring | ios | quality | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-diabetes-type1-emergency-surgery` | inv-ketones | ios | quality | known gap | no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)] |
-| `periop-diabetes-type1-emergency-surgery` | mgmt-vriii | ios | critical | known gap | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-diabetes-type1-emergency-surgery` | mgmt-continue-basal-insulin | ios | critical | known gap | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-endo-diagnostic-ogd-warfarin` | inv-inr | ios | quality | known gap | no investigation matched among 30 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 30 (ios.pipeline.decisions, ios.pipeline.voi, ios.rad |
-| `periop-endo-diagnostic-ogd-warfarin` | mgmt-continue-warfarin | ios | quality | known gap | no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-endo-ercp-sphincterotomy-apixaban` | mgmt-doac-interrupt | ios | critical | known gap | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.actions, |
-| `periop-endo-polypectomy-clopidogrel` | mgmt-stop-clopidogrel | ios | critical | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
 | `periop-endo-polypectomy-clopidogrel` | mgmt-no-bridging | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "...ocedural plan below when the patient takes one - no routine bridging" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radi |
 | `periop-frailty-elective-dementia` | score-rec-cfs | ios | quality | known gap | cfs not recommended; recommended: caprini [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: ios:abcd2, ios:nihss, ios:mrs, caprini] |
 | `periop-frailty-elective-dementia` | inv-iron-studies | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `periop-frailty-elective-dementia` | mgmt-cga | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `periop-frailty-elective-dementia` | mgmt-delirium-prevention | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `periop-frailty-elective-dementia` | mgmt-shared-decision | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `periop-nela-frail-emergency-laparotomy` | score-rec-cfs | ios | quality | known gap | cfs not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews] |
 | `periop-nela-frail-emergency-laparotomy` | score-rec-p-possum | ios | quality | known gap | p-possum not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists |
-| `periop-nela-frail-emergency-laparotomy` | mgmt-mortality-risk | ios | quality | known gap | no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-nela-frail-emergency-laparotomy` | mgmt-geriatric-input | ios | quality | known gap | no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-nela-frail-emergency-laparotomy` | mgmt-shared-decision | ios | quality | known gap | no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-nela-frail-emergency-laparotomy` | mgmt-doac-plan | ios | quality | known gap | no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-postop-aki-oliguria` | mgmt-urinalysis | ios | quality | known gap | no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `periop-postop-aki-oliguria` | mgmt-no-nsaid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "...or solitary kidney → emergency decompression (eau 2024); no nsaids in aki" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios |
 | `periop-postop-aki-oliguria` | mgmt-no-insulin-dextrose-mild-k | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1..." [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 u |
 | `periop-postop-anastomotic-leak-day5` | dx-leak-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Pulmonary Embolism \| 5. Anastomotic Leak; also in ios.ccEarly#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in t |
 | `periop-postop-anastomotic-leak-day5` | score-rec-qsofa | ios | quality | known gap | qsofa not recommended; recommended: caprini, news2, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: caprini, news2, mews] |
-| `periop-postop-anastomotic-leak-day5` | mgmt-source-control | ios | quality | known gap | no management item matched among 2 (ios.pipeline.decisions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 (ios.pipeline.decisions, ios.soap.plan)] |
-| `periop-postop-anastomotic-leak-occult-elderly` | inv-ct | ios | critical | known gap | no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi,  |
-| `periop-postop-anastomotic-leak-occult-elderly` | mgmt-steroid-cover | ios | quality | known gap | no management item matched among 4 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.decisions, ios.pipeline.action |
 | `periop-postop-delirium-hypoactive` | mgmt-medication-review | ios | quality | known gap | no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `periop-postop-fever-day1-early` | score-rec-news2 | ios | quality | known gap | news2 not recommended; recommended: caprini [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): news2 not recommended; recommended: caprini] |
 | `periop-postop-fever-day1-early` | mgmt-clinical-source-review | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)] |
@@ -11503,82 +10826,36 @@ Guidelines:
 | `periop-postop-ileus` | mgmt-reduce-opioids | ios | quality | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.action |
 | `periop-postop-ileus` | mgmt-correct-electrolytes | ios | quality | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.action |
 | `periop-postop-pe-high-risk-shock` | dx-pe-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Heart Failure / Pulmonary Oedema \| 3. Acute Coronary Syndrome \| 4. Community-Acquired Pneumonia \| 5. Pulmonary Embolism; also in ios.pipeline#5 [known gap: iOS CI 2026-09-25 (run 361691343 |
-| `periop-postop-pe-high-risk-shock` | mgmt-ufh | ios | quality | known gap | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-postop-ssi-organ-space-diabetic` | mgmt-glycaemic-control | ios | quality | known gap | no management item matched among 34 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 |
+| `periop-postop-pe-high-risk-shock` | mgmt-ufh | ios | quality | known gap | no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `periop-postop-ssi-superficial` | mgmt-no-broad-spectrum-iv | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "iv antibiotics: tazobactam/piperacillin 4.5 g 8-hourly (broad spectrum)" (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present i |
-| `periop-postop-urinary-retention` | mgmt-catheterise | ios | critical | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-postop-urinary-retention` | mgmt-alpha-blocker-twoc | ios | quality | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `periop-pregnancy-emergency-laparotomy-sbo` | inv-no-unqualified-ct | ios | quality | known gap | forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast (defines level, cause, strangulation - sensitivity 94%)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation pre |
-| `periop-pregnancy-emergency-laparotomy-sbo` | mgmt-left-uterine-displacement | ios | quality | known gap | no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-pregnancy-emergency-laparotomy-sbo` | mgmt-antenatal-steroids | ios | quality | known gap | no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-preop-asa1-lap-chole` | inv-pregnancy-status | ios | quality | known gap | no investigation matched among 7 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 7 (ios.pipeline.decisions, ios.pipeline.voi, io |
-| `periop-preop-ckd-dialysis-hyperkalaemia` | mgmt-correct-k-before-surgery | ios | critical | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.action |
-| `periop-preop-ckd-dialysis-hyperkalaemia` | mgmt-dialysis-timing | ios | quality | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.action |
-| `periop-preop-ckd-dialysis-hyperkalaemia` | mgmt-no-nsaid | ios | quality | known gap | forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." [known gap: iOS CI 2 |
-| `periop-preop-latex-allergy` | mgmt-latex-free | ios | critical | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-preop-latex-allergy` | mgmt-first-on-list | ios | quality | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `periop-preop-long-term-steroids` | mgmt-steroid-cover | ios | critical | known gap | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.action |
-| `periop-preop-mh-susceptible` | mgmt-trigger-free-anaesthesia | ios | critical | known gap | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.action |
-| `periop-preop-mh-susceptible` | mgmt-dantrolene | ios | quality | known gap | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.action |
-| `periop-preop-mh-susceptible` | mgmt-mh-unit-referral | ios | quality | known gap | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.action |
-| `periop-preop-osa-stopbang` | mgmt-osa-plan | ios | quality | known gap | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.action |
-| `periop-preop-rcri-high-risk-hemicolectomy` | inv-natriuretic-peptide-or-troponin | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `periop-preop-rcri-high-risk-hemicolectomy` | inv-echocardiography | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `periop-preop-rcri-high-risk-hemicolectomy` | inv-iron-studies | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `periop-preop-rcri-high-risk-hemicolectomy` | mgmt-ecg | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `periop-preop-rcri-high-risk-hemicolectomy` | mgmt-functional-capacity | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `periop-preop-recent-acs-des-elective-chole` | mgmt-defer-elective-surgery | ios | critical | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `periop-preop-suxamethonium-apnoea` | level-at-least-urgent | ios | critical | known gap | ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ u |
-| `periop-preop-suxamethonium-apnoea` | mgmt-avoid-suxamethonium-mivacurium | ios | critical | known gap | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `periop-vte-caprini-high-cancer-surgery` | mgmt-pharmacological-prophylaxis | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `periop-vte-caprini-high-cancer-surgery` | mgmt-extended-prophylaxis | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `periop-vte-caprini-high-cancer-surgery` | mgmt-mechanical-prophylaxis | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `periop-vte-high-bleeding-risk-mechanical` | mgmt-mechanical-prophylaxis | ios | critical | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
-| `periop-vte-high-bleeding-risk-mechanical` | mgmt-reassess-vte-bleeding | ios | quality | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
 | `pharyngeal-pouch-elderly` | mnm-pouch | ios | quality | known gap | not in top 5 of ios.bayes: 1. Oesophageal / Gastric Carcinoma \| 2. Gastro-oesophageal Reflux Disease \| 3. Pancreatic Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Acute Coronary Syndrome; also in ios.triage#3 [known gap: No phary |
-| `pharyngeal-pouch-elderly` | flag-dysphagia | ios | critical | known gap | no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage)] |
-| `pharyngeal-pouch-elderly` | inv-imaging-or-endoscopy | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `pharyngeal-pouch-elderly` | inv-barium-first | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `pharyngeal-pouch-elderly` | mgmt-pouch-treatment-options | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `pilonidal-abscess-acute` | dx-pilonidal-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Skin Abscess \| 2. Inguinal Hernia \| 3. Incisional Hernia \| 4. Deep Vein Thrombosis \| 5. Incarcerated / Strangulated Hernia [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios |
 | `pilonidal-abscess-acute` | mgmt-no-acute-excision | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "excision with limberg flap or karydakis procedure - best outcomes, low recurrence" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present i |
 | `ppu-elderly-steroids-masked` | dx-perforation-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Kidney Injury \| 3. Acute Coronary Syndrome \| 4. Obturator Hernia \| 5. Perforated Peptic Ulcer [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1.  |
 | `ppu-elderly-steroids-masked` | score-rec-qsofa | ios | quality | known gap | qsofa not recommended; recommended: (none) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: (none)] |
 | `ppu-elderly-steroids-masked` | score-qsofa-autofill | ios | quality | known gap | expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for sepsis / deterioration) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for seps |
-| `ppu-elderly-steroids-masked` | mgmt-steroid-cover | ios | quality | known gap | no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no mana |
-| `ppu-perforated-peptic-ulcer` | flag-nsaid | ios | quality | known gap | no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 14 |
+| `ppu-perforated-peptic-ulcer` | flag-nsaid | ios | quality | known gap | no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): n |
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | ios | quality | known gap | boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, |
-| `ppu-septic-shock-delayed` | mgmt-source-control | ios | critical | known gap | no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `ppu-septic-shock-delayed` | mgmt-icu | ios | quality | known gap | no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `pyelonephritis-adult-female` | mgmt-no-nitrofurantoin | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: |
-| `pyelonephritis-pregnant-24wk` | mgmt-no-quinolone | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "⚠ pregnancy: fluoroquinolone / tetracycline removed (bnf) - e.g. cefalexin for pyelonephritis in pregnancy (..." [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbi |
-| `pyelonephritis-pregnant-24wk` | mgmt-no-nitrofurantoin | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "nitrofurantoin 100 mg mr bd × 5 days (first-line - st lucia)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: |
-| `pyelonephritis-pregnant-24wk` | mgmt-no-trimethoprim | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "or trimethoprim 200 mg bd × 7 days (if low resistance)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "or t |
 | `rectal-bleeding-young-haemorrhoidal` | dx-haemorrhoids-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Anxiety Disorder \| 2. Medication Side Effect / Adverse Drug Reaction \| 3. Acute Kidney Injury \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency [known gap: iOS CI 2026-09-25 (run 36169134350, da |
 | `rectal-prolapse-incarcerated` | dx-prolapse-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Fournier's Gangrene \| 2. Perianal Abscess \| 3. Skin Abscess \| 4. Femoral Hernia \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of |
-| `rectal-prolapse-incarcerated` | mgmt-emergency-perineal | ios | critical | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
-| `renal-colic-infected-obstructed` | mgmt-no-definitive-stone-treatment | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "5-10 mm: met + urology follow-up; eswl if no spontaneous passage at 4 weeks" (+2 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item prese |
-| `renal-colic-pregnant` | inv-ultrasound-first | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `renal-colic-pregnant` | mgmt-paracetamol-opioid | ios | quality | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the |
-| `renal-colic-solitary-kidney-anticoagulated` | mgmt-no-nsaid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "diclofenac 75 mg im or pr (nsaid - first line, reduces ureteric spasm)" [known gap: Web: "Diclofenac 75 mg IM / PR (first-line)" in plan, panel and medications for AKI on CKD in a so |
-| `renal-colic-solitary-kidney-anticoagulated` | mgmt-no-conservative-met | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "alpha blocker (met - medical expulsive therapy):" (+1 more) [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney. \| iOS CI 2026-09-25 (run 3616913435 |
-| `sbo-adhesive-base` | mgmt-potassium | ios | quality | known gap | no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
-| `sbo-malignant-carcinomatosis` | mgmt-palliative-mdt | ios | quality | known gap | no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No palliative, oncology or goals-of-care step for maligna |
-| `sbo-malignant-carcinomatosis` | mgmt-medical-mbo | ios | quality | known gap | no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antisecretory/antiemetic/steroid or venting-gastrostom |
-| `sbo-strangulation` | mgmt-no-nom-trial-with-strangulation | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and  |
+| `renal-colic-solitary-kidney-anticoagulated` | mgmt-no-conservative-met | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "alpha blocker (met - medical expulsive therapy):" [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney. \| iOS CI 2026-09-25 (run 36169134350, databas |
+| `sbo-adhesive-base` | mgmt-potassium | ios | quality | known gap | no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
+| `sbo-malignant-carcinomatosis` | mgmt-palliative-mdt | ios | quality | known gap | no management item matched among 32 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No palliative, oncology or goals-of-care step for maligna |
+| `sbo-malignant-carcinomatosis` | mgmt-medical-mbo | ios | quality | known gap | no management item matched among 32 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antisecretory/antiemetic/steroid or venting-gastrostom |
 | `sbo-virgin-abdomen` | mnm-neoplasm | ios | quality | known gap | not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Gastric Outlet Obstruction \| 3. Renal / Ureteric Colic \| 4. Obturator Hernia \| 5. Acute Kidney Injury [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis |
-| `sbo-virgin-abdomen` | mgmt-surgical-exploration | ios | quality | known gap | no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.ng12.plan, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mo |
-| `screen-aaa-lung-ex-smoker-68` | mgmt-aaa-ultrasound | ios | quality | known gap | no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `screen-aaa-lung-ex-smoker-68` | mgmt-ldct | ios | quality | known gap | no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `screen-aaa-lung-ex-smoker-68` | mgmt-aaa-ultrasound | ios | quality | known gap | no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `screen-aaa-lung-ex-smoker-68` | mgmt-ldct | ios | quality | known gap | no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `screen-breast-average-risk-42` | mgmt-mammogram | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-breast-average-risk-42` | mgmt-biennial-interval | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-breast-brca1-carrier-33` | inv-annual-mri | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `screen-breast-brca1-carrier-33` | mgmt-risk-reducing-surgery | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `screen-breast-brca1-carrier-33` | mgmt-high-risk-service | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
+| `screen-breast-brca1-carrier-33` | mgmt-risk-reducing-surgery | ios | quality | known gap | no management item matched among 7 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
+| `screen-breast-brca1-carrier-33` | mgmt-high-risk-service | ios | quality | known gap | no management item matched among 7 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-cervical-hpv-overdue-34` | inv-hpv-test | ios | quality | known gap | no investigation matched among 1 (ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)] |
-| `screen-cervical-hpv-overdue-34` | mgmt-screening-arranged | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
+| `screen-cervical-hpv-overdue-34` | mgmt-screening-arranged | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-crc-average-risk-46` | mgmt-no-cancer-staging-plan | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "mdt referral - colorectal oncology" (+3 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "mdt referral - |
-| `screen-crc-fhx-sister-48-lynch-features` | mgmt-lynch-genetics | ios | quality | known gap | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, |
+| `screen-crc-fhx-sister-48-lynch-features` | mgmt-lynch-genetics | ios | quality | known gap | no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions,  |
 | `screen-cv-risk-lipids-smoker-52` | inv-lipids | ios | quality | known gap | no investigation matched among 1 (ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)] |
 | `screen-cv-risk-lipids-smoker-52` | mgmt-10-year-risk | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-cv-risk-lipids-smoker-52` | mgmt-smoking-cessation | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
@@ -11590,56 +10867,21 @@ Guidelines:
 | `screen-hpylori-fdr-gastric-cancer` | inv-hpylori-test | ios | quality | known gap | no investigation matched among 6 (ios.pipeline.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions)] |
 | `screen-hypertension-clinic-bp-confirm` | mgmt-abpm-hbpm | ios | quality | known gap | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, |
 | `screen-hypertension-clinic-bp-confirm` | mgmt-cv-risk | ios | quality | known gap | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, |
-| `screen-older-man-81-overscreening` | mgmt-individualised-crc | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
+| `screen-older-man-81-overscreening` | mgmt-individualised-crc | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-polyp-low-risk-no-surveillance` | mgmt-low-risk-interval | ios | quality | known gap | no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, i |
 | `screen-polyp-piecemeal-emr-site-check` | mgmt-site-check | ios | quality | known gap | no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, i |
-| `screen-post-hysterectomy-no-cervical-52` | mgmt-mammogram-due | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `screen-post-hysterectomy-no-cervical-52` | mgmt-crc-screening-due | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `screen-post-splenectomy-vaccination` | mgmt-pneumococcal | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `screen-post-splenectomy-vaccination` | mgmt-meningococcal | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `screen-post-splenectomy-vaccination` | mgmt-hib | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `screen-post-splenectomy-vaccination` | mgmt-influenza | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `screen-post-splenectomy-vaccination` | mgmt-antibiotic-prophylaxis | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `screen-post-splenectomy-vaccination` | mgmt-alert-card | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
+| `screen-post-hysterectomy-no-cervical-52` | mgmt-mammogram-due | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
+| `screen-post-hysterectomy-no-cervical-52` | mgmt-crc-screening-due | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-prostate-58-shared-decision` | mgmt-shared-decision | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `seizure-first-unprovoked-adult` | mgmt-ecg | ios | critical | known gap | no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.actions, i |
-| `seizure-first-unprovoked-adult` | mgmt-first-seizure-referral | ios | critical | known gap | no management item matched among 7 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.actions, i |
 | `sigmoid-volvulus-base` | mnm-volvulus | ios | quality | known gap | not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI); also in ios.triage#4 [known gap: iOS CI 2026-09-25 (ru |
-| `sigmoid-volvulus-base` | mgmt-potassium | ios | quality | known gap | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No potassium replacement despite K 3.2. \| iOS CI 2026-09-25 (run 36169134350, da |
-| `sigmoid-volvulus-gangrenous` | mgmt-emergency-resection | ios | critical | known gap | no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisi |
-| `sigmoid-volvulus-gangrenous` | mgmt-icu | ios | quality | known gap | no management item matched among 11 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisi |
-| `sigmoid-volvulus-gangrenous` | mgmt-no-endoscopic-detorsion-with-gangrene | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "sigmoid volvulus without ischaemia: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission; gangrene or..." [known gap: iOS CI 2026-09-25 (run 36 |
-| `stroke-acute-fast-positive` | mgmt-swallow-screen | ios | quality | known gap | no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
-| `stroke-anticoagulated-apixaban-elderly` | mgmt-no-thrombolysis-on-doac | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "thrombolysis (iv alteplase 0.9 mg/kg max 90 mg):" (+4 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: " |
-| `thyroid-bethesda-1-nondiagnostic` | mgmt-repeat-fna | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-bethesda-3-aus` | mgmt-options | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-bethesda-4-follicular-neoplasm` | mgmt-lobectomy | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-bethesda-5-suspicious` | mgmt-surgery | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-bethesda-6-papillary-cn1b` | mgmt-total-thyroidectomy | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-bethesda-6-papillary-cn1b` | mgmt-lateral-neck-dissection | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-nodule-euthyroid-tirads4` | inv-tsh | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `thyroid-nodule-euthyroid-tirads4` | inv-us | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `thyroid-nodule-euthyroid-tirads4` | inv-fna | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `thyroid-nodule-euthyroid-tirads4` | mgmt-us-fna-recommended | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-nodule-hyperthyroid-hot` | inv-radionuclide-scan | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `thyroid-nodule-hyperthyroid-hot` | mgmt-beta-blocker | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-nodule-hyperthyroid-hot` | mgmt-definitive | ios | quality | known gap | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
+| `sigmoid-volvulus-base` | mgmt-potassium | ios | quality | known gap | no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No potassium replacement despite K 3.2. \| iOS CI 2026-09-25 (run 36169134350, da |
+| `stroke-acute-fast-positive` | mgmt-swallow-screen | ios | quality | known gap | no management item matched among 34 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 |
 | `thyroid-post-op-neck-haematoma` | dx-haematoma-top3 | ios | critical | known gap | not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Pulmonary Embolism \| 3. Acute Coronary Syndrome \| 4. Atrial Fibrillation \| 5. Sepsis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bay |
-| `thyroid-post-op-neck-haematoma` | mgmt-bedside-decompression | ios | critical | known gap | no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.action |
-| `thyroid-post-op-neck-haematoma` | mgmt-return-to-theatre | ios | quality | known gap | no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.action |
-| `thyroid-rapid-enlargement-stridor` | inv-core-biopsy | ios | critical | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `thyroid-rapid-enlargement-stridor` | inv-ct-neck-chest | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `thyroid-rapid-enlargement-stridor` | mgmt-airway | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-retrosternal-goitre-compression` | inv-tfts | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `thyroid-retrosternal-goitre-compression` | inv-ct | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
-| `thyroid-retrosternal-goitre-compression` | mgmt-thyroidectomy | ios | critical | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `thyroid-retrosternal-goitre-compression` | mgmt-airway-planning | ios | quality | known gap | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `tia-transient-weakness-dysarthria` | mgmt-defer-elective-surgery | ios | quality | known gap | no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: The pending hernia repair is not deferred (no TIA rule). \| iOS CI 2026-09-25 (ru |
+| `tia-transient-weakness-dysarthria` | mgmt-defer-elective-surgery | ios | quality | known gap | no management item matched among 33 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: The pending hernia repair is not deferred (no TIA rule). \| iOS CI 2026-09-25 (ru |
 | `trauma-blunt-polytrauma-class3-shock` | dx-abdominal-trauma-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Bacterial Meningitis / Meningococcal Sepsis \| 4. Ischaemic Colitis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not  |
-| `trauma-blunt-polytrauma-class3-shock` | mgmt-pelvic-binder | ios | quality | known gap | no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `trauma-blunt-polytrauma-class3-shock` | mgmt-pelvic-binder | ios | quality | known gap | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `trauma-elderly-occult-shock-warfarin` | flag-beta-blocker-masking | ios | quality | known gap | no red flag matched among 17 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag match |
-| `trauma-elderly-occult-shock-warfarin` | mgmt-no-bridging-advice | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "no lmwh bridging for most atrial fibrillation (bridge; accp 2022) - bridge only for high thrombo..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a bleeding |
-| `trauma-head-injury-elderly-apixaban` | inv-falls-ecg | ios | quality | known gap | no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)] |
+| `trauma-head-injury-elderly-apixaban` | inv-falls-ecg | ios | quality | known gap | no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)] |
 | `trauma-head-injury-elderly-apixaban` | pathway-trauma | ios | quality | known gap | recommended firstVisit (No previous visits on record); expected trauma [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma] |
 | `trauma-head-injury-gcs12` | score-rec-gcs | ios | quality | known gap | gcs not recommended; recommended: (none) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): gcs not recommended; recommended: (none)] |
 | `trauma-head-injury-gcs12` | inv-c-spine | ios | quality | known gap | no investigation matched among 2 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)] |
@@ -11647,35 +10889,12 @@ Guidelines:
 | `trauma-splenic-injury-stable` | dx-splenic-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer \| 3. Community-Acquired Pneumonia \| 4. Acute Pancreatitis \| 5. Testicular Torsion [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 |
 | `trauma-splenic-injury-unstable` | dx-splenic-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Coronary Syndrome \| 3. Community-Acquired Pneumonia \| 4. Acute Appendicitis \| 5. Small Bowel Obstruction [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios |
 | `trauma-stab-abdomen-evisceration` | dx-penetrating-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer \| 3. Community-Acquired Pneumonia \| 4. Sepsis \| 5. Pulmonary Embolism [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.baye |
-| `trauma-stab-abdomen-evisceration` | mgmt-tetanus | ios | quality | known gap | no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `trauma-stab-abdomen-evisceration` | mgmt-tetanus | ios | quality | known gap | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `uc-acute-severe-truelove-witts` | score-rec-truelove-witts | ios | quality | known gap | truelove-witts not recommended; recommended: ios:trueloveWitts [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. \| iOS CI 2026-09-25 (run 36169134350, databas |
-| `uc-acute-severe-truelove-witts` | inv-flexi-biopsy | ios | quality | known gap | no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)] |
-| `uc-acute-severe-truelove-witts` | inv-axr | ios | quality | known gap | no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)] |
-| `uc-asuc-day3-nonresponse` | inv-cmv | ios | quality | known gap | no investigation matched among 8 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)] |
-| `uc-asuc-day3-nonresponse` | mgmt-joint-review | ios | quality | known gap | no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.actions, |
-| `uc-flare-cdiff` | mgmt-cdi-treatment | ios | critical | known gap | no management item matched among 23 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.actions, |
-| `uc-steroid-refractory-cmv` | inv-cmv | ios | critical | known gap | no investigation matched among 9 (ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 9 (ios.pipeline.voi, ios.radiation)] |
-| `uc-steroid-refractory-cmv` | mgmt-antiviral | ios | critical | known gap | no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.actions, |
 | `uc-toxic-megacolon` | mnm-perforation | ios | quality | known gap | not in top 5 of ios.bayes: 1. Inflammatory Bowel Disease \| 2. Sepsis \| 3. Acute Appendicitis \| 4. Community-Acquired Pneumonia \| 5. Small Bowel Obstruction [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of  |
-| `uc-toxic-megacolon` | inv-no-colonoscopy | ios | critical | known gap | forbidden investigation present in ios.radiation: "colonoscopy + biopsy - gold standard diagnosis - extent and pattern" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.radiation: "colon |
-| `ugib-cvd-dual-antiplatelet` | mgmt-cardiology-antiplatelet-decision | ios | quality | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `ugib-cvd-dual-antiplatelet` | mgmt-no-tranexamic-acid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
-| `ugib-elderly-doac-pre-endoscopy-rockall` | mgmt-no-tranexamic-acid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
-| `ugib-melaena-only-woman` | mgmt-no-tranexamic-acid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
 | `ugib-nonvariceal-gbs-high` | flag-nsaid | ios | quality | known gap | no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag match |
-| `ugib-nonvariceal-gbs-high` | mgmt-stop-nsaid | ios | quality | known gap | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `ugib-nonvariceal-gbs-high` | mgmt-no-tranexamic-acid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
-| `ugib-nonvariceal-gbs-low-outpatient` | mgmt-no-tranexamic-acid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
-| `ugib-nonvariceal-unstable-shock` | mgmt-critical-care | ios | quality | known gap | no management item matched among 10 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among |
-| `ugib-nonvariceal-unstable-shock` | mgmt-escalation-ir-surgery | ios | quality | known gap | no management item matched among 10 (ios.pipeline.decisions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among |
-| `ugib-nonvariceal-unstable-shock` | mgmt-no-tranexamic-acid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
-| `ugib-on-warfarin-high-inr` | inv-inr | ios | critical | known gap | no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 3 (ios.radiation)] |
-| `ugib-on-warfarin-high-inr` | mgmt-no-tranexamic-acid | ios | critical | known gap | forbidden management item present in ios.radiation.plan: "no routine tranexamic acid (halt-it 2020; esge 2021)" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no rou |
 | `ugib-post-endoscopy-rockall` | score-rec-rockall | ios | quality | known gap | rockall not recommended; recommended: (none) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): rockall not recommended; recommended: (none)] |
 | `ugib-post-endoscopy-rockall` | mgmt-oral-ppi-continuation | ios | quality | known gap | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 14 (ios.pipeline.actions, |
-| `upper-abdominal-pain-weight-loss-over55` | inv-ogd | ios | critical | known gap | no investigation matched among 3 (ios.pipeline.voi, ios.ng12) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)] |
-| `urosepsis-elderly-immunosuppressed-catheter` | mgmt-steroid-cover | ios | critical | known gap | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `urosepsis-elderly-immunosuppressed-catheter` | mgmt-hold-methotrexate | ios | quality | known gap | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Methotrexate is not mentioned. \| iOS CI 2026-09-25 (run 36169134350, database mo |
 | `variceal-bleed-known-cirrhosis` | score-rec-child-pugh | ios | quality | known gap | child-pugh not recommended; recommended: glasgow-blatchford, rockall, aims65, ios:forrest [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): child-pugh not recommended; recommended: glasgow-blatchford, rockall, aims65, ios:forr |
 | `variceal-bleed-unrecognised-cirrhosis` | score-rec-child-pugh | ios | quality | known gap | child-pugh not recommended; recommended: glasgow-blatchford, rockall, aims65, ios:forrest [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): child-pugh not recommended; recommended: glasgow-blatchford, rockall, aims65, ios:forr |
 | `abscess-recurrent-mrsa-pwid` | mnm-pseudoaneurysm | web | quality | known gap | not in top 3 of web.pane: 1. Skin Abscess / Furuncle \| 2. Cellulitis \| 3. Perianal Abscess / Fistula [known gap: No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin s |

@@ -120,7 +120,11 @@ enum SupplementAlerts {
         }
 
         // Fever or cellulitis / line-site infection → IV drips outside clinical care.
-        let fever = (i.temperatureC.map { $0 >= 38.0 } ?? false) || text.containsAny(terms("fever"))
+        // "Hay fever", "rheumatic fever" and "yellow fever" (vaccine) are not a current fever.
+        let feverText = i.clinicalText.replacingOccurrences(of: #"\b(hay|rheumatic|yellow)\s+fever\b"#, with: " ",
+                                                            options: [.regularExpression, .caseInsensitive])
+        let fever = (i.temperatureC.map { $0 >= 38.0 } ?? false)
+            || NegationMatcher.containsAnyAffirmed(feverText, terms("fever"))
         if fever || text.containsAny(terms("lineInfection")) || recordedIds.contains("iv_vitamin_drip") {
             add("iv_drip", .info, recorded: recorded.filter { $0.id == "iv_vitamin_drip" })
         }

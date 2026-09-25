@@ -158,7 +158,9 @@ export function computeSupplementPrompts(i: SupplementPromptInput): SupplementPr
     add('detox', 'info', recorded.filter(r => r.id === 'detox_cleanse'));
   }
 
-  const fever = (i.temperatureC !== null && i.temperatureC >= 38.0) || has('fever');
+  // "Hay fever", "rheumatic fever" and "yellow fever" (vaccine) are not a current fever.
+  const feverText = i.clinicalText.replace(/\b(hay|rheumatic|yellow)\s+fever\b/gi, ' ');
+  const fever = (i.temperatureC !== null && i.temperatureC >= 38.0) || containsAnyAffirmed(feverText, terms('fever'));
   if (fever || has('lineInfection') || ids.has('iv_vitamin_drip')) {
     add('iv_drip', 'info', recorded.filter(r => r.id === 'iv_vitamin_drip'));
   }

@@ -117,7 +117,9 @@ enum VisitRiskAssessment {
         // PCI / 12 months of ACS; do not stop P2Y12 inhibitors without cardiology agreement.
         let pmhAll = NegationMatcher.Source(NegationMatcher.joinClauses(p.pmhEntries.map { Optional($0.condition) }
                                                                         + [p.pmhNotes, p.surgicalHistory, p.hpi]))
-        if pmhAll.containsAny(["coronary stent", "drug-eluting stent", "des ", "pci", "angioplasty"]) {
+        // Whole words: "des " used to match inside "episodes " and "pci" inside other words.
+        if pmhAll.containsAny(["coronary stent", "drug-eluting stent", "des", "pci",
+                               "percutaneous coronary intervention", "coronary angioplasty"], wholeWord: true) {
             flags.append(.init(level: .high, title: "Coronary stent",
                                detail: "Elective surgery / high-risk endoscopy deferred within 6 months of elective PCI or 12 months of ACS; do not stop P2Y12 inhibitors without cardiology agreement (ESC/ESAIC 2022).",
                                icon: "heart.text.square"))

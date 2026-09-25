@@ -211,6 +211,13 @@ final class SupplementTests: XCTestCase {
         drip.temperatureC = 36.8
         drip.clinicalText = "Afebrile"
         XCTAssertFalse(ids(drip).contains("iv_drip"))
+        // Twin of supplements.test.ts: hay / rheumatic fever is not a current fever.
+        drip.clinicalText = "Asthma and eczema; hay fever"
+        XCTAssertFalse(ids(drip).contains("iv_drip"))
+        drip.clinicalText = "Rheumatic fever as a child"
+        XCTAssertFalse(ids(drip).contains("iv_drip"))
+        drip.clinicalText = "Hay fever; now fever and rigors"
+        XCTAssertTrue(ids(drip).contains("iv_drip"))
     }
 
     func testRiskSnapshotShowsTheMandatoryQuestionForAProcedure() {

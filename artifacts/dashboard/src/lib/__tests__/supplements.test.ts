@@ -232,6 +232,9 @@ describe('prompts (iOS twin: SupplementAlerts)', () => {
     expect(ids(base({ temperatureC: 38.4 }))).toContain('iv_drip');
     expect(ids(base({ clinicalText: 'Cellulitis at the cannula site' }))).toContain('iv_drip');
     expect(ids(base({ clinicalText: 'Afebrile' }))).not.toContain('iv_drip');
+    expect(ids(base({ clinicalText: 'Asthma and eczema; hay fever' }))).not.toContain('iv_drip');
+    expect(ids(base({ clinicalText: 'Rheumatic fever as a child' }))).not.toContain('iv_drip');
+    expect(ids(base({ clinicalText: 'Hay fever; now fever and rigors' }))).toContain('iv_drip');
   });
 
   it('labValue reads whole words only', () => {
