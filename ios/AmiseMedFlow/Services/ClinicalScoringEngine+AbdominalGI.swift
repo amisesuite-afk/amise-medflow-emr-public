@@ -90,7 +90,7 @@ extension ClinicalScoringEngine {
         } else if hasGradeII {
             grade = 2; risk = .high
             interpretation = "Tokyo Grade II — Moderate acute cholecystitis; early laparoscopic cholecystectomy within 72 h"
-            recs = ["IV antibiotics (co-amoxiclav or cefuroxime + metronidazole)",
+            recs = ["IV antibiotics per local policy (e.g. co-amoxiclav, or cefuroxime + metronidazole; non-penicillin regimen if penicillin-allergic)",
                     "Early laparoscopic cholecystectomy within 72 h (if fit)",
                     "ERCP or MRCP if bile duct stones suspected",
                     "HDU monitoring if WBC markedly elevated or haemodynamically unstable"]
@@ -153,7 +153,7 @@ extension ClinicalScoringEngine {
             redFlags = ["Urgent biliary drainage (ERCP) is life-saving",
                         "Organ dysfunction — ICU-level care"]
             recs = ["Emergency ERCP with sphincterotomy and stone extraction / stent",
-                    "IV antibiotics (meropenem or piperacillin-tazobactam)",
+                    "IV antibiotics per local policy (e.g. meropenem or piperacillin-tazobactam; non-penicillin regimen if penicillin-allergic)",
                     "ICU admission", "Critical care / hepatobiliary surgical review",
                     "Blood cultures × 2 before antibiotics"]
         } else if gradeIICount >= 2 {
@@ -161,7 +161,7 @@ extension ClinicalScoringEngine {
             // age ≥75, bilirubin ≥5 mg/dL, albumin <0.7 × LLN (one criterion was counted before).
             grade = 2; risk = .high
             interpretation = "Tokyo Grade II — Moderate acute cholangitis; early biliary drainage (within 24 h)"
-            recs = ["IV antibiotics (co-amoxiclav or cefuroxime + metronidazole)",
+            recs = ["IV antibiotics per local policy (e.g. co-amoxiclav, or cefuroxime + metronidazole; non-penicillin regimen if penicillin-allergic)",
                     "Early biliary drainage (ERCP) within 24 h (TG18; ACG 2024)",
                     "Admit for IV hydration and monitoring",
                     "Blood cultures × 2 before antibiotics",

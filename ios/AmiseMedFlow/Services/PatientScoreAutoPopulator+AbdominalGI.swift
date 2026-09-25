@@ -38,6 +38,14 @@ extension PatientScoreAutoPopulator {
             if val > 18 { i.wbcAbove18 = true; f.autoFieldKeys.insert("wbcAbove18") }
         }
 
+        // TG18 Grade III organ dysfunction from vitals, labs and the examination text.
+        let organ = tg18OrganDysfunction(patient: patient)
+        if organ.cardiovascular { i.cardiovascularDysfunction = true; f.autoFieldKeys.insert("cardiovascularDysfunction") }
+        if organ.neurological { i.neurologicalDysfunction = true; f.autoFieldKeys.insert("neurologicalDysfunction") }
+        if organ.renal { i.renalDysfunction = true; f.autoFieldKeys.insert("renalDysfunction") }
+        if organ.hepatic { i.hepaticDysfunction = true; f.autoFieldKeys.insert("hepaticDysfunction") }
+        if organ.haematological { i.haematologicalDysfunction = true; f.autoFieldKeys.insert("haematologicalDysfunction") }
+
         return (i, f)
     }
 
@@ -67,6 +75,14 @@ extension PatientScoreAutoPopulator {
             let umol = bili < 5 ? bili * 17.1 : bili
             if umol > 85 { i.bilirubinAbove5 = true; f.autoFieldKeys.insert("bilirubinAbove5") }
         }
+
+        // TG18 Grade III organ dysfunction from vitals, labs and the examination text.
+        let organ = tg18OrganDysfunction(patient: patient)
+        if organ.cardiovascular { i.cardiovascularDysfunction = true; f.autoFieldKeys.insert("cardiovascularDysfunction") }
+        if organ.neurological { i.neurologicalDysfunction = true; f.autoFieldKeys.insert("neurologicalDysfunction") }
+        if organ.renal { i.renalDysfunction = true; f.autoFieldKeys.insert("renalDysfunction") }
+        if organ.hepatic { i.hepaticDysfunction = true; f.autoFieldKeys.insert("hepaticDysfunction") }
+        if organ.haematological { i.haematologicalDysfunction = true; f.autoFieldKeys.insert("haematologicalDysfunction") }
 
         return (i, f)
     }
