@@ -144,9 +144,11 @@ extension SyncService {
             let patient_id: String
             let prescriber_id: String
             let drug_name: String
-            let dose: String?
+            // Always sent: the live schema (Migration 32) has NOT NULL dose/frequency with no
+            // default, so leaving an empty one out made the insert fail on every sync.
+            let dose: String
             let route: String?
-            let frequency: String?
+            let frequency: String
             let duration: String?
             let indication: String?
             let instructions: String?
@@ -199,9 +201,9 @@ extension SyncService {
                         patient_id: patientId,
                         prescriber_id: prescriberId,
                         drug_name: rx.drug,
-                        dose: rx.dose.isEmpty ? nil : rx.dose,
+                        dose: rx.dose,
                         route: PrescriptionRoute.serverValue(rx.route),   // the CHECK's lowercase values
-                        frequency: rx.frequency.isEmpty ? nil : rx.frequency,
+                        frequency: rx.frequency,
                         duration: rx.duration.isEmpty ? nil : rx.duration,
                         indication: rx.indication.isEmpty ? nil : rx.indication,
                         instructions: rx.instructions,
