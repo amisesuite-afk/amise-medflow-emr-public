@@ -15,12 +15,12 @@ import type { DxExpectation } from './types';
 
 /** category → [pre-1.0.0 passes, floor now, expectations in the category] */
 const FLOORS: Record<string, [number, number, number]> = {
-  'anorectal':        [9, 14, 19],
+  'anorectal':        [9, 15, 19],
   'breast-endocrine': [5, 17, 17],
   'colorectal':       [14, 23, 25],
-  'general-medicine': [4, 54, 57],
-  'gi-emergency':     [22, 32, 39],
-  'hernia':           [6, 19, 20],
+  'general-medicine': [4, 55, 57],
+  'gi-emergency':     [22, 33, 39],
+  'hernia':           [6, 20, 20],
   'hpb':              [36, 42, 46],
   'other':            [7, 31, 31],
   'soft-tissue':      [5, 17, 19],

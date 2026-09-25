@@ -42,7 +42,7 @@ registerModule({
     },
     {
       id: 'urinary_retention', label: 'Urinary Retention (Acute / Chronic)', icd10: 'R33.9', prior: T.uncommon, course: 'acute',
-      features: { urinary_retention_symptoms: 0.95, palpable_bladder: 0.85, prostate_symptoms: 0.55, suprapubic_pain: 0.70, frequency_urgency: 0.25, overflow_incontinence: 0.25, hydronephrosis: 0.20, anticholinergic_or_opioid: 0.20 },
+      features: { urinary_retention_symptoms: 0.95, palpable_bladder: 0.85, prostate_symptoms: 0.55, suprapubic_pain: 0.70, frequency_urgency: 0.25, overflow_incontinence: 0.25, hydronephrosis: 0.20, anticholinergic_or_opioid: 0.20, recent_surgery: 0.15 },
     },
     {
       id: 'uti', label: 'Urinary Tract Infection (Cystitis / UTI)', icd10: 'N39.0', prior: T.common, course: 'acute',

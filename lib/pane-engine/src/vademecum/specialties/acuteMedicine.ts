@@ -48,7 +48,7 @@ registerModule({
     },
     {
       id: 'aki', label: 'Acute Kidney Injury (AKI)', icd10: 'N17.9', prior: T.uncommon, course: 'acute',
-      features: { raised_creatinine: 0.95, oliguria: 0.45, dehydration: 0.45, diarrhoea: 0.25, nausea_vomiting: 0.35, nsaid_use: 0.30, acei_arb_use: 0.45, diuretic_use: 0.35, known_ckd: 0.30, confusion: 0.15, hyperkalaemia_lab: 0.25, fatigue: 0.30, hypotension: 0.20, raised_urea: 0.85 },
+      features: { raised_creatinine: 0.95, oliguria: 0.45, dehydration: 0.45, diarrhoea: 0.25, nausea_vomiting: 0.35, nsaid_use: 0.30, acei_arb_use: 0.45, diuretic_use: 0.35, known_ckd: 0.30, confusion: 0.15, hyperkalaemia_lab: 0.25, fatigue: 0.30, hypotension: 0.20, raised_urea: 0.85, recent_surgery: 0.15 },
     },
     {
       id: 'hyperkalaemia', label: 'Hyperkalaemia', icd10: 'E87.5', prior: T.rare, course: 'acute',

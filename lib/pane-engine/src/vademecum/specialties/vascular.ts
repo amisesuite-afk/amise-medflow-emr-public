@@ -42,7 +42,7 @@ registerModule({
     },
     {
       id: 'deep_vein_thrombosis', label: 'Deep Vein Thrombosis', icd10: 'I82.409', prior: T.uncommon, course: 'acute',
-      features: { leg_swelling: 0.90, unilateral_leg_swelling: 0.85, calf_tenderness: 0.75, limb_pain: 0.70, previous_surgery: 0.20, recent_immobility: 0.35, fever: 0.10, erythema_surrounding: 0.25, known_malignancy: 0.15, oestrogen_use: 0.15 },
+      features: { leg_swelling: 0.90, unilateral_leg_swelling: 0.85, calf_tenderness: 0.75, limb_pain: 0.70, previous_surgery: 0.20, recent_surgery: 0.20, recent_immobility: 0.35, fever: 0.10, erythema_surrounding: 0.25, known_malignancy: 0.15, oestrogen_use: 0.15 },
     },
     {
       id: 'superficial_thrombophlebitis', label: 'Superficial Vein Thrombosis / Thrombophlebitis', icd10: 'I80.00', prior: T.uncommon, course: 'acute',
@@ -70,7 +70,7 @@ registerModule({
     },
     {
       id: 'pulmonary_embolism', label: 'Pulmonary Embolism', icd10: 'I26.99', prior: T.uncommon, course: 'acute',
-      features: { dyspnoea: 0.80, dyspnoea_pe: 0.65, pleuritic_chest_pain: 0.50, chest_pain_pressure: 0.10, tachycardia: 0.35, tachypnoea: 0.50, hypoxia: 0.55, haemoptysis: 0.12, syncope: 0.12, hypotension: 0.08, leg_swelling: 0.25, unilateral_leg_swelling: 0.25, calf_tenderness: 0.20, previous_surgery: 0.25, recent_immobility: 0.35, known_malignancy: 0.15, oestrogen_use: 0.15, sudden_onset: 0.50, fever: 0.15, cough: 0.20 },
+      features: { dyspnoea: 0.80, dyspnoea_pe: 0.65, pleuritic_chest_pain: 0.50, chest_pain_pressure: 0.10, tachycardia: 0.35, tachypnoea: 0.50, hypoxia: 0.55, haemoptysis: 0.12, syncope: 0.12, hypotension: 0.08, leg_swelling: 0.25, unilateral_leg_swelling: 0.25, calf_tenderness: 0.20, previous_surgery: 0.25, recent_surgery: 0.20, recent_immobility: 0.35, known_malignancy: 0.15, oestrogen_use: 0.15, sudden_onset: 0.50, fever: 0.15, cough: 0.20 },
     },
     {
       id: 'raynauds_phenomenon', label: "Raynaud's Phenomenon", icd10: 'I73.00', prior: T.rare, course: 'chronic',
