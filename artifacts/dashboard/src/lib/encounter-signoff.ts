@@ -8,6 +8,9 @@ import { allergyStatus } from '@/lib/allergy-status';
 import { isConfirmedDiagnosis } from '@/lib/diagnosis-suggestion';
 import { SECTION_LABELS } from '@/lib/workflow-completion';
 
+/** Optional steps: nothing is missing when they are empty (files, progress notes). */
+export const OPTIONAL_SIGNOFF_STEPS: ReadonlySet<Section> = new Set<Section>(['attachments', 'progress']);
+
 /** Steps checked when no chief-complaint pathway is active. */
 export const DEFAULT_SIGNOFF_STEPS: Section[] = ['hpi', 'pmh', 'medications', 'allergies', 'examination', 'assessment', 'plan'];
 
@@ -26,10 +29,10 @@ export interface SignOffGap {
 }
 
 export function buildSignOffSummary(input: SignOffInput): { gaps: SignOffGap[]; undocumented: string[] } {
-  // Only steps that have a documentation signal (Tasks, Monitor… have none) can be "missing".
-  // Allergies have their own line below.
+  // Only steps that have a documentation signal (Tasks, Monitor… have none) can be "missing";
+  // optional steps (Files, Notes) never are. Allergies have their own line below.
   const undocumented = input.steps
-    .filter(step => step !== 'allergies' && step in input.done && !input.done[step])
+    .filter(step => step !== 'allergies' && !OPTIONAL_SIGNOFF_STEPS.has(step) && step in input.done && !input.done[step])
     .map(step => SECTION_LABELS[step] ?? step);
   const gaps: SignOffGap[] = [];
   if (undocumented.length) {

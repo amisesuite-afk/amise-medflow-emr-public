@@ -28,6 +28,14 @@ describe('buildSignOffSummary', () => {
     expect(buildSignOffSummary({ steps: [], done: {}, allergies: 'Latex', workingDiagnosis: null, icdCodes: ['K80.2 — Gallstones'] }).gaps).toEqual([]);
   });
 
+  it('optional steps (Files, Notes) are never listed as missing', () => {
+    const { undocumented } = buildSignOffSummary({
+      steps: ['attachments', 'progress', 'pmh'], done: { attachments: false, progress: false, pmh: false },
+      allergies: 'NKDA', workingDiagnosis: confirmed, icdCodes: [],
+    });
+    expect(undocumented).toEqual(['PMH']);
+  });
+
   it('an unconfirmed diagnosis and an NKDA/allergy conflict are flagged; steps without a signal are not', () => {
     const unlocked = { ...confirmed, locked: false };
     const { gaps } = buildSignOffSummary({
