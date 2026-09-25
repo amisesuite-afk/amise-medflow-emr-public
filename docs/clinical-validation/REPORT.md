@@ -1,10 +1,10 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-25T21:05:27.057Z.
+Generated 2026-09-25T21:51:00.327Z.
 
 - iOS: 397 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T20:05:45Z).
 - iOS differential engine mode: database (BayesianDiagnosisEngine used DiagnosticDatabase.json).
-- Web: 397 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T19:01:21.899Z, clinval-web/1).
+- Web: 397 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T21:50:50.160Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -15,7 +15,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
 | ios | 397 | 3087 | 2715 | 256 | 116 | 21 | 0 | 255 | 0 | 0 |
-| web | 397 | 3087 | 2871 | 124 | 92 | 5 | 0 | 122 | 0 | 0 |
+| web | 397 | 3087 | 2919 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
 
 ## Blocking failures
 
@@ -44,11 +44,6 @@ None.
 - `periop-preop-suxamethonium-apnoea` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): ios.triage: routine (ClinicalAcuityEngine level=Routine; pathway=Undifferentiated Abdominal Pain — Further Assessment Required; because: keywords: Chief complaint: Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ u]
 - `ppu-elderly-steroids-masked` / **dx-perforation-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Kidney Injury \| 3. Acute Coronary Syndrome \| 4. Obturator Hernia \| 5. Perforated Peptic Ulcer [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Acute Kidney Injury \| 3. Acute Coronary Syndrome \| 4. Obturator Hernia \| 5. Perforated Peptic Ulcer]
 - `thyroid-post-op-neck-haematoma` / **dx-haematoma-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Pulmonary Embolism \| 3. Acute Coronary Syndrome \| 4. Atrial Fibrillation \| 5. Sepsis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Pulmonary Embolism \| 3. Acute Coronary Syndrome \| 4. Atrial Fibrillation \| 5. Sepsis]
-- `breast-inflammatory-cancer` / **mgmt-no-bcs-or-slnb** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"]
-- `cholangitis-tg18-grade3-reynolds` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
-- `cholecystitis-tg18-grade3-organ-dysfunction` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
-- `dvt-pregnancy-22wk` / **mgmt-no-warfarin-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "... weeks (mhra 2020); anticoagulation with lmwh, not doacs or warfarin (rcog gtg 37a/b); ultrasound or mri before ionising imaging where it answers th..." [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more)]
-- `lbo-cancer-impending-caecal-perforation` / **mgmt-no-stent-with-impending-perforation** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated'). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)"]
 
 ## Results by condition and permutation
 
@@ -353,12 +348,11 @@ Guidelines:
 | inv-ecg | investigationInclude | quality | PASS | PASS | 2021 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure (and 2023 focused update) 2021 |  |
 | inv-cxr | investigationInclude | quality | PASS | PASS | 2021 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure (and 2023 focused update) 2021 |  |
 | mgmt-niv | managementInclude | quality | FAIL (known gap) | PASS | 2021 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure (and 2023 focused update) 2021 |  |
-| mgmt-no-fluid-challenge | managementExclude | quality | PASS | FAIL (known gap) | 2021 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure (and 2023 focused update) 2021 | tachycardia_afebrile prompt: do not offer a fluid challenge when heart failure signs are recorded; offer ECG, BNP and diuretic review instead. |
+| mgmt-no-fluid-challenge | managementExclude | quality | PASS | PASS | 2021 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure (and 2023 focused update) 2021 |  |
 
 Failure details:
 
 - **mgmt-niv** (ios): no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-fluid-challenge** (web): forbidden management item present in web.clinicalPrompts: "• no iv fluid challenge - heart-failure signs or suspected pe recorded (esc 2021; esc 2019)." [known gap: Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: "• iv fluid challenge 500ml if hypovolaemia likely - reassess hr at 30 min.".]
 
 Guidelines:
 
@@ -862,11 +856,7 @@ Guidelines:
 | inv-ctpa | investigationInclude | critical | PASS | PASS | NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing 2020; 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 |  |
 | score-rec-wells-pe | scoreRecommended | quality | PASS | PASS | NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing 2020 |  |
 | mgmt-anticoagulation | managementInclude | quality | PASS | PASS | NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing 2020; 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism 2019 |  |
-| mgmt-no-ddimer-gate | managementExclude | quality | PASS | FAIL (known gap) | NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing 2020 | Two-level Wells PE in the hypoxia/tachycardia prompts: >4 -> CTPA (interim anticoagulation if delayed); ≤4 -> D-dimer, or PERC when probability is low. |
-
-Failure details:
-
-- **mgmt-no-ddimer-gate** (web): forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more).]
+| mgmt-no-ddimer-gate | managementExclude | quality | PASS | PASS | NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing 2020 |  |
 
 Guidelines:
 
@@ -1323,13 +1313,12 @@ Guidelines:
 | level-routine | emergencyLevel | quality | PASS | FAIL (known gap) | ASCRS clinical practice guidelines 2023 |  |
 | mgmt-topical | managementInclude | quality | PASS | PASS | ASCRS clinical practice guidelines 2023 |  |
 | mgmt-fibre | managementInclude | quality | PASS | PASS | ASCRS clinical practice guidelines 2023 |  |
-| mgmt-no-resuscitation | managementExclude | quality | PASS | FAIL (known gap) | ASCRS clinical practice guidelines 2023 |  |
+| mgmt-no-resuscitation | managementExclude | quality | PASS | PASS | ASCRS clinical practice guidelines 2023 |  |
 
 Failure details:
 
 - **dx-fissure-top3** (ios): not in top 3 of ios.bayes: 1. Medication Side Effect / Adverse Drug Reaction \| 2. Anxiety Disorder \| 3. Acute Kidney Injury \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Medication Side Effect / Adverse Drug Reaction \| 2. Anxiety Disorder \| 3. Acute Kidney Injury \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency]
 - **level-routine** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → emergency_now), so every rectal bleed — including minor outlet bleeding — is "emergency".]
-- **mgmt-no-resuscitation** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore cannulae, Hartmann’s bolus, cross-match 2 units) for any rectal-bleeding chip, regardless of volume, haemodynamics or Hb.]
 
 Guidelines:
 
@@ -1455,7 +1444,7 @@ Guidelines:
 | inv-urinalysis | investigationInclude | quality | PASS | PASS |  |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-analgesia | managementInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-no-routine-postop-antibiotics | managementExclude | quality | PASS | FAIL (known gap) | WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-routine-postop-antibiotics | managementExclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | pathway-first-visit | pathway | quality | PASS | n/a |  |  |
 | variant-uncomplicated | dxVariant | quality | n/a | PASS | WSES Jerusalem guidelines 2020 |  |
 
@@ -1463,7 +1452,6 @@ Failure details:
 
 - **score-alvarado-autofill** (ios): expected ≥ 7; got ios.autofill.alvarado=3 (Score 3/10 — appendicitis unlikely) [known gap: iOS auto-fill reads only temperature and WBC (3/10); history and examination items stay unticked.]
 - **score-rec-air** (web): air not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web CDS has no AIR rule (and no AIR calculator); Alvarado only.]
-- **mgmt-no-routine-postop-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo 4.5g tds + metronidazole 500mg tds × 5 ..." [known gap: Web appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis.]
 
 Guidelines:
 
@@ -1513,13 +1501,12 @@ Permutation of `appendicitis-adult-typical`.
 | mgmt-lap-appendicectomy | managementInclude | critical | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-appendicolith-caution | managementInclude | quality | FAIL (known gap) | PASS | WSES Jerusalem guidelines 2020; CODA trial 2020 |  |
 | mgmt-no-antibiotics-first-despite-appendicolith | managementExclude | quality | PASS | PASS | CODA trial 2020; WSES Jerusalem guidelines 2020 |  |
-| mgmt-no-routine-postop-antibiotics | managementExclude | quality | PASS | FAIL (known gap) | WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-routine-postop-antibiotics | managementExclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | variant-uncomplicated | dxVariant | quality | n/a | PASS | WSES Jerusalem guidelines 2020 |  |
 
 Failure details:
 
 - **mgmt-appendicolith-caution** (ios): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-routine-postop-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo 4.5g tds + metronidazole 500mg tds × 5 ..." [known gap: Web: Appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis.]
 
 Guidelines:
 
@@ -1631,8 +1618,8 @@ Permutation of `appendicitis-adult-typical`.
 | score-rec-pas | scoreRecommended | quality | FAIL (known gap) | FAIL (known gap) | WSES Jerusalem guidelines 2020; Pediatric Appendicitis Score (PAS) 2002 |  |
 | inv-ultrasound | investigationInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-no-unqualified-ct-child | managementExclude | quality | FAIL (known gap) | FAIL (known gap) | WSES Jerusalem guidelines 2020 | Keep the investigation 'conditional' text in PlanTab.buildPlanText and add a paediatric qualifier (US first; CT only if US non-diagnostic). |
-| mgmt-no-routine-postop-antibiotics | managementExclude | quality | PASS | FAIL (known gap) | WSES Jerusalem guidelines 2020 |  |
+| mgmt-no-unqualified-ct-child | managementExclude | quality | FAIL (known gap) | PASS | WSES Jerusalem guidelines 2020 | Keep the investigation 'conditional' text in PlanTab.buildPlanText and add a paediatric qualifier (US first; CT only if US non-diagnostic). |
+| mgmt-no-routine-postop-antibiotics | managementExclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | pathway-first-visit | pathway | quality | PASS | n/a |  |  |
 | variant-uncomplicated | dxVariant | quality | n/a | PASS | WSES Jerusalem guidelines 2020 |  |
 
@@ -1641,8 +1628,6 @@ Failure details:
 - **score-rec-pas** (ios): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews]
 - **mgmt-no-unqualified-ct-child** (ios): forbidden management item present in ios.soap.plan: "investigations: fbc, β-hcg (females), urinalysis / msu, ct abdomen/pelvis with iv contrast, uss abdomen." [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads 'Investigation: CT abdomen/pelvis with IV contrast (urgent)' for a child whose ultrasound already confirmed appendicitis; the prompt strip adds 'CT abdomen/pelvis — appendix calibre'. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: fbc, β-hcg (females), urinalysis / msu, ct abdomen/pelvis with iv contrast, uss abdomen."]
 - **score-rec-pas** (web): pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews]
-- **mgmt-no-unqualified-ct-child** (web): forbidden management item present in web.clinicalPrompts: "• ct abdomen/pelvis - appendix calibre, perforation, appendicolith." (+1 more) [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads 'Investigation: CT abdomen/pelvis with IV contrast (urgent)' for a child whose ultrasound already confirmed appendicitis; the prompt strip adds 'CT abdomen/pelvis — appendix calibre'. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: "investigations: fbc, β-hcg (females), urinalysis / msu, ct abdomen/pelvis with iv contrast, uss abdomen."]
-- **mgmt-no-routine-postop-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav [weight-based dose - calculate per bnfc] tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo [weight-based dose - calculate per bnfc..." [known gap: Web: Appendicectomy operative-plan prompt prescribes IV then oral co-amoxiclav for 5 days after simple appendicitis.]
 
 Guidelines:
 
@@ -1791,15 +1776,14 @@ Permutation of `biliary-colic-uncomplicated`.
 | no-alarm | mustNotAlarm | quality | PASS | FAIL (known gap) |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
 | mgmt-reassure-safety-net | managementInclude | quality | FAIL (known gap) | PASS | NICE CG188 2014 | Add a biliary-colic/asymptomatic-cholelithiasis protocol (see biliary-colic-uncomplicated) with the NICE CG188 "no treatment for asymptomatic stones in a normal gallbladder" branch. |
 | mgmt-no-cholecystectomy | managementExclude | quality | PASS | FAIL (known gap) | NICE CG188 2014 | clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any "guarding", "gallbladder wall" or "gallstone" substring. |
-| mgmt-no-antibiotics | managementExclude | quality | PASS | FAIL (known gap) |  | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. |
+| mgmt-no-antibiotics | managementExclude | quality | PASS | PASS |  |  |
 
 Failure details:
 
 - **mgmt-reassure-safety-net** (ios): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
 - **level-routine** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=60); expected ≤ routine [known gap: adaptiveTriage emergency_now (score 100) for an asymptomatic referral: "never had … jaundice or fever" fires biliary-obstruction and cholangitis-pattern rules.]
 - **no-alarm** (web): forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. call 911 or go to the nearest emergency department now ..." [known gap: "Emergency now" and "Dilated CBD" alarms fire on negated history and "CBD 4 mm".]
-- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.plan: "[surgical] gallbladder polyp ≥ 10 mm: laparoscopic cholecystectomy; 6-9 mm with risk factors: cholecystectomy or ultrasound surveillance (2022 joi..." (+4 more) [known gap: With no features applied, PANE still ranks cholecystitis first (0.27 ≥ 0.20), so the Assessment panel shows early LC within 72 h; the gallstone operative-plan prompt fires on "gallstones" in the US report.]
-- **mgmt-no-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment panel (cholecystitis protocol from PANE top) lists IV co-amoxiclav/pip-tazo.]
+- **mgmt-no-cholecystectomy** (web): forbidden management item present in web.plan: "[surgical] gallbladder polyp ≥ 10 mm: laparoscopic cholecystectomy; 6-9 mm with risk factors: cholecystectomy or ultrasound surveillance (2022 joi..." (+3 more) [known gap: With no features applied, PANE still ranks cholecystitis first (0.27 ≥ 0.20), so the Assessment panel shows early LC within 72 h; the gallstone operative-plan prompt fires on "gallstones" in the US report.]
 
 Guidelines:
 
@@ -1824,12 +1808,11 @@ Guidelines:
 | inv-lfts | investigationInclude | quality | PASS | PASS | NICE CG188 2014 |  |
 | inv-ultrasound | investigationInclude | quality | PASS | PASS | NICE CG188 2014 |  |
 | mgmt-elective-lap-chole | managementInclude | quality | PASS | PASS | NICE CG188 2014 |  |
-| mgmt-no-antibiotics | managementExclude | quality | PASS | FAIL (known gap) |  | clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches "temp" and "afebrile") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text. |
+| mgmt-no-antibiotics | managementExclude | quality | PASS | PASS |  |  |
 
 Failure details:
 
 - **score-rec-asge-cbd** (ios): asge-cbd not recommended; recommended: tg18-cholecystitis, tg18-cholangitis, news2, rcri, asa, mews [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholecystitis, tg18-cholangitis, news2, rcri, asa, mews]
-- **mgmt-no-antibiotics** (web): forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment panel shows the cholecystitis protocol (PANE top) with IV co-amoxiclav/pip-tazo; the Murphy's-sign prompt (fired by "Murphy's sign negative") adds IV co-amoxiclav.]
 
 Guidelines:
 
@@ -2004,14 +1987,13 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| level-routine | emergencyLevel | quality | PASS | FAIL (known gap) | NICE CG164 2013 |  |
+| level-routine | emergencyLevel | quality | PASS | PASS | NICE CG164 2013 |  |
 | mgmt-genetics-referral | managementInclude | quality | FAIL (known gap) | PASS | NICE CG164 2013 |  |
 | mgmt-no-biopsy | managementExclude | quality | PASS | PASS |  |  |
 
 Failure details:
 
 - **mgmt-genetics-referral** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
-- **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Triage same_day_call: the word "cancer" in the complaint ("Worried about breast cancer") matches the "Possible malignancy" red flag.]
 
 Guidelines:
 
@@ -2029,14 +2011,10 @@ Guidelines:
 | level-at-least-priority | emergencyLevel | critical | PASS | PASS | NICE NG12 2015 |  |
 | flag-inflammatory | redFlags | critical | PASS | PASS | NCCN Guidelines 2025 |  |
 | inv-core-biopsy | investigationInclude | critical | PASS | PASS | NCCN Guidelines 2025 |  |
-| mgmt-no-bcs-or-slnb | managementExclude | critical | PASS | FAIL (known gap) | NCCN Guidelines 2025 | Add an inflammatory-breast-cancer variant (C50 + "inflammatory"/"peau d'orange"): neoadjuvant systemic therapy then modified radical mastectomy; exclude BCS and SLNB. |
+| mgmt-no-bcs-or-slnb | managementExclude | critical | PASS | PASS | NCCN Guidelines 2025 |  |
 | inv-staging | investigationInclude | quality | PASS | PASS | NCCN Guidelines 2025 |  |
 | mgmt-neoadjuvant | managementInclude | quality | PASS | PASS | NCCN Guidelines 2025 |  |
 | mgmt-no-further-antibiotics-only | managementExclude | quality | PASS | PASS |  |  |
-
-Failure details:
-
-- **mgmt-no-bcs-or-slnb** (web): forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"]
 
 Guidelines:
 
@@ -2611,7 +2589,7 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | dx-cellulitis-top3 | mustRankTopK | critical | PASS | PASS | NICE NG141 2019; IDSA practice guideline 2014 |  |
 | mnm-dvt | mustNotMiss | quality | PASS | FAIL (known gap) | NICE NG158 2020 |  |
-| level-not-emergency | emergencyLevel | quality | PASS | FAIL (known gap) | NICE NG141 2019 | Require a diabetes context (comorbidity or diabetic-foot words other than 'spreading redness') for the diabetic-foot red flag. |
+| level-not-emergency | emergencyLevel | quality | PASS | PASS | NICE NG141 2019 |  |
 | no-shock-alarm | mustNotAlarm | quality | PASS | PASS |  |  |
 | inv-mark-border | investigationInclude | quality | FAIL (known gap) | PASS | NICE NG141 2019 |  |
 | mgmt-flucloxacillin | managementInclude | quality | PASS | PASS | NICE NG141 2019 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
@@ -2623,7 +2601,6 @@ Failure details:
 
 - **inv-mark-border** (ios): no investigation matched among 10 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 10 (ios.pipeline.decisions, ios.radiation)]
 - **mnm-dvt** (web): not in top 3 of web.pane: 1. Cellulitis \| 2. Necrotising Fasciitis (NSTI) \| 3. Perianal Abscess / Fistula [known gap: PANE top 3: Acute cholecystitis, Cellulitis, GORD; DVT not listed. Triage surgical matches list DVT #1.]
-- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Over-triage: the HPI word 'spreading redness' matches the diabetic-foot red flag (rules.ts, urgent) → emergency_now in a non-diabetic with mild cellulitis.]
 
 Guidelines:
 
@@ -2712,7 +2689,7 @@ Guidelines:
 | mnm-choledocholithiasis | mustNotMiss | quality | PASS | PASS |  |  |
 | flag-charcot | redFlags | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | score-rec-tg18-cholangitis | scoreRecommended | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| score-tg18-autofill | scoreValue | quality | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-autofill | scoreValue | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | score-qsofa-calculator | scoreValue | quality | PASS | n/a | Sepsis-3 consensus definitions 2016 |  |
 | score-qsofa-autofill | scoreValue | quality | FAIL (known gap) | n/a | Sepsis-3 consensus definitions 2016 |  |
 | inv-lfts | investigationInclude | quality | PASS | PASS |  |  |
@@ -2728,7 +2705,6 @@ Failure details:
 
 - **dx-cholangitis-top1** (ios): not in top 1 of ios.bayes: 1. Choledocholithiasis \| 2. Sepsis \| 3. Ascending Cholangitis; also in ios.ccEarly#1, ios.pipeline#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 1 of ios.bayes: 1. Choledocholithiasis \| 2. Sepsis \| 3. Ascending Cholangitis; also in ios.ccEarly#1, ios.pipeline#2]
 - **score-qsofa-autofill** (ios): expected = 2; got ios.autofill.qsofa=0 (qSOFA 0/3 — Lower risk, but reassess if clinical status chan) [known gap: iOS qSOFA auto-fill uses RR >22 and SBP <100 instead of Sepsis-3 RR ≥22 and SBP ≤100, so boundary values are missed.]
-- **score-tg18-autofill** (web): expected = 2; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: Web clinical-scores needs manual imaging ticks before it will diagnose, so auto-fill reads "criteria not met".]
 
 Guidelines:
 
@@ -2754,7 +2730,7 @@ Permutation of `cholangitis-tg18-charcot-sepsis`.
 | no-sepsis-alarm-mild | mustNotAlarm | quality | PASS | PASS |  |  |
 | score-rec-tg18-cholangitis | scoreRecommended | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | score-tg18-calculator | scoreValue | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| score-tg18-autofill | scoreValue | quality | FAIL (known gap) | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-autofill | scoreValue | quality | FAIL (known gap) | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-lfts | investigationInclude | quality | PASS | PASS |  |  |
 | inv-mrcp-or-eus | investigationInclude | quality | PASS | PASS |  |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
@@ -2766,7 +2742,6 @@ Failure details:
 
 - **score-tg18-autofill** (ios): expected = 1; got ios.autofill.tg18-cholangitis=0 (Charcot's triad not met — consider biliary colic or other he) [known gap: iOS auto-fill: age >75 alone → Grade II; web clinical-scores: criteria not met without manual imaging ticks.]
 - **mnm-malignant-obstruction** (web): not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3 includes Inguinal / Femoral Hernia (male/age prior modifiers) instead.]
-- **score-tg18-autofill** (web): expected = 1; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill: age >75 alone → Grade II; web clinical-scores: criteria not met without manual imaging ticks.]
 
 Guidelines:
 
@@ -2787,7 +2762,7 @@ Permutation of `cholangitis-tg18-charcot-sepsis`.
 | alarm-sepsis | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | alarm-haemodynamic | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | score-tg18-calculator | scoreValue | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| score-tg18-autofill | scoreValue | critical | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-autofill | scoreValue | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-blood-cultures | investigationInclude | critical | PASS | PASS | Surviving Sepsis Campaign guidelines 2021 2021; Tokyo Guidelines 2018 2018 |  |
 | mgmt-urgent-biliary-drainage | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018; Tokyo Guidelines 2018 2018 |  |
 | mgmt-organ-support | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign guidelines 2021 2021 |  |
@@ -2804,10 +2779,6 @@ Permutation of `cholangitis-tg18-charcot-sepsis`.
 | mgmt-no-surgery-first | managementExclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | pathway-first-visit | pathway | quality | PASS | n/a |  |  |
 | variant-grade3 | dxVariant | quality | n/a | PASS | Tokyo Guidelines 2018 2018 |  |
-
-Failure details:
-
-- **score-tg18-autofill** (web): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 
 Guidelines:
 
@@ -2866,8 +2837,8 @@ Guidelines:
 | mgmt-lap-cholecystectomy | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mnm-cbd-stone-or-cholangitis | mustNotMiss | quality | FAIL (known gap) | PASS |  |  |
 | no-sepsis-alarm-grade1 | mustNotAlarm | quality | PASS | PASS |  |  |
-| score-rec-tg18-cholecystitis | scoreRecommended | quality | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
-| score-tg18-autofill | scoreValue | quality | FAIL (known gap) | FAIL (known gap) |  |  |
+| score-rec-tg18-cholecystitis | scoreRecommended | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-autofill | scoreValue | quality | FAIL (known gap) | PASS |  |  |
 | inv-ultrasound | investigationInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-lfts | investigationInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-fbc-crp | investigationInclude | quality | PASS | PASS |  |  |
@@ -2882,8 +2853,6 @@ Failure details:
 
 - **mnm-cbd-stone-or-cholangitis** (ios): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Biliary Colic \| 4. Ectopic Pregnancy \| 5. Small Bowel Obstruction; also in ios.triage#3 [known gap: iOS: fallback mode (DiagnosticDatabase.json does not decode): the gallstone ultrasound text is appended to the CC for routing and selects the biliaryColic pool, which has no built-in list (`?? []`), so the differential is empty.]
 - **score-tg18-autofill** (ios): expected = 1; got ios.autofill.tg18-cholecystitis=0 (Criteria for acute cholecystitis not met — consider biliary ) [known gap: iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads "criteria not met"; web clinical-scores needs manual Murphy/imaging ticks.]
-- **score-rec-tg18-cholecystitis** (web): tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2, asa, stop-bang [known gap: Web CDS has a TG18 cholangitis rule but none for cholecystitis.]
-- **score-tg18-autofill** (web): expected = 1; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads "criteria not met"; web clinical-scores needs manual Murphy/imaging ticks.]
 
 Guidelines:
 
@@ -2906,11 +2875,11 @@ Permutation of `cholecystitis-tg18-grade1`.
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | mnm-mesenteric-ischaemia | mustNotMiss | quality | FAIL (known gap) | FAIL (known gap) |  | PANE: age ≥75 / vascular risk modifier for mesenteric ischaemia. |
 | flag-diabetes-elderly | redFlags | quality | PASS | PASS |  |  |
-| score-tg18-autofill | scoreValue | quality | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 | clinical-scores.ts: derive the TG18 imaging criterion from the radiology result text (wall thickening, pericholecystic fluid, sonographic Murphy's) and local signs from exam chips. |
+| score-tg18-autofill | scoreValue | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-glycaemic-plan | managementInclude | quality | PASS | PASS |  |  |
-| mgmt-no-nsaid-ckd | managementExclude | quality | FAIL (known gap) | FAIL (known gap) |  | Operative-plan templates: omit NSAIDs when comorbidities include CKD or age ≥75, rather than a free-text "if eGFR normal" caveat. |
+| mgmt-no-nsaid-ckd | managementExclude | quality | FAIL (known gap) | PASS |  | Operative-plan templates: omit NSAIDs when comorbidities include CKD or age ≥75, rather than a free-text "if eGFR normal" caveat. |
 | variant-grade2 | dxVariant | quality | n/a | PASS | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I, and remove the bare "cholecystitis" keyword from Grade I. |
 
 Failure details:
@@ -2918,8 +2887,6 @@ Failure details:
 - **mnm-mesenteric-ischaemia** (ios): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Small Bowel Obstruction \| 4. Acute Pancreatitis \| 5. Ascending Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Small Bowel Obstruction \| 4. Acute Pancreatitis \| 5. Ascending Cholangitis]
 - **mgmt-no-nsaid-ckd** (ios): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." [known gap: Lap chole operative-plan post-op orders: "Ibuprofen 400mg TDS (if eGFR normal)" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."]
 - **mnm-mesenteric-ischaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Small Bowel Obstruction \| 4. Acute Pancreatitis \| 5. Ascending Cholangitis]
-- **score-tg18-autofill** (web): expected ≥ 2; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: clinical-scores auto-derived grade = 0 "criteria not met" despite WBC 19.4 and a characteristic US report (needs manual imaging ticks).]
-- **mgmt-no-nsaid-ckd** (web): forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole operative-plan post-op orders: "Ibuprofen 400mg TDS (if eGFR normal)" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."]
 
 Guidelines:
 
@@ -3032,7 +2999,7 @@ Permutation of `cholecystitis-tg18-grade1`.
 | score-tg18-calculator | scoreValue | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-lap-cholecystectomy | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | flag-diabetes | redFlags | quality | PASS | PASS |  |  |
-| score-rec-tg18-cholecystitis | scoreRecommended | quality | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| score-rec-tg18-cholecystitis | scoreRecommended | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-blood-cultures | investigationInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-glucose | investigationInclude | quality | FAIL (known gap) | PASS |  |  |
 | mgmt-gb-drainage-option | managementInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
@@ -3044,7 +3011,6 @@ Permutation of `cholecystitis-tg18-grade1`.
 Failure details:
 
 - **inv-glucose** (ios): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation)]
-- **score-rec-tg18-cholecystitis** (web): tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, web:wagner, news2, caprini, asa, rcri [known gap: No TG18 cholecystitis CDS rule on web.]
 
 Guidelines:
 
@@ -3066,14 +3032,14 @@ Permutation of `cholecystitis-tg18-grade1`.
 | alarm-haemodynamic | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
 | flag-penicillin-allergy | redFlags | critical | PASS | PASS |  |  |
 | score-tg18-calculator | scoreValue | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| score-tg18-autofill | scoreValue | critical | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| score-tg18-autofill | scoreValue | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | inv-blood-cultures | investigationInclude | critical | PASS | PASS | Surviving Sepsis Campaign 2021; Tokyo Guidelines 2018 2018 |  |
 | mgmt-gb-drainage | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-organ-support | managementInclude | critical | PASS | PASS | Tokyo Guidelines 2018 2018; Surviving Sepsis Campaign 2021 |  |
 | mgmt-no-penicillin-in-anaphylaxis | managementExclude | critical | PASS | PASS |  |  |
 | mnm-cholangitis | mustNotMiss | quality | FAIL (known gap) | PASS |  |  |
 | flag-organ-support | redFlags | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
-| score-rec-tg18-cholecystitis | scoreRecommended | quality | PASS | FAIL (known gap) | Tokyo Guidelines 2018 2018 |  |
+| score-rec-tg18-cholecystitis | scoreRecommended | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
 | score-rec-news2 | scoreRecommended | quality | PASS | PASS | Surviving Sepsis Campaign 2021; Royal College of Physicians 2017 |  |
 | score-qsofa-autofill | scoreValue | quality | PASS | n/a | Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3) 2016 |  |
 | inv-lactate | investigationInclude | quality | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
@@ -3090,8 +3056,6 @@ Failure details:
 - **inv-coagulation** (ios): no investigation matched among 18 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 18 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)]
 - **mgmt-gb-drainage-in-generated-plan** (ios): no management item matched among 11 (ios.radiation.plan) [known gap: iOS radiation plan text has no drainage step (only an IR referral chip); web PlanTab selects the Grade I variant, which filters out the conservative-phase cholecystostomy line.]
 - **mgmt-no-early-cholecystectomy-in-shock** (ios): forbidden management item present in ios.scoreCalculator.tg18-cholecystitis: "early urgent cholecystostomy or emergency cholecystectomy" [known gap: iOS TG18 Grade III recommendation offers 'emergency cholecystectomy' as an equal alternative; web key points recommend early cholecystectomy without grade qualification.]
-- **score-rec-tg18-cholecystitis** (web): tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs [known gap: No TG18 cholecystitis CDS rule on web.]
-- **score-tg18-autofill** (web): expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets 88) and returns Grade II from WBC alone; web returns "criteria not met".]
 
 Guidelines:
 
@@ -3409,12 +3373,8 @@ Permutation of `crc-lynch-surveillance-overdue`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| level-routine | emergencyLevel | quality | PASS | FAIL (known gap) | USPSTF recommendation statement 2021 |  |
+| level-routine | emergencyLevel | quality | PASS | PASS | USPSTF recommendation statement 2021 |  |
 | mgmt-screening-offered | managementInclude | quality | PASS | PASS | USPSTF recommendation statement 2021; ACG clinical guidelines 2021 |  |
-
-Failure details:
-
-- **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the words "colorectal cancer" in the family-history comorbidity trigger "Possible malignancy" (priority) → same_day_call for an asymptomatic screening request.]
 
 Guidelines:
 
@@ -3605,7 +3565,7 @@ Permutation of `dfi-moderate-osteomyelitis`.
 
 Failure details:
 
-- **level-priority-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer; the negated 'no fever' also scores as 'Systemic red flag symptom'.]
+- **level-priority-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=52); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer; the negated 'no fever' also scores as 'Systemic red flag symptom'.]
 
 Guidelines:
 
@@ -3842,13 +3802,12 @@ Permutation of `dvt-wells-likely`.
 | inv-compression-duplex | investigationInclude | critical | PASS | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 | mgmt-lmwh | managementInclude | critical | PASS | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 | mgmt-no-doac-in-pregnancy | managementExclude | critical | PASS | PASS | RCOG Green-top Guideline No. 37b 2015 | Make the DVT/PE plans pregnancy-aware (pregnancy → LMWH only; hide DOAC and warfarin lines) and add a dx-variant or plan prefix for VTE in pregnancy. |
-| mgmt-no-warfarin-in-pregnancy | managementExclude | critical | PASS | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Rewrite the DVT protocol line: pregnancy → treatment-dose LMWH throughout pregnancy; warfarin is contraindicated antenatally. |
+| mgmt-no-warfarin-in-pregnancy | managementExclude | critical | PASS | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 | inv-no-ddimer-in-pregnancy | investigationExclude | quality | FAIL (known gap) | PASS | RCOG Green-top Guideline No. 37b 2015 | Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy. |
 
 Failure details:
 
 - **inv-no-ddimer-in-pregnancy** (ios): forbidden investigation present in ios.pipeline.decisions: "d-dimer: high sensitivity (~96%), low specificity - use to rule out only" (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: "d-dimer: high sensitivity (~96%), low specificity - use to rule out only" (+1 more)]
-- **mgmt-no-warfarin-in-pregnancy** (web): forbidden management item present in web.clinicalPrompts: "... weeks (mhra 2020); anticoagulation with lmwh, not doacs or warfarin (rcog gtg 37a/b); ultrasound or mri before ionising imaging where it answers th..." [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy. \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...egnancy safety - no nsaids from 20 weeks, lmwh not doacs or warfarin, no ace inhibitors/arbs, avoid ionising imaging where ultrasound or mri answers..." (+5 more)]
 
 Guidelines:
 
@@ -4003,14 +3962,13 @@ Permutation of `mimic-testicular-torsion`.
 | mgmt-sti-regimen | managementInclude | quality | PASS | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
 | mgmt-partner-notification | managementInclude | quality | PASS | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
 | mgmt-no-orchidectomy | managementExclude | quality | PASS | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016 |  |
-| mgmt-no-unconditional-exploration | managementExclude | quality | PASS | FAIL (known gap) | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016; EAU/ESPU Guidelines on Paediatric Urology 2024 | Condition the torsion prompt on sudden onset / absent cremasteric reflex, or phrase exploration as "if torsion cannot be excluded". |
+| mgmt-no-unconditional-exploration | managementExclude | quality | PASS | PASS | IUSTI/WHO European guideline on the management of epididymo-orchitis 2016; EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
 
 Failure details:
 
 - **mnm-torsion-considered** (ios): not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Hydrocele \| 3. Epididymo-orchitis \| 4. Fournier's Gangrene \| 5. Incarcerated / Strangulated Hernia [known gap: Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion is not in the top 3 (symptom inference lists "torsion / epididymo-orchitis" #2). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Hydrocele \| 3. Epididymo-orchitis \| 4. Fournier's Gangrene \| 5. Incarcerated / Strangulated Hernia]
 - **mnm-torsion-considered** (web): not in top 3 of web.pane: 1. Epididymo-orchitis \| 2. Acute Pyelonephritis / Upper Urinary Tract Infection \| 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); also in web.symptomInference#2, web.passive#5 [known gap: Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion is not in the top 3 (symptom inference lists "torsion / epididymo-orchitis" #2). \| iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Hydrocele \| 3. Epididymo-orchitis \| 4. Fournier's Gangrene \| 5. Incarcerated / Strangulated Hernia]
 - **level-priority** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≥ priority, ≤ urgent [known gap: Web: Triage "emergency_now" (score 48): fever in the text and the 38.1 °C vital plus a moderate pain score add up past the emergency threshold (45); the scrotal chip itself adds nothing.]
-- **mgmt-no-unconditional-exploration** (web): forbidden management item present in web.clinicalPrompts: "• emergency scrotal exploration - do not delay surgery for ultrasound when torsion is suspected (eau 2024); sal..." (+1 more) [known gap: Web: The scrotal-chip torsion prompt always adds "Emergency scrotal exploration" regardless of onset, Doppler result or confirmed epididymo-orchitis.]
 
 Guidelines:
 
@@ -4803,12 +4761,11 @@ Permutation of `hernia-umbilical-adult-elective`.
 | mgmt-emergency-surgery | managementInclude | critical | PASS | PASS | WSES guidelines 2017 |  |
 | flag-penicillin-allergy | redFlags | quality | PASS | PASS |  |  |
 | inv-lactate | investigationInclude | quality | PASS | PASS | WSES guidelines 2017 |  |
-| mgmt-no-penicillin | managementExclude | quality | PASS | FAIL (known gap) |  | Filter protocol medications and prompt templates against recorded allergies (drug-class aware) and show the alternative. |
+| mgmt-no-penicillin | managementExclude | quality | PASS | PASS |  |  |
 | variant-incarcerated-or-worse | dxVariant | quality | n/a | FAIL (known gap) |  |  |
 
 Failure details:
 
-- **mgmt-no-penicillin** (web): forbidden management item present in web.clinicalPrompts: "...rative: • nbm from midnight. consent signed. • antibiotics: co-amoxiclav 1.2g iv at induction (optional - low infection risk if no mesh contamination). ..." [known gap: The recorded penicillin allergy is not cross-checked: prompts propose piperacillin-tazobactam and co-amoxiclav (as found for the seed vignettes).]
 - **variant-incarcerated-or-worse** (web): detected hernia_strangulated in group Hernia; expected hernia_incarcerated [known gap: Web, since the engine-matching fixes (2026-09): "strangulation not excluded" is a hedge, not a negation, so the strangulated variant is now detected (the tie between "incarcerated" and "strangulation" goes to the more severe variant). The expectation id says "incarcerated or worse" but checks equals hernia_incarcerated: surgeon to decide whether hernia_strangulated should be accepted.]
 
 Guidelines:
@@ -4828,12 +4785,11 @@ Guidelines:
 | level-routine | emergencyLevel | quality | PASS | PASS |  |  |
 | mgmt-mesh | managementInclude | quality | PASS | PASS | EHS/AHS guidelines 2020 |  |
 | mgmt-smoking | managementInclude | quality | FAIL (known gap) | PASS | EHS/AHS guidelines 2020 |  |
-| mgmt-no-inguinal-template | managementExclude | quality | PASS | FAIL (known gap) |  | Choose the operative template by hernia site (umbilical/ventral vs inguinal) and make the tender check negation-aware. |
+| mgmt-no-inguinal-template | managementExclude | quality | PASS | PASS |  |  |
 
 Failure details:
 
 - **mgmt-smoking** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-no-inguinal-template** (web): forbidden management item present in web.clinicalPrompts: "laparoscopic inguinal hernia repair (tapp) - operative plan ───────────────────────────────────────────────────────────── ..." [known gap: computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan. Here also "EMERGENCY" because "non-tender" matches "tender".]
 
 Guidelines:
 
@@ -4855,11 +4811,7 @@ Permutation of `hernia-umbilical-adult-elective`.
 | level-at-least-priority | emergencyLevel | quality | PASS | PASS |  |  |
 | score-rec-child-pugh | scoreRecommended | quality | PASS | PASS |  |  |
 | score-rec-meld | scoreRecommended | quality | PASS | PASS |  |  |
-| mgmt-no-standard-day-case-plan | managementExclude | quality | PASS | FAIL (known gap) |  |  |
-
-Failure details:
-
-- **mgmt-no-standard-day-case-plan** (web): forbidden management item present in web.clinicalPrompts: "... male (reduces haematoma). • ice pack to groin prn × 24h. • day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding. ..." [known gap: computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan. Its post-operative orders include day-case discharge.]
+| mgmt-no-standard-day-case-plan | managementExclude | quality | PASS | PASS |  |  |
 
 Guidelines:
 
@@ -5256,12 +5208,8 @@ Permutation of `lbo-obstructing-sigmoid-cancer`.
 | level-emergency | emergencyLevel | critical | PASS | PASS | WSES guidelines 2018 |  |
 | alarm-sepsis | mustAlarm | critical | PASS | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-emergency-surgery | managementInclude | critical | PASS | PASS | WSES guidelines 2018 |  |
-| mgmt-no-stent-with-impending-perforation | managementExclude | critical | PASS | FAIL (known gap) | WSES guidelines 2018 | State the stent contraindications in the prompt and the lbo_malignant prefix (perforation, peritonitis, caecal ischaemia/pneumatosis, closed loop ≥12 cm with tenderness) and suppress the stent option when they are present. |
+| mgmt-no-stent-with-impending-perforation | managementExclude | critical | PASS | PASS | WSES guidelines 2018 |  |
 | variant-lbo-malignant | dxVariant | quality | n/a | PASS | WSES guidelines 2018 |  |
-
-Failure details:
-
-- **mgmt-no-stent-with-impending-perforation** (web): forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated'). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "...hartmann's or primary anastomosis ± defunctioning stoma) or sems as a bridge to surgery by mdt decision (wses 2018)"]
 
 Guidelines:
 
@@ -5278,12 +5226,8 @@ Permutation of `lbo-obstructing-sigmoid-cancer`.
 |---|---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | WSES guidelines 2018 |  |
 | mgmt-right-hemicolectomy | managementInclude | quality | PASS | PASS | WSES guidelines 2018 | Split lbo_malignant into left- and right-sided variants; right-sided = right colectomy with primary anastomosis. |
-| mgmt-no-left-sided-plan-for-right-lesion | managementExclude | quality | PASS | FAIL (known gap) | WSES guidelines 2018 |  |
+| mgmt-no-left-sided-plan-for-right-lesion | managementExclude | quality | PASS | PASS | WSES guidelines 2018 |  |
 | variant-lbo-malignant | dxVariant | quality | n/a | PASS | WSES guidelines 2018 |  |
-
-Failure details:
-
-- **mgmt-no-left-sided-plan-for-right-lesion** (web): forbidden management item present in web.clinicalPrompts: "...lignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctioning colostomy') is applied to a hepatic-flexure tumour.]
 
 Guidelines:
 
@@ -5363,7 +5307,7 @@ Guidelines:
 | score-rec-oakland | scoreRecommended | quality | FAIL (known gap) | FAIL (known gap) | Oakland score 2017; BSG guideline 2019 | Add the Oakland score (age, sex, previous LGIB admission, DRE blood, HR, SBP, Hb) to clinical-scales and a CDS rule for rectal bleeding; ≤ 8 → discharge with outpatient investigation (BSG 2019). |
 | inv-no-cta | investigationExclude | quality | PASS | PASS | BSG guideline 2019 |  |
 | mgmt-discharge-outpatient | managementInclude | quality | PASS | PASS | BSG guideline 2019 |  |
-| mgmt-no-transfusion | managementExclude | quality | PASS | FAIL (known gap) | BSG guideline 2019 | Condition the resuscitation/cross-match actions on instability (shock index > 1, SBP < 90, Hb < 80 g/L) or a large-volume bleed. |
+| mgmt-no-transfusion | managementExclude | quality | PASS | PASS | BSG guideline 2019 |  |
 
 Failure details:
 
@@ -5371,7 +5315,6 @@ Failure details:
 - **score-rec-oakland** (ios): oakland not recommended; recommended: glasgow-blatchford, ios:oakland, rockall, aims65, ios:forrest [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for "lower gi bleed"). \| iOS CI 2026-09-25 (run 36169134350, database mode): oakland not recommended; recommended: glasgow-blatchford, ios:oakland, rockall, aims65, ios:forrest]
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ urgent [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → emergency_now), so every rectal bleed — including minor outlet bleeding — is "emergency".]
 - **score-rec-oakland** (web): oakland not recommended; recommended: news2, rockall [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisScoreMapper for "lower gi bleed"). \| iOS CI 2026-09-25 (run 36169134350, database mode): oakland not recommended; recommended: glasgow-blatchford, ios:oakland, rockall, aims65, ios:forrest]
-- **mgmt-no-transfusion** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore cannulae, Hartmann’s bolus, cross-match 2 units) for any rectal-bleeding chip, regardless of volume, haemodynamics or Hb.]
 
 Guidelines:
 
@@ -6130,11 +6073,7 @@ Guidelines:
 | mgmt-iv-fluids-potassium | managementInclude | quality | PASS | PASS | RCOG Green-top Guideline No. 69 2016 |  |
 | mgmt-vte-prophylaxis | managementInclude | quality | PASS | PASS | RCOG Green-top Guideline No. 69 2016 |  |
 | mgmt-no-surgical-plan | managementExclude | quality | PASS | PASS | RCOG Green-top Guideline No. 69 2016 |  |
-| mgmt-no-ct-in-early-pregnancy | managementExclude | quality | PASS | FAIL (known gap) | ACOG Committee Opinion No. 723 2017; RCOG Green-top Guideline No. 69 2016 | Suppress the occult-malignancy CT when pregnancy is recorded (or require an explicit clinical question); prefer ultrasound/MRI (ACOG CO 723). |
-
-Failure details:
-
-- **mgmt-no-ct-in-early-pregnancy** (web): forbidden management item present in web.clinicalPrompts: "• ct chest/abdomen/pelvis - occult malignancy screen (alarm symptoms)." [known gap: Web: the unintentional-weight-loss alarm prompt adds '• CT chest/abdomen/pelvis — occult malignancy screen (alarm symptoms)' (and an upper GI endoscopy line) for a woman recorded at 10 weeks whose weight loss is from vomiting.]
+| mgmt-no-ct-in-early-pregnancy | managementExclude | quality | PASS | PASS | ACOG Committee Opinion No. 723 2017; RCOG Green-top Guideline No. 69 2016 |  |
 
 Guidelines:
 
@@ -6576,7 +6515,7 @@ Guidelines:
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 | AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol. Pancreatitis context: suppress the peritonism prompt's antibiotics (negated "no peritonism" trigger) and the SIRS "Sepsis-6 … antibiotics" bundle when the working diagnosis is acute pancreatitis without a documented infection; add an explicit "No prophylactic antibiotics (ACG 2024; IAP/APA 2013; NICE NG104)" line to the pancreatitis protocol. |
 | mgmt-no-routine-ercp | managementExclude | critical | PASS | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
-| score-rec-bisap | scoreRecommended | quality | PASS | FAIL (known gap) | BISAP score 2008; ACG Guideline 2024 | clinical-cds.ts bisap rule: also trigger on workingDiagnosis.diseaseId === "pancreatitis" or lipase/amylase ≥3 × ULN. |
+| score-rec-bisap | scoreRecommended | quality | PASS | PASS | BISAP score 2008; ACG Guideline 2024 |  |
 | inv-ultrasound | investigationInclude | quality | PASS | PASS | ACG Guideline 2024 |  |
 | inv-triglycerides | investigationInclude | quality | PASS | PASS | ACG Guideline 2024 | Pancreatitis protocol: add triglycerides and calcium to the aetiology work-up (ACG 2024). |
 | inv-calcium | investigationInclude | quality | PASS | PASS | ACG Guideline 2024 |  |
@@ -6589,7 +6528,6 @@ Guidelines:
 Failure details:
 
 - **mgmt-no-routine-nbm** (ios): forbidden management item present in ios.pipeline.decisions: "...ine - ignore old advice); anti-emetic: ondansetron 4 mg iv; nil by mouth initially (clear fluids once pain improves - within 24-48 h in mild cases); oxy..." (+1 more) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: "...ine - ignore old advice); anti-emetic: ondansetron 4 mg iv; nil by mouth initially (clear fluids once pain improves - within 24-48 h in mild cases); oxy..." (+1 more)]
-- **score-rec-bisap** (web): bisap not recommended; recommended: alvarado, ranson, news2, web:gerdq, asa, stop-bang [known gap: CDS BISAP rule fires only on a "pancreatitis"/"epigastric pain" chip plus an alcohol/gallstone/hyperlipidaemia comorbidity; it ignores the locked working diagnosis and the lipase result.]
 
 Guidelines:
 
@@ -6716,7 +6654,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 | mgmt-no-prophylactic-antibiotics | managementExclude | critical | PASS | PASS | ACG Guideline 2024; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013; NICE NG104 2018; AGA Institute guideline on initial management of acute pancreatitis 2018 |  |
 | mgmt-no-routine-ercp | managementExclude | critical | PASS | PASS | ACG Guideline 2024; AGA Institute guideline on initial management of acute pancreatitis 2018; APEC trial 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
-| score-rec-bisap | scoreRecommended | quality | PASS | FAIL (known gap) | BISAP score 2008; ACG Guideline 2024 | clinical-cds.ts bisap rule: trigger on the working diagnosis. |
+| score-rec-bisap | scoreRecommended | quality | PASS | PASS | BISAP score 2008; ACG Guideline 2024 |  |
 | mgmt-enteral-nutrition | managementInclude | quality | PASS | PASS | ACG Guideline 2024; NICE NG104 2018 |  |
 | mgmt-abdominal-compartment | managementInclude | quality | FAIL (known gap) | PASS |  | Pancreatitis protocol (severe): add intra-abdominal pressure monitoring / abdominal compartment syndrome. |
 | mgmt-no-early-necrosectomy | managementExclude | quality | PASS | PASS | ESGE guideline 2018; IAP/APA evidence-based guidelines for the management of acute pancreatitis 2013 |  |
@@ -6727,7 +6665,6 @@ Failure details:
 
 - **dx-pancreatitis-top3** (ios): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Pulmonary Embolism; also in ios.pipeline#2 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Acute Coronary Syndrome \| 4. Acute Kidney Injury \| 5. Pulmonary Embolism; also in ios.pipeline#2]
 - **mgmt-abdominal-compartment** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **score-rec-bisap** (web): bisap not recommended; recommended: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang [known gap: BISAP not suggested (CDS rule ignores the working diagnosis); 12 other scales are.]
 
 Guidelines:
 
@@ -6914,12 +6851,8 @@ Guidelines:
 | score-rec-wells-pe | scoreRecommended | quality | PASS | PASS | NICE NG158 2020; Wells PE score (two-level) 2000 |  |
 | mgmt-oxygen | managementInclude | quality | PASS | PASS | 2019 ESC guidelines 2019 |  |
 | mgmt-anticoagulation | managementInclude | quality | PASS | PASS | NICE NG158 2020; 2019 ESC guidelines 2019 |  |
-| mgmt-no-ddimer-gate | managementExclude | quality | PASS | FAIL (known gap) | NICE NG158 2020 | Use the two-level Wells PE: >4 → CTPA (interim anticoagulation if delayed); ≤4 → D-dimer, or PERC when clinical probability is low. |
+| mgmt-no-ddimer-gate | managementExclude | quality | PASS | PASS | NICE NG158 2020 |  |
 | pathway-ward-review | pathway | quality | PASS | n/a |  |  |
-
-Failure details:
-
-- **mgmt-no-ddimer-gate** (web): forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: The hypoxia and tachycardia clinical prompts (clinical-inference.ts) add 'CTPA if Wells score ≥ 2 and D-dimer positive' and 'CTPA if Wells score ≥ 2' — the DVT cut-off and a D-dimer gate for a Wells-likely patient.]
 
 Guidelines:
 
@@ -7013,7 +6946,7 @@ Permutation of `periop-abx-penicillin-anaphylaxis-colectomy`.
 |---|---|---|---|---|---|---|
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | level-routine-or-priority | emergencyLevel | quality | PASS | PASS |  |  |
-| inv-no-routine-coag | investigationExclude | quality | PASS | FAIL (known gap) | NICE NG45 2016 | preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt. |
+| inv-no-routine-coag | investigationExclude | quality | PASS | PASS | NICE NG45 2016 |  |
 | inv-no-preop-psa | investigationExclude | quality | PASS | PASS | NICE NG45 2016 |  |
 | mgmt-single-dose-prophylaxis | managementInclude | quality | FAIL (known gap) | PASS | NICE NG125 2019; SIGN 104 2014 |  |
 | mgmt-no-postop-antibiotic-course | managementExclude | quality | PASS | PASS | SIGN 104 2014; ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery 2013 |  |
@@ -7021,7 +6954,6 @@ Permutation of `periop-abx-penicillin-anaphylaxis-colectomy`.
 Failure details:
 
 - **mgmt-single-dose-prophylaxis** (ios): no management item matched among 17 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
-- **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.]
 
 Guidelines:
 
@@ -7074,13 +7006,12 @@ Permutation of `periop-anticoag-warfarin-af-no-bridging`.
 | mgmt-doac-interrupt | managementInclude | critical | PASS | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-cfs | scoreRecommended | quality | FAIL (known gap) | PASS | CPOC/BGS guideline 2021 |  |
-| inv-no-routine-coag | investigationExclude | quality | PASS | FAIL (known gap) | PAUSE study 2019; ACCP guideline 2022 | Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH. |
+| inv-no-routine-coag | investigationExclude | quality | PASS | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
 | mgmt-no-bridging | managementExclude | quality | PASS | PASS | PAUSE study 2019; ACCP guideline 2022 |  |
 
 Failure details:
 
 - **score-rec-cfs** (ios): cfs not recommended; recommended: asa, rcri, dasi, stop-bang, ios:ariscat, caprini, ios:nrs2002 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: asa, rcri, dasi, stop-bang, ios:ariscat, caprini, ios:nrs2002]
-- **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" (+1 more) [known gap: PT/INR and APTT added by anticoag_check and preop_haem for a DOAC patient (PAUSE: not needed with standardised interruption).]
 
 Guidelines:
 
@@ -7386,13 +7317,12 @@ Guidelines:
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | mgmt-urinalysis | managementInclude | quality | PASS | PASS | NICE NG148 2019 |  |
 | mgmt-volume-assessment | managementInclude | quality | PASS | PASS | KDIGO clinical practice guideline 2012 |  |
-| mgmt-no-insulin-dextrose-mild-k | managementExclude | quality | FAIL (known gap) | FAIL (known gap) | UK Kidney Association 2020 | Grade the hyperkalaemia prompt by UKKA 2020 bands: mild 5.5–5.9 → treat the cause and recheck; moderate/severe → insulin-glucose (±calcium with ECG changes). |
+| mgmt-no-insulin-dextrose-mild-k | managementExclude | quality | FAIL (known gap) | PASS | UK Kidney Association 2020 | Grade the hyperkalaemia prompt by UKKA 2020 bands: mild 5.5–5.9 → treat the cause and recheck; moderate/severe → insulin-glucose (±calcium with ECG changes). |
 | pathway-ward-review | pathway | quality | PASS | n/a |  |  |
 
 Failure details:
 
 - **mgmt-no-insulin-dextrose-mild-k** (ios): forbidden management item present in ios.radiation.plan: "insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1..." [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1..."]
-- **mgmt-no-insulin-dextrose-mild-k** (web): forbidden management item present in web.clinicalPrompts: "• iv insulin-glucose: 10 units soluble insulin with 25 g glucose - shift k⁺ intracellularly; monitor..." (+1 more) [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1..."]
 
 Guidelines:
 
@@ -7724,17 +7654,14 @@ Guidelines:
 | level-not-urgent | emergencyLevel | quality | PASS | PASS | NICE NG45 2016 |  |
 | score-rec-asa | scoreRecommended | quality | PASS | FAIL (known gap) | ASA Physical Status Classification System 2020 | Trigger ASA on encounter type (pre-operative assessment / elective surgery visit) and on a confirmed operative plan, not only on symptom words. |
 | inv-pregnancy-status | investigationInclude | quality | PASS | PASS | NICE NG45 2016 |  |
-| inv-no-routine-coag | investigationExclude | quality | PASS | FAIL (known gap) | NICE NG45 2016 | preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt. |
+| inv-no-routine-coag | investigationExclude | quality | PASS | PASS | NICE NG45 2016 |  |
 | inv-no-routine-ecg | investigationExclude | quality | PASS | PASS | NICE NG45 2016 |  |
-| mgmt-no-fasting-from-midnight | managementExclude | quality | PASS | FAIL (known gap) | ESA guideline 2011 | Replace with 'Solids until 6 h and clear fluids until 2 h before anaesthesia' (ESA 2011) in the lap chole, appendicectomy and hernia templates. |
-| mgmt-no-routine-antibiotic-prophylaxis | managementExclude | quality | PASS | FAIL (known gap) | SIGN 104 2014 | Make prophylaxis conditional on SIGN 104 high-risk criteria (e.g. acute cholecystitis, jaundice, CBD exploration, age/ASA) and check the allergy record. |
+| mgmt-no-fasting-from-midnight | managementExclude | quality | PASS | PASS | ESA guideline 2011 |  |
+| mgmt-no-routine-antibiotic-prophylaxis | managementExclude | quality | PASS | PASS | SIGN 104 2014 |  |
 
 Failure details:
 
 - **score-rec-asa** (web): asa not recommended; recommended: asge-cbd, news2 [known gap: getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (Perioperative tab) is not set by the harness, so this may pass in the app once that tab is filled.]
-- **inv-no-routine-coag** (web): forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.]
-- **mgmt-no-fasting-from-midnight** (web): forbidden management item present in web.clinicalPrompts: "...────────────────────────────────────────── pre-operative: • nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single..." [known gap: The lap_chole_pathway operative template starts 'NBM from midnight (or ≥ 6h solids / 2h clear fluids)'.]
-- **mgmt-no-routine-antibiotic-prophylaxis** (web): forbidden management item present in web.clinicalPrompts: "... nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of s..." [known gap: The lap chole template orders 'IV Co-amoxiclav 1.2g at induction (single prophylactic dose)' unconditionally.]
 
 Guidelines:
 
@@ -7758,12 +7685,8 @@ Permutation of `periop-preop-asa1-lap-chole`.
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
 | score-rec-rcri | scoreRecommended | quality | PASS | PASS | Revised Cardiac Risk Index (Lee) 1999 |  |
 | mgmt-dialysis-timing | managementInclude | quality | PASS | PASS | UK Kidney Association 2020 | In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'. |
-| mgmt-no-unadjusted-lmwh | managementExclude | quality | PASS | FAIL (known gap) | NICE NG89 2018 | Operative templates: 'LMWH dose-adjusted for renal function (UFH if eGFR <30 or dialysis per local protocol)' when creatinine/eGFR or dialysis is recorded. |
+| mgmt-no-unadjusted-lmwh | managementExclude | quality | PASS | PASS | NICE NG89 2018 |  |
 | mgmt-no-nsaid | managementExclude | quality | PASS | PASS | NICE NG203 2021 |  |
-
-Failure details:
-
-- **mgmt-no-unadjusted-lmwh** (web): forbidden management item present in web.clinicalPrompts: "...iclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of surgery; ted stockings. • iv access; identify allergy..." [known gap: The lap chole template orders 'LMWH (Enoxaparin 40mg SC) night before + day of surgery' with no renal qualification for a dialysis patient.]
 
 Guidelines:
 
@@ -8212,14 +8135,13 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 | dx-haemorrhoids-top3 | mustRankTopK | quality | FAIL (known gap) | PASS | ASCRS clinical practice guidelines 2024 |  |
 | level-routine-or-priority | emergencyLevel | quality | PASS | FAIL (known gap) | NICE NG12 2023 |  |
 | mgmt-fibre | managementInclude | quality | PASS | PASS | ASCRS clinical practice guidelines 2024 |  |
-| mgmt-no-resuscitation | managementExclude | quality | PASS | FAIL (known gap) | BSG guideline 2019 |  |
+| mgmt-no-resuscitation | managementExclude | quality | PASS | PASS | BSG guideline 2019 |  |
 | mgmt-no-2ww | managementExclude | quality | PASS | PASS | NICE NG12 2023 |  |
 
 Failure details:
 
 - **dx-haemorrhoids-top3** (ios): not in top 3 of ios.bayes: 1. Anxiety Disorder \| 2. Medication Side Effect / Adverse Drug Reaction \| 3. Acute Kidney Injury \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Anxiety Disorder \| 2. Medication Side Effect / Adverse Drug Reaction \| 3. Acute Kidney Injury \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency]
 - **level-routine-or-priority** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → emergency_now), so every rectal bleed — including minor outlet bleeding — is "emergency".]
-- **mgmt-no-resuscitation** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore cannulae, Hartmann’s bolus, cross-match 2 units) for any rectal-bleeding chip, regardless of volume, haemodynamics or Hb.]
 
 Guidelines:
 
@@ -8673,7 +8595,7 @@ Permutation of `screen-crc-average-risk-46`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| level-not-urgent | emergencyLevel | quality | PASS | FAIL (known gap) | US Multi-Society Task Force on Colorectal Cancer 2017 | Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation). |
+| level-not-urgent | emergencyLevel | quality | PASS | PASS | US Multi-Society Task Force on Colorectal Cancer 2017 |  |
 | mgmt-colonoscopy | managementInclude | quality | PASS | PASS | US Multi-Society Task Force on Colorectal Cancer 2017; ACG clinical guidelines 2021 |  |
 | mgmt-lynch-genetics | managementInclude | quality | FAIL (known gap) | PASS | BSG/ACPGBI/UKCGG guidelines 2020; NICE DG27 2017 |  |
 | pathway-firstvisit | pathway | quality | PASS | n/a |  |  |
@@ -8681,7 +8603,6 @@ Permutation of `screen-crc-average-risk-46`.
 Failure details:
 
 - **mgmt-lynch-genetics** (ios): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'cancer' also counts as a higher-risk comorbidity → same_day_call for an asymptomatic screening consultation.]
 
 Guidelines:
 
@@ -8948,15 +8869,11 @@ Permutation of `trauma-splenic-injury-unstable`.
 |---|---|---|---|---|---|---|
 | mgmt-pneumococcal | managementInclude | critical | PASS | PASS | BCSH (BSH) guideline 2011 |  |
 | mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | PASS | BCSH (BSH) guideline 2011 |  |
-| mgmt-meningococcal | managementInclude | quality | PASS | FAIL (known gap) | BCSH (BSH) guideline 2011 | See mgmt-pneumococcal. |
+| mgmt-meningococcal | managementInclude | quality | PASS | PASS | BCSH (BSH) guideline 2011 |  |
 | mgmt-hib | managementInclude | quality | PASS | PASS | BCSH (BSH) guideline 2011 |  |
 | mgmt-influenza | managementInclude | quality | PASS | PASS | BCSH (BSH) guideline 2011 |  |
 | mgmt-antibiotic-prophylaxis | managementInclude | quality | PASS | PASS | BCSH (BSH) guideline 2011 |  |
 | mgmt-alert-card | managementInclude | quality | PASS | PASS | BCSH (BSH) guideline 2011 |  |
-
-Failure details:
-
-- **mgmt-meningococcal** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -9515,13 +9432,12 @@ Guidelines:
 | flag-beta-blocker-masking | redFlags | quality | FAIL (known gap) | PASS | ATLS 10th edition 2018; ATLS 10th edition 2018 |  |
 | inv-ct-trauma | investigationInclude | quality | PASS | PASS | ATLS 10th edition 2018 |  |
 | mgmt-hdu-analgesia | managementInclude | quality | PASS | PASS | ATLS 10th edition 2018 |  |
-| mgmt-no-bridging-advice | managementExclude | quality | PASS | FAIL (known gap) | ATLS 10th edition 2018 | Make the anticoag_check prompt context-aware (trauma/bleeding → reversal). |
+| mgmt-no-bridging-advice | managementExclude | quality | PASS | PASS | ATLS 10th edition 2018 |  |
 | pathway-trauma | pathway | quality | PASS | n/a |  |  |
 
 Failure details:
 
 - **flag-beta-blocker-masking** (ios): no red flag matched among 17 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 17 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert, ios.acuity)]
-- **mgmt-no-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "• no routine lmwh bridging for atrial fibrillation (bridge trial; accp 2022); bridging only for high throm..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K). \| iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: "no lmwh bridging for most atrial fibrillation (bridge; accp 2022) - bridge only for high thrombo..."]
 
 Guidelines:
 
@@ -9544,14 +9460,13 @@ Permutation of `trauma-head-injury-gcs12`.
 | mgmt-no-discharge-without-ct | managementExclude | critical | PASS | PASS | NICE NG232 2023 |  |
 | inv-falls-ecg | investigationInclude | quality | FAIL (known gap) | PASS | ATLS 10th edition 2018 |  |
 | mgmt-reversal-plan | managementInclude | quality | PASS | PASS | ATLS 10th edition 2018; ATLS 10th edition 2018 |  |
-| mgmt-no-elective-bridging-advice | managementExclude | quality | PASS | FAIL (known gap) | ATLS 10th edition 2018 | Make the anticoag_check prompt context-aware: trauma/bleeding/head injury → reversal and CT; elective procedure → bridging plan. |
+| mgmt-no-elective-bridging-advice | managementExclude | quality | PASS | PASS | ATLS 10th edition 2018 |  |
 | pathway-trauma | pathway | quality | FAIL (known gap) | n/a |  |  |
 
 Failure details:
 
 - **inv-falls-ecg** (ios): no investigation matched among 3 (ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)]
 - **pathway-trauma** (ios): recommended firstVisit (No previous visits on record); expected trauma [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma]
-- **mgmt-no-elective-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "...l bleeding is confirmed (haematology); do not simply hold / bridge" (+2 more) [known gap: The 'anticoag_check' clinical prompt (clinical-inference.ts) always proposes 'hold DOAC 48–72 h pre-op; warfarin — bridge with LMWH', including after a head injury on apixaban.]
 
 Guidelines:
 
@@ -10026,11 +9941,7 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | score-rec-gbs | scoreRecommended | quality | PASS | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | inv-ogd | investigationInclude | quality | PASS | PASS | ESGE Guideline 2021 |  |
 | mgmt-outpatient | managementInclude | quality | PASS | PASS | ESGE Guideline 2021; ACG Clinical Guideline 2021; BSG-led multisociety consensus care bundle 2020 | upper_gi_bleed protocol / gi_bleed_panel prompt: add "GBS ≤1 — outpatient endoscopy, no admission (ESGE 2021, ACG 2021)" keyed on the calculated GBS. |
-| mgmt-no-transfusion | managementExclude | quality | PASS | FAIL (known gap) | ESGE Guideline 2021 | gi_bleed_panel: make the resuscitation/crossmatch line conditional on instability, Hb or GBS. |
-
-Failure details:
-
-- **mgmt-no-transfusion** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: gi_bleed_panel prompt fires on any haematemesis/melaena symptom and adds "2 × large-bore IV cannulae, Hartmann's 500 ml bolus, crossmatch 2 units pRBC" regardless of Hb (14.6) or GBS (0).]
+| mgmt-no-transfusion | managementExclude | quality | PASS | PASS | ESGE Guideline 2021 |  |
 
 Guidelines:
 
@@ -10531,29 +10442,22 @@ Guidelines:
 | `abscess-recurrent-mrsa-pwid` | mnm-pseudoaneurysm | web | quality | known gap | not in top 3 of web.pane: 1. Skin Abscess / Furuncle \| 2. Cellulitis \| 3. Perianal Abscess / Fistula [known gap: No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin s |
 | `acutemed-af-incidental-preop-elderly` | mnm-af | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Femoral Hernia \| 3. Incisional Hernia [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. GORD / Reflux Oesophagitis |
 | `acutemed-af-incidental-preop-elderly` | score-rec-cha2ds2vasc | web | quality | known gap | cha2ds2-vasc not recommended; recommended: news2, caprini, asa, rcri, cfs [known gap: Web run 2026-09-25: cha2ds2-vasc not recommended; recommended: news2, caprini, asa, rcri, cfs.] |
-| `acutemed-ahf-pulmonary-oedema` | mgmt-no-fluid-challenge | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• no iv fluid challenge - heart-failure signs or suspected pe recorded (esc 2021; esc 2019)." [known gap: Web run 2026-09-25: forbidden management item present in web.clinicalPrompt |
 | `acutemed-cap-low-severity` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=115); expected ≤ urgent [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=130); expected ≤ urgent. Triage reasons: Possible ca |
 | `acutemed-cellulitis-true-portal-of-entry` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≤ urgent [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≤ urgent. Triage reasons: Systemic red  |
 | `acutemed-copd-mild-exacerbation-outpatient` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=7); expected ≤ priority [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority. Triage reasons: Post-operat |
 | `acutemed-gastroenteritis-mimic-euglycaemic-dka` | mnm-dka-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Gallstone pancreatitis \| 3. Acute cholecystitis \| 4. Perforated peptic ulcer \| 5. Acute alcoholic pancreatitis; also in web.pane#1 [known gap: Web run 2026-09-25: not in t |
-| `acutemed-pe-ocp-long-haul` | mgmt-no-ddimer-gate | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: "•  |
 | `acutemed-pe-post-lap-chole-pleuritic` | mnm-postop-collection | web | quality | known gap | not in top 3 of web.pane: 1. Pulmonary Embolism \| 2. Post-operative Pneumonia / Atelectasis \| 3. Community-acquired Pneumonia (Adult / Child) [known gap: Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) \| 2. |
 | `acutemed-pe-post-lap-chole-pleuritic` | alarm-hypoxia-or-tachycardia | web | quality | known gap | no alarm matched among 6 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. \| iOS CI 2026-09-25 (run 36169134350, database mode): no |
 | `acutemed-syncope-vasovagal-low-risk` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=50); expected ≤ priority [known gap: Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=90); expected ≤ priority. Triage reasons: Possible  |
 | `aki-prerenal-diarrhoea-acei-nsaid` | mnm-aki-symptom-engine | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute gastroenteritis \| 2. Acute cholecystitis \| 3. BPPV / labyrinthitis / vestibular neuritis \| 4. DKA / hyperglycaemic hyperosmolar state \| 5. Acute mesenteric ischaemia; also in web.pane#1 [kn |
 | `anal-fissure-acute-posterior` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
-| `anal-fissure-acute-posterior` | mgmt-no-resuscitation | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
 | `anal-fissure-atypical-lateral-hiv` | mnm-sti-crohn | web | quality | known gap | not in top 3 of web.pane: 1. Anal Cancer (Squamous Cell Carcinoma of the Anus) \| 2. Anal Fissure \| 3. Ulcerative Colitis [known gap: Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions |
 | `aortic-dissection-epigastric-back-pain` | mnm-dissection-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm \| 2. Acute mesenteric ischaemia \| 3. Gallstone pancreatitis \| 4. Acute alcoholic pancreatitis \| 5. Perforated peptic ulcer; also in web.pane#1 [kn |
 | `appendicitis-adult-typical` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web CDS has no AIR rule (and no AIR calculator); Alvarado only.] |
-| `appendicitis-adult-typical` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo  |
 | `appendicitis-antibiotics-first-coda` | mnm-gynaecological | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Mesenteric adenitis \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Typhoid fever [known gap: Web: Symptom inference top 5: appendicitis ×2, alcoholic pa |
-| `appendicitis-appendicolith` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav 1.2g tds × 24h → oral co-amoxiclav × 5 days. • perforated appendicitis: iv pip-tazo  |
 | `appendicitis-elderly-atypical` | mnm-caecal-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Mesenteric Ischaemia \| 3. Perforated Peptic Ulcer / Perforated Viscus [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not c |
 | `appendicitis-elderly-atypical` | mnm-diverticulitis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Mesenteric Ischaemia \| 3. Perforated Peptic Ulcer / Perforated Viscus [known gap: Not in PANE top 3.] |
 | `appendicitis-paediatric-9y` | score-rec-pas | web | quality | known gap | pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not reco |
-| `appendicitis-paediatric-9y` | mgmt-no-unqualified-ct-child | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ct abdomen/pelvis - appendix calibre, perforation, appendicolith." (+1 more) [known gap: Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the doc |
-| `appendicitis-paediatric-9y` | mgmt-no-routine-postop-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l: [x] ml. swab count correct × 2. post-operative orders: • simple appendicitis: iv amoxiclav [weight-based dose - calculate per bnfc] tds × 24h → oral co-amoxiclav × 5 days. • p |
 | `appendicitis-pregnant-t2` | mnm-obstetric-cause | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list ( |
 | `appendicitis-pregnant-t2` | mnm-pyelonephritis | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Perforated Peptic Ulcer / Perforated Viscus \| 3. Acute Diverticulitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain |
 | `appendicitis-score-intermediate-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.] |
@@ -10562,91 +10466,50 @@ Guidelines:
 | `appendicitis-score-low-band` | score-rec-air | web | quality | known gap | air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule. \| iOS CI 2026-09-25 (run 36169134350, database mode): air not recommended; recommended: news2, mews] |
 | `biliary-colic-asymptomatic-incidental-gallstones` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=60); expected ≤ routine [known gap: adaptiveTriage emergency_now (score 100) for an asymptomatic referral: "never had … jaundice or fever" fires biliary-obstruction and chola |
 | `biliary-colic-asymptomatic-incidental-gallstones` | no-alarm | web | quality | known gap | forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. call 911 or go to the nearest emergency department now ..." [known gap: "Emergency now" and "Dilated CBD" alarms fire on negated history and "CBD 4 mm".] |
-| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-cholecystectomy | web | quality | known gap | forbidden management item present in web.plan: "[surgical] gallbladder polyp ≥ 10 mm: laparoscopic cholecystectomy; 6-9 mm with risk factors: cholecystectomy or ultrasound surveillance (2022 joi..." (+4 more) [known gap: With no features ap |
-| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment  |
+| `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-no-cholecystectomy | web | quality | known gap | forbidden management item present in web.plan: "[surgical] gallbladder polyp ≥ 10 mm: laparoscopic cholecystectomy; 6-9 mm with risk factors: cholecystectomy or ultrasound surveillance (2022 joi..." (+3 more) [known gap: With no features ap |
 | `biliary-colic-mimic-inferior-mi` | alarm-cardiac-or-haemodynamic | web | quality | known gap | no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Only the generic "Emergency now" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).] |
-| `biliary-colic-uncomplicated` | mgmt-no-antibiotics | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...post-op; light diet same evening if tolerating fluids. • iv antibiotics: co-amoxiclav 1.2g tds × 24h (complicated cholecystitis only). • remove iv can..." [known gap: Assessment  |
-| `breast-family-history-brca` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Triage same_day_call: the word "cancer" in the complaint ("Worried about breast cancer") matches the "Possible malignancy" red flag.] |
-| `breast-inflammatory-cancer` | mgmt-no-bcs-or-slnb | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "..., staging ct; neoadjuvant systemic therapy first (nccn). no wide local excision or slnb for inflammatory breast cancer." [known gap: The C50 plan comes from the generic invasive_ |
 | `breast-lump-under-30` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "breast lump" RED_FLAG is priority ("Possible malignancy") regardless of age, and the adaptive action maps priority  |
 | `breast-male-gynaecomastia` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=74); expected ≤ priority [known gap: Triage same_day_call: "breast lump" → Possible malignancy (priority) and the cancer screen triggers (age ≥30 + breast lump, applied to men |
 | `cellulitis-leg-adult` | mnm-dvt | web | quality | known gap | not in top 3 of web.pane: 1. Cellulitis \| 2. Necrotising Fasciitis (NSTI) \| 3. Perianal Abscess / Fistula [known gap: PANE top 3: Acute cholecystitis, Cellulitis, GORD; DVT not listed. Triage surgical matches list DVT #1.] |
-| `cellulitis-leg-adult` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Over-triage: the HPI word 'spreading redness' matches the diabetic-foot red flag (rules.ts, urgent) → emergency_now in a non-diabetic with  |
-| `cholangitis-tg18-charcot-sepsis` | score-tg18-autofill | web | quality | known gap | expected = 2; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: Web clinical-scores needs manual imaging ticks before it will diagnose, so auto-fill reads "criteria not met".] |
 | `cholangitis-tg18-grade1-single-criterion` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3 includes Inguinal / Femoral Hernia (male/age prior modifiers) instead.] |
-| `cholangitis-tg18-grade1-single-criterion` | score-tg18-autofill | web | quality | known gap | expected = 1; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill: age >75 alone → Grade II; web clinical-scores: criteria not met without manual imaging ticks.] |
-| `cholangitis-tg18-grade3-reynolds` | score-tg18-autofill | web | critical | known gap | expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria |
 | `cholecystitis-elderly-diabetic-atypical` | mnm-mesenteric-ischaemia | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Choledocholithiasis \| 3. Acute Cholangitis [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). \| iOS CI 2026-09-25 (run 36169134 |
-| `cholecystitis-elderly-diabetic-atypical` | score-tg18-autofill | web | quality | known gap | expected ≥ 2; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: clinical-scores auto-derived grade = 0 "criteria not met" despite WBC 19.4 and a characteristic US report (needs manual im |
-| `cholecystitis-elderly-diabetic-atypical` | mgmt-no-nsaid-ckd | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... 2. post-operative orders: • paracetamol 1g qds (regular) + ibuprofen 400mg tds (if egfr normal). • morphine 2.5-5mg sc/iv prn for pain > 5/10. • fre..." [known gap: Lap chole op |
-| `cholecystitis-tg18-grade1` | score-rec-tg18-cholecystitis | web | quality | known gap | tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, news2, asa, stop-bang [known gap: Web CDS has a TG18 cholangitis rule but none for cholecystitis.] |
-| `cholecystitis-tg18-grade1` | score-tg18-autofill | web | quality | known gap | expected = 1; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads "criteria not met"; web  |
-| `cholecystitis-tg18-grade2` | score-rec-tg18-cholecystitis | web | quality | known gap | tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, asge-cbd, web:wagner, news2, caprini, asa, rcri [known gap: No TG18 cholecystitis CDS rule on web.] |
-| `cholecystitis-tg18-grade3-organ-dysfunction` | score-rec-tg18-cholecystitis | web | quality | known gap | tg18-cholecystitis not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs [known gap: No TG18 cholecystitis CDS rule on web.] |
-| `cholecystitis-tg18-grade3-organ-dysfunction` | score-tg18-autofill | web | critical | known gap | expected = 3; got web.scoreCalculator.tg18-cholecystitis=0 (Criteria not met for cholecystitis diagnosis) [known gap: iOS auto-fill ignores the organ-dysfunction data in the record (SBP 82 on noradrenaline, AVPU C, creatinine 238, platelets |
 | `choledocholithiasis-asge-high-risk` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Biliary Colic / Symptomatic Cholelithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#4, web.passive#2 [known gap: PANE top 3: cholecystitis, choledocholithiasis, pancreati |
 | `choledocholithiasis-elderly-warfarin` | mnm-malignant-obstruction | web | quality | known gap | not in top 3 of web.pane: 1. Choledocholithiasis \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4 [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cau |
-| `crc-screening-african-caribbean-fhx` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the words "colorectal cancer" in the family-history comorbidity trigger "Possible malignancy" (priority) → same_day_call for  |
 | `dfu-ischaemic-calcified-abpi` | flag-incompressible | web | quality | known gap | no red flag matched among 22 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ul |
-| `dfu-neuropathic-uninfected` | level-priority-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=67); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer;  |
-| `dvt-pregnancy-22wk` | mgmt-no-warfarin-in-pregnancy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "... weeks (mhra 2020); anticoagulation with lmwh, not doacs or warfarin (rcog gtg 37a/b); ultrasound or mri before ionising imaging where it answers th..." [known gap: The DVT plan  |
+| `dfu-neuropathic-uninfected` | level-priority-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=52); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer;  |
 | `eoe-young-atopic-recurrent-bolus` | mnm-eoe | web | quality | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Oesophageal Stricture (Benign) \| 3. Hiatus Hernia [known gap: No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture pr |
 | `eoe-young-atopic-recurrent-bolus` | level-priority-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≥ priority, ≤ urgent [known gap: Emergency now: "Systemic red flag symptom" and "Dysphagia" red flags plus a 2-week-wait cancer screen labelled "colorectal" (ca |
 | `epididymo-orchitis-sti-young` | mnm-torsion-considered | web | quality | known gap | not in top 3 of web.pane: 1. Epididymo-orchitis \| 2. Acute Pyelonephritis / Upper Urinary Tract Infection \| 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); also in web.symptomInference#2, web.passive#5 [kno |
 | `epididymo-orchitis-sti-young` | level-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=48); expected ≥ priority, ≤ urgent [known gap: Web: Triage "emergency_now" (score 48): fever in the text and the 38.1 °C vital plus a moderate pain score add up past the emer |
-| `epididymo-orchitis-sti-young` | mgmt-no-unconditional-exploration | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency scrotal exploration - do not delay surgery for ultrasound when torsion is suspected (eau 2024); sal..." (+1 more) [known gap: Web: The scrotal-chip torsion prompt always |
 | `fournier-gangrene` | score-rec-lrinec | web | quality | known gap | lrinec not recommended; recommended: qsofa, gcs, child-pugh, web:wagner, news2, caprini, asa, web:audit, rcri, stop-bang, cfs [known gap: No LRINEC calculator or CDS rule on web (Wagner and AUDIT are suggested instead).] |
 | `haemorrhoids-grade3-over-50` | mnm-crc | web | quality | known gap | not in top 3 of web.pane: 1. Rectal Prolapse \| 2. Haemorrhoids \| 3. Anal Cancer (Squamous Cell Carcinoma of the Anus); also in web.symptomInference#4 [known gap: PANE top 3 (haemorrhoids, hernia, fissure) does not keep colorectal cancer v |
 | `hernia-incisional-midline-elective` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=34); expected ≤ priority [known gap: Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15); "Hartmann's … reversed" |
 | `hernia-parastomal-symptomatic` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=44); expected ≤ priority [known gap: Triage emergency_now (score 59): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting"); "rectal cancer" history → "Po |
-| `hernia-paraumbilical-incarcerated-obese` | mgmt-no-penicillin | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...rative: • nbm from midnight. consent signed. • antibiotics: co-amoxiclav 1.2g iv at induction (optional - low infection risk if no mesh contamination). ..." [known gap: The recor |
 | `hernia-paraumbilical-incarcerated-obese` | variant-incarcerated-or-worse | web | quality | known gap | detected hernia_strangulated in group Hernia; expected hernia_incarcerated [known gap: Web, since the engine-matching fixes (2026-09): "strangulation not excluded" is a hedge, not a negation, so the strangulated variant is now detected (the |
-| `hernia-umbilical-adult-elective` | mgmt-no-inguinal-template | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic inguinal hernia repair (tapp) - operative plan ───────────────────────────────────────────────────────────── ..." [known gap: computeClinicalPrompts fires the hernia pa |
-| `hernia-umbilical-cirrhosis-ascites` | mgmt-no-standard-day-case-plan | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... male (reduces haematoma). • ice pack to groin prn × 24h. • day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding. ..." [known gap: computeClinic |
 | `infective-colitis-bloody-diarrhoea` | mnm-ibd | web | quality | known gap | not in top 3 of web.pane: 1. Acute Gastroenteritis / Infective Colitis \| 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk \| 3. Clostridioides difficile Colitis (C. diff infection); also in web.symptomInference#4, web.p |
-| `lbo-cancer-impending-caecal-perforation` | mgmt-no-stent-with-impending-perforation | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "• if lbo due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic  |
-| `lbo-right-colon-cancer` | mgmt-no-left-sided-plan-for-right-lesion | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...lignancy: colonic stent as bridge to elective resection (vs emergency hartmann's)." [known gap: Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctionin |
 | `lgib-diverticular-apixaban` | score-rec-oakland | web | quality | known gap | oakland not recommended; recommended: cha2ds2-vasc, news2, rockall, has-bled, cfs [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland |
 | `lgib-oakland-low-risk-discharge` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ urgent [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → emerg |
 | `lgib-oakland-low-risk-discharge` | score-rec-oakland | web | quality | known gap | oakland not recommended; recommended: news2, rockall [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland, recommended by DiagnosisSco |
-| `lgib-oakland-low-risk-discharge` | mgmt-no-transfusion | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
 | `lgib-unstable-cta-first` | score-rec-shock-index | web | quality | known gap | web:shockIndex not recommended; recommended: qsofa, news2, rockall, caprini, asa, rcri, cfs [known gap: No shock-index output on web; BSG 2019 defines instability by shock index > 1.] |
 | `mallory-weiss-young-binge` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≤ urgent [known gap: Emergency now (score 120): any "blood"/"bleed" word is an urgent red flag regardless of volume or GBS, and "No chest pain" in the HPI fires |
 | `mi-presenting-as-epigastric-pain` | mnm-acs-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. GORD / acid reflux / oesophagitis \| 2. Gallstone pancreatitis \| 3. Acute alcoholic pancreatitis \| 4. Perforated peptic ulcer \| 5. Gastric carcinoma; also in web.pane#1 [known gap: Symptom inferen |
 | `mimic-inferior-mi` | mnm-acs-symptom-engine | web | quality | known gap | not in top 5 of web.symptomInference: 1. Acute alcoholic pancreatitis \| 2. Gallstone pancreatitis \| 3. Perforated peptic ulcer \| 4. Acute gastroenteritis \| 5. Gastric carcinoma; also in web.pane#1 [known gap: Web: Symptom inference top  |
 | `nsti-leg-diabetic-sepsis` | score-rec-lrinec | web | quality | known gap | lrinec not recommended; recommended: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang [known gap: getCdsSuggestions has no LRINEC scale (clinical-cds.ts); iOS has one.] |
-| `obs-hyperemesis-gravidarum` | mgmt-no-ct-in-early-pregnancy | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ct chest/abdomen/pelvis - occult malignancy screen (alarm symptoms)." [known gap: Web: the unintentional-weight-loss alarm prompt adds '• CT chest/abdomen/pelvis — occult malignan |
 | `paed-appendicitis-preschool-perforated` | score-rec-pas | web | quality | known gap | pas not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: getCdsSuggestions has no Paediatric Appendicitis Score; it suggests Alvarado, TG18 cholangitis, Ranson, qSOFA, NEWS2 for a 4-year-old. \| iOS CI  |
 | `paed-nai-duodenal-haematoma` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Splenic Laceration \| 2. Blunt Abdominal Trauma \| 3. Acute Pancreatitis [known gap: PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists  |
-| `pancreatitis-gallstone-mild` | score-rec-bisap | web | quality | known gap | bisap not recommended; recommended: alvarado, ranson, news2, web:gerdq, asa, stop-bang [known gap: CDS BISAP rule fires only on a "pancreatitis"/"epigastric pain" chip plus an alcohol/gallstone/hyperlipidaemia comorbidity; it ignores the lo |
-| `pancreatitis-severe-organ-failure` | score-rec-bisap | web | quality | known gap | bisap not recommended; recommended: alvarado, wells-pe, ranson, qsofa, web:wagner, curb65, news2, caprini, web:gerdq, asa, rcri, stop-bang [known gap: BISAP not suggested (CDS rule ignores the working diagnosis); 12 other scales are.] |
-| `pe-postop-day5` | mgmt-no-ddimer-gate | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: The hypoxia and tachycardia clinical prompts (clinical-inference.ts) add 'CTPA if |
 | `perianal-abscess-diabetic-cellulitis` | mnm-nsti | web | quality | known gap | not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Cellulitis; also in web.symptomInference#1, web.passive#2 [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: peria |
 | `perianal-abscess-hiv` | mnm-anal-neoplasia | web | quality | known gap | not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Anal Fissure; also in web.symptomInference#2, web.passive#2 [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2. \| iOS CI  |
-| `periop-abx-clean-mesh-hernia` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.] |
 | `periop-abx-penicillin-anaphylaxis-colectomy` | level-not-urgent | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=47); expected ≤ priority [known gap: Triage emergency_now (score 47) for an elective planning visit: 'Systemic red flag symptom' from 'collapse' in the allergy history, and ' |
-| `periop-anticoag-apixaban-ckd-elderly` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" (+1 more) [known gap: PT/INR and APTT added by anticoag_check and preop_haem for a DOAC patient (PAUSE: not needed with standardised interruption).] |
 | `periop-endo-polypectomy-clopidogrel` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=31); expected ≤ priority [known gap: Triage same_day_call (score 31) from age, comorbidity and the antiplatelet reason for a booked elective EMR.] |
 | `periop-nela-frail-emergency-laparotomy` | score-rec-p-possum | web | quality | known gap | p-possum not recommended; recommended: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs [known gap: P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (n |
-| `periop-postop-aki-oliguria` | mgmt-no-insulin-dextrose-mild-k | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• iv insulin-glucose: 10 units soluble insulin with 25 g glucose - shift k⁺ intracellularly; monitor..." (+1 more) [known gap: The hyperkalaemia prompt fires from K⁺ >5.5 and adds ' |
 | `periop-postop-fever-day1-early` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=152); expected ≤ urgent [known gap: Triage emergency_now (score 152) for T 38.2, HR 94 on day 1: 'Post-operative concern' (urgent) for any 'post-op' word, 'Post-op fever — so |
 | `periop-postop-ssi-superficial` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Triage emergency_now (score 88): 'Post-operative concern' (urgent) for 'wound … pus' wording, plus 'Vomiting or possible dehydration' from  |
 | `periop-postop-urinary-retention` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=45); expected ≤ urgent [known gap: Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.] |
 | `periop-preop-asa1-lap-chole` | score-rec-asa | web | quality | known gap | asa not recommended; recommended: asge-cbd, news2 [known gap: getCdsSuggestions suggests only asge-cbd and news2. The ASA rule fires on pre-op symptom words or comorbidities, none present in a fit patient; the procedureData.preop trigger (P |
-| `periop-preop-asa1-lap-chole` | inv-no-routine-coag | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "prothrombin time (pt/inr)" [known gap: The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.] |
-| `periop-preop-asa1-lap-chole` | mgmt-no-fasting-from-midnight | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...────────────────────────────────────────── pre-operative: • nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single..." [known gap: The  |
-| `periop-preop-asa1-lap-chole` | mgmt-no-routine-antibiotic-prophylaxis | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... nbm from midnight (or ≥ 6h solids / 2h clear fluids). • iv co-amoxiclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of s..." [kn |
-| `periop-preop-ckd-dialysis-hyperkalaemia` | mgmt-no-unadjusted-lmwh | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...iclav 1.2g at induction (single prophylactic dose). • lmwh (enoxaparin 40mg sc) night before + day of surgery; ted stockings. • iv access; identify allergy..." [known gap: The la |
 | `pharyngeal-pouch-elderly` | mnm-pouch | web | quality | known gap | not in top 3 of web.pane: 1. Oesophageal Carcinoma \| 2. Oesophageal Stricture (Benign) \| 3. Achalasia [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump. \| iOS CI 2026-09-25 (r |
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatch |
 | `rectal-bleeding-young-haemorrhoidal` | level-routine-or-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
-| `rectal-bleeding-young-haemorrhoidal` | mgmt-no-resuscitation | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
 | `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic pla |
 | `sbo-virgin-abdomen` | mnm-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Obturator Hernia \| 3. Small Bowel Obstruction — Adhesions [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no sma |
-| `screen-crc-fhx-sister-48-lynch-features` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'can |
-| `screen-post-splenectomy-vaccination` | mgmt-meningococcal | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: See mgmt-pneumococcal. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
-| `trauma-elderly-occult-shock-warfarin` | mgmt-no-bridging-advice | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• no routine lmwh bridging for atrial fibrillation (bridge trial; accp 2022); bridging only for high throm..." [known gap: The 'anticoag_check' prompt proposes elective bridging for |
-| `trauma-head-injury-elderly-apixaban` | mgmt-no-elective-bridging-advice | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "...l bleeding is confirmed (haematology); do not simply hold / bridge" (+2 more) [known gap: The 'anticoag_check' clinical prompt (clinical-inference.ts) always proposes 'hold DOAC  |
 | `trauma-paediatric-nai-bruising` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Rib Fractures \| 2. Traumatic Brain Injury \| 3. Intussusception [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in |
 | `uc-acute-severe-truelove-witts` | score-rec-truelove-witts | web | quality | known gap | truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. \| iOS |
-| `ugib-nonvariceal-gbs-low-outpatient` | mgmt-no-transfusion | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: gi_bleed_panel prompt fires on any haematemesis/melaena symptom and adds "2 × large-bore  |
