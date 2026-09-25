@@ -31,8 +31,11 @@ pnpm --filter @workspace/scripts run test             # vitest: schema checks, g
 and 2 when a vignette is malformed.
 
 iOS results: the unit-test job prints one `CLINVAL|{json}` line per vignette plus a
-`CLINVAL-SUMMARY|` line. The workflow extracts them into `clinval-ios.jsonl` and uploads them as the
-`clinval-ios` artifact (30 days). To include them in the report:
+`CLINVAL-SUMMARY|` line. The workflow extracts them into `clinval-ios.jsonl`, uploads them as the
+`clinval-ios` artifact (30 days) and, on a push to a `claude/**` branch, commits them to that branch
+as `results/ios-latest.jsonl` (a bot commit "clinval: iOS results from run …"; pull before pushing).
+`clinval:report` reads that file first, so after a green iOS run just pull and run the report.
+Manual alternative:
 
 ```bash
 gh run download <run-id> -n clinval-ios -D /tmp/clinval
