@@ -183,11 +183,7 @@ export default function AppHeader({ completing, completeEncounter, showAiPanel, 
           {encounterId ? (
             <button
               type="button"
-              onClick={() => {
-                if (window.confirm('Mark this encounter as complete and close it?')) {
-                  completeEncounter();
-                }
-              }}
+              onClick={completeEncounter /* opens the in-app sign-off dialog (Home.tsx) */}
               style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, border: '1px solid rgba(220,38,38,0.4)', background: completing ? 'rgba(220,38,38,0.2)' : 'rgba(220,38,38,0.1)', color: '#fca5a5', fontSize: 10, fontWeight: 700, cursor: completing ? 'wait' : 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
               title="Close this encounter"
               disabled={completing}

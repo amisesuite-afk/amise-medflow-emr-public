@@ -21,6 +21,18 @@ export interface CompletionFields {
   assessment: string; plan: string; progressNotes: unknown[];
 }
 
+/** Short labels for the pathway steps (pathway bar, sign-off summary). */
+export const SECTION_LABELS: Partial<Record<Section, string>> = {
+  triage: 'Triage', hpi: 'HPI', pmh: 'PMH', surgical: 'Surgical Hx',
+  medications: 'Meds', allergies: 'Allergies', family_hx: 'Family Hx',
+  toxic: 'Social', ros: 'ROS', examination: 'Exam', wounds: 'Wounds',
+  investigations: 'Labs', blood_gas: 'ABG', radiology: 'Imaging',
+  attachments: 'Files', assessment: 'Assessment', plan: 'Plan',
+  procedures: 'Procedure', prescriptions: 'RX', dosing: 'Dosing',
+  fluid_nutrition: 'Fluids', referring_providers: 'Referrals',
+  progress: 'Notes', monitoring: 'Monitor', tasks: 'Tasks',
+};
+
 const filled = (v: unknown) => typeof v === 'string' ? v.trim() !== '' : v !== null && v !== undefined && v !== false;
 
 export function computeSectionDone(f: CompletionFields): Partial<Record<Section, boolean>> {

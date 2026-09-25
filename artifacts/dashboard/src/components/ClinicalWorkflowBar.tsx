@@ -1,18 +1,8 @@
 import { useMemo } from 'react';
 import { useAppContext, type Section } from '@/context/AppContext';
 import { getMatrix } from '@/lib/cc-matrices';
-import { computeSectionDone } from '@/lib/workflow-completion';
+import { computeSectionDone, SECTION_LABELS } from '@/lib/workflow-completion';
 
-const SECTION_LABELS: Partial<Record<Section, string>> = {
-  triage: 'Triage', hpi: 'HPI', pmh: 'PMH', surgical: 'Surgical Hx',
-  medications: 'Meds', allergies: 'Allergies', family_hx: 'Family Hx',
-  toxic: 'Social', ros: 'ROS', examination: 'Exam', wounds: 'Wounds',
-  investigations: 'Labs', blood_gas: 'ABG', radiology: 'Imaging',
-  attachments: 'Files', assessment: 'Assessment', plan: 'Plan',
-  procedures: 'Procedure', prescriptions: 'RX', dosing: 'Dosing',
-  fluid_nutrition: 'Fluids', referring_providers: 'Referrals',
-  progress: 'Notes', monitoring: 'Monitor', tasks: 'Tasks',
-};
 
 const SECTION_ICONS: Partial<Record<Section, string>> = {
   triage: '⚡', hpi: '📝', pmh: '🏥', surgical: '⚕️',

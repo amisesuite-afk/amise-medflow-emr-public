@@ -99,6 +99,7 @@ import NoPatientQuickstart from '@/components/NoPatientQuickstart';
 import PatientNotifyModal from '@/components/PatientNotifyModal';
 import ConsultationNav from '@/components/ConsultationNav';
 import AmbientConsultation from '@/components/AmbientConsultation';
+import EncounterSignOffDialog from '@/components/EncounterSignOffDialog';
 import { getMatrix } from '@/lib/cc-matrices';
 
 const API_ORIGIN = getApiOrigin();
@@ -415,6 +416,16 @@ export default function HomePage() {
     setTopSection('finaldoc');
   }, [encounterId, plan, setEncounterStatus, setEncounterClosedAt, setTopSection]);
 
+  // Every "close / finish encounter" control opens the in-app sign-off dialog first (missing
+  // steps, allergy status, diagnosis); the encounter closes only on its explicit confirmation.
+  const [signOffOpen, setSignOffOpen] = useState(false);
+  const requestCompleteEncounter = useCallback(() => setSignOffOpen(true), []);
+  const cancelSignOff = useCallback(() => setSignOffOpen(false), []);
+  const confirmSignOff = useCallback(async () => {
+    await completeEncounter();
+    setSignOffOpen(false);
+  }, [completeEncounter]);
+
   const [reopening, setReopening] = useState(false);
   const [reopenError, setReopenError] = useState('');
 
@@ -727,9 +738,15 @@ export default function HomePage() {
         transition: 'grid-template-columns 200ms ease, grid-template-rows 200ms ease',
       }}
     >
+      <EncounterSignOffDialog
+        open={signOffOpen}
+        completing={completing}
+        onCancel={cancelSignOff}
+        onConfirm={() => { void confirmSignOff(); }}
+      />
       <AppHeader
         completing={completing}
-        completeEncounter={completeEncounter}
+        completeEncounter={requestCompleteEncounter}
         showAiPanel={showAiPanel}
         setShowAiPanel={setShowAiPanel}
       />
@@ -838,7 +855,7 @@ export default function HomePage() {
           <AmbientConsultation
             visitType={ctxVisitType ?? headerVisitMode}
             onDetailedMode={() => { setAmbientMode(false); setGuidedMode(true); }}
-            onFinalise={completeEncounter}
+            onFinalise={requestCompleteEncounter}
             compact={!ambientMode}
           />
         )}
@@ -849,7 +866,7 @@ export default function HomePage() {
         <ConsultationNav
           consultTabs={consultTabs}
           sectionCompletion={sectionCompletion}
-          completeEncounter={completeEncounter}
+          completeEncounter={requestCompleteEncounter}
           completing={completing}
           ambientMode={ambientMode}
           setAmbientMode={setAmbientMode}
