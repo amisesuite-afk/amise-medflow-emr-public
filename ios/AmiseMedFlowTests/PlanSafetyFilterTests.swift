@@ -131,6 +131,13 @@ final class PlanSafetyFilterTests: XCTestCase {
         XCTAssertTrue(bolus.contains("2 L/min"), bolus)
         let perKg = PlanSafetyFilter.adaptLine("- IV crystalloid 20 mL/kg bolus", s).text
         XCTAssertTrue(perKg.contains("20 mL/kg"), perKg)
+        // Weight-based formula kept; below 50 mL an amount in mL is a drug dose, not a fluid.
+        let parkland = PlanSafetyFilter.adaptLine("- Parkland 4 mL × kg × %TBSA over 24 h", s).text
+        XCTAssertEqual(parkland, "- Parkland 4 mL × kg × %TBSA over 24 h")
+        let calcium = PlanSafetyFilter.adaptLine("- Calcium gluconate 10% 30 mL IV", s).text
+        XCTAssertTrue(calcium.contains("[dose: weight-based dosing — calculate per BNFc]"), calcium)
+        XCTAssertFalse(calcium.contains("fluids by weight"), calcium)
+        XCTAssertTrue(PlanSafetyFilter.adaptLine("- Bolus 500 mL", s).text.contains("[fluids by weight — calculate per APLS/BNFc (mL/kg)]"))
         // Adults keep the volumes.
         let adult = PlanSafetyFilter.adaptLine("- Hartmann's 1 L stat", PlanSafetyFilter.signals(ctx(age: 40))).text
         XCTAssertEqual(adult, "- Hartmann's 1 L stat")

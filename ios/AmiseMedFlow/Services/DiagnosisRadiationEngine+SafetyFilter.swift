@@ -334,34 +334,47 @@ extension DiagnosisRadiationEngine {
     // MARK: Paediatric dose suppression
 
     private static let doseRegex: NSRegularExpression? = try? NSRegularExpression(
-        pattern: #"\b\d+(?:[.,]\d+)?(?:\s*(?:–|-|to)\s*\d+(?:[.,]\d+)?)?\s*(?:mg|g|mcg|µg|micrograms?|units?|iu|ml|l|litres?|liters?|mmol|meq)\b(?!\s*/\s*(?:l|dl|min|m2|m²)\b)(?:\s*/\s*kg)?(?:\s*/\s*(?:h|hr|hour|day|d|24\s*h)\b)?"#,
+        pattern: #"\b\d+(?:[.,]\d+)?(?:\s*(?:–|-|to)\s*\d+(?:[.,]\d+)?)?\s*(?:mg|g|mcg|µg|micrograms?|units?|iu|ml|l|litres?|liters?|mmol|meq)\b(?!\s*/\s*(?:l|dl|min|m2|m²|kg)\b)(?!\s*(?:×|x|\*)\s*kg\b)(?:\s*/\s*(?:h|hr|hour|day|d|24\s*h)\b)?"#,
         options: [.caseInsensitive])
 
     /// The under-16 replacement for a fixed adult fluid volume. Same wording as the web filter.
     static let paediatricFluids = "fluids by weight — calculate per APLS/BNFc (mL/kg)"
 
     /// Fixed fluid volumes and fixed mL/h rates ("1 L", "500 mL", "250–500 mL/h"); per-kilogram
-    /// amounts ("20 mL/kg", "0.5 mL/kg/h") and oxygen flows ("2 L/min") are not matched.
+    /// amounts ("20 mL/kg", "0.5 mL/kg/h", "4 mL × kg × %TBSA") and oxygen flows ("2 L/min") are
+    /// not matched. Groups: 1 = amount, 2 = upper amount of a range, 3 = unit.
     private static let fluidRegex: NSRegularExpression? = try? NSRegularExpression(
-        pattern: #"\b\d+(?:[.,]\d+)?(?:\s*(?:–|-|to)\s*\d+(?:[.,]\d+)?)?\s*(?:ml|l|litres?|liters?)\b(?:\s*/\s*(?:h|hr|hour)\b)?(?!\s*/\s*(?:kg|min|l|dl|m2|m²)\b)"#,
+        pattern: #"\b(\d+(?:[.,]\d+)?)(?:\s*(?:–|-|to)\s*(\d+(?:[.,]\d+)?))?\s*(ml|l|litres?|liters?)\b(?:\s*/\s*(?:h|hr|hour)\b)?(?!\s*/\s*(?:kg|min|l|dl|m2|m²)\b)(?!\s*(?:×|x|\*)\s*kg\b)"#,
         options: [.caseInsensitive])
+
+    /// Below this many millilitres an amount in mL is a drug dose ("calcium gluconate 10% 30 mL"),
+    /// not a fluid volume — same cut-off as the web filter.
+    static let fluidVolumeCutOffML = 50.0
 
     /// Under 16: fixed adult fluid volumes are doses too (a child's fluids are calculated by
     /// weight). Applied to every line, including urine-output titration lines, whose "mL/kg/h"
-    /// target is kept.
+    /// target is kept. Litres are always a fluid; millilitres from 50 mL (the larger end of a range).
     static func suppressAdultFluids(_ line: String) -> String {
         guard let re = fluidRegex else { return line }
         let ns = line as NSString
         let matches = re.matches(in: line, range: NSRange(location: 0, length: ns.length))
         guard !matches.isEmpty else { return line }
+        func number(_ r: NSRange) -> Double? {
+            guard r.location != NSNotFound else { return nil }
+            return Double(ns.substring(with: r).replacingOccurrences(of: ",", with: "."))
+        }
         var out = line
         for m in matches.reversed() {
+            let unit = ns.substring(with: m.range(at: 3)).lowercased()
+            let amount = max(number(m.range(at: 1)) ?? 0, number(m.range(at: 2)) ?? 0)
+            if unit == "ml" && amount < fluidVolumeCutOffML { continue }   // a drug dose in mL
             guard let range = Range(m.range, in: out) else { continue }
             out.replaceSubrange(range, with: "[\(paediatricFluids)]")
         }
         return out
     }
 
+    /// Weight-based amounts ("0.1 mg/kg", "20 mL/kg", "4 mL × kg × %TBSA") are kept, as on the web.
     /// Replaces adult doses in a text with the BNFc instruction, and fixed adult fluid volumes
     /// with the APLS/BNFc fluid instruction. Urine-output targets and lab thresholds are not
     /// doses and are kept.
