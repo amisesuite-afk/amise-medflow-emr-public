@@ -8,6 +8,10 @@
  *   - artifacts/front-desk/lib/instructions.ts (emailed automatically on booking)
  *   - front-desk pages that show prep text to patients
  *   - the dashboard's staff prep reference text (read to patients by phone)
+ *   - the public health-information library,
+ *     artifacts/front-desk/content/health-info.ts (all articles, drafts too),
+ *     with stricter rules: no medicine word with an instruction verb, no
+ *     doses, no fees, no "midnight"
  *
  * Rules (Dr Kabiye's decisions, CLAUDE.md Tone rule):
  *   1. No sentence pairs insulin, a diabetes medicine or a blood thinner with
@@ -43,6 +47,7 @@ import {
   type ProcedureInstructions,
 } from '../../artifacts/front-desk/lib/instructions';
 import { APPOINTMENT_TYPES } from '../../artifacts/front-desk/lib/scheduling';
+import { HEALTH_ARTICLES, articleText } from '../../artifacts/front-desk/content/health-info';
 
 // scripts/src/lint-patient-instructions.ts -> scripts/src -> scripts -> repo root
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
@@ -268,6 +273,57 @@ if (getInstructionsForAppointment('__lint_unknown_type__') !== PROCEDURE_INSTRUC
   failures.push('getInstructionsForAppointment: unknown booking types must fall back to general_appointment');
 }
 
+// ── Health-information library (artifacts/front-desk/content/health-info.ts) ──
+// Public patient education, drafts included (they are one approval away from
+// publication). Stricter than the prep text: general information only, so no
+// sentence may pair ANY medicine word with an instruction verb (bar the
+// approved "If you take … please call the clinic" line), and no doses, no
+// fees and no mention of midnight at all.
+const LIBRARY_MEDICINE =
+  /\b(medicines?|medications?|tablets?|pills?|drugs?|antibiotics?|painkillers?|antacids?|ointments?|creams?|suppositor\w*|injections?|inhalers?|insulin|doses?|dosage)\b/i;
+const LIBRARY_INSTRUCTION =
+  /\b(take|takes|taking|taken|hold|holding|stop|stops|stopping|adjust\w*|skip\w*|omit\w*|withh[eo]ld\w*|pause\w*|continue\w*|discontinue\w*|start|starting|double|complete|finish)\b/i;
+const LIBRARY_DOSE =
+  /\b\d+(\.\d+)?\s?(mg|mcg|µg|micrograms?|milligrams?|g|grams?|ml|millilitres?|units?|iu|tablets?|capsules?|puffs?|drops?)\b|\b(once|twice|three times|four times) (a|per) day\b/i;
+const LIBRARY_FEE = /(\bEC\$|\bUS\$|\$\s?\d|\bXCD\b|\bfees?\b|\bprices?\b|\bcosts?\b|\bcharges?\b)/i;
+
+export function libraryViolations(text: string): string[] {
+  const out: string[] = [];
+  for (const s of sentences(text)) {
+    let scrubbed = s;
+    for (const re of ALLOWED_PHRASES) scrubbed = scrubbed.replace(re, ' ');
+    if (LIBRARY_MEDICINE.test(scrubbed) && LIBRARY_INSTRUCTION.test(scrubbed)) out.push(`medicine instruction: "${s}"`);
+    if (LIBRARY_DOSE.test(s)) out.push(`dose or dosing frequency: "${s}"`);
+    if (LIBRARY_FEE.test(s)) out.push(`fee or price: "${s}"`);
+    if (/\bmidnight\b/i.test(s)) out.push(`mentions midnight (fasting wording): "${s}"`);
+  }
+  return out;
+}
+
+for (const bad of [
+  'Please complete the full course of antibiotics.',
+  'Stop your tablets two days before the test.',
+  'The usual dose is 20 mg once a day.',
+  'The consultation fee is EC$150.',
+  'Nothing to eat after midnight.',
+]) {
+  if (libraryViolations(bad).length === 0) failures.push(`self-test: health-library rule missed unsafe text: "${bad}"`);
+}
+for (const ok of [
+  'If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions.',
+  'Some patients are also given stockings or injections to reduce this risk.',
+]) {
+  if (libraryViolations(ok).length > 0) failures.push(`self-test: health-library rule flagged approved text: "${ok}"`);
+}
+
+for (const article of HEALTH_ARTICLES) {
+  const text = articleText(article).join('\n');
+  const where = `content/health-info.ts ${article.id}`;
+  for (const s of medicationInstructionViolations(text)) failures.push(`${where}: medication instruction: "${s}"`);
+  for (const s of sentences(text)) if (MIDNIGHT_FAST.test(s)) failures.push(`${where}: fasting from midnight: "${s}"`);
+  for (const v of libraryViolations(text)) failures.push(`${where}: ${v}`);
+}
+
 // ── Pages and staff reference text ────────────────────────────────────────────
 for (const rel of SOURCE_FILES) {
   const text = stripSource(readFileSync(join(REPO_ROOT, rel), 'utf8'));
@@ -282,4 +338,4 @@ if (failures.length) {
   console.error('Use the approved wording: "MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions."');
   process.exit(1);
 }
-console.log(`✓ lint:patient-instructions — ${Object.keys(PROCEDURE_INSTRUCTIONS).length} instruction sets, ${Object.keys(APPOINTMENT_TYPES).length} booking-type mappings and ${SOURCE_FILES.length} source files clean.`);
+console.log(`✓ lint:patient-instructions — ${Object.keys(PROCEDURE_INSTRUCTIONS).length} instruction sets, ${Object.keys(APPOINTMENT_TYPES).length} booking-type mappings, ${HEALTH_ARTICLES.length} health-information articles and ${SOURCE_FILES.length} source files clean.`);
