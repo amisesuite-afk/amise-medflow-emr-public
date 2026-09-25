@@ -161,7 +161,7 @@ extension Patient {
 
     fileprivate func scoreResultedLabs() -> [ScoreResultedLab] {
         investigations
-            .filter { $0.status == .resulted }
+            .filter { $0.status == .resulted && $0.category.holdsLabValues }
             .map { ScoreResultedLab(lowerName: $0.name.lowercased(), entry: $0) }
     }
 

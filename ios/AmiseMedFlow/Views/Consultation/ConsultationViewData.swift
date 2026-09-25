@@ -141,12 +141,27 @@ struct InvestigationEntry: Codable, Identifiable {
     var resultedAt: Date?
     var suggestedFor: String = ""
 
+    // Report import provenance (LabReportParser / ImagingReportParser). Optional, so entries
+    // saved before these existed (and by older builds) decode unchanged.
+    var source: String? = nil          // "Laboratory Services Ltd (imported PDF)"
+    var accession: String? = nil       // lab number / study number
+    var referenceRange: String? = nil
+    var flag: String? = nil            // H / L / … as printed
+    var reportedAt: Date? = nil
+    var portalURL: String? = nil       // imaging study address, opened in Safari only
+    var documentId: UUID? = nil        // PatientDocument holding the source PDF
+
     enum InvCategory: String, Codable, CaseIterable {
         case blood     = "Blood"
         case imaging   = "Imaging"
         case endoscopy = "Endoscopy"
         case pathology = "Pathology"
         case other     = "Other"
+
+        /// Imaging and endoscopy entries hold narrative reports, never a lab value: numeric lab
+        /// readers (latestLab, LabPanel) skip them, so "US Breast" is not read as AST and the
+        /// first number of an impression is never taken for a result.
+        var holdsLabValues: Bool { self != .imaging && self != .endoscopy }
 
         var icon: String {
             switch self {

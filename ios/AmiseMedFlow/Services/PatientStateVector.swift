@@ -336,7 +336,7 @@ extension LabPanel {
     static func parse(from entries: [InvestigationEntry]) -> LabPanel {
         var lab = LabPanel()
         let resulted = entries
-            .filter { $0.status == .resulted && !$0.result.isEmpty }
+            .filter { $0.status == .resulted && !$0.result.isEmpty && $0.category.holdsLabValues }
             .sorted { ($0.resultedAt ?? $0.orderedAt) > ($1.resultedAt ?? $1.orderedAt) }
 
         func fv(_ raw: String, at date: Date) -> FusedValue<Double>? {
