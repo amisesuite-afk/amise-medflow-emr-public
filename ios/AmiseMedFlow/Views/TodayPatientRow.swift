@@ -46,7 +46,7 @@ struct TodayPatientRow: View {
             else if let cc = patient.chiefComplaint { parts.append(cc) }
             if let asa = patient.asaClass {
                 let roman = ["I","II","III","IV","V"]
-                parts.append("ASA \(roman[min(asa-1, 4)])")
+                parts.append("ASA \(roman[max(0, min(asa - 1, 4))])")   // clamp: ASA 0/negative crashed
             }
             return parts.joined(separator: " · ")
         case .clinic:
