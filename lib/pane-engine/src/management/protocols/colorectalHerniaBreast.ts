@@ -126,6 +126,7 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { label: 'FBC, CRP, albumin, B12, iron studies', urgency: 'urgent' },
       { label: 'Faecal calprotectin (disease activity)', urgency: 'routine' },
       { label: 'MRI enterography (small bowel, fistula, abscess)', urgency: 'urgent' },
+      { label: 'MRI pelvis (perianal fistula / abscess)', urgency: 'urgent', category: 'imaging-mri', conditional: 'Perianal Crohn\'s disease (ECCO-ESGAR 2019 imaging guideline)' },
       { label: 'Colonoscopy + ileoscopy + biopsies', urgency: 'urgent' },
       { label: 'CT if perforation / abscess suspected', urgency: 'urgent' },
     ],
@@ -401,6 +402,7 @@ export const herniaProtocols: ManagementProtocol[] = [
       { label: 'Clinical diagnosis', urgency: 'routine' },
       { label: 'USS if diagnosis unclear', urgency: 'routine' },
       { label: 'FBC, U&E if emergency', urgency: 'urgent' },
+      { label: 'CT abdomen/pelvis if obstruction or strangulation is suspected — only if it will not delay surgery', urgency: 'urgent', category: 'imaging-ct', conditional: 'Emergency presentation (WSES 2017 emergency repair of complicated abdominal wall hernias)' },
     ],
     management: [
       { phase: 'surgical', step: 'Elective: mesh plug repair (Lockwood) or laparoscopic TEP.' },

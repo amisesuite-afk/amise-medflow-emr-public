@@ -147,6 +147,41 @@ export const surgicalAdditionsProtocols: ManagementProtocol[] = [
     referral: 'Emergency: vascular surgery + general surgery.',
   },
 
+  // ── Secondary aorto-enteric fistula / aortic graft infection (2026-09, fix-web-protocols
+  //    "not done": no protocol for the PANE node) ──────────────────────────────────────────
+  // No ICD mapping: the PANE node's K63.2 (fistula of intestine) and T82.7 (vascular device
+  // infection, also used for catheter infections) are too broad; reached by the disease id only.
+  {
+    diseaseId: 'aortoenteric_fistula',
+    icd10Prefixes: [],
+    label: 'Aorto-enteric Fistula (after aortic graft) / Aortic Graft Infection',
+    kind: 'emergency',
+    guidelines: ['ESVS 2020 Clinical Practice Guidelines on the management of vascular graft and endograft infections (Chakfé et al., Eur J Vasc Endovasc Surg 2020)'],
+    keyPoints: [
+      'Any gastrointestinal bleeding in a patient with an aortic graft (open repair or EVAR) is a secondary aorto-enteric fistula until proven otherwise; a self-limiting "herald" bleed often precedes exsanguinating haemorrhage (ESVS 2020).',
+      'CT angiography is the first test; endoscopy must not delay it, and a normal endoscopy does not exclude a fistula (ESVS 2020).',
+      'Fever, back pain and raised inflammatory markers point to graft infection: blood cultures before antibiotics.',
+    ],
+    redFlags: [
+      'Herald bleed after aortic surgery — immediate transfer; massive haemorrhage can follow within hours.',
+      'Haemodynamic instability — major haemorrhage protocol and emergency vascular surgery.',
+    ],
+    investigations: [
+      { label: 'CT angiography (CTA) of the aorta — graft, peri-graft gas / fluid, fistula', urgency: 'stat', tier: 3, category: 'imaging-ct' },
+      { label: 'FBC, U&E, coagulation, CRP, group and crossmatch', urgency: 'stat', tier: 1, category: 'bloods' },
+      { label: 'Blood cultures × 2 before antibiotics (graft infection)', urgency: 'urgent', tier: 1, category: 'microbiology' },
+      { label: 'OGD to the fourth part of the duodenum — after CTA, in a hospital with vascular surgery on site', urgency: 'urgent', tier: 3, category: 'endoscopy', conditional: 'Only if CTA is not diagnostic and the patient is stable (ESVS 2020)' },
+    ],
+    management: [
+      { phase: 'immediate', step: EMERGENCY_REDIRECT },
+      { phase: 'immediate', step: 'While waiting: two large-bore cannulae, bloods and crossmatch; alert the on-call vascular surgery team at the receiving hospital.' },
+      { phase: 'conservative', step: 'Broad-spectrum IV antibiotics after blood cultures, per microbiology advice; prolonged antimicrobial therapy after graft infection (ESVS 2020).' },
+      { phase: 'surgical', step: 'Vascular surgery: graft excision with in situ reconstruction or extra-anatomic bypass and repair of the bowel; endovascular stent-graft as a bridge in the unstable patient (ESVS 2020).' },
+      { phase: 'followup', step: 'Lifelong vascular surveillance; long-term antimicrobial therapy as the vascular and infection teams advise (ESVS 2020).' },
+    ],
+    referral: 'Emergency vascular surgery (on-call vascular surgeon) via the emergency department.',
+  },
+
   // ── B4 Aortic dissection (AAA protocol lives in vascular.ts) ─────────────────────────────
   {
     diseaseId: 'aortic_dissection',
@@ -684,6 +719,7 @@ export const surgicalAdditionsProtocols: ManagementProtocol[] = [
     ],
     investigations: [
       { label: 'Entamoeba histolytica serology; FBC, LFTs, CRP', urgency: 'urgent', tier: 1, category: 'bloods' },
+      { label: 'Blood cultures × 2 (exclude a pyogenic or mixed abscess)', urgency: 'urgent', tier: 1, category: 'microbiology' },
       { label: 'Ultrasound (or CT) liver', urgency: 'urgent', tier: 2, category: 'imaging-uss' },
     ],
     management: [

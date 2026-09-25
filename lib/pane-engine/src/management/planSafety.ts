@@ -530,6 +530,7 @@ interface Signals {
   child: boolean;
   infant: boolean;
   female: boolean;
+  male: boolean;
   pregnancy: { status: PregnancyStatus; gestationWeeks: number | null };
   allergy: AllergyProfile;
   meds: string;
@@ -553,6 +554,7 @@ function signalsFor(ctx: PlanPatientContext): Signals {
     child: age !== null && age < 16,
     infant: age !== null && age < 1,
     female: lower(ctx.sex) === 'female',
+    male: lower(ctx.sex) === 'male',
     pregnancy: pregnancyFor(ctx),
     allergy: allergyProfile(ctx.allergies),
     meds,
@@ -656,9 +658,13 @@ function adaptLine(line: string, protocol: ManagementProtocol, s: Signals): Step
   return { text };
 }
 
+/** Ultrasound / MRI named first ("USS KUB", "MRI pelvis"): not ionising, whatever region follows. */
+const NON_IONISING_FIRST = /^\s*(?:uss|us|ultrasound|transvaginal|tvus|doppler|duplex|mri|mrcp|mr\b|echo\w*)/i;
+
 function adaptInvestigation(inv: InvestigationItem, s: Signals): InvestigationItem {
   let label = inv.label;
-  const ionising = inv.category === 'imaging-ct' || inv.category === 'imaging-xr' || IONISING_IMAGING.test(label);
+  const nonIonising = inv.category === 'imaging-uss' || inv.category === 'imaging-mri' || NON_IONISING_FIRST.test(label);
+  const ionising = inv.category === 'imaging-ct' || inv.category === 'imaging-xr' || (!nonIonising && IONISING_IMAGING.test(label));
   if (ionising && s.pregnancy.status === 'pregnant') {
     label += ' — pregnancy: only if ultrasound/MRI cannot answer the question; discuss dose with radiology (ACOG Committee Opinion 723, 2017)';
   } else if (ionising && s.pregnancy.status === 'possible') {
@@ -671,6 +677,18 @@ function adaptInvestigation(inv: InvestigationItem, s: Signals): InvestigationIt
     label += ' — contrast allergy recorded: discuss premedication or an alternative with radiology (ESUR 2018)';
   }
   return label === inv.label ? inv : { ...inv, label };
+}
+
+const PREGNANCY_TEST = /β-?\s?hcg|βhcg|beta-?\s?hcg|\bb-?hcg\b|pregnancy test/i;
+
+/**
+ * A pregnancy test is not suggested when it cannot help: male patients, age under 10 or over 55
+ * (the same range as the "result required" line), or a pregnancy already recorded. Protocols where
+ * pregnancy is the condition (ectopic, quantitative β-hCG) keep it.
+ */
+function pregnancyTestNotApplicable(inv: InvestigationItem, protocol: ManagementProtocol, s: Signals): boolean {
+  if (protocol.pregnancySpecific || !PREGNANCY_TEST.test(inv.label)) return false;
+  return s.male || (s.age !== null && (s.age < 10 || s.age > 55)) || s.pregnancy.status === 'pregnant';
 }
 
 function adaptMedication(m: ProtocolMedication, protocol: ManagementProtocol, s: Signals, withheld: AdaptedProtocol['withheld']): ProtocolMedication | null {
@@ -1065,6 +1083,7 @@ export function adaptProtocolForPatient(
 
   const investigations = protocol.investigations
     .filter(i => conditionHolds(i.onlyIf, s))
+    .filter(i => !pregnancyTestNotApplicable(i, protocol, s))
     .map(i => adaptInvestigation(i, s));
   const extraInvestigations = (procedureKind: ProcedureKind): InvestigationItem[] => {
     const extra: InvestigationItem[] = [];
@@ -1076,6 +1095,15 @@ export function adaptProtocolForPatient(
     if (procedureKind !== 'none' && s.female && s.age !== null && s.age >= 12 && s.age <= 55
       && (s.pregnancy.status === 'possible' || s.pregnancy.status === 'unknown') && !/hcg|pregnan/.test(labels)) {
       extra.push({ label: 'Pregnancy test (urine or serum β-hCG) before surgery or ionising imaging — result required (NICE NG45)', urgency: 'urgent' });
+    }
+    // Older patient with an acute abdominal (digestive-system) presentation: sepsis and mesenteric
+    // ischaemia are easily masked (ESVS 2017 mesenteric arterial and venous disease; NELA).
+    const acuteAbdomen = kind !== 'emergency' && kind !== 'medical'
+      && protocol.icd10Prefixes.some(p => /^K/i.test(p))
+      && protocol.management.some(st => st.phase === 'immediate')
+      && !/\belective\b/.test(s.assessment);
+    if (s.age !== null && s.age >= 65 && acuteAbdomen && !/lactate/.test(labels)) {
+      extra.push({ label: 'Venous blood gas with lactate — age ≥ 65 with an acute abdomen: sepsis and mesenteric ischaemia may be masked; CT angiography if mesenteric ischaemia is suspected (a normal lactate does not exclude it) (ESVS 2017; NELA)', urgency: 'urgent', category: 'bloods' });
     }
     return extra;
   };

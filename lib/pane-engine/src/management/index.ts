@@ -29,7 +29,7 @@ export type {
  * planSafety.ts). Registered in clinical-content/registry.json as "pane-engine-management-protocols";
  * bump together with the registry entry and add a changelog line there.
  */
-export const MANAGEMENT_PROTOCOLS_VERSION = '1.0.0';
+export const MANAGEMENT_PROTOCOLS_VERSION = '1.1.0';
 
 // Order matters only for ties between equally long ICD prefixes: the earlier protocol wins
 // (e.g. K92.2 → lower GI bleeding before upper GI haemorrhage; C20 → rectal carcinoma).
@@ -57,13 +57,25 @@ const _byDiseaseId = new Map(ALL_PROTOCOLS.map(p => [p.diseaseId, p]));
 /**
  * PANE disease ids whose management is an existing protocol under another id (the differential
  * gained these nodes in 2026-09; see docs/clinical-validation/changes/fix-web-differential.md).
- * `sah` and `anaplastic_thyroid` are deliberately not aliased while HpiTab seeds investigations
- * from every top-3 PANE protocol: they would seed an immediate CT head / thyroid staging into
- * unrelated consultations (e.g. low-risk syncope, post-thyroidectomy haematoma).
+ *
+ * Suggested investigations are now seeded from one diagnosis only — the confirmed one, else the
+ * PANE leader — adapted to the patient, with no stat test from an unconfirmed diagnosis
+ * (dashboard plan-builder.ts seedInvestigations; docs/clinical-validation/changes/
+ * web-plan-filter-everywhere.md). With that:
+ *   - `anaplastic_thyroid` → thyroid_carcinoma is aliased: it only seeds when it leads (a neck
+ *     haematoma after thyroidectomy leads with postop_haematoma), and that protocol has no stat
+ *     test and carries the anaplastic / airway lines.
+ *   - `sah` is still NOT aliased: the PANE engine ranks it first (34%) in the low-risk vasovagal
+ *     syncope vignette, so before a diagnosis is confirmed the Assessment reference panel and the
+ *     Ambient preview would show the SAH emergency protocol ("call 911") for that patient. Seeding
+ *     itself would be safe (the immediate CT head is a stat test, held back). Confirmed SAH
+ *     (ICD I60) already resolves to subarachnoid_haemorrhage. Revisit once the syncope ranking is
+ *     fixed in the differential.
  */
 export const PROTOCOL_ALIASES: Readonly<Record<string, string>> = {
   acs: 'acute_coronary_syndrome',
   aki: 'acute_kidney_injury',
+  anaplastic_thyroid: 'thyroid_carcinoma',
   asthma_exacerbation: 'acute_asthma',
   cardiac_syncope: 'syncope',
   cauda_equina: 'cauda_equina_syndrome',

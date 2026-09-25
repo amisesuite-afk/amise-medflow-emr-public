@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
-  adaptPlanText, adaptProtocolForPatient, allergyProfile, gestationFromText, getAllProtocols, getProtocol,
+  adaptInvestigationForPatient, adaptPlanText, adaptProtocolForPatient, allergyProfile, gestationFromText, getAllProtocols, getProtocol,
   getProtocolByIcd, hasOperativeSteps, pregnancyFor, procedureFor, resolveProtocol, PAEDIATRIC_FLUID,
 } from '../management/index.js';
 import type { PlanPatientContext } from '../management/index.js';
@@ -254,5 +254,61 @@ describe('procedure detection', () => {
     expect(hasOperativeSteps(proto('cellulitis'))).toBe(false);
     expect(hasOperativeSteps(proto('appendicitis'))).toBe(true);
     expect(hasOperativeSteps(proto('appendicitis'), ['immediate', 'conservative'])).toBe(false);
+  });
+});
+
+describe('investigation filters (web-plan-filter-everywhere, 2026-09-25)', () => {
+  it('an ultrasound named first is not ionising imaging ("USS KUB" in pregnancy)', () => {
+    const preg = { ...adult, sex: 'female', ageYears: 28, freeText: '26 weeks pregnant' };
+    const uss = adaptInvestigationForPatient({ label: 'USS KUB (pregnancy, children — avoids radiation)', urgency: 'urgent' }, preg);
+    expect(uss.label).toBe('USS KUB (pregnancy, children — avoids radiation)');
+    const ct = adaptInvestigationForPatient({ label: 'CT KUB (non-contrast)', urgency: 'urgent' }, preg);
+    expect(ct.label).toMatch(/pregnancy: only if ultrasound\/MRI cannot answer/);
+  });
+  it('no pregnancy test for a man, an older woman or a recorded pregnancy; kept where pregnancy is the condition', () => {
+    const hcg = (a: ReturnType<typeof adaptProtocolForPatient>) => a.investigations.some(i => /hcg|pregnancy test/i.test(i.label));
+    expect(hcg(adaptProtocolForPatient(proto('appendicitis'), { ...adult, sex: 'female', ageYears: 30 }))).toBe(true);
+    expect(hcg(adaptProtocolForPatient(proto('appendicitis'), adult))).toBe(false);
+    expect(hcg(adaptProtocolForPatient(proto('appendicitis'), { ...adult, sex: 'female', ageYears: 78 }))).toBe(false);
+    expect(hcg(adaptProtocolForPatient(proto('appendicitis'), { ...adult, sex: 'female', ageYears: 29, freeText: '22 weeks pregnant' }))).toBe(false);
+    expect(hcg(adaptProtocolForPatient(proto('ectopic_pregnancy'), { ...adult, sex: 'female', ageYears: 29, freeText: 'pregnant' }))).toBe(true);
+  });
+  it('age ≥ 65 with an acute abdomen: lactate and the CT-angiography caveat; not for an elective plan', () => {
+    const lactate = (a: ReturnType<typeof adaptProtocolForPatient>) => a.investigations.find(i => /Venous blood gas with lactate — age ≥ 65/.test(i.label));
+    expect(lactate(adaptProtocolForPatient(proto('appendicitis'), { ...adult, ageYears: 78, sex: 'female' }))?.label).toMatch(/CT angiography/);
+    expect(lactate(adaptProtocolForPatient(proto('appendicitis'), adult))).toBeUndefined();
+    expect(lactate(adaptProtocolForPatient(proto('femoral_hernia'), { ...adult, ageYears: 80, assessment: 'Elective femoral hernia repair' }))).toBeUndefined();
+  });
+});
+
+describe('protocols added 2026-09-25 (web-plan-filter-everywhere)', () => {
+  it('aorto-enteric fistula: emergency redirect, CT angiography, blood cultures, vascular surgery, no tranexamic acid', () => {
+    const p = proto('aortoenteric_fistula');
+    expect(p.kind).toBe('emergency');
+    expect(p.icd10Prefixes).toEqual([]);
+    expect(p.investigations.map(i => i.label).join('\n')).toMatch(/CT angiography[\s\S]*Blood cultures/);
+    expect(p.referral).toMatch(/vascular surg/i);
+    expect(JSON.stringify(p)).not.toMatch(/tranexamic/i);
+  });
+  it('IgA vasculitis: D69.0, ultrasound for intussusception, urinalysis and BP; child branch, no fixed doses, no operation', () => {
+    expect(getProtocolByIcd('D69.0')?.diseaseId).toBe('hsp_iga_vasculitis');
+    const a = adaptProtocolForPatient(proto('hsp_iga_vasculitis'), { ...adult, ageYears: 6 });
+    const text = allText(a);
+    expect(text).toMatch(/Ultrasound abdomen \(intussusception\)/);
+    expect(text).toMatch(/Urinalysis/);
+    expect(text).toMatch(/same-day paediatric assessment/);
+    expect(text).not.toMatch(/\d+\s*(mg|g)\b/);
+    expect(text).not.toMatch(/appendicectomy|laparotomy/i);
+    expect(adaptProtocolForPatient(proto('hsp_iga_vasculitis'), adult).management.some(m => /Adult IgA vasculitis/.test(m.step))).toBe(true);
+  });
+  it('anaplastic_thyroid resolves to thyroid carcinoma; sah stays unaliased', () => {
+    expect(getProtocol('anaplastic_thyroid')?.diseaseId).toBe('thyroid_carcinoma');
+    expect(getProtocol('sah')).toBeNull();
+    expect(getProtocolByIcd('I60.9')?.diseaseId).toBe('subarachnoid_haemorrhage');
+  });
+  it('filled gaps: perianal Crohn\'s MRI pelvis, femoral hernia CT, amoebic abscess blood cultures', () => {
+    expect(proto('crohns_disease').investigations.some(i => /MRI pelvis/.test(i.label))).toBe(true);
+    expect(proto('femoral_hernia').investigations.some(i => /^CT abdomen\/pelvis if obstruction or strangulation/.test(i.label))).toBe(true);
+    expect(proto('amoebic_liver_abscess').investigations.some(i => /Blood cultures/.test(i.label))).toBe(true);
   });
 });

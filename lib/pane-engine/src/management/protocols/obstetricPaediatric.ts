@@ -260,6 +260,43 @@ export const obstetricPaediatricProtocols: ManagementProtocol[] = [
     ],
     referral: 'Obstetric team — emergency transfer to a hospital with an obstetric unit.',
   },
-  // Febrile infant and HSP are recognised by triage (another area); they get no ICD mapping here
-  // because R50.9 / D69.0 also cover adults.
+  // The febrile infant is recognised by triage (another area); it gets no protocol here because
+  // R50.9 also covers adults.
+
+  // ── IgA vasculitis (Henoch–Schönlein purpura) — child with an adult branch (2026-09,
+  //    fix-web-protocols "not done") ────────────────────────────────────────────────────────
+  {
+    diseaseId: 'hsp_iga_vasculitis',
+    icd10Prefixes: ['D69.0'],
+    label: 'IgA Vasculitis (Henoch–Schönlein Purpura)',
+    kind: 'medical',
+    guidelines: [
+      'SHARE 2019 European consensus-based recommendations for the diagnosis and treatment of IgA vasculitis (Ozen et al., Rheumatology 2019)',
+      'EULAR/PRINTO/PRES 2010 classification criteria for IgA vasculitis',
+    ],
+    keyPoints: [
+      'Palpable purpura (buttocks, lower limbs) with a normal platelet count, plus abdominal pain, arthritis/arthralgia or renal involvement (EULAR/PRINTO/PRES 2010).',
+      'Colicky abdominal pain with vomiting or rectal bleeding: exclude intussusception (usually ileo-ileal) with abdominal ultrasound (SHARE 2019).',
+      'Nephritis can appear weeks after the rash: urinalysis and blood pressure at every review for at least 6 months (SHARE 2019).',
+    ],
+    redFlags: [
+      'Severe or colicky abdominal pain, rectal bleeding, a mass or peritonism — ultrasound for intussusception and paediatric surgical review.',
+      'Nephritic or nephrotic picture, hypertension, rising creatinine or persistent proteinuria — paediatric nephrology (SHARE 2019).',
+      'Acute scrotal pain in a boy — exclude testicular torsion.',
+    ],
+    investigations: [
+      { label: 'Urinalysis (dipstick) and urine protein:creatinine ratio', urgency: 'urgent', tier: 1, category: 'bedside' },
+      { label: 'Blood pressure (age-appropriate centiles in children)', urgency: 'urgent', tier: 1, category: 'bedside' },
+      { label: 'FBC (normal platelets), U&E, creatinine, albumin, coagulation', urgency: 'urgent', tier: 1, category: 'bloods' },
+      { label: 'Ultrasound abdomen (intussusception) — colicky pain, vomiting or rectal bleeding', urgency: 'urgent', tier: 2, category: 'imaging-uss' },
+    ],
+    management: [
+      { phase: 'immediate', step: 'Child with abdominal pain, rectal bleeding, renal involvement or hypertension: same-day paediatric assessment — refer to the paediatric team (SHARE 2019).', onlyIf: 'under-16' },
+      { phase: 'conservative', step: 'Supportive care: rest and simple analgesia (paracetamol, weight-based per BNFc in children); avoid NSAIDs when there is renal involvement or gastrointestinal bleeding.' },
+      { phase: 'conservative', step: 'Oral corticosteroids may be considered for severe abdominal pain (once intussusception is excluded) or orchitis, with the paediatric team; they do not prevent nephritis (SHARE 2019).' },
+      { phase: 'conservative', step: 'Adult IgA vasculitis: higher risk of nephritis — nephrology review; look for a trigger (infection, drug, malignancy).', onlyIf: 'adult' },
+      { phase: 'followup', step: 'Urinalysis and blood pressure at each review for at least 6 months (12 months if urinary abnormalities persist); refer to nephrology for persistent proteinuria, hypertension or impaired renal function (SHARE 2019).' },
+    ],
+    referral: 'Paediatric team (same day with abdominal or renal involvement); paediatric nephrology for nephritis. Adults: nephrology / rheumatology.',
+  },
 ];

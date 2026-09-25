@@ -767,7 +767,7 @@
       "title": "Management protocols: investigations, phased management steps, medications with doses, red flags",
       "platforms": ["web"],
       "kind": "management-protocol",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.1.0",
       "versionStamp": { "file": "lib/pane-engine/src/management/index.ts", "type": "regex", "pattern": "MANAGEMENT_PROTOCOLS_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "lib/pane-engine/src/management/protocols/*.ts",
@@ -786,9 +786,10 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "196 protocols (incl. medical, obstetric and paediatric emergencies: recognise, first actions, 911 / nearest emergency department — OKEU, St Jude's or Tapion Hospital), 747 medication entries. ManagementProtocol.guidelines names each protocol's sources; doses only where the guideline states them. Conditional branches (onlyIf: pregnant, penicillin allergy, under 16, adult) are resolved by plan-safety-filters; views that read a raw protocol show both branches.",
+      "notes": "198 protocols (incl. medical, obstetric and paediatric emergencies: recognise, first actions, 911 / nearest emergency department — OKEU, St Jude's or Tapion Hospital), 747 medication entries. ManagementProtocol.guidelines names each protocol's sources; doses only where the guideline states them. Conditional branches (onlyIf: pregnant, penicillin allergy, under 16, adult) are resolved by plan-safety-filters; every patient view reads the adapted protocol (dashboard plan-builder.ts patientProtocol); only the Dictionary with no patient open shows the raw protocol, every branch labelled.",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "First versioned release: SURGEON-DECISIONS A1–A25, B1–B16, G2 content, new medical/obstetric/paediatric emergency protocols, ICD longest-prefix lookup, resolveProtocol, PANE-id aliases, guidelines field. See docs/clinical-validation/changes/fix-web-protocols.md." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "First versioned release: SURGEON-DECISIONS A1–A25, B1–B16, G2 content, new medical/obstetric/paediatric emergency protocols, ICD longest-prefix lookup, resolveProtocol, PANE-id aliases, guidelines field. See docs/clinical-validation/changes/fix-web-protocols.md." },
+        { "version": "1.1.0", "date": "2026-09-25", "change": "New protocols: secondary aorto-enteric fistula / aortic graft infection (ESVS 2020; no ICD mapping) and IgA vasculitis (SHARE 2019; D69.0, child with an adult branch). Added: MRI pelvis for perianal Crohn's (ECCO-ESGAR 2019), CT for an obstructed/strangulated femoral hernia if it will not delay surgery (WSES 2017), blood cultures in amoebic liver abscess. PANE alias anaplastic_thyroid → thyroid_carcinoma (sah still not aliased). See docs/clinical-validation/changes/web-plan-filter-everywhere.md." }
       ]
     },
     {
@@ -814,7 +815,7 @@
       "notes": "Clinician-facing only (PlanTab suggested plan, ManagementPanel, PrescriptionsTab protocol medicines, SummaryTab discharge-summary protocol fill, Ambient consultation protocol card and plan, InvestigationsTab protocol panel, Dictionary launch, suggested investigations); never patient-facing (hazard H-10). Deterministic, negation-aware whole-word matching. Several choices need surgeon sign-off (SGLT2 CPOC vs FDA interval, P2Y12 intervals, frailty trigger) — see the change log.",
       "changelog": [
         { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS C5, G2.1–G2.3, G2.5, G2.6, G2.11, G2.12, A3–A5, A22). See docs/clinical-validation/changes/fix-web-protocols.md." },
-        { "version": "1.1.0", "date": "2026-09-25", "change": "Under 16: a fixed adult fluid volume (\"1 L\", \"500 mL\", \"200–300 mL/hr\") is replaced by \"fluids by weight — calculate per APLS/BNFc (mL/kg)\", titration wording kept; weight-based amounts (\"4 mL × kg × %TBSA\") are no longer replaced. Withheld medicines carry their phase and replacement line. The filter now also covers the SummaryTab discharge medicines, Ambient consultation, InvestigationsTab, Dictionary and the suggested investigations. See docs/clinical-validation/changes/web-plan-filter-everywhere.md." }
+        { "version": "1.1.0", "date": "2026-09-25", "change": "Under 16: a fixed adult fluid volume (\"1 L\", \"500 mL\", \"200–300 mL/hr\") is replaced by \"fluids by weight — calculate per APLS/BNFc (mL/kg)\", titration wording kept; weight-based amounts (\"4 mL × kg × %TBSA\") are no longer replaced. Withheld medicines carry their phase and replacement line. An ultrasound or MRI named first (\"USS KUB\") is no longer treated as ionising imaging. A pregnancy test is not suggested for male patients, age < 10 or > 55, or a recorded pregnancy (pregnancy-specific protocols keep it). Age ≥ 65 with an acute digestive-system presentation: venous blood gas with lactate and the CT-angiography caveat (ESVS 2017; NELA). The filter now also covers the SummaryTab discharge medicines, Ambient consultation, InvestigationsTab, Dictionary and the suggested investigations. See docs/clinical-validation/changes/web-plan-filter-everywhere.md." }
       ]
     },
     {
