@@ -46,7 +46,7 @@ extension ManagementEngine {
         followUp: "Regular reassessment: lactate clearance, organ function, antibiotic de-escalation based on cultures",
         keyPitfalls: [
             "Antibiotic without source control = inadequate treatment — identify the source",
-            "Lactate ≥4 = high-risk sepsis regardless of BP — prompt resuscitation (30 mL/kg crystalloid) and critical care review (SSC 2021)",
+            "Lactate ≥4 = high-risk sepsis regardless of BP — prompt goal-directed resuscitation (fluid volume by cause of shock) and critical care review (SSC 2021)",
             "Do not give broad-spectrum antibiotics without cultures first",
             "Antibiotic de-escalation: narrow based on culture/sensitivity results at 24–48 h",
         ],

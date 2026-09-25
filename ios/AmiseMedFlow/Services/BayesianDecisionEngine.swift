@@ -299,7 +299,7 @@ enum BayesianDecisionEngine {
 
         case "Incarcerated / Strangulated Hernia":
             return ClinicalDecision(
-                title: "Suspected Strangulated Hernia — Emergency Surgical Review",
+                title: "Hernia with Suspected Strangulation — Emergency Surgical Review",
                 rationale: "Strangulated hernia with bowel compromise requires urgent repair to prevent perforation.",
                 priority: .emergency,
                 actions: [

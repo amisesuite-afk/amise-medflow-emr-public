@@ -334,7 +334,10 @@ extension PlanSafetyFilter {
     }
 
     static func highRiskSurgeryNote(_ s: Signals, emergency: Bool) -> Note? {
-        guard emergency, test(#"\b(emergency (?:laparotomy|laparoscopy|surgery|operation|repair|resection|hartmann\w*)|laparotomy)\b"#, s.assessment) else { return nil }
+        // iOS: read the assessment with "day 3 after laparotomy" / "post-laparotomy" removed, so a
+        // past operation does not raise the planned-emergency-laparotomy line.
+        let planned = replaceAll(notAPlannedOperation, in: s.assessment, with: " ")
+        guard emergency, test(#"\b(emergency (?:laparotomy|laparoscopy|surgery|operation|repair|resection|hartmann\w*)|laparotomy)\b"#, planned) else { return nil }
         return Note(kind: .surgicalRisk, severity: .warning,
             text: "Emergency laparotomy / high-risk surgery: document the predicted mortality risk pre-operatively (NELA risk calculator or P-POSSUM); if ≥ 5%, consultant surgeon and anaesthetist present and planned post-operative critical care (NELA; RCS 2018 The Higher Risk General Surgical Patient). Age ≥ 65 or frail: elderly-medicine (geriatric) review.")
     }

@@ -56,7 +56,7 @@ extension DiagnosisRadiationEngine {
 - Left-sided malignant obstruction without those features: resection (Hartmann's or primary anastomosis ± defunctioning stoma) or SEMS as a bridge to surgery by MDT decision — not if perforation, peritonitis or ischaemia (WSES 2018)
 - Right-sided / hepatic flexure tumour: right (extended) hemicolectomy with primary anastomosis (WSES 2018)
 - Sigmoid volvulus only if no ischaemia or peritonitis: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission
-- Gangrenous volvulus or peritonitis: emergency laparotomy with sigmoid resection (Hartmann's procedure) — no endoscopic decompression; critical care (ASCRS 2021; WSES 2023)
+- Gangrenous volvulus or peritonitis: emergency laparotomy with sigmoid resection and end colostomy — no endoscopic decompression; critical care (ASCRS 2021; WSES 2023)
 - Caecal volvulus: operative management — right hemicolectomy (ASCRS 2021); no endoscopic detorsion
 - Colorectal MDT and stoma nurse
 """, consent: "Emergency laparotomy / colectomy", urgency: "Large bowel obstruction: urgent surgical review; emergency if peritonism, caecum ≥12 cm or ischaemia.",
