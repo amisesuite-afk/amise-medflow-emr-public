@@ -265,10 +265,6 @@
           "guidelineRefs": [
             "iwgdf-2023-infection"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
           "unverified": [
             "ios"
           ],
@@ -288,10 +284,6 @@
             "iwgdf-2023-infection"
           ],
           "note": "IWGDF/IDSA: culture tissue, not superficial swabs.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
           "unverified": [
             "ios"
           ],
@@ -313,10 +305,6 @@
           "guidelineRefs": [
             "iwgdf-2023-pad"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
           "unverified": [
             "ios"
           ],
@@ -338,10 +326,6 @@
           "guidelineRefs": [
             "iwgdf-2023-offloading"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
           "unverified": [
             "ios"
           ],
@@ -361,10 +345,6 @@
           "guidelineRefs": [
             "nice-ng19"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
           "unverified": [
             "ios"
           ],
@@ -383,10 +363,6 @@
           "guidelineRefs": [
             "iwgdf-2023-infection"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
           "unverified": [
             "ios"
           ],
@@ -405,10 +381,6 @@
             "iwgdf-2023-classification"
           ],
           "note": "IWGDF 2023 recommends the IWGDF/IDSA infection classification (not Wagner) for infection severity.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain. The web CDS suggests the Wagner scale; IWGDF 2023 recommends IWGDF/IDSA for infection.",
           "unverified": [
             "ios"
           ],

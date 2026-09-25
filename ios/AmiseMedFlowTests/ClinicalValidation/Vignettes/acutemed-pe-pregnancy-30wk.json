@@ -246,10 +246,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.plan: \"[conservative] anticoagulation: rivaroxaban 15 mg bd × 21 days then 20 mg od; or lmwh/warfarin.\" (+5 more).",
           "proposedFix": "Pregnancy-aware PE protocol: LMWH (weight-adjusted) instead of DOACs/warfarin when pregnancyPossible; add CUS first if leg symptoms, then CTPA or V/Q; obstetric involvement."
         }
       ]

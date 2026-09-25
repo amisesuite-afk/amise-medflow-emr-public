@@ -307,10 +307,6 @@
           "guidelineRefs": [
             "sages-pregnancy-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No positioning advice.",
           "unverified": [
             "ios"
           ],
@@ -329,10 +325,6 @@
           "guidelineRefs": [
             "nice-ng25"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No antenatal corticosteroid consideration at 29 weeks.",
           "unverified": [
             "ios"
           ],

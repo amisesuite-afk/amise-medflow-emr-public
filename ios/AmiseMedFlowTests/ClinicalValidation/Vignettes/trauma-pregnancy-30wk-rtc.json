@@ -295,10 +295,6 @@
             "atls-10-pregnancy",
             "green-top-anti-d-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.",
           "unverified": [
             "ios"
           ],

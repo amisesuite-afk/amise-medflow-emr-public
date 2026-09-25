@@ -304,10 +304,6 @@
             "age ≥ 12",
             "microgram/kg"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — protocol 'co-amoxiclav 1.2 g TDS or cefuroxime 750 mg TDS + metronidazole 500 mg TDS', ondansetron 4 mg, paracetamol 1 g; prompts 'IV Piperacillin-tazobactam 4.5g TDS', 'Hartmann's 1L bolus', and the operative template's paracetamol 1 g + ibuprofen 400 mg + morphine 5 mg for a 16 kg child.",
           "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
           "unverified": [
             "ios"
@@ -333,10 +329,6 @@
       "id": "variant-abscess",
       "severity": "quality",
       "equals": "appendicitis_abscess",
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "detectDxVariants still picks appendicitis_uncomplicated for 'Perforated appendicitis with periappendiceal abscess … a 3 cm abscess'.",
       "proposedFix": "Check complicated variants (generalised peritonitis → localised → abscess → phlegmon) before the uncomplicated one, and include 'abscess'/'perforated' keywords."
     }
   },

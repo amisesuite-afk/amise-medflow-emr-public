@@ -419,10 +419,6 @@
         "atlanta-2012"
       ],
       "note": "Written as a clinician would (\"Moderately severe acute pancreatitis\"). Detection must not depend on word order.",
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "\"Moderately severe acute pancreatitis\" contains \"severe acute pancreatitis\" → severe variant (ICU prefix, surgical phase) selected.",
       "proposedFix": "dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match \"moderately severe\" before \"severe acute pancreatitis\"; move \"pancreatic necrosis\" out of the moderate list or check persistent organ failure first), and accept qualifiers between \"mild\" and \"pancreatitis\" (e.g. \"mild acute biliary pancreatitis\")."
     }
   },

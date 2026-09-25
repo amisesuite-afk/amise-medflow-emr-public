@@ -197,10 +197,6 @@
           "guidelineRefs": [
             "aagbi-anaphylaxis-2009"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No 'first on the list' instruction.",
           "unverified": [
             "ios"
           ],

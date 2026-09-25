@@ -209,10 +209,6 @@
             "nice-ng125"
           ],
           "note": "Penicillin anaphylaxis: no penicillin-containing prophylaxis or treatment regimen.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Penicillins despite recorded penicillin anaphylaxis: Plan tab (dx-variant 'diverticulitis_abscess' prefix 'IV antibiotics: piperacillin-tazobactam' and protocol 'oral co-amoxiclav'), protocol medications (co-amoxiclav, pip-tazo) and the negated-free-air prompt (pip-tazo). Nothing reads the allergy list. Same root cause as the seed finding 'Allergies: neither platform's plan templates check the recorded allergy'.",
           "unverified": [
             "ios"
           ],
@@ -235,10 +231,6 @@
             "ashp-2013",
             "nice-ng125"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No prophylaxis plan for the elective colectomy at all: the diverticulitis protocol is a treatment protocol for acute disease, and there is no colorectal operative template.",
           "unverified": [
             "ios"
           ],
@@ -262,10 +254,6 @@
             "ashp-2013",
             "jtf-drug-allergy-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No non-beta-lactam alternative in the documented plan or panel. (The uncomplicated-diverticulitis dx-variant prefix has 'ciprofloxacin + metronidazole if penicillin allergy', but the detected variant here is the abscess one, whose prefix is pip-tazo.)",
           "unverified": [
             "ios"
           ],

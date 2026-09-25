@@ -354,10 +354,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the \"Upper GI Bleed\" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan. The plan text includes \"Suspected varices: terlipressin\" and variceal steps for a patient without liver disease.",
           "proposedFix": "Remove K92 from the upper_gi_bleed protocol/dx-variant ICD prefixes (or require upper-GI words) and route lower GI bleeding to its own protocol."
         }
       ]

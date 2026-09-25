@@ -236,10 +236,6 @@
           "guidelineRefs": [
             "bsg-eoe-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "As inv-oesophageal-biopsies.",
           "unverified": [
             "ios"
           ]
@@ -262,10 +258,6 @@
           "guidelineRefs": [
             "bsg-eoe-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No management output at all for K20.0.",
           "unverified": [
             "ios"
           ]

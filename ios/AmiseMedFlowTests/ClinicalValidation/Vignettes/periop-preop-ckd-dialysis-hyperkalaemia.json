@@ -241,10 +241,6 @@
             "ukka-hyperk-2020"
           ],
           "note": "Dialysis patients: dialysis is the definitive treatment of hyperkalaemia; schedule dialysis before surgery.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The hyperkalaemia prompt fires (ECG, calcium not given at 6.2, insulin-dextrose, 'Surgery DEFERRED — K⁺ must be < 5.5') but never mentions dialysis for a haemodialysis patient.",
           "unverified": [
             "ios"
           ],

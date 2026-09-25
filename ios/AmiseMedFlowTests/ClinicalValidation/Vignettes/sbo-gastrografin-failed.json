@@ -259,10 +259,6 @@
           "guidelineRefs": [
             "wses-sbo-2018"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: sbo_adhesional variant (no 'surgical' phase) is selected; the failed contrast challenge is not a variant trigger, so the documented plan stays conservative.",
           "proposedFix": "Add a 'failed NOM' variant (contrast not in colon at 24 h, no resolution by 72 h) with immediate + surgical phases."
         }
       ],
@@ -280,11 +276,7 @@
           "guidelineRefs": [
             "wses-sbo-2018"
           ],
-          "note": "The challenge has been done and failed; repeating it delays surgery.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: Plan text still contains 'water-soluble contrast study at 24 h' after a failed challenge."
+          "note": "The challenge has been done and failed; repeating it delays surgery."
         },
         {
           "id": "mgmt-no-appendicectomy-template",

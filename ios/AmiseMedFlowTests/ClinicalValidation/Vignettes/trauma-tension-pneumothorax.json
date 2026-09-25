@@ -266,10 +266,6 @@
             "atls-10-thorax"
           ],
           "note": "ATLS 10 moved adult needle decompression to the 4th/5th intercostal space anterior to the mid-axillary line (chest wall too thick at the 2nd ICS mid-clavicular line in many adults). Surgeon to confirm the site the practice teaches.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The pneumothorax protocol says \"needle decompression (14G cannula 2nd ICS MCL)\" for all patients (and a key point repeats it), while ATLS 10 moved the adult site to the 4th/5th ICS anterior to the mid-axillary line.",
           "unverified": [
             "ios"
           ],

@@ -403,10 +403,6 @@
             "tg18-mgmt-cholecystitis"
           ],
           "note": "The Plan tab text is the documented plan; drainage must be in it, not only in the Assessment panel.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Grade I variant allows immediate/surgical/followup phases only, so \"percutaneous cholecystostomy if … unfit for surgery\" (conservative phase) is missing from the Plan tab; it appears only in the Assessment panel.",
           "proposedFix": "dx-variants.ts: include the conservative (drainage) phase in the Grade II variant, and fix variant order (see variant-grade2)."
         }
       ],
@@ -430,10 +426,6 @@
             "tg18-mgmt-cholecystitis"
           ],
           "note": "For CCI 8 / ASA IV, TG18 does not recommend early LC; an unqualified early-LC line in the plan is misleading. Quality because the plan lists options and the surgeon chooses.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Plan tab: \"[surgical] Early laparoscopic cholecystectomy within 72 h (Grade I–II)\" for a CCI 8 / ASA IV patient, with no fitness qualifier.",
           "unverified": [
             "ios"
           ],

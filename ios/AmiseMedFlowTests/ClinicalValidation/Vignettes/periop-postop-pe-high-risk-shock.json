@@ -318,10 +318,6 @@
             "esc-pe-2019"
           ],
           "note": "Major surgery 6 days ago is a contraindication to systemic thrombolysis (ESC 2019); an unqualified thrombolysis order is a bleeding hazard — prefer surgical embolectomy or catheter-directed therapy.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The pulmonary_embolism protocol management step is qualified ('if no contraindication'), but its medications list 'Alteplase 10 mg IV bolus, then 90 mg over 2 hours … Massive PE with haemodynamic compromise' and the key point 'systemic thrombolysis (alteplase 100 mg IV over 2 hours) is life-saving' with no contraindication check, 6 days after a laparotomy.",
           "unverified": [
             "ios"
           ],

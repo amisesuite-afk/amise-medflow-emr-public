@@ -200,11 +200,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "N64.4 (mastodynia) maps to no protocol; no mastalgia guidance."
+          ]
         }
       ]
     }

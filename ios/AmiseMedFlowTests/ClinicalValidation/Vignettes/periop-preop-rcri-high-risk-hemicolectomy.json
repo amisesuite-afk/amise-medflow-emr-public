@@ -265,10 +265,6 @@
             "esc-ncs-2022"
           ],
           "note": "Known HF with poor functional capacity before high-risk surgery: reassess LV function.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No echocardiography suggested for known HFrEF (EF 35%) with poor functional capacity before cancer surgery.",
           "unverified": [
             "ios"
           ],
@@ -288,10 +284,6 @@
             "anaemia-consensus-2017"
           ],
           "note": "Hb 10.8 g/dL before major elective surgery: treat iron deficiency (IV iron when surgery is within weeks).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Hb 10.8 g/dL before major cancer surgery: only 'FBC (exclude iron-deficiency anaemia)' from the colorectal protocol; no ferritin/iron studies or pre-operative iron plan (the severe_anaemia prompt needs Hb <8).",
           "unverified": [
             "ios"
           ],
@@ -329,10 +321,6 @@
           "guidelineRefs": [
             "esc-ncs-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Functional capacity (METs / two flights) is never asked for or documented; the colorectal_cancer protocol and prompts have no pre-operative risk content.",
           "unverified": [
             "ios"
           ],

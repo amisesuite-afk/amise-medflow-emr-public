@@ -263,10 +263,6 @@
           "guidelineRefs": [
             "nice-cg103"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No non-pharmacological delirium care.",
           "unverified": [
             "ios"
           ],

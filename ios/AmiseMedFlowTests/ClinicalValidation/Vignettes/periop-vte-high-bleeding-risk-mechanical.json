@@ -170,10 +170,6 @@
             "accp-2012-gould"
           ],
           "note": "Pharmacological prophylaxis contraindicated by active bleeding risk: mechanical prophylaxis, reassess daily.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No VTE decision at all on post-operative day 1: the plan is the peptic_ulcer protocol (with 'OGD within 24 h' after an operation that already controlled the bleed). No LMWH is suggested either, so the no-LMWH check passes by omission.",
           "unverified": [
             "ios"
           ],
@@ -192,10 +188,6 @@
           "guidelineRefs": [
             "nice-ng89"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No daily VTE/bleeding reassessment.",
           "unverified": [
             "ios"
           ],

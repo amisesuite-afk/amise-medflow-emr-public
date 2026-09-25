@@ -328,10 +328,6 @@
             "asge-2019"
           ],
           "note": "ASGE high risk: proceed directly to ERCP; confirmatory MRCP/EUS delays therapy. Quality (over-investigation, not harm).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Choledocholithiasis protocol lists MRCP unconditionally, even when a duct stone is seen on US (ASGE high risk).",
           "unverified": [
             "ios"
           ],

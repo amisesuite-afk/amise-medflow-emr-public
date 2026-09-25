@@ -166,10 +166,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 10 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • Document last mammogram date — refer to radiology if overdue. | • Arrange bilateral mammogram — screening protocol. | • Faecal occult blood test — CRC screening (if colonoscopy declined)..",
           "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
         }
       ],

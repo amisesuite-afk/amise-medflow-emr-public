@@ -256,10 +256,6 @@
           "guidelineRefs": [
             "nice-cg188"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output recommends reassurance/no treatment for asymptomatic stones.",
           "unverified": [
             "ios"
           ],

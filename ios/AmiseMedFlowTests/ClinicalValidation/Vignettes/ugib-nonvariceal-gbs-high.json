@@ -426,10 +426,6 @@
             "esge-2021",
             "nice-cg184"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The upper_gi_bleed protocol only says \"PPI long-term if NSAID cannot be stopped\"; no line tells the clinician to stop the NSAID.",
           "unverified": [
             "ios"
           ]
@@ -462,10 +458,6 @@
             "halt-it-2020"
           ],
           "note": "ESGE 2021 recommends against tranexamic acid in NVUGIH (HALT-IT: no mortality benefit, more venous thromboembolism).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "upper_gi_bleed protocol medications list \"Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive\"; it appears in every plan built on that protocol.",
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
           "unverified": [
             "ios"

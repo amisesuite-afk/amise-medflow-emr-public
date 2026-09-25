@@ -265,10 +265,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The inguinal_hernia protocol lists FBC, U&E only; no lactate/CPK (WSES strangulation markers) anywhere in the web outputs.",
           "proposedFix": "Add lactate (± CPK, D-dimer) and CT when strangulation is uncertain to the hernia protocols for irreducible hernias."
         }
       ]

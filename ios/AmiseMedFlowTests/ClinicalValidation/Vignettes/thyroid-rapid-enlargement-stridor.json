@@ -271,11 +271,7 @@
           "note": "ATA 2021: core or open biopsy when FNA cannot distinguish anaplastic carcinoma from lymphoma.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma."
+          ]
         },
         {
           "id": "inv-ct-neck-chest",

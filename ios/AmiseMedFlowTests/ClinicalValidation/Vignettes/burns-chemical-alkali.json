@@ -161,10 +161,6 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.",
           "unverified": [
             "ios"
           ],

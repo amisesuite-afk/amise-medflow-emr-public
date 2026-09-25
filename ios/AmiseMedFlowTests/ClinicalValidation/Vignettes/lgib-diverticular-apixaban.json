@@ -316,10 +316,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD K57.31 (diverticulosis with bleeding) maps to the diverticulitis protocol and dx-variant group, so a diverticular bleed gets the diverticulitis plan (co-amoxiclav, Hinchey-based Hartmann’s).",
           "proposedFix": "Route K57.x1 (with bleeding) to the lower GI bleeding protocol; keep K57.x2/x3 (diverticulitis/abscess) on the diverticulitis protocol."
         }
       ]

@@ -246,10 +246,6 @@
           "guidelineRefs": [
             "nice-cg184"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "peptic_ulcer protocol gives omeprazole 20 mg OD \"4–8 weeks\" in medications (matched only in part) — the plan text has no 8-week full-dose course for an NSAID ulcer.",
           "unverified": [
             "ios"
           ]

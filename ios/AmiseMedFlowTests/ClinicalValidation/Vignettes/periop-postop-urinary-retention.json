@@ -196,10 +196,6 @@
             "pcrmp-2016"
           ],
           "note": "PSA is falsely raised by retention and catheterisation; defer it.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The urinary_retention protocol lists 'U&E, eGFR, PSA (once catheterised)' as an urgent investigation (it also says 'PSA reassay at 6 weeks'), and the preventative prompt adds PSA. PSA is falsely raised by retention and catheterisation.",
           "unverified": [
             "ios"
           ],

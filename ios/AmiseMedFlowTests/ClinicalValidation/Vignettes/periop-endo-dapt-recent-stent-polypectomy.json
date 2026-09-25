@@ -172,10 +172,6 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No deferral or staged plan.",
           "unverified": [
             "ios"
           ],

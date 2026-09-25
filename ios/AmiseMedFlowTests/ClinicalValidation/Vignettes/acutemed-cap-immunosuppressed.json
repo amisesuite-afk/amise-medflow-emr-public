@@ -261,10 +261,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 10 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — pre-operative cardiac baseline (age ≥ 40). | • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
           "proposedFix": "Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis)."
         }
       ]

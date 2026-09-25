@@ -502,10 +502,6 @@
             "bsg-ibd-2019"
           ],
           "note": "Truelove and Witts: ≥ 6 bloody stools/day plus HR > 90, T > 37.8 °C, Hb < 10.5 g/dL or ESR > 30 mm/h. WBC is not a criterion; a key point that says \"WBC > 10.5\" misstates the Hb criterion.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The ulcerative_colitis protocol key point reads \"Truelove-Witts criteria: HR > 90, temp > 37.8 °C, WBC > 10.5, > 6 stools/day\" — the criterion is Hb < 10.5 g/dL (and ESR > 30), not WBC.",
           "proposedFix": "Correct the key point in lib/pane-engine management protocols (colorectalHerniaBreast.ts, ulcerative_colitis): \"≥ 6 bloody stools/day plus HR > 90, T > 37.8 °C, Hb < 10.5 g/dL or ESR > 30 mm/h\"."
         }
       ]

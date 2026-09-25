@@ -224,10 +224,6 @@
             "wses-spleen-2017",
             "atls-10-abdomen"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The splenic protocol lists \"CT abdomen/pelvis with IV contrast (AAST grading)\" without \"if stable\" in the unstable patient.",
           "unverified": [
             "ios"
           ],

@@ -568,11 +568,7 @@
       "equals": "cholangitis_grade3",
       "guidelineRefs": [
         "tg18-mgmt-cholangitis"
-      ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "dx-variants needs 'severe cholangitis' word order; 'Severe acute cholangitis' selects no variant."
+      ]
     }
   },
   "guideline": [

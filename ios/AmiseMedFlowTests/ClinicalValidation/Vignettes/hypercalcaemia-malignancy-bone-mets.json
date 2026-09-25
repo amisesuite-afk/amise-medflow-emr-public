@@ -349,9 +349,6 @@
           "guidelineRefs": [
             "endo-hcm-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],

@@ -242,10 +242,6 @@
             "re:fluid[^\\n]{0,40}(ml/kg|bolus|resusc)",
             "re:ml/kg"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No mL/kg fluid output; fluids appear only as adult volumes ('Hartmann's 500ml bolus, crossmatch 2 units pRBC', 'IV fluid challenge 500ml').",
           "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
           "unverified": [
             "ios"

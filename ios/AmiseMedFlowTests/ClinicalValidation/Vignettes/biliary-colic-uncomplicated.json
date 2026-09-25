@@ -293,11 +293,7 @@
           "note": "Safety-netting: fever, jaundice or persistent pain should prompt urgent return.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only on the cholangitis triage pathway and Charcot/Murphy prompts that fired on negated text (\"not jaundiced\", \"no fever\", \"Murphy's sign negative\"). No output now gives return precautions."
+          ]
         }
       ]
     },

@@ -215,11 +215,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No oral calcium / alfacalcidol plan."
+          ]
         }
       ]
     }

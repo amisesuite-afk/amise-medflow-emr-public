@@ -315,10 +315,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The ulcerative_colitis protocol lists \"Flexible sigmoidoscopy / colonoscopy + biopsies\" as an urgent investigation with no severity condition, so the documented plan orders a colonoscopy in toxic megacolon.",
           "proposedFix": "Mark the UC colonoscopy investigation conditional (\"not in acute severe colitis/toxic megacolon — limited unprepared flexible sigmoidoscopy only\") and add a toxic-megacolon dx-variant that drops endoscopy."
         }
       ]

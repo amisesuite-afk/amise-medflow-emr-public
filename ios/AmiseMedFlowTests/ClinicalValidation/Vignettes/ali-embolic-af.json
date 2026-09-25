@@ -249,10 +249,6 @@
             "esvs-ali-2020"
           ],
           "note": "Imaging must not delay revascularisation in IIb.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
           "unverified": [
             "ios"
           ],

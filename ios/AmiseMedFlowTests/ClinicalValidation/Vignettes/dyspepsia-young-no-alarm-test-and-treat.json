@@ -201,10 +201,6 @@
             "nice-cg184",
             "maastricht-6"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol for K30 (uninvestigated/functional dyspepsia); the GORD management panel (PANE top) lists H. pylori only as a routine investigation, which is not seeded.",
           "proposedFix": "Add a dyspepsia (K30/R10.13) protocol: CG184 test-and-treat or 4-week PPI; NG12 alarm check.",
           "unverified": [
             "ios"
@@ -251,11 +247,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's GORD protocol; the panel now follows the confirmed diagnosis (K30), which maps to no protocol, so no panel is shown."
+          ]
         },
         {
           "id": "mgmt-lifestyle",
@@ -272,11 +264,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's GORD protocol; the panel now follows the confirmed diagnosis (K30), which maps to no protocol, so no panel is shown."
+          ]
         }
       ]
     }

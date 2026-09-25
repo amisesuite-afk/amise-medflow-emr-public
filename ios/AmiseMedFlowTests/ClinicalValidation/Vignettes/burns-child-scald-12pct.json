@@ -146,10 +146,6 @@
             "atls-10-burns"
           ],
           "note": "Rule of nines overestimates limbs and underestimates the head in young children.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
           "unverified": [
             "ios"
           ],
@@ -187,10 +183,6 @@
             "atls-10-burns"
           ],
           "note": "Children need maintenance glucose-containing fluid in addition to the resuscitation volume.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
           "unverified": [
             "ios"
           ],
@@ -207,10 +199,6 @@
           "guidelineRefs": [
             "atls-10-burns"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
           "unverified": [
             "ios"
           ],

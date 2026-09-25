@@ -262,11 +262,7 @@
           "note": "BSG 2019: plan when to restart warfarin (the guideline suggests about 7 days after the bleed in most patients) — the thrombotic risk of AF persists.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output plans when to restart warfarin after the bleed; the only anticoagulant text is the reversal line and generic peri-operative bridging."
+          ]
         }
       ]
     }

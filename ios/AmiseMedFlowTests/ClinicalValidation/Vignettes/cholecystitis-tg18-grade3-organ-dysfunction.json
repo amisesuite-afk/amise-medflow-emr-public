@@ -575,8 +575,7 @@
           ],
           "note": "The patient has penicillin anaphylaxis. A penicillin in the suggested plan (without an allergy caveat) is a prescribing hazard.",
           "knownGap": [
-            "ios",
-            "web"
+            "ios"
           ],
           "knownGapNote": "Plan templates suggest co-amoxiclav / piperacillin-tazobactam regardless of the recorded penicillin anaphylaxis."
         },
@@ -605,8 +604,7 @@
           ],
           "note": "TG18 allows early cholecystectomy in Grade III only with favourable organ failure and no negative predictive factor; neurological dysfunction is a negative predictive factor.",
           "knownGap": [
-            "ios",
-            "web"
+            "ios"
           ],
           "knownGapNote": "iOS TG18 Grade III recommendation offers 'emergency cholecystectomy' as an equal alternative; web key points recommend early cholecystectomy without grade qualification."
         }

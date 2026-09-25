@@ -359,10 +359,6 @@
             "tg18-gb-drainage"
           ],
           "note": "Early LC is not the default for an unstable ventilated patient; an unqualified early-LC line is noise that competes with drainage.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment panel key point \"Early laparoscopic cholecystectomy (within 72 h) reduces complications\" is shown unqualified for a ventilated Grade III patient.",
           "unverified": [
             "ios"
           ],

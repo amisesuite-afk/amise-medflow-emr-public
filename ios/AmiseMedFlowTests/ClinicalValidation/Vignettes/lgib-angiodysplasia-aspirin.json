@@ -307,11 +307,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No endoscopic therapy (argon plasma coagulation) — there is no angiodysplasia protocol."
+          ]
         }
       ],
       "mustExclude": [
@@ -341,10 +337,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ICD K55.21 (angiodysplasia of colon with haemorrhage) matches the ischaemic_colitis protocol (prefix K55), whose medications include a therapeutic heparin infusion (for mesenteric venous thrombosis) — offered to a bleeding patient.",
           "proposedFix": "Exclude K55.2x (angiodysplasia) from the ischaemic_colitis protocol prefixes; add an angiodysplasia/LGIB protocol (colonoscopy + APC, iron, continue secondary-prevention aspirin)."
         },
         {
@@ -390,11 +382,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Same K55 → ischaemic_colitis routing: \"broad-spectrum IV antibiotics (piperacillin-tazobactam)\" and NBM for an outpatient with angiodysplasia."
+          ]
         }
       ]
     }

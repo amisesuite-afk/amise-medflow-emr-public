@@ -181,7 +181,7 @@
           ],
           "guidelineRefs": ["wses-2020", "acog-co723-2017"],
           "note": "US was non-diagnostic: non-contrast MRI of the abdomen/pelvis is the recommended next test in pregnancy (WSES 2020; ACOG Committee Opinion 723). MRCP/liver MRI does not count.",
-          "knownGap": ["ios", "web"],
+          "knownGap": ["ios"],
           "knownGapNote": "Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered."
         }
       ],

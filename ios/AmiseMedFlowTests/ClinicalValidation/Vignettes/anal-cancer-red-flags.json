@@ -210,11 +210,7 @@
           "note": "Tissue diagnosis of the anal lesion itself (EUA and biopsy); a colonoscopy biopsy does not sample it.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output asks for EUA/biopsy of the anal lesion: C21.0 has no protocol; the plan shown is the haemorrhoids protocol (PANE top) and colonoscopy + biopsy from colorectal_cancer seeding."
+          ]
         },
         {
           "id": "inv-mri-pelvis",
@@ -262,11 +258,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No chemoradiotherapy/oncology output (no anal cancer protocol); the management panel shows the haemorrhoid protocol."
+          ]
         }
       ],
       "mustExclude": [

@@ -225,9 +225,7 @@
       "id": "variant-grade1",
       "severity": "quality",
       "equals": "cholangitis_grade1",
-      "guidelineRefs": ["tg18-mgmt-cholangitis"],
-      "knownGap": ["web"],
-      "knownGapNote": "dx-variants keywords need 'mild cholangitis' word order; 'Mild acute cholangitis' selects no variant."
+      "guidelineRefs": ["tg18-mgmt-cholangitis"]
     }
   },
   "guideline": [

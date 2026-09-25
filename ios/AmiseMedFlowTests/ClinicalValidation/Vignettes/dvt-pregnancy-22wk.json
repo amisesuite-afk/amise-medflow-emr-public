@@ -211,10 +211,6 @@
           "guidelineRefs": [
             "rcog-gtg37b"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The DVT protocol lists \"D-dimer (only if pre-test probability low/intermediate)\" without a pregnancy caveat.",
           "unverified": [
             "ios"
           ],
@@ -263,10 +259,6 @@
             "rcog-gtg37b"
           ],
           "note": "DOACs are not recommended in pregnancy.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The DVT plan offers rivaroxaban/apixaban as first line with no pregnancy check although the record says pregnant (22 weeks) and pregnancyPossible is true; the protocol has no pregnancy-aware variant.",
           "unverified": [
             "ios"
           ],

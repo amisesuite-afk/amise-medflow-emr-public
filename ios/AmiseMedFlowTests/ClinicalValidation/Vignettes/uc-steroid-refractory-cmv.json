@@ -195,10 +195,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The CMV-positive biopsy result is not read and no output mentions CMV.",
           "proposedFix": "Read biopsy/IHC results for CMV in UC; steroid-refractory UC → CMV testing prompt (ECCO 2021)."
         }
       ]
@@ -220,10 +216,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No antiviral (ganciclovir) anywhere; the UC plan escalates immunosuppression (infliximab, ciclosporin, tofacitinib) regardless of CMV.",
           "proposedFix": "Add a CMV-colitis branch: CMV on biopsy in steroid-refractory UC → IV ganciclovir, review immunomodulators (ECCO 2021)."
         },
         {

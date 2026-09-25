@@ -200,9 +200,6 @@
           "guidelineRefs": [
             "nice-ng234"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],

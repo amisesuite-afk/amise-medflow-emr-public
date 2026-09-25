@@ -210,10 +210,6 @@
             "esgar-polyp-2022"
           ],
           "note": "A polyp ≥10 mm carries a malignancy risk and changes the indication/urgency and the histology plan.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine mentions the 12 mm polyp (no polyp rule in triage, prompts or protocols).",
           "unverified": [
             "ios"
           ],

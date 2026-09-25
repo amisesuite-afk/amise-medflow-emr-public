@@ -197,10 +197,6 @@
             "cpoc-diabetes-2022"
           ],
           "note": "Sulfonylurea omitted on the day of surgery (hypoglycaemia while fasting).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No sulfonylurea instruction (hypoglycaemia while fasting).",
           "unverified": [
             "ios"
           ],
@@ -232,10 +228,6 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No peri-operative capillary glucose monitoring line.",
           "unverified": [
             "ios"
           ],

@@ -251,9 +251,7 @@
           "severity": "quality",
           "match": ["ercp", "biliary drainage", "biliary decompression"],
           "sources": ["web.plan", "ios.radiation.plan"],
-          "note": "Drainage must reach the generated plan text, not only a side panel.",
-          "knownGap": ["web"],
-          "knownGapNote": "dx-variants: 'ascending cholangitis' is a Grade I keyword, Grade I is checked first, and Grade I phases exclude 'surgical', so ERCP disappears from the generated plan."
+          "note": "Drainage must reach the generated plan text, not only a side panel."
         },
         {
           "id": "mgmt-antibiotics",
@@ -277,9 +275,7 @@
       "id": "variant-grade2",
       "severity": "quality",
       "equals": "cholangitis_grade2",
-      "guidelineRefs": ["tg18-mgmt-cholangitis"],
-      "knownGap": ["web"],
-      "knownGapNote": "dx-variants selects Grade I from 'ascending cholangitis'."
+      "guidelineRefs": ["tg18-mgmt-cholangitis"]
     }
   },
   "guideline": [

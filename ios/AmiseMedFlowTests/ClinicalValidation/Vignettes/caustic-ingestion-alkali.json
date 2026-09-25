@@ -216,10 +216,6 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No caustic-ingestion protocol or prompt; nothing mentions airway assessment.",
           "proposedFix": "Add a caustic-ingestion protocol/prompt (WSES 2019: airway first, no emesis/neutralisation/blind NG tube, CT ± endoscopy, psychiatry).",
           "unverified": [
             "ios"
@@ -239,10 +235,6 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Only the triage reason \"Mental health crisis\"; no plan line.",
           "proposedFix": "As inv-airway-assessment.",
           "unverified": [
             "ios"
@@ -258,10 +250,6 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No plan output at all for T54.3.",
           "proposedFix": "As inv-airway-assessment.",
           "unverified": [
             "ios"

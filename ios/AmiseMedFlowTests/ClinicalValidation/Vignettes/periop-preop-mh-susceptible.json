@@ -201,10 +201,6 @@
           "guidelineRefs": [
             "aa-mh-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No referral of the untested relative to an MH unit.",
           "unverified": [
             "ios"
           ],

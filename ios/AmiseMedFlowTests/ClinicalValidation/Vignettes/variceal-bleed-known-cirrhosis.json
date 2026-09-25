@@ -455,10 +455,6 @@
             "villanueva-2013"
           ],
           "note": "Baveno VII: transfuse at Hb ~7 g/dL, target 7–8 g/dL.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).",
           "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time.",
           "unverified": [
             "ios"
@@ -496,11 +492,7 @@
           "note": "Over-transfusion raises portal pressure and increases rebleeding and mortality in variceal bleeding (Villanueva 2013). Web passes today only because no protocol loads for I85 (see mgmt-vasoactive); the upper_gi_bleed protocol, if it loaded, says \"transfuse to Hb 70–90 g/L (80–100 in varices)\" and would fail this.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only because no protocol loaded. The Assessment management panel now follows the confirmed diagnosis (upper_gi_bleed), whose step says \"transfuse to Hb 70-90 g/L (80-100 in varices)\" (Baveno VII: 70-80)."
+          ]
         },
         {
           "id": "mgmt-no-tranexamic-acid",

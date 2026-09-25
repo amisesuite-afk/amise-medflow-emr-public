@@ -170,10 +170,6 @@
             "contracept",
             "pill"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The combined oral contraceptive is not flagged. Triage also scores 'Possible cardiac event' and 'Haemoptysis' from the negated text 'No chest pain, breathlessness or haemoptysis'.",
           "unverified": [
             "ios"
           ],

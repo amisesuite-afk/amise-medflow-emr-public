@@ -216,10 +216,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 6 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism. | • 12-lead ECG — arrhythmia, right heart strain pattern (PE)..",
           "proposedFix": "Asthma protocol with the life-threatening branch (critical care / anaesthetist)."
         },
         {
@@ -234,10 +230,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 6 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism. | • 12-lead ECG — arrhythmia, right heart strain pattern (PE)..",
           "proposedFix": "Asthma protocol: IV magnesium sulphate in acute severe/life-threatening asthma."
         }
       ]

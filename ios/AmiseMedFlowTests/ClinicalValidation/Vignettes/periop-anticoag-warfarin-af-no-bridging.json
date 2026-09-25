@@ -220,10 +220,6 @@
           "guidelineRefs": [
             "accp-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No restart plan for warfarin after surgery.",
           "unverified": [
             "ios"
           ],

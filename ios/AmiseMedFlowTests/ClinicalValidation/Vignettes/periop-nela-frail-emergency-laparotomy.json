@@ -376,10 +376,6 @@
             "rcs-highrisk-2011",
             "nela-standards"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No documented mortality risk in any output.",
           "unverified": [
             "ios"
           ],
@@ -398,10 +394,6 @@
             "cpoc-bgs-frailty-2021",
             "nela-standards"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "CFS is suggested, but no elderly-medicine/geriatric review for an 84-year-old CFS 6 undergoing emergency laparotomy (NELA standard).",
           "unverified": [
             "ios"
           ],
@@ -422,10 +414,6 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No goals-of-care, treatment escalation or resuscitation-status prompt.",
           "unverified": [
             "ios"
           ],
@@ -442,10 +430,6 @@
             "esc-ncs-2022"
           ],
           "note": "Apixaban taken this morning: document timing and the haemostatic plan for emergency surgery.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Apixaban taken this morning is covered only by the generic 'hold DOAC 48–72h pre-op' line, which does not apply to emergency surgery; no timing, anti-Xa or haemostatic plan.",
           "unverified": [
             "ios"
           ],

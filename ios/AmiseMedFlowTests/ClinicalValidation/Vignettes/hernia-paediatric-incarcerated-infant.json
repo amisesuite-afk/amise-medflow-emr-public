@@ -203,11 +203,7 @@
           "note": "Adult pre-operative checks and mesh templates are wrong for an infant.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Adult inguinal protocol and TAPP template for an infant (see the base paediatric vignette)."
+          ]
         }
       ]
     }

@@ -281,10 +281,6 @@
             "esge-2021",
             "halt-it-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "upper_gi_bleed protocol medications list \"Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive\"; it appears in every plan built on that protocol.",
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
           "unverified": [
             "ios"

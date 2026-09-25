@@ -234,10 +234,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No post-polypectomy bleeding protocol (K91.840 has none); the only plan is the generic GI-bleed prompt without endoscopic haemostasis/clips.",
           "proposedFix": "Add a post-polypectomy bleed rule (post-procedure + rectal bleeding): repeat colonoscopy with endoscopic haemostasis (ESGE)."
         },
         {

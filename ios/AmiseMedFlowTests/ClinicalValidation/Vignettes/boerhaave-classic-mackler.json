@@ -371,10 +371,6 @@
           "guidelineRefs": [
             "wses-2019"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "oesophageal_perforation protocol has no antifungal.",
           "unverified": [
             "ios"
           ]

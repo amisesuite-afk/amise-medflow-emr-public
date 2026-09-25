@@ -234,11 +234,7 @@
           "note": "ASCRS 2022: antibiotics after drainage only for cellulitis, systemic signs of infection or immunosuppression.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The perianal_abscess protocol medications include oral metronidazole \"anaerobic cover for fistula tract\" without an indication condition; ASCRS 2022 reserves antibiotics for cellulitis, systemic infection or immunosuppression."
+          ]
         }
       ]
     }

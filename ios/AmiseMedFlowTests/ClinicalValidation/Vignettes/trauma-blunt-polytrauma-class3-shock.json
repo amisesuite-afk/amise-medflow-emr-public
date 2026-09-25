@@ -235,10 +235,6 @@
           "guidelineRefs": [
             "atls-10-shock"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine names the ATLS haemorrhage class; the protocol uses \"SBP <90 + HR >120\" for MTP.",
           "unverified": [
             "ios"
           ],
@@ -360,10 +356,6 @@
           "guidelineRefs": [
             "nice-ng39"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The blunt abdominal trauma protocol does not mention a pelvic binder for pelvic tenderness in shock.",
           "unverified": [
             "ios"
           ],

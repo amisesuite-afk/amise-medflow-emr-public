@@ -152,10 +152,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The haemorrhoids protocol mentions \"acutely thrombosed external haemorrhoid (< 72 h) — surgical excision under LA\" only as a red flag; the plan steps (fibre, RBL, haemorrhoidectomy, HALO) have no thrombosed-external branch.",
           "proposedFix": "Add a thrombosed-external-haemorrhoid dx-variant: < 72 h → excision under LA; > 72 h → conservative (ASCRS 2024)."
         }
       ]

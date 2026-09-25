@@ -155,11 +155,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "getProtocolByIcd(\"K60.3\") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61."
+          ]
         }
       ],
       "mustExclude": [
@@ -214,11 +210,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "getProtocolByIcd(\"K60.3\") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61. A lateral internal sphincterotomy in a woman with a complex anterior fistula and an obstetric sphincter injury risks incontinence."
+          ]
         }
       ]
     }

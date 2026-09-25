@@ -164,9 +164,6 @@
           "guidelineRefs": [
             "nice-ng128"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
@@ -218,9 +215,6 @@
             "nice-ng128"
           ],
           "note": "Surgeon-relevant: elective hernia repair postponed after a TIA.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],

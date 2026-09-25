@@ -222,10 +222,6 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Ketones appear only as a plan line ('Urine ketones — exclude diabetic ketoacidosis', addToPlan, graded as management), not as an investigation; the recorded capillary ketones (0.8) are not interpreted.",
           "unverified": [
             "ios"
           ],

@@ -348,11 +348,7 @@
       "id": "variant-strangulated-or-obstructed",
       "severity": "quality",
       "equals": "hernia_incarcerated",
-      "note": "An obstructed (incarcerated) hernia; ischaemia not shown on CT.",
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment (\"Small bowel obstruction due to left obturator hernia\") has no hernia keyword (\"obstructed hernia\", \"irreducible\", \"incarcerated\"), so no variant is chosen."
+      "note": "An obstructed (incarcerated) hernia; ischaemia not shown on CT."
     }
   },
   "guideline": [

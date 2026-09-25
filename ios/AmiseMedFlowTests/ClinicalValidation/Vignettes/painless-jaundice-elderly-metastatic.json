@@ -243,10 +243,6 @@
             "performance status",
             "ecog"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No frailty/performance-status flag (CFS 6 in the PMH).",
           "unverified": [
             "ios"
           ],

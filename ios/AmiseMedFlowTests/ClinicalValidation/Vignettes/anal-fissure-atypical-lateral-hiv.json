@@ -220,10 +220,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The anal_fissure protocol has no EUA/biopsy investigation (only \"biopsy if non-healing after 8 weeks\" in red flags), and the atypical/lateral red flag does not change the plan.",
           "proposedFix": "Add an \"atypical fissure\" dx-variant (lateral, multiple, painless, indurated, HIV/IBD) that replaces the treatment phases with EUA + biopsy, syphilis/HSV/HIV/TB testing and Crohn’s assessment (ASCRS 2023)."
         }
       ]
@@ -256,11 +252,7 @@
           "note": "Sphincterotomy (or botulinum) for an undiagnosed atypical ulcer risks incontinence and delays a cancer or infection diagnosis.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The anal_fissure plan is phase-unfiltered (no fissure dx-variant), so lateral internal sphincterotomy and botulinum toxin are in the documented plan for an undiagnosed atypical ulcer."
+          ]
         }
       ]
     }

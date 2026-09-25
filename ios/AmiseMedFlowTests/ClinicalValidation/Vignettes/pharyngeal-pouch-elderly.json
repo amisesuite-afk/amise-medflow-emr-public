@@ -238,10 +238,6 @@
             "esge-zenker-2020"
           ],
           "note": "Contrast swallow defines the pouch and lowers the risk of intubating (and perforating) it blindly.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol for K22.5; no output mentions a contrast swallow.",
           "unverified": [
             "ios"
           ]
@@ -263,10 +259,6 @@
           "guidelineRefs": [
             "esge-zenker-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No protocol for K22.5.",
           "unverified": [
             "ios"
           ]

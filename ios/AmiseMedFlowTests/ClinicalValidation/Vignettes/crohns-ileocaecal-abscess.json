@@ -293,10 +293,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The crohns_disease protocol says \"Abscess or fistula — urgent imaging and intervention\" (red flag) but no step for percutaneous drainage; the management panel shows the appendicitis protocol because PANE ranks appendicitis first (0.71).",
           "proposedFix": "Add \"intra-abdominal abscess: IV antibiotics + percutaneous drainage, then delayed resection; wean steroids\" to the crohns_disease protocol (ECCO 2020)."
         },
         {
@@ -401,10 +397,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The crohns_disease protocol medications (prednisolone, budesonide, IV hydrocortisone \"flare induction\") are offered unconditionally, including for a septic abscess.",
           "proposedFix": "Condition the Crohn’s steroid medications on \"no abscess/sepsis\" and add an explicit caution (ECCO 2020)."
         }
       ]

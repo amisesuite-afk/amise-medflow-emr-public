@@ -400,9 +400,6 @@
             "age ≥ 12"
           ],
           "note": "Weight 30 kg. Paracetamol 1 g QDS (133 mg/kg/day), ibuprofen 400 mg (13 mg/kg/dose), piperacillin-tazobactam 4.5 g (150 mg/kg) and co-amoxiclav 1.2 g are adult fixed doses; a child needs weight-based (mg/kg) dosing. Quality of prescribing is a patient-safety issue, so critical.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],

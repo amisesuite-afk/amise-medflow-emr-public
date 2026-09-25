@@ -358,9 +358,6 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],

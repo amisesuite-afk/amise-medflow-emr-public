@@ -194,10 +194,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 18 investigation items matched (sources: web.clinicalPrompts, web.pane.seeded). First items: FBC, U&E (pre-operative bloods) (inguinal_hernia) | OGD (alarm features or PPI failure) (gord) | FBC, CRP (cholecystitis) | LFTs, bilirubin, ALP, GGT (cholecystitis).",
           "proposedFix": "Syncope rule/protocol with echocardiography when a murmur or structural heart disease is recorded (ESC 2018)."
         }
       ]

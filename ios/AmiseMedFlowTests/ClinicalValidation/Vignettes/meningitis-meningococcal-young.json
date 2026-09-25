@@ -259,9 +259,6 @@
           "guidelineRefs": [
             "nice-ng240"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
@@ -277,9 +274,6 @@
           ],
           "guidelineRefs": [
             "nice-ng240"
-          ],
-          "knownGap": [
-            "web"
           ],
           "unverified": [
             "ios"

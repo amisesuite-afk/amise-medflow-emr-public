@@ -266,9 +266,6 @@
           "guidelineRefs": [
             "esvs-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
@@ -316,9 +313,6 @@
           ],
           "guidelineRefs": [
             "esvs-2017"
-          ],
-          "knownGap": [
-            "web"
           ],
           "unverified": [
             "ios"

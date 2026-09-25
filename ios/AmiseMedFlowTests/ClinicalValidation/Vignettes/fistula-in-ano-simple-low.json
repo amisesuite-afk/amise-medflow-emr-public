@@ -150,10 +150,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "getProtocolByIcd(\"K60.3\") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61.",
           "proposedFix": "Add a fistula-in-ano protocol keyed to K60.3–K60.5 (simple → fistulotomy; complex → MRI, loose seton, sphincter-preserving repair; Parks classification) and narrow anal_fissure to K60.0–K60.2."
         }
       ],
@@ -180,11 +176,7 @@
           "note": "A fistula-in-ano plan must not be an anal-fissure plan (chemical/surgical sphincterotomy).",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "getProtocolByIcd(\"K60.3\") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61. The documented plan is GTN/diltiazem, botulinum toxin and lateral internal sphincterotomy."
+          ]
         }
       ]
     }

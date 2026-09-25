@@ -216,10 +216,6 @@
           "guidelineRefs": [
             "iwgdf-2023-charcot"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
           "unverified": [
             "ios"
           ],
@@ -244,10 +240,6 @@
             "iwgdf-2023-charcot"
           ],
           "note": "Immediate offloading while the diagnosis is confirmed.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
           "unverified": [
             "ios"
           ],

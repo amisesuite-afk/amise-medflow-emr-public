@@ -246,10 +246,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "GORD protocol OGD line is conditional (\"Alarm features, age >55, or 4-week PPI trial failed\") and not urgent; no 2-week-wait wording. The triage reason \"Cancer screening triggered\" is present but labelled \"colorectal\".",
           "unverified": [
             "ios"
           ]

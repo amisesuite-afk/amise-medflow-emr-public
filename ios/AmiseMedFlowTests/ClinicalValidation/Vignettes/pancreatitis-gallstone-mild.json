@@ -332,10 +332,6 @@
           "guidelineRefs": [
             "acg-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Pancreatitis protocol investigations have no triglycerides (iOS radiation has them).",
           "unverified": [
             "ios"
           ],
@@ -379,10 +375,6 @@
             "acg-2024"
           ],
           "note": "CT is not indicated at presentation when the diagnosis is clear; CECT at 72–96 h if not improving.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "HPI completion seeds \"CECT abdomen (assess pancreatic necrosis)\" as an urgent order, dropping the protocol's conditional \"at 48–72 h if severe or not improving\".",
           "unverified": [
             "ios"
           ],
@@ -447,10 +439,6 @@
             "aga-2018"
           ],
           "note": "Early oral feeding (within 24–72 h as tolerated) in mild AP.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No early oral feeding line: the mild variant (which has one) is not detected (see variant-mild) and the protocol says \"NBM\".",
           "unverified": [
             "ios"
           ],
@@ -476,10 +464,6 @@
             "acg-2024"
           ],
           "note": "WATERFALL (NEJM 2022) was stopped for harm: aggressive resuscitation (20 mL/kg bolus then 3 mL/kg/h) caused more fluid overload (20.5% vs 6.3%) without benefit. ACG 2024 recommends moderate, goal-directed fluids. A plan that says \"aggressive\" or 250–500 mL/h is a fluid-overload hazard.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Plan tab and Assessment panel: \"Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h initial)\"; protocol medication \"Hartmann's 500 ml Q2H — aggressive fluid resuscitation\"; lipase prompt \"NBM + aggressive IV fluid resuscitation\".",
           "unverified": [
             "ios"
           ],
@@ -577,10 +561,6 @@
             "aga-2018"
           ],
           "note": "Routine nil-by-mouth is not recommended; quality because a short NBM period for vomiting is reasonable.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Protocol step \"NBM — enteral feeding via NG/NJ if not tolerating PO at 48 h\"; lipase prompt \"NBM + …\".",
           "unverified": [
             "ios"
           ],
@@ -612,10 +592,6 @@
       "guidelineRefs": [
         "atlanta-2012"
       ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Assessment \"…No cholangitis…\" selects the Cholangitis group by text before the Pancreatitis group is checked; no variant, so the Plan tab shows every phase (including necrosectomy).",
       "proposedFix": "dx-variants.ts detectDxVariants: pick the group by diseaseId/ICD across all groups first and use the text fallback only if nothing matched (and make it negation-aware). Today \"No cholangitis\"/\"no pancreatitis\" in the assessment selects the earlier Cholangitis/Pancreatitis group by text before the Pancreatitis group is checked by disease id. dx-variants.ts pancreatitis group: test severe → moderately severe → mild with Atlanta phrases that cannot be substrings of each other (e.g. match \"moderately severe\" before \"severe acute pancreatitis\"; move \"pancreatic necrosis\" out of the moderate list or check persistent organ failure first), and accept qualifiers between \"mild\" and \"pancreatitis\" (e.g. \"mild acute biliary pancreatitis\")."
     }
   },

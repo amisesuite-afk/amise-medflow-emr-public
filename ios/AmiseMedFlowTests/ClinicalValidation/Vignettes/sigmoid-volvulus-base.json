@@ -276,9 +276,6 @@
             "wses-volvulus-2023"
           ],
           "note": "First-line treatment without peritonitis or ischaemia; avoids an emergency laparotomy in a frail 81-year-old.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
@@ -298,9 +295,6 @@
             "wses-volvulus-2023"
           ],
           "note": "Recurrence after decompression alone is high; sigmoid resection in the same admission if fit.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
@@ -312,9 +306,6 @@
           "match": [
             "potassium",
             "re:\\bkcl\\b"
-          ],
-          "knownGap": [
-            "web"
           ],
           "unverified": [
             "ios"

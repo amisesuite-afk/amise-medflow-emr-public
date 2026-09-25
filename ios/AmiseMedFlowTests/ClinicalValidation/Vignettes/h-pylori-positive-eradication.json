@@ -170,10 +170,6 @@
             "maastricht-6"
           ],
           "note": "Maastricht VI: 14 days; bismuth quadruple first-line where clarithromycin resistance is >15% or unknown.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Gastritis protocol: \"triple therapy (PPI + amoxicillin + clarithromycin × 7 days)\"; no bismuth quadruple option, no 14-day course.",
           "proposedFix": "Gastritis / peptic_ulcer / gastric_carcinoma protocols: align H. pylori regimens with Maastricht VI (14 days; bismuth quadruple first-line where clarithromycin resistance is high or unknown). The three protocols currently disagree (7, 7–14 and 14 days).",
           "unverified": [
             "ios"
@@ -208,10 +204,6 @@
             "maastricht-6"
           ],
           "note": "A 7-day clarithromycin triple regimen is below the 14 days Maastricht VI recommends, and the patient had prior clarithromycin exposure (resistance risk).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Gastritis protocol plan line and medications prescribe clarithromycin triple therapy for 7 days (patient also had prior clarithromycin).",
           "proposedFix": "As mgmt-14-day-or-bismuth.",
           "unverified": [
             "ios"

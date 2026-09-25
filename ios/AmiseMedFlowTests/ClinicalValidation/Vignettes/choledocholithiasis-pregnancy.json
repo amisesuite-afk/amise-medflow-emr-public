@@ -308,10 +308,6 @@
           "guidelineRefs": [
             "asge-2012-pregnancy"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "ERCP is offered with no pregnancy adaptation (fluoroscopy minimisation, shielding, obstetric support).",
           "unverified": [
             "ios"
           ],

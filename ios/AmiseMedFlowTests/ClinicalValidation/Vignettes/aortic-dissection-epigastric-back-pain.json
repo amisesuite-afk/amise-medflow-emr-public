@@ -282,10 +282,6 @@
           "guidelineRefs": [
             "esc-aortic-2014"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output.",
           "unverified": [
             "ios"
           ]

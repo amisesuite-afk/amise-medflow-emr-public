@@ -257,10 +257,6 @@
             "bsg-2020"
           ],
           "note": "The plan should say the patient can be managed as an outpatient (GBS ≤1). Generic words such as \"post-discharge\" do not count.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No output says the patient can be managed as an outpatient; the GI-bleed prompt adds a resuscitation plan instead.",
           "proposedFix": "upper_gi_bleed protocol / gi_bleed_panel prompt: add \"GBS ≤1 — outpatient endoscopy, no admission (ESGE 2021, ACG 2021)\" keyed on the calculated GBS.",
           "unverified": [
             "ios"
@@ -279,10 +275,6 @@
             "esge-2021",
             "halt-it-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "upper_gi_bleed protocol medications list \"Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive\"; it appears in every plan built on that protocol.",
           "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed.",
           "unverified": [
             "ios"

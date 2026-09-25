@@ -287,10 +287,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
           "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
         },
         {
@@ -309,10 +305,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 11 management items matched (sources: web.clinicalPrompts). First items: • Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%. | • CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly. | • Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review. | • CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism..",
           "proposedFix": "lib/pane-engine: add asthma and COPD exacerbation nodes (wheeze, PEF, chest tightness; smoking/COPD history) with BTS/SIGN 158 and GOLD protocols; map J44/J45/J46."
         }
       ],

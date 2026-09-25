@@ -196,10 +196,6 @@
           "guidelineRefs": [
             "anaemia-consensus-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Hb 9.4 g/dL with a caecal cancer: only 'FBC (exclude iron-deficiency anaemia)'; no iron studies or pre-operative iron plan.",
           "unverified": [
             "ios"
           ],
@@ -221,10 +217,6 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "CFS is suggested but no comprehensive geriatric assessment or elderly-medicine input.",
           "unverified": [
             "ios"
           ],
@@ -243,10 +235,6 @@
             "nice-cg103",
             "cpoc-bgs-frailty-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No delirium prevention plan.",
           "unverified": [
             "ios"
           ],
@@ -265,10 +253,6 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No capacity / shared decision-making prompt with dementia.",
           "unverified": [
             "ios"
           ],

@@ -181,10 +181,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The inguinal_hernia protocol has no paediatric branch: the plan offers \"Truss may be offered for unfit patients declining surgery\".",
           "proposedFix": "Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16."
         },
         {
@@ -207,10 +203,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Adult plan for a 4-month-old: \"Lichtenstein mesh herniorrhaphy … TEP/TAPP\" (protocol) and computeClinicalPrompts fires the hernia pathway for any CC/exam containing \"hernia\", \"inguinal\" or \"umbilical\", and always attaches the adult \"LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)\" operative plan.",
           "proposedFix": "Age-gate the hernia protocol and prompt (paediatric herniotomy template; suppress adult pre-op items such as PSA/ECG)."
         }
       ]

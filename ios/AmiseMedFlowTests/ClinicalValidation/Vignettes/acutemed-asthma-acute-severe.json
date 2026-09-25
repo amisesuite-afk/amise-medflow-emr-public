@@ -228,10 +228,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: none of 5 management items matched (sources: web.clinicalPrompts). First items: • 12-lead ECG — arrhythmia, right heart strain pattern (PE). | • CTPA if Wells score ≥ 2 — exclude pulmonary embolism. | • IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min. | • Confirm cervical smear date — document last result..",
           "proposedFix": "Asthma protocol (BTS/SIGN 158)."
         },
         {

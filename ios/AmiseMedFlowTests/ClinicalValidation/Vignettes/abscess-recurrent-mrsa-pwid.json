@@ -226,10 +226,6 @@
             "ct angiogra"
           ],
           "note": "Imaging of the femoral vessels before incising a groin injection-site swelling. No guideline statement cited; quality until the surgeon decides the severity.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No engine recommends imaging a groin injection-site swelling before incision.",
           "unverified": [
             "ios"
           ]
@@ -259,10 +255,6 @@
             "blood-borne",
             "bbv"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No blood-borne virus screen suggested for a person who injects drugs.",
           "unverified": [
             "ios"
           ]

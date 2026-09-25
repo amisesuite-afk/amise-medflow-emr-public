@@ -255,9 +255,6 @@
             "ascrs-diverticulitis-2020"
           ],
           "note": "WSES 2020 / AGA 2021 / ASCRS 2020: in immunocompetent patients with mild uncomplicated diverticulitis antibiotics can be omitted (selective use); outpatient care.",
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
@@ -285,9 +282,6 @@
             "aga-2021",
             "ascrs-diverticulitis-2020"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
@@ -309,11 +303,7 @@
       "equals": "diverticulitis_uncomplicated",
       "guidelineRefs": [
         "wses-diverticulitis-2020"
-      ],
-      "knownGap": [
-        "web"
-      ],
-      "knownGapNote": "Web: Keyword 'uncomplicated diverticulitis' is not a substring of 'Uncomplicated acute sigmoid diverticulitis'; no variant is selected."
+      ]
     }
   },
   "guideline": [

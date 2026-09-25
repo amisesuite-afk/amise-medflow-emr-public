@@ -250,9 +250,6 @@
           "guidelineRefs": [
             "jbds-hypo-2023"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],

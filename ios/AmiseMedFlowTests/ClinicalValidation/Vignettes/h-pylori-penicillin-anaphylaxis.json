@@ -173,10 +173,6 @@
           "guidelineRefs": [
             "maastricht-6"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No penicillin-free regimen in any H. pylori protocol.",
           "proposedFix": "As h-pylori-positive-eradication; add the bismuth quadruple (tetracycline + metronidazole) regimen.",
           "unverified": [
             "ios"
@@ -203,10 +199,6 @@
             "maastricht-6"
           ],
           "note": "Amoxicillin in documented penicillin anaphylaxis is a contraindicated plan.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Gastritis protocol plan line and medications list amoxicillin despite a recorded penicillin anaphylaxis (the allergy shows only in the header).",
           "proposedFix": "buildPlanText / protocol medications: filter or flag drugs that match a recorded allergy class (penicillins); same finding as the seed appendicitis/cholangitis vignettes.",
           "unverified": [
             "ios"

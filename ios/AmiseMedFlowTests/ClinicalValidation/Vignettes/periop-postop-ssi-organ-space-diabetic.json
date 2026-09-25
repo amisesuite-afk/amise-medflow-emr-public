@@ -282,10 +282,6 @@
           "guidelineRefs": [
             "wses-iai-2017"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The surgical_site_infection protocol management has superficial wound opening and 'Deep incisional SSI: formal surgical debridement', but no radiological drainage of an organ-space collection; 'CT-guided drainage' appears only in the protocol red flags. The negated 'no generalised peritonism' adds 'Emergency laparotomy consent'.",
           "unverified": [
             "ios"
           ],

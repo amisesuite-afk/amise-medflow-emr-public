@@ -363,10 +363,6 @@
           "guidelineRefs": [
             "acg-2024"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No triglycerides in the pancreatitis protocol.",
           "unverified": [
             "ios"
           ],
@@ -455,10 +451,6 @@
             "acg-2024"
           ],
           "note": "WATERFALL (NEJM 2022) was stopped for harm: aggressive resuscitation (20 mL/kg bolus then 3 mL/kg/h) caused more fluid overload (20.5% vs 6.3%) without benefit. ACG 2024 recommends moderate, goal-directed fluids. A plan that says \"aggressive\" or 250–500 mL/h is a fluid-overload hazard. HFrEF (EF 30%): WATERFALL excluded NYHA II–IV heart failure — the risk of fluid overload is higher still.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Plan tab: \"Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)\" for a 79-year-old with EF 30% — no heart-failure caveat.",
           "unverified": [
             "ios"
           ],

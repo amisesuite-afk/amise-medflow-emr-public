@@ -266,9 +266,6 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "knownGap": [
-            "web"
-          ],
           "unverified": [
             "ios"
           ],
@@ -283,9 +280,6 @@
           ],
           "guidelineRefs": [
             "eau-luts-2024"
-          ],
-          "knownGap": [
-            "web"
           ],
           "unverified": [
             "ios"

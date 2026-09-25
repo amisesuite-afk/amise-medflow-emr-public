@@ -331,11 +331,7 @@
           "guidelineRefs": [
             "wses-sbo-2018"
           ],
-          "note": "The documented plan should not treat a virgin-abdomen obstruction with a mass lesion as adhesional.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: Variant 'sbo_adhesional' is chosen from the words 'small bowel obstruction' even though the assessment says 'virgin abdomen … adhesions unlikely'; the plan keeps the adhesive-SBO conservative step."
+          "note": "The documented plan should not treat a virgin-abdomen obstruction with a mass lesion as adhesional."
         }
       ]
     }

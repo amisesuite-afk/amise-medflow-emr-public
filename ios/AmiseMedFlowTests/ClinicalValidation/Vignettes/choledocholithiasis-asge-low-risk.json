@@ -230,10 +230,6 @@
             "asge-2019"
           ],
           "note": "ASGE low risk: no further CBD evaluation before cholecystectomy. Quality (cost and delay).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "MRCP seeded from the choledocholithiasis protocol (PANE #2) for an ASGE low-risk patient.",
           "unverified": [
             "ios"
           ],

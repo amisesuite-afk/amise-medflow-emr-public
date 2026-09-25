@@ -234,10 +234,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "No CMV testing anywhere (UC protocol investigations: bloods, AXR, stool C&S + C. difficile, sigmoidoscopy/colonoscopy, CT).",
           "proposedFix": "Add \"flexible sigmoidoscopy with biopsies incl. CMV (IHC/PCR)\" to the ASUC/steroid-refractory steps (ECCO 2021)."
         }
       ]
@@ -288,11 +284,7 @@
           ],
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web, since the engine-matching fixes (2026-09): this passed only on the appendicectomy operative template, which fired on \"no guarding\"/\"no rebound\". No output now names a joint medical-surgical review."
+          ]
         }
       ]
     }

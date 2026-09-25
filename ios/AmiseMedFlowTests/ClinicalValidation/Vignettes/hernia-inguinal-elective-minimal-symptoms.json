@@ -236,10 +236,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Neither the inguinal_hernia protocol nor the prompts mention watchful waiting (only \"truss for unfit patients declining surgery\").",
           "proposedFix": "Add the HerniaSurge watchful-waiting option for minimally symptomatic men to the inguinal_hernia protocol (conservative phase)."
         }
       ],

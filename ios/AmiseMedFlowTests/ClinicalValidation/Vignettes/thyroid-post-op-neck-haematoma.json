@@ -286,10 +286,6 @@
           "unverified": [
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The assessment mentions \"thyroidectomy\", so detectDxVariants selects thyroid_total and prepends the elective Total Thyroidectomy template to the haematoma plan.",
           "proposedFix": "Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' (\"irreducible\" contains \"reducible\"); \"bethesda vi\" contains \"bethesda v\"."
         }
       ]
@@ -316,11 +312,7 @@
           "note": "Imaging has no place before decompression of a haematoma with airway compromise.",
           "unverified": [
             "ios"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The generic postop_haematoma investigations include \"USS wound (confirm haematoma …)\" with no exception for a neck haematoma with airway compromise."
+          ]
         }
       ]
     }
