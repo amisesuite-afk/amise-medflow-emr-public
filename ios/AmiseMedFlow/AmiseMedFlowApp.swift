@@ -86,6 +86,9 @@ struct AmiseMedFlowApp: App {
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: bioAuth.isLocked)
+            // Report PDFs shared from another app (e.g. the Laboratory Services Ltd app):
+            // staged on arrival, shown only when unlocked, signed in and not in hand-over mode.
+            .incomingReportHandling(bioAuth: bioAuth, sync: sync)
         }
         .modelContainer(sharedModelContainer)
         .onChange(of: scenePhase, initial: false) { _, newPhase in

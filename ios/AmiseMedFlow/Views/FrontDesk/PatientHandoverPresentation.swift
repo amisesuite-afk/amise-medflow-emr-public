@@ -80,6 +80,8 @@ private struct PatientHandoverView: View {
     @State private var isAuthenticating = false
     @State private var authFailureMessage: String?
     @State private var didLogOpen = false
+    /// Counted in PatientHandoverState while on screen (holds back shared-report imports).
+    @State private var holdsHandoverState = false
 
     private var livePatient: Patient? { patient.flatMap { $0.isLive ? $0 : nil } }
     private var mode: String { patient == nil ? "walk_in" : "registered" }
@@ -87,7 +89,13 @@ private struct PatientHandoverView: View {
     var body: some View {
         stageContent
             .interactiveDismissDisabled(true)
-            .onAppear { logOpen() }
+            .onAppear {
+                logOpen()
+                if !holdsHandoverState { holdsHandoverState = true; PatientHandoverState.shared.begin() }
+            }
+            .onDisappear {
+                if holdsHandoverState { holdsHandoverState = false; PatientHandoverState.shared.end() }
+            }
             .alert("Staff exit", isPresented: Binding(
                 get: { authFailureMessage != nil },
                 set: { if !$0 { authFailureMessage = nil } }

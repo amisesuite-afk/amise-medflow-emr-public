@@ -75,6 +75,16 @@ targets:
           - "_amise-medflow._udp"
         # Encryption compliance — app uses HTTPS (exempt from export regs)
         ITSAppUsesNonExemptEncryption: false
+        # Report PDFs shared from another app (Laboratory Services Ltd "SLUlabservices", Files,
+        # Safari): "Open in / Copy to MedFlow". Not in place: iOS copies the file into
+        # Documents/Inbox and calls .onOpenURL (Services/IncomingReportStaging.swift).
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: "PDF report"
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - com.adobe.pdf
+        LSSupportsOpeningDocumentsInPlace: false
 
     entitlements:
       path: AmiseMedFlow/AmiseMedFlow.entitlements
