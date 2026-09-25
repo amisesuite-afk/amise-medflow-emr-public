@@ -1,6 +1,6 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-25T15:41:58.759Z.
+Generated 2026-09-25T15:42:39.380Z.
 
 - Harness clinval-web/1; 317 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
@@ -12,11 +12,11 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 317 | 2488 | 1568 | 841 | 79 | 375 | 1 | 837 | 3 | 131 |
+| web | 317 | 2488 | 1568 | 841 | 79 | 375 | 0 | 838 | 3 | 131 |
 
 ## Blocking failures
 
-- `periop-preop-suxamethonium-apnoea` / **level-at-least-urgent** (web, FAIL — BLOCKING): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent
+None.
 
 ## All critical failures (including known gaps and unverified)
 
@@ -335,7 +335,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 - `periop-preop-osa-stopbang` / **flag-osa-risk** (web, FAIL (known gap)): no red flag matched among 13 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: STOP-Bang is suggested in the scales list ('snoring' chip, obesity), but nothing flags OSA as a peri-operative risk: no red flag, no alert. Triage adds 'Post-operative concern' (urgent) because the HPI says 'breathless on one flight of stairs'.]
 - `periop-preop-recent-acs-des-elective-chole` / **mgmt-defer-elective-surgery** (web, FAIL (known gap)): no management item matched among 12 (web.clinicalPrompts) [known gap: No output relates the stent date to surgical timing. The lap chole operative template (consent, NBM, co-amoxiclav, LMWH) is offered for an elective case 3 months after an ACS stent. Aspirin/ticagrelor raise only the generic triage reason 'Anticoagulant or antiplatelet medication mentioned'.]
 - `periop-preop-recent-acs-des-elective-chole` / **mgmt-cardiology-liaison** (web, FAIL (known gap)): no management item matched among 12 (web.clinicalPrompts) [known gap: No cardiology input suggested for P2Y12 management 3 months after a DES.]
-- `periop-preop-suxamethonium-apnoea` / **level-at-least-urgent** (web, FAIL — BLOCKING): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent
+- `periop-preop-suxamethonium-apnoea` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): the perioperative vignette was written against the pre-fix engine, where negated phrases in the free text raised triage. With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=23: no triage rule reads an anaesthetic-hazard history (suxamethonium apnoea) as urgent.]
 - `periop-preop-suxamethonium-apnoea` / **flag-sux-apnoea** (web, FAIL (known gap)): no red flag matched among 21 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suxamethonium-apnoea history (PMH and HPI) raises nothing; triage reasons are pregnancy (from 'urine pregnancy test negative'), pain and vomiting.]
 - `periop-preop-suxamethonium-apnoea` / **mgmt-avoid-suxamethonium-mivacurium** (web, FAIL (known gap)): no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The appendicectomy template specifies 'General anaesthesia + endotracheal intubation' with no neuromuscular-blocker caution; no rocuronium/sugammadex alternative for RSI.]
 - `periop-vte-caprini-high-cancer-surgery` / **mgmt-pharmacological-prophylaxis** (web, FAIL (known gap)): no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Caprini is suggested as a score, but no output recommends thromboprophylaxis: the plan is the colorectal_cancer protocol (C20 → colorectal_cancer; paneDiseaseId rectal_carcinoma is not used for the protocol) with no VTE content, and there is no colorectal operative template. Triage emergency_now from rectal bleeding history.]
@@ -12865,14 +12865,14 @@ Permutation of `periop-preop-mh-susceptible`.
 
 | Expectation | Kind | Severity | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|
-| level-at-least-urgent | emergencyLevel | critical | **FAIL — BLOCKING** |  |  |
+| level-at-least-urgent | emergencyLevel | critical | FAIL (known gap) |  |  |
 | flag-sux-apnoea | redFlags | critical | FAIL (known gap) | Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review) 2019 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
 | mgmt-avoid-suxamethonium-mivacurium | managementInclude | critical | FAIL (known gap) | Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review) 2019 | Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list). |
 | dx-appendicitis-top3 | mustRankTopK | quality | PASS |  |  |
 
 Failure details:
 
-- **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent
+- **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): the perioperative vignette was written against the pre-fix engine, where negated phrases in the free text raised triage. With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=23: no triage rule reads an anaesthetic-hazard history (suxamethonium apnoea) as urgent.]
 - **flag-sux-apnoea** (web): no red flag matched among 21 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suxamethonium-apnoea history (PMH and HPI) raises nothing; triage reasons are pregnancy (from 'urine pregnancy test negative'), pain and vomiting.]
 - **mgmt-avoid-suxamethonium-mivacurium** (web): no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The appendicectomy template specifies 'General anaesthesia + endotracheal intubation' with no neuromuscular-blocker caution; no rocuronium/sugammadex alternative for RSI.]
 
@@ -16422,6 +16422,7 @@ Guidelines:
 | `periop-preop-rcri-high-risk-hemicolectomy` | mgmt-functional-capacity | web | quality | known gap | no management item matched among 30 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Functional capacity (METs / two flights) is never asked for or documented; the colorectal_cancer protocol an |
 | `periop-preop-recent-acs-des-elective-chole` | mgmt-defer-elective-surgery | web | critical | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: No output relates the stent date to surgical timing. The lap chole operative template (consent, NBM, co-amoxiclav, LMWH) is offered for an elective case 3 months after an |
 | `periop-preop-recent-acs-des-elective-chole` | mgmt-cardiology-liaison | web | critical | known gap | no management item matched among 12 (web.clinicalPrompts) [known gap: No cardiology input suggested for P2Y12 management 3 months after a DES.] |
+| `periop-preop-suxamethonium-apnoea` | level-at-least-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=23); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): the perioperative vignette was written against the pre-fix engine, where negated phrases i |
 | `periop-preop-suxamethonium-apnoea` | flag-sux-apnoea | web | critical | known gap | no red flag matched among 21 (web.triage.reasons, web.protocol.redFlags, web.dxVariant.urgencyNote, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suxamethonium-apnoea history (PMH and HPI) raises nothing; tri |
 | `periop-preop-suxamethonium-apnoea` | mgmt-avoid-suxamethonium-mivacurium | web | critical | known gap | no management item matched among 52 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The appendicectomy template specifies 'General anaesthesia + endotracheal intubati |
 | `periop-vte-caprini-high-cancer-surgery` | mgmt-pharmacological-prophylaxis | web | critical | known gap | no management item matched among 34 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Caprini is suggested as a score, but no output recommends thromboprophylaxis: the plan is the colorectal_can |

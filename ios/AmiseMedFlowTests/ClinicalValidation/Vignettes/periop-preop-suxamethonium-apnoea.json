@@ -184,7 +184,11 @@
         "atLeast": "urgent",
         "unverified": [
           "ios"
-        ]
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web, since the engine-matching fixes (2026-09): the perioperative vignette was written against the pre-fix engine, where negated phrases in the free text raised triage. With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=23: no triage rule reads an anaesthetic-hazard history (suxamethonium apnoea) as urgent."
       },
       "redFlags": [
         {
