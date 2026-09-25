@@ -186,7 +186,10 @@ enum DiagnosisRadiationEngine {
     }
 
     /// Precedence entries, the original dictionary, then the added cards.
-    static let lookupOrder: [Entry] = _precedenceEntries
+    /// The plan-safety cards (DiagnosisRadiationEngine+PlanSafetyCards*) come first: each is more
+    /// specific than a generic keyword elsewhere.
+    static let lookupOrder: [Entry] = _planSafetyEntries
+        + _precedenceEntries
         + allEntries.filter { precedenceConditionNames.contains($0.radiation.conditionName) }
         + allEntries
         + _additionalEntries

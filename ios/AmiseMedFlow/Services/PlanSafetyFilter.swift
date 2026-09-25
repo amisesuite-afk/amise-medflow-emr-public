@@ -130,8 +130,10 @@ enum PlanSafetyFilter {
     private static let negationBefore =
         #"\b(?:avoid|avoiding|no|not|never|without|stop|stopped|withhold|withheld|hold|omit|contraindicated|except|instead of|rather than|nor|allergic to|non)\b[^.;:]{0,30}$"#
     /// "penicillin allergy", "NSAID-induced", "non-penicillin": the drug is named but not given.
+    /// iOS addition to the web list: "NSAID contraindicated", "if NSAID not tolerated" name the
+    /// drug to rule it out.
     private static let notGivenAfter =
-        #"^[\s-]*(?:allerg\w*|hypersensitiv\w*|sensitiv\w*|intoleran\w*|induced|associated|related|exposure|history|free\b)"#
+        #"^[\s-]*(?:allerg\w*|hypersensitiv\w*|sensitiv\w*|intoleran\w*|induced|associated|related|exposure|history|free\b|contraindicat\w*|not tolerated)"#
 
     /// First affirmed (not "avoid X" / "no X" / "X allergy") mention of any term.
     static func affirmedMention(_ text: String, _ terms: [String]) -> String? {
@@ -414,6 +416,13 @@ enum PlanSafetyFilter {
         }
         for drug in s.allergy.otherDrugs where affirmedMention(line, [drug]) != nil {
             return ("\(prefix)⚠ ALLERGY — \(drug) recorded: withheld (contains \(drug)). Choose an alternative.", "allergy: \(drug)")
+        }
+
+        // iOS addition (not in the web filter): thrombolysis in a patient on an oral anticoagulant.
+        if !drugsPresent(s.meds, doacs + vka).isEmpty,
+           let hit = affirmedMention(line, ["alteplase", "tenecteplase", "thrombolysis", "thrombolytic"]) {
+            return ("\(prefix)⚠ ANTICOAGULATED: thrombolysis withheld (contains \(hit)) — contraindicated after a DOAC dose within 48 h (unless drug-specific tests are normal) or on warfarin with INR > 1.7; discuss thrombectomy or other treatment with the specialist team (NICE NG128; ESO 2021; ESC 2019).",
+                    "anticoagulated")
         }
 
         if s.pregnancy == .pregnant && !pregnancySpecific {

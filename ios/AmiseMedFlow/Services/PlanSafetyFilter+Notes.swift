@@ -52,7 +52,10 @@ extension PlanSafetyFilter {
         notes += diabetesNotes(s, procedure: proc, acuteIllness: acuteIllness)
         if let n = steroidNote(s, procedure: proc, acuteIllness: acuteIllness) { notes.append(n) }
         if proc != .none { notes += anaestheticNotes(s) }
-        if (proc == .surgery && procedural) || (bleeding && procedural && shape.operative) {
+        // iOS addition: the clinician asks about VTE prophylaxis in the assessment ("VTE
+        // prophylaxis decision", "day 1 after under-running …") — give the NICE NG89 line.
+        let vteAsked = test(#"\b(vte prophylaxis|thromboprophylaxis|vte risk|caprini)\b"#, s.assessment)
+        if (proc == .surgery && procedural) || (bleeding && procedural && shape.operative) || (vteAsked && !shape.emergencyCard) {
             if let n = vteNote(s, shape: shape, bleeding: bleeding) { notes.append(n) }
         }
         if proc != .none || acuteIllness, let n = frailtyNote(s) { notes.append(n) }
@@ -159,7 +162,7 @@ extension PlanSafetyFilter {
                     text: "\(v) and \(what): continue \(v); check the INR in the week before and, if above the therapeutic range, reduce the dose and recheck (BSG/ESGE 2021). No bridging."))
             } else if mechanicalValve {
                 notes.append(Note(kind: .anticoagulation, severity: .critical,
-                    text: "\(v) with a mechanical heart valve and \(what): stop \(v) 5 days before; bridging with treatment-dose LMWH (or UFH) is indicated for a mechanical valve — plan with cardiology/haematology (ACC/AHA 2020 valvular heart disease; BSG/ESGE 2021). Check the INR the day before; resume \(v) the evening of the procedure or the next day if haemostasis is secure."))
+                    text: "\(v) with a mechanical heart valve and \(what): stop \(v) 5 days before; bridging with LMWH (treatment dose) or UFH is indicated for a mechanical valve — plan with cardiology/haematology (ACC/AHA 2020 valvular heart disease; BSG/ESGE 2021). Check the INR the day before; resume \(v) the evening of the procedure or the next day if haemostasis is secure."))
             } else {
                 notes.append(Note(kind: .anticoagulation, severity: .warning,
                     text: "\(v) and \(what): stop \(v) 5 days before; check the INR the day before (proceed when < 1.5). No bridging for most patients with atrial fibrillation (BRIDGE trial 2015; ACCP 2022 perioperative guideline); bridge with LMWH only for a mechanical valve, VTE within 3 months or a high-risk thrombophilia, with specialist advice. Resume \(v) the evening of the procedure or the next day at the usual dose if haemostasis is secure."))
@@ -170,7 +173,7 @@ extension PlanSafetyFilter {
             if procedure == .endoscopyLow {
                 text = "\(d) and \(what): omit the morning dose on the day of the procedure (BSG/ESGE 2021). No bridging."
             } else if procedure == .endoscopyHigh {
-                text = "\(d) and \(what): take the last dose 3 days before the procedure\(d == "dabigatran" ? " (5 days before if CrCl 30–50 mL/min)" : ""); restart 2–3 days after if haemostasis is secure (BSG/ESGE 2021). No bridging."
+                text = "\(d) and \(what): stop \(d) 3 days before the procedure (last dose 3 days before\(d == "dabigatran" ? "; 5 days before if CrCl 30–50 mL/min" : "")); restart 2–3 days after if haemostasis is secure (BSG/ESGE 2021). No bridging."
             } else if d == "dabigatran" {
                 text = "dabigatran and surgery (PAUSE 2019): CrCl ≥ 50 mL/min — omit 1 day before a low-bleed-risk and 2 days before a high-bleed-risk operation; CrCl 30–50 — 2 and 4 days. Resume 1 day after low-risk and 2–3 days after high-risk surgery. No bridging, no routine pre-operative coagulation test (ACCP 2022)."
             } else {
