@@ -6,6 +6,8 @@ import SwiftData
 
 extension PatientOverviewContent {
 
+    // @ViewBuilder is needed explicitly: `body` declared in an extension doesn't inherit it.
+    @ViewBuilder
     var body: some View {
         // Never read a deleted record (removed or merged while open).
         if patient.isLive { liveBody }
