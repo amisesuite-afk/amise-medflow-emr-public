@@ -47,7 +47,7 @@ function num(v: string | undefined | null): number | null {
 function Chip({ children, title, fg, bg }: { children: React.ReactNode; title?: string; fg: string; bg: string }) {
   return (
     <span title={title} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, lineHeight: '16px',
+      display: 'inline-block', fontSize: 11, lineHeight: '16px',
       padding: '1px 6px', borderRadius: 4, color: fg, background: bg, border: `1px solid ${bg}`,
     }}>{children}</span>
   );

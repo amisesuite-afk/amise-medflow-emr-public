@@ -301,6 +301,10 @@ const MOCK_ENCOUNTER = {
   await page.waitForTimeout(400);
   await shot(page, '04-assessment-typed');
 
+  // ── Diagnostic reasoning panel (engine-derived; writes nothing without a tap) ──
+  if (await page.locator('[data-testid="diagnostic-reasoning"]').count()) pass('Diagnostic reasoning panel on the Assessment step');
+  else fail('Diagnostic reasoning panel', 'data-testid="diagnostic-reasoning" not found on the Assessment step');
+
   // ── Pathognomonic detection → SUGGESTION, confirmed by the clinician ──────────
   // A sign only suggests the working diagnosis (UX review C4); nothing is recorded until
   // "Confirm diagnosis" is tapped.
