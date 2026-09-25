@@ -11,6 +11,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import { AMISE_LOGO_SVG } from './lib/docTemplate';
 import { saveBlobAsPDF } from './lib/pdfExport';
 import { allergyStatus, allergyNoteText } from '@/lib/allergy-status';
+import { examNoteLines } from '@/lib/exam-documentation';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -469,16 +470,8 @@ function buildDirectSummaryHtml(ctx: DirectCtx, meta: PrintMeta): string {
     'BSL':  ctx.vitals.glucoseMmol    ? `${ctx.vitals.glucoseMmol} mmol/L` : '',
   }).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
 
-  const examLines = [
-    ctx.examGeneral     && `General: ${ctx.examGeneral}`,
-    ctx.examCardio      && `Cardiovascular: ${ctx.examCardio}`,
-    ctx.examResp        && `Respiratory: ${ctx.examResp}`,
-    ctx.examAbdomen     && `Abdomen: ${ctx.examAbdomen}`,
-    ctx.examNeuro       && `Neurological: ${ctx.examNeuro}`,
-    ctx.examExtremities && `Extremities: ${ctx.examExtremities}`,
-    ctx.examBreast      && `Breast / Local: ${ctx.examBreast}`,
-    ctx.examWound       && `Wound: ${ctx.examWound}`,
-  ].filter(Boolean) as string[];
+  // Only systems the clinician documented (nothing is pre-filled as normal any more).
+  const examLines = examNoteLines(ctx);
 
   // Prescribed medications table — rendered from protocol queue if populated
   const hasMedTable = ctx.pendingPrescriptions && ctx.pendingPrescriptions.length > 0;

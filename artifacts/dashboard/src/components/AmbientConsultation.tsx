@@ -645,17 +645,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSection]);
 
-  // Auto-seed standard exam fields with normal text when entering exam phase
-  useEffect(() => {
-    if (consultPhase !== 'exam') return;
-    if (!examGeneral.trim())     setExamGeneral(EXAM_NORMALS.General);
-    if (!examAbdomen.trim())     setExamAbdomen(EXAM_NORMALS.Abdomen);
-    if (!examCardio.trim())      setExamCardio(EXAM_NORMALS.CVS);
-    if (!examResp.trim())        setExamResp(EXAM_NORMALS.Resp);
-    if (!examExtremities.trim()) setExamExtremities(EXAM_NORMALS.Extremities);
-    if (!examWound.trim())       setExamWound(EXAM_NORMALS.Wound);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [consultPhase]);
+  // Exam systems start empty ("not examined"). Normal text is applied only by the clinician's
+  // own "◎ Nml" tap on a system — never on entering the exam phase (UX review C2). This effect
+  // used to write normal General/Abdomen/CVS/Resp/Extremities/Wound text into the record.
 
   // ── Voice state ────────────────────────────────────────────────────────────
   const [micOpen, setMicOpen]         = useState(false);
