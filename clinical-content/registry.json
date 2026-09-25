@@ -304,7 +304,7 @@
       "tests": ["ios/AmiseMedFlowTests/ConsultPathwayTests.swift"],
       "ciChecks": ["ios-build-check.yml unit tests"],
       "guidelines": [
-        { "name": "US Preventive Services Task Force recommendations, adapted to Caribbean practice", "version": "not recorded per item", "section": "ScreeningEngine.items", "citation": "Code comment only. Items match USPSTF breast (40-74 biennial), colorectal (45-75) and lung (50-80, 20 pack-years); the years are not recorded" }
+        { "name": "US Preventive Services Task Force recommendations, adapted to Caribbean practice", "version": "not recorded per item", "section": "ScreeningEngine.items", "citation": "Per item in ScreeningEngine.items (USPSTF 2018-2024, ACG 2021, US MSTF 2017/2020, NCCN 2024, ACR 2023, ADA 2024, NICE NG136, CDC 2023, Maastricht VI 2022), mirroring lib/triage-engine/src/screening/preventive.ts" }
       ],
       "citationStatus": "file-header",
       "lastReviewed": "unknown",
@@ -313,9 +313,41 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Diabetes from 35 and PSA from 45 for African-Caribbean men are local adaptations: record who decided them. Parkland burns fluid calculation is in the same file.",
+      "notes": "Diabetes from 35 and PSA from 45 for African-Caribbean men are local adaptations: record who decided them. Parkland burns fluid calculation is in the same file. Twin of lib/triage-engine/src/screening/preventive.ts (preventive-screening); remaining differences are listed in docs/clinical-validation/changes/ios-screening-parity.md.",
       "changelog": [
-        { "version": "unversioned", "date": "2026-09-25", "change": "Parity with the web preventive-screening module (fix-web-screening.md): Lynch, US MSTF 2020 polyp intervals, family-history split, 76-85 individualised, BRCA carrier, hysterectomy, PSA from 55 (45 higher risk), HBV, diabetes risk rule, lipids/statin wording, H. pylori with gastric-cancer family history, NICE NG136 ABPM." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "Parity with the web preventive-screening module (fix-web-screening.md): Lynch, US MSTF 2020 polyp intervals, family-history split, 76-85 individualised, BRCA carrier, hysterectomy, PSA from 55 (45 higher risk), HBV, diabetes risk rule, lipids/statin wording, H. pylori with gastric-cancer family history, NICE NG136 ABPM." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "ios-screening-parity: rows and wording aligned with preventive.ts 1.0.0 — US MSTF 2020 polyp rows with a polyp histology field; inputs for polyp count, size and the last normal colonoscopy; colorectal from 18, family history under 40 'due from 40' and over 75 individualised; BRCA from 18 (MRI from 25); breast family-history item from 25; PSA from 45 with BRCA and no PSA investigation offered; HBV vaccination line; no ABPM prompt at >= 180/120. DRIFT NOTE on ScreeningEngine names the web twin." }
+      ]
+    },
+    {
+      "id": "ios-suspected-cancer-screening",
+      "title": "iOS NICE NG12 suspected-cancer criteria and BSG 2021 IDA rule (Swift twin of cancer-screening 1.1.0) and the Diagnosis-tab prompt",
+      "platforms": ["ios"],
+      "kind": "screening-rules",
+      "contentVersion": "1.1.0",
+      "versionStamp": { "file": "ios/AmiseMedFlow/Services/SuspectedCancerScreening.swift", "type": "regex", "pattern": "rulesVersion\\s*=\\s*\"([^\"]+)\"" },
+      "files": [
+        "ios/AmiseMedFlow/Services/SuspectedCancerScreening.swift",
+        "ios/AmiseMedFlow/Services/SuspectedCancerScreening+Prompt.swift",
+        "ios/AmiseMedFlow/Views/Consultation/SuspectedCancerSection.swift"
+      ],
+      "tests": ["ios/AmiseMedFlowTests/SuspectedCancerScreeningTests.swift"],
+      "ciChecks": ["ios-build-check.yml unit tests"],
+      "guidelines": [
+        { "name": "NICE NG12 Suspected cancer: recognition and referral", "version": "2015 (1.1.0 rules); earlier rules not recorded", "section": "per criterion: 1.3.1 colorectal, 1.6 bladder, 1.8.1 breast", "citation": "https://www.nice.org.uk/guidance/ng12" },
+        { "name": "NICE DG56 quantitative FIT; BSG/ACPGBI FIT guideline", "version": "2023 / 2022", "section": "FIT ≥ 10 µg Hb/g faeces", "citation": "https://www.nice.org.uk/guidance/dg56; Monahan et al., Gut 2022" },
+        { "name": "BSG guidelines for the management of iron deficiency anaemia in adults", "version": "2021", "section": "Hb/ferritin thresholds; bidirectional endoscopy, coeliac serology, urinalysis; oral iron", "citation": "Snook et al., Gut 2021" }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. XCTests port the web vectors (cancer-screening-ng12.test.ts); not a clinical review.",
+      "reviewPriority": "P2",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer, in the same PR as the web rule set (cancer-screening). Ships with an iOS app release.",
+      "notes": "Twin of lib/triage-engine/src/cancer-screening.ts (screenForCancer, readCancerScreenLabs) and of the dashboard prompt (preventive-screening-prompts.ts suspectedCancerPrompts). Keep contentVersion equal to the web cancer-screening version. Lab values are read from resulted investigations, latest first, with LabNameMatch whole-word names.",
+      "changelog": [
+        { "version": "1.1.0", "date": "2026-09-25", "change": "New (ios-screening-parity): Swift port of cancer-screening 1.1.0 — chip rules, negation-aware free-text rules (rectal bleeding ≥ 50, weight loss + abdominal pain ≥ 40, nipple change ≥ 50, visible haematuria ≥ 45), FIT ≥ 10, IDA from Hb + ferritin; dismissible Diagnosis-tab card." }
       ]
     },
     {
@@ -1042,7 +1074,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": ""
+      "notes": "",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "ios-screening-parity: ABCD2 no longer recommended for TIA or stroke (NICE NG128: no risk score to decide urgency; specialist assessment within 24 h); the calculator keeps a reference-only NG128 note. 'tia' matched as a whole word, so 'dementia' no longer brings the stroke scores." }
+      ]
     },
     {
       "id": "ios-diagnosis-radiation-engine",
