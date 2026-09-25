@@ -93,6 +93,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/triage-engine/src/apcq.ts',
   'lib/triage-engine/src/adaptive-triage.ts',
   'lib/triage-engine/src/cancer-screening.ts',
+  'lib/triage-engine/src/screening/preventive.ts',
+  'artifacts/dashboard/src/lib/preventive-screening-prompts.ts',
   'lib/triage-engine/src/pathways.ts',
   'lib/triage-engine/src/pathway-matcher.ts',
   'lib/triage-engine/src/surgical-dictionary.ts',
