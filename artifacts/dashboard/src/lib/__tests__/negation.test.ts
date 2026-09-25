@@ -2,6 +2,9 @@
  * Negation-aware matcher (lib/triage-engine/src/negation.ts). The negative phrases are the exact
  * wording from the clinical-validation vignettes that fired emergency triage, alarms and operative
  * plans; the positive controls must keep firing.
+ *
+ * ios/AmiseMedFlowTests/NegationMatcherTests.swift asserts the same vectors against the Swift twin
+ * (scripts/src/negation-parity.test.ts fails when the literal vectors differ): change both files.
  */
 import { describe, expect, it } from 'vitest';
 import { containsAffirmed, containsAnyAffirmed, findAffirmed, isNegatedAt, joinClauses, testAffirmed } from '@workspace/triage-engine';

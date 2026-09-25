@@ -3,6 +3,11 @@
  * dashboard's consultation engines (clinical prompts, dx variants, PANE feature mapping,
  * passive ranking).
  *
+ * iOS twin: ios/AmiseMedFlow/Services/NegationMatcher.swift (same rule, cue lists and windows).
+ * Change both together; scripts/src/negation-parity.test.ts checks that the two test files
+ * (artifacts/dashboard/src/lib/__tests__/negation.test.ts, ios/AmiseMedFlowTests/NegationMatcherTests.swift)
+ * keep the same vectors.
+ *
  * Clinicians document pertinent negatives ("No guarding, no rebound", "Murphy's sign negative",
  * "afebrile", "not jaundiced"). A plain substring or regex test reads those as positive findings,
  * which raised emergency triage, alarms and operative plans for patients without the finding
