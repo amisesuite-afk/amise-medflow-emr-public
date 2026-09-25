@@ -3,29 +3,31 @@ import type { ManagementProtocol } from '../types.js';
 export const hepatobiliaryProtocols: ManagementProtocol[] = [
   {
     diseaseId: 'choledocholithiasis',
-    icd10Prefixes: ['K80.5', 'K80.4', 'K80.3'],
+    icd10Prefixes: ['K80.5', 'K80.4'],
     label: 'Choledocholithiasis',
+    guidelines: ['ASGE 2019 guideline on the role of endoscopy in the evaluation and management of choledocholithiasis', 'BSG 2017 guidelines on the management of common bile duct stones', 'ASGE 2012 guideline for endoscopy in pregnant and lactating women'],
     keyPoints: [
-      'CBD stones cause 10–15% of all biliary colic presentations; risk rises with gallbladder stones.',
-      'MRCP is gold standard non-invasive imaging (>95% sensitivity); USS CBD dilation suggests obstruction.',
-      'ERCP is both diagnostic and therapeutic — sphincterotomy clears stones in 90%.',
+      'ASGE 2019 likelihood of a CBD stone: high (stone seen on imaging, ascending cholangitis, or bilirubin > 4 mg/dL (≈ 68 µmol/L) with a dilated CBD); intermediate (abnormal LFTs, age > 55 or a dilated CBD); low (none of these).',
+      'Intermediate likelihood: confirm with MRCP or EUS (or intraoperative cholangiography) — ERCP only if a stone is confirmed; low likelihood: cholecystectomy without further CBD imaging (ASGE 2019).',
+      'ERCP with sphincterotomy (stone clearance ~90%) only if the likelihood is high or a stone is confirmed; within 24 h if cholangitis.',
     ],
     redFlags: [
       'Fever + jaundice + pain — acute cholangitis; urgent biliary decompression.',
-      'Rising bilirubin despite antibiotics — escalate to ERCP within 24 h.',
+      'Cholangitis with rising bilirubin despite antibiotics — urgent biliary drainage (ERCP) within 24 h.',
       'Septic shock — emergency biliary decompression, HDU.',
     ],
     investigations: [
       { label: 'LFTs, bilirubin (conjugated), ALP, GGT', urgency: 'urgent' },
       { label: 'USS abdomen (CBD dilation, stones)', urgency: 'urgent' },
-      { label: 'MRCP (CBD stone confirmation)', urgency: 'urgent' },
+      { label: 'MRCP or EUS — if intermediate likelihood of a CBD stone (ASGE 2019); not needed before ERCP when likelihood is high', urgency: 'urgent' },
       { label: 'FBC, CRP, blood cultures if febrile', urgency: 'urgent' },
       { label: 'Amylase (exclude pancreatitis)', urgency: 'urgent' },
     ],
     management: [
       { phase: 'immediate', step: 'IV analgesia, antiemetics, IV fluids, NBM.' },
-      { phase: 'surgical', step: 'ERCP + sphincterotomy and stone extraction.' },
-      { phase: 'surgical', step: 'Laparoscopic cholecystectomy + intraoperative cholangiogram (same admission or elective after ERCP).' },
+      { phase: 'surgical', step: 'ERCP with sphincterotomy and stone extraction only if high likelihood (ASGE 2019) or a stone is confirmed on MRCP / EUS / intraoperative cholangiogram; within 24 h if cholangitis.' },
+      { phase: 'surgical', step: 'Laparoscopic cholecystectomy + intraoperative cholangiogram in the same admission (after ERCP if one was needed); intermediate likelihood may instead go straight to cholecystectomy with intraoperative cholangiography or laparoscopic CBD exploration (ASGE 2019; BSG 2017).' },
+      { phase: 'surgical', step: 'Pregnancy: ERCP only if indicated (cholangitis, or a confirmed obstructing CBD stone) — ideally in the second trimester by an experienced endoscopist, minimising fluoroscopy time and shielding the fetus; MRCP without gadolinium or EUS for diagnosis; obstetric involvement and fetal heart monitoring (ASGE 2012).', onlyIf: 'pregnant' },
       { phase: 'followup', step: 'LFTs at 6 weeks to confirm resolution; repeat USS if not normalised.' },
     ],
     medications: [
@@ -36,7 +38,7 @@ export const hepatobiliaryProtocols: ManagementProtocol[] = [
       { drugName: 'Omeprazole', dose: '40 mg', frequency: 'OD (once daily)', route: 'IV (intravenous)', indication: 'Mucosal protection', phase: 'immediate' },
       { drugName: 'Paracetamol', dose: '1 g', frequency: 'QDS (four times daily)', route: 'IV (intravenous)', indication: 'Multimodal analgesia', phase: 'immediate' },
     ],
-    referral: 'Gastroenterology / HPB surgery for ERCP.',
+    referral: 'Gastroenterology / HPB surgery — ERCP if indicated by the ASGE 2019 likelihood or a confirmed stone.',
   },
   {
     diseaseId: 'cholangiocarcinoma',
@@ -214,8 +216,8 @@ export const hepatobiliaryProtocols: ManagementProtocol[] = [
     management: [
       { phase: 'immediate', step: 'IV broad-spectrum antibiotics: piperacillin-tazobactam + metronidazole.' },
       { phase: 'immediate', step: 'IV fluids, analgesia, antipyretics.' },
-      { phase: 'surgical', step: 'USS-guided percutaneous aspiration / drain insertion (abscess >3 cm).' },
-      { phase: 'conservative', step: 'Amoebic abscess: metronidazole 800 mg TDS × 10 days (often responds without drainage).' },
+      { phase: 'surgical', step: 'Pyogenic abscess: USS-guided percutaneous aspiration or drain (abscess > 3 cm). Amoebic abscess: drainage only if no response to metronidazole within 3–5 days, a left-lobe abscess or impending rupture.' },
+      { phase: 'conservative', step: 'Amoebic abscess: metronidazole 800 mg TDS for 5–10 days (often responds without drainage), followed by a luminal agent (paromomycin or diloxanide furoate) to clear intestinal cysts (BNF).' },
       { phase: 'followup', step: 'CT at 4–6 weeks to confirm resolution; prolonged oral antibiotics (4–6 weeks total).' },
     ],
     medications: [

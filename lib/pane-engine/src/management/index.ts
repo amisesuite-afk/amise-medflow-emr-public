@@ -9,10 +9,34 @@ import { upperGIProtocols } from './protocols/upperGI.js';
 import { skinSoftTissueProtocols } from './protocols/skinSoftTissue.js';
 import { urologyProtocols } from './protocols/urology.js';
 import { postOpWoundsProtocols } from './protocols/postOpWounds.js';
+import { surgicalAdditionsProtocols } from './protocols/surgicalAdditions.js';
+import { acuteMedicineProtocols } from './protocols/acuteMedicine.js';
+import { obstetricPaediatricProtocols } from './protocols/obstetricPaediatric.js';
 
-export type { ManagementProtocol, InvestigationItem, ManagementStep, ProtocolMedication } from './types.js';
+export type {
+  ManagementProtocol, InvestigationItem, ManagementStep, ProtocolMedication, ProtocolKind, PatientCondition,
+} from './types.js';
+export {
+  adaptProtocolForPatient, adaptPlanText, allergyProfile, pregnancyFor, gestationFromText, procedureFor, hasOperativeSteps,
+  ALLERGY_CLASSES, PLAN_SAFETY_VERSION,
+} from './planSafety.js';
+export type {
+  PlanPatientContext, AdaptedProtocol, AdaptOptions, SafetyNote, SafetyKind, PregnancyStatus, ProcedureKind, AllergyClass,
+} from './planSafety.js';
 
+/**
+ * Version of the management protocol content (lib/pane-engine/src/management/protocols/*.ts and
+ * planSafety.ts). Registered in clinical-content/registry.json as "pane-engine-management-protocols";
+ * bump together with the registry entry and add a changelog line there.
+ */
+export const MANAGEMENT_PROTOCOLS_VERSION = '1.0.0';
+
+// Order matters only for ties between equally long ICD prefixes: the earlier protocol wins
+// (e.g. K92.2 → lower GI bleeding before upper GI haemorrhage; C20 → rectal carcinoma).
 const ALL_PROTOCOLS = [
+  ...surgicalAdditionsProtocols,
+  ...acuteMedicineProtocols,
+  ...obstetricPaediatricProtocols,
   ...generalSurgeryProtocols,
   ...hepatobiliaryProtocols,
   ...colorectalProtocols,
@@ -34,9 +58,65 @@ export function getProtocol(diseaseId: string) {
   return _byDiseaseId.get(diseaseId) ?? null;
 }
 
+/** "K35.89 — Acute appendicitis" / "k35.89" / "K3589" → "K3589". */
+export function normaliseIcd(code: string): string {
+  return code.split(/\s[—–-]\s|\s/)[0].trim().toUpperCase().replace(/\./g, '');
+}
+
+function prefixMatchLength(p: { icd10Prefixes: string[] }, code: string): number {
+  let best = 0;
+  for (const raw of p.icd10Prefixes) {
+    const prefix = normaliseIcd(raw);
+    if (prefix && code.startsWith(prefix) && prefix.length > best) best = prefix.length;
+  }
+  return best;
+}
+
+/**
+ * The protocol whose ICD-10 prefix is the longest match for the code (dots ignored): K83.01
+ * (primary sclerosing cholangitis) no longer resolves to acute cholangitis (K83.0), and I71.3
+ * resolves to the aortic aneurysm protocol. Ties go to the earlier protocol in ALL_PROTOCOLS.
+ */
 export function getProtocolByIcd(icdCode: string) {
-  const code = icdCode.split(' ')[0].trim();
-  return ALL_PROTOCOLS.find(p => p.icd10Prefixes.some(prefix => code.startsWith(prefix))) ?? null;
+  const code = normaliseIcd(icdCode);
+  if (!code) return null;
+  let best: (typeof ALL_PROTOCOLS)[number] | null = null;
+  let bestLen = 0;
+  for (const p of ALL_PROTOCOLS) {
+    const len = prefixMatchLength(p, code);
+    if (len > bestLen) { best = p; bestLen = len; }
+  }
+  return best;
+}
+
+/** Longest prefix of the protocol in the same 3-character ICD-10 category as the code (0 if none). */
+function sameCategoryLength(p: { icd10Prefixes: string[] }, code: string): number {
+  let best = 0;
+  for (const raw of p.icd10Prefixes) {
+    const prefix = normaliseIcd(raw);
+    if (prefix.slice(0, 3) === code.slice(0, 3) && prefix.length > best) best = prefix.length;
+  }
+  return best;
+}
+
+/**
+ * The protocol for a confirmed diagnosis (locked working diagnosis and/or recorded ICD-10 code).
+ * The disease id wins unless the recorded ICD code maps to a different protocol that the disease's
+ * own protocol does not cover, at least as specifically as the disease's own codes in that ICD
+ * category — then the code is the more specific statement of what the clinician confirmed
+ * (working diagnosis "upper GI bleed" + I85.11 → the variceal protocol; "diverticulitis" + K57.31
+ * diverticular bleeding → lower GI bleeding; "liver abscess" + A06.4 → amoebic abscess). A generic
+ * code in the same category does not override a specific disease: "post-operative ileus" (K56.0)
+ * recorded with K56.7 stays the ileus protocol, not bowel obstruction (K56).
+ */
+export function resolveProtocol(diseaseId?: string | null, icdCode?: string | null) {
+  const byId = diseaseId ? getProtocol(diseaseId) : null;
+  const byIcd = icdCode ? getProtocolByIcd(icdCode) : null;
+  if (!byId) return byIcd;
+  if (!byIcd || byIcd === byId || !icdCode) return byId;
+  const code = normaliseIcd(icdCode);
+  if (prefixMatchLength(byId, code) > 0) return byId;
+  return prefixMatchLength(byIcd, code) >= sameCategoryLength(byId, code) ? byIcd : byId;
 }
 
 export function getAllProtocols() {

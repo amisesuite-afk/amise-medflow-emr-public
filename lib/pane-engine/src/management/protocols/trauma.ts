@@ -3,8 +3,10 @@ import type { ManagementProtocol } from '../types.js';
 export const traumaProtocols: ManagementProtocol[] = [
   {
     diseaseId: 'blunt_abdominal_trauma',
-    icd10Prefixes: ['S39.9'],
+    icd10Prefixes: ['S39.9', 'S36.1', 'S36.2', 'S36.4', 'S36.5', 'S36.8', 'S36.9', 'S35'],
     label: 'Blunt Abdominal Trauma',
+    kind: 'bleeding',
+    guidelines: ['ATLS 10th edition (2018)', 'CRASH-2 (tranexamic acid within 3 h)', 'NICE NG39 (2016) major trauma'],
     keyPoints: [
       'FAST (Focused Assessment with Sonography in Trauma) is the first-line imaging in haemodynamically unstable patients — positive FAST + instability = immediate laparotomy.',
       'CT abdomen/pelvis with contrast is the gold standard for haemodynamically stable patients; identifies solid organ injury grade.',
@@ -15,12 +17,13 @@ export const traumaProtocols: ManagementProtocol[] = [
       'Peritonism or evisceration — emergency laparotomy',
       'Positive FAST with haemodynamic instability — operating theatre immediately',
       'Delayed presentation (>6 h) with falling Hb or expanding haematoma',
+      'Haemorrhagic shock (ATLS class III–IV: HR > 120, falling systolic BP, confusion, low urine output) — massive haemorrhage protocol and haemorrhage control now; a beta-blocker or old age can mask tachycardia.',
     ],
     investigations: [
       { label: 'FAST ultrasound (bedside, immediate)', urgency: 'stat' },
       { label: 'FBC, U&E, LFTs, amylase, coagulation, crossmatch 6 units', urgency: 'stat' },
       { label: 'ABG / VBG (lactate, base excess)', urgency: 'stat' },
-      { label: 'CT abdomen/pelvis with IV contrast (haemodynamically stable)', urgency: 'urgent' },
+      { label: 'CT abdomen/pelvis with IV contrast — only once haemodynamically stable (unstable → theatre / damage control)', urgency: 'urgent' },
       { label: 'Urinalysis / urinary catheter (haematuria)', urgency: 'urgent' },
       { label: 'CXR / pelvic X-ray (primary survey)', urgency: 'stat' },
     ],
@@ -28,6 +31,7 @@ export const traumaProtocols: ManagementProtocol[] = [
       { phase: 'immediate', step: 'Primary survey ABCDE: airway with C-spine control, breathing, circulation (two large-bore IV access, 1 L warmed crystalloid), disability (GCS, pupils), exposure.' },
       { phase: 'immediate', step: 'Activate MTP if SBP <90 + HR >120: PRBC:FFP:Platelets = 1:1:1; tranexamic acid 1 g IV within 3 hours of injury.' },
       { phase: 'immediate', step: 'FAST scan: free fluid in Morrison\'s pouch, splenorenal recess, pelvis, pericardium.' },
+      { phase: 'immediate', step: 'Suspected pelvic fracture (mechanism, pelvic pain, instability): apply a pelvic binder at the level of the greater trochanters (ATLS 10).' },
       { phase: 'surgical', step: 'Damage-control laparotomy: control haemorrhage (packing, vessel ligation), prevent contamination, temporary closure — definitive repair after resuscitation.' },
       { phase: 'conservative', step: 'Non-operative management for grades I–III solid organ injury in stable patients: ICU monitoring, serial FBC/Hb every 6 h, NPO, bed rest.' },
       { phase: 'conservative', step: 'Angioembolisation via interventional radiology for contained vascular injury in stable patient (splenic, hepatic).' },
@@ -91,11 +95,14 @@ export const traumaProtocols: ManagementProtocol[] = [
 
   {
     diseaseId: 'traumatic_brain_injury',
-    icd10Prefixes: ['S09.9'],
+    icd10Prefixes: ['S09.9', 'S06', 'S02.0', 'S02.1'],
     label: 'Traumatic Brain Injury',
+    kind: 'bleeding',
+    guidelines: ['NICE NG232 (2023) head injury: assessment and early management', 'Brain Trauma Foundation 2016', 'BSH / BSG-ESGE 2021 anticoagulant reversal'],
     keyPoints: [
       'GCS classification: mild TBI (GCS 13–15), moderate (GCS 9–12), severe (GCS ≤8 — intubate and ventilate).',
-      'CT head is indicated for any GCS <15, loss of consciousness, amnesia, vomiting, focal neurological deficit, or high-risk mechanism.',
+      'CT head within 1 hour for NICE NG232 high-risk features (GCS < 13 at first assessment or < 15 at 2 h, suspected skull fracture, seizure, focal deficit, > 1 episode of vomiting).',
+      'Anticoagulated (warfarin, DOAC) with a head injury and no other CT indication: CT head within 8 hours of the injury (NICE NG232 2023); immediately if any other risk factor.',
       'Avoid secondary brain injury: maintain SBP ≥90 mmHg, SpO2 ≥95%, temperature normothermia; target PaCO2 35–40 mmHg (avoid hyperventilation except for herniation).',
     ],
     redFlags: [
@@ -105,7 +112,8 @@ export const traumaProtocols: ManagementProtocol[] = [
       'Extradural / subdural haematoma on CT with mass effect — emergency craniotomy',
     ],
     investigations: [
-      { label: 'CT head without contrast (within 1 hour of presentation)', urgency: 'stat' },
+      { label: 'CT head without contrast — within 1 h for NG232 high-risk features; within 8 h of injury if on an anticoagulant without other criteria (NICE NG232)', urgency: 'stat' },
+      { label: 'Older person after a fall: ECG, lying and standing BP and a falls assessment (NICE CG161)', urgency: 'urgent' },
       { label: 'ABG (PaCO2, PaO2, oxygenation)', urgency: 'stat' },
       { label: 'Blood glucose (avoid hypoglycaemia)', urgency: 'stat' },
       { label: 'FBC, coagulation, U&E (coagulopathy correction)', urgency: 'urgent' },
@@ -114,6 +122,7 @@ export const traumaProtocols: ManagementProtocol[] = [
     ],
     management: [
       { phase: 'immediate', step: 'Airway: intubate (RSI) if GCS ≤8 or airway compromise; target SpO2 ≥97%, ETCO2 35–40 mmHg.' },
+      { phase: 'immediate', step: 'On an anticoagulant: check time of last dose, INR / renal function; intracranial haemorrhage → immediate reversal (warfarin: prothrombin complex concentrate + IV vitamin K; apixaban/rivaroxaban: andexanet alfa where available or prothrombin complex concentrate; dabigatran: idarucizumab) with haematology/neurosurgery (NICE NG232; BSH).' },
       { phase: 'immediate', step: 'Circulation: target SBP ≥90 mmHg (avoid hypotension); use vasopressors if needed; avoid hypotonic fluids.' },
       { phase: 'immediate', step: 'C-spine immobilisation until cleared clinically or radiologically.' },
       { phase: 'immediate', step: 'Neuroprotection: head of bed 30°, avoid neck flexion/rotation, normoglycaemia (4–10 mmol/L), normothermia.' },
@@ -138,7 +147,7 @@ export const traumaProtocols: ManagementProtocol[] = [
 
   {
     diseaseId: 'rib_fractures',
-    icd10Prefixes: ['S29.0'],
+    icd10Prefixes: ['S29.0', 'S22.3', 'S22.4', 'S22.5'],
     label: 'Rib Fractures',
     keyPoints: [
       'Flail chest (≥3 consecutive ribs fractured in ≥2 places) causes paradoxical breathing — may require intubation and mechanical ventilation.',
@@ -183,8 +192,9 @@ export const traumaProtocols: ManagementProtocol[] = [
     diseaseId: 'pneumothorax_traumatic',
     icd10Prefixes: ['S27.0'],
     label: 'Traumatic Pneumothorax',
+    guidelines: ['ATLS 10th edition (2018)'],
     keyPoints: [
-      'Tension pneumothorax is a clinical diagnosis — do NOT wait for CXR; needle decompression at 2nd ICS midclavicular line, then definitive chest drain.',
+      'Tension pneumothorax is a clinical diagnosis — do NOT wait for CXR; decompress immediately (adults: 4th/5th intercostal space just anterior to the mid-axillary line — ATLS 10th edition), then a definitive chest drain.',
       'Simple pneumothorax >2 cm or symptomatic: intercostal chest drain (ICD) 4th/5th ICS anterior axillary line (ATLS 11 — avoid 2nd ICS midclavicular for ICD).',
       'Occult pneumothorax (CT-only finding, haemodynamically stable, no ventilation): observe; drain if clinical deterioration or ventilation required.',
     ],
@@ -200,14 +210,14 @@ export const traumaProtocols: ManagementProtocol[] = [
       { label: 'Bedside USS (pleural sliding — absent in pneumothorax)', urgency: 'stat' },
     ],
     management: [
-      { phase: 'immediate', step: 'Tension pneumothorax: needle decompression (14G cannula 2nd ICS MCL) → immediate clinical improvement → proceed to ICD.' },
+      { phase: 'immediate', step: 'Tension pneumothorax: needle or finger decompression — adults at the 4th/5th intercostal space just anterior to the mid-axillary line (ATLS 10th edition); children: 2nd intercostal space, mid-clavicular line — then an immediate chest drain.' },
       { phase: 'immediate', step: 'High-flow O2 (accelerates pneumothorax reabsorption for small, asymptomatic PTX).' },
       { phase: 'surgical', step: 'ICD: 4th/5th ICS anterior axillary line, blunt dissection, 28–32 Fr drain; confirm on CXR. Water-seal drainage.' },
       { phase: 'conservative', step: 'Monitor drain output; remove when <100 mL/24 h and lung fully expanded on CXR.' },
       { phase: 'followup', step: 'CXR post-drain removal; air travel restriction 6 weeks; referral for recurrent pneumothorax (VATS pleurodesis).' },
     ],
     medications: [
-      { drugName: 'Oxygen', dose: '15 L/min', frequency: 'Continuous', route: 'Non-rebreather mask', indication: 'Tension PTX support pre-decompression / simple PTX — accelerates gas reabsorption', phase: 'immediate' },
+      { drugName: 'Oxygen', dose: 'High flow', frequency: 'Continuous', route: 'Non-rebreather mask', indication: 'Tension PTX support pre-decompression / simple PTX — accelerates gas reabsorption', phase: 'immediate' },
       { drugName: 'Morphine sulfate', dose: '2.5–5 mg', frequency: 'Once (procedural)', route: 'IV (intravenous)', indication: 'Procedural analgesia for ICD insertion', phase: 'immediate' },
       { drugName: 'Paracetamol', dose: '1 g', frequency: 'QDS (four times daily)', route: 'IV or PO', indication: 'Post-ICD analgesia', phase: 'immediate' },
       { drugName: 'Co-amoxiclav (Augmentin)', dose: '625 mg', frequency: 'TDS (three times daily) × 5 days', route: 'PO (oral)', duration: '5 days', indication: 'Post-ICD infection prophylaxis', phase: 'discharge' },
@@ -259,6 +269,8 @@ export const traumaProtocols: ManagementProtocol[] = [
     diseaseId: 'splenic_laceration',
     icd10Prefixes: ['S36.0'],
     label: 'Splenic Laceration',
+    kind: 'bleeding',
+    guidelines: ['WSES 2017 splenic trauma', 'ATLS 10th edition (2018)'],
     keyPoints: [
       'AAST grading (I–V): grades I–III managed non-operatively in stable adults; grades IV–V often require surgery or angioembolisation.',
       'Kehr\'s sign: left shoulder tip pain on Trendelenburg (blood tracking under diaphragm) is pathognomonic but present in only ~50%.',
@@ -272,7 +284,7 @@ export const traumaProtocols: ManagementProtocol[] = [
     ],
     investigations: [
       { label: 'FAST ultrasound (free fluid LUQ, Morrison\'s pouch)', urgency: 'stat' },
-      { label: 'CT abdomen/pelvis with IV contrast (AAST grading)', urgency: 'urgent' },
+      { label: 'CT abdomen/pelvis with IV contrast (AAST grading) — only if haemodynamically stable', urgency: 'urgent' },
       { label: 'FBC, crossmatch 4 units pRBC', urgency: 'stat' },
       { label: 'Coagulation screen, ABG (lactate)', urgency: 'urgent' },
     ],
@@ -299,10 +311,11 @@ export const traumaProtocols: ManagementProtocol[] = [
 
   {
     diseaseId: 'thermal_burn_major',
-    icd10Prefixes: ['T31.3', 'T31.4', 'T31.5', 'T31.6', 'T31.7', 'T31.8', 'T31.9'],
-    label: 'Major Thermal Burn (≥20% TBSA)',
+    icd10Prefixes: ['T31.2', 'T31.3', 'T31.4', 'T31.5', 'T31.6', 'T31.7', 'T31.8', 'T31.9', 'T27', 'T32.2', 'T32.3', 'T32.4', 'T32.5'],
+    label: 'Major Thermal Burn (≥20% TBSA) / Inhalation Injury',
+    guidelines: ['ATLS 10th edition (2018) burns', 'UK National Burn Care Referral Guidance (2012)', 'ABA 2019 burn resuscitation'],
     keyPoints: [
-      'Parkland formula: 4 × weight (kg) × TBSA (%) = mL Lactated Ringer\'s in first 24 h from time of burn. Half in first 8 h, half in next 16 h.',
+      'Formal fluid resuscitation from the time of burn: Parkland 4 mL × kg × %TBSA of Hartmann\'s/LR in 24 h (half in the first 8 h), or the ATLS 10 / ABA starting estimate of 2 mL × kg × %TBSA in adults (3 mL in children) — surgeon to choose; titrate to urine output.',
       'Target urine output: 0.5–1 mL/kg/hr adults, 1 mL/kg/hr children — titrate fluids accordingly.',
       'Inhalation injury significantly increases mortality; early intubation if any signs (singed nasal hair, hoarse voice, sooty sputum, stridor).',
     ],
@@ -323,7 +336,7 @@ export const traumaProtocols: ManagementProtocol[] = [
     management: [
       { phase: 'immediate', step: 'Stop the burning process; remove clothing/jewellery; cool with running water 20 min (if <3 h post burn); wrap in cling film.' },
       { phase: 'immediate', step: 'Airway: 100% O2 via non-rebreather mask; intubate if ANY inhalation injury signs — do not delay.' },
-      { phase: 'immediate', step: 'IV access × 2 (large bore, avoid burnt skin); Parkland formula: 4 × kg × TBSA% mL LR; give ½ in first 8 h from time of burn, ½ in next 16 h.' },
+      { phase: 'immediate', step: 'IV access × 2 (large bore, avoid burnt skin); formal fluid resuscitation from the time of burn — Parkland 4 mL × kg × %TBSA (½ in the first 8 h, ½ in the next 16 h) or the ATLS 10/ABA starting rate of 2 mL × kg × %TBSA (adults) — then titrate to urine output. Children also need maintenance fluid with glucose.' },
       { phase: 'immediate', step: 'Urinary catheter; target UO 0.5–1 mL/kg/hr adults; adjust fluid rate accordingly.' },
       { phase: 'conservative', step: 'Analgesia: IV morphine titrated; NSAIDs cautiously. Tetanus prophylaxis.' },
       { phase: 'conservative', step: 'Wound care: non-adherent dressings (silver sulfadiazine / mepitel / Mepilex Ag); daily wound review.' },
@@ -344,46 +357,49 @@ export const traumaProtocols: ManagementProtocol[] = [
       { drugName: 'Omeprazole', dose: '40 mg', frequency: 'OD (once daily)', route: 'IV (intravenous)', indication: 'Curling\'s ulcer prophylaxis', phase: 'immediate' },
       { drugName: 'Enoxaparin', dose: '40 mg', frequency: 'OD (once daily)', route: 'SC (subcutaneous)', indication: 'VTE prophylaxis — once haemostasis achieved', phase: 'immediate' },
     ],
-    referral: 'Burns unit transfer (TBSA >20%, full-thickness >5%, hands/face/genitalia, inhalation, electrical, chemical, paediatric). Plastic Surgery.',
+    referral: 'Burns unit / burns centre transfer (UK National Burn Care Referral Guidance 2012): large burns, full thickness, face/hands/feet/genitalia/perineum, circumferential, inhalation, electrical, chemical, paediatric. Plastic Surgery.',
   },
 
   {
     diseaseId: 'thermal_burn_minor',
-    icd10Prefixes: ['T30.0', 'T14.0'],
-    label: 'Minor Thermal Burn (<20% TBSA)',
+    icd10Prefixes: ['T20', 'T21', 'T22', 'T23', 'T24', 'T25', 'T29', 'T30', 'T31.0', 'T31.1'],
+    label: 'Burns under 20% TBSA (including special areas)',
+    guidelines: ['ATLS 10th edition (2018) burns', 'UK National Burn Care Referral Guidance (2012)', 'BBA first aid (2018)', 'NICE CG89 (2009, updated 2017) child maltreatment'],
     keyPoints: [
-      'Superficial (1st degree, erythema only) — does not count towards TBSA; treat with cool water and analgesia.',
-      'Superficial partial thickness (2nd degree, blistering) — heals within 14 days with non-adherent dressings; do NOT de-roof intact blisters.',
-      'Deep partial thickness / full thickness burns require early surgical review regardless of size.',
+      'Estimate TBSA with a Lund and Browder chart (children) or Rule of Nines / palm (≈ 1%) — erythema alone does not count.',
+      'IV fluid resuscitation for burns ≥ 15% TBSA in adults and ≥ 10% in children (threshold per the referral guidance — surgeon to confirm ≥ vs >).',
+      'Discuss with or refer to a burns service by the referral criteria — size is not the only trigger (special areas, depth, circumferential, mechanism, age, safeguarding).',
     ],
     redFlags: [
-      'Burns of face, hands, feet, genitalia, or circumferential — refer to Burns specialist',
-      'Chemical or electrical burns (TBSA can be deceiving)',
-      'Child with scalds suggesting non-accidental injury — safeguarding referral',
-      'Failure to heal at 14 days — likely deep partial thickness; surgical review',
+      'Burns of face, hands, feet, genitalia, perineum or major joints, or circumferential — refer to a burns specialist.',
+      'Circumferential full-thickness burn with distal ischaemia or rising compartment pressure — escharotomy.',
+      'Chemical or electrical burns (TBSA can be deceiving).',
+      'Child with scalds suggesting non-accidental injury (immersion pattern, feet/buttocks/perineum) — safeguarding referral.',
+      'Failure to heal at 14 days — likely deep partial thickness; surgical review.',
     ],
     investigations: [
-      { label: 'Rule of Nines TBSA assessment + burn depth documentation', urgency: 'urgent' },
-      { label: 'FBC, U&E (if TBSA >10% or systemic features)', urgency: 'routine' },
+      { label: 'TBSA assessment: Lund and Browder chart (children) / Rule of Nines (adults) + burn depth documentation', urgency: 'urgent' },
+      { label: 'FBC, U&E, glucose (if TBSA ≥ 10% in children or ≥ 15% in adults, or systemic features)', urgency: 'urgent' },
+      { label: 'Distal perfusion checks (capillary refill, Doppler) for circumferential limb burns', urgency: 'stat' },
       { label: 'Wound swab if signs of infection (purulent discharge, cellulitis)', urgency: 'urgent' },
     ],
     management: [
-      { phase: 'immediate', step: 'Cool burn with running water 20 minutes (start within 3 h of injury); do NOT use ice.' },
-      { phase: 'conservative', step: 'Analgesia: paracetamol + ibuprofen (oral); consider IV morphine for severe pain.' },
-      { phase: 'conservative', step: 'Non-adherent dressings (Mepitel, Adaptic, or silver-containing if infection risk); change every 3–5 days.' },
-      { phase: 'conservative', step: 'Intact blisters: leave; burst blisters: de-roof and dress. Tetanus prophylaxis.' },
-      { phase: 'followup', step: 'Review at 48 h (infection check) and 5–7 days (healing progress). Refer if no healing at 14 days.' },
+      { phase: 'immediate', step: 'First aid: stop the burning; remove clothing and jewellery; cool with running water for 20 minutes (up to 3 h after injury); cover with cling film; keep the patient warm; do NOT use ice.' },
+      { phase: 'immediate', step: 'Formal fluid resuscitation only if TBSA ≥ 15% (adults) or ≥ 10% (children), from the time of burn (Parkland or the ATLS 10 starting rate — see major burns); children also need maintenance fluid with glucose; urinary catheter — target urine output 0.5 mL/kg/h in adults and 1 mL/kg/h in children.' },
+      { phase: 'immediate', step: 'Circumferential full-thickness limb or chest burn: elevate the limb, monitor distal perfusion hourly; escharotomy (burns/plastic surgeon) for ischaemia or respiratory restriction.' },
+      { phase: 'conservative', step: 'Analgesia: paracetamol ± ibuprofen or opioid (weight-based in children); non-adherent dressings; leave intact blisters; review at 48 h and 5–7 days.' },
+      { phase: 'conservative', step: 'Tetanus prophylaxis according to immunisation status.' },
+      { phase: 'followup', step: 'Refer to a burns service / plastic surgery (UK National Burn Care Referral Guidance 2012): children ≥ 2% or adults ≥ 3% TBSA partial/full thickness, any full-thickness burn, special areas, circumferential, inhalation, electrical or chemical injury, suspected non-accidental injury, pregnancy, extremes of age — or failure to heal by 14 days.' },
     ],
     medications: [
       { drugName: 'Morphine sulfate', dose: '2.5–5 mg', frequency: 'As required (initial)', route: 'PO or IV', indication: 'Initial severe pain — titrate', phase: 'immediate' },
       { drugName: 'Tetanus toxoid', dose: '0.5 mL', frequency: 'Once', route: 'IM (intramuscular)', indication: 'Wound prophylaxis if >5 years since last dose', phase: 'immediate' },
       { drugName: 'Paracetamol', dose: '1 g', frequency: 'QDS (four times daily) × 3–5 days', route: 'PO (oral)', duration: '3–5 days', indication: 'Analgesia', phase: 'discharge' },
       { drugName: 'Ibuprofen', dose: '400 mg', frequency: 'TDS (three times daily) with food × 3–5 days', route: 'PO (oral)', duration: '3–5 days', indication: 'Anti-inflammatory analgesia', phase: 'discharge' },
-      { drugName: 'Chlorhexidine 0.05% solution', dose: 'Apply topically', frequency: 'As required', route: 'Topical', indication: 'Wound hygiene', phase: 'discharge' },
       { drugName: 'Silver sulfadiazine 1% cream', dose: 'Apply topically', frequency: 'OD (once daily)', route: 'Topical', indication: 'Antimicrobial dressing for superficial partial thickness burns', phase: 'discharge' },
       { drugName: 'Cefalexin', dose: '500 mg', frequency: 'QDS (four times daily) × 5 days', route: 'PO (oral)', duration: '5 days', indication: 'Infected burn', phase: 'discharge' },
     ],
-    referral: 'Plastic Surgery / Burns Clinic if deep partial or full thickness, special areas, or failure to heal.',
+    referral: 'Burns service / burns unit discussion by the referral criteria; Plastic Surgery / Burns Clinic if deep partial or full thickness, special areas, or failure to heal.',
   },
 
   {
