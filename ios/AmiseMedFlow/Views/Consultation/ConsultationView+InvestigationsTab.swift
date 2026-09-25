@@ -10,6 +10,13 @@ extension ConsultationView {
 
     var investigationsTab: some View {
         List {
+            // Results from the lab / imaging portals (PDF or pasted text, parsed on the device)
+            Section {
+                ReportImportMenu(patient: patient)
+            } footer: {
+                Text("Laboratory Services Ltd results or Tapion imaging reports. Read on this device; you review every value before it is saved.")
+            }
+
             // CC-matched suggestions
             if let cc = patient.chiefComplaint,
                let suggestions = ccInvestigations[cc], !suggestions.isEmpty {
@@ -145,7 +152,8 @@ extension ConsultationView {
                     .frame(width: 20, alignment: .center)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(inv.name).font(.subheadline.weight(.medium))
-                    Text(inv.category.rawValue).font(.caption2).foregroundStyle(.secondary)
+                    Text(inv.source.map { "\(inv.category.rawValue) · \($0)" } ?? inv.category.rawValue)
+                        .font(.caption2).foregroundStyle(.secondary)
                 }
                 Spacer()
                 // Tappable status badge — tap to advance ordered → pending → resulted
@@ -177,6 +185,15 @@ extension ConsultationView {
                     .foregroundStyle(.secondary)
                     .lineLimit(2...)
                     .padding(.leading, 28)
+            }
+            // Imaging study in the hospital portal (opens Safari; never fetched by MedFlow)
+            if let link = inv.portalURL, case .success(let url) = PortalLink.validate(link) {
+                Link(destination: url) {
+                    Label("Open in portal", systemImage: "safari")
+                        .font(.caption.weight(.semibold))
+                }
+                .buttonStyle(.borderless)
+                .padding(.leading, 28)
             }
             // Inline critical value badge and trend arrow
             if inv.status == .resulted && !inv.result.isEmpty {

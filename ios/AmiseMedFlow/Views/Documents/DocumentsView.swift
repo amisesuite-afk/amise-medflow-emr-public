@@ -155,6 +155,9 @@ struct DocumentsView: View {
             } label: {
                 Label("Import PDF / File", systemImage: "doc.badge.plus")
             }
+
+            // Lab / imaging report: parsed on the device and reviewed before anything is saved.
+            ReportImportMenu(patient: patient)
         }
         .sheet(isPresented: $showFilePicker) {
             pdfCategoryPicker
