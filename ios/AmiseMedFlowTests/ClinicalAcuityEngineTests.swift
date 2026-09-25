@@ -146,9 +146,10 @@ final class ClinicalAcuityEngineTests: XCTestCase {
     }
 
     func testEuglycaemicDKAIsRecognisedFromKetones() {
-        let a = ClinicalAcuityEngine.assess(inputs(cc: "Vomiting after operation", meds: ["Empagliflozin"],
+        let a = ClinicalAcuityEngine.assess(inputs(cc: "Vomiting after operation",
                                                    labs: [lab("Glucose", "8.9 mmol/L"), lab("Blood ketones", "4.9 mmol/L"),
-                                                          lab("Venous pH", "7.19")]))
+                                                          lab("Venous pH", "7.19")],
+                                                   meds: ["Empagliflozin"]))
         XCTAssertEqual(a.level, .emergency)
         XCTAssertTrue(titles(a).contains { $0.hasPrefix("Diabetic ketoacidosis (DKA)") })
     }
