@@ -206,7 +206,7 @@ final class NASDocumentsBackupTests: XCTestCase {
                                      size: nil, sha256: nil)
         XCTAssertEqual(plan([e], local: [here]), [.fillMissingData(e, localCode: "CLOUD")])
         // Nothing to fill from a backup entry that has no file either.
-        let metadataOnly = self.entry(code: "A", remoteId: "row-1", sha: nil, path: nil)
+        let metadataOnly = self.entry(code: "A", sha: nil, path: nil, remoteId: "row-1")
         XCTAssertEqual(plan([metadataOnly], local: [here]), [.skipAlreadyHere])
     }
 
