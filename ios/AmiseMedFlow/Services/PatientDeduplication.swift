@@ -201,6 +201,11 @@ enum PatientIdentityStore {
         return (UserDefaults.standard.stringArray(forKey: deletedKey) ?? []).contains(id)
     }
 
+    /// Every remembered id (remoteIds, "appt:" sentinels and syncCodes), for the peer manifest.
+    static func deletedIds() -> [String] {
+        UserDefaults.standard.stringArray(forKey: deletedKey) ?? []
+    }
+
     /// `survivors` are the other local records. An id still held by one of them (two local copies
     /// of the same cloud record) is not remembered, so the kept copy keeps syncing.
     static func markDeleted(_ patient: Patient, survivors: [Patient] = []) {

@@ -57,6 +57,7 @@ final class PeerSyncMergeTests: XCTestCase {
         p.examAbdo = "Soft"
         p.workingDiagnosis = "Biliary colic"
         p.syncedAt = syncedAt
+        p.updatedAt = syncedAt   // "newer" is by edit and sync time (PeerVersion)
         p.pendingSync = true
         context.insert(p)
         return p
@@ -70,6 +71,7 @@ final class PeerSyncMergeTests: XCTestCase {
         r.mrn = local.mrn
         r.syncedAt = syncedAt
         configure(r)
+        r.updatedAt = syncedAt   // the other device's last edit, at the same time as its sync
         return PeerPatient(r)
     }
 

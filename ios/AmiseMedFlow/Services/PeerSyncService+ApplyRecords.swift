@@ -53,13 +53,18 @@ extension PeerSyncService {
             } else {
                 patient = Patient(fullName: rec.fullName)
                 context.insert(patient)
+                // Its last change is the peer's (no echo of an unchanged copy back to the peer).
+                if let peerUpdated = rec.updatedAt { patient.updatedAt = Date(timeIntervalSince1970: peerUpdated) }
             }
 
-            let peerTime = Date(timeIntervalSince1970: rec.syncedAt)
-            let myTime   = patient.syncedAt ?? .distantPast
-            // A record created here from the peer takes the peer's administrative fields even when
-            // neither side has a cloud sync time yet (both would otherwise be distantPast).
-            let remoteIsNewer = matched == nil || peerTime > myTime
+            // The newer copy by edit and sync time (PeerVersion). A record created here from the
+            // peer takes the peer's administrative fields even when neither side has a cloud sync
+            // time yet.
+            let peerStamp = PeerVersion.stamp(peerUpdatedAt: rec.updatedAt, peerSyncedAt: rec.syncedAt)
+                ?? rec.syncedAt
+            let remoteIsNewer = matched == nil || PeerVersion.remoteIsNewer(
+                localUpdated: patient.updatedAt, localSynced: patient.syncedAt,
+                localPending: wasPending, peerUpdated: rec.updatedAt, peerSynced: rec.syncedAt)
 
             // Identity — always propagate syncCode; link the server row when this copy has none.
             patient.syncCode = rec.syncCode
@@ -162,19 +167,26 @@ extension PeerSyncService {
             patient.examSkin    = mergeDoc(patient.examSkin,    rec.examSkin,    remoteIsNewer: remoteIsNewer)
             patient.examOther   = mergeDoc(patient.examOther,   rec.examOther,   remoteIsNewer: remoteIsNewer)
 
-            patient.syncedAt    = max(myTime, peerTime)
             // Unsent local edits stay pending; a peer's unsent change to a record with a server
             // row becomes pending here too (PeerApplyPending). A content change bumps updatedAt,
             // so a cloud push already in flight for this patient does not clear pendingSync over
             // values it did not send.
-            let contentChanged = matched == nil || contentBefore == nil
-                || contentBefore != Self.contentFingerprint(patient)
+            let contentAfter = Self.contentFingerprint(patient)
+            let contentChanged = matched == nil || contentBefore == nil || contentBefore != contentAfter
             if contentChanged && matched != nil { patient.updatedAt = .now }
             patient.pendingSync = PeerApplyPending.pendingAfterApply(
                 localPending: wasPending,
                 contentChanged: contentChanged,
                 hasServerRow: SyncRemoteId.serverId(patient.remoteId) != nil,
                 peerPending: rec.pendingSync)
+            // Stamp: at least the peer's, so it is not sent again; above it when this merged copy
+            // must go back to the peer (PeerVersion). Never moves back.
+            let sendBack = matched != nil && PeerVersion.sendsBack(
+                differsFromPeer: PeerFingerprint.differ(contentAfter, PeerFingerprint.of(rec)),
+                contentChanged: contentChanged, remoteIsNewer: remoteIsNewer)
+            patient.syncedAt = PeerVersion.syncedAtAfterApply(
+                localUpdated: patient.updatedAt, localSynced: patient.syncedAt,
+                peerStamp: peerStamp, sendBack: sendBack)
         }
         try context.save()
     }
@@ -185,11 +197,13 @@ extension PeerSyncService {
         let tombstoned = SyncTombstones.ids(in: .clinicalNotes)
         for rec in records {
             if let local = existing.first(where: { $0.syncCode == rec.syncCode }) {
-                // Already here: only take the server row id this copy lacks, so its push updates
-                // that row (no second insert) and the cloud pull matches it (no second copy).
+                // Already here: take the server row id this copy lacks, so its push updates that
+                // row (no second insert) and the cloud pull matches it (no second copy); then the
+                // peer's edit, if it is the newer copy.
                 let linked = Self.linkedChildRemoteId(local: local.remoteId, peer: rec.remoteId,
                                                       tombstoned: tombstoned)
                 if linked != local.remoteId { local.remoteId = linked }
+                applyPeerEdit(rec, to: local)
                 continue
             }
             // Deleted on this device: don't let a peer recreate it.
@@ -205,6 +219,8 @@ extension PeerSyncService {
             // SOAP fields for a structured note (as the cloud pull does), so contentForSync gives
             // back the same content if this device uploads it.
             note.applySyncContent(rec.content)
+            // Its last change is the peer's, so this copy is not sent straight back.
+            if let peerUpdated = rec.updatedAt { note.updatedAt = Date(timeIntervalSince1970: peerUpdated) }
             note.syncedAt    = Date(timeIntervalSince1970: rec.syncedAt)
             note.pendingSync = PeerApplyPending.pendingAfterApply(
                 localPending: false, contentChanged: true,
@@ -224,6 +240,7 @@ extension PeerSyncService {
                 let linked = Self.linkedChildRemoteId(local: local.remoteId, peer: rec.remoteId,
                                                       tombstoned: tombstoned)
                 if linked != local.remoteId { local.remoteId = linked }
+                applyPeerEdit(rec, to: local)   // the peer's edit, if it is the newer copy
                 continue
             }
             if let rid = rec.remoteId, tombstoned.contains(rid) { continue }   // deleted here
@@ -240,6 +257,7 @@ extension PeerSyncService {
             rx.prescribedAt = Date(timeIntervalSince1970: rec.prescribedAt)
             rx.patient      = patient
             rx.remoteId     = rec.remoteId
+            rx.updatedAt    = rec.updatedAt.map { Date(timeIntervalSince1970: $0) }   // the peer's last change
             rx.syncedAt     = Date(timeIntervalSince1970: rec.syncedAt)
             rx.pendingSync  = PeerApplyPending.pendingAfterApply(
                 localPending: false, contentChanged: true,
@@ -259,6 +277,7 @@ extension PeerSyncService {
                 let linked = Self.linkedChildRemoteId(local: local.remoteId, peer: rec.remoteId,
                                                       tombstoned: tombstoned)
                 if linked != local.remoteId { local.remoteId = linked }
+                applyPeerEdit(rec, to: local)   // the peer's edit, if it is the newer copy
                 continue
             }
             if let rid = rec.remoteId, tombstoned.contains(rid) { continue }   // deleted here
@@ -279,6 +298,7 @@ extension PeerSyncService {
             v.onSupplementalO2   = rec.onSupplementalO2
             v.notes              = rec.notes
             v.remoteId           = rec.remoteId
+            v.updatedAt          = rec.updatedAt.map { Date(timeIntervalSince1970: $0) }   // the peer's last change
             v.syncedAt           = Date(timeIntervalSince1970: rec.syncedAt)
             v.pendingSync        = PeerApplyPending.pendingAfterApply(
                 localPending: false, contentChanged: true,
@@ -298,6 +318,7 @@ extension PeerSyncService {
                 let linked = Self.linkedChildRemoteId(local: local.remoteId, peer: rec.remoteId,
                                                       tombstoned: tombstoned)
                 if linked != local.remoteId { local.remoteId = linked }
+                applyPeerEdit(rec, to: local)   // the peer's edit, if it is the newer copy
                 continue
             }
             if let rid = rec.remoteId, tombstoned.contains(rid) { continue }   // deleted here
@@ -314,6 +335,7 @@ extension PeerSyncService {
             item.addedAt     = Date(timeIntervalSince1970: rec.addedAt)
             item.patient     = patient
             item.remoteId    = rec.remoteId
+            item.updatedAt   = rec.updatedAt.map { Date(timeIntervalSince1970: $0) }   // the peer's last change
             item.syncedAt    = Date(timeIntervalSince1970: rec.syncedAt)
             item.pendingSync = PeerApplyPending.pendingAfterApply(
                 localPending: false, contentChanged: true,
@@ -322,6 +344,155 @@ extension PeerSyncService {
             context.insert(item)
         }
         try context.save()
+    }
+
+    // MARK: - Peer edits to child records already here
+    //
+    // Newer wins, for the whole record (PeerVersion.remoteIsNewer): a prescription, vitals entry
+    // or billing line is edited as one unit, and a cleared value (a mistyped SpO₂ removed) must be
+    // cleared here too. A note is a doctor's document (the mergeDoc rule): the newer copy's
+    // content wins when it has any, an empty note is filled from the other copy, and a note signed
+    // on this device is never reopened as a draft by a peer.
+
+    func applyPeerEdit(_ rec: PeerNote, to note: ClinicalNote) {
+        guard let beforeCopy = PeerNote(note) else { return }   // no patient: nothing to compare
+        let before = PeerFingerprint.of(beforeCopy)
+        let wasPending = note.pendingSync
+        let newer = PeerVersion.remoteIsNewer(localUpdated: note.updatedAt, localSynced: note.syncedAt,
+                                              localPending: wasPending, peerUpdated: rec.updatedAt,
+                                              peerSynced: rec.syncedAt)
+        let peerHasContent = nonBlank(rec.content) != nil
+        let peerStatus = NoteStatus(rawValue: rec.status) ?? note.status
+        let reopensSignedNote = note.status == .signed && peerStatus != .signed
+        if newer && !reopensSignedNote {
+            if peerHasContent {
+                if let type = NoteType(rawValue: rec.noteType) { note.noteType = type }
+                note.applySyncContent(rec.content)
+            }
+            note.status = peerStatus
+        } else if note.isEmpty && peerHasContent && !reopensSignedNote {
+            if let type = NoteType(rawValue: rec.noteType) { note.noteType = type }
+            note.applySyncContent(rec.content)
+        }
+        let after = PeerNote(note).flatMap { PeerFingerprint.of($0) }
+        let changed = PeerFingerprint.differ(before, after)
+        if changed { note.updatedAt = .now }   // an in-flight push must not clear pending over it
+        let result = Self.afterChildApply(wasPending: wasPending, contentChanged: changed,
+                                          remoteIsNewer: newer,
+                                          differsFromPeer: PeerFingerprint.differ(after, PeerFingerprint.of(rec)),
+                                          remoteId: note.remoteId, peerPending: rec.pendingSync,
+                                          updatedAt: note.updatedAt, syncedAt: note.syncedAt,
+                                          peerUpdatedAt: rec.updatedAt, peerSyncedAt: rec.syncedAt)
+        note.pendingSync = result.pending
+        note.syncedAt = result.syncedAt
+    }
+
+    func applyPeerEdit(_ rec: PeerPrescription, to rx: Prescription) {
+        let before = PeerFingerprint.of(PeerPrescription(rx))
+        let wasPending = rx.pendingSync
+        let newer = PeerVersion.remoteIsNewer(localUpdated: rx.updatedAt, localSynced: rx.syncedAt,
+                                              localPending: wasPending, peerUpdated: rec.updatedAt,
+                                              peerSynced: rec.syncedAt)
+        if newer {
+            if nonBlank(rec.drug) != nil { rx.drug = rec.drug }
+            rx.dose         = rec.dose ?? ""
+            rx.route        = rec.route ?? ""
+            rx.frequency    = rec.frequency ?? ""
+            rx.duration     = rec.duration ?? ""
+            rx.indication   = rec.indication ?? ""
+            rx.instructions = rec.instructions
+            rx.prescribedAt = Date(timeIntervalSince1970: rec.prescribedAt)
+        }
+        let after = PeerFingerprint.of(PeerPrescription(rx))
+        let changed = PeerFingerprint.differ(before, after)
+        if changed { rx.updatedAt = .now }
+        let result = Self.afterChildApply(wasPending: wasPending, contentChanged: changed,
+                                          remoteIsNewer: newer,
+                                          differsFromPeer: PeerFingerprint.differ(after, PeerFingerprint.of(rec)),
+                                          remoteId: rx.remoteId, peerPending: rec.pendingSync,
+                                          updatedAt: rx.updatedAt, syncedAt: rx.syncedAt,
+                                          peerUpdatedAt: rec.updatedAt, peerSyncedAt: rec.syncedAt)
+        rx.pendingSync = result.pending
+        rx.syncedAt = result.syncedAt
+    }
+
+    func applyPeerEdit(_ rec: PeerVitals, to v: VitalsEntry) {
+        let before = PeerFingerprint.of(PeerVitals(v))
+        let wasPending = v.pendingSync
+        let newer = PeerVersion.remoteIsNewer(localUpdated: v.updatedAt, localSynced: v.syncedAt,
+                                              localPending: wasPending, peerUpdated: rec.updatedAt,
+                                              peerSynced: rec.syncedAt)
+        if newer {
+            v.recordedAt         = Date(timeIntervalSince1970: rec.recordedAt)
+            v.bpSystolic         = rec.bpSystolic
+            v.bpDiastolic        = rec.bpDiastolic
+            v.heartRate          = rec.heartRate
+            v.respiratoryRate    = rec.respiratoryRate
+            v.temperatureCelsius = rec.temperatureCelsius
+            v.spo2               = rec.spo2
+            v.weightKg           = rec.weightKg
+            v.glucoseMmol        = rec.glucoseMmol
+            v.avpu               = AVPU(rawValue: rec.avpu) ?? v.avpu
+            v.onSupplementalO2   = rec.onSupplementalO2
+            v.notes              = rec.notes
+        }
+        let after = PeerFingerprint.of(PeerVitals(v))
+        let changed = PeerFingerprint.differ(before, after)
+        if changed { v.updatedAt = .now }
+        let result = Self.afterChildApply(wasPending: wasPending, contentChanged: changed,
+                                          remoteIsNewer: newer,
+                                          differsFromPeer: PeerFingerprint.differ(after, PeerFingerprint.of(rec)),
+                                          remoteId: v.remoteId, peerPending: rec.pendingSync,
+                                          updatedAt: v.updatedAt, syncedAt: v.syncedAt,
+                                          peerUpdatedAt: rec.updatedAt, peerSyncedAt: rec.syncedAt)
+        v.pendingSync = result.pending
+        v.syncedAt = result.syncedAt
+    }
+
+    func applyPeerEdit(_ rec: PeerBillingItem, to item: BillingLineItem) {
+        let before = PeerFingerprint.of(PeerBillingItem(item))
+        let wasPending = item.pendingSync
+        let newer = PeerVersion.remoteIsNewer(localUpdated: item.updatedAt, localSynced: item.syncedAt,
+                                              localPending: wasPending, peerUpdated: rec.updatedAt,
+                                              peerSynced: rec.syncedAt)
+        if newer {
+            if nonBlank(rec.cptCode) != nil { item.cptCode = rec.cptCode }
+            item.cptDescription = rec.cptDescription
+            item.cptCategory    = rec.cptCategory
+            item.units          = rec.units
+            item.amountXCD      = rec.amountXCD
+            item.modifier       = rec.modifier
+            item.note           = rec.note
+            item.addedAt        = Date(timeIntervalSince1970: rec.addedAt)
+        }
+        let after = PeerFingerprint.of(PeerBillingItem(item))
+        let changed = PeerFingerprint.differ(before, after)
+        if changed { item.updatedAt = .now }
+        let result = Self.afterChildApply(wasPending: wasPending, contentChanged: changed,
+                                          remoteIsNewer: newer,
+                                          differsFromPeer: PeerFingerprint.differ(after, PeerFingerprint.of(rec)),
+                                          remoteId: item.remoteId, peerPending: rec.pendingSync,
+                                          updatedAt: item.updatedAt, syncedAt: item.syncedAt,
+                                          peerUpdatedAt: rec.updatedAt, peerSyncedAt: rec.syncedAt)
+        item.pendingSync = result.pending
+        item.syncedAt = result.syncedAt
+    }
+
+    /// Pending state (PeerApplyPending) and syncedAt (PeerVersion) of a child record after a
+    /// peer's copy was applied to it.
+    static func afterChildApply(wasPending: Bool, contentChanged: Bool, remoteIsNewer: Bool,
+                                differsFromPeer: Bool, remoteId: String?, peerPending: Bool?,
+                                updatedAt: Date?, syncedAt: Date?,
+                                peerUpdatedAt: Double?, peerSyncedAt: Double) -> (pending: Bool, syncedAt: Date) {
+        let pending = PeerApplyPending.pendingAfterApply(
+            localPending: wasPending, contentChanged: contentChanged,
+            hasServerRow: SyncRemoteId.serverId(remoteId) != nil, peerPending: peerPending)
+        let sendBack = PeerVersion.sendsBack(differsFromPeer: differsFromPeer,
+                                             contentChanged: contentChanged, remoteIsNewer: remoteIsNewer)
+        let peerStamp = PeerVersion.stamp(peerUpdatedAt: peerUpdatedAt, peerSyncedAt: peerSyncedAt)
+            ?? peerSyncedAt
+        return (pending, PeerVersion.syncedAtAfterApply(localUpdated: updatedAt, localSynced: syncedAt,
+                                                        peerStamp: peerStamp, sendBack: sendBack))
     }
 
     // MARK: - Identity helpers
@@ -362,11 +533,7 @@ extension PeerSyncService {
     /// whether applying a peer's copy changed anything on this device. nil if it cannot be
     /// encoded (treated as changed).
     static func contentFingerprint(_ patient: Patient) -> Data? {
-        guard let data = try? JSONEncoder().encode(PeerPatient(patient)),
-              var object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
-        else { return nil }
-        for key in PeerPatient.bookkeepingKeys { object.removeValue(forKey: key) }
-        return try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys])
+        PeerFingerprint.of(PeerPatient(patient))
     }
 
     // MARK: - Helpers

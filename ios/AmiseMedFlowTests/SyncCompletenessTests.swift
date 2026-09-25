@@ -8,6 +8,9 @@ import XCTest
 ///    and the user is signed in, that is a refusal (SyncZeroRowUpdate).
 /// 3. The prescription, vitals and billing pulls update an existing clean local row when the
 ///    server's copy differs (and is newer, where the table has updated_at) (ChildPullMerge).
+/// 4. Peer sync compares records by syncCode and stamp, max(updatedAt, syncedAt), so records
+///    created or edited offline are sent, and an applied copy is not sent again (PeerVersion,
+///    PeerFingerprint); manifests and payloads still interoperate with older builds.
 final class SyncCompletenessTests: XCTestCase {
 
     // MARK: - Prescription route
@@ -183,5 +186,206 @@ final class SyncCompletenessTests: XCTestCase {
         XCTAssertNil(SyncTimestamp.parse(nil))
         XCTAssertNil(SyncTimestamp.parse(""))
         XCTAssertNil(SyncTimestamp.parse("not a date"))
+    }
+
+    // MARK: - Peer manifest: stamps
+
+    private var synced: Date { early }
+    private var edited: Date { early.addingTimeInterval(600) }
+
+    func testStampIsTheLaterOfEditAndCloudSync() {
+        XCTAssertEqual(PeerVersion.stamp(updatedAt: edited, syncedAt: synced), edited.timeIntervalSince1970)
+        XCTAssertEqual(PeerVersion.stamp(updatedAt: synced, syncedAt: edited), edited.timeIntervalSince1970)
+        XCTAssertEqual(PeerVersion.stamp(updatedAt: edited, syncedAt: nil), edited.timeIntervalSince1970,
+                       "never uploaded: its edit time, not year 1")
+        XCTAssertEqual(PeerVersion.stamp(peerUpdatedAt: 20, peerSyncedAt: 10), 20)
+        XCTAssertNil(PeerVersion.stamp(peerUpdatedAt: nil, peerSyncedAt: 10), "older build")
+    }
+
+    // MARK: - Peer manifest: what is sent
+
+    private func sends(local: Double, synced: Double = 0, peer: Double?, peerSynced: Double? = nil,
+                      stamps: Bool = true) -> Bool {
+        PeerVersion.shouldSend(localStamp: local, localSynced: synced, peerStamp: peer,
+                               peerSynced: peerSynced, peerSendsStamps: stamps)
+    }
+
+    func testRecordCreatedOfflineIsSent() {
+        let stamp = PeerVersion.stamp(updatedAt: edited, syncedAt: nil)
+        let neverSynced = PeerVersion.epoch(nil)
+        XCTAssertTrue(sends(local: stamp, synced: neverSynced, peer: nil), "the peer does not have it")
+        XCTAssertTrue(sends(local: stamp, synced: neverSynced, peer: nil, peerSynced: nil, stamps: false),
+                      "an older build that does not have it gets it too")
+    }
+
+    func testEditSinceTheLastCloudSyncIsSent() {
+        let peerCopy = PeerVersion.stamp(updatedAt: synced, syncedAt: synced)
+        let mine = PeerVersion.stamp(updatedAt: edited, syncedAt: synced)
+        XCTAssertTrue(sends(local: mine, synced: synced.timeIntervalSince1970, peer: peerCopy),
+                      "syncedAt did not move, the edit time did")
+        XCTAssertFalse(sends(local: peerCopy, peer: mine), "the peer's copy is the newer one")
+    }
+
+    func testUnchangedRecordIsNeverSent() {
+        let stamp = edited.timeIntervalSince1970
+        XCTAssertFalse(sends(local: stamp, peer: stamp))
+        XCTAssertFalse(sends(local: stamp + PeerVersion.tolerance / 2, peer: stamp),
+                       "Date round trip rounding is not a newer change")
+    }
+
+    func testOlderBuildsManifestUsesCloudSyncTimes() {
+        XCTAssertTrue(sends(local: 0, synced: 20, peer: nil, peerSynced: 10, stamps: false))
+        XCTAssertFalse(sends(local: 99, synced: 10, peer: nil, peerSynced: 10, stamps: false),
+                       "previous rule for a record it has: newer cloud sync only")
+    }
+
+    func testPatientDeletedHereIsNeverSentBack() {
+        XCTAssertFalse(sends(local: Date.now.timeIntervalSince1970, peer: PeerVersion.deletedHere))
+        XCTAssertFalse(sends(local: 0, synced: Date.now.timeIntervalSince1970, peer: nil,
+                            peerSynced: PeerVersion.deletedHere, stamps: false),
+                       "older builds compare the syncedAt map, which holds the same stamp")
+    }
+
+    // MARK: - Peer apply: which copy wins
+
+    func testUnsentLocalEditLosesOnlyToALaterEdit() {
+        // The peer synced more recently but its copy does not hold this device's edit.
+        XCTAssertFalse(PeerVersion.remoteIsNewer(localUpdated: edited, localSynced: synced, localPending: true,
+                                                 peerUpdated: synced.timeIntervalSince1970,
+                                                 peerSynced: edited.addingTimeInterval(60).timeIntervalSince1970))
+        XCTAssertTrue(PeerVersion.remoteIsNewer(localUpdated: synced, localSynced: synced, localPending: true,
+                                                peerUpdated: edited.timeIntervalSince1970,
+                                                peerSynced: synced.timeIntervalSince1970))
+    }
+
+    func testCleanLocalCopyComparesStamps() {
+        XCTAssertTrue(PeerVersion.remoteIsNewer(localUpdated: synced, localSynced: synced, localPending: false,
+                                                peerUpdated: synced.timeIntervalSince1970,
+                                                peerSynced: edited.timeIntervalSince1970),
+                      "synced more recently: the fresher cloud copy")
+        XCTAssertFalse(PeerVersion.remoteIsNewer(localUpdated: edited, localSynced: synced, localPending: false,
+                                                 peerUpdated: edited.timeIntervalSince1970,
+                                                 peerSynced: synced.timeIntervalSince1970),
+                       "same stamp: this copy stays")
+    }
+
+    func testOlderBuildsPayloadIsMergedBySyncTime() {
+        XCTAssertTrue(PeerVersion.remoteIsNewer(localUpdated: edited, localSynced: synced, localPending: true,
+                                                peerUpdated: nil, peerSynced: edited.timeIntervalSince1970))
+        XCTAssertFalse(PeerVersion.remoteIsNewer(localUpdated: synced, localSynced: edited, localPending: false,
+                                                 peerUpdated: nil, peerSynced: synced.timeIntervalSince1970))
+    }
+
+    // MARK: - Peer apply: loop control
+
+    func testAppliedCopyIsNotSentAgain() {
+        // B sends its newer copy; A applies it and nothing is left to send either way.
+        let bStamp = edited.timeIntervalSince1970
+        let aSynced = PeerVersion.syncedAtAfterApply(localUpdated: synced, localSynced: synced,
+                                                     peerStamp: bStamp, sendBack: false)
+        let aStamp = PeerVersion.stamp(updatedAt: synced, syncedAt: aSynced)
+        XCTAssertFalse(sends(local: bStamp, peer: aStamp), "B does not send it again")
+        XCTAssertFalse(sends(local: aStamp, peer: bStamp), "A does not echo it back")
+    }
+
+    func testMergedCopyGoesBackAndThenSettles() {
+        // A keeps its own newer edit (the peer's copy lost) and differs: it must go back to B.
+        let bStamp = edited.timeIntervalSince1970
+        XCTAssertTrue(PeerVersion.sendsBack(differsFromPeer: true, contentChanged: false, remoteIsNewer: false))
+        let aSynced = PeerVersion.syncedAtAfterApply(localUpdated: synced, localSynced: synced,
+                                                     peerStamp: bStamp, sendBack: true)
+        let aStamp = PeerVersion.stamp(updatedAt: synced, syncedAt: aSynced)
+        XCTAssertTrue(sends(local: aStamp, peer: bStamp), "A's copy goes back to B")
+
+        // B takes it: its content changed, so updatedAt is bumped (in-flight push guard) and its
+        // copy, now the same as A's, goes back to A once.
+        XCTAssertFalse(PeerVersion.sendsBack(differsFromPeer: false, contentChanged: true, remoteIsNewer: true))
+        let bNow = edited.addingTimeInterval(30)
+        let bSynced = PeerVersion.syncedAtAfterApply(localUpdated: bNow, localSynced: synced,
+                                                     peerStamp: aStamp, sendBack: false)
+        let bStamp2 = PeerVersion.stamp(updatedAt: bNow, syncedAt: bSynced)
+        XCTAssertTrue(sends(local: bStamp2, peer: aStamp))
+
+        // A applies it: nothing changes, nothing differs; it adopts B's stamp. Settled.
+        XCTAssertFalse(PeerVersion.sendsBack(differsFromPeer: false, contentChanged: false, remoteIsNewer: true))
+        let aSynced2 = PeerVersion.syncedAtAfterApply(localUpdated: synced, localSynced: aSynced,
+                                                      peerStamp: bStamp2, sendBack: false)
+        let aStamp2 = PeerVersion.stamp(updatedAt: synced, syncedAt: aSynced2)
+        XCTAssertFalse(sends(local: aStamp2, peer: bStamp2))
+        XCTAssertFalse(sends(local: bStamp2, peer: aStamp2))
+    }
+
+    func testCopyThatLostAndDidNotChangeIsNotSentBack() {
+        XCTAssertFalse(PeerVersion.sendsBack(differsFromPeer: true, contentChanged: false, remoteIsNewer: true),
+                       "the peer's rules keep its values: sending it back would repeat for ever")
+        XCTAssertFalse(PeerVersion.sendsBack(differsFromPeer: false, contentChanged: false, remoteIsNewer: false))
+    }
+
+    func testSyncedAtNeverMovesBack() {
+        let later = edited.addingTimeInterval(3600)
+        let result = PeerVersion.syncedAtAfterApply(localUpdated: synced, localSynced: later,
+                                                    peerStamp: edited.timeIntervalSince1970, sendBack: false)
+        XCTAssertEqual(result.timeIntervalSince1970, later.timeIntervalSince1970, accuracy: 0.000_1)
+    }
+
+    func testChangedCopyAlreadyAboveThePeerKeepsItsSyncTime() {
+        let now = edited.addingTimeInterval(60)
+        let result = PeerVersion.syncedAtAfterApply(localUpdated: now, localSynced: synced,
+                                                    peerStamp: edited.timeIntervalSince1970, sendBack: true)
+        XCTAssertEqual(result.timeIntervalSince1970, edited.timeIntervalSince1970, accuracy: 0.000_1,
+                       "updatedAt (just bumped) already sends it back; syncedAt only adopts")
+    }
+
+    // MARK: - Peer payloads: fingerprints and older builds
+
+    private func prescription(_ fields: [String: Any]) throws -> PeerPrescription {
+        var object: [String: Any] = [
+            "syncCode": "rx-1", "patientSyncCode": "pt-1", "drug": "Co-amoxiclav",
+            "dose": "625 mg", "route": "Oral", "prescribedAt": 1_750_000_000.0, "syncedAt": 0.0,
+        ]
+        for (key, value) in fields { object[key] = value }
+        return try JSONDecoder().decode(PeerPrescription.self,
+                                        from: JSONSerialization.data(withJSONObject: object))
+    }
+
+    func testFingerprintIgnoresBookkeepingAndDateRounding() throws {
+        let a = try prescription(["remoteId": "x", "pendingSync": true, "updatedAt": 5.0, "syncedAt": 1.0])
+        let b = try prescription(["prescribedAt": 1_750_000_000.000_01, "patientSyncCode": "pt-2",
+                                  "syncedAt": 9.0])
+        XCTAssertFalse(PeerFingerprint.differ(PeerFingerprint.of(a), PeerFingerprint.of(b)))
+        let c = try prescription(["dose": "1.2 g"])
+        XCTAssertTrue(PeerFingerprint.differ(PeerFingerprint.of(a), PeerFingerprint.of(c)))
+        XCTAssertTrue(PeerFingerprint.differ(nil, PeerFingerprint.of(a)), "unknown counts as different")
+    }
+
+    func testPayloadWithoutUpdatedAtDecodes() throws {
+        let rx = try prescription([:])
+        XCTAssertNil(rx.updatedAt, "older build: merged by syncedAt")
+        XCTAssertNil(rx.pendingSync)
+    }
+
+    /// The fields an older build's PeerManifest has.
+    private struct OlderManifest: Decodable {
+        let emailHash: String
+        let patients, notes, prescriptions, vitals, billingItems: [String: Double]
+    }
+
+    func testManifestInteroperatesWithOlderBuilds() throws {
+        let manifest = PeerManifest(emailHash: "h", patients: ["p": 1], notes: [:], prescriptions: [:],
+                                    vitals: [:], billingItems: [:],
+                                    patientStamps: ["p": 2], noteStamps: [:], prescriptionStamps: [:],
+                                    vitalsStamps: [:], billingStamps: [:])
+        let data = try JSONEncoder().encode(manifest)
+        let older = try JSONDecoder().decode(OlderManifest.self, from: data)
+        XCTAssertEqual(older.patients["p"], 1, "an older build reads the syncedAt maps and ignores the rest")
+
+        let fromOlder = try JSONSerialization.data(withJSONObject: [
+            "emailHash": "h", "patients": ["p": 1.0], "notes": [String: Double](),
+            "prescriptions": [String: Double](), "vitals": [String: Double](),
+            "billingItems": [String: Double](),
+        ] as [String: Any])
+        let decoded = try JSONDecoder().decode(PeerManifest.self, from: fromOlder)
+        XCTAssertNil(decoded.patientStamps, "no stamps: the older rule applies (shouldSend)")
+        XCTAssertEqual(decoded.patients["p"], 1)
     }
 }

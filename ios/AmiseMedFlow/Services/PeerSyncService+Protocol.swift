@@ -48,11 +48,19 @@ indirect enum PeerMessage: Codable {
 
 struct PeerManifest: Codable {
     let emailHash:     String
-    let patients:      [String: Double]   // syncCode → syncedAt epoch seconds
+    // syncCode → syncedAt epoch seconds (what older builds compare).
+    let patients:      [String: Double]
     let notes:         [String: Double]
     let prescriptions: [String: Double]
     let vitals:        [String: Double]
     let billingItems:  [String: Double]
+    // syncCode → stamp, max(updatedAt, syncedAt) (PeerVersion). nil from older builds, which
+    // ignore these keys when they decode this build's manifest.
+    let patientStamps:      [String: Double]?
+    let noteStamps:         [String: Double]?
+    let prescriptionStamps: [String: Double]?
+    let vitalsStamps:       [String: Double]?
+    let billingStamps:      [String: Double]?
 }
 
 struct PeerPatient: Codable {
@@ -99,10 +107,14 @@ struct PeerPatient: Codable {
     // cloud yet. The receiver then keeps the change pending too (PeerApplyPending). Optional so
     // payloads and backups from older builds still decode (nil = unknown, treated as false).
     let pendingSync: Bool?
+    // The sender's updatedAt (epoch seconds): with syncedAt, the copy's stamp (PeerVersion).
+    // Optional so payloads and backups from older builds still decode (nil = merged by syncedAt).
+    let updatedAt: Double?
 
     /// Sync bookkeeping, not record content: left out when comparing a patient before and after
-    /// a peer's copy is applied (PeerSyncService.contentFingerprint).
-    static let bookkeepingKeys: Set<String> = ["syncCode", "remoteId", "syncedAt", "pendingSync"]
+    /// a peer's copy is applied (PeerSyncService.contentFingerprint, PeerFingerprint).
+    static let bookkeepingKeys: Set<String> = ["syncCode", "remoteId", "syncedAt", "pendingSync",
+                                               "updatedAt"]
 
     init(_ p: Patient) {
         let iso = ISO8601DateFormatter()
@@ -147,6 +159,7 @@ struct PeerPatient: Codable {
         pathwayDataJson             = p.pathwayDataJson
         news2UseSpO2Scale2          = p.news2UseSpO2Scale2
         pendingSync                 = p.pendingSync
+        updatedAt                   = p.updatedAt.timeIntervalSince1970
     }
 }
 
@@ -156,6 +169,7 @@ struct PeerNote: Codable {
     let noteType, status, content: String
     let syncedAt: Double
     let pendingSync: Bool?   // sender's unsent-change flag; nil from older builds
+    let updatedAt: Double?   // sender's updatedAt (PeerVersion stamp); nil from older builds
 
     init?(_ n: ClinicalNote) {
         guard let pid = n.patient?.syncCode, !pid.isEmpty else { return nil }
@@ -167,6 +181,7 @@ struct PeerNote: Codable {
         content         = n.contentForSync
         syncedAt        = (n.syncedAt ?? .distantPast).timeIntervalSince1970
         pendingSync     = n.pendingSync
+        updatedAt       = n.updatedAt.timeIntervalSince1970
     }
 }
 
@@ -176,6 +191,7 @@ struct PeerPrescription: Codable {
     let dose, route, frequency, duration, indication, instructions: String?
     let prescribedAt, syncedAt: Double
     let pendingSync: Bool?   // sender's unsent-change flag; nil from older builds
+    let updatedAt: Double?   // sender's updatedAt; nil from older builds or a record never edited
 
     init(_ rx: Prescription) {
         syncCode        = rx.syncCode.isEmpty ? rx.id.uuidString : rx.syncCode
@@ -192,6 +208,7 @@ struct PeerPrescription: Codable {
         prescribedAt    = rx.prescribedAt.timeIntervalSince1970
         syncedAt        = (rx.syncedAt ?? .distantPast).timeIntervalSince1970
         pendingSync     = rx.pendingSync
+        updatedAt       = rx.updatedAt?.timeIntervalSince1970
     }
 }
 
@@ -208,6 +225,7 @@ struct PeerVitals: Codable {
     let notes: String?
     let syncedAt: Double
     let pendingSync: Bool?   // sender's unsent-change flag; nil from older builds
+    let updatedAt: Double?   // sender's updatedAt; nil from older builds or a record never edited
 
     init(_ v: VitalsEntry) {
         syncCode           = v.syncCode.isEmpty ? v.id.uuidString : v.syncCode
@@ -223,6 +241,7 @@ struct PeerVitals: Codable {
         notes              = v.notes
         syncedAt           = (v.syncedAt ?? .distantPast).timeIntervalSince1970
         pendingSync        = v.pendingSync
+        updatedAt          = v.updatedAt?.timeIntervalSince1970
     }
 }
 
@@ -234,6 +253,7 @@ struct PeerBillingItem: Codable {
     let modifier, note: String
     let addedAt, syncedAt: Double
     let pendingSync: Bool?   // sender's unsent-change flag; nil from older builds
+    let updatedAt: Double?   // sender's updatedAt; nil from older builds or a record never edited
 
     init(_ b: BillingLineItem) {
         syncCode           = b.syncCode.isEmpty ? b.id.uuidString : b.syncCode
@@ -246,5 +266,6 @@ struct PeerBillingItem: Codable {
         addedAt            = b.addedAt.timeIntervalSince1970
         syncedAt           = (b.syncedAt ?? .distantPast).timeIntervalSince1970
         pendingSync        = b.pendingSync
+        updatedAt          = b.updatedAt?.timeIntervalSince1970
     }
 }
