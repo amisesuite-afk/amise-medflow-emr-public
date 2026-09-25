@@ -1,4 +1,5 @@
 // ─── HpiTab — Adaptive HPI Builder ───────────────────────────────────────────
+import { allergyStatus } from '@/lib/allergy-status';
 //
 // Merges SYMPTOM_BRANCHES triage questions with CC-matrix SOCRATES prompts into
 // a tap-to-fill interview. HPI prose regenerates in real-time as chips are
@@ -531,7 +532,7 @@ function MedicalBackgroundStrip({ comorbidities, allergies, medications, surgica
   const hasAny = comorbidities.length || allergyItems.length || medications.length || surgicalHistory.length;
   if (!hasAny) return null;
 
-  const nkda = allergyItems.length === 1 && /nkda|no known/i.test(allergyItems[0]);
+  const nkda = allergyStatus(allergies).kind === 'nkda';
 
   return (
     <div style={{

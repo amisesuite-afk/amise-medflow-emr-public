@@ -10,6 +10,7 @@ import type { ManagementProtocol } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { AMISE_LOGO_SVG } from './lib/docTemplate';
 import { saveBlobAsPDF } from './lib/pdfExport';
+import { allergyStatus, allergyNoteText } from '@/lib/allergy-status';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -540,7 +541,13 @@ ${ctx.surgicalNotes ? `<div style="margin-top:4px">${escHtml(ctx.surgicalNotes)}
 
 <div class="section">
 <div class="sec-hdr sec-hdr--warn">Allergies</div>
-<div class="sec-body" style="font-weight:700;color:#b91c1c">${ctx.allergies ? escHtml(ctx.allergies) : '<span style="color:#94a3b8;font-weight:400;font-style:italic;font-size:12px">No known drug allergies (NKDA)</span>'}</div>
+${(() => {
+  // An empty field is "not recorded" — never printed as NKDA (see lib/allergy-status.ts).
+  const st = allergyStatus(ctx.allergies);
+  if (st.kind === 'not_recorded') return '<div class="sec-body" style="color:#b45309;font-weight:700;font-style:italic">Allergies: not recorded</div>';
+  if (st.kind === 'nkda') return '<div class="sec-body">No known drug allergies (NKDA)</div>';
+  return `<div class="sec-body" style="font-weight:700;color:#b91c1c">${escHtml(allergyNoteText(ctx.allergies))}</div>`;
+})()}
 </div>
 
 <div class="section">
@@ -706,10 +713,10 @@ ${ctx.medications.length || ctx.medicationsText ? `<div class="section">
 <div class="sec-body">${items(ctx.medications)}${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}</div>
 </div>` : ''}
 
-${ctx.allergies ? `<div class="section">
+<div class="section">
 <div class="sec-hdr">Allergies</div>
-<div class="sec-body">${escHtml(ctx.allergies)}</div>
-</div>` : ''}
+<div class="sec-body">${escHtml(allergyNoteText(ctx.allergies))}</div>
+</div>
 
 ${ctx.assessment ? `<div class="section">
 <div class="sec-hdr">Clinical Assessment</div>

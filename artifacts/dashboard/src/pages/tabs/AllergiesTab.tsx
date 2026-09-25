@@ -2,6 +2,7 @@ import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
 import NarrativeInput from '@/components/NarrativeInput';
+import { allergyStatus } from '@/lib/allergy-status';
 
 const ALLERGY_CHIPS = [
   'Penicillin / amoxicillin', 'Cephalosporins', 'Sulfonamides / Bactrim',
@@ -26,8 +27,29 @@ export default function AllergiesTab() {
     if (allergiesStr) setAllergies(allergiesStr);
   }
 
+  const status = allergyStatus(allergies);
+
   return (
     <div className="gap-y">
+      {/* Allergy status — an empty field is "not recorded", never NKDA. */}
+      <div
+        data-testid="allergy-status"
+        style={{
+          padding: '8px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+          ...(status.kind === 'not_recorded'
+            ? { background: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e' }
+            : status.kind === 'nkda'
+              ? { background: '#f0fdf4', border: '1px solid #86efac', color: '#166534' }
+              : { background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b' }),
+        }}
+      >
+        {status.kind === 'not_recorded' && 'Allergies: not recorded — record allergies, or tap "No known allergies" once you have asked.'}
+        {status.kind === 'nkda' && 'No known drug allergies (NKDA) — recorded.'}
+        {status.kind === 'recorded' && (status.conflictsWithNkda
+          ? `⚠ "No known allergies" is marked but allergies are also recorded (${status.allergies.join(', ')}). Remove one to reconcile.`
+          : `⚠ Allergies recorded: ${status.allergies.join(', ')}`)}
+      </div>
+
       <NarrativeInput
         section="allergies"
         placeholder="Dictate or paste allergy history — e.g. 'Allergic to penicillin, developed anaphylaxis in 2015. Also intolerant to NSAIDs — causes GI bleeding. Contrast dye — urticaria. No other known allergies.'"
