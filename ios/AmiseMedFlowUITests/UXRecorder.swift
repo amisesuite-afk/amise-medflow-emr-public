@@ -198,9 +198,17 @@ final class UXRecorder {
 
     func tap(_ element: XCUIElement, _ what: String, timeout: TimeInterval = 10) throws {
         try waitFor(element, what, timeout: timeout)
-        if !element.isHittable { bringOnScreen(element) }
-        guard element.isHittable else { throw UXError.unexpected("\(what) is not tappable") }
-        element.tap()
+        var target = element
+        // The same identifier can exist twice, e.g. the visit-pathway cards in a sheet and in the
+        // consultation underneath it: prefer a copy the user can actually tap.
+        if !target.isHittable, !element.identifier.isEmpty,
+           let visible = app.descendants(matching: .any).matching(identifier: element.identifier)
+               .allElementsBoundByIndex.first(where: { $0.exists && $0.isHittable }) {
+            target = visible
+        }
+        if !target.isHittable { bringOnScreen(target) }
+        guard target.isHittable else { throw UXError.unexpected("\(what) is not tappable") }
+        target.tap()
         record(["action": "tap", "target": what]) { taps += 1 }
     }
 
@@ -297,10 +305,12 @@ final class UXRecorder {
                 } else {
                     app.swipeUp()   // below the screen, or on screen but covered (footer)
                 }
-            } else if searchUpwards {
-                scrollContainer.swipeDown()   // lazily built rows appear only as the list scrolls
             } else {
-                scrollContainer.swipeUp()
+                // Lazily built rows appear only as the list scrolls. Short, slow drags: a swipe can
+                // fling a small form (an iPad sheet) past the row, which is then unloaded again.
+                // Half the attempts go one way, then the other.
+                let upwards = searchUpwards != (gestures >= maxGestures / 2)
+                dragWithin(scrollContainer, upwards: upwards)
             }
             gestures += 1
         }
@@ -321,6 +331,14 @@ final class UXRecorder {
         if element.exists && element.isHittable { return }
         bringOnScreen(element, searchUpwards: upwards)
         guard element.exists else { throw UXError.missing(what) }
+    }
+
+    /// A short drag (about a third of the container) inside `container`: reveals rows below when
+    /// `upwards` is false (content moves up), rows above when true.
+    private func dragWithin(_ container: XCUIElement, upwards: Bool) {
+        let from = container.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: upwards ? 0.35 : 0.65))
+        let to = container.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: upwards ? 0.65 : 0.35))
+        from.press(forDuration: 0.1, thenDragTo: to, withVelocity: .slow, thenHoldForDuration: 0.1)
     }
 
     private func dragVertically(fromY: CGFloat, toY: CGFloat) {
