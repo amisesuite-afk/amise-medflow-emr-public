@@ -114,8 +114,24 @@ Front desk (role confirmed via `isRoleConfirmed`) sends only `FrontDeskPatientCo
 patient UPDATE (`PatientUpdateRow`), mirroring Migration 89's column guard. Tests:
 `AmiseMedFlowTests/FrontDeskSyncTests.swift`.
 
-**PeerSyncService**: MCSession, service type `"amise-medflow"`, matches peers by
-SHA-256 of email. Manifest-based: syncCode → stamp, `max(updatedAt, syncedAt)`
+**PeerSyncService**: MultipeerConnectivity, service type `"amise-medflow"`, one MCSession per
+peer (`encryptionPreference: .required`). Admission (`PeerSyncService+Pairing.swift`, protocol
+comment in `PeerPairingCrypto.swift`, secrets in `PeerPairingStore.swift`):
+- Discovery info is only `d` (random per-install device id) and `p` (pairing mode). Never put the
+  email or any hash of it in discovery info, invitation context or a pre-auth message.
+- One-time pairing: Settings → Nearby devices → Pair a device shows a 6-digit code (2 min, one
+  attempt); the other device types it. Ephemeral Curve25519 + HKDF over Z ‖ code + HMAC
+  confirmations; the resulting 32-byte secret goes in the Keychain
+  (`AfterFirstUnlockThisDeviceOnly`) keyed by the peer's device id. "Forget" deletes it.
+- Every session: mutual HMAC-SHA256 challenge-response over fresh nonces, then the same-account
+  tag. Until `isAuthenticated(peer)`, nothing is sent and `didReceive` ignores everything except
+  `PeerHandshakeMessage`. New send paths must go through `sessions[peer]` and check
+  `isAuthenticated`. Failures drop that peer and are audited (`peer_auth_failed`, also
+  `peer_pair`, `peer_forget`).
+- Installs updated from the unpaired build see "Pair your iPad to resume nearby sync"
+  (`pairingPrompt`). Tests: `PeerPairingTests.swift`.
+
+Data sync is manifest-based: syncCode → stamp, `max(updatedAt, syncedAt)`
 (`PeerVersion`, `PeerSyncService+Versions.swift`), so records created or edited offline are sent;
 the old syncCode → syncedAt maps stay for older builds, and payloads carry an optional
 `updatedAt`. Longer text wins for clinical narrative, the newer copy wins for admin fields and

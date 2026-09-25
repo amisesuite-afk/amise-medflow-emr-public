@@ -89,7 +89,7 @@ This is adapted from the DCB0129/DCB0160 guidance matrix. **The CSO must confirm
 | H-16 | Wrong-patient data entry or display | 4 | 3 | 3 | Open on the web (localStorage encounter). iOS: guard for a patient deleted while the consultation is open (`705717f`, `925ef2f`) |
 | H-17 | AI-drafted clinical document contains errors and is signed | 3 | 3 | 3 | Open. The complete kill switch (`113b1d9`) is a control, not a fix |
 | H-18 | Transcription or voice-parsing error enters the record | 3 | 3 | 3 | Open. iOS dictation now on-device when supported (`16435f3`), a privacy gain only |
-| H-19 | Unauthorised access to or disclosure of PHI | 3 | 3 | 3 (**2** once Migration 89 is applied and `STAFF_MACHINE_TOKEN` is set) | S-1, S-3 and S-4 fixed in code. S-2 pending Migration 89. S-5 and S-6 open. Questionnaire hand-over mode added (`23904fd`) |
+| H-19 | Unauthorised access to or disclosure of PHI | 3 | 3 | 3 (**2** once Migration 89 is applied and `STAFF_MACHINE_TOKEN` is set) | S-1, S-3 and S-4 fixed in code. S-2 pending Migration 89. S-5 fixed in code (peer-sync pairing; residual risk awaiting acceptance). S-6 open. Questionnaire hand-over mode added (`23904fd`) |
 | H-20 | System unavailable during clinical care | 2 | 2 | 2 | Open. New cause: staff without a `user_profiles` row are locked out once Migration 89 is applied |
 
 **Highest residual risk, top 5 (v0.2).** Sorted by residual rating, then severity, then whether the defect is *confirmed in code* rather than theoretical:

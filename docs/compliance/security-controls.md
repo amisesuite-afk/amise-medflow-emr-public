@@ -56,7 +56,7 @@
 | **PHI-safe crash reporting** | `Services/CrashReporting.swift`: `sendDefaultPii = false`, no screenshots or view hierarchy, no network breadcrumbs or tracing, auto-breadcrumbs off, `beforeSend` strips user, request and server name. Active only when `SENTRY_DSN` is configured | This is the reference pattern. The web and API Sentry setups do **not** follow it (§2) |
 | **iOS audit trail** | `Services/AuditLog.swift`. Events are queued on device and uploaded to `audit_log`, with no clinical free text by design | |
 | **AI disabled pending a BAA** | `Services/AIService.swift` (all generation methods throw `AIError.disabled`) | |
-| **Peer-sync transport encryption** | `PeerSyncService.swift:85-86` (`encryptionPreference: .required`) | Weak peer **authentication**: see S-5 |
+| **Peer-sync transport encryption and pairing** (fixed in code) | `Services/PeerSyncService+Pairing.swift` (`makeSession`: `encryptionPreference: .required`, one session per peer), `Services/PeerPairingCrypto.swift`, `Services/PeerPairingStore.swift`; tests `PeerPairingTests.swift` | One-time 6-digit-code pairing, per-peer Keychain secret (`AfterFirstUnlockThisDeviceOnly`), mutual HMAC challenge-response every session, then the same-account check. See S-5 for the residual risk |
 | **On-device dictation when supported** (fixed in code) | `Services/SpeechService.swift` (`requiresOnDeviceRecognition` follows `supportsOnDeviceRecognition`; `16435f3`) | Falls back to Apple's servers where the recogniser has no on-device model (G-12) |
 | **Questionnaire hand-over mode** (fixed in code) | `Views/FrontDesk/PatientHandoverPresentation.swift`, `Services/QuestionnairePatientSearch.swift`, `BiometricAuthService.verifyDeviceOwner`; `23904fd`; tests `QuestionnairePrivacyTests.swift` | When the device is handed to a patient: no default patient list, search only after 3+ letters or an MRN (at most 5 results), full-screen cover, staff-only exit with device-owner authentication, camera-only prescription photo, audit events on open and exit |
 | **Sync respects server refusals** (fixed in code) | `Services/SyncService+Refusals.swift` (`8e350a0`, `9565db7`) | A `42501` or an UPDATE that RLS filters to 0 rows marks that record refused. It stays local and pending, and the rest of the sync continues. A confirmed front-desk user sends only the Migration 89 allow-listed patient columns (`FrontDeskPatientColumns`) |
@@ -135,14 +135,17 @@ These are **potential vulnerabilities identified by reading the code**. Each nee
 - **Fixed:** the QR code is now generated in the browser (`dashboard/src/components/LocalQrCode.tsx`, `qrcode` npm package, MIT). No request leaves the page. `pnpm --filter @workspace/scripts run lint:no-external-qr` (CI) fails the build if any web source references a third-party QR or chart-image service. No other web call sites existed. iOS has no QR generation today; if one is added, use CoreImage `CIQRCodeGenerator`.
 - **Residual:** tokens already sent before the fix may be in the vendor's logs. Questionnaire tokens expire (`supabase-questionnaire-token-expiry-migration.sql`), which limits that exposure.
 
-**S-5: iOS peer-sync peer authentication is weak. (High, to verify.) Open.**
+**S-5: iOS peer-sync peer authentication is weak. (High.) Fixed in code.**
 
-- The only admission check is a **djb2 hash of the signed-in email** (`PeerSyncService+ApplyRecords.swift:233-237`). That hash is **broadcast in Bonjour discovery info** (`PeerSyncService.swift:89-91`).
-- Invitations with no context are accepted (`PeerSyncService+MCDelegates.swift:19`).
-- The session has no `securityIdentity` (`PeerSyncService.swift:85`).
-- A nearby device that learns the hash could request all local records.
-- **Fix:** mutual authentication with a server-issued per-device credential, or a pairing code, or certificate identities. Stop advertising the hash. Consider disabling peer sync by default.
-- **Status: open.** The peer-sync changes since v0.1 (`dac2823`, `746d289`) are about merge correctness, not admission. `PeerSyncService.swift` at `cc83845` still creates the session with `securityIdentity: nil` and advertises the hash in discovery info.
+- Was: the only admission check was a **djb2 hash of the signed-in email**, **broadcast in Bonjour discovery info**; invitations with no context were accepted; the session had no `securityIdentity`. A nearby device that learned or guessed the hash could request all local records. (Transport encryption was already `.required`.)
+- **Fixed in code** (branch `peer-pairing`):
+  - Discovery info holds only a random per-install device id and a pairing-mode flag. The email hash is no longer broadcast or checked.
+  - One-time pairing (Settings → Nearby devices → Pair a device): a 6-digit code, valid 2 minutes, one confirmation attempt. It authenticates an ephemeral Curve25519 key agreement (HKDF-SHA256 over the shared secret and the code, salted with a transcript of both device ids and keys; HMAC confirmations). The resulting 32-byte secret is stored in the Keychain (`kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`) per peer device id.
+  - Every session: mutual HMAC-SHA256 challenge-response over fresh nonces, then the same-account check, inside the encrypted session and before any manifest or record is sent or read. One `MCSession` per peer, so a failed peer is disconnected alone.
+  - Paired devices are listed in Settings with "Forget". Pair, forget and failed authentication are written to `audit_log` (device id and a fixed reason; no PHI).
+  - Tests: `ios/AmiseMedFlowTests/PeerPairingTests.swift`.
+- **Residual risk (for CSO/PO acceptance, A-8):** the pairing step is not a full PAKE (CryptoKit has no SPAKE2/CPace). A passive listener learns nothing, but an **active** attacker in radio range during the 2-minute window, advertising pairing mode and chosen by the typing device, could brute-force the 6-digit code offline from that device's confirmation. Mitigated by: the typing device refuses when more than one device advertises pairing mode, one pairing session and one attempt per code, 2-minute expiry, audit events, and the paired-device list with "Forget". Older builds (email hash) can no longer connect to an updated device, but two older builds still use the old scheme between themselves until updated. Needs verification on devices.
+- **Migration:** users pair their devices once after updating. Until then the sync status shows "Pair your iPad to resume nearby sync" (or iPhone).
 
 **S-6: Web and API error telemetry may carry PHI. (Medium.) Open.**
 

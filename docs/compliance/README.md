@@ -65,7 +65,7 @@ Related documents: `docs/MULTI-TENANCY-PLAN.md` (new: how to sell to other pract
 | A-5 | Rewrite the prep-instruction medication wording. Remove or justify the forced `'auto'` in `cron.ts:85`. Check `draft.safe` | PO (clinical content), ENG | **PO** approves the wording | **P0** | **Fixed in code** (`e094063`, `38a7891`, `996fe1b`, `b9ae85b`, `ba47093`). Wording follows the surgeon's recorded decisions; PO to record formal approval in the safety case | H-09, H-10 |
 | A-6 | Appoint a CSO. Write a Clinical Risk Management Plan. Review and accept the hazard log | PO | **PO** appoints. **CSO** signs the safety case | P1 | Open | `clinical-safety-case.md` |
 | A-7 | Remove the api.qrserver.com call (session token leak) | ENG | — | P1 | **Done**: local QR generation (`LocalQrCode.tsx`) and a CI lint (`lint:no-external-qr`) (`f430146`) | S-4 |
-| A-8 | iOS peer-sync authentication hardening, or disable peer sync by default | ENG | CSO/PO accepts the residual risk | P1 | Open | S-5 |
+| A-8 | iOS peer-sync authentication hardening, or disable peer sync by default | ENG | CSO/PO accepts the residual risk | P1 | **Fixed in code** (branch `peer-pairing`: one-time code pairing, Keychain per-peer secret, mutual challenge-response, no email hash broadcast). Device verification and **CSO/PO acceptance of the residual active-attack risk open** | S-5 |
 | A-9 | Add PHI scrubbing to web and API Sentry | ENG | — | P1 | Open | S-6 |
 | A-10 | Clinical-field merge with timestamps or conflict prompts. Server-side soft delete | ENG | CSO | P1 | Soft delete **pending migration** (87; `cad8d9c`, `48ac9f7`, `8f8a467`). Clinical-field merge **open** (longer copy still wins) | H-12, H-14 |
 | A-11 | Map drug-interaction classes to drugs, or license a database. Add the "absence of alert" label. Pharmacist review of formulary and dosing content | ENG, PHARM | **CSO** | P1 | Mapping and label **fixed in code** on both platforms, with a parity lint (`2f111c3`, `31521d3`, `19406ae`, `8e32180`). Opioid + benzodiazepine grade **pending surgeon decision**. Pharmacist review **open** | H-07, H-08 |
@@ -122,7 +122,9 @@ Refreshed against `cc83845` (41 commits after the first draft `7dff890`, plus 17
 
 **Re-rated (proposed, not CSO-accepted):** H-04 4 → 2; H-09 3 → 2; H-10 3 → 2; H-07 stays 3 with likelihood Medium → Low; H-19 stays 3 until Migration 89 is applied, then 2.
 
-**Unchanged and still open:** S-5 (peer-sync authentication), S-6 (Sentry PHI), G-4 and G-5 (MFA, idle timeout, browser PHI on sign-out), PITR and bucket backups, the peer-sync longer-copy merge, all vendor agreements, CSO appointment, and the regulatory decision.
+**Since the refresh:** S-5 (peer-sync authentication) fixed in code on branch `peer-pairing`; residual risk awaiting acceptance (A-8).
+
+**Unchanged and still open:** S-6 (Sentry PHI), G-4 and G-5 (MFA, idle timeout, browser PHI on sign-out), PITR and bucket backups, the peer-sync longer-copy merge, all vendor agreements, CSO appointment, and the regulatory decision.
 
 ## Maintaining this pack
 
