@@ -5,6 +5,8 @@
  * surface the most discriminating questions first.
  */
 
+import { containsAffirmed, joinClauses } from '@workspace/triage-engine';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type DxUrgency = 'urgent' | 'priority' | 'routine';
@@ -4247,12 +4249,14 @@ function computeRawScore(
   { symptoms, symptomDetails, age, sex, examText }: InferenceInput,
 ): number {
   // ── Pathognomonic check: single sign drives score +150 ────────────────────
-  const fullClinicalText = [...symptoms, examText ?? ''].join(' ').toLowerCase();
+  // Negation-aware (negation.ts): "Murphy's sign negative" neither confirms cholecystitis nor
+  // excludes appendicitis.
+  const fullClinicalText = joinClauses([...symptoms, examText ?? '']);
   const pathoSigns = PATHOGNOMONIC_SIGNS[dx.id];
-  const matchedSign = pathoSigns?.find(s => fullClinicalText.includes(s.toLowerCase()));
+  const matchedSign = pathoSigns?.find(s => containsAffirmed(fullClinicalText, s));
 
   const exclusionSigns = EXCLUSION_SIGNS[dx.id] ?? dx.exclusionSigns;
-  const isExcluded = exclusionSigns?.some(s => fullClinicalText.includes(s.toLowerCase()));
+  const isExcluded = exclusionSigns?.some(s => containsAffirmed(fullClinicalText, s));
   if (isExcluded) return 0;
 
   let score = dx.basePrior;
@@ -4299,7 +4303,7 @@ function computeRawScore(
  * values add to ≤ 100 (softmax-like).
  */
 export function computeRankedDifferentials(input: InferenceInput): RankedDifferential[] {
-  const fullClinicalText = [...input.symptoms, input.examText ?? ''].join(' ').toLowerCase();
+  const fullClinicalText = joinClauses([...input.symptoms, input.examText ?? '']);
   const scored = DIFFERENTIALS.map(dx => ({
     ...dx,
     rawScore: computeRawScore(dx, input),
@@ -4309,7 +4313,7 @@ export function computeRankedDifferentials(input: InferenceInput): RankedDiffere
   const ranked = scored
     .map(d => {
       const pathoSigns = PATHOGNOMONIC_SIGNS[d.id];
-      const matchedSign = pathoSigns?.find(s => fullClinicalText.includes(s.toLowerCase()));
+      const matchedSign = pathoSigns?.find(s => containsAffirmed(fullClinicalText, s));
       return {
         id: d.id,
         name: d.name,

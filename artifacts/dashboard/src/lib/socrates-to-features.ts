@@ -12,6 +12,8 @@
  * left to the Bayesian engine (DEFAULT_SENSITIVITY covers unlisted features).
  */
 
+import { testAffirmed } from '@workspace/triage-engine';
+
 type FeatureMap = Record<string, boolean>;
 
 // ── CC-level feature hints ────────────────────────────────────────────────────
@@ -170,7 +172,8 @@ const KEY_TO_RULES: Record<string, AnswerRule[]> = {
 function applyRules(text: string, rules: AnswerRule[]): FeatureMap {
   const out: FeatureMap = {};
   for (const rule of rules) {
-    if (rule.pattern.test(text)) {
+    // Negation-aware (negation.ts): an answer of "no fever, no vomiting" extracts neither.
+    if (testAffirmed(rule.pattern, text)) {
       Object.assign(out, rule.features);
     }
   }
