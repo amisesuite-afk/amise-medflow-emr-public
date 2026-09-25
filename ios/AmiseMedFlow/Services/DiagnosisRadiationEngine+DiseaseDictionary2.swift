@@ -187,11 +187,11 @@ extension DiagnosisRadiationEngine {
                 .init(name: "Doppler USS Lower Limbs", category: .imaging, rationale: "DVT confirmation — source of PE"),
             ],
             planTemplate: """
-- Wells' PE score: if ≤4 → D-dimer; if >4 → CTPA directly
+- Suspected pulmonary embolism — two-level Wells score (NICE NG158): Wells > 4 (PE likely) → CTPA directly, with interim anticoagulation if CTPA is delayed; Wells ≤ 4 → D-dimer, and CTPA only if it is positive. D-dimer is unhelpful after recent surgery and in pregnancy.
 - HAEMODYNAMICALLY STABLE (most patients):
   • DOACs (preferred): rivaroxaban 15 mg BD × 21d → 20 mg OD; or apixaban 10 mg BD × 7d → 5 mg BD
   • LMWH (enoxaparin 1.5 mg/kg SC OD or 1 mg/kg BD) when a DOAC is unsuitable (renal failure, pregnancy, drug interactions) — no "bridging" to a DOAC
-  • PREGNANCY: LMWH only — no DOACs or warfarin (RCOG Green-top 37b)
+  • PREGNANCY: anticoagulation with LMWH — DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic) (RCOG GTG 37a/b)
 - HAEMODYNAMICALLY UNSTABLE (massive PE — SBP <90):
   • ADMIT ICU — thrombolysis: alteplase 100 mg IV over 2h — CONTRAINDICATED after major surgery or trauma within 3 weeks, recent stroke or active bleeding (ESC 2019): choose surgical embolectomy / catheter-directed therapy instead
   • If thrombolysis contraindicated: surgical embolectomy / catheter-directed therapy

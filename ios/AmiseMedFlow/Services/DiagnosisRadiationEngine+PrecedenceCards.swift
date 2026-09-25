@@ -53,7 +53,7 @@ extension DiagnosisRadiationEngine {
 - NBM, IV fluids, NG tube if vomiting, correct electrolytes; analgesia
 - Emergency surgery if perforation, peritonitis, ischaemia/closed loop, caecal diameter ≥12 cm with tenderness (impending perforation) — stent contraindicated (WSES 2018)
 - Impending caecal perforation: emergency laparotomy — resection (extended right hemicolectomy or subtotal colectomy) (WSES 2018)
-- Left-sided malignant obstruction without those features: resection (Hartmann's or primary anastomosis ± defunctioning stoma) or SEMS as a bridge to surgery by MDT decision — not if perforation, peritonitis or ischaemia (WSES 2018)
+- Left-sided obstructing colon cancer without perforation, peritonitis, ischaemia or a closed loop: colonic stent as a bridge to elective resection (selected patients, MDT), or emergency resection / Hartmann's procedure (WSES 2018; ESGE 2020)
 - Right-sided / hepatic flexure tumour: right (extended) hemicolectomy with primary anastomosis (WSES 2018)
 - Sigmoid volvulus only if no ischaemia or peritonitis: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission
 - Gangrenous volvulus or peritonitis: emergency laparotomy with sigmoid resection and end colostomy — no endoscopic decompression; critical care (ASCRS 2021; WSES 2023)

@@ -200,7 +200,7 @@ enum VisitRiskAssessment {
         if pregnancy.isPregnant {
             flags.append(.init(level: .high,
                                title: "Pregnant\(pregnancy.gestationWeeks.map { " (\($0) weeks)" } ?? "")",
-                               detail: "Obstetric handover; no NSAIDs from 20 weeks; LMWH, not DOACs or warfarin; avoid ionising imaging where ultrasound / MRI answers the question; BP ≥160/110 = severe (NICE NG133).",
+                               detail: "Obstetric handover; no NSAIDs from 20 weeks; anticoagulation with LMWH — DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic); avoid ionising imaging where ultrasound / MRI answers the question; BP ≥160/110 = severe (NICE NG133).",
                                icon: "figure.stand.dress"))
         } else if acutePathway, p.sex == .female, p.dateOfBirth != nil, (12...55).contains(p.ageYears) {
             flags.append(.init(level: .moderate, title: "Could be pregnant?",

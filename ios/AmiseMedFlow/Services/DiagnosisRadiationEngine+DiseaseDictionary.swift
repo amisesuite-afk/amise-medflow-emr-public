@@ -201,7 +201,8 @@ extension DiagnosisRadiationEngine {
 - Laparoscopic appendicectomy (preferred) — consent + book OT
 - Alvarado score: >7 → operate without CT; 5–6 → further imaging; <5 → observe
 - Post-op: early mobilisation, discharge at 24–48h if uncomplicated
-- Complicated (perforated / gangrenous) appendicitis: post-operative IV antibiotics for 3–5 days only (WSES 2020; STOP-IT); no routine antibiotics after simple appendicitis
+- Uncomplicated appendicitis: no post-operative antibiotics after appendicectomy (WSES 2020).
+- Complicated appendicitis (perforation, gangrene, abscess): IV Pip-Tazo 4.5g TDS for 3–5 days after adequate source control (maximum 7), switch to oral when tolerating PO (WSES 2020; STOP-IT).
 """,
             billingCodes: [
                 .init(icd10: "K37", icdDescription: "Unspecified appendicitis", cpt: "44950", cptDescription: "Appendectomy"),

@@ -15,7 +15,7 @@ extension DiagnosisRadiationEngine {
             icd10Primary: "K40.90",
             investigations: [
                 .init(name: "Ultrasound — Groin", category: .imaging, rationale: "If diagnosis in doubt — confirm hernia vs hydrocele/lymph node"),
-                .init(name: "FBC / U&E / ECG", category: .blood, rationale: "Pre-operative assessment"),
+                .init(name: "FBC / U&E; ECG only if age ≥ 65 or cardiovascular, renal or diabetic disease (NICE NG45)", category: .blood, rationale: "Pre-operative assessment"),
                 .init(name: "Group and Save", category: .blood, rationale: "Pre-operative"),
             ],
             planTemplate: """
@@ -43,12 +43,12 @@ extension DiagnosisRadiationEngine {
             icd10Primary: "K42.9",
             investigations: [
                 .init(name: "Abdominal Ultrasound", category: .imaging, rationale: "Hernia content — exclude bowel / omentum"),
-                .init(name: "Pre-op bloods: FBC / U&E / Clotting", category: .blood, rationale: "Pre-operative baseline"),
+                .init(name: "Pre-op bloods: FBC / U&E", category: .blood, rationale: "Pre-operative baseline — no routine clotting test before elective surgery; clotting only with liver disease, a vitamin K antagonist or heparin, a bleeding disorder or jaundice (NICE NG45)"),
             ],
             planTemplate: """
 - Elective umbilical hernia repair (open Mayo repair or laparoscopic mesh)
-- >2 cm defect: mesh reinforcement recommended
-- Optimise: weight loss (BMI >35 increases recurrence)
+- Umbilical / epigastric defect ≥ 1 cm: mesh repair (preperitoneal or retromuscular flat mesh); defect < 1 cm: suture repair may be considered (EHS/AHS 2020)
+- Smoking cessation and weight optimisation before elective repair where possible (BMI >35 increases recurrence)
 - Cirrhosis with ascites: control ascites first (diuretics, therapeutic paracentesis ± TIPS) with hepatology before repair; thinning or ulcerated skin → urgent repair because of the rupture risk (EASL 2018; EHS)
 - Advise against heavy lifting and straining
 - Consent: recurrence, mesh complications, wound infection
@@ -60,7 +60,7 @@ extension DiagnosisRadiationEngine {
             urgencyNote: nil,
             redFlags: ["Acute onset irreducibility → emergency OT"],
             followUp: "Review 6 weeks post-repair.",
-            guidelineReference: "EHS 2019 Guidelines"
+            guidelineReference: "EHS/AHS 2020 umbilical and epigastric hernia guideline; EHS 2019 Guidelines"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -175,7 +175,7 @@ extension DiagnosisRadiationEngine {
 - URGENT MDT referral — breast oncology
 - Receptor status (ER/PR/HER2) drives systemic therapy decision
 - Early stage (not for inflammatory breast cancer): wide local excision + sentinel node biopsy ± mastectomy
-- Inflammatory breast cancer: neoadjuvant systemic therapy first, then modified radical mastectomy with axillary clearance and post-mastectomy radiotherapy; breast-conserving surgery and SLNB are contraindicated (NCCN 2024)
+- Inflammatory breast cancer: urgent breast oncology MDT; neoadjuvant systemic therapy first, then modified radical mastectomy with axillary node dissection and post-mastectomy radiotherapy (NCCN). Breast-conserving surgery (wide local excision) and sentinel node biopsy are not recommended in inflammatory breast cancer (NCCN)
 - Adjuvant: endocrine therapy if ER+ (tamoxifen / aromatase inhibitor), Herceptin if HER2+
 - BRCA testing if strong FH or <45y
 - Breast reconstruction discussion pre-operatively
