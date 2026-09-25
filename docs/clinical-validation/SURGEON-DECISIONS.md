@@ -198,9 +198,9 @@ emergency reached only through "No vomiting") now fail and are listed as known g
 In progress: the same negation handling for the iOS text parser ("No crepitus" still raises the
 necrotising-fasciitis alarm on iOS) and "Heartburn" opening the Burns pathway on iOS.
 
-## H. Decisions made (dated, with the owner)
+## I. Decisions made (dated, with the owner)
 
-### H1. Patients may be told to stop herbal products 2 weeks before surgery — DECIDED 2026-09-25
+### I1. Patients may be told to stop herbal products 2 weeks before surgery — DECIDED 2026-09-25
 
 - **Owner:** Dr Dawit Daniel Kabiye (practice owner), 2026-09-25, relayed with the herbs /
   supplements work (`docs/clinical-validation/changes/supplements-interactions.md`).

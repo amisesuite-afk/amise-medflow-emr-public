@@ -115,7 +115,7 @@ pregnancy or thyroid disease → "Ashwagandha: avoid in liver disease, pregnancy
 
 ### 6. Patient-facing text — surgeon decision 2026-09-25
 
-Recorded in `docs/clinical-validation/SURGEON-DECISIONS.md` (H1) and CLAUDE.md. The approved paragraph
+Recorded in `docs/clinical-validation/SURGEON-DECISIONS.md` (I1) and CLAUDE.md. The approved paragraph
 ("Herbal remedies, bush teas and supplements: please stop them 2 weeks before your operation or procedure
 … Why … When … valerian … This does not apply to medicines prescribed by a doctor …") is in the procedure
 sets of `artifacts/front-desk/lib/instructions.ts` (`HERBAL_SUPPLEMENTS_STOP`), the api-server prep
