@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-cervical-hpv-overdue-34",
+  "condition": "Cervical screening overdue — HPV-based primary screening",
+  "category": "other",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Woman aged 34, last cytology 6 years ago",
+  "summary": "34-year-old woman at a wellness visit, last cervical cytology 6 years ago (normal). WHO 2021: HPV DNA primary screening from 30, every 5–10 years; USPSTF 2018: at 30–65 hrHPV every 5 years, co-testing every 5 or cytology every 3.",
+  "tags": [
+    "screening",
+    "wellness",
+    "cervical"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wellness check — smear test overdue",
+    "hpi": "Well 34-year-old at a wellness visit. Last cervical smear 6 years ago in Martinique, reported normal; none since. No intermenstrual or post-coital bleeding, no discharge. HIV test 2 years ago negative. Copper IUD for contraception.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "post-coital bleeding",
+      "intermenstrual bleeding",
+      "vaginal discharge"
+    ],
+    "exam": {
+      "general": "Well. BP 112/70."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 66,
+        "systolicBp": 112,
+        "diastolicBp": 70,
+        "respiratoryRate": 12,
+        "temperatureC": 36.5,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Shop manager. Non-smoker. Copper IUD.",
+    "confirmedDiagnosis": {
+      "name": "Cervical screening overdue — age 34",
+      "icd10": "Z12.4",
+      "assessmentText": "Asymptomatic. Cervical screening overdue (last 6 years ago). Primary HPV test (self- or clinician-collected); if not available, cytology."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-hpv-test",
+          "severity": "quality",
+          "guidelineRefs": [
+            "who-cervical-2021",
+            "uspstf-cervical-2018"
+          ],
+          "note": "From 30, HPV testing is the preferred primary screen (WHO 2021) or one of three options (USPSTF 2018).",
+          "match": [
+            "hpv"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: cervical_smear offers only 'Cervical smear — confirm up to date … every 3 years (21–65)' and 'Refer gynaecology — cervical smear overdue'; HPV testing is never mentioned.",
+          "proposedFix": "From 30, offer primary HPV testing every 5 years (WHO 2021 / USPSTF 2018); cytology every 3 years at 21–29; screening can be done in the practice rather than by gynaecology referral.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-screening-arranged",
+          "severity": "quality",
+          "guidelineRefs": [
+            "who-cervical-2021",
+            "uspstf-cervical-2018"
+          ],
+          "match": [
+            "cervical screen",
+            "smear",
+            "cytology",
+            "hpv"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "mustNotAlarm": [
+        {
+          "id": "no-emergency-banner",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-cervical-2018"
+          ],
+          "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
+          "match": [
+            "emergency now"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "who-cervical-2021",
+      "name": "WHO guideline for screening and treatment of cervical pre-cancer lesions (2nd edition)",
+      "year": 2021,
+      "section": "General population: HPV DNA detection as the primary screening test, starting at 30 years, every 5–10 years; women living with HIV from 25 years, every 3–5 years",
+      "citation": "World Health Organization. WHO guideline for screening and treatment of cervical pre-cancer lesions for cervical cancer prevention, 2nd ed. Geneva: WHO; 2021.",
+      "verified": false
+    },
+    {
+      "id": "uspstf-cervical-2018",
+      "name": "USPSTF recommendation statement — screening for cervical cancer",
+      "year": 2018,
+      "section": "21–29: cytology every 3 years; 30–65: cytology every 3 years, high-risk HPV testing alone every 5 years, or co-testing every 5 years (grade A); recommend against screening after hysterectomy with removal of the cervix and no history of CIN 2+ or cancer (grade D)",
+      "citation": "US Preventive Services Task Force. Screening for cervical cancer: US Preventive Services Task Force recommendation statement. JAMA. 2018;320:674–686.",
+      "verified": false
+    }
+  ],
+  "rationale": "Cervical screening at 30 and over is HPV-based in current WHO and USPSTF guidance. A fixed \"smear every 3 years\" prompt is out of date for this age group.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

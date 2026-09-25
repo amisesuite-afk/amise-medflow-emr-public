@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "id": "paed-intussusception-lethargy-atypical",
+  "condition": "Intussusception presenting with lethargy (atypical)",
+  "category": "gi-emergency",
+  "permutationOf": "paed-intussusception-infant-classic",
+  "permutationLabel": "Lethargy and pallor only, no crying episodes, referred as \"?sepsis\"",
+  "summary": "7-month-old girl (8 kg), 10 h of increasing lethargy, pallor and poor feeding with two vomits; no crying episodes, no blood per rectum; afebrile, HR 170, CRT 3 s; referred as \"?sepsis ?meningitis\". Lethargy can be the only sign of intussusception.",
+  "tags": [
+    "paediatric",
+    "intussusception",
+    "atypical",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 0,
+      "sex": "female",
+      "heightCm": 67,
+      "weightKg": 8.0
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Baby floppy and pale, not feeding",
+    "hpi": "7-month-old girl. Since this morning (10 hours) increasingly sleepy, floppy and pale, taking only small amounts of milk, vomited twice. Mother has not noticed screaming episodes. No diarrhoea, no blood in the nappy so far, no rash, no cough. Referred by the health centre as \"?sepsis ?meningitis\".",
+    "symptoms": [
+      "lethargy",
+      "poor feeding",
+      "vomiting"
+    ],
+    "negatives": [
+      "fever",
+      "rash",
+      "diarrhoea",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Pale, hypotonic, rousable. T 37.2, HR 170, RR 40, CRT 3 s. Fontanelle flat. No rash.",
+      "abdomen": "Soft; possible fullness in the right upper quadrant; no guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 170,
+        "systolicBp": 84,
+        "diastolicBp": 50,
+        "respiratoryRate": 40,
+        "temperatureC": 37.2,
+        "spo2": 98,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "weightKg": 8.0
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 8,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with parents; immunisations up to date.",
+    "confirmedDiagnosis": {
+      "name": "Lethargic infant — intussusception to be excluded",
+      "icd10": "R53.83",
+      "assessmentText": "Lethargy, pallor and vomiting in a 7-month-old without fever or rash: intussusception must be excluded — urgent abdominal ultrasound; paediatric surgical review; fluids by weight; septic screen in parallel."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "socratesAnswers": {
+          "onset": "This morning",
+          "associated": "Vomiting, lethargy, pale, poor feeding",
+          "timing": "Getting worse"
+        },
+        "symptoms": [
+          "poor feeding",
+          "vomiting",
+          "fatigue"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Food",
+            "Multiple episodes daily"
+          ]
+        },
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-intussusception",
+          "severity": "critical",
+          "guidelineRefs": [
+            "applegate-2009",
+            "apsa-intussusception-2021"
+          ],
+          "match": [
+            "intussus"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no intussusception disease node (pane-engine has 130 diseases, none for intussusception); top 3: acute cholecystitis, appendicitis, peptic ulcer. Symptom inference ranks intussusception #2 behind pyloric stenosis (secondary view).",
+          "proposedFix": "Add paediatric surgical conditions (intussusception, pyloric stenosis, malrotation/volvulus) as PANE nodes and management protocols (Q40.0, Q43.3, K56.1) with paediatric surgery referral.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustRankTopK": [
+        {
+          "id": "dx-intussusception-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "intussus"
+          ],
+          "k": 5,
+          "source": "web.symptomInference"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "guidelineRefs": [
+          "nice-ng143",
+          "applegate-2009"
+        ],
+        "note": "Lethargy/reduced responsiveness and CRT 3 s in an infant are high-risk features.",
+        "atLeast": "urgent",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-abdominal-ultrasound",
+          "severity": "critical",
+          "guidelineRefs": [
+            "apsa-intussusception-2021",
+            "applegate-2009"
+          ],
+          "match": [
+            "re:(ultrasound|uss|\\bus\\b)[^\\n]{0,30}abdo",
+            "re:abdominal (ultrasound|uss)",
+            "uss abdomen"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-adult-fixed-doses",
+          "severity": "critical",
+          "note": "Weight 8.0 kg. Paracetamol 1 g, ibuprofen 400 mg, piperacillin-tazobactam 4.5 g, co-amoxiclav 1.2 g, meropenem 1 g, morphine 2.5–5 mg, ondansetron 4 mg and fixed 1 L, 1–2 L or 500 mL fluid volumes are adult fixed doses; a child needs weight-based (mg/kg, mL/kg) dosing. Prescribing accuracy is a patient-safety issue, so critical.",
+          "match": [
+            "re:paracetamol 1 ?g",
+            "re:ibuprofen 400 ?mg",
+            "re:4\\.5 ?g",
+            "re:co-amoxiclav[^\\n]{0,20}1\\.2 ?g",
+            "re:amoxiclav 1\\.2 ?g",
+            "re:meropenem 1 ?g",
+            "re:morphine (sulfate )?(2\\.5|5) ?mg",
+            "re:hartmann'?s (1 ?l|1[–-]2 ?l|500 ?ml)",
+            "re:fluid challenge 500 ?ml",
+            "re:ondansetron 4 ?mg"
+          ],
+          "unless": [
+            "mg/kg",
+            "ml/kg",
+            "adult",
+            ">50 kg",
+            "over 50 kg",
+            "age ≥ 12",
+            "microgram/kg"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — 'Hartmann's 1L bolus' (shock protocol) and 'IV fluid challenge 500ml' for an 8 kg infant — the adult shock/tachycardia prompts fire because computeClinicalPrompts and adaptiveTriage use adult thresholds (SBP < 90, HR > 100/110/120, RR > 24), which are normal values for an infant (SBP 84 is labelled 'shock').",
+          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "applegate-2009",
+      "name": "Intussusception in children: evidence-based diagnosis and treatment",
+      "year": 2009,
+      "section": "Classic triad (colicky pain, vomiting, red-currant jelly stool) is present in a minority; lethargy/altered consciousness can be the presenting feature in infants; ultrasound is the diagnostic test of choice",
+      "citation": "Applegate KE. Intussusception in children: evidence-based diagnosis and treatment. Pediatr Radiol. 2009;39(Suppl 2):S140–S143.",
+      "verified": false
+    },
+    {
+      "id": "apsa-intussusception-2021",
+      "name": "APSA Outcomes and Evidence-Based Practice Committee — management of intussusception in children (systematic review)",
+      "year": 2021,
+      "section": "Point-of-care/radiology ultrasound for diagnosis; image-guided enema reduction (pneumatic or hydrostatic) first-line in the stable child without peritonitis, with the surgical team aware; operative reduction if enema fails or peritonitis/perforation; delayed repeat enema option",
+      "citation": "Kelley-Quon LI, Arthur LG, Williams RF, et al. Management of intussusception in children: a systematic review. J Pediatr Surg. 2021;56:587–596.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng143",
+      "name": "NICE NG143 — fever in under 5s: assessment and initial management",
+      "year": 2019,
+      "section": "Age < 3 months with temperature ≥ 38 °C is a high-risk (red) feature; red features: refer for urgent paediatric assessment; infants < 3 months with fever: FBC, CRP, blood culture, urine testing, lumbar puncture in selected infants; parenteral antibiotics for infants 1–3 months with fever who appear unwell (and all < 1 month)",
+      "citation": "National Institute for Health and Care Excellence. Fever in under 5s: assessment and initial management. NICE guideline NG143, 2019 (updated 2021).",
+      "verified": false
+    }
+  ],
+  "rationale": "Up to a fifth of infants with intussusception present with lethargy or altered consciousness without the classic triad; an abdominal ultrasound belongs in the work-up of the \"floppy, pale\" infant.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

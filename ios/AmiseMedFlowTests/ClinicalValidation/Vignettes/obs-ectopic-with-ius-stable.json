@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "id": "obs-ectopic-with-ius-stable",
+  "condition": "Ectopic pregnancy with an intrauterine system in situ",
+  "category": "other",
+  "permutationOf": "mimic-ectopic-pregnancy",
+  "permutationLabel": "Levonorgestrel IUS, \"cannot be pregnant\", left-sided pain, stable",
+  "summary": "29-year-old woman with a levonorgestrel IUS for 2 years (\"I can't be pregnant\"), 3 days of left iliac fossa pain and irregular spotting, stable. Pregnancy test is mandatory despite contraception; a pregnancy with an IUS in situ is disproportionately ectopic.",
+  "tags": [
+    "mimic",
+    "pregnancy",
+    "ectopic",
+    "contraception",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "unknown"
+      },
+      "heightCm": 168,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Left lower abdominal pain",
+    "hpi": "Three days of left lower abdominal pain, now constant, with irregular brown spotting. Mirena (levonorgestrel IUS) inserted 2 years ago; periods usually light or absent, so she does not know her LMP. Says she \"can't be pregnant\". No fever, no bowel or urinary symptoms. No shoulder-tip pain.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "LLQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "pelvic pain",
+      "vaginal bleeding"
+    ],
+    "negatives": [
+      "fever",
+      "dysuria",
+      "diarrhoea"
+    ],
+    "exam": {
+      "general": "Comfortable. T 36.8, HR 84, BP 122/76.",
+      "abdomen": "Tender left iliac fossa, no guarding. IUS threads visible. Left adnexal tenderness, no cervical excitation."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 84,
+        "systolicBp": 122,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.8,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 6,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Levonorgestrel intrauterine system (Mirena)",
+        "dose": "52 mg",
+        "frequency": "In situ",
+        "indication": "Contraception"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Pharmacist. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Left iliac fossa pain with an IUS in situ — pregnancy of unknown location / ectopic to be excluded",
+      "icd10": "R10.32",
+      "assessmentText": "Left iliac fossa pain and spotting with a levonorgestrel IUS: exclude ectopic pregnancy — urine/serum hCG now, transvaginal ultrasound, early pregnancy / gynaecology referral if positive."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Left lower (LLQ)",
+          "onset": "3 days, gradual",
+          "character": "Aching",
+          "associated": "Nausea, brown spotting",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol helps",
+          "severity": "5/10",
+          "lmp": "Unknown — Mirena, periods light/absent"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "pelvic pain",
+          "vaginal bleeding"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "LLQ",
+            "1–3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Nausea",
+            "Continuous",
+            "Movement"
+          ],
+          "pelvic pain": [
+            "Constant",
+            "Abnormal bleeding"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender LLQ"
+          ]
+        },
+        "paneAnswers": {
+          "adnexal_tenderness": true
+        },
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ectopic-top3",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng126",
+            "fsrh-iuc-2023"
+          ],
+          "match": [
+            "ectopic"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "guidelineRefs": [
+          "nice-ng126"
+        ],
+        "note": "Stable, no peritonism: same-day assessment; pregnancy test first.",
+        "atLeast": "priority",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-pregnancy-test",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng126",
+            "fsrh-iuc-2023"
+          ],
+          "note": "Mandatory despite contraception.",
+          "match": [
+            "hcg",
+            "pregnancy test"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-transvaginal-us",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "match": [
+            "transvaginal",
+            "tvus",
+            "re:\\btvs\\b",
+            "pelvic ultrasound",
+            "uss pelvis"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-gynaecology",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "match": [
+            "gynaecolog",
+            "gynecolog",
+            "early pregnancy"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-assumed-negative-hcg",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "note": "No pregnancy test has been done: a template asserting a negative β-hCG is unsafe.",
+          "match": [
+            "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-diverticulitis-antibiotics",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "note": "Left iliac fossa pain at 29 with an IUS is not diverticulitis until pregnancy is excluded.",
+          "match": [
+            "re:diverticul[^\\n]{0,60}(co-amoxiclav|antibiotic|metronidazole)"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng126",
+      "name": "NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management",
+      "year": 2019,
+      "section": "Pregnancy test in every woman of reproductive age with abdominal/pelvic pain, even with contraception; transvaginal ultrasound; immediate referral to an early pregnancy assessment service / gynaecology when pregnancy test positive with pain; surgical management if ruptured",
+      "citation": "National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "fsrh-iuc-2023",
+      "name": "FSRH clinical guideline — intrauterine contraception",
+      "year": 2023,
+      "section": "Pregnancy with an IUD/IUS in situ is uncommon but a higher proportion of such pregnancies are ectopic: ectopic pregnancy must be excluded",
+      "citation": "Faculty of Sexual and Reproductive Healthcare. FSRH Clinical Guideline: Intrauterine Contraception. London: FSRH; 2023.",
+      "verified": false
+    }
+  ],
+  "rationale": "Contraception lowers the chance of pregnancy but not the proportion of pregnancies that are ectopic; NICE NG126 requires a pregnancy test in every woman of reproductive age with abdominal pain. Left-sided pain should not steer the engine to diverticulitis at 29.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

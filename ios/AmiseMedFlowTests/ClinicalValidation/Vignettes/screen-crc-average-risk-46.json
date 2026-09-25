@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-crc-average-risk-46",
+  "condition": "Colorectal cancer screening — average risk, age 45–49",
+  "category": "colorectal",
+  "permutationOf": null,
+  "permutationLabel": "Average risk, age 46 (base case for the screening cluster)",
+  "summary": "46-year-old asymptomatic woman at a wellness visit asks about bowel cancer screening; no family history, never screened. USPSTF 2021 starts average-risk screening at 45 (FIT yearly or colonoscopy 10-yearly).",
+  "tags": [
+    "screening",
+    "wellness",
+    "colorectal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 163,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wellness check — asking about bowel cancer screening",
+    "hpi": "Well 46-year-old woman attending for a wellness check. Asks whether she should have bowel cancer screening after a colleague was diagnosed. No change in bowel habit, no rectal bleeding, no weight loss, no abdominal pain. Never had a colonoscopy or stool test. No family history of bowel cancer or polyps.",
+    "symptoms": [],
+    "negatives": [
+      "rectal bleeding",
+      "change in bowel habit",
+      "weight loss",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Well. BMI 24. BP 122/76, pulse 72.",
+      "abdomen": "Soft, non-tender, no masses."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 122,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Bank officer. Never smoked. Alcohol 2–3 units/week.",
+    "confirmedDiagnosis": {
+      "name": "Colorectal cancer screening — average risk, age 46",
+      "icd10": "Z12.11",
+      "assessmentText": "Asymptomatic, average risk, age 46. Colorectal cancer screening discussion: annual FIT or colonoscopy every 10 years."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "guidelineRefs": [
+          "uspstf-crc-2021"
+        ],
+        "note": "Asymptomatic screening request: routine.",
+        "atMost": "priority",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Over-triage: the topic words 'bowel cancer screening' match 'Possible malignancy' and 'No change in bowel habit' still matches 'Lower GI red flag' ('no change' is treated as a pseudo-negation). Two priority flags (score 50) → emergency_now for a well 46-year-old. (The negated 'no rectal bleeding' no longer fires.)",
+        "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation).",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-emergency-banner",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-crc-2021"
+          ],
+          "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
+          "match": [
+            "emergency now"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web triage raises 'Emergency now — do not auto-book … urgent emergency assessment' for a screening request (see level-routine).",
+          "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-crc-screening-offered",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-crc-2021",
+            "acg-crc-2021"
+          ],
+          "note": "USPSTF 2021 grade B from 45: an average-risk 46-year-old should be offered screening.",
+          "match": [
+            "fit",
+            "faecal immunochemical",
+            "faecal occult",
+            "fobt",
+            "colonoscopy",
+            "colorectal cancer screening",
+            "crc screening"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: computeClinicalPrompts preventative prompts are fixed age/sex rules: the colorectal_screen prompt starts at age ≥ 50 ('FOBT every 2 years or colonoscopy every 10 years'); at 46 nothing about colorectal screening is suggested (USPSTF/ACG 2021 start at 45).",
+          "proposedFix": "Lower the colorectal_screen threshold to 45 (USPSTF 2021 grade B), use 'FIT yearly' rather than 'FOBT every 2 years', and stop at 75 unless individualised.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cancer-staging-plan",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-crc-2021"
+          ],
+          "note": "A screening visit must not generate a cancer staging / resection plan (the working diagnosis contains the words \"colorectal cancer\").",
+          "match": [
+            "staging",
+            "hemicolectomy",
+            "anterior resection",
+            "mdt referral",
+            "stoma nurse"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-crc-2021",
+      "name": "USPSTF recommendation statement — screening for colorectal cancer",
+      "year": 2021,
+      "section": "Screen adults 45–49 (grade B) and 50–75 (grade A); 76–85 selectively, considering overall health and prior screening (grade C); stool-based (e.g. annual FIT) or direct visualisation (e.g. colonoscopy every 10 years) strategies",
+      "citation": "US Preventive Services Task Force. Screening for colorectal cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:1965–1977.",
+      "verified": false
+    },
+    {
+      "id": "acg-crc-2021",
+      "name": "ACG clinical guidelines — colorectal cancer screening",
+      "year": 2021,
+      "section": "Average risk: start at 45; one first-degree relative with CRC or advanced adenoma diagnosed < 60, or two FDRs at any age: colonoscopy from 40 (or 10 years before the youngest affected relative) every 5 years",
+      "citation": "Shaukat A, Kahi CJ, Burke CA, et al. ACG clinical guidelines: colorectal cancer screening 2021. Am J Gastroenterol. 2021;116:458–479.",
+      "verified": false
+    }
+  ],
+  "rationale": "USPSTF 2021 and ACG 2021 lowered the average-risk starting age to 45. The engines should offer FIT or colonoscopy, keep the visit routine, and not treat the words \"colorectal cancer screening\" as a cancer diagnosis.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

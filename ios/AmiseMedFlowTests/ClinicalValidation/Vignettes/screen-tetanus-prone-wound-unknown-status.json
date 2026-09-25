@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-tetanus-prone-wound-unknown-status",
+  "condition": "Tetanus-prone wound with unknown immunisation status",
+  "category": "soft-tissue",
+  "permutationOf": null,
+  "permutationLabel": "Farm laceration, soil and manure contamination, immunisation unknown (base case)",
+  "summary": "52-year-old pig farmer with an 8 cm forearm laceration from rusty barbed wire in a pig pen 8 hours ago, soil and manure in the wound; last tetanus vaccine \"as a child\", unsure. Needs debridement, tetanus-containing vaccine and tetanus immunoglobulin.",
+  "tags": [
+    "vaccination",
+    "tetanus",
+    "wound",
+    "prevention"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "heightCm": 178,
+      "weightKg": 86
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Cut on the forearm from barbed wire on the farm",
+    "hpi": "Caught his left forearm on rusty barbed wire in the pig pen 8 hours ago. Wound contaminated with soil and manure. Last tetanus vaccination \"as a child\", unsure how many doses. Type 2 diabetes on metformin. No fever.",
+    "symptoms": [
+      "wound pain"
+    ],
+    "negatives": [
+      "fever",
+      "numbness",
+      "weakness"
+    ],
+    "exam": {
+      "general": "Well. T 36.8.",
+      "skin": "Left forearm: 8 cm ragged laceration through skin and subcutaneous fat with ingrained soil and devitalised edges; no tendon exposed; distal neurovascular function intact."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 84,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose (random)",
+        "value": 9.8,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Pig farmer. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Tetanus-prone contaminated laceration of left forearm — tetanus immunisation status unknown",
+      "icd10": "S51.812A",
+      "assessmentText": "High-risk tetanus-prone wound (soil/manure, devitalised tissue, > 6 h) with unknown immunisation: wound irrigation and debridement, tetanus-containing vaccine now plus human tetanus immunoglobulin; complete the primary course."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "wound pain"
+        ],
+        "durationDays": 0,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-tetanus-vaccine",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acip-tetanus-2018",
+            "ukhsa-tetanus-2019"
+          ],
+          "note": "Unknown/incomplete immunisation with a tetanus-prone wound: tetanus-containing vaccine now.",
+          "match": [
+            "re:tetanus[^\\n]{0,40}(vaccin|toxoid|booster|immunis|\\btd)",
+            "re:\\btdap?\\b",
+            "tetanus toxoid"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No tetanus output: S51.812A maps to no protocol, PANE top 3 is inguinal hernia / cholecystitis / GORD, and computeClinicalPrompts has no wound or tetanus-prone rule. Tetanus toxoid/immunoglobulin exist only inside the major-trauma, burns and splenic protocols.",
+          "proposedFix": "Add a wound prompt (laceration/bite/puncture/burn, or S0–T1 injury codes): classify tetanus-prone vs clean, ask immunisation status, and output vaccine ± human tetanus immunoglobulin per ACIP/UKHSA tables; debridement/irrigation.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-tetanus-immunoglobulin",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acip-tetanus-2018",
+            "ukhsa-tetanus-2019"
+          ],
+          "note": "Tetanus immunoglobulin for a contaminated wound when fewer than 3 doses or status unknown.",
+          "match": [
+            "immunoglobulin",
+            "re:\\btig\\b",
+            "re:\\bhtig\\b",
+            "immune globulin"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "See mgmt-tetanus-vaccine: no tetanus immunoglobulin output for a high-risk wound with unknown immunisation.",
+          "proposedFix": "See mgmt-tetanus-vaccine.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-debridement",
+          "severity": "quality",
+          "guidelineRefs": [
+            "ukhsa-tetanus-2019"
+          ],
+          "match": [
+            "debrid",
+            "irrigat",
+            "wound toilet",
+            "washout",
+            "wash out",
+            "clean"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No wound-care output (see mgmt-tetanus-vaccine).",
+          "proposedFix": "See mgmt-tetanus-vaccine.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "ukhsa-tetanus-2019"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) the first-substring match would have attached the acute coronary syndrome (aspirin 300 mg, ticagrelor, fondaparinux) plan to this diagnosis because \"mi\" is inside \"contaminated\". With word-boundary matching no radiation entry matches (simulated from the source), so iOS is expected to pass; to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "guidelineRefs": [
+          "ukhsa-tetanus-2019"
+        ],
+        "atLeast": "priority",
+        "atMost": "urgent",
+        "unverified": [
+          "ios"
+        ]
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "acip-tetanus-2018",
+      "name": "ACIP — prevention of pertussis, tetanus and diphtheria with vaccines (wound management)",
+      "year": 2018,
+      "section": "Wound management: for a contaminated (tetanus-prone) wound in a person with unknown or < 3 doses of tetanus toxoid — give Td/Tdap AND tetanus immune globulin (TIG)",
+      "citation": "Liang JL, Tiwari T, Moro P, et al. Prevention of pertussis, tetanus, and diphtheria with vaccines in the United States: recommendations of the Advisory Committee on Immunization Practices (ACIP). MMWR Recomm Rep. 2018;67(2):1–44.",
+      "verified": false
+    },
+    {
+      "id": "ukhsa-tetanus-2019",
+      "name": "UKHSA (PHE) guidance — assessment and management of tetanus-prone wounds",
+      "year": 2019,
+      "section": "Tetanus-prone and high-risk tetanus-prone wounds (e.g. contamination with soil or manure, devitalised tissue): thorough cleaning/debridement; incomplete or unknown immunisation — tetanus-containing vaccine plus human tetanus immunoglobulin",
+      "citation": "Public Health England (now UKHSA). Guidance on the management of suspected tetanus cases and on the assessment and management of tetanus-prone wounds. London; 2019 (updated).",
+      "verified": false
+    }
+  ],
+  "rationale": "Tetanus remains a risk in agricultural injuries; both ACIP and UKHSA require vaccine plus immunoglobulin for a contaminated wound when immunisation is incomplete or unknown, together with surgical wound care.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

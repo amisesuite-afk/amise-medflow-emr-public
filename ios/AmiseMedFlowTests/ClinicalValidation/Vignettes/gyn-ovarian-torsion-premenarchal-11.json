@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "id": "gyn-ovarian-torsion-premenarchal-11",
+  "condition": "Ovarian torsion in a premenarchal girl",
+  "category": "other",
+  "permutationOf": "gyn-ovarian-torsion-dermoid",
+  "permutationLabel": "Premenarchal 11-year-old, labelled gastroenteritis, Doppler flow present",
+  "summary": "11-year-old premenarchal girl (38 kg), 18 h intermittent lower abdominal pain and vomiting labelled \"gastroenteritis\"; US: enlarged left ovary with peripheral follicles and a whirlpool sign, arterial flow still present. Doppler flow does not exclude torsion.",
+  "tags": [
+    "paediatric",
+    "gynaecology",
+    "torsion",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 11,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 146,
+      "weightKg": 38
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Tummy pain and vomiting",
+    "hpi": "Premenarchal 11-year-old girl with 18 hours of intermittent severe lower abdominal pain, worse on the left, vomiting six times. Seen at a health centre last night and told it was gastroenteritis; no diarrhoea. Pain comes in waves and makes her cry. No fever, no urinary symptoms.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Sudden"
+      ],
+      "site": [
+        "LLQ",
+        "Suprapubic"
+      ],
+      "character": [
+        "Sharp",
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "pelvic pain"
+    ],
+    "negatives": [
+      "diarrhoea",
+      "fever",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "Distressed between waves of pain. T 37.4, HR 118, BP 108/66.",
+      "abdomen": "Tender left iliac fossa and suprapubic region with guarding; no rebound."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "systolicBp": 108,
+        "diastolicBp": 66,
+        "respiratoryRate": 22,
+        "temperatureC": 37.4,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 38
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 9,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Ketones 2+, otherwise negative",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen and pelvis (transabdominal)",
+        "modality": "US",
+        "region": "Pelvis",
+        "result": "Left ovary enlarged 6.2 cm with peripheralised follicles and a twisted vascular pedicle (whirlpool sign); arterial Doppler flow present. Small free fluid. Appendix normal calibre.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Primary school pupil, lives with parents.",
+    "confirmedDiagnosis": {
+      "name": "Left ovarian torsion",
+      "icd10": "N83.52",
+      "paneDiseaseId": "ovarian_torsion",
+      "assessmentText": "Left ovarian torsion in a premenarchal girl (whirlpool sign; Doppler flow present does not exclude torsion). Emergency laparoscopy and detorsion with ovarian preservation; paediatric surgery / gynaecology."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Left lower (LLQ) and pelvic",
+          "onset": "Sudden, yesterday",
+          "character": "Sharp, comes in waves",
+          "associated": "Vomiting",
+          "timing": "Intermittent",
+          "triggers": "Movement",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "pelvic pain"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "LLQ",
+            "Suprapubic",
+            "6–24 hours",
+            "Colicky",
+            "Severe (7–9)",
+            "Vomiting",
+            "Intermittent / colicky"
+          ],
+          "vomiting": [
+            "Food",
+            "Multiple episodes daily"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender LLQ",
+            "Guarding"
+          ]
+        },
+        "paneAnswers": {
+          "pelvic_pain": true,
+          "nausea_vomiting": true
+        },
+        "durationDays": 1,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-torsion-top3",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "match": [
+            "torsion"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "guidelineRefs": [
+          "acog-co783-2019"
+        ],
+        "atLeast": "urgent",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-laparoscopy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "match": [
+            "laparoscop"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-ovarian-conservation",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "match": [
+            "detorsion",
+            "preserve",
+            "conserv",
+            "ovarian-sparing"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-adult-fixed-doses",
+          "severity": "critical",
+          "note": "Weight 38 kg. Paracetamol 1 g, ibuprofen 400 mg, piperacillin-tazobactam 4.5 g, co-amoxiclav 1.2 g, meropenem 1 g, morphine 2.5–5 mg, ondansetron 4 mg and fixed 1 L, 1–2 L or 500 mL fluid volumes are adult fixed doses; a child needs weight-based (mg/kg, mL/kg) dosing. Prescribing accuracy is a patient-safety issue, so critical.",
+          "match": [
+            "re:paracetamol 1 ?g",
+            "re:ibuprofen 400 ?mg",
+            "re:4\\.5 ?g",
+            "re:co-amoxiclav[^\\n]{0,20}1\\.2 ?g",
+            "re:amoxiclav 1\\.2 ?g",
+            "re:meropenem 1 ?g",
+            "re:morphine (sulfate )?(2\\.5|5) ?mg",
+            "re:hartmann'?s (1 ?l|1[–-]2 ?l|500 ?ml)",
+            "re:fluid challenge 500 ?ml",
+            "re:ondansetron 4 ?mg"
+          ],
+          "unless": [
+            "mg/kg",
+            "ml/kg",
+            "adult",
+            ">50 kg",
+            "over 50 kg",
+            "age ≥ 12",
+            "microgram/kg"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — the ovarian_torsion protocol medications (ondansetron 4 mg, paracetamol 1 g, ibuprofen 400 mg) and the appendicectomy prompt/template (pip-tazo 4.5 g, co-amoxiclav 1.2 g, morphine 5 mg) for a 38 kg child, plus 'IV fluid challenge 500ml'.",
+          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-default-oophorectomy",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "note": "Oophorectomy is not the default; ACOG favours preservation even when the ovary looks non-viable.",
+          "match": [
+            "oophorectomy"
+          ],
+          "unless": [
+            "only if",
+            "rather than",
+            "avoid"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "acog-co783-2019",
+      "name": "ACOG Committee Opinion No. 783 — adnexal torsion in adolescents",
+      "year": 2019,
+      "section": "Torsion is a surgical emergency: prompt laparoscopy; preserve the ovary (detorsion) even when it looks non-viable, rather than oophorectomy; normal Doppler flow does not exclude torsion",
+      "citation": "American College of Obstetricians and Gynecologists. Adnexal torsion in adolescents: ACOG Committee Opinion No. 783. Obstet Gynecol. 2019;134:e56–e63.",
+      "verified": false
+    }
+  ],
+  "rationale": "Adnexal torsion in girls is frequently mislabelled as gastroenteritis; preserved Doppler flow does not exclude it. Prompt laparoscopy with ovarian preservation and weight-based analgesia are required.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

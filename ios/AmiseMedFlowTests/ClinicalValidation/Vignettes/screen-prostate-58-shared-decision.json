@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-prostate-58-shared-decision",
+  "condition": "Prostate cancer screening — shared decision-making",
+  "category": "urology",
+  "permutationOf": "screen-older-man-81-overscreening",
+  "permutationLabel": "Age 58, African-Caribbean, asks about PSA",
+  "summary": "58-year-old African-Caribbean man, no urinary symptoms, asks about \"the prostate test\". USPSTF 2018: at 55–69 an individual decision after discussing benefits and harms; Black men may particularly benefit from the discussion.",
+  "tags": [
+    "screening",
+    "prostate",
+    "shared-decision"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "heightCm": 178,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Asking about the prostate blood test",
+    "hpi": "Asymptomatic 58-year-old man of African-Caribbean descent. Two friends have had prostate cancer and he asks whether he should have a PSA test. No urinary frequency, nocturia once, good stream. No bone pain. No family history of prostate cancer.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "lower urinary tract symptoms",
+      "haematuria",
+      "bone pain"
+    ],
+    "exam": {
+      "general": "Well. BP 132/84.",
+      "abdomen": "Soft, bladder not palpable."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 132,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Taxi owner. Ex-smoker, 10 pack-years, quit 20 years ago.",
+    "confirmedDiagnosis": {
+      "name": "Prostate cancer screening discussion — age 58",
+      "icd10": "Z12.5",
+      "assessmentText": "Asymptomatic 58-year-old African-Caribbean man. Shared decision on PSA screening: benefits (small reduction in prostate cancer death) and harms (false positives, biopsy, overdiagnosis, treatment effects) discussed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-shared-decision",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-prostate-2018"
+          ],
+          "note": "Grade C: an individual decision after discussion, not an automatic test.",
+          "match": [
+            "shared decision",
+            "benefits and harms",
+            "benefits and limitations",
+            "informed"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-prostate-biopsy",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-prostate-2018"
+          ],
+          "note": "No PSA result yet: no biopsy or MRI.",
+          "match": [
+            "prostate biopsy",
+            "trus biopsy",
+            "mri prostate"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "guidelineRefs": [
+          "uspstf-prostate-2018"
+        ],
+        "atMost": "priority",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Over-triage: 'Two friends have had prostate cancer' → 'Possible malignancy' (priority) → same_day_call.",
+        "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation).",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-prostate-2018",
+      "name": "USPSTF recommendation statement — screening for prostate cancer",
+      "year": 2018,
+      "section": "55–69: individual decision about PSA-based screening after discussion of potential benefits and harms (grade C); ≥ 70: recommend against PSA-based screening (grade D); Black men and men with a family history may benefit from the discussion",
+      "citation": "US Preventive Services Task Force. Screening for prostate cancer: US Preventive Services Task Force recommendation statement. JAMA. 2018;319:1901–1913.",
+      "verified": false
+    }
+  ],
+  "rationale": "PSA screening at 55–69 is a preference-sensitive decision. The output should support an informed discussion rather than an automatic test, and certainly not a diagnostic pathway.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

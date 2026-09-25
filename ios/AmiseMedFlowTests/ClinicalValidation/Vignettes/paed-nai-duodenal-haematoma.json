@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "id": "paed-nai-duodenal-haematoma",
+  "condition": "Non-accidental abdominal injury (duodenal haematoma)",
+  "category": "trauma-burns",
+  "permutationOf": "trauma-paediatric-nai-bruising",
+  "permutationLabel": "3-year-old, \"fell off the sofa\", bilious vomiting 36 h later, duodenal haematoma",
+  "summary": "3-year-old boy (14 kg) with bilious vomiting and abdominal pain 36 h after a reported fall from a sofa; bruises of different ages on the upper abdomen and back; amylase 480, ALT 210; CT: duodenal haematoma with partial obstruction and pancreatic head contusion. Inflicted visceral injury until proven otherwise.",
+  "tags": [
+    "paediatric",
+    "trauma",
+    "safeguarding",
+    "nai"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 3,
+      "sex": "male",
+      "heightCm": 95,
+      "weightKg": 14
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting green and tummy pain after a fall",
+    "hpi": "Mother's partner reports he \"fell off the sofa\" the evening before last. Brought in today with 12 hours of green vomiting and abdominal pain. Mother was at work at the time. Previous attendance 3 months ago with a forearm bruise. Explanation has varied between carers.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Epigastric",
+        "Periumbilical"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "bilious vomiting",
+      "bruising"
+    ],
+    "negatives": [
+      "loss of consciousness",
+      "fever"
+    ],
+    "exam": {
+      "general": "Quiet, withdrawn. HR 142, BP 94/58, RR 30, T 37.3.",
+      "abdomen": "Bruises of different colours over the upper abdomen; epigastric tenderness and fullness; no peritonism.",
+      "skin": "Linear bruises on the back and fingertip bruises on both upper arms, of different ages."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 142,
+        "systolicBp": 94,
+        "diastolicBp": 58,
+        "respiratoryRate": 30,
+        "temperatureC": 37.3,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 14
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 480,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 210,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ast",
+        "name": "AST",
+        "value": 260,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.2,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen",
+        "result": "Intramural duodenal haematoma (D2–D3) causing partial obstruction; contusion of the pancreatic head without duct disruption; no free air; small left posterior rib fracture of older appearance.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with mother and her partner. Known to social services? Not documented.",
+    "confirmedDiagnosis": {
+      "name": "Duodenal haematoma and pancreatic contusion — suspected non-accidental injury",
+      "icd10": "T74.12XA",
+      "assessmentText": "Blunt duodenal haematoma with pancreatic contusion and an old rib fracture in a 3-year-old with an inconsistent history and delayed presentation: inflicted injury suspected. Admit under paediatric surgery (NG decompression, IV fluids, non-operative management); child protection referral today; skeletal survey."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Upper abdomen (epigastric)",
+          "onset": "2 days",
+          "character": "Aching",
+          "radiation": "Back",
+          "associated": "Green vomiting",
+          "timing": "Constant",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "bilious vomiting",
+          "bruising",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Bile",
+            "Multiple episodes daily"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "mechanism_blunt": true,
+          "abdominal_tenderness": true
+        },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-nai",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-cg89"
+          ],
+          "match": [
+            "non-accidental",
+            "abuse",
+            "maltreat",
+            "inflicted"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no child-maltreatment node; top 3: acute pancreatitis, blunt abdominal trauma, peptic ulcer. Symptom inference lists malrotation and intussusception.",
+          "proposedFix": "Add a suspected-maltreatment rule (NICE CG89) for children: visceral injury without a confirmed accidental mechanism, patterned bruising, inconsistent history, delayed presentation.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "quality",
+        "guidelineRefs": [
+          "nice-cg89"
+        ],
+        "atLeast": "urgent",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-safeguarding",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-cg89"
+          ],
+          "note": "NICE CG89: intra-abdominal injury without a confirmed accidental cause, patterned bruising and an inconsistent history.",
+          "match": [
+            "safeguard",
+            "non-accidental",
+            "child protection",
+            "abuse",
+            "maltreat"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No safeguarding/maltreatment output in triage, prompts or protocols; T74.12XA maps to no protocol.",
+          "proposedFix": "Suspected-maltreatment rule → safeguarding flag and child protection referral.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-skeletal-survey",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcr-sor-2017"
+          ],
+          "note": "Case-by-case over 2 years; indicated here (old rib fracture on CT).",
+          "match": [
+            "skeletal survey"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No skeletal survey suggested.",
+          "proposedFix": "Suspected-maltreatment rule (RCR/SoR 2017 imaging).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-safeguarding-referral",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-cg89"
+          ],
+          "match": [
+            "safeguard",
+            "child protection",
+            "social services",
+            "social work"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No child protection referral output.",
+          "proposedFix": "Suspected-maltreatment rule.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-non-operative-duodenal",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcr-sor-2017"
+          ],
+          "match": [
+            "nasogastric",
+            "re:\\bng\\b",
+            "non-operative",
+            "conservative",
+            "parenteral nutrition"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No NG decompression or non-operative duodenal-haematoma plan: T74.12XA maps to no protocol. The only management is the adult pancreatitis prompt from amylase 480 (which also plans an 'interval laparoscopic cholecystectomy — gallstone pancreatitis' for a traumatic pancreatic contusion) and the adult tachycardia work-up (ECG, CTPA).",
+          "proposedFix": "Paediatric blunt-trauma branch for visceral injury: NG decompression, IV fluids by weight, parenteral nutrition if prolonged, non-operative management; do not route traumatic pancreatic injury to the gallstone-pancreatitis prompt.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-adult-fixed-doses",
+          "severity": "critical",
+          "note": "Weight 14 kg. Paracetamol 1 g, ibuprofen 400 mg, piperacillin-tazobactam 4.5 g, co-amoxiclav 1.2 g, meropenem 1 g, morphine 2.5–5 mg, ondansetron 4 mg and fixed 1 L, 1–2 L or 500 mL fluid volumes are adult fixed doses; a child needs weight-based (mg/kg, mL/kg) dosing. Prescribing accuracy is a patient-safety issue, so critical.",
+          "match": [
+            "re:paracetamol 1 ?g",
+            "re:ibuprofen 400 ?mg",
+            "re:4\\.5 ?g",
+            "re:co-amoxiclav[^\\n]{0,20}1\\.2 ?g",
+            "re:amoxiclav 1\\.2 ?g",
+            "re:meropenem 1 ?g",
+            "re:morphine (sulfate )?(2\\.5|5) ?mg",
+            "re:hartmann'?s (1 ?l|1[–-]2 ?l|500 ?ml)",
+            "re:fluid challenge 500 ?ml",
+            "re:ondansetron 4 ?mg"
+          ],
+          "unless": [
+            "mg/kg",
+            "ml/kg",
+            "adult",
+            ">50 kg",
+            "over 50 kg",
+            "age ≥ 12",
+            "microgram/kg"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — the pancreatitis prompt's 'paracetamol 1g QDS + morphine 5mg PRN' and 'IV fluid challenge 500ml' for a 14 kg child.",
+          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-first-line-laparotomy",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-cg89"
+          ],
+          "note": "Duodenal haematoma without perforation is managed non-operatively.",
+          "match": [
+            "re:(emergency )?laparotomy"
+          ],
+          "unless": [
+            "if ",
+            "perforation",
+            "fail"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-cg89"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) the first-substring match would have attached the pulmonary-embolism (DOAC, thrombolysis) plan to this diagnosis because \"pe\" is inside \"suspected\". With word-boundary matching no radiation entry matches (simulated from the source), so iOS is expected to pass; to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg89",
+      "name": "NICE CG89 — child maltreatment: when to suspect maltreatment in under 18s",
+      "year": 2009,
+      "section": "Suspect maltreatment when a child has an intra-abdominal injury without a confirmed accidental cause or known medical explanation, bruising in unusual sites or patterns, or an explanation inconsistent with the injury or delayed presentation; follow local child protection procedures (updated 2017)",
+      "citation": "National Institute for Health and Care Excellence. Child maltreatment: when to suspect maltreatment in under 18s. Clinical guideline CG89, 2009 (updated 2017).",
+      "verified": false
+    },
+    {
+      "id": "rcr-sor-2017",
+      "name": "RCR/SoR — the radiological investigation of suspected physical abuse in children",
+      "year": 2017,
+      "section": "Skeletal survey mandatory under 2 years and considered case by case in older children; CT of the abdomen with contrast when visceral injury is suspected",
+      "citation": "The Royal College of Radiologists and the Society and College of Radiographers. The radiological investigation of suspected physical abuse in children. London: RCR; 2017 (revised 2018).",
+      "verified": false
+    }
+  ],
+  "rationale": "Duodenal haematoma and pancreatic injury in a preschool child with a minor-fall history are classic inflicted injuries. The surgeon's duty includes the child protection referral as well as non-operative management.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

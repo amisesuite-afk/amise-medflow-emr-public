@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-post-hysterectomy-no-cervical-52",
+  "condition": "No cervical screening after total hysterectomy for benign disease",
+  "category": "other",
+  "permutationOf": "screen-cervical-hpv-overdue-34",
+  "permutationLabel": "Age 52, total hysterectomy (cervix removed) for fibroids",
+  "summary": "52-year-old woman, total abdominal hysterectomy with removal of the cervix for fibroids 8 years ago, no history of CIN. USPSTF 2018 grade D: no cervical screening. She is due breast and colorectal screening.",
+  "tags": [
+    "screening",
+    "wellness",
+    "cervical",
+    "over-screening"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wellness check — which screening tests are due?",
+    "hpi": "Asymptomatic 52-year-old at a wellness visit. Total abdominal hysterectomy (uterus and cervix removed) for fibroids 8 years ago; all previous smears normal, never had CIN. Last mammogram 3 years ago. Never had bowel screening.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "vaginal bleeding",
+      "breast lump",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Well. BP 126/80. BMI 28.8."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 126,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Total abdominal hysterectomy (cervix removed) for fibroids — 8 years ago, benign histology"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Civil servant. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Health check — screening review after total hysterectomy",
+      "icd10": "Z00.00",
+      "assessmentText": "Asymptomatic. Cervical screening not required (total hysterectomy for benign disease, no CIN history). Due mammography and colorectal screening."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cervical-screening",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-cervical-2018"
+          ],
+          "note": "USPSTF 2018 grade D: no screening after hysterectomy with removal of the cervix for benign disease.",
+          "match": [
+            "smear",
+            "cervical cytology",
+            "cervical screening due",
+            "re:hpv test"
+          ],
+          "unless": [
+            "not required",
+            "not indicated",
+            "no longer"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: cervical_smear fires for every woman 21–65 regardless of surgical history: 'Confirm cervical smear date' and 'Refer gynaecology — cervical smear overdue' after a total hysterectomy for fibroids (USPSTF 2018 grade D).",
+          "proposedFix": "Suppress cervical_smear when the surgical history records total hysterectomy (cervix removed) for benign disease without CIN 2+.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "uspstf-cervical-2018"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) the first-substring match would have attached the atrial-fibrillation anticoagulation (apixaban, rivaroxaban, dabigatran) plan to this diagnosis because \"af\" is inside \"after\". With word-boundary matching no radiation entry matches (simulated from the source), so iOS is expected to pass; to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustInclude": [
+        {
+          "id": "mgmt-mammogram-due",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-breast-2024"
+          ],
+          "match": [
+            "mammogra"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-crc-screening-due",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-crc-2021"
+          ],
+          "match": [
+            "fit",
+            "faecal immunochemical",
+            "faecal occult",
+            "fobt",
+            "colonoscopy"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-cervical-2018",
+      "name": "USPSTF recommendation statement — screening for cervical cancer",
+      "year": 2018,
+      "section": "21–29: cytology every 3 years; 30–65: cytology every 3 years, high-risk HPV testing alone every 5 years, or co-testing every 5 years (grade A); recommend against screening after hysterectomy with removal of the cervix and no history of CIN 2+ or cancer (grade D)",
+      "citation": "US Preventive Services Task Force. Screening for cervical cancer: US Preventive Services Task Force recommendation statement. JAMA. 2018;320:674–686.",
+      "verified": false
+    },
+    {
+      "id": "uspstf-breast-2024",
+      "name": "USPSTF recommendation statement — screening for breast cancer",
+      "year": 2024,
+      "section": "Biennial screening mammography for women aged 40–74 (grade B)",
+      "citation": "US Preventive Services Task Force. Screening for breast cancer: US Preventive Services Task Force recommendation statement. JAMA. 2024;331:1918–1930.",
+      "verified": false
+    },
+    {
+      "id": "uspstf-crc-2021",
+      "name": "USPSTF recommendation statement — screening for colorectal cancer",
+      "year": 2021,
+      "section": "Screen adults 45–49 (grade B) and 50–75 (grade A); 76–85 selectively, considering overall health and prior screening (grade C); stool-based (e.g. annual FIT) or direct visualisation (e.g. colonoscopy every 10 years) strategies",
+      "citation": "US Preventive Services Task Force. Screening for colorectal cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:1965–1977.",
+      "verified": false
+    }
+  ],
+  "rationale": "Screening prompts should use the surgical history: after total hysterectomy for benign disease there is no cervix to screen, while breast and colorectal screening are due at 52.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

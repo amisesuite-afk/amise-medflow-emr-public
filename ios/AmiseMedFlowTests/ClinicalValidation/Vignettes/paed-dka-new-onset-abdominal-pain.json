@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "id": "paed-dka-new-onset-abdominal-pain",
+  "condition": "New-onset type 1 diabetes in DKA presenting as abdominal pain",
+  "category": "general-medicine",
+  "permutationOf": "mimic-dka-abdominal-pain",
+  "permutationLabel": "9-year-old, undiagnosed diabetes, referred as \"?appendicitis\"",
+  "summary": "9-year-old girl (26 kg), 2 weeks of thirst, polyuria and bed-wetting, then 24 h of vomiting and central abdominal pain; drowsy with deep sighing breathing, HR 138, capillary glucose 27, ketones 5.8, pH 7.08; referred as \"?appendicitis\". Severe paediatric DKA: cerebral oedema risk.",
+  "tags": [
+    "paediatric",
+    "dka",
+    "mimic",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 9,
+      "sex": "female",
+      "heightCm": 132,
+      "weightKg": 26
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Tummy pain and vomiting — ?appendicitis",
+    "hpi": "Previously well 9-year-old. Two weeks of drinking a lot, passing a lot of urine, wetting the bed again and losing weight. For 24 hours central abdominal pain and vomiting; today drowsy and breathing deeply. Referred to the surgical team as \"?appendicitis\".",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Periumbilical",
+        "Diffuse"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Weight loss"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "excessive thirst",
+      "polyuria",
+      "weight loss",
+      "drowsiness"
+    ],
+    "negatives": [
+      "fever",
+      "diarrhoea"
+    ],
+    "exam": {
+      "general": "Drowsy but rousable (GCS 14), deep sighing (Kussmaul) respiration, ketotic breath, dry mucosa. T 37.1, HR 138, RR 34, BP 102/64, CRT 3 s.",
+      "abdomen": "Diffuse tenderness with voluntary guarding, no rebound, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 138,
+        "systolicBp": 102,
+        "diastolicBp": 64,
+        "respiratoryRate": 34,
+        "temperatureC": 37.1,
+        "spo2": 99,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "glucoseMmol": 27.0,
+        "weightKg": 26
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 27.0,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ketones",
+        "name": "Blood ketones",
+        "value": 5.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ph",
+        "name": "pH (venous)",
+        "value": 7.08,
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 133,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 180,
+        "unit": "U/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Primary school.",
+    "confirmedDiagnosis": {
+      "name": "Diabetic ketoacidosis (new-onset type 1 diabetes), severe",
+      "icd10": "E10.10",
+      "assessmentText": "Severe DKA (pH 7.08, bicarbonate 6) at presentation of type 1 diabetes; abdominal pain is from DKA, no surgical abdomen. Paediatric DKA protocol: weight-based fluids, insulin infusion 0.05–0.1 units/kg/h after fluids (no bolus), potassium, hourly neurological observations for cerebral oedema; paediatric team / HDU. Re-examine abdomen as acidosis corrects."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Around the belly button, all over",
+          "onset": "Yesterday",
+          "character": "Aching",
+          "associated": "Vomiting, thirst, passing lots of urine, weight loss, drowsy",
+          "timing": "Constant",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "excessive thirst",
+          "polyuria",
+          "weight loss",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "Diffuse",
+            "1–3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Diffuse tenderness",
+            "Guarding"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-dka",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsped-dka-2021",
+            "ispad-dka-2022"
+          ],
+          "match": [
+            "ketoacidosis",
+            "dka",
+            "diabet"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no DKA disease node (pane-engine has 130 diseases, none for DKA); top 3: acute cholecystitis, appendicitis, peptic ulcer. The BGL 27 prompt does raise \"DKA / HHS — exclude\" and symptom inference ranks DKA #1 (secondary views).",
+          "proposedFix": "Add a DKA rule/node: glucose > 11 with ketones ≥ 3 or pH < 7.3 → DKA as the leading diagnosis, suppressing surgical operative prompts.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustRankTopK": [
+        {
+          "id": "dx-dka-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "dka",
+            "ketoacidosis"
+          ],
+          "k": 3,
+          "source": "web.symptomInference"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "guidelineRefs": [
+          "bsped-dka-2021"
+        ],
+        "atLeast": "emergency",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-dka",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsped-dka-2021"
+          ],
+          "match": [
+            "dka",
+            "ketoacidosis",
+            "hyperglyc"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ketones-gas",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsped-dka-2021"
+          ],
+          "match": [
+            "ketone",
+            "blood gas",
+            "re:\\bvbg\\b",
+            "re:\\babg\\b"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-insulin",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsped-dka-2021",
+            "ispad-dka-2022"
+          ],
+          "match": [
+            "insulin"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-cerebral-oedema",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsped-dka-2021",
+            "ispad-dka-2022"
+          ],
+          "note": "Children in DKA need hourly neurological observations for cerebral oedema.",
+          "match": [
+            "cerebral oedema",
+            "cerebral edema",
+            "neurological observation",
+            "neuro obs",
+            "cerebral injury"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No cerebral-oedema or neurological-observation output; the hyperglycaemia prompt is the adult pathway (VRIII wording, 'DKA fixed-rate 0.1 units/kg/h'), with no paediatric DKA protocol.",
+          "proposedFix": "Paediatric DKA branch (age < 18): BSPED/ISPAD fluids by weight, insulin 0.05–0.1 units/kg/h after fluids, no bolus, hourly neuro observations for cerebral oedema.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsped-dka-2021"
+          ],
+          "note": "Abdominal pain of DKA: an appendicectomy plan is a wrong-procedure suggestion.",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: computeClinicalPrompts fires the 'Appendicitis — emergency surgical indication' laparoscopic-appendicectomy operative plan (consent, theatre booking, post-operative orders, pip-tazo at induction). hasAppendicitisIndication fires on any affirmed 'guarding'/'rebound' in the abdominal exam ('voluntary guarding' from DKA) and ignores the confirmed diagnosis.",
+          "proposedFix": "Gate the appendicectomy operative-plan prompt on an appendicitis working diagnosis (as the Alvarado block does with assessmentHasAppend); guarding from torsion, PID, haemoperitoneum or DKA is not an appendicectomy indication. Also suppress when a DKA prompt is active.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "ispad-dka-2022"
+          ],
+          "match": [
+            "re:(emergency )?laparotomy"
+          ],
+          "unless": [
+            "if ",
+            "persist"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-adult-fixed-doses",
+          "severity": "critical",
+          "note": "Weight 26 kg. Paracetamol 1 g, ibuprofen 400 mg, piperacillin-tazobactam 4.5 g, co-amoxiclav 1.2 g, meropenem 1 g, morphine 2.5–5 mg, ondansetron 4 mg and fixed 1 L, 1–2 L or 500 mL fluid volumes are adult fixed doses; a child needs weight-based (mg/kg, mL/kg) dosing. Prescribing accuracy is a patient-safety issue, so critical.",
+          "match": [
+            "re:paracetamol 1 ?g",
+            "re:ibuprofen 400 ?mg",
+            "re:4\\.5 ?g",
+            "re:co-amoxiclav[^\\n]{0,20}1\\.2 ?g",
+            "re:amoxiclav 1\\.2 ?g",
+            "re:meropenem 1 ?g",
+            "re:morphine (sulfate )?(2\\.5|5) ?mg",
+            "re:hartmann'?s (1 ?l|1[–-]2 ?l|500 ?ml)",
+            "re:fluid challenge 500 ?ml",
+            "re:ondansetron 4 ?mg"
+          ],
+          "unless": [
+            "mg/kg",
+            "ml/kg",
+            "adult",
+            ">50 kg",
+            "over 50 kg",
+            "age ≥ 12",
+            "microgram/kg"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: adult fixed doses with no weight or age adjustment — the appendicectomy template's pip-tazo 4.5 g, co-amoxiclav 1.2 g, paracetamol 1 g, ibuprofen 400 mg, morphine 5 mg and 'IV fluid challenge 500ml' for a 26 kg child.",
+          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg and mL/kg with an adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg; use age-specific vital-sign ranges before firing the adult shock/sepsis/tachycardia prompts.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsped-dka-2021"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) the first-substring match would have attached the pulmonary-embolism (DOAC, thrombolysis) plan to this diagnosis because \"pe\" is inside \"type 1\". With word-boundary matching no radiation entry matches (simulated from the source), so iOS is expected to pass; to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsped-dka-2021",
+      "name": "BSPED guideline — diabetic ketoacidosis in children and young people",
+      "year": 2021,
+      "section": "DKA diagnosis (acidosis with ketonaemia); weight-based fluid calculation; insulin infusion (0.05–0.1 units/kg/h) started after IV fluids, no insulin bolus; potassium replacement; close neurological observation for cerebral oedema; abdominal pain is common in DKA",
+      "citation": "British Society for Paediatric Endocrinology and Diabetes. BSPED interim guideline for the management of children and young people under the age of 18 years with diabetic ketoacidosis. 2021.",
+      "verified": false
+    },
+    {
+      "id": "ispad-dka-2022",
+      "name": "ISPAD clinical practice consensus guidelines 2022 — diabetic ketoacidosis and hyperglycaemic hyperosmolar state",
+      "year": 2022,
+      "section": "Children with DKA: fluids, insulin infusion, potassium; monitor for cerebral injury (cerebral oedema); abdominal pain may mimic an acute abdomen",
+      "citation": "Glaser N, Fritsch M, Priyambada L, et al. ISPAD clinical practice consensus guidelines 2022: diabetic ketoacidosis and hyperglycemic hyperosmolar state. Pediatr Diabetes. 2022;23:835–856.",
+      "verified": false
+    }
+  ],
+  "rationale": "DKA commonly presents to surgeons as abdominal pain with vomiting and leucocytosis. In children the main risk is cerebral oedema; fluids and insulin follow the paediatric protocol by weight, and no operation is needed.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

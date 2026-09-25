@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "id": "obs-hyperemesis-gravidarum",
+  "condition": "Hyperemesis gravidarum",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "10 weeks, dehydration, ketonuria, 7% weight loss (base case)",
+  "summary": "24-year-old at 10 weeks with 2 weeks of intractable vomiting, unable to keep fluids down, 7% weight loss, ketones 3+, K 3.0, Na 131; mild epigastric discomfort; referred as \"?gastric outlet obstruction\". RCOG GTG 69: admit, IV saline with potassium, thiamine, antiemetics, LMWH, confirm intrauterine pregnancy.",
+  "tags": [
+    "pregnancy",
+    "vomiting",
+    "mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 10
+      },
+      "heightCm": 162,
+      "weightKg": 55
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting everything for two weeks, 10 weeks pregnant",
+    "hpi": "G1 at 10 weeks by dates, no scan yet. Two weeks of vomiting 10–15 times a day, unable to keep water down for 24 hours, weight down from 59 to 55 kg. Mild epigastric soreness from retching. Oral cyclizine did not help. Dizzy on standing. No abdominal pain otherwise, no diarrhoea, no fever, no vaginal bleeding.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago",
+        "Gradual"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Weight loss"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "vomiting",
+      "nausea",
+      "weight loss",
+      "dehydration"
+    ],
+    "negatives": [
+      "abdominal pain",
+      "fever",
+      "diarrhoea",
+      "vaginal bleeding"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes, ketotic breath. HR 112, BP 104/66 lying, 92/60 standing.",
+      "abdomen": "Soft, mild epigastric tenderness, no peritonism, no succussion splash."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 104,
+        "diastolicBp": 66,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.0,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 7.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 78,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Ketones 3+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Serum hCG",
+        "value": 162000,
+        "unit": "IU/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 58,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "tsh",
+        "name": "TSH",
+        "value": 0.08,
+        "unit": "mU/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Pregnancy (10 weeks)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Cyclizine",
+        "dose": "50 mg",
+        "frequency": "TDS",
+        "indication": "Nausea (not tolerated orally)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Call-centre worker. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Hyperemesis gravidarum at 10 weeks",
+      "icd10": "O21.1",
+      "assessmentText": "Hyperemesis gravidarum with dehydration, ketonuria, hypokalaemia and 7% weight loss. Admit (obstetrics/gynaecology): IV 0.9% saline with potassium chloride, thiamine, parenteral antiemetic, LMWH thromboprophylaxis; ultrasound to confirm viable intrauterine pregnancy and exclude multiple/molar pregnancy. No surgical cause."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "socratesAnswers": {
+          "site": "Epigastric",
+          "onset": "2 weeks",
+          "character": "Sore from retching",
+          "associated": "Nausea, vomiting, weight loss, dizziness",
+          "timing": "Constant",
+          "triggers": "Eating or drinking",
+          "relief": "Nothing",
+          "severity": "2/10"
+        },
+        "symptoms": [
+          "vomiting",
+          "nausea",
+          "weight loss",
+          "dehydration"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Food",
+            "Multiple episodes daily"
+          ],
+          "nausea": [
+            "Severe — unable to eat",
+            "Morning (pregnancy?)"
+          ],
+          "weight loss": [
+            "< 5 kg",
+            "< 1 month",
+            "Unintentional"
+          ]
+        },
+        "durationDays": 14
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hyperemesis",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "note": "No surgical cause; the working differential should contain hyperemesis / a pregnancy cause.",
+          "match": [
+            "hyperemesis",
+            "pregnan"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no hyperemesis gravidarum disease node (pane-engine has 130 diseases, none for hyperemesis gravidarum); top 3: acute cholecystitis, peptic ulcer, appendicitis. Symptom inference lists gastroenteritis, pyloric stenosis and gastric carcinoma.",
+          "proposedFix": "Add hyperemesis gravidarum (O21) as a PANE node or a pregnancy + vomiting rule.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "quality",
+        "guidelineRefs": [
+          "rcog-gtg69-2016"
+        ],
+        "note": "Unable to keep fluids down with ketonuria and > 5% weight loss: admission.",
+        "atLeast": "urgent",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-pregnancy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "match": [
+            "pregnan"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ultrasound-viability",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "match": [
+            "re:(ultrasound|uss|scan)[^\\n]{0,60}(viab|intrauterine|dating|molar|multiple)",
+            "dating scan",
+            "early pregnancy scan",
+            "transvaginal"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No pregnancy ultrasound suggested; the only pregnancy output is 'Urine Pregnancy Test (β-HCG) — mandatory' for a woman recorded at 10 weeks.",
+          "proposedFix": "Hyperemesis rule: dating/viability scan (exclude multiple and molar pregnancy).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-electrolytes",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "match": [
+            "u&e",
+            "urea & electrolytes",
+            "electrolytes",
+            "potassium"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-thiamine",
+          "severity": "critical",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "note": "Thiamine for women admitted with prolonged vomiting prevents Wernicke encephalopathy.",
+          "match": [
+            "thiamine",
+            "pabrinex",
+            "vitamin b1"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No thiamine anywhere; O21.1 maps to no protocol, so no management panel or plan exists.",
+          "proposedFix": "Hyperemesis rule (RCOG GTG 69): thiamine, IV saline with KCl, antiemetics, LMWH.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-iv-fluids-potassium",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "match": [
+            "re:(saline|sodium chloride)[^\\n]{0,40}potassium",
+            "re:potassium[^\\n]{0,40}(saline|replace|kcl)",
+            "kcl"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No fluid/electrolyte plan beyond the adult tachycardia prompt's 'IV fluid challenge 500ml'.",
+          "proposedFix": "Hyperemesis rule.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-vte-prophylaxis",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "match": [
+            "lmwh",
+            "enoxaparin",
+            "tinzaparin",
+            "dalteparin",
+            "thromboprophylaxis",
+            "vte prophylaxis"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No thromboprophylaxis.",
+          "proposedFix": "Hyperemesis rule.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-surgical-plan",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "note": "No endoscopy or operation for uncomplicated hyperemesis.",
+          "match": [
+            "re:(gastro)?jejunostomy",
+            "pyloroplasty",
+            "laparotomy",
+            "ogd",
+            "gastroscopy"
+          ],
+          "unless": [
+            "not indicated",
+            "if persistent",
+            "if atypical"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-ct-in-early-pregnancy",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acog-co723-2017",
+            "rcog-gtg69-2016"
+          ],
+          "note": "Weight loss here is from vomiting in a 10-week pregnancy: a CT chest/abdomen/pelvis \"occult malignancy screen\" irradiates the pregnancy without a clinical question. Ultrasound is the first-line imaging.",
+          "match": [
+            "re:\\bct\\b[^\\n]{0,30}(abdomen|pelvis|chest)"
+          ],
+          "unless": [
+            "mri",
+            "if ultrasound",
+            "non-diagnostic",
+            "not in pregnancy"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: the unintentional-weight-loss alarm prompt adds '• CT chest/abdomen/pelvis — occult malignancy screen (alarm symptoms)' (and an upper GI endoscopy line) for a woman recorded at 10 weeks whose weight loss is from vomiting.",
+          "proposedFix": "Suppress the occult-malignancy CT when pregnancy is recorded (or require an explicit clinical question); prefer ultrasound/MRI (ACOG CO 723).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "rcog-gtg69-2016"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard: before 999f838 (word-boundary lookup) \"pe\" inside \"hyperemesis\" would have attached the PE plan (DOAC/thrombolysis — DOACs are contraindicated in pregnancy). With word-boundary matching no radiation entry matches (simulated from the source); to be confirmed on the first iOS CI run. Prophylactic LMWH is correct; therapeutic DOAC or thrombolysis is not.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcog-gtg69-2016",
+      "name": "RCOG Green-top Guideline No. 69 — nausea and vomiting of pregnancy and hyperemesis gravidarum",
+      "year": 2016,
+      "section": "Hyperemesis: inpatient care when unable to keep down oral fluids or antiemetics, or with ketonuria and/or weight loss > 5%; IV normal saline with potassium chloride guided by U&E; thiamine supplementation for women admitted with prolonged vomiting (Wernicke encephalopathy); antiemetics safe in pregnancy; thromboprophylaxis with LMWH for admitted women; ultrasound to confirm a viable intrauterine pregnancy and exclude multiple or molar pregnancy (updated 2024)",
+      "citation": "Royal College of Obstetricians and Gynaecologists. The management of nausea and vomiting of pregnancy and hyperemesis gravidarum. Green-top Guideline No. 69. London: RCOG; 2016 (updated 2024).",
+      "verified": false
+    },
+    {
+      "id": "acog-co723-2017",
+      "name": "ACOG Committee Opinion No. 723 — guidelines for diagnostic imaging during pregnancy and lactation",
+      "year": 2017,
+      "section": "Ultrasound and MRI are the imaging techniques of choice in pregnancy; CT with its radiation dose should be used when necessary for a specific clinical question, not as a screening test",
+      "citation": "American College of Obstetricians and Gynecologists. Guidelines for diagnostic imaging during pregnancy and lactation: ACOG Committee Opinion No. 723. Obstet Gynecol. 2017;130:e210–e216.",
+      "verified": false
+    }
+  ],
+  "rationale": "Hyperemesis gravidarum is a diagnosis of exclusion that surgeons meet as \"?obstruction\" or \"?gastritis\". Management is supportive: fluids with potassium, thiamine, antiemetics, thromboprophylaxis and confirmation of the pregnancy — not endoscopy or surgery.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

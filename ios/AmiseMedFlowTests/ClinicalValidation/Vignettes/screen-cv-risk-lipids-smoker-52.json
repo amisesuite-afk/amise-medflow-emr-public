@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-cv-risk-lipids-smoker-52",
+  "condition": "Cardiovascular risk assessment and lipid screening",
+  "category": "general-medicine",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Man aged 52, current smoker, borderline BP",
+  "summary": "52-year-old current smoker (25 pack-years) with BP 138/86 at a wellness visit; no lipid test on record. USPSTF 2022 / ACC-AHA 2019: lipids and 10-year risk estimate to guide statin; smoking cessation; USPSTF 2021 lung screening.",
+  "tags": [
+    "screening",
+    "cardiovascular",
+    "lipids",
+    "smoking"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "heightCm": 170,
+      "weightKg": 86
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wellness check",
+    "hpi": "Asymptomatic 52-year-old bus driver at a wellness visit. Smokes 15 cigarettes/day (25 pack-years). No lipid test on record. No exertional chest pain, no claudication. Brother had a heart attack at 54.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "exertional chest pain",
+      "claudication"
+    ],
+    "exam": {
+      "general": "BMI 29.8. BP 138/86. Pulse 80."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 80,
+        "systolicBp": 138,
+        "diastolicBp": 86,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Family history: brother myocardial infarction at 54"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Bus driver. Current smoker 15/day, 25 pack-years. Alcohol 6 units/week.",
+    "confirmedDiagnosis": {
+      "name": "Cardiovascular risk assessment — current smoker",
+      "icd10": "Z13.6",
+      "assessmentText": "Asymptomatic smoker, 52. Lipid profile and HbA1c; calculate 10-year cardiovascular risk; smoking cessation support; annual low-dose CT chest."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "toxicHabits": [
+          "Smoker (15/day, 25 pack-years)"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-lipids",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-statin-2022",
+            "acc-aha-primary-2019"
+          ],
+          "match": [
+            "lipid"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-10-year-risk",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-statin-2022",
+            "acc-aha-primary-2019"
+          ],
+          "note": "A formal 10-year risk estimate, not only \"document BP and BMI\".",
+          "match": [
+            "qrisk",
+            "ascvd",
+            "pooled cohort",
+            "10-year",
+            "re:cardiovascular risk (score|calculat|estimat|assessment)",
+            "framingham"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No formal 10-year risk estimate is suggested; the lipid profile comes from diabetes_screen and the only CV-risk text is 'Document BP, BMI, waist circumference — cardiovascular risk profiling'.",
+          "proposedFix": "Add a primary-prevention prompt at 40–75: lipid profile plus QRISK3/PCE 10-year risk and statin discussion (USPSTF 2022).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-smoking-cessation",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acc-aha-primary-2019"
+          ],
+          "match": [
+            "smoking cessation",
+            "stop smoking",
+            "nicotine replacement",
+            "varenicline"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-ldct",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-lung-2021"
+          ],
+          "note": "USPSTF 2021: annual LDCT at 50–80 with ≥ 20 pack-years who currently smoke.",
+          "match": [
+            "low-dose ct",
+            "ldct",
+            "low dose ct"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-statin-2022",
+      "name": "USPSTF recommendation statement — statin use for primary prevention of cardiovascular disease",
+      "year": 2022,
+      "section": "Adults 40–75 with ≥ 1 CVD risk factor (dyslipidaemia, diabetes, hypertension or smoking) and an estimated 10-year CVD risk ≥ 10%: prescribe a statin (grade B); requires lipid measurement and a 10-year risk estimate",
+      "citation": "US Preventive Services Task Force. Statin use for the primary prevention of cardiovascular disease in adults: US Preventive Services Task Force recommendation statement. JAMA. 2022;328:746–753.",
+      "verified": false
+    },
+    {
+      "id": "acc-aha-primary-2019",
+      "name": "2019 ACC/AHA guideline on the primary prevention of cardiovascular disease",
+      "year": 2019,
+      "section": "Adults 40–75: estimate 10-year ASCVD risk (pooled cohort equations) to guide statin therapy; assess and treat tobacco use at every visit",
+      "citation": "Arnett DK, Blumenthal RS, Albert MA, et al. 2019 ACC/AHA guideline on the primary prevention of cardiovascular disease. Circulation. 2019;140:e596–e646.",
+      "verified": false
+    },
+    {
+      "id": "uspstf-lung-2021",
+      "name": "USPSTF recommendation statement — screening for lung cancer",
+      "year": 2021,
+      "section": "Annual low-dose CT for adults 50–80 with a ≥ 20 pack-year history who currently smoke or quit within the past 15 years (grade B)",
+      "citation": "US Preventive Services Task Force. Screening for lung cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:962–970.",
+      "verified": false
+    }
+  ],
+  "rationale": "Statin decisions in primary prevention depend on a lipid profile and a 10-year risk estimate; smoking cessation is the single most effective intervention for this patient.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

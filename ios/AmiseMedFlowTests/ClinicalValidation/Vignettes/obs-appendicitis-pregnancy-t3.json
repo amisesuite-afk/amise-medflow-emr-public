@@ -1,0 +1,427 @@
+{
+  "schemaVersion": 1,
+  "id": "obs-appendicitis-pregnancy-t3",
+  "condition": "Acute appendicitis in the third trimester",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-pregnant-t2",
+  "permutationLabel": "32 weeks, right upper quadrant/flank pain, MRI-confirmed",
+  "summary": "31-year-old G3P2 at 32 weeks with 24 h of right upper quadrant/flank pain (displaced appendix), T 37.9, HR 108, WBC 16.2, CRP 88; US non-diagnostic, MRI: inflamed appendix. Laparoscopic appendicectomy with obstetric input and fetal monitoring; no NSAIDs.",
+  "tags": [
+    "pregnancy",
+    "appendicitis",
+    "third-trimester"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 32
+      },
+      "heightCm": 163,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right-sided abdominal pain, 32 weeks pregnant",
+    "hpi": "G3P2 at 32 weeks. 24 hours of right-sided abdominal pain, now constant under the right ribs and in the right flank, nausea and anorexia. No vaginal bleeding, no contractions, fetal movements normal. Urine: trace leucocytes only.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Gradual"
+      ],
+      "site": [
+        "RUQ",
+        "Right side"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Anorexia",
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "nausea",
+      "anorexia"
+    ],
+    "negatives": [
+      "vaginal bleeding",
+      "contractions",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "T 37.9, HR 108, BP 118/70.",
+      "abdomen": "Gravid uterus, fundus 32 cm, soft and non-tender, no contractions. Tender right flank and right upper quadrant lateral to the uterus with guarding. Fetal heart 145/min on Doppler."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 108,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 37.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 88,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 9,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 18,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Leucocytes trace, nitrite negative, protein negative",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Gallbladder normal, no stones. Right kidney mild physiological hydronephrosis. Appendix not visualised.",
+        "minutesAgo": 240
+      },
+      {
+        "name": "MRI abdomen (non-contrast)",
+        "modality": "MRI",
+        "region": "Abdomen",
+        "result": "Dilated 11 mm appendix displaced superiorly to the right flank with wall thickening and periappendiceal inflammatory change; no abscess.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Pregnancy (32 weeks)"
+    ],
+    "surgicalHistory": [
+      "Caesarean section x1"
+    ],
+    "medications": [
+      {
+        "drug": "Ferrous sulfate",
+        "dose": "200 mg",
+        "frequency": "OD",
+        "indication": "Pregnancy"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Shop assistant. Non-smoker.",
+    "scoreForms": {
+      "alvarado": {
+        "migration": false,
+        "anorexia": true,
+        "nauseaVomiting": true,
+        "rifTenderness": false,
+        "rebound": false,
+        "temperatureRaised": true,
+        "wbcAbove10": true,
+        "neutrophilia": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis at 32 weeks' gestation (MRI-confirmed)",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Acute uncomplicated appendicitis at 32 weeks, MRI-confirmed. Laparoscopic appendicectomy with left lateral tilt; obstetric team, CTG before and after surgery; avoid NSAIDs."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right upper (RUQ) and right flank",
+          "onset": "Yesterday",
+          "character": "Aching",
+          "associated": "Nausea, loss of appetite, fever",
+          "timing": "Constant, worsening",
+          "triggers": "Movement",
+          "relief": "Nothing",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "nausea",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "1–3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Nausea",
+            "Anorexia",
+            "Fever",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Guarding"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "match": [
+            "append"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "guidelineRefs": [
+          "wses-2020"
+        ],
+        "atLeast": "urgent",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-pregnancy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-co775-2019"
+          ],
+          "match": [
+            "pregnan"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-appendicectomy",
+          "severity": "quality",
+          "guidelineRefs": [
+            "sages-2017",
+            "wses-2020"
+          ],
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-obstetric-fetal-monitoring",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-co775-2019",
+            "sages-2017"
+          ],
+          "note": "Viable fetus at 32 weeks: obstetric team and fetal heart/contraction monitoring before and after surgery.",
+          "match": [
+            "obstetric",
+            "obstetrician",
+            "o&g",
+            "maternity",
+            "fetal monitoring",
+            "fetal heart",
+            "ctg",
+            "cardiotocograph"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No obstetric or fetal-monitoring output: the appendicitis protocol and dx variant have no pregnancy branch; the only pregnancy output is the urine β-HCG prompt (for a woman recorded at 32 weeks).",
+          "proposedFix": "When pregnancy is recorded: strip NSAIDs from 20 weeks, replace 'β-HCG confirmed negative' with the gestation, add obstetric review and fetal monitoring to the operative templates.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-left-lateral",
+          "severity": "quality",
+          "guidelineRefs": [
+            "sages-2017"
+          ],
+          "match": [
+            "left lateral",
+            "lateral tilt",
+            "uterine displacement",
+            "left uterine"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-after-20-weeks",
+          "severity": "critical",
+          "guidelineRefs": [
+            "fda-2020-nsaid"
+          ],
+          "note": "NSAIDs are avoided from 20 weeks (fetal renal dysfunction, oligohydramnios, ductal constriction in the third trimester).",
+          "match": [
+            "nsaid",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "parecoxib",
+            "celecoxib"
+          ],
+          "unless": [
+            "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
+            "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: the appendicectomy operative-plan prompt prescribes 'paracetamol 1g QDS + ibuprofen 400mg TDS (regular)' at 32 weeks.",
+          "proposedFix": "When pregnancy is recorded: strip NSAIDs from 20 weeks, replace 'β-HCG confirmed negative' with the gestation, add obstetric review and fetal monitoring to the operative templates.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-assumed-negative-hcg",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-co775-2019"
+          ],
+          "note": "She is 32 weeks pregnant: a template stating \"β-HCG confirmed negative\" is false and dangerous.",
+          "match": [
+            "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: the appendicectomy operative-plan prompt states '• β-HCG confirmed negative (female of reproductive age)' although she is recorded as 32 weeks pregnant.",
+          "proposedFix": "Replace the line with 'β-HCG result: [ ]' (or the recorded gestation) and block the template until a negative result is recorded.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-uncomplicated",
+      "severity": "quality",
+      "equals": "appendicitis_uncomplicated"
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Pregnancy: ultrasound first, MRI if inconclusive; laparoscopic appendicectomy in pregnancy; children: ultrasound first, clinical scores (PAS), antibiotics and appendicectomy for complicated appendicitis",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "sages-2017",
+      "name": "SAGES guidelines for the use of laparoscopy during pregnancy",
+      "year": 2017,
+      "section": "Laparoscopic appendicectomy may be performed in any trimester; left lateral positioning to limit aortocaval compression; pre- and post-operative fetal heart monitoring; obstetric consultation",
+      "citation": "Pearl JP, Price RR, Tonkin AE, Richardson WS, Stefanidis D. SAGES guidelines for the use of laparoscopy during pregnancy. Surg Endosc. 2017;31:3767–3782.",
+      "verified": false
+    },
+    {
+      "id": "acog-co775-2019",
+      "name": "ACOG Committee Opinion No. 775 — nonobstetric surgery during pregnancy",
+      "year": 2019,
+      "section": "Obstetric consultation before non-obstetric surgery; with a viable fetus, at minimum electronic fetal heart rate and contraction monitoring before and after the procedure",
+      "citation": "American College of Obstetricians and Gynecologists. Nonobstetric surgery during pregnancy: ACOG Committee Opinion No. 775. Obstet Gynecol. 2019;133:e285–e286.",
+      "verified": false
+    },
+    {
+      "id": "fda-2020-nsaid",
+      "name": "FDA drug safety communication — NSAIDs at 20 weeks or later in pregnancy",
+      "year": 2020,
+      "section": "Avoid NSAIDs from 20 weeks of pregnancy (fetal renal dysfunction, oligohydramnios; ductal constriction later in pregnancy)",
+      "citation": "US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "In the third trimester the appendix is displaced upwards, so pain is right-sided or subcostal. Laparoscopic appendicectomy is appropriate in any trimester, with obstetric involvement and fetal monitoring for a viable fetus, left lateral positioning and no NSAIDs.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

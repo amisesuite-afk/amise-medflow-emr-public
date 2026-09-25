@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-polyp-piecemeal-emr-site-check",
+  "condition": "Large polyp removed piecemeal — early site-check colonoscopy",
+  "category": "colorectal",
+  "permutationOf": "polyp-surveillance-high-risk-3y",
+  "permutationLabel": "30 mm lesion removed piecemeal by EMR",
+  "summary": "67-year-old woman after piecemeal EMR of a 30 mm laterally spreading tubulovillous adenoma in the ascending colon. MSTF 2020: site-check colonoscopy at 6 months; BSG 2020: site check at 2–6 months (not 3 years).",
+  "tags": [
+    "screening",
+    "surveillance",
+    "polyp",
+    "emr",
+    "colorectal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 67,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Follow-up after removal of a large bowel polyp",
+    "hpi": "Colonoscopy 4 weeks ago for a positive FIT: 30 mm granular laterally spreading lesion in the ascending colon removed piecemeal by endoscopic mucosal resection (6 pieces), margins treated with snare-tip soft coagulation, site tattooed. Histology: tubulovillous adenoma, low-grade dysplasia, no invasive cancer. No other polyps. Recovered well.",
+    "symptoms": [
+      "results review"
+    ],
+    "negatives": [
+      "bleeding after procedure",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 74,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [
+      {
+        "name": "Colonoscopy",
+        "modality": "Endoscopy",
+        "region": "Colon",
+        "result": "30 mm LST-G ascending colon, piecemeal EMR in 6 pieces, margins treated with STSC, tattoo placed distally. No residual lesion visible.",
+        "minutesAgo": 40320
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Piecemeal EMR ascending colon (4 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired nurse. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Large (30 mm) tubulovillous adenoma removed piecemeal by EMR",
+      "icd10": "D12.2",
+      "assessmentText": "30 mm tubulovillous adenoma (LGD) removed piecemeal by EMR. Site-check colonoscopy at 6 months for residual/recurrent adenoma, then 1 year later."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colonoscopy (diagnostic / surveillance)",
+        "symptoms": [
+          "results review"
+        ],
+        "durationDays": 28
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-site-check",
+          "severity": "quality",
+          "guidelineRefs": [
+            "mstf-polyp-2020",
+            "bsg-polyp-2020"
+          ],
+          "note": "Piecemeal resection of a lesion ≥ 20 mm: early site check for residual/recurrent adenoma (MSTF 6 months; BSG 2–6 months).",
+          "match": [
+            "site check",
+            "site-check",
+            "re:\\b(6|six)[ -]?months?",
+            "re:2[–-]6 ?months"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No output mentions a site check after piecemeal EMR; D12.2 maps to no protocol; the generic age-≥50 screening prompt still offers 'FOBT every 2 years' and 'Colonoscopy — CRC screening' 4 weeks after the EMR.",
+          "proposedFix": "Post-polypectomy surveillance helper with a piecemeal ≥ 20 mm branch: site-check colonoscopy at 6 months (MSTF) / 2–6 months (BSG).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-3-year-first-interval",
+          "severity": "quality",
+          "guidelineRefs": [
+            "mstf-polyp-2020",
+            "bsg-polyp-2020"
+          ],
+          "note": "A 3-year first interval misses residual adenoma after piecemeal EMR.",
+          "match": [
+            "re:one-off surveillance colonoscopy at 3 years",
+            "re:surveillance colonoscopy (at|in) (3|three) years"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "mstf-polyp-2020",
+      "name": "US Multi-Society Task Force — recommendations for follow-up after colonoscopy and polypectomy",
+      "year": 2020,
+      "section": "1–2 tubular adenomas < 10 mm completely removed: repeat colonoscopy in 7–10 years; adenoma ≥ 20 mm removed piecemeal: repeat colonoscopy (site check) at 6 months",
+      "citation": "Gupta S, Lieberman D, Anderson JC, et al. Recommendations for follow-up after colonoscopy and polypectomy: a consensus update by the US Multi-Society Task Force on Colorectal Cancer. Gastroenterology. 2020;158:1131–1153.",
+      "verified": false
+    },
+    {
+      "id": "bsg-polyp-2020",
+      "name": "BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines",
+      "year": 2020,
+      "section": "Low-risk findings (no high-risk criteria): no colonoscopic surveillance — return to population screening when invited; high-risk findings: one-off surveillance at 3 years; large non-pedunculated polyp (≥ 20 mm) removed piecemeal: site-check colonoscopy at 2–6 months",
+      "citation": "Rutter MD, East J, Rees CJ, et al. British Society of Gastroenterology/Association of Coloproctology of Great Britain and Ireland/Public Health England post-polypectomy and post-colorectal cancer resection surveillance guidelines. Gut. 2020;69:201–223.",
+      "verified": false
+    }
+  ],
+  "rationale": "Residual or recurrent adenoma after piecemeal EMR is common; both guidelines require an early site-check colonoscopy rather than the standard high-risk 3-year interval.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}
