@@ -5,8 +5,10 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { supabase } from '@/lib/supabase';
 import { saveDischargeNotes, loadDischargeNotes } from '@/lib/db';
-import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
-import type { ManagementProtocol } from '@workspace/pane-engine';
+import type { AdaptedProtocol } from '@workspace/pane-engine';
+import { confirmedPlanSource } from '@/lib/diagnosis-suggestion';
+import { dischargeProtocolFill, patientProtocol } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { AMISE_LOGO_SVG } from './lib/docTemplate';
 import { saveBlobAsPDF } from './lib/pdfExport';
@@ -995,6 +997,9 @@ function DirectExportPanel() {
   const [aiError, setAiError] = useState('');
   const [showPreview, setShowPreview] = useState(true);
   const [protocolFillMsg, setProtocolFillMsg] = useState('');
+  // The patient on record, for the plan-safety filter on the protocol fill (allergy, pregnancy,
+  // under 16): a withheld drug never reaches the discharge summary.
+  const planPatient = usePlanPatientContext();
 
   const locked = ctx.encounterStatus === 'closed';
 
@@ -1039,10 +1044,13 @@ function DirectExportPanel() {
   // the same clinical protocol data (lib/pane-engine) that drives the working
   // diagnosis's posterior probability and the Management panel, so it never
   // needs a network round-trip and always matches the protocol on file.
-  function resolveProtocol(): ManagementProtocol | null {
-    return (ctx.workingDiagnosis?.diseaseId ? getProtocol(ctx.workingDiagnosis.diseaseId) : null) ??
-      (ctx.workingDiagnosis?.icdCode ? getProtocolByIcd(ctx.workingDiagnosis.icdCode) : null) ??
-      (ctx.icdCodes[0] ? getProtocolByIcd(ctx.icdCodes[0]) : null);
+  // Only a CONFIRMED diagnosis (locked working diagnosis or recorded ICD-10 code), resolved with
+  // pane-engine resolveProtocol and adapted to the patient on record (plan-builder.ts
+  // patientProtocol) — never the raw protocol: a drug withheld for allergy, pregnancy or age is
+  // replaced by the protocol's alternative with the reason, and a child's doses by the BNFc line.
+  function resolveProtocol(): AdaptedProtocol | null {
+    const { diseaseId, icdCode } = confirmedPlanSource(ctx.workingDiagnosis, ctx.icdCodes);
+    return patientProtocol(diseaseId, icdCode, planPatient);
   }
 
   function handleProtocolFill() {
@@ -1054,18 +1062,13 @@ function DirectExportPanel() {
       return;
     }
 
-    if (protocol.redFlags.length) setWarningSign(protocol.redFlags.join('\n'));
+    const fill = dischargeProtocolFill(protocol);
+    if (fill.warningSigns.length) setWarningSign(fill.warningSigns.join('\n'));
+    if (fill.followUp.length) setFollowUp(fill.followUp.join('\n'));
+    if (fill.dischargeNotes.length) setDischargeNotes(fill.dischargeNotes.join('\n'));
 
-    const followUpSteps = protocol.management.filter(s => s.phase === 'followup').map(s => s.step);
-    const followUpText = [...followUpSteps, protocol.referral ? `Referral: ${protocol.referral}` : null].filter(Boolean).join('\n');
-    if (followUpText) setFollowUp(followUpText);
-
-    const dischargeMeds = (protocol.medications ?? []).filter(m => m.phase === 'discharge')
-      .map(m => `${m.drugName} ${m.dose} ${m.route}, ${m.frequency}${m.duration ? ` for ${m.duration}` : ''} — ${m.indication}`);
-    const instructionLines = [...dischargeMeds, ...protocol.keyPoints];
-    if (instructionLines.length) setDischargeNotes(instructionLines.join('\n'));
-
-    setProtocolFillMsg(`Filled from protocol: ${protocol.label}`);
+    const withheld = protocol.withheld.filter(w => w.from === 'medication' && w.phase === 'discharge').length;
+    setProtocolFillMsg(`Filled from protocol: ${protocol.label}${withheld ? ` — ${withheld} medicine(s) withheld for this patient, see the discharge notes` : ''}`);
   }
 
   // protocol.referral (e.g. "Surgical team — same day admission.") previously
@@ -1082,9 +1085,12 @@ function DirectExportPanel() {
 
     if (protocol.referral) setReferTo(protocol.referral);
 
+    const safetyTexts = new Set(protocol.safetyNotes.map(n => n.text));
     const justification = [
       `Working diagnosis: ${protocol.label}${ctx.icdCodes[0] ? ` (${ctx.icdCodes[0]})` : ''}`,
-      ...protocol.redFlags,
+      ...protocol.redFlags.filter(f => !safetyTexts.has(f)),
+      // Patient-specific lines the receiving clinician needs (allergy, pregnancy, anticoagulation …).
+      ...protocol.safetyNotes.filter(n => n.severity === 'critical').map(n => `⚠ ${n.text}`),
     ].join('\n');
     setReferNotes(justification);
 
