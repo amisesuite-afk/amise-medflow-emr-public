@@ -8,7 +8,7 @@ import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
 import { supabase } from '@/lib/supabase';
-import { loadPMH, loadEncounterData, getLatestOpenEncounter, getLatestClosedEncounter, getQuestionnaireIntake } from '@/lib/db';
+import { loadPMH, loadEncounterData, getLatestOpenEncounter, getQuestionnaireIntake } from '@/lib/db';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -261,7 +261,6 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     setTopSection, clearPatient,
     setComorbidities, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes,
     setEncounterId, setVisitType,
-    setPriorEncounterSummary,
     setClinicalScores, setExtractedLabs,
     setHpiNotes, setFreeText, toggleSymptom,
   } = useAppContext();
@@ -359,11 +358,8 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         if (Object.keys(d.extractedLabs).length) setExtractedLabs(d.extractedLabs);
       }
     }
-    // Non-blocking: prior closed encounter for follow-up baseline strip
-    void getLatestClosedEncounter(patientId).then(({ data }) => {
-      setPriorEncounterSummary(data);
-    });
-  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes, setPriorEncounterSummary, setClinicalScores, setExtractedLabs]);
+    // The prior closed encounter (Ambient "Prior visit" strip) is loaded by AppContext.
+  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes, setClinicalScores, setExtractedLabs]);
 
   const load = useCallback(async () => {
     try {

@@ -6,7 +6,7 @@ import { EMPTY_VITALS, restoreVitalsState, type VitalsState, type VitalKey } fro
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns, type News2Avpu } from '@workspace/triage-engine';
 import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, type EncounterSummary } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, getLatestClosedEncounter, type EncounterSummary } from '@/lib/db';
 import { switchEncounter, type EncounterSwitchResult, type EncounterSwitchTarget } from '@/lib/encounter-switch';
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
@@ -1271,6 +1271,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     // A late answer for the previous encounter must not land in the current one.
     void loadWoundAssessments(patientId, encounterId).then(list => { if (!cancelled) setWounds(list); });
+    return () => { cancelled = true; };
+  }, [patientId, encounterId]);
+
+  // ── Prior closed encounter (Ambient view "Prior visit" strip) ─────────────
+  // Loaded here, keyed on the patient and encounter, rather than by each patient-loading tab:
+  // a tab's promise could resolve after the user had moved on (and PatientSearchTab's guard read
+  // a stale patient id, so the strip never appeared). The encounter being documented is excluded.
+  useEffect(() => {
+    if (!patientId) { setPriorEncounterSummary(null); return; }
+    let cancelled = false;
+    void getLatestClosedEncounter(patientId, { excludeEncounterId: encounterId }).then(({ data, error }) => {
+      if (cancelled) return;
+      setPriorEncounterSummary(error ? null : data);
+    });
     return () => { cancelled = true; };
   }, [patientId, encounterId]);
 

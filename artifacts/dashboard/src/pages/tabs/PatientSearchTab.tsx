@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestEncounter, getLatestAppointmentType, getLatestClosedEncounter, loadPMH, loadEncounterData, createEncounter, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestEncounter, getLatestAppointmentType, loadPMH, loadEncounterData, createEncounter, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
 import { SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -151,7 +151,6 @@ export default function PatientSearchTab() {
     toggleSymptom, setFreeText, symptoms, freeText,
     setMedicationsText,
     comorbidities, surgicalHistory, toxicHabits,
-    setPriorEncounterSummary,
     setWard, setDateAdmission, setDateDischarge, setAdmittingSurgeon,
     setReferringPhysician, setNokName, setNokRelation, setNokTel,
     setBloodGroup, setMrNumber,
@@ -431,14 +430,8 @@ export default function PatientSearchTab() {
       }
     }
 
-    // Non-blocking: load most recent closed encounter for follow-up baseline strip.
-    // Capture the patient ID at call time so we can guard against a race where
-    // the user switches patients before this promise resolves.
-    const encPatientId = p.id;
-    void getLatestClosedEncounter(p.id).then(({ data }) => {
-      // Only apply if the user hasn't switched to a different patient in the meantime
-      if (patientId === encPatientId) setPriorEncounterSummary(data);
-    });
+    // The prior closed encounter (Ambient "Prior visit" strip) is loaded by AppContext for the
+    // loaded patient and encounter — no per-tab load here.
 
     // Check for questionnaire intake data (state already reset above, before async)
     const qData = await getQuestionnaireIntake(p.id);
