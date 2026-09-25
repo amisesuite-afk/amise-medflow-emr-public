@@ -1,0 +1,504 @@
+{
+  "schemaVersion": 1,
+  "id": "ppu-perforated-peptic-ulcer",
+  "condition": "Perforated peptic ulcer",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "permutationLabel": "NSAID-related perforation, generalised peritonitis (base case)",
+  "summary": "47-year-old smoker on regular ibuprofen, sudden severe epigastric pain now generalised, board-like rigidity, HR 112; erect CXR free air.",
+  "tags": [
+    "acute-abdomen",
+    "perforation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 47,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 86
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Sudden severe upper abdominal pain",
+    "hpi": "Sudden severe epigastric pain 5 hours ago while at work, now spread across the whole abdomen, worse on any movement. Vomited once. Taking ibuprofen 400 mg three times a day for 3 weeks for back strain. Smokes 20 a day. Previous 'indigestion'.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Epigastric",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp",
+        "Stabbing"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Deep breathing",
+        "NSAIDs"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "epigastric pain",
+      "vomiting",
+      "nausea"
+    ],
+    "negatives": [
+      "haematemesis",
+      "melaena",
+      "fever"
+    ],
+    "exam": {
+      "general": "Lying very still, pale, sweaty. Temperature 37.5°C, pulse 112/min, BP 124/76, RR 22.",
+      "abdomen": "Board-like rigidity with generalised guarding and rebound tenderness; maximal in the epigastrium. Bowel sounds absent. Loss of liver dullness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 22,
+        "temperatureC": 37.5,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 18,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 96,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.6,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Erect chest X-ray",
+        "modality": "XR",
+        "region": "Chest",
+        "result": "Free subdiaphragmatic air under the right hemidiaphragm.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [
+      "Back strain"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ibuprofen",
+        "dose": "400 mg",
+        "frequency": "TDS",
+        "indication": "Back strain"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Construction foreman. Smoker 20/day. Alcohol 20 units/week.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": false,
+        "rrAtLeast22": true,
+        "sbpAtMost100": false,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Perforated peptic ulcer",
+      "icd10": "K27.5",
+      "paneDiseaseId": "peptic_ulcer",
+      "assessmentText": "Perforated peptic ulcer (NSAID-related) with generalised peritonitis; free air on erect CXR. Boey 0. Emergency laparoscopic repair (omental patch)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Epigastric, now generalised",
+          "onset": "Sudden, 5 hours ago",
+          "character": "Sharp, stabbing",
+          "radiation": "Right shoulder tip",
+          "associated": "Vomited once, nausea",
+          "timing": "Constant",
+          "triggers": "Movement, deep breathing; ibuprofen for 3 weeks",
+          "relief": "Nothing helps",
+          "severity": "10/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "epigastric pain",
+          "vomiting",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Diffuse",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Worst ever (10)",
+            "Vomiting",
+            "Nausea",
+            "Continuous",
+            "Movement",
+            "Deep breathing",
+            "Nothing helps"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Rigidity",
+            "Guarding",
+            "Rebound tenderness",
+            "Epigastric tenderness",
+            "Bowel sounds absent"
+          ]
+        },
+        "paneAnswers": {
+          "nsaid_use": true
+        },
+        "toxicHabits": [
+          "smoking",
+          "alcohol"
+        ],
+        "durationDays": 0.2,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-perforation-top3",
+          "severity": "critical",
+          "match": [
+            "perforat",
+            "peptic ulcer",
+            "ulcer"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "note": "PANE has no separate perforation node; 'Peptic Ulcer Disease' in the top 3 counts.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-ppu-2020"
+        ],
+        "knownGap": [
+          "web",
+          "ios"
+        ],
+        "knownGapNote": "Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal|belly|stomach)? pain' because of the word 'upper'; HR 112 is below the >120 vital flag; rigidity/free air are not read by triage. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe upper abdominal pain' gives 'routine'.",
+        "proposedFix": "Broaden the 'Acute abdominal pain' red flag to allow a site word ('severe upper/lower/central abdominal pain') and add 'sudden severe', 'rigid', 'board-like' and imaging 'free air' as emergency triggers."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-perforation",
+          "severity": "critical",
+          "match": [
+            "pneumoperitoneum",
+            "perforat",
+            "free air",
+            "free gas"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-nsaid",
+          "severity": "quality",
+          "match": [
+            "nsaid",
+            "ibuprofen"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-boey",
+          "severity": "quality",
+          "score": "boey",
+          "guidelineRefs": [
+            "wses-ppu-2020",
+            "boey-1987"
+          ],
+          "note": "WSES 2020 suggests Boey or PULP for risk stratification. No platform has either.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No Boey or PULP score on either platform."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-group-and-save",
+          "severity": "quality",
+          "match": [
+            "group & save",
+            "group and save",
+            "group & screen",
+            "crossmatch",
+            "blood group"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-h-pylori",
+          "severity": "quality",
+          "match": [
+            "h. pylori",
+            "helicobacter",
+            "h pylori"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-urgent-ogd-in-perforation",
+          "severity": "quality",
+          "match": [
+            "upper gi endoscopy (ogd) (urgent)",
+            "re:^upper gi endoscopy \\(ogd\\)$",
+            "re:ogd within 24"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "note": "Urgent diagnostic OGD is not part of the work-up of a free perforation (insufflation); follow-up OGD for gastric ulcers is appropriate.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: K27.5 maps to the peptic_ulcer protocol and its 'Upper GI endoscopy (OGD) (urgent)' investigation is shown for a free perforation; ICD K25–K28 also routes the dx-variant group to 'Upper GI Bleed'.",
+          "proposedFix": "Add a perforated-ulcer variant (K25–K28 .1/.2/.5/.6) to a peptic-ulcer group separate from 'Upper GI Bleed'; defer OGD to follow-up."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-surgical-repair",
+          "severity": "critical",
+          "match": [
+            "omental patch",
+            "graham",
+            "laparoscopic repair",
+            "laparotomy",
+            "repair of perforat",
+            "patch repair"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "note": "WSES 2020: broad-spectrum antibiotics for perforated peptic ulcer with peritonitis.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-ppi",
+          "severity": "quality",
+          "match": [
+            "ppi",
+            "omeprazole",
+            "pantoprazole",
+            "esomeprazole"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-stop-nsaid",
+          "severity": "quality",
+          "match": [
+            "stop nsaid",
+            "stop nsaids",
+            "stop or switch",
+            "discontinue nsaid",
+            "avoid nsaid"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-h-pylori-eradication",
+          "severity": "quality",
+          "match": [
+            "eradication"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-ppu-2020",
+      "name": "WSES guidelines — perforated and bleeding peptic ulcer",
+      "year": 2020,
+      "section": "CT/erect CXR for free air; early source control (laparoscopic or open repair / omental patch); broad-spectrum antibiotics; resuscitation; H. pylori testing and eradication; risk scores (Boey, PULP)",
+      "citation": "Tarasconi A, Coccolini F, Biffl WL, et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg. 2020;15:3.",
+      "verified": false
+    },
+    {
+      "id": "boey-1987",
+      "name": "Boey score (perforated peptic ulcer)",
+      "year": 1987,
+      "section": "Major medical illness, pre-operative shock (SBP <100 mmHg), perforation >24 h: 0–3",
+      "citation": "Boey J, Choi SK, Poon A, Alagaratnam TT. Risk stratification in perforated duodenal ulcers. A prospective validation of predictive factors. Ann Surg. 1987;205:22–6.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for perforated peptic ulcer: emergency level, perforation alarm, surgical repair, antibiotics, PPI, stop NSAIDs, H. pylori testing and eradication.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

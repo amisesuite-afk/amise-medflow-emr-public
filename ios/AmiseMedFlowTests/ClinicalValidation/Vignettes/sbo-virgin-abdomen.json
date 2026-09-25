@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "id": "sbo-virgin-abdomen",
+  "condition": "Small bowel obstruction",
+  "category": "gi-emergency",
+  "permutationOf": "sbo-adhesive-base",
+  "permutationLabel": "Virgin abdomen, CT mass lesion (elderly, weight loss)",
+  "summary": "74-year-old woman with no previous surgery, 2 days of SBO, 3 kg weight loss, no hernia palpable; CT: transition point at a short-segment ileal lesion.",
+  "tags": [
+    "acute-abdomen",
+    "obstruction",
+    "elderly",
+    "malignancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 155,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Colicky abdominal pain and vomiting",
+    "hpi": "2 days of colicky central abdominal pain, vomiting, distension and no flatus since yesterday. Never had abdominal surgery. Some intermittent colicky pain after meals and 3 kg weight loss over the last 2 months. No lumps noticed in the groin.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Periumbilical"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Weight loss"
+      ],
+      "timing": [
+        "Intermittent",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "absolute constipation",
+      "weight loss"
+    ],
+    "negatives": [
+      "previous abdominal surgery",
+      "groin lump",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Thin. Temperature 37.0°C, pulse 100/min, BP 142/80.",
+      "abdomen": "Distended, mildly tender centrally, no guarding or peritonism. No scars. Groins examined: no palpable hernia. Rectum empty."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 100,
+        "systolicBp": 142,
+        "diastolicBp": 80,
+        "respiratoryRate": 18,
+        "temperatureC": 37.0,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 9.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 18,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.9,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Small bowel obstruction with a transition point in the distal ileum at a 3 cm short-segment enhancing mural thickening, suspicious for a small bowel neoplasm. No hernia, no closed loop, normal bowel wall enhancement elsewhere.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Osteoarthritis"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS PRN",
+        "indication": "Osteoarthritis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Widowed, lives with son.",
+    "confirmedDiagnosis": {
+      "name": "Small bowel obstruction in a virgin abdomen",
+      "icd10": "K56.69",
+      "paneDiseaseId": "bowel_obstruction",
+      "assessmentText": "Small bowel obstruction in a virgin abdomen (no previous surgery). CT transition point at a short-segment ileal mural lesion suspicious for neoplasm; adhesions unlikely. Surgical exploration and resection."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Central (periumbilical)",
+          "onset": "2 days ago",
+          "character": "Colicky",
+          "associated": "Vomiting, distension, no flatus (constipation), weight loss 3 kg",
+          "timing": "Intermittent / colicky, worsening",
+          "triggers": "After meals",
+          "relief": "Vomiting",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "constipation",
+          "weight loss"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "1–3 days",
+            "Colicky",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Distension",
+            "Constipation",
+            "Intermittent / colicky"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Soft"
+          ]
+        },
+        "paneAnswers": {
+          "previous_surgery": false
+        },
+        "durationDays": 2,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-obstruction-top3",
+          "severity": "critical",
+          "match": [
+            "obstruct"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-neoplasm",
+          "severity": "quality",
+          "match": [
+            "neoplasm",
+            "carcinoma",
+            "cancer",
+            "tumour",
+            "gist",
+            "carcinoid",
+            "lymphoma"
+          ],
+          "note": "Weight loss and a virgin abdomen: small bowel or colonic neoplasm must be on the list.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no small-bowel neoplasm node (colorectal cancer only), and the trigger answer 'After meals' is read as fatty_food_trigger, which lifts cholecystitis."
+        },
+        {
+          "id": "mnm-hernia",
+          "severity": "quality",
+          "match": [
+            "hernia"
+          ],
+          "note": "Occult femoral/obturator hernia is a classic cause in thin elderly women.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3 has no hernia (no groin feature because no lump was found)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-sbo-2018"
+        ],
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Colicky abdominal pain and vomiting' gives 'routine'."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "note": "Bologna: without previous surgery adhesions are less likely; CT is needed to find the cause (hernia, neoplasm, internal hernia, gallstone ileus).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-surgical-exploration",
+          "severity": "quality",
+          "match": [
+            "exploratory laparotomy",
+            "exploratory laparoscopy",
+            "laparoscopic exploration",
+            "surgical exploration",
+            "small bowel resection",
+            "bowel resection",
+            "segmental resection"
+          ],
+          "unless": [
+            "elective",
+            "recurrent adhesive",
+            "recurrence"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-adhesion-label-in-plan",
+          "severity": "quality",
+          "match": [
+            "adhesional",
+            "adhesive sbo",
+            "adhesions account"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "note": "The documented plan should not treat a virgin-abdomen obstruction with a mass lesion as adhesional.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: Variant 'sbo_adhesional' is chosen from the words 'small bowel obstruction' even though the assessment says 'virgin abdomen … adhesions unlikely'; the plan keeps the adhesive-SBO conservative step."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sbo-2018",
+      "name": "WSES Bologna guidelines — adhesive small bowel obstruction (2017 update)",
+      "year": 2018,
+      "section": "CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes",
+      "citation": "ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: no previous surgery. Obstruction without adhesions needs CT for the cause and usually surgery; the engines should keep neoplasm and hernia on the differential and not label the plan as adhesional.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

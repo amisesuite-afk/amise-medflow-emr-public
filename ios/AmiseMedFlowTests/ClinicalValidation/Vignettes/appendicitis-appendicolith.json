@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-appendicolith",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Appendicolith on CT (antibiotics-first caution)",
+  "summary": "34-year-old man, 30 h migratory RIF pain, rebound, WBC 14.1; CT shows appendicitis with a 7 mm appendicolith. He asks about antibiotics instead of surgery.",
+  "tags": [
+    "acute-abdomen",
+    "shared-decision"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right iliac fossa pain",
+    "hpi": "30 hours of migratory right iliac fossa pain with anorexia and one vomit. He read about treating appendicitis with antibiotics and asks whether he can avoid an operation.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Periumbilical",
+        "RLQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "migration of pain to the right iliac fossa",
+      "anorexia",
+      "vomiting"
+    ],
+    "negatives": [
+      "diarrhoea",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "Temperature 37.8°C, pulse 96/min, BP 130/80.",
+      "abdomen": "Right iliac fossa tenderness with guarding and rebound at McBurney's point."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 96,
+        "systolicBp": 130,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 37.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "neutrophilPct",
+        "name": "Neutrophils (%)",
+        "value": 80,
+        "unit": "%",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 44,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Acute appendicitis, appendix 11 mm, with a 7 mm appendicolith at the base. No perforation, no abscess.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Chef. Smoker 10/day.",
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis with appendicolith",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "CT-confirmed acute appendicitis with a 7 mm appendicolith, no perforation. Laparoscopic appendicectomy recommended."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Periumbilical then right iliac fossa",
+          "onset": "Yesterday",
+          "character": "Sharp",
+          "associated": "Anorexia, vomiting once",
+          "timing": "Constant, worsening",
+          "triggers": "Movement",
+          "relief": "Rest",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "RLQ",
+            "1–3 days",
+            "Sharp",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Anorexia",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Guarding",
+            "Rebound tenderness"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": [
+            "appendic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-2020"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "re:lap(\\.|aroscopic)? append"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "With an appendicolith, appendicectomy is the recommended treatment.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-appendicolith-caution",
+          "severity": "quality",
+          "match": [
+            "re:appendicolith[^\\n]{0,80}(antibiotic|non-operative|failure|recurren|complicat)",
+            "re:(antibiotic|non-operative)[^\\n]{0,80}appendicolith"
+          ],
+          "guidelineRefs": [
+            "wses-2020",
+            "coda-2020"
+          ],
+          "note": "WSES 2020 / CODA: an appendicolith predicts failure of antibiotics-first treatment and more complications; the plan should say so when antibiotics are discussed.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antibiotics-first-despite-appendicolith",
+          "severity": "quality",
+          "match": [
+            "antibiotic-first",
+            "antibiotics-first",
+            "antibiotics first",
+            "antibiotics alone",
+            "antibiotic therapy alone",
+            "non-operative treatment",
+            "non-operative management"
+          ],
+          "unless": [
+            "appendicolith",
+            "appendix mass",
+            "phlegmon",
+            "abscess",
+            "inflamed mass"
+          ],
+          "guidelineRefs": [
+            "coda-2020",
+            "wses-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-routine-postop-antibiotics",
+          "severity": "quality",
+          "match": [
+            "re:simple appendicitis[^\\n]{0,120}5 days",
+            "re:uncomplicated appendicitis[^\\n]{0,120}(antibiotic|co-amoxiclav)[^\\n]{0,60}days"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: no postoperative antibiotics after appendicectomy for uncomplicated appendicitis.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-uncomplicated",
+      "severity": "quality",
+      "equals": "appendicitis_uncomplicated",
+      "guidelineRefs": [
+        "wses-2020"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "coda-2020",
+      "name": "CODA trial — antibiotics versus appendectomy for acute appendicitis",
+      "year": 2020,
+      "section": "Non-inferiority of antibiotics-first for health status at 30 days; ~3 in 10 had appendicectomy by 90 days; appendicolith associated with more appendicectomies and complications",
+      "citation": "CODA Collaborative. A randomized trial comparing antibiotics with appendectomy for appendicitis. N Engl J Med. 2020;383:1907–19.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: appendicolith. Antibiotics-first is less successful and has more complications with an appendicolith (CODA; WSES 2020), so appendicectomy should be recommended and any non-operative option should carry the appendicolith caveat.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

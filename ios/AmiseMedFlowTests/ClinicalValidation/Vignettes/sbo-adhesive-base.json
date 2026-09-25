@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "id": "sbo-adhesive-base",
+  "condition": "Small bowel obstruction",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "permutationLabel": "Adhesive SBO, no strangulation (base case)",
+  "summary": "58-year-old woman after open hysterectomy/appendicectomy, 36 h colicky pain, bilious vomiting, distension, no flatus; CT: single transition point, no strangulation features. Stable.",
+  "tags": [
+    "acute-abdomen",
+    "obstruction"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 71
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Colicky abdominal pain, vomiting and distension",
+    "hpi": "36 hours of colicky central abdominal pain coming in waves, bilious vomiting six times, increasing distension. No flatus for 24 hours, last bowel motion 2 days ago. Open hysterectomy and appendicectomy in the past. No fever. Post-menopausal. No weight loss or change in bowel habit before this.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Periumbilical",
+        "Diffuse"
+      ],
+      "character": [
+        "Colicky",
+        "Cramping"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Change in bowel habit"
+      ],
+      "timing": [
+        "Intermittent",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "absolute constipation",
+      "nausea"
+    ],
+    "negatives": [
+      "fever",
+      "weight loss",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Uncomfortable, dry mucous membranes. Temperature 37.2°C, pulse 96/min, BP 128/76.",
+      "abdomen": "Distended and tympanic with mild diffuse tenderness. No guarding, no rebound, no peritonism. Lower midline scar. Hernial orifices clear. High-pitched tinkling bowel sounds. Rectum empty on PR."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 96,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 18,
+        "temperatureC": 37.2,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 22,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.3,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 134,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.3,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 9.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 96,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Abdominal X-ray",
+        "modality": "XR",
+        "region": "Abdomen",
+        "result": "Multiple dilated small bowel loops centrally, little gas in the colon.",
+        "minutesAgo": 90
+      },
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Small bowel obstruction with a single transition point in the right lower quadrant consistent with an adhesive band; small bowel faeces sign. Collapsed colon. Normal bowel wall enhancement, no closed loop, no mesenteric oedema, no free fluid, no hernia.",
+        "minutesAgo": 40
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Open total abdominal hysterectomy",
+      "Open appendicectomy"
+    ],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired teacher. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Adhesive small bowel obstruction",
+      "icd10": "K56.50",
+      "paneDiseaseId": "adhesion_obstruction",
+      "assessmentText": "Adhesive small bowel obstruction (single transition point, previous laparotomy) without CT or clinical features of strangulation. Non-operative management with water-soluble contrast challenge."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Central (periumbilical), generalised",
+          "onset": "36 hours ago",
+          "character": "Colicky, cramping in waves",
+          "associated": "Bilious vomiting x6, distension, no flatus for 24 h (constipation)",
+          "timing": "Intermittent / colicky, worsening",
+          "triggers": "Eating",
+          "relief": "Vomiting",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "constipation",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "Diffuse",
+            "1–3 days",
+            "Colicky",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Distension",
+            "Constipation",
+            "Nausea",
+            "Intermittent / colicky"
+          ],
+          "vomiting": [
+            "Bile",
+            "Multiple episodes daily"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Diffuse tenderness",
+            "Bowel sounds hyperactive"
+          ]
+        },
+        "paneAnswers": {
+          "previous_surgery": true
+        },
+        "durationDays": 1.5,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-obstruction-top3",
+          "severity": "critical",
+          "match": [
+            "obstruct",
+            "adhesion"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-sbo-2018"
+        ],
+        "note": "Bowel obstruction needs same-day admission; in an outpatient practice this is an ER referral."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-false-peritonism-alarm",
+          "severity": "quality",
+          "match": [
+            "generalised peritonism",
+            "perforated viscus"
+          ],
+          "note": "The exam text says 'No guarding, no rebound, no peritonism'; an alarm for generalised peritonism is a negation error that leads to an emergency-laparotomy prompt.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: computeClinicalPrompts fires 'Generalised peritonism → Perforated viscus' on the substring 'peritonism' in 'no peritonism'.",
+          "proposedFix": "Negation-aware exam() matching ('no peritonism', 'no guarding', 'no rigidity')."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "note": "Bologna: CT with IV contrast to confirm the diagnosis and look for strangulation (the finding that changes management).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-electrolytes",
+          "severity": "quality",
+          "match": [
+            "u&e",
+            "urea",
+            "electrolyte",
+            "potassium"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ngt",
+          "severity": "quality",
+          "match": [
+            "nasogastric",
+            "ng tube",
+            "re:\\bngt\\b",
+            "drip and suck"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-iv-fluids",
+          "severity": "quality",
+          "match": [
+            "crystalloid",
+            "hartmann's",
+            "fluid resuscitation",
+            "iv fluid",
+            "0.9% sodium chloride",
+            "0.9% nacl",
+            "iv fluids"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-water-soluble-contrast",
+          "severity": "quality",
+          "match": [
+            "gastrografin",
+            "water-soluble contrast",
+            "water soluble contrast"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-surgery-if-nom-fails",
+          "severity": "quality",
+          "match": [
+            "re:(fail|no resolution|not resolv)[^\\n]{0,60}(72|48)",
+            "re:(48|72)[^\\n]{0,60}(operat|surgery|laparo)",
+            "failure to resolve"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "note": "Bologna: operate when NOM fails (no resolution by 72 h) or strangulation develops.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-potassium",
+          "severity": "quality",
+          "match": [
+            "potassium",
+            "re:\\bkcl\\b"
+          ],
+          "note": "K 3.3 mmol/L with ongoing losses.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No potassium replacement despite K 3.3: getProtocolByIcd('K56.50') returns the generic bowel_obstruction protocol (prefix K56), not adhesion_obstruction, whose medications include KCl."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-unrelated-operative-template",
+          "severity": "quality",
+          "match": [
+            "appendicectomy",
+            "re:emergency laparotomy consent"
+          ],
+          "note": "No appendicitis or peritonitis here: an appendicectomy or emergency-laparotomy template can only come from misread negatives ('no guarding, no rebound').",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Negated exam text ('No guarding, no rebound, no peritonism') triggers both the peritonism prompt ('Emergency laparotomy consent') and the appendicectomy operative-plan prompt."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-sbo-adhesional",
+      "severity": "quality",
+      "equals": "sbo_adhesional",
+      "guidelineRefs": [
+        "wses-sbo-2018"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sbo-2018",
+      "name": "WSES Bologna guidelines — adhesive small bowel obstruction (2017 update)",
+      "year": 2018,
+      "section": "CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes",
+      "citation": "ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for adhesive SBO. The engines should recognise obstruction, triage urgently, recommend CT, and propose non-operative management (NGT, fluids, electrolytes, water-soluble contrast) with surgery if NOM fails.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

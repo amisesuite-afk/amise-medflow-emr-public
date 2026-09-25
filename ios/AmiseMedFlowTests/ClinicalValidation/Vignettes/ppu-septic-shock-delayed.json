@@ -1,0 +1,436 @@
+{
+  "schemaVersion": 1,
+  "id": "ppu-septic-shock-delayed",
+  "condition": "Perforated peptic ulcer",
+  "category": "upper-gi",
+  "permutationOf": "ppu-perforated-peptic-ulcer",
+  "permutationLabel": "Delayed presentation with septic shock",
+  "summary": "58-year-old heavy drinker, 2 days of generalised peritonitis, T 38.8 °C, HR 128, BP 82/50, RR 28, confused, lactate 5.6, AKI; CT pneumoperitoneum.",
+  "tags": [
+    "acute-abdomen",
+    "perforation",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Severe abdominal pain for two days",
+    "hpi": "Heavy drinker. Two days of severe upper abdominal pain that became generalised; would not come to hospital. Now vomiting, feverish, confused and has not passed urine since last night.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Sudden"
+      ],
+      "site": [
+        "Epigastric",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "epigastric pain",
+      "vomiting",
+      "fever",
+      "confusion"
+    ],
+    "negatives": [
+      "haematemesis"
+    ],
+    "exam": {
+      "general": "Confused, mottled, cold peripheries. Temperature 38.8°C, pulse 128/min, BP 82/50, RR 28.",
+      "abdomen": "Distended, rigid, generalised peritonitis. Bowel sounds absent."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 128,
+        "systolicBp": 82,
+        "diastolicBp": 50,
+        "respiratoryRate": 28,
+        "temperatureC": 38.8,
+        "spo2": 92,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 23.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 320,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 5.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 244,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 96,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 32,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis (non-contrast)",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Large-volume pneumoperitoneum and free fluid; thickened gastric antrum with a defect suspicious for a perforated ulcer.",
+        "minutesAgo": 10
+      }
+    ],
+    "comorbidities": [
+      "Alcohol excess"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Unemployed. Alcohol 60 units/week. Smoker.",
+    "confirmedDiagnosis": {
+      "name": "Perforated peptic ulcer with septic shock",
+      "icd10": "K27.5",
+      "paneDiseaseId": "peptic_ulcer",
+      "assessmentText": "Perforated peptic ulcer, delayed presentation (>24 h), generalised peritonitis and septic shock with AKI (Boey 2). Resuscitation, antibiotics within the hour, emergency source control, ICU."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Epigastric, now generalised",
+          "onset": "Sudden, 2 days ago",
+          "character": "Sharp",
+          "associated": "Vomiting, fever, confusion",
+          "timing": "Constant, worsening",
+          "triggers": "Movement",
+          "relief": "Nothing helps",
+          "severity": "10/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "epigastric pain",
+          "vomiting",
+          "fever",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Diffuse",
+            "Sudden",
+            "1–3 days",
+            "Sharp",
+            "Worst ever (10)",
+            "Vomiting",
+            "Fever",
+            "Continuous",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Rigidity",
+            "Guarding",
+            "Bowel sounds absent"
+          ]
+        },
+        "toxicHabits": [
+          "alcohol",
+          "smoking"
+        ],
+        "durationDays": 2,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-perforation-top3",
+          "severity": "critical",
+          "match": [
+            "perforat",
+            "peptic ulcer",
+            "ulcer"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alcohol history). PANE has no perforation node and no feature for rigidity/free gas; symptom inference ranks perforated peptic ulcer #2.",
+          "proposedFix": "Add a perforated-viscus node to PANE with rigidity/board-like abdomen, sudden onset and imaging free gas as features (the 'Perforated viscus' CC template exists but has no CC_HINTS entry)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ssc-2021",
+          "wses-ppu-2020"
+        ],
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Severe abdominal pain for two days' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-perforation",
+          "severity": "critical",
+          "match": [
+            "pneumoperitoneum",
+            "perforat",
+            "free air",
+            "free gas"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-fluids-vasopressor",
+          "severity": "critical",
+          "match": [
+            "crystalloid",
+            "hartmann's",
+            "fluid resuscitation",
+            "iv fluid",
+            "0.9% sodium chloride",
+            "0.9% nacl",
+            "vasopressor",
+            "noradrenaline",
+            "norepinephrine",
+            "30ml/kg",
+            "30 ml/kg"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-source-control",
+          "severity": "critical",
+          "match": [
+            "omental patch",
+            "graham",
+            "laparoscopic repair",
+            "laparotomy",
+            "repair of perforat",
+            "patch repair"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-icu",
+          "severity": "quality",
+          "match": [
+            "re:\\bicu\\b",
+            "intensive care",
+            "re:\\bhdu\\b",
+            "critical care"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-ppu-2020",
+      "name": "WSES guidelines — perforated and bleeding peptic ulcer",
+      "year": 2020,
+      "section": "CT/erect CXR for free air; early source control (laparoscopic or open repair / omental patch); broad-spectrum antibiotics; resuscitation; H. pylori testing and eradication; risk scores (Boey, PULP)",
+      "citation": "Tarasconi A, Coccolini F, Biffl WL, et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg. 2020;15:3.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: severity/delay. Tests the sepsis bundle (cultures, antibiotics, fluids/vasopressors), shock alarms and emergency source control.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

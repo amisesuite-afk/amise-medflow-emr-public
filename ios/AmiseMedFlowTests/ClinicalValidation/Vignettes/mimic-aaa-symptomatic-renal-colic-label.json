@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "id": "mimic-aaa-symptomatic-renal-colic-label",
+  "condition": "Symptomatic abdominal aortic aneurysm (GI emergency mimic)",
+  "category": "vascular",
+  "permutationOf": "mimic-ruptured-aaa",
+  "permutationLabel": "Stable symptomatic AAA presenting as 'renal colic'",
+  "summary": "69-year-old smoker with a known 5.4 cm AAA (missed surveillance), 12 h right loin pain to the groin, microscopic haematuria, tender pulsatile mass; haemodynamically stable.",
+  "tags": [
+    "mimic",
+    "vascular",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 69,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Right loin pain radiating to the groin",
+    "hpi": "12 hours of constant right loin and lower back pain radiating to the right groin. No vomiting. Known 5.4 cm abdominal aortic aneurysm on ultrasound surveillance; missed his last scan. Smoker.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Loin",
+        "Right side"
+      ],
+      "character": [
+        "Dull",
+        "Aching"
+      ],
+      "radiation": [
+        "Back",
+        "Groin"
+      ],
+      "associations": [
+        "Haematuria"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "loin pain",
+      "back pain",
+      "haematuria"
+    ],
+    "negatives": [
+      "fever",
+      "dysuria",
+      "collapse"
+    ],
+    "exam": {
+      "general": "Comfortable at rest. Temperature 36.8°C, pulse 92/min, BP 146/88.",
+      "abdomen": "Tender pulsatile, expansile mass in the epigastrium. Mild right loin tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 92,
+        "systolicBp": 146,
+        "diastolicBp": 88,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.9,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Blood + (microscopic haematuria), no leucocytes or nitrites",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Abdominal aortic aneurysm 5.4 cm (surveillance)",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "40 mg",
+        "frequency": "ON",
+        "indication": "Vascular risk"
+      },
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Vascular risk"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 40 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Symptomatic abdominal aortic aneurysm",
+      "icd10": "I71.4",
+      "paneDiseaseId": "aortic_aneurysm",
+      "assessmentText": "Symptomatic (tender) intact abdominal aortic aneurysm, previously 5.4 cm; loin pain with microscopic haematuria is not renal colic until the aneurysm is excluded as the cause. Urgent CT angiography and vascular surgery."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right loin and back",
+          "onset": "12 hours ago",
+          "character": "Constant dull ache",
+          "radiation": "Right groin",
+          "associated": "Blood in urine (dipstick)",
+          "timing": "Constant",
+          "relief": "Nothing",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "loin pain",
+          "back pain",
+          "haematuria",
+          "pulsatile mass"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "6–24 hours",
+            "Dull",
+            "Moderate (4–6)",
+            "Loin",
+            "Groin",
+            "Back",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Mass palpable"
+          ]
+        },
+        "paneAnswers": {
+          "pulsatile_mass": true
+        },
+        "toxicHabits": [
+          "smoking"
+        ],
+        "durationDays": 0.5,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-aaa",
+          "severity": "critical",
+          "match": [
+            "aortic aneurysm",
+            "aneurysm",
+            "re:\\baaa\\b"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3: renal colic, inguinal/femoral hernia, cholecystitis (pulsatile_mass answered yes). Symptom inference ranks AAA #1.",
+          "proposedFix": "Age/sex prior and pulsatile-mass weighting for aortic_aneurysm; a prompt for 'loin pain + known AAA'."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "esvs-aaa-2024"
+        ],
+        "note": "Symptomatic AAA: same-day emergency transfer for CTA; repair within hours to days.",
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right loin pain radiating to the groin' gives 'routine'."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cta",
+          "severity": "critical",
+          "match": [
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "ct mesenteric angiogra",
+            "mesenteric angiogra",
+            "re:ct aort",
+            "re:arterial[- ]phase ct",
+            "multiphase ct"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: ICD I71.4 has no protocol (only 'I71.9' is mapped), so no CT angiography is suggested.",
+          "proposedFix": "Same ICD prefix fix (I71)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vascular-referral",
+          "severity": "critical",
+          "match": [
+            "vascular"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No vascular referral: no protocol for I71.4."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-renal-colic-nsaid",
+          "severity": "quality",
+          "match": [
+            "nsaid",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "parecoxib"
+          ],
+          "unless": [
+            "avoid",
+            "hold nsaid",
+            "stop nsaid",
+            "stop or switch",
+            "not in pregnan",
+            "contraindicated",
+            "do not",
+            "no nsaid",
+            "caution:"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-aaa-2024",
+      "name": "ESVS clinical practice guidelines — abdominal aorto-iliac artery aneurysms (2024)",
+      "year": 2024,
+      "section": "Ruptured AAA: immediate transfer to vascular surgery, permissive hypotension, CT angiography only if haemodynamically stable enough; symptomatic intact AAA: urgent CTA and repair",
+      "citation": "Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 clinical practice guidelines on the management of abdominal aorto-iliac artery aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: stable. A tender known aneurysm with loin pain and haematuria must be treated as a symptomatic AAA (urgent CTA, vascular surgery). The confirmed ICD-10 is I71.4 (AAA without rupture), which also tests the protocol lookup by ICD.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

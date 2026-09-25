@@ -1,0 +1,470 @@
+{
+  "schemaVersion": 1,
+  "id": "sbo-strangulation",
+  "condition": "Small bowel obstruction",
+  "category": "gi-emergency",
+  "permutationOf": "sbo-adhesive-base",
+  "permutationLabel": "Strangulation (fever, tachycardia, peritonism, lactate, CT signs)",
+  "summary": "67-year-old man, previous laparotomy, pain now constant, T 38.4 °C, HR 118, localised peritonism, WBC 19.4, lactate 4.1; CT: closed loop with reduced wall enhancement.",
+  "tags": [
+    "acute-abdomen",
+    "obstruction",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 67,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Constant abdominal pain, distension and vomiting",
+    "hpi": "Laparotomy for a stab wound 20 years ago. 20 hours of abdominal pain, colicky at first but constant and severe for the last 6 hours, now worst on the right. Vomiting, no flatus since yesterday. Feels hot and shaky. Known small bowel obstruction from adhesions treated conservatively 3 years ago.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Diffuse",
+        "RLQ"
+      ],
+      "character": [
+        "Colicky",
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Fever",
+        "Rigors"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "absolute constipation",
+      "fever"
+    ],
+    "negatives": [
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Unwell, sweaty, tachycardic. Temperature 38.4°C, pulse 118/min, BP 104/66, RR 22.",
+      "abdomen": "Distended. Localised peritonism in the right lower abdomen with guarding and rebound tenderness. Midline laparotomy scar. Hernial orifices clear. Quiet bowel sounds."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "systolicBp": 104,
+        "diastolicBp": 66,
+        "respiratoryRate": 22,
+        "temperatureC": 38.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 145,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 142,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Closed-loop small bowel obstruction with whirl sign in the right lower quadrant. A 40 cm ileal segment shows reduced mural enhancement, mesenteric oedema and free fluid — features of strangulation.",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "Hypercholesterolaemia"
+    ],
+    "surgicalHistory": [
+      "Laparotomy for stab wound"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "20 mg",
+        "frequency": "ON",
+        "indication": "Hypercholesterolaemia"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired fisherman. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Strangulated adhesive small bowel obstruction",
+      "icd10": "K56.52",
+      "paneDiseaseId": "adhesion_obstruction",
+      "assessmentText": "Adhesive small bowel obstruction with strangulation: closed-loop obstruction with reduced bowel wall enhancement, fever, peritonism and lactate 4.1. Emergency laparotomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Generalised, now right lower",
+          "onset": "20 hours ago; constant for 6 hours",
+          "character": "Colicky then constant, sharp",
+          "associated": "Vomiting, no flatus (constipation), fever, rigors",
+          "timing": "Constant, worsening",
+          "triggers": "Movement",
+          "relief": "Nothing helps",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "constipation",
+          "fever",
+          "rigors"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "RLQ",
+            "6–24 hours",
+            "Constant",
+            "Severe (7–9)",
+            "Vomiting",
+            "Fever",
+            "Distension",
+            "Constipation",
+            "Continuous",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Guarding",
+            "Rebound tenderness",
+            "Tender RLQ"
+          ]
+        },
+        "paneAnswers": {
+          "previous_surgery": true
+        },
+        "durationDays": 1,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-obstruction-top3",
+          "severity": "critical",
+          "match": [
+            "obstruct",
+            "adhesion",
+            "strangulat"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-sbo-2018"
+        ],
+        "note": "Strangulation signs (fever, tachycardia, peritonism, lactate, CT) mandate emergency surgery.",
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Constant abdominal pain, distension and vomiting' gives 'urgent'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-strangulation",
+          "severity": "critical",
+          "match": [
+            "strangulat",
+            "ischaem",
+            "peritonism",
+            "closed-loop",
+            "closed loop",
+            "vascular compromise"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-group-and-save",
+          "severity": "quality",
+          "match": [
+            "group & save",
+            "group and save",
+            "group & screen",
+            "crossmatch",
+            "blood group"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-surgery",
+          "severity": "critical",
+          "match": [
+            "laparotomy",
+            "adhesiolysis",
+            "re:laparoscop[^\\n]{0,20}(adhesiolysis|exploration)",
+            "bowel resection",
+            "small bowel resection"
+          ],
+          "unless": [
+            "elective",
+            "recurrent adhesive",
+            "recurrence"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-emergency-surgery-in-documented-plan",
+          "severity": "critical",
+          "match": [
+            "laparotomy",
+            "adhesiolysis",
+            "re:laparoscop[^\\n]{0,20}(adhesiolysis|exploration)",
+            "bowel resection",
+            "small bowel resection"
+          ],
+          "unless": [
+            "elective",
+            "recurrent adhesive",
+            "recurrence"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "note": "The Plan tab text is the documented plan; for strangulation it must contain the operation.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: detectDxVariants picks 'sbo_adhesional' (keyword 'small bowel obstruction' is checked before 'strangulation'), whose allowed phases exclude 'surgical'; the documented plan has no operation.",
+          "proposedFix": "Same ordering fix; the strangulation variant's surgical phase then carries the operation into the documented plan."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nom-trial-with-strangulation",
+          "severity": "critical",
+          "match": [
+            "gastrografin",
+            "water-soluble contrast",
+            "re:(72|48)[- ]?h(our)?s?[^\\n]{0,20}(trial of )?non-operative",
+            "re:non-operative (trial|management)",
+            "drip and suck"
+          ],
+          "unless": [
+            "peritonism →",
+            "failure",
+            "if no",
+            "exclude strangulation",
+            "without strangulation",
+            "unless"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "note": "Bologna: non-operative management and contrast challenge are contraindicated when strangulation/peritonitis is present; delay increases resection and mortality.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.",
+          "proposedFix": "Check sbo_strangulation before sbo_adhesional (specific-first) and drop the conservative phase whenever strangulation words, lactate > 2 with peritonism, or closed-loop appear."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-sbo-strangulation",
+      "severity": "quality",
+      "equals": "sbo_strangulation",
+      "guidelineRefs": [
+        "wses-sbo-2018"
+      ],
+      "knownGap": [
+        "web"
+      ],
+      "knownGapNote": "Web: First-match order: sbo_adhesional ('small bowel obstruction', 'adhesion') is tested before sbo_strangulation."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sbo-2018",
+      "name": "WSES Bologna guidelines — adhesive small bowel obstruction (2017 update)",
+      "year": 2018,
+      "section": "CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes",
+      "citation": "ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: strangulation. Every sign the Bologna guideline lists is present; the documented plan must be emergency surgery, never the 72-hour non-operative trial. The assessment text uses the ordinary phrase 'adhesive small bowel obstruction with strangulation'.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

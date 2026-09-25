@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-score-low-band",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Low-risk score band (Alvarado 3, AIR 1), woman",
+  "summary": "22-year-old woman, 12 h dull RIF pain, no migration, no anorexia, afebrile, mild RIF tenderness without peritonism, WBC 8.9, CRP 6. Low probability of appendicitis.",
+  "tags": [
+    "acute-abdomen",
+    "scores",
+    "negation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 22,
+      "sex": "female",
+      "pregnancy": {
+        "status": "unknown"
+      },
+      "heightCm": 163,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Lower abdominal pain since this morning",
+    "hpi": "12 hours of dull lower abdominal pain, more on the right. No migration. Eating normally, mild nausea, no vomiting. LMP 14 days ago. No vaginal bleeding or discharge, no urinary symptoms. Similar milder pain mid-cycle before.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "RLQ",
+        "Suprapubic"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "nausea"
+    ],
+    "negatives": [
+      "vomiting",
+      "anorexia",
+      "fever",
+      "vaginal bleeding",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "Well, walking comfortably. Temperature 37.1°C, pulse 78/min.",
+      "abdomen": "Mild tenderness in the right iliac fossa. No guarding, no rebound, Rovsing's negative. No mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 78,
+        "systolicBp": 116,
+        "diastolicBp": 70,
+        "respiratoryRate": 14,
+        "temperatureC": 37.1,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "neutrophilPct",
+        "name": "Neutrophils (%)",
+        "value": 64,
+        "unit": "%",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 6,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "University student.",
+    "scoreForms": {
+      "alvarado": {
+        "migration": false,
+        "anorexia": false,
+        "nauseaVomiting": true,
+        "rifTenderness": true,
+        "rebound": false,
+        "temperatureRaised": false,
+        "wbcAbove10": false,
+        "neutrophilia": false
+      },
+      "air": {
+        "vomiting": false,
+        "rifPain": true,
+        "rebound": 0,
+        "tempAtLeast38_5": false,
+        "pmnBand": 0,
+        "wbcBand": 0,
+        "crpBand": 0
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Non-specific lower abdominal pain",
+      "icd10": "R10.31",
+      "assessmentText": "Right iliac fossa pain, low probability of appendicitis (Alvarado 3, AIR 1). Probable mid-cycle (ovulation) pain. Pregnancy test pending."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right lower abdomen and suprapubic",
+          "onset": "This morning",
+          "character": "Dull",
+          "associated": "Mild nausea",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol",
+          "severity": "3/10",
+          "lmp": "14 days ago"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Suprapubic",
+            "6–24 hours",
+            "Dull",
+            "Mild (1–3)",
+            "Nausea",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Soft"
+          ]
+        },
+        "durationDays": 0.5,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-gynaecological",
+          "severity": "quality",
+          "match": [
+            "ovarian",
+            "ectopic",
+            "pelvic inflammatory",
+            "pid"
+          ],
+          "note": "Gynaecological causes (ovarian cyst/torsion, ectopic) must be on the list for a young woman with RIF pain.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "wses-2020"
+        ],
+        "note": "Low-risk score band: observation/outpatient review is appropriate; an emergency triage is over-triage.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web: adaptiveTriage returns emergency_now because the HPI negative 'No vaginal bleeding' matches the 'GI or other bleeding' red flag (no negation handling).",
+        "proposedFix": "Add negation handling to scanRedFlags (skip matches preceded within a few words by 'no', 'denies', 'without', 'negative')."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-air",
+          "severity": "quality",
+          "score": "air",
+          "guidelineRefs": [
+            "wses-2020",
+            "air-2008"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Web CDS has no AIR rule."
+        }
+      ],
+      "values": [
+        {
+          "id": "score-alvarado-calculator",
+          "severity": "critical",
+          "score": "alvarado",
+          "mode": "calculator",
+          "equals": 3,
+          "guidelineRefs": [
+            "alvarado-1986"
+          ],
+          "note": "Nausea 1 + RIF tenderness 2 = 3 (unlikely).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-air-calculator",
+          "severity": "critical",
+          "score": "air",
+          "mode": "calculator",
+          "equals": 1,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "air-2008"
+          ],
+          "note": "RIF pain 1 = 1 (low probability, 0–4).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-pregnancy-test",
+          "severity": "critical",
+          "match": [
+            "hcg",
+            "pregnancy test"
+          ],
+          "guidelineRefs": [
+            "wses-2020",
+            "nice-ng126"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-observe-or-safety-net",
+          "severity": "quality",
+          "match": [
+            "active observation",
+            "observation",
+            "re-assess",
+            "reassess",
+            "safety-net",
+            "safety net",
+            "discharge with"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: low-risk patients (AIR 0–4) can be observed or discharged with safety-netting, without routine imaging.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy-at-low-risk",
+          "severity": "quality",
+          "match": [
+            "re:(emergency )?laparoscopic appendicectomy[^\\n]{0,30}(consent obtained|theatre booked)",
+            "re:emergency laparoscopic appendicectomy"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "An operative plan for a low-risk score band (and with 'no guarding, no rebound' in the exam text) risks a negative appendicectomy.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: The appendicitis prompt fires on the substrings 'guarding'/'rebound' in 'No guarding, no rebound' and adds 'Emergency laparoscopic appendicectomy — consent obtained, theatre booked' for an AIR 1 patient.",
+          "proposedFix": "Negation-aware exam() matching in computeClinicalPrompts; gate the operative template on a confirmed appendicitis diagnosis, not on exam substrings."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "alvarado-1986",
+      "name": "Alvarado score (MANTRELS)",
+      "year": 1986,
+      "section": "Items and weights; ≤4 unlikely, 5–6 possible, 7–8 probable, 9–10 very probable",
+      "citation": "Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15:557–64.",
+      "verified": false
+    },
+    {
+      "id": "air-2008",
+      "name": "Appendicitis Inflammatory Response (AIR) score",
+      "year": 2008,
+      "section": "Items and weights; 0–4 low, 5–8 intermediate, 9–12 high probability",
+      "citation": "Andersson M, Andersson RE. The appendicitis inflammatory response score: a tool for the diagnosis of acute appendicitis that outperforms the Alvarado score. World J Surg. 2008;32:1843–9.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng126",
+      "name": "NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management",
+      "year": 2019,
+      "section": "Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D",
+      "citation": "National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: score band (low). Tests the score arithmetic at the low end, the pregnancy test, and that the documented negatives ('No guarding, no rebound') do not trigger an operative plan. Pregnancy status is unknown until the test is back.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

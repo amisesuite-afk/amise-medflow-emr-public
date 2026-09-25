@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "id": "lbo-right-colon-cancer",
+  "condition": "Large bowel obstruction",
+  "category": "colorectal",
+  "permutationOf": "lbo-obstructing-sigmoid-cancer",
+  "permutationLabel": "Right-sided (hepatic flexure) obstructing cancer",
+  "summary": "68-year-old woman with iron-deficiency anaemia, 3 days of obstruction; CT: obstructing hepatic flexure tumour, no perforation.",
+  "tags": [
+    "obstruction",
+    "malignancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 161,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Colicky abdominal pain, distension and vomiting",
+    "hpi": "3 days of colicky central and right-sided pain, distension and vomiting; no flatus for 24 hours. Tired for months; iron-deficiency anaemia found by her GP last month, awaiting colonoscopy.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Periumbilical",
+        "Right side"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea"
+      ],
+      "timing": [
+        "Intermittent",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "abdominal distension",
+      "vomiting",
+      "absolute constipation",
+      "fatigue"
+    ],
+    "negatives": [
+      "fever",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Pale. Temperature 37.0°C, pulse 98/min, BP 124/74.",
+      "abdomen": "Distended, mildly tender on the right, no peritonism. Hernial orifices normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 124,
+        "diastolicBp": 74,
+        "respiratoryRate": 18,
+        "temperatureC": 37.0,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 8.9,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 10.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 26,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 84,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Obstructing tumour at the hepatic flexure with dilated small bowel and ascending colon; no perforation; no metastases seen.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Iron-deficiency anaemia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ferrous sulfate",
+        "dose": "200 mg",
+        "frequency": "OD",
+        "indication": "Iron-deficiency anaemia"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired nurse.",
+    "confirmedDiagnosis": {
+      "name": "Obstructing hepatic flexure carcinoma",
+      "icd10": "C18.3",
+      "paneDiseaseId": "colorectal_cancer",
+      "assessmentText": "Large bowel obstruction from an obstructing hepatic flexure carcinoma, no perforation. Right (extended) hemicolectomy with primary ileocolic anastomosis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Central and right side",
+          "onset": "3 days ago",
+          "character": "Colicky",
+          "associated": "Vomiting, distension, no flatus (constipation)",
+          "timing": "Intermittent / colicky, worsening",
+          "triggers": "Eating",
+          "relief": "Vomiting",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "abdominal distension",
+          "vomiting",
+          "constipation",
+          "fatigue"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "1–3 days",
+            "Colicky",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Distension",
+            "Constipation",
+            "Intermittent / colicky"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Soft"
+          ]
+        },
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-lbo-2018"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-right-hemicolectomy",
+          "severity": "quality",
+          "match": [
+            "right hemicolectomy",
+            "extended right hemicolectomy",
+            "right colectomy",
+            "ileocolic anastomosis"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "note": "WSES 2018: right-sided obstruction — right colectomy with primary anastomosis; stents are not routinely recommended for right-sided lesions.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Plan offers the left-sided LBO options only (SEMS, Hartmann's, colostomy); no right colectomy with primary anastomosis.",
+          "proposedFix": "Split lbo_malignant into left- and right-sided variants; right-sided = right colectomy with primary anastomosis."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-left-sided-plan-for-right-lesion",
+          "severity": "quality",
+          "match": [
+            "re:hartmann'?s?'? (procedure|operation)",
+            "emergency hartmann",
+            "sigmoid colectomy",
+            "anterior resection"
+          ],
+          "unless": [
+            "left-sided",
+            "sigmoid obstruction",
+            "if left",
+            "rectal cancer:"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctioning colostomy') is applied to a hepatic-flexure tumour."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-lbo-malignant",
+      "severity": "quality",
+      "equals": "lbo_malignant",
+      "guidelineRefs": [
+        "wses-lbo-2018"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-lbo-2018",
+      "name": "WSES guidelines — colon and rectal cancer emergencies: obstruction and perforation (2017)",
+      "year": 2018,
+      "section": "CT for diagnosis; left-sided obstruction (Hartmann's vs resection with primary anastomosis ± stoma; SEMS as a bridge in selected patients); right-sided obstruction (right colectomy with primary anastomosis); caecal distension and perforation (emergency surgery, no stent)",
+      "citation": "Pisano M, Zorcolo L, Merli C, et al. 2017 WSES guidelines on colon and rectal cancer emergencies: obstruction and perforation. World J Emerg Surg. 2018;13:36.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: tumour side. Right-sided obstruction is treated by right colectomy with primary anastomosis (WSES 2018); a left-sided (Hartmann's/stent) template is the wrong plan.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

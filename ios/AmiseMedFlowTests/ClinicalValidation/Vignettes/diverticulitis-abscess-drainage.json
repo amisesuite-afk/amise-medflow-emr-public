@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "id": "diverticulitis-abscess-drainage",
+  "condition": "Acute diverticulitis",
+  "category": "colorectal",
+  "permutationOf": "diverticulitis-uncomplicated-outpatient",
+  "permutationLabel": "Complicated: 6 cm pericolic abscess (modified Hinchey Ib)",
+  "summary": "63-year-old man, 5 days of LIF pain with fever 38.3 °C, tender LIF mass, WBC 17.8, CRP 212; CT: 6 × 5 cm pericolic abscess, no free gas.",
+  "tags": [
+    "acute-abdomen",
+    "diverticulitis",
+    "complicated"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 83
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Left lower abdominal pain and fever",
+    "hpi": "5 days of left lower abdominal pain, fevers and sweats, reduced appetite. Two previous episodes of diverticulitis treated by his GP.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "LLQ"
+      ],
+      "character": [
+        "Dull",
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "fever",
+      "rigors",
+      "anorexia"
+    ],
+    "negatives": [
+      "vomiting",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Temperature 38.3°C, pulse 102/min, BP 128/78.",
+      "abdomen": "Tender mass in the left iliac fossa with localised guarding; no generalised peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 102,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 38.3,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 17.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 212,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 94,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.5,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Sigmoid diverticulitis with a 6 × 5 cm rim-enhancing pericolic abscess. No free gas, no generalised fluid.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Taxi driver.",
+    "confirmedDiagnosis": {
+      "name": "Complicated diverticulitis with pericolic abscess",
+      "icd10": "K57.20",
+      "paneDiseaseId": "diverticulitis",
+      "assessmentText": "Complicated sigmoid diverticulitis with a 6 cm pericolic abscess (modified Hinchey Ib) — admit, IV antibiotics and CT-guided percutaneous drainage."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Left lower abdomen (LLQ / LIF)",
+          "onset": "5 days ago",
+          "character": "Constant ache",
+          "associated": "Fever, rigors, anorexia",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol partly",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "LLQ",
+            "> 3 days",
+            "Constant",
+            "Dull",
+            "Moderate (4–6)",
+            "Fever",
+            "Rigors",
+            "Anorexia",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender LLQ",
+            "Guarding",
+            "Mass palpable"
+          ]
+        },
+        "durationDays": 5,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-diverticulitis-top3",
+          "severity": "critical",
+          "match": [
+            "diverticul"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-diverticulitis-2020",
+          "aga-2021",
+          "ascrs-diverticulitis-2020"
+        ],
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal pain and fever' gives 'routine'."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-colonoscopy-after",
+          "severity": "quality",
+          "match": [
+            "colonoscopy"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020",
+            "aga-2021"
+          ],
+          "note": "Colonoscopy after complicated diverticulitis to exclude cancer.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-antibiotics",
+          "severity": "critical",
+          "match": [
+            "re:\\biv\\b[^\\n]{0,40}(antibiotic|piperacillin|co-amoxiclav|amoxiclav|cefuroxime|ceftriaxone|metronidazole|meropenem|pip-tazo)",
+            "intravenous antibiotic"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020",
+            "aga-2021",
+            "ascrs-diverticulitis-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-drainage",
+          "severity": "critical",
+          "match": [
+            "percutaneous drain",
+            "ct-guided drain",
+            "image-guided drain",
+            "ct-guided percutaneous"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020",
+            "ascrs-diverticulitis-2020"
+          ],
+          "note": "Abscess >4–5 cm: percutaneous drainage with antibiotics (WSES 2020).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-drainage-in-documented-plan",
+          "severity": "critical",
+          "match": [
+            "percutaneous drain",
+            "ct-guided drain",
+            "image-guided drain",
+            "ct-guided percutaneous"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "note": "The Plan tab text is what gets documented; for a 6 cm abscess it must contain drainage, not an outpatient oral-antibiotic plan.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: Assessment says 'modified Hinchey Ib'; the uncomplicated variant lists 'hinchey ib' (in the modified Hinchey scale Ib is a pericolic abscess) and is checked first, so the documented plan is the outpatient oral co-amoxiclav plan with no drainage.",
+          "proposedFix": "Use the modified Hinchey scale in dx-variants: move 'hinchey ib' to the abscess variant, use word-boundary matching (so 'hinchey i' does not match 'hinchey ii/iii/iv') and check peritonitis → abscess → uncomplicated."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-abscess",
+      "severity": "quality",
+      "equals": "diverticulitis_abscess",
+      "guidelineRefs": [
+        "wses-diverticulitis-2020",
+        "hinchey-mod-1999"
+      ],
+      "knownGap": [
+        "web"
+      ],
+      "knownGapNote": "Web: 'hinchey ib' is a keyword of diverticulitis_uncomplicated."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-diverticulitis-2020",
+      "name": "WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update)",
+      "year": 2020,
+      "section": "CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery",
+      "citation": "Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32.",
+      "verified": false
+    },
+    {
+      "id": "aga-2021",
+      "name": "AGA clinical practice update — medical management of colonic diverticulitis",
+      "year": 2021,
+      "section": "Antibiotics used selectively rather than routinely in immunocompetent patients with mild uncomplicated diverticulitis; CT when diagnosis uncertain; colonoscopy after complicated diverticulitis or if not recently done",
+      "citation": "Peery AF, Shaukat A, Strate LL. AGA clinical practice update on medical management of colonic diverticulitis: expert review. Gastroenterology. 2021;160:906–11.e1.",
+      "verified": false
+    },
+    {
+      "id": "ascrs-diverticulitis-2020",
+      "name": "ASCRS clinical practice guidelines — left-sided colonic diverticulitis",
+      "year": 2020,
+      "section": "Selective antibiotics for uncomplicated disease; percutaneous drainage for large abscess; urgent colectomy for diffuse peritonitis; immunocompromised patients; colonoscopy after complicated disease",
+      "citation": "Hall J, Hardiman K, Lee S, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the treatment of left-sided colonic diverticulitis. Dis Colon Rectum. 2020;63:728–47.",
+      "verified": false
+    },
+    {
+      "id": "hinchey-mod-1999",
+      "name": "Modified Hinchey classification",
+      "year": 1999,
+      "section": "0 mild; Ia confined pericolic inflammation/phlegmon; Ib pericolic or mesocolic abscess; II pelvic/distant abscess; III generalised purulent peritonitis; IV faecal peritonitis",
+      "citation": "Wasvary H, Turfah F, Kadro O, Beauregard W. Same hospitalization resection for acute diverticulitis. Am Surg. 1999;65:632–5.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: abscess. A 6 cm abscess needs admission, IV antibiotics and percutaneous drainage. The assessment uses the modified Hinchey grade (Ib = pericolic abscess), which is how CT-era reports grade it.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

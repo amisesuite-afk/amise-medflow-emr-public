@@ -1,0 +1,411 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-antibiotics-first-coda",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Woman, CT-confirmed uncomplicated, no appendicolith (antibiotics-first candidate)",
+  "summary": "28-year-old woman, 20 h migratory RIF pain, urine hCG negative, US non-diagnostic, CT uncomplicated appendicitis without appendicolith; she asks to avoid surgery.",
+  "tags": [
+    "acute-abdomen",
+    "shared-decision"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 28,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 61
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right iliac fossa pain",
+    "hpi": "20 hours of central abdominal pain moving to the right iliac fossa, anorexia and nausea. LMP 12 days ago, regular cycle. No vaginal discharge or bleeding. Urine pregnancy test negative in triage. She would like to avoid an operation if possible because she is travelling for work next week.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Periumbilical",
+        "RLQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "migration of pain to the right iliac fossa",
+      "anorexia",
+      "nausea"
+    ],
+    "negatives": [
+      "vaginal bleeding",
+      "vaginal discharge",
+      "dysuria",
+      "fever"
+    ],
+    "exam": {
+      "general": "Well. Temperature 37.6°C, pulse 92/min, BP 118/72.",
+      "abdomen": "Tender right iliac fossa with mild localised guarding; no rebound, no mass. Rest of abdomen soft."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 92,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 16,
+        "temperatureC": 37.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "neutrophilPct",
+        "name": "Neutrophils (%)",
+        "value": 78,
+        "unit": "%",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 34,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Urine hCG negative",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Negative",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen and pelvis",
+        "modality": "US",
+        "region": "Abdomen/pelvis",
+        "result": "Appendix not visualised. Normal uterus and ovaries. No free fluid.",
+        "minutesAgo": 180
+      },
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Uncomplicated acute appendicitis: appendix 9 mm with periappendiceal fat stranding. No appendicolith, no perforation, no abscess.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Combined oral contraceptive",
+        "dose": "1 tablet",
+        "frequency": "OD",
+        "indication": "Contraception"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Accountant. Non-smoker.",
+    "scoreForms": {
+      "air": {
+        "vomiting": false,
+        "rifPain": true,
+        "rebound": 0,
+        "tempAtLeast38_5": false,
+        "pmnBand": 1,
+        "wbcBand": 1,
+        "crpBand": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "CT-confirmed uncomplicated acute appendicitis without appendicolith. Discussed laparoscopic appendicectomy and antibiotics-first treatment."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Periumbilical, now right iliac fossa",
+          "onset": "Yesterday",
+          "character": "Sharp",
+          "associated": "Nausea, anorexia",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Rest",
+          "severity": "5/10",
+          "lmp": "12 days ago, regular; urine hCG negative"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "nausea",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "RLQ",
+            "6–24 hours",
+            "Sharp",
+            "Moderate (4–6)",
+            "Nausea",
+            "Anorexia",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Guarding"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": [
+            "appendic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-gynaecological",
+          "severity": "quality",
+          "match": [
+            "ovarian",
+            "ectopic",
+            "pelvic inflammatory",
+            "pid"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "note": "Gynaecological mimics in a woman of reproductive age (secondary engine).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: Symptom inference top 5: appendicitis ×2, alcoholic pancreatitis, gastroenteritis, typhoid; no gynaecological cause for a 28-year-old woman."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-2020"
+        ]
+      }
+    },
+    "scores": {
+      "values": [
+        {
+          "id": "score-air-calculator",
+          "severity": "critical",
+          "score": "air",
+          "mode": "calculator",
+          "equals": 4,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "air-2008"
+          ],
+          "note": "RIF pain 1 + PMN 70–84% 1 + WBC 10–14.9 1 + CRP 10–49 1 = 4.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-pregnancy-test",
+          "severity": "critical",
+          "match": [
+            "hcg",
+            "pregnancy test"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "Pregnancy test in every woman of reproductive age before imaging, drugs or theatre.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-ultrasound-first",
+          "severity": "quality",
+          "match": [
+            "ultrasound",
+            "uss"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: ultrasound first in young women; CT if non-diagnostic.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-appendicectomy-offered",
+          "severity": "quality",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "re:lap(\\.|aroscopic)? append"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics-first-option",
+          "severity": "quality",
+          "match": [
+            "antibiotic-first",
+            "antibiotics-first",
+            "antibiotics first",
+            "antibiotic therapy alone",
+            "antibiotics alone",
+            "non-operative management of uncomplicated",
+            "non-operative treatment",
+            "non-operative management"
+          ],
+          "unless": [
+            "appendix mass",
+            "phlegmon",
+            "abscess",
+            "inflamed mass"
+          ],
+          "guidelineRefs": [
+            "wses-2020",
+            "coda-2020"
+          ],
+          "note": "WSES 2020 and CODA: antibiotics-first is a safe alternative for CT-confirmed uncomplicated appendicitis without appendicolith, after shared decision-making (about 3 in 10 need appendicectomy by 90 days).",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendicitis; the protocol's only non-operative step is for an appendix mass.",
+          "proposedFix": "Add a 'conservative' step to the appendicitis protocol: antibiotics-first for CT-confirmed uncomplicated appendicitis without appendicolith after shared decision (WSES 2020, CODA), with the recurrence figure."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-uncomplicated",
+      "severity": "quality",
+      "equals": "appendicitis_uncomplicated",
+      "guidelineRefs": [
+        "wses-2020"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "coda-2020",
+      "name": "CODA trial — antibiotics versus appendectomy for acute appendicitis",
+      "year": 2020,
+      "section": "Non-inferiority of antibiotics-first for health status at 30 days; ~3 in 10 had appendicectomy by 90 days; appendicolith associated with more appendicectomies and complications",
+      "citation": "CODA Collaborative. A randomized trial comparing antibiotics with appendectomy for appendicitis. N Engl J Med. 2020;383:1907–19.",
+      "verified": false
+    },
+    {
+      "id": "air-2008",
+      "name": "Appendicitis Inflammatory Response (AIR) score",
+      "year": 2008,
+      "section": "Items and weights; 0–4 low, 5–8 intermediate, 9–12 high probability",
+      "citation": "Andersson M, Andersson RE. The appendicitis inflammatory response score: a tool for the diagnosis of acute appendicitis that outperforms the Alvarado score. World J Surg. 2008;32:1843–9.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: sex and treatment choice. Tests the pregnancy test, US-first imaging in a young woman, and whether the antibiotics-first option (WSES 2020, CODA) is offered alongside appendicectomy when the patient is eligible.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

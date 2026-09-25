@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "id": "lbo-obstructing-sigmoid-cancer",
+  "condition": "Large bowel obstruction",
+  "category": "colorectal",
+  "permutationOf": null,
+  "permutationLabel": "Obstructing sigmoid cancer, no perforation (base case)",
+  "summary": "72-year-old man, 6 weeks of change in bowel habit with blood and weight loss, then 4 days of absolute constipation and distension; CT: obstructing sigmoid tumour, caecum 10 cm, no perforation.",
+  "tags": [
+    "obstruction",
+    "malignancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 72,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Abdominal distension and no bowel motion for 4 days",
+    "hpi": "6 weeks of looser, more frequent stools with dark blood mixed in, 5 kg weight loss. For 4 days no stool and no flatus, progressive distension and lower abdominal colicky pain; vomited twice since yesterday.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse",
+        "LLQ"
+      ],
+      "character": [
+        "Colicky",
+        "Bloating"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Weight loss",
+        "Rectal bleeding",
+        "Change in bowel habit"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal distension",
+      "absolute constipation",
+      "abdominal pain",
+      "vomiting",
+      "weight loss",
+      "rectal bleeding",
+      "change in bowel habit"
+    ],
+    "negatives": [
+      "fever"
+    ],
+    "exam": {
+      "general": "Temperature 37.1°C, pulse 104/min, BP 136/84. Pale.",
+      "abdomen": "Grossly distended and tympanic, mildly tender in the left iliac fossa, no guarding, no peritonism. Empty rectum, no palpable rectal mass. Hernial orifices normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 104,
+        "systolicBp": 136,
+        "diastolicBp": 84,
+        "respiratoryRate": 18,
+        "temperatureC": 37.1,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.1,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 40,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 118,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 31,
+        "unit": "g/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Large bowel obstruction due to a 5 cm shouldered sigmoid tumour. Proximal colon dilated, caecum 10 cm, no pneumatosis, no free gas. Two indeterminate 8 mm liver lesions.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "Type 2 diabetes mellitus"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired bus driver. Ex-smoker. Independent.",
+    "confirmedDiagnosis": {
+      "name": "Large bowel obstruction from sigmoid carcinoma",
+      "icd10": "C18.7",
+      "paneDiseaseId": "colorectal_cancer",
+      "assessmentText": "Large bowel obstruction secondary to an obstructing sigmoid carcinoma; no perforation, caecum 10 cm. Emergency resection (primary anastomosis ± covering stoma or Hartmann's) versus stent as a bridge; staging CT chest; MDT."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Lower abdomen, generalised (LLQ)",
+          "onset": "4 days ago",
+          "character": "Colicky, bloating",
+          "associated": "Distension, no flatus or stool (constipation), vomiting, weight loss, blood in stool, change in bowel habit",
+          "timing": "Worsening",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "abdominal distension",
+          "constipation",
+          "abdominal pain",
+          "vomiting",
+          "weight loss",
+          "rectal bleeding",
+          "change in bowel habit"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "LLQ",
+            "Diffuse",
+            "> 3 days",
+            "Colicky",
+            "Moderate (4–6)",
+            "Distension",
+            "Constipation",
+            "Vomiting",
+            "PR bleeding",
+            "Worsening over time"
+          ],
+          "rectal bleeding": [
+            "Dark red",
+            "Mixed with stool",
+            "Weight loss"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Tender LLQ"
+          ]
+        },
+        "durationDays": 4,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-colorectal-or-obstruction-top3",
+          "severity": "critical",
+          "match": [
+            "colorectal",
+            "colon",
+            "obstruct",
+            "large bowel"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-lbo-2018"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "note": "WSES 2018: CT to confirm the level and cause and exclude perforation.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-staging-chest",
+          "severity": "quality",
+          "match": [
+            "re:ct (chest|thorax)",
+            "chest/abdomen/pelvis",
+            "chest, abdomen"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-cea",
+          "severity": "quality",
+          "match": [
+            "cea"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-decompression-or-resection",
+          "severity": "critical",
+          "match": [
+            "stent",
+            "sems",
+            "hartmann",
+            "resection",
+            "colostomy",
+            "stoma",
+            "colectomy"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-primary-anastomosis-option",
+          "severity": "quality",
+          "match": [
+            "primary anastomosis"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "note": "WSES 2018: resection with primary anastomosis (± covering stoma) is preferred in suitable patients; Hartmann's for high-risk patients; SEMS bridge in selected high-risk cases.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-mdt",
+          "severity": "quality",
+          "match": [
+            "mdt",
+            "multidisciplinary"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-lbo-malignant",
+      "severity": "quality",
+      "equals": "lbo_malignant",
+      "guidelineRefs": [
+        "wses-lbo-2018"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-lbo-2018",
+      "name": "WSES guidelines — colon and rectal cancer emergencies: obstruction and perforation (2017)",
+      "year": 2018,
+      "section": "CT for diagnosis; left-sided obstruction (Hartmann's vs resection with primary anastomosis ± stoma; SEMS as a bridge in selected patients); right-sided obstruction (right colectomy with primary anastomosis); caecal distension and perforation (emergency surgery, no stent)",
+      "citation": "Pisano M, Zorcolo L, Merli C, et al. 2017 WSES guidelines on colon and rectal cancer emergencies: obstruction and perforation. World J Emerg Surg. 2018;13:36.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for malignant LBO (WSES 2018): CT, decompression by resection or stent as a bridge, staging and MDT.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

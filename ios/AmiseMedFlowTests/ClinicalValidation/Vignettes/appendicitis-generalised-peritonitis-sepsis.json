@@ -1,0 +1,442 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-generalised-peritonitis-sepsis",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Perforated, generalised peritonitis with sepsis",
+  "summary": "31-year-old man, 3 days of RIF pain now generalised, T 39.1 °C, HR 126, BP 92/58, RR 24, lactate 3.4; CT shows perforated appendicitis with free fluid throughout.",
+  "tags": [
+    "acute-abdomen",
+    "sepsis",
+    "complicated"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 181,
+      "weightKg": 79
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Abdominal pain all over and fever",
+    "hpi": "3 days of right lower abdominal pain, much worse since this morning and now across the whole abdomen. Rigors, vomiting four times, feels faint on standing. Passed little urine today. No diarrhoea. No previous abdominal surgery.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RLQ",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Vomiting",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Coughing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "fever",
+      "rigors",
+      "vomiting",
+      "anorexia"
+    ],
+    "negatives": [
+      "diarrhoea",
+      "previous surgery"
+    ],
+    "exam": {
+      "general": "Flushed, rigoring, dry mucous membranes. Temperature 39.1°C, pulse 126/min, BP 92/58, RR 24.",
+      "abdomen": "Generalised guarding and rigidity, maximal in the right iliac fossa, rebound tenderness throughout. Bowel sounds absent."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 126,
+        "systolicBp": 92,
+        "diastolicBp": 58,
+        "respiratoryRate": 24,
+        "temperatureC": 39.1,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 21.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "neutrophilPct",
+        "name": "Neutrophils (%)",
+        "value": 90,
+        "unit": "%",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 280,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 128,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 9.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Perforated appendicitis with extraluminal gas in the right iliac fossa and free fluid throughout the peritoneal cavity and pelvis. No drainable walled-off collection.",
+        "minutesAgo": 10
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher. Non-smoker.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": false,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Perforated appendicitis with generalised peritonitis",
+      "icd10": "K35.20",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Perforated appendicitis with generalised peritonitis and sepsis (lactate 3.4). Emergency source control."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Started right lower (RLQ), now generalised",
+          "onset": "3 days ago, sudden worsening today",
+          "character": "Sharp",
+          "associated": "Fever, rigors, vomiting x4, anorexia",
+          "timing": "Constant, worsening",
+          "triggers": "Movement, coughing",
+          "relief": "Nothing helps",
+          "severity": "10/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "rigors",
+          "vomiting",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Diffuse",
+            "1–3 days",
+            "Sharp",
+            "Worst ever (10)",
+            "Fever",
+            "Rigors",
+            "Vomiting",
+            "Anorexia",
+            "Continuous",
+            "Worsening over time",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Diffuse tenderness",
+            "Guarding",
+            "Rigidity",
+            "Rebound tenderness",
+            "Bowel sounds absent"
+          ]
+        },
+        "durationDays": 3,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": [
+            "appendic",
+            "perforat",
+            "peritonitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-2020",
+          "ssc-2021"
+        ],
+        "note": "Generalised peritonitis with sepsis (SBP 92, lactate 3.4): emergency resuscitation and source control.",
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain all over and fever' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 2,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis-3"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-source-control",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "re:lap(\\.|aroscopic)? append",
+            "laparotomy",
+            "peritoneal washout",
+            "peritoneal lavage"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-2020",
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-fluids",
+          "severity": "quality",
+          "match": [
+            "crystalloid",
+            "hartmann's",
+            "fluid resuscitation",
+            "iv fluid",
+            "0.9% sodium chloride",
+            "0.9% nacl"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-postop-antibiotics-short-course",
+          "severity": "quality",
+          "match": [
+            "re:(3|3–5|3-5|five|5)[- ]?(to )?(5 )?days?",
+            "short course"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: after source control for complicated appendicitis, a short postoperative course (about 3–5 days) is adequate.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-generalised-peritonitis",
+      "severity": "quality",
+      "equals": "appendicitis_generalised_peritonitis",
+      "guidelineRefs": [
+        "wses-2020"
+      ],
+      "knownGap": [
+        "web"
+      ],
+      "knownGapNote": "Web: Same first-match problem: 'appendicitis' in the uncomplicated variant wins over 'generalised peritonitis'; the plan header says 'ideally within 12 h' instead of the emergency note.",
+      "proposedFix": "Same as the abscess fix: specific-first ordering; uncomplicated as fallback."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    },
+    {
+      "id": "sepsis-3",
+      "name": "Third international consensus definitions for sepsis and septic shock (Sepsis-3)",
+      "year": 2016,
+      "section": "qSOFA: RR ≥22, altered mentation, SBP ≤100",
+      "citation": "Singer M, Deutschman CS, Seymour CW, et al. JAMA. 2016;315:801–10.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: severity. Generalised peritonitis with sepsis must be an emergency with a sepsis alarm, blood cultures, antibiotics, resuscitation and emergency source control; postoperative antibiotics are indicated here (short course), unlike uncomplicated disease.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

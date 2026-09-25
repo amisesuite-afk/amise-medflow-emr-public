@@ -1,0 +1,452 @@
+{
+  "schemaVersion": 1,
+  "id": "mimic-ruptured-aaa",
+  "condition": "Ruptured abdominal aortic aneurysm (GI emergency mimic)",
+  "category": "vascular",
+  "permutationOf": null,
+  "permutationLabel": "Flank pain labelled renal colic, shocked (base case)",
+  "summary": "74-year-old smoker, sudden left flank/back pain to the groin, collapse, HR 122, BP 84/50, pulsatile expansile mass, microscopic haematuria; POCUS aorta 7.1 cm. Referred as '?renal colic'.",
+  "tags": [
+    "mimic",
+    "vascular",
+    "do-not-miss",
+    "elderly",
+    "shock"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Left loin pain and collapse",
+    "hpi": "Sudden severe left flank and back pain 90 minutes ago radiating to the left groin, then felt faint and collapsed at home. GP letter: '?left renal colic'. Smoker, hypertensive. Never had kidney stones.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Loin",
+        "Left side"
+      ],
+      "character": [
+        "Sharp",
+        "Stabbing"
+      ],
+      "radiation": [
+        "Back",
+        "Groin"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "flank pain",
+      "back pain",
+      "collapse",
+      "abdominal pain"
+    ],
+    "negatives": [
+      "dysuria",
+      "fever"
+    ],
+    "exam": {
+      "general": "Pale, sweaty, clammy. Temperature 36.4°C, pulse 122/min, BP 84/50, RR 24.",
+      "abdomen": "Tender, pulsatile, expansile mass above the umbilicus. Left flank tenderness. Femoral pulses weak."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 122,
+        "systolicBp": 84,
+        "diastolicBp": 50,
+        "respiratoryRate": 24,
+        "temperatureC": 36.4,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.8,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 132,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Blood + (microscopic haematuria), no leucocytes or nitrites",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Point-of-care ultrasound (ED)",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Infrarenal abdominal aorta 7.1 cm; suspected left retroperitoneal haematoma.",
+        "minutesAgo": 5
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "COPD"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 micrograms",
+        "frequency": "PRN",
+        "indication": "COPD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 50 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Ruptured abdominal aortic aneurysm",
+      "icd10": "I71.3",
+      "paneDiseaseId": "aortic_aneurysm",
+      "assessmentText": "Ruptured abdominal aortic aneurysm (7.1 cm on POCUS), haemodynamically unstable — permissive hypotension, immediate vascular surgery for EVAR or open repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Left loin / flank and back",
+          "onset": "Sudden, 90 minutes ago",
+          "character": "Severe, tearing",
+          "radiation": "Back and left groin",
+          "associated": "Collapse, nausea",
+          "timing": "Constant",
+          "relief": "Nothing helps",
+          "severity": "10/10"
+        },
+        "symptoms": [
+          "loin pain",
+          "back pain",
+          "syncope",
+          "abdominal pain",
+          "pulsatile mass"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Worst ever (10)",
+            "Back",
+            "Loin",
+            "Groin",
+            "Continuous",
+            "Nothing helps"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Mass palpable",
+            "Diffuse tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "pulsatile_mass": true
+        },
+        "toxicHabits": [
+          "smoking"
+        ],
+        "durationDays": 0.1,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-aaa-top3",
+          "severity": "critical",
+          "match": [
+            "aortic aneurysm",
+            "aneurysm",
+            "re:\\baaa\\b"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "note": "Flank pain + collapse + pulsatile mass in a 74-year-old smoker: ruptured AAA first, not renal colic.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3: inguinal/femoral hernia, renal colic, cholecystitis — even with the PANE answer pulsatile_mass = yes. Symptom inference ranks ruptured AAA #1.",
+          "proposedFix": "Raise the pulsatile_mass and haemodynamic_instability likelihoods for aortic_aneurysm in PANE and add an age/sex prior; add CC_HINTS for collapse + flank/back pain."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-aaa-symptom-engine",
+          "severity": "quality",
+          "match": [
+            "aortic aneurysm",
+            "aneurysm",
+            "re:\\baaa\\b"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esvs-aaa-2024"
+        ],
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left loin pain and collapse' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-aaa",
+          "severity": "critical",
+          "match": [
+            "aortic aneurysm",
+            "aneurysm",
+            "re:\\baaa\\b",
+            "aortic"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "note": "A generic hypotension alarm is not enough: the alarm must name the aneurysm so that no one sends the patient for a CT KUB.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Alarms are 'Hypotension', 'Tachycardia' and the generic 'SBP 84 → Shock Protocol'; none names the aneurysm.",
+          "proposedFix": "Add a prompt: pulsatile/expansile mass or known AAA + pain + hypotension → 'Suspected ruptured AAA — vascular surgery now, permissive hypotension'."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-crossmatch",
+          "severity": "quality",
+          "match": [
+            "crossmatch",
+            "cross-match",
+            "group and",
+            "group &"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vascular-repair",
+          "severity": "critical",
+          "match": [
+            "vascular surg",
+            "evar",
+            "endovascular",
+            "open repair",
+            "open surgical repair",
+            "aortic repair"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No protocol reaches the plan: ICD I71.3 does not start with the aortic protocol's only prefix 'I71.9', and PANE does not select aortic_aneurysm. Only prompts remain (no vascular surgery).",
+          "proposedFix": "Map the whole I71 family (I71.3, I71.4, I71.9) to the aortic protocol (getProtocolByIcd prefix 'I71')."
+        },
+        {
+          "id": "mgmt-permissive-hypotension",
+          "severity": "quality",
+          "match": [
+            "permissive hypotension",
+            "permissive hypotensive"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No permissive hypotension (the aortic protocol has it, but is not reached)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-renal-colic",
+          "severity": "critical",
+          "match": [
+            "nsaid",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "parecoxib"
+          ],
+          "unless": [
+            "avoid",
+            "hold nsaid",
+            "stop nsaid",
+            "stop or switch",
+            "not in pregnan",
+            "contraindicated",
+            "do not",
+            "no nsaid",
+            "caution:"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "note": "An NSAID 'renal colic' plan in a haemorrhaging patient is harmful (platelet function, renal injury) and signals anchoring on the wrong diagnosis.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-large-fluid-bolus",
+          "severity": "quality",
+          "match": [
+            "30ml/kg",
+            "30 ml/kg",
+            "re:1 ?l (bolus|hartmann)",
+            "re:hartmann's 1l bolus"
+          ],
+          "unless": [
+            "avoid",
+            "permissive",
+            "not "
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "note": "ESVS: restrictive (permissive hypotensive) resuscitation before aortic control.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Shock prompt: 'Hartmann's 1L bolus — reassess BP and HR at 15 min' for a ruptured AAA."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-aaa-2024",
+      "name": "ESVS clinical practice guidelines — abdominal aorto-iliac artery aneurysms (2024)",
+      "year": 2024,
+      "section": "Ruptured AAA: immediate transfer to vascular surgery, permissive hypotension, CT angiography only if haemodynamically stable enough; symptomatic intact AAA: urgent CTA and repair",
+      "citation": "Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 clinical practice guidelines on the management of abdominal aorto-iliac artery aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic of renal colic and acute abdomen. The engines must put AAA first, alarm for shock naming the aneurysm, and propose immediate vascular repair with permissive hypotension — never an NSAID renal-colic plan.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

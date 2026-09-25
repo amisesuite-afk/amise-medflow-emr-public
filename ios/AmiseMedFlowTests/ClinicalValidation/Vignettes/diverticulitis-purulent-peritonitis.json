@@ -1,0 +1,425 @@
+{
+  "schemaVersion": 1,
+  "id": "diverticulitis-purulent-peritonitis",
+  "condition": "Acute diverticulitis",
+  "category": "colorectal",
+  "permutationOf": "diverticulitis-uncomplicated-outpatient",
+  "permutationLabel": "Perforated, purulent peritonitis (Hinchey III)",
+  "summary": "59-year-old man, sudden generalised peritonitis after 3 days of LIF pain, T 38.7 °C, HR 116, BP 118/70; CT: free gas and generalised fluid, no faecal contamination.",
+  "tags": [
+    "acute-abdomen",
+    "diverticulitis",
+    "perforation",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 59,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 95
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Severe generalised abdominal pain and fever",
+    "hpi": "3 days of left lower abdominal pain; this morning sudden worsening with pain across the whole abdomen, fever and vomiting. Known diverticular disease.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Sudden"
+      ],
+      "site": [
+        "LLQ",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Coughing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "fever",
+      "vomiting"
+    ],
+    "negatives": [
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Unwell. Temperature 38.7°C, pulse 116/min, BP 118/70, RR 22.",
+      "abdomen": "Generalised peritonism: guarding and rigidity throughout, maximal in the left iliac fossa. Bowel sounds absent."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 116,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 22,
+        "temperatureC": 38.7,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 290,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 112,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Perforated sigmoid diverticulitis with free intraperitoneal gas and generalised free fluid; no faecal contamination seen.",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": [
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Mechanic.",
+    "confirmedDiagnosis": {
+      "name": "Perforated diverticulitis with purulent peritonitis",
+      "icd10": "K57.20",
+      "paneDiseaseId": "diverticulitis",
+      "assessmentText": "Perforated sigmoid diverticulitis with generalised purulent peritonitis (Hinchey III). Emergency surgery: sigmoid resection with primary anastomosis ± defunctioning stoma, or Hartmann's procedure."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Left lower, now generalised",
+          "onset": "3 days; sudden worsening today",
+          "character": "Constant ache",
+          "associated": "Fever, vomiting",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol partly",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "LLQ",
+            "Diffuse",
+            "1–3 days",
+            "Sharp",
+            "Severe (7–9)",
+            "Fever",
+            "Vomiting",
+            "Continuous",
+            "Worsening over time",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Diffuse tenderness",
+            "Guarding",
+            "Rigidity",
+            "Bowel sounds absent"
+          ]
+        },
+        "durationDays": 3,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-diverticulitis-top3",
+          "severity": "critical",
+          "match": [
+            "diverticul",
+            "perforat",
+            "peritonitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3: cholecystitis, inguinal/femoral hernia, appendicitis (features lif_pain, nausea_vomiting, fever) — the same likelihood problem as the base case."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-diverticulitis-2020",
+          "aga-2021",
+          "ascrs-diverticulitis-2020"
+        ],
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Severe generalised abdominal pain and fever' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-perforation",
+          "severity": "critical",
+          "match": [
+            "pneumoperitoneum",
+            "perforat",
+            "free air",
+            "free gas"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-surgery",
+          "severity": "critical",
+          "match": [
+            "re:hartmann'?s?'? (procedure|operation)",
+            "emergency hartmann",
+            "primary anastomosis",
+            "re:emergency[^\\n]{0,40}(resection|colectomy|laparotomy|surgery)",
+            "re:sigmoid (resection|colectomy)[^\\n]{0,30}(emergency|now|urgent)"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-emergency-surgery-in-documented-plan",
+          "severity": "critical",
+          "match": [
+            "re:hartmann'?s?'? (procedure|operation)",
+            "emergency hartmann",
+            "primary anastomosis",
+            "re:emergency[^\\n]{0,40}(resection|colectomy|laparotomy|surgery)",
+            "re:sigmoid (resection|colectomy)[^\\n]{0,30}(emergency|now|urgent)"
+          ],
+          "unless": [
+            "interval",
+            "6–8 weeks",
+            "elective"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "note": "The documented plan must contain the emergency operation for Hinchey III.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: 'hinchey iii' contains the abscess keyword 'hinchey i', and the abscess variant is checked before the peritonitis variant, so the documented plan (immediate/conservative/follow-up phases) has no emergency operation — only 'interval sigmoid colectomy 6–8 weeks'.",
+          "proposedFix": "Word-boundary Hinchey matching and specific-first variant order (peritonitis before abscess)."
+        },
+        {
+          "id": "mgmt-primary-anastomosis-option",
+          "severity": "quality",
+          "match": [
+            "primary anastomosis"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "note": "WSES 2020: in stable, immunocompetent patients, resection with primary anastomosis ± diverting stoma is an alternative to Hartmann's.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-peritonitis",
+      "severity": "quality",
+      "equals": "diverticulitis_peritonitis",
+      "guidelineRefs": [
+        "wses-diverticulitis-2020",
+        "hinchey-mod-1999"
+      ],
+      "knownGap": [
+        "web"
+      ],
+      "knownGapNote": "Web: Substring 'hinchey i' ⊂ 'hinchey iii' selects diverticulitis_abscess."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-diverticulitis-2020",
+      "name": "WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update)",
+      "year": 2020,
+      "section": "CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery",
+      "citation": "Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32.",
+      "verified": false
+    },
+    {
+      "id": "aga-2021",
+      "name": "AGA clinical practice update — medical management of colonic diverticulitis",
+      "year": 2021,
+      "section": "Antibiotics used selectively rather than routinely in immunocompetent patients with mild uncomplicated diverticulitis; CT when diagnosis uncertain; colonoscopy after complicated diverticulitis or if not recently done",
+      "citation": "Peery AF, Shaukat A, Strate LL. AGA clinical practice update on medical management of colonic diverticulitis: expert review. Gastroenterology. 2021;160:906–11.e1.",
+      "verified": false
+    },
+    {
+      "id": "ascrs-diverticulitis-2020",
+      "name": "ASCRS clinical practice guidelines — left-sided colonic diverticulitis",
+      "year": 2020,
+      "section": "Selective antibiotics for uncomplicated disease; percutaneous drainage for large abscess; urgent colectomy for diffuse peritonitis; immunocompromised patients; colonoscopy after complicated disease",
+      "citation": "Hall J, Hardiman K, Lee S, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the treatment of left-sided colonic diverticulitis. Dis Colon Rectum. 2020;63:728–47.",
+      "verified": false
+    },
+    {
+      "id": "hinchey-mod-1999",
+      "name": "Modified Hinchey classification",
+      "year": 1999,
+      "section": "0 mild; Ia confined pericolic inflammation/phlegmon; Ib pericolic or mesocolic abscess; II pelvic/distant abscess; III generalised purulent peritonitis; IV faecal peritonitis",
+      "citation": "Wasvary H, Turfah F, Kadro O, Beauregard W. Same hospitalization resection for acute diverticulitis. Am Surg. 1999;65:632–5.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: Hinchey III. Emergency surgery (primary anastomosis ± stoma in a stable patient, or Hartmann's) with antibiotics; the documented plan must follow the Hinchey grade in the assessment.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

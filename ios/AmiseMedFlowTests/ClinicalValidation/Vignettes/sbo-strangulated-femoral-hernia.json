@@ -1,0 +1,345 @@
+{
+  "schemaVersion": 1,
+  "id": "sbo-strangulated-femoral-hernia",
+  "condition": "Small bowel obstruction",
+  "category": "gi-emergency",
+  "permutationOf": "sbo-adhesive-base",
+  "permutationLabel": "Hernia cause: strangulated femoral hernia (elderly, anticoagulated)",
+  "summary": "83-year-old woman on apixaban, 2 days of SBO and a tense, tender, irreducible right femoral lump with erythema; T 37.9 °C, HR 112, lactate 2.9; CT: incarcerated femoral hernia with a poorly enhancing loop.",
+  "tags": [
+    "obstruction",
+    "hernia",
+    "elderly",
+    "anticoagulated"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 83,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 152,
+      "weightKg": 49
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful lump in the right groin and vomiting",
+    "hpi": "2 days of vomiting and colicky abdominal pain with distension; no flatus since yesterday. For the last 24 hours a painful lump in the right groin that she cannot push back. No previous abdominal surgery.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Groin",
+        "Periumbilical"
+      ],
+      "character": [
+        "Colicky",
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "groin swelling",
+      "absolute constipation"
+    ],
+    "negatives": [
+      "previous abdominal surgery"
+    ],
+    "exam": {
+      "general": "Frail, dry. Temperature 37.9°C, pulse 112/min, BP 108/64.",
+      "abdomen": "Distended, mildly tender centrally. Right groin: 3 cm tense, tender, irreducible lump below and lateral to the pubic tubercle with overlying erythema; no cough impulse."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 112,
+        "systolicBp": 108,
+        "diastolicBp": 64,
+        "respiratoryRate": 20,
+        "temperatureC": 37.9,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 131,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Small bowel obstruction caused by an incarcerated right femoral hernia; the herniated loop is thick-walled with reduced enhancement. No free gas.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Chronic kidney disease stage 3"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "2.5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives in sheltered housing.",
+    "confirmedDiagnosis": {
+      "name": "Strangulated right femoral hernia with small bowel obstruction",
+      "icd10": "K41.30",
+      "paneDiseaseId": "femoral_hernia",
+      "assessmentText": "Strangulated right femoral hernia causing small bowel obstruction — emergency repair with assessment of bowel viability."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right groin lump and central abdomen",
+          "onset": "2 days ago",
+          "character": "Colicky, now sharp over the lump",
+          "associated": "Vomiting, distension, no flatus (constipation)",
+          "timing": "Constant, worsening",
+          "triggers": "Movement",
+          "relief": "Nothing helps",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "groin swelling",
+          "constipation"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "1–3 days",
+            "Colicky",
+            "Severe (7–9)",
+            "Vomiting",
+            "Distension",
+            "Constipation",
+            "Continuous"
+          ],
+          "hernia": [
+            "Right groin",
+            "Femoral",
+            "Irreducible",
+            "Pain",
+            "Tenderness",
+            "Vomiting",
+            "Can't pass gas",
+            "Redness"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Hernia present"
+          ]
+        },
+        "paneAnswers": {
+          "hernia_irreducible": true
+        },
+        "durationDays": 2,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-hernia-top3",
+          "severity": "critical",
+          "match": [
+            "hernia"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3: bowel obstruction, adhesive SBO, post-operative ileus. The SOCRATES site text 'Right groin lump' maps to groin_swelling but the obstruction features dominate; hernia appears only in the triage surgical match list. The 'hernia' symptom-branch details are not read by PANE.",
+          "proposedFix": "Let PANE read the hernia symptom branch ('Irreducible', 'Femoral') and exam chip 'Hernia present' as hernia_irreducible/groin_swelling evidence."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-hernia-2017"
+        ],
+        "note": "Strangulated hernia: emergency surgery.",
+        "knownGap": [
+          "ios"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Painful lump in the right groin and vomiting' gives 'routine'."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-repair",
+          "severity": "critical",
+          "match": [
+            "re:emergency[^\\n]{0,60}(repair|surgery|theatre|exploration|herniotomy)"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-anticoagulant-plan",
+          "severity": "quality",
+          "match": [
+            "apixaban",
+            "anticoag",
+            "doac"
+          ],
+          "note": "DOAC timing/reversal before emergency surgery.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-manual-reduction",
+          "severity": "critical",
+          "match": [
+            "manual reduction",
+            "reduce the hernia",
+            "taxis",
+            "attempt reduction",
+            "gentle reduction"
+          ],
+          "unless": [
+            "do not",
+            "not attempt",
+            "contraindicated",
+            "avoid",
+            "no signs of strangulation",
+            "never"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "note": "WSES 2017: do not attempt reduction when strangulation is suspected (tender, erythematous, systemic signs, raised lactate) — non-viable bowel can be reduced into the abdomen.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-hernia-strangulated",
+      "severity": "quality",
+      "equals": "hernia_strangulated",
+      "guidelineRefs": [
+        "wses-hernia-2017"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sbo-2018",
+      "name": "WSES Bologna guidelines — adhesive small bowel obstruction (2017 update)",
+      "year": 2018,
+      "section": "CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes",
+      "citation": "ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24.",
+      "verified": false
+    },
+    {
+      "id": "wses-hernia-2017",
+      "name": "WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update)",
+      "year": 2017,
+      "section": "Strangulation signs; emergency repair; manual reduction not attempted when strangulation is suspected",
+      "citation": "Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: hernia as the cause. Strangulated femoral hernia needs emergency repair; attempting manual reduction of a strangulated hernia is contraindicated.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}
