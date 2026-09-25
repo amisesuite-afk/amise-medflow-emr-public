@@ -12,8 +12,10 @@ extension ClinicalScoresView {
     var trueloveWittsForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Stools per day").font(.subheadline)
+                Text("Stools per day").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(trueloveI.stoolsPerDay)", value: $trueloveI.stoolsPerDay, in: 0...30)
+                    .accessibilityLabel("Stools per day")
+                    .accessibilityValue("\(trueloveI.stoolsPerDay)")
             }
             scoreToggle("Macroscopic blood in stool", binding: $trueloveI.macroscopicBlood, points: "+1", autoKey: "macroscopicBlood")
             scoreToggle("Heart rate > 90 bpm", binding: $trueloveI.hrAbove90, points: "+1", autoKey: "hrAbove90")
@@ -30,24 +32,34 @@ extension ClinicalScoresView {
     var harveyBradshawForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
-                Text("General wellbeing (0 = very well, 4 = terrible)").font(.subheadline)
+                Text("General wellbeing (0 = very well, 4 = terrible)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(harveyI.generalWellbeing)", value: $harveyI.generalWellbeing, in: 0...4)
+                    .accessibilityLabel("General wellbeing (0 = very well, 4 = terrible)")
+                    .accessibilityValue("\(harveyI.generalWellbeing)")
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Abdominal pain (0 = none, 3 = severe)").font(.subheadline)
+                Text("Abdominal pain (0 = none, 3 = severe)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(harveyI.abdominalPain)", value: $harveyI.abdominalPain, in: 0...3)
+                    .accessibilityLabel("Abdominal pain (0 = none, 3 = severe)")
+                    .accessibilityValue("\(harveyI.abdominalPain)")
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Liquid stools per day").font(.subheadline)
+                Text("Liquid stools per day").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(harveyI.liquidStoolsPerDay)", value: $harveyI.liquidStoolsPerDay, in: 0...30)
+                    .accessibilityLabel("Liquid stools per day")
+                    .accessibilityValue("\(harveyI.liquidStoolsPerDay)")
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Abdominal mass (0 = none, 3 = tender)").font(.subheadline)
+                Text("Abdominal mass (0 = none, 3 = tender)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(harveyI.abdominalMass)", value: $harveyI.abdominalMass, in: 0...3)
+                    .accessibilityLabel("Abdominal mass (0 = none, 3 = tender)")
+                    .accessibilityValue("\(harveyI.abdominalMass)")
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Complications (arthralgia, uveitis, etc.)").font(.subheadline)
+                Text("Complications (arthralgia, uveitis, etc.)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(harveyI.complications)", value: $harveyI.complications, in: 0...10)
+                    .accessibilityLabel("Complications (arthralgia, uveitis, etc.)")
+                    .accessibilityValue("\(harveyI.complications)")
             }
         }
         .onChange(of: harveyI) { _, _ in recalculate() }

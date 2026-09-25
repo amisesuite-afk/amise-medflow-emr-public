@@ -16,7 +16,8 @@ extension ClinicalScoresView {
         )
 
         return VStack(alignment: .leading, spacing: 14) {
-            HStack {
+            // Name + interpretation beside the badge; the badge goes below at accessibility sizes.
+            resultHeaderLayout {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(r.systemName)
                         .font(.headline)
@@ -24,7 +25,7 @@ extension ClinicalScoresView {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-                Spacer()
+                if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                 riskBadge(r.risk, score: r.score, max: r.maxScore)
             }
 
@@ -34,6 +35,7 @@ extension ClinicalScoresView {
                     Image(systemName: "brain.head.profile")
                         .font(.caption)
                         .foregroundStyle(AMColor.accent)
+                        .accessibilityHidden(true)
                     Text("Score corroborates working diagnosis: \(dx)")
                         .font(.caption.weight(.medium))
                         .foregroundStyle(AMColor.accent)
@@ -58,6 +60,7 @@ extension ClinicalScoresView {
                 .padding(10)
                 .background { Color.red.opacity(0.08) }
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityElement(children: .combine)
             }
 
             if !r.recommendations.isEmpty {
@@ -98,6 +101,7 @@ extension ClinicalScoresView {
                             .font(.caption.monospacedDigit())
                             .foregroundStyle(AMColor.accent)
                     }
+                    .accessibilityElement(children: .combine)
                 }
             }
 
@@ -144,6 +148,7 @@ extension ClinicalScoresView {
                                 .font(.caption2)
                                 .foregroundStyle(.tertiary)
                         }
+                        .accessibilityElement(children: .combine)
                     }
                 }
                 .padding(10)
@@ -173,6 +178,12 @@ extension ClinicalScoresView {
         .shadow(color: .black.opacity(0.07), radius: 6, y: 3)
     }
 
+    var resultHeaderLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout())
+    }
+
     func riskBadge(_ risk: ScoreRisk, score: Double, max: Double) -> some View {
         let color: Color = switch risk {
         case .low:      .green
@@ -197,6 +208,9 @@ extension ClinicalScoresView {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(A11yLabel.joined([
+            max > 0 ? "Score \(scoreStr) out of \(maxStr)" : "Score \(scoreStr)", risk.rawValue])))
     }
 
 

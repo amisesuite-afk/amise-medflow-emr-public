@@ -373,8 +373,10 @@ extension ClinicalScoresView {
                 ipssItemPicker(label, keyPath: kp)
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Quality of life (0 = delighted, 6 = terrible)").font(.subheadline)
+                Text("Quality of life (0 = delighted, 6 = terrible)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(ipssI.qualityOfLife)", value: $ipssI.qualityOfLife, in: 0...6)
+                    .accessibilityLabel("Quality of life (0 = delighted, 6 = terrible)")
+                    .accessibilityValue("\(ipssI.qualityOfLife)")
             }
         }
         .onChange(of: ipssI) { _, _ in recalculate() }

@@ -8,6 +8,8 @@ struct ClinicalScoresView: View {
     /// Open straight into this score's form (e.g. AUDIT-C from wellness screening).
     var initialScore: ActiveScore? = nil
     @Environment(\.modelContext) var modelContext
+    /// Accessibility text sizes stack score rows and the result header vertically.
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     @State var selectedCategory: ScoreCategory = .all
     @State var selectedScore: ActiveScore? = nil

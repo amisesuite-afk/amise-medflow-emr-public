@@ -16,18 +16,27 @@ extension ClinicalScoresView {
                 Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
                 if autoFill.isAuto(autoKey) {
                     HStack(spacing: 3) {
-                        Image(systemName: "wand.and.stars").font(.system(size: 8))
-                        Text("Auto").font(.system(size: 8, weight: .semibold))
+                        Image(systemName: "wand.and.stars").scaledFont(size: 8)
+                        Text("Auto").scaledFont(size: 8, weight: .semibold)
                     }
                     .foregroundStyle(.teal)
                     .padding(.horizontal, 4).padding(.vertical, 1)
                     .background(.teal.opacity(0.12), in: Capsule())
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Pre-filled from the record")
                 }
             }
             HStack {
                 Slider(value: value, in: range, step: step)
                     .tint(autoFill.isAuto(autoKey) ? .teal : AMColor.accent)
-                Text(display).font(.caption.monospacedDigit()).frame(width: 54, alignment: .trailing)
+                    // A bare Slider reads as a percentage; say the field and its value.
+                    .accessibilityLabel(label)
+                    .accessibilityValue(display)
+                // Grows with large text instead of truncating the reading.
+                Text(display).font(.caption.monospacedDigit()).frame(minWidth: 54, alignment: .trailing)
+                    .fixedSize()
+                    .accessibilityHidden(true)
             }
         }
     }
@@ -38,10 +47,14 @@ extension ClinicalScoresView {
         VStack(alignment: .leading, spacing: 4) {
             Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
             HStack {
-                Slider(value: value, in: range, step: step).tint(AMColor.accent)
                 let v = value.wrappedValue
                 let display = step < 1 ? String(format: "%.2f \(unit)", v) : "\(Int(v)) \(unit)"
-                Text(display).font(.caption.monospacedDigit()).frame(width: 66, alignment: .trailing)
+                Slider(value: value, in: range, step: step).tint(AMColor.accent)
+                    .accessibilityLabel(label)
+                    .accessibilityValue(display)
+                Text(display).font(.caption.monospacedDigit()).frame(minWidth: 66, alignment: .trailing)
+                    .fixedSize()
+                    .accessibilityHidden(true)
             }
         }
     }
@@ -54,12 +67,15 @@ extension ClinicalScoresView {
                 Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
                 if autoFill.isAuto(autoKey) {
                     HStack(spacing: 3) {
-                        Image(systemName: "wand.and.stars").font(.system(size: 8))
-                        Text("Auto").font(.system(size: 8, weight: .semibold))
+                        Image(systemName: "wand.and.stars").scaledFont(size: 8)
+                        Text("Auto").scaledFont(size: 8, weight: .semibold)
                     }
                     .foregroundStyle(.teal)
                     .padding(.horizontal, 4).padding(.vertical, 1)
                     .background(.teal.opacity(0.12), in: Capsule())
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Pre-filled from the record")
                 }
             }
             content()
@@ -132,8 +148,11 @@ extension ClinicalScoresView {
                        range: ClosedRange<Int>, step: Int) -> some View {
         HStack {
             Text(label).font(.subheadline)
+                .accessibilityHidden(true)   // spoken on the stepper
             Spacer()
             Stepper("\(value.wrappedValue)", value: value, in: range, step: step)
+                .accessibilityLabel(label)
+                .accessibilityValue("\(value.wrappedValue)")
                 .fixedSize()
         }
     }

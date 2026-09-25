@@ -65,4 +65,15 @@ extension View {
         frame(minWidth: side, minHeight: side, alignment: alignment)
             .contentShape(Rectangle())
     }
+
+    /// Adds invisible hit area around a small control without changing its layout size, for
+    /// places where growing the frame to 44 pt would push the surrounding layout around. Use it
+    /// inside a Button's label (the label's shape is what the button hit-tests).
+    func expandedHitArea(horizontal: CGFloat = 0, vertical: CGFloat = 0) -> some View {
+        padding(.horizontal, horizontal)
+            .padding(.vertical, vertical)
+            .contentShape(Rectangle())
+            .padding(.horizontal, -horizontal)
+            .padding(.vertical, -vertical)
+    }
 }

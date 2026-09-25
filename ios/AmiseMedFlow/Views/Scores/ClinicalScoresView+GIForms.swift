@@ -302,17 +302,21 @@ extension ClinicalScoresView {
             Text("Enter current serum albumin (g/L) and bilirubin (μmol/L). Use most recent lab values.")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
             HStack {
-                Text("Albumin (g/L)")
+                Text("Albumin (g/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper("\(Int(albiI.albuminGperL)) g/L",
                         value: $albiI.albuminGperL, in: 5...60, step: 1)
+                    .accessibilityLabel("Albumin (g/L)")
+                    .accessibilityValue("\(Int(albiI.albuminGperL)) g/L")
                     .fixedSize()
             }
             HStack {
-                Text("Bilirubin (μmol/L)")
+                Text("Bilirubin (μmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper("\(Int(albiI.bilirubinUmolL)) μmol/L",
                         value: $albiI.bilirubinUmolL, in: 1...500, step: 1)
+                    .accessibilityLabel("Bilirubin (μmol/L)")
+                    .accessibilityValue("\(Int(albiI.bilirubinUmolL)) μmol/L")
                     .fixedSize()
             }
             Text("ALBI = (log₁₀(bilirubin) × 0.66) + (albumin × −0.085). Grade 1 ≤−2.60 (safe); Grade 3 >−1.39 (prohibitive risk).")
@@ -367,38 +371,48 @@ extension ClinicalScoresView {
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
             Toggle("Female sex (+1.33 to score)", isOn: $meld3I.isFemale)
             HStack {
-                Text("Creatinine (μmol/L)")
+                Text("Creatinine (μmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f μmol/L", meld3I.creatinineMmolL),
                         value: $meld3I.creatinineMmolL, in: 10...700, step: 5)
+                    .accessibilityLabel("Creatinine (μmol/L)")
+                    .accessibilityValue(String(format: "%.0f μmol/L", meld3I.creatinineMmolL))
                     .fixedSize()
             }
             HStack {
-                Text("Bilirubin (μmol/L)")
+                Text("Bilirubin (μmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f μmol/L", meld3I.bilirubinMmolL),
                         value: $meld3I.bilirubinMmolL, in: 1...500, step: 2)
+                    .accessibilityLabel("Bilirubin (μmol/L)")
+                    .accessibilityValue(String(format: "%.0f μmol/L", meld3I.bilirubinMmolL))
                     .fixedSize()
             }
             HStack {
-                Text("INR")
+                Text("INR").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.1f", meld3I.inr),
                         value: $meld3I.inr, in: 0.8...12.0, step: 0.1)
+                    .accessibilityLabel("INR")
+                    .accessibilityValue(String(format: "%.1f", meld3I.inr))
                     .fixedSize()
             }
             HStack {
-                Text("Sodium (mmol/L)")
+                Text("Sodium (mmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper("\(meld3I.sodiumMmolL) mmol/L",
                         value: $meld3I.sodiumMmolL, in: 120...145, step: 1)
+                    .accessibilityLabel("Sodium (mmol/L)")
+                    .accessibilityValue("\(meld3I.sodiumMmolL) mmol/L")
                     .fixedSize()
             }
             HStack {
-                Text("Albumin (g/L)")
+                Text("Albumin (g/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f g/L", meld3I.albuminGperL),
                         value: $meld3I.albuminGperL, in: 10...60, step: 1)
+                    .accessibilityLabel("Albumin (g/L)")
+                    .accessibilityValue(String(format: "%.0f g/L", meld3I.albuminGperL))
                     .fixedSize()
             }
             Text("Score ≥15 = transplant listing threshold. ≥25 = active waitlist priority.")

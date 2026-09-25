@@ -103,12 +103,16 @@ extension ClinicalScoresView {
     var ariscatForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Age (years)").font(.subheadline)
+                Text("Age (years)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(ariscatI.age) yrs", value: $ariscatI.age, in: 0...110)
+                    .accessibilityLabel("Age (years)")
+                    .accessibilityValue("\(ariscatI.age) yrs")
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Pre-op SpO₂ (%)").font(.subheadline)
+                Text("Pre-op SpO₂ (%)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(ariscatI.spo2Preop)%", value: $ariscatI.spo2Preop, in: 70...100)
+                    .accessibilityLabel("Pre-op SpO₂ (%)")
+                    .accessibilityValue("\(ariscatI.spo2Preop)%")
             }
             Toggle(isOn: $ariscatI.respiratoryInfection) {
                 VStack(alignment: .leading, spacing: 2) {

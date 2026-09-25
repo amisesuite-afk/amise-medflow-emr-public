@@ -12,8 +12,10 @@ extension ClinicalScoresView {
     var laceForm: some View {
         Group {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Length of stay (days)").font(.subheadline)
+                Text("Length of stay (days)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(laceI.lengthOfStayDays) day(s)", value: $laceI.lengthOfStayDays, in: 0...30)
+                    .accessibilityLabel("Length of stay (days)")
+                    .accessibilityValue("\(laceI.lengthOfStayDays) day(s)")
             }
             Toggle(isOn: $laceI.acuteAdmission) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -22,15 +24,19 @@ extension ClinicalScoresView {
                 }
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Charlson Comorbidity Index (CCI)").font(.subheadline)
+                Text("Charlson Comorbidity Index (CCI)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 HStack {
                     Stepper("\(laceI.charlsonIndex)", value: $laceI.charlsonIndex, in: 0...20)
+                        .accessibilityLabel("Charlson Comorbidity Index (CCI)")
+                        .accessibilityValue("\(laceI.charlsonIndex)")
                     Text("(scored 0–4 in LACE)").font(.caption2).foregroundStyle(.secondary)
                 }
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("ED visits in last 6 months").font(.subheadline)
+                Text("ED visits in last 6 months").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(laceI.edVisitsLast6Months)", value: $laceI.edVisitsLast6Months, in: 0...10)
+                    .accessibilityLabel("ED visits in last 6 months")
+                    .accessibilityValue("\(laceI.edVisitsLast6Months)")
             }
         }
         .onChange(of: laceI.lengthOfStayDays)   { _, _ in recalculate() }
@@ -146,8 +152,10 @@ extension ClinicalScoresView {
                 }
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Age (years)").font(.subheadline)
+                Text("Age (years)").font(.subheadline).accessibilityHidden(true)   // spoken on the stepper
                 Stepper("\(ckdEpiI.ageYears) yrs", value: $ckdEpiI.ageYears, in: 18...100)
+                    .accessibilityLabel("Age (years)")
+                    .accessibilityValue("\(ckdEpiI.ageYears) yrs")
             }
             VStack(alignment: .leading, spacing: 4) {
                 Text("Sex").font(.subheadline)

@@ -188,10 +188,12 @@ extension ClinicalScoresView {
             sapsIIStepper("Max heart rate (bpm)", value: $sapsIII.heartRateMax, range: 0...300, step: 1)
             sapsIIStepper("Min systolic BP (mmHg)", value: $sapsIII.sbpMin, range: 0...300, step: 1)
             HStack {
-                Text("Max temperature (°C)")
+                Text("Max temperature (°C)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.1f °C", sapsIII.tempMax),
                         value: $sapsIII.tempMax, in: 30.0...45.0, step: 0.1)
+                    .accessibilityLabel("Max temperature (°C)")
+                    .accessibilityValue(String(format: "%.1f °C", sapsIII.tempMax))
                     .fixedSize()
             }
             Toggle("Ventilated (PaO₂/FiO₂ applicable)", isOn: $sapsIII.onVentilator)
@@ -200,33 +202,41 @@ extension ClinicalScoresView {
             }
             sapsIIStepper("Urine output (mL/24 h)", value: $sapsIII.urineOutputML, range: 0...5000, step: 50)
             HStack {
-                Text("BUN (mmol/L)")
+                Text("BUN (mmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.1f mmol/L", sapsIII.bunMmolL),
                         value: $sapsIII.bunMmolL, in: 0...100, step: 0.5)
+                    .accessibilityLabel("BUN (mmol/L)")
+                    .accessibilityValue(String(format: "%.1f mmol/L", sapsIII.bunMmolL))
                     .fixedSize()
             }
             HStack {
-                Text("WBC (× 10⁹/L)")
+                Text("WBC (× 10⁹/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.1f ×10⁹/L", sapsIII.wbc),
                         value: $sapsIII.wbc, in: 0...100, step: 0.5)
+                    .accessibilityLabel("WBC (× 10⁹/L)")
+                    .accessibilityValue(String(format: "%.1f ×10⁹/L", sapsIII.wbc))
                     .fixedSize()
             }
             sapsIIStepper("Sodium (mmol/L)", value: $sapsIII.sodiumMmolL, range: 100...180, step: 1)
             HStack {
-                Text("Potassium (mmol/L)")
+                Text("Potassium (mmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.1f mmol/L", sapsIII.potassiumMmolL),
                         value: $sapsIII.potassiumMmolL, in: 0...10, step: 0.1)
+                    .accessibilityLabel("Potassium (mmol/L)")
+                    .accessibilityValue(String(format: "%.1f mmol/L", sapsIII.potassiumMmolL))
                     .fixedSize()
             }
             sapsIIStepper("Bicarbonate (mmol/L)", value: $sapsIII.bicarbonateMmolL, range: 0...60, step: 1)
             HStack {
-                Text("Bilirubin (μmol/L)")
+                Text("Bilirubin (μmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f μmol/L", sapsIII.bilirubinUmolL),
                         value: $sapsIII.bilirubinUmolL, in: 0...600, step: 5)
+                    .accessibilityLabel("Bilirubin (μmol/L)")
+                    .accessibilityValue(String(format: "%.0f μmol/L", sapsIII.bilirubinUmolL))
                     .fixedSize()
             }
             sapsIIStepper("GCS (3–15)", value: $sapsIII.gcsScore, range: 3...15, step: 1)
@@ -273,17 +283,21 @@ extension ClinicalScoresView {
             Text("Berlin Definition (2012). Requires: acute onset ≤1 week, bilateral opacities not explained by effusions/lobar collapse/nodules, respiratory failure not fully explained by cardiac failure. PF ratio measured with PEEP/CPAP ≥5 cmH₂O.")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
             HStack {
-                Text("PaO₂/FiO₂ ratio (mmHg)")
+                Text("PaO₂/FiO₂ ratio (mmHg)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f", berlinI.pao2FiO2Ratio),
                         onIncrement: { berlinI.pao2FiO2Ratio = min(600, berlinI.pao2FiO2Ratio + 10) },
                         onDecrement: { berlinI.pao2FiO2Ratio = max(0, berlinI.pao2FiO2Ratio - 10) })
+                    .accessibilityLabel("PaO₂/FiO₂ ratio (mmHg)")
+                    .accessibilityValue(String(format: "%.0f", berlinI.pao2FiO2Ratio))
                     .fixedSize()
             }
             HStack {
-                Text("PEEP/CPAP (cmH₂O)")
+                Text("PEEP/CPAP (cmH₂O)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper("\(berlinI.peepOrCPAP)", value: $berlinI.peepOrCPAP, in: 0...30)
+                    .accessibilityLabel("PEEP/CPAP (cmH₂O)")
+                    .accessibilityValue("\(berlinI.peepOrCPAP)")
                     .fixedSize()
             }
             scoreToggle("Acute onset within 1 week of clinical insult or new/worsening symptoms",
@@ -326,73 +340,91 @@ extension ClinicalScoresView {
             Text("Fournier Gangrene Severity Index. Score ≥9 = high mortality risk (>75%). Based on APACHE-II physiological parameters.")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 4)
             HStack {
-                Text("Temperature (°C)")
+                Text("Temperature (°C)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.1f", fgsiI.temperature),
                         onIncrement: { fgsiI.temperature = min(45, fgsiI.temperature + 0.1); recalculate() },
                         onDecrement: { fgsiI.temperature = max(30, fgsiI.temperature - 0.1); recalculate() })
+                    .accessibilityLabel("Temperature (°C)")
+                    .accessibilityValue(String(format: "%.1f", fgsiI.temperature))
                     .fixedSize()
             }
             HStack {
-                Text("Heart rate (bpm)")
+                Text("Heart rate (bpm)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper("\(fgsiI.heartRate)", value: $fgsiI.heartRate, in: 20...200, step: 5)
+                    .accessibilityLabel("Heart rate (bpm)")
+                    .accessibilityValue("\(fgsiI.heartRate)")
                     .fixedSize()
                     .onChange(of: fgsiI.heartRate) { _, _ in recalculate() }
             }
             HStack {
-                Text("Respiratory rate (/min)")
+                Text("Respiratory rate (/min)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper("\(fgsiI.respiratoryRate)", value: $fgsiI.respiratoryRate, in: 4...60, step: 1)
+                    .accessibilityLabel("Respiratory rate (/min)")
+                    .accessibilityValue("\(fgsiI.respiratoryRate)")
                     .fixedSize()
                     .onChange(of: fgsiI.respiratoryRate) { _, _ in recalculate() }
             }
             HStack {
-                Text("Sodium (mmol/L)")
+                Text("Sodium (mmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f", fgsiI.sodium),
                         onIncrement: { fgsiI.sodium = min(200, fgsiI.sodium + 1); recalculate() },
                         onDecrement: { fgsiI.sodium = max(90, fgsiI.sodium - 1); recalculate() })
+                    .accessibilityLabel("Sodium (mmol/L)")
+                    .accessibilityValue(String(format: "%.0f", fgsiI.sodium))
                     .fixedSize()
             }
             HStack {
-                Text("Potassium (mmol/L)")
+                Text("Potassium (mmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.1f", fgsiI.potassium),
                         onIncrement: { fgsiI.potassium = min(10, fgsiI.potassium + 0.1); recalculate() },
                         onDecrement: { fgsiI.potassium = max(1, fgsiI.potassium - 0.1); recalculate() })
+                    .accessibilityLabel("Potassium (mmol/L)")
+                    .accessibilityValue(String(format: "%.1f", fgsiI.potassium))
                     .fixedSize()
             }
             HStack {
-                Text("Creatinine (μmol/L)")
+                Text("Creatinine (μmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f", fgsiI.creatinine),
                         onIncrement: { fgsiI.creatinine = min(1000, fgsiI.creatinine + 10); recalculate() },
                         onDecrement: { fgsiI.creatinine = max(10, fgsiI.creatinine - 10); recalculate() })
+                    .accessibilityLabel("Creatinine (μmol/L)")
+                    .accessibilityValue(String(format: "%.0f", fgsiI.creatinine))
                     .fixedSize()
             }
             HStack {
-                Text("Haematocrit (%)")
+                Text("Haematocrit (%)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f", fgsiI.haematocrit),
                         onIncrement: { fgsiI.haematocrit = min(75, fgsiI.haematocrit + 1); recalculate() },
                         onDecrement: { fgsiI.haematocrit = max(10, fgsiI.haematocrit - 1); recalculate() })
+                    .accessibilityLabel("Haematocrit (%)")
+                    .accessibilityValue(String(format: "%.0f", fgsiI.haematocrit))
                     .fixedSize()
             }
             HStack {
-                Text("WBC (×10⁹/L)")
+                Text("WBC (×10⁹/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.1f", fgsiI.wbc),
                         onIncrement: { fgsiI.wbc = min(60, fgsiI.wbc + 0.5); recalculate() },
                         onDecrement: { fgsiI.wbc = max(0, fgsiI.wbc - 0.5); recalculate() })
+                    .accessibilityLabel("WBC (×10⁹/L)")
+                    .accessibilityValue(String(format: "%.1f", fgsiI.wbc))
                     .fixedSize()
             }
             HStack {
-                Text("Bicarbonate (mmol/L)")
+                Text("Bicarbonate (mmol/L)").accessibilityHidden(true)   // spoken on the stepper
                 Spacer()
                 Stepper(String(format: "%.0f", fgsiI.bicarbonate),
                         onIncrement: { fgsiI.bicarbonate = min(50, fgsiI.bicarbonate + 1); recalculate() },
                         onDecrement: { fgsiI.bicarbonate = max(5, fgsiI.bicarbonate - 1); recalculate() })
+                    .accessibilityLabel("Bicarbonate (mmol/L)")
+                    .accessibilityValue(String(format: "%.0f", fgsiI.bicarbonate))
                     .fixedSize()
             }
         }

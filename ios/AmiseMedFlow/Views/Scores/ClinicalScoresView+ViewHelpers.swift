@@ -26,12 +26,13 @@ extension ClinicalScoresView {
                                 : Color.secondary.opacity(0.12),
                                 in: Capsule())
                             .foregroundStyle(selectedCategory == cat ? .white : .primary)
+                            .minimumTouchTarget()   // 44 pt; the bar's padding shrinks to match
                     }
                     .buttonStyle(.plain)
+                    .accessibilityAddTraits(selectedCategory == cat ? .isSelected : [])
                 }
             }
             .padding(.horizontal)
-            .padding(.vertical, 8)
         }
         .background(Color(uiColor: .systemGroupedBackground))
     }
@@ -60,6 +61,7 @@ extension ClinicalScoresView {
                     HStack(spacing: 8) {
                         Image(systemName: "info.circle")
                             .foregroundStyle(AMColor.accent)
+                            .accessibilityHidden(true)
                         Text("Set a working diagnosis to see tailored scores.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -139,14 +141,16 @@ extension ClinicalScoresView {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 5) {
                 Image(systemName: icon)
-                    .font(.system(size: 9, weight: .bold))
+                    .scaledFont(size: 9, weight: .bold)
                     .foregroundStyle(AMColor.accent)
+                    .accessibilityHidden(true)
                 Text(title)
-                    .font(.system(size: 10, weight: .heavy))
-                    .foregroundStyle(AMColor.accent)
                     .kerning(0.8)
+                    .scaledFont(size: 10, weight: .heavy)
+                    .foregroundStyle(AMColor.accent)
             }
             .padding(.horizontal)
+            .accessibilityAddTraits(.isHeader)
             content()
         }
     }
@@ -212,7 +216,7 @@ extension ClinicalScoresView {
                 if let note = incompleteNote {
                     // Missing parameters score 0, so an incomplete NEWS2 can under-state risk.
                     Label(note, systemImage: "exclamationmark.circle")
-                        .font(.system(size: 9, weight: .semibold))
+                        .scaledFont(size: 9, weight: .semibold)
                         .foregroundStyle(.orange)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -220,7 +224,7 @@ extension ClinicalScoresView {
                 }
                 if let vitalsAt = snapshot.latestVitalsAt, score == .news2 {
                     Text("Vitals: \(vitalsAt, style: .relative)")
-                        .font(.system(size: 9))
+                        .scaledFont(size: 9)
                         .foregroundStyle(.tertiary)
                         .lineLimit(1)
                 }
@@ -234,7 +238,26 @@ extension ClinicalScoresView {
             }
         }
         .buttonStyle(.plain)
+        // "NEWS2 7, high risk" rather than "7" (the colour alone carried the band).
+        .accessibilityLabel(Text(monitoringAccessibilityLabel(score, live: liveNews2, saved: savedEntry)))
         .padding(.horizontal)
+    }
+
+    func monitoringAccessibilityLabel(_ score: ActiveScore,
+                                      live: ScoresPatientSnapshot.LiveNEWS2?,
+                                      saved: ScoresPatientSnapshot.SavedScore?) -> String {
+        let name = monitoringShortName(score)
+        if let n = live {
+            return A11yLabel.joined([
+                A11yLabel.news2(score: n.value, risk: n.risk),
+                n.incompleteNote,
+                "from the latest vitals",
+            ])
+        }
+        if let saved {
+            return A11yLabel.joined(["\(name) \(saved.abbreviation)", saved.riskRaw, "last saved"])
+        }
+        return "\(name), not recorded. Tap to record"
     }
 
     func monitoringShortName(_ score: ActiveScore) -> String {
@@ -248,7 +271,10 @@ extension ClinicalScoresView {
     // MARK: - Clinical / risk score grid (Blocks 2 & 3)
 
     func clinicalScoreGrid(_ recs: [DiagnosisScoreRecommendation]) -> some View {
-        let cols = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+        // Three columns; one at accessibility text sizes so names and rationale stay readable.
+        let cols = dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
         return LazyVGrid(columns: cols, spacing: 10) {
             ForEach(recs) { rec in
                 Button {
@@ -284,9 +310,9 @@ extension ClinicalScoresView {
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
             Text(rec.rationale)
-                .font(.system(size: 9))
+                .scaledFont(size: 9)
                 .foregroundStyle(.secondary)
-                .lineLimit(2)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 4 : 2)
         }
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -295,6 +321,12 @@ extension ClinicalScoresView {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(AMColor.line, lineWidth: 1)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(A11yLabel.joined([
+            rec.score.rawValue,
+            savedEntry.map { "last \($0.abbreviation), \($0.riskRaw)" },
+            rec.rationale,
+        ])))
     }
 
     // MARK: - Score history list (Block 4)
@@ -304,19 +336,30 @@ extension ClinicalScoresView {
         return VStack(spacing: 0) {
             ForEach(entries) { entry in
                 HStack(spacing: 10) {
-                    Circle()
-                        .fill(scoreHistoryColor(entry.riskRaw))
-                        .frame(width: 8, height: 8)
-                    Text(entry.scoreName)
-                        .font(.caption.weight(.medium))
-                        .lineLimit(1)
-                    Spacer()
-                    Text(entry.abbreviation)
-                        .font(.caption.monospacedDigit().weight(.semibold))
-                        .foregroundStyle(scoreHistoryColor(entry.riskRaw))
-                    Text(entry.recordedAt, style: .relative)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
+                    // Name, value and time: one spoken element carrying the risk band that the
+                    // dot and the value's colour show.
+                    historyLayout {
+                        HStack(spacing: 10) {
+                            Circle()
+                                .fill(scoreHistoryColor(entry.riskRaw))
+                                .frame(width: 8, height: 8)
+                            Text(entry.scoreName)
+                                .font(.caption.weight(.medium))
+                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
+                        }
+                        if !dynamicTypeSize.isAccessibilitySize { Spacer() }
+                        HStack(spacing: 10) {
+                            Text(entry.abbreviation)
+                                .font(.caption.monospacedDigit().weight(.semibold))
+                                .foregroundStyle(scoreHistoryColor(entry.riskRaw))
+                            Text(entry.recordedAt, style: .relative)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(Text(A11yLabel.joined([entry.scoreName, entry.abbreviation, entry.riskRaw])))
+                    if dynamicTypeSize.isAccessibilitySize { Spacer() }
                     Button {
                         if let match = entry.activeScore {
                             selectedScore = match
@@ -326,8 +369,10 @@ extension ClinicalScoresView {
                         Image(systemName: "arrow.right.circle")
                             .font(.caption)
                             .foregroundStyle(AMColor.accent)
+                            .expandedHitArea(horizontal: 12, vertical: 14)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Open \(entry.scoreName)")
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 9)
@@ -339,6 +384,13 @@ extension ClinicalScoresView {
         }
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal)
+    }
+
+    /// Score history row: name, value and time side by side, or stacked at accessibility sizes.
+    var historyLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(spacing: 10))
     }
 
     // MARK: - Score browse catalogue (shown when showingAllScores = true)
@@ -353,6 +405,7 @@ extension ClinicalScoresView {
                     Label("Back to patient view", systemImage: "chevron.left")
                         .font(.subheadline)
                         .foregroundStyle(AMColor.accent)
+                        .expandedHitArea(vertical: 12)
                 }
                 .buttonStyle(.plain)
                 .padding(.horizontal)
@@ -430,6 +483,13 @@ extension ClinicalScoresView {
                 .stroke(isRecommended ? AMColor.accent.opacity(0.3) : Color.clear, lineWidth: 1)
         )
         .shadow(color: .black.opacity(0.06), radius: 4, y: 2)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(A11yLabel.joined([
+            score.rawValue,
+            score.category.rawValue,
+            isRecommended ? "Recommended" : nil,
+            lastEntry.map { "last \($0.abbreviation), \($0.riskRaw)" },
+        ])))
     }
 
 

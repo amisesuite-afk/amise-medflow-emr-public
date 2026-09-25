@@ -15,7 +15,9 @@ extension ClinicalScoresView {
                 } label: {
                     Label(showingAllScores ? "All Scores" : "Patient Scores", systemImage: "chevron.left")
                         .font(.subheadline)
+                        .expandedHitArea(vertical: 12)
                 }
+                .accessibilityLabel(showingAllScores ? "Back to all scores" : "Back to patient scores")
                 Spacer()
                 Text(score.rawValue)
                     .font(.headline)
@@ -63,6 +65,7 @@ extension ClinicalScoresView {
                             .font(.caption)
                             .foregroundStyle(.orange)
                             .padding(.top, 1)
+                            .accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(field.label)
                                 .font(.caption)
@@ -75,15 +78,20 @@ extension ClinicalScoresView {
                         // Confirm button: sets toggle true + writes to PMH.
                         // MEWS/NEWS2 pending fields are vitals measurements — use Save to Vitals instead.
                         if selectedScore != .mews && selectedScore != .news2 {
-                            Button("Yes") {
+                            Button {
                                 confirmPendingField(field)
+                            } label: {
+                                Text("Yes")
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(.orange, in: Capsule())
+                                    // 44 pt target without making the row taller.
+                                    .expandedHitArea(horizontal: 6, vertical: 12)
                             }
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(.orange, in: Capsule())
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Confirm \(field.label)")
                         }
                     }
                 }
@@ -104,14 +112,17 @@ extension ClinicalScoresView {
                 if isAuto {
                     HStack(spacing: 3) {
                         Image(systemName: "wand.and.stars")
-                            .font(.system(size: 9))
+                            .scaledFont(size: 9)
                         Text("Auto")
-                            .font(.system(size: 9, weight: .semibold))
+                            .scaledFont(size: 9, weight: .semibold)
                     }
                     .foregroundStyle(.teal)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 2)
                     .background(.teal.opacity(0.12), in: Capsule())
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Pre-filled from the record")
                 }
                 Spacer()
                 Text(points)
