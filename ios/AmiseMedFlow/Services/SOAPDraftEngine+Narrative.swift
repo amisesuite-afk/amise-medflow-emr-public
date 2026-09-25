@@ -80,6 +80,8 @@ extension SOAPDraftEngine {
         }
         if let fhx = p.familyHistoryNotes, !fhx.isEmpty { bg.append("Family history: \(fhx).") }
         if let soc = p.socialHistory, !soc.isEmpty { bg.append("Social history: \(soc).") }
+        // Fasting, complementary therapies, night-shift work, sleep — only when recorded.
+        if let life = p.pathwayData.lifestyle.summary { bg.append(life) }
         if !bg.isEmpty { paragraphs.append(bg.joined(separator: " ")) }
 
         // ── Paragraph 3: Examination & Investigations ─────────────────────────

@@ -109,6 +109,9 @@ extension ConsultationView {
                 Label("Activity Level", systemImage: "figure.walk")
             }
 
+            // Ritual fasting, complementary therapies, night-shift work, sleep (LifestyleSections.swift)
+            LifestyleHistorySection(patient: patient, onEdit: { touch() })
+
             // Free text notes
             Section {
                 ZStack(alignment: .topLeading) {

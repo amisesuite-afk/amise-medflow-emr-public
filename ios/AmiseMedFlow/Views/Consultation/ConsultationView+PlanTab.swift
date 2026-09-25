@@ -63,6 +63,9 @@ extension ConsultationView {
                               filled: !(patient.managementPlan ?? "").isEmpty)
             }
 
+            // Fasting / sleep safety prompts and evidence-graded non-drug options (tap to add)
+            LifestylePracticesSection(patient: patient, onEdit: { touch() })
+
             // Bowel preparation for colonoscopy / flexible sigmoidoscopy (clinician chooses the prep)
             if BowelPrepProcedure.detect(for: patient) != nil {
                 Section {

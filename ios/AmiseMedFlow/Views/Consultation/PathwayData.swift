@@ -15,6 +15,10 @@ struct PathwayData: Codable {
     var ward = WardReview()
     /// Bowel-prep plan for colonoscopy / flexible sigmoidoscopy (BowelPrepProtocols.swift).
     var bowelPrep = BowelPrepPlan()
+    /// Social / lifestyle history: ritual fasting, complementary therapies, night-shift work,
+    /// usual sleep (LifestylePractices.swift). Also read and written by the dashboard, under the
+    /// same "lifestyle" key of patients.pathway_data_json.
+    var lifestyle = LifestyleHistory()
 
     init() {}
 
@@ -24,6 +28,7 @@ struct PathwayData: Codable {
         wellness = (try? c.decodeIfPresent(WellnessScreening.self, forKey: .wellness)) ?? WellnessScreening()
         ward     = (try? c.decodeIfPresent(WardReview.self, forKey: .ward)) ?? WardReview()
         bowelPrep = (try? c.decodeIfPresent(BowelPrepPlan.self, forKey: .bowelPrep)) ?? BowelPrepPlan()
+        lifestyle = (try? c.decodeIfPresent(LifestyleHistory.self, forKey: .lifestyle)) ?? LifestyleHistory()
     }
 }
 

@@ -137,6 +137,10 @@ struct SOAPDraftEngine {
         if let soc = p.socialHistory, !soc.isEmpty {
             parts.append("Social: \(soc).")
         }
+        // Fasting, complementary therapies, night-shift work, sleep — only when recorded.
+        if let life = p.pathwayData.lifestyle.summary {
+            parts.append(life)
+        }
 
         return parts.joined(separator: " ").ifEmpty("No subjective data recorded.")
     }
