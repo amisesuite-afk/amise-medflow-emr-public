@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-ssi-organ-space-diabetic",
+  "condition": "Deep and organ-space surgical site infection in a diabetic patient (day 9)",
+  "category": "soft-tissue",
+  "permutationOf": "periop-postop-ssi-superficial",
+  "permutationLabel": "Organ-space SSI with sepsis, insulin-treated diabetes",
+  "summary": "67-year-old man with insulin-treated diabetes, day 9 after open right hemicolectomy: purulent wound, fever 38.9°C, HR 114, 6 cm subhepatic collection on CT, anastomosis intact; glucose 17.8.",
+  "tags": [
+    "periop",
+    "postop",
+    "ssi",
+    "diabetes",
+    "sepsis",
+    "collection"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 67,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 98
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 9
+    },
+    "chiefComplaint": "Fever and pus from the wound after bowel operation",
+    "hpi": "Day 9 after open right hemicolectomy (converted) for caecal cancer. Swinging fevers for 2 days, rigors last night, right upper abdominal pain, pus from the upper end of the midline wound. Eating a little, bowels open. Glucose readings in the high teens.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Anorexia"
+      ],
+      "timing": [
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "wound discharge",
+      "fever",
+      "rigors",
+      "abdominal pain"
+    ],
+    "negatives": [
+      "vomiting",
+      "diarrhoea"
+    ],
+    "exam": {
+      "general": "Unwell. HR 114, BP 108/66, RR 22, SpO2 95% on air, T 38.9°C.",
+      "abdomen": "Upper midline wound: erythema 6 cm, purulent discharge, fascia intact. Tender right upper quadrant, no generalised peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 114,
+        "systolicBp": 108,
+        "diastolicBp": 66,
+        "respiratoryRate": 22,
+        "temperatureC": 38.9,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 17.8
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.0,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 310,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.4,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 17.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 118,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "6 cm rim-enhancing subhepatic collection adjacent to the ileocolic anastomosis; no extraluminal contrast; subcutaneous wound collection.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus on insulin",
+      "Obesity",
+      "Caecal adenocarcinoma (resected)"
+    ],
+    "surgicalHistory": [
+      "Open right hemicolectomy (day 9)"
+    ],
+    "medications": [
+      {
+        "drug": "Insulin glargine",
+        "dose": "30 units",
+        "frequency": "nocte",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Deep incisional and organ-space SSI (subhepatic collection) — day 9 after right hemicolectomy",
+      "icd10": "T81.43XA",
+      "paneDiseaseId": "surgical_site_infection",
+      "assessmentText": "Organ-space SSI with 6 cm subhepatic collection and deep wound infection, sepsis. Anastomosis intact on CT. IV antibiotics, CT-guided drainage, open wound, glycaemic control."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Post-op wound concern",
+        "symptoms": [
+          "wound discharge",
+          "fever",
+          "rigors",
+          "abdominal pain"
+        ],
+        "durationDays": 2,
+        "painScore": 5,
+        "paneAnswers": {
+          "previous_surgery": true,
+          "wound_erythema": true,
+          "wound_discharge": true,
+          "postop_fever": true,
+          "elevated_wbc": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ssi-or-collection-top3",
+          "severity": "critical",
+          "match": [
+            "surgical site",
+            "wound infection",
+            "ssi",
+            "collection",
+            "abscess",
+            "anastomotic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng125",
+            "wses-iai-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ssc-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "fever"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-drainage",
+          "severity": "critical",
+          "match": [
+            "percutaneous",
+            "ct-guided",
+            "radiological drain",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "wses-iai-2017"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The surgical_site_infection protocol management has superficial wound opening and 'Deep incisional SSI: formal surgical debridement', but no radiological drainage of an organ-space collection; 'CT-guided drainage' appears only in the protocol red flags. The negated 'no generalised peritonism' adds 'Emergency laparotomy consent'.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an organ/space SSI step to the SSI protocol: CT-guided percutaneous drainage of accessible collections (WSES 2017), relaparotomy for diffuse peritonitis."
+        },
+        {
+          "id": "mgmt-iv-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "piperacillin",
+            "pip-tazo",
+            "meropenem",
+            "co-amoxiclav",
+            "amoxiclav",
+            "ceftriaxone",
+            "cefuroxime",
+            "metronidazole",
+            "gentamicin",
+            "tazocin"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "wses-iai-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-glycaemic-control",
+          "severity": "quality",
+          "match": [
+            "vriii",
+            "variable-rate",
+            "variable rate",
+            "insulin",
+            "glucose control",
+            "glycaemic control"
+          ],
+          "guidelineRefs": [
+            "cpoc-diabetes-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-emergency-laparotomy",
+          "severity": "quality",
+          "match": [
+            "emergency laparotomy"
+          ],
+          "unless": [
+            "hinchey",
+            "grade c",
+            "if peritonitis",
+            "if generalised peritonitis"
+          ],
+          "note": "Contained collection with an intact anastomosis and no generalised peritonitis: percutaneous drainage is first-line source control (WSES 2017); relaparotomy is not the default.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Peritonism prompt fired by 'no generalised peritonism' → 'Emergency laparotomy consent' for a contained collection with an intact anastomosis.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng125",
+      "name": "NICE NG125 — Surgical site infections: prevention and treatment",
+      "year": 2019,
+      "section": "1.3 Antibiotic prophylaxis before clean surgery involving a prosthesis or implant, clean-contaminated and contaminated surgery; single dose IV on starting anaesthesia; do not use routinely for clean non-prosthetic uncomplicated surgery; take allergy and local resistance into account. 1.4 SSI treatment: antibiotic covering likely organisms, local resistance and culture results",
+      "citation": "National Institute for Health and Care Excellence. Surgical site infections: prevention and treatment (NG125). London: NICE; 2019 (updated 2020).",
+      "verified": false
+    },
+    {
+      "id": "wses-iai-2017",
+      "name": "WSES guidelines — management of intra-abdominal infections",
+      "year": 2017,
+      "section": "Early source control; CT for diagnosis; percutaneous drainage for accessible collections; relaparotomy for diffuse peritonitis; empirical antibiotics by severity and local resistance",
+      "citation": "Sartelli M, Chichom-Mefire A, Labricciosa FM, et al. World J Emerg Surg. 2017;12:29.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines 2021",
+      "year": 2021,
+      "section": "Antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; source control as soon as practical; measure lactate; admit to ICU when needed",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–143.",
+      "verified": false
+    },
+    {
+      "id": "cpoc-diabetes-2022",
+      "name": "CPOC guideline — perioperative care for people with diabetes mellitus undergoing elective and emergency surgery",
+      "year": 2022,
+      "section": "SGLT2 inhibitors: omit the day before and the day of surgery, check ketones; sulfonylureas omitted on the day of surgery; people with diabetes early on the list; capillary glucose monitoring; VRIII when more than one meal will be missed or in emergency surgery; type 1 diabetes: never omit basal insulin (continue long-acting insulin, usually at a reduced dose) alongside VRIII",
+      "citation": "Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: deep/organ-space SSI with sepsis in a diabetic. Tests diagnosis, level, sepsis alarm, drainage, IV antibiotics and glycaemic control.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

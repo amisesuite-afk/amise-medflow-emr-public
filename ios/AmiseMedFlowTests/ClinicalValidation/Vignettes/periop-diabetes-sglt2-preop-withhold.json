@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-diabetes-sglt2-preop-withhold",
+  "condition": "Peri-operative diabetes — SGLT2 inhibitor, metformin and sulfonylurea before day-case surgery",
+  "category": "other",
+  "permutationOf": null,
+  "summary": "57-year-old man with type 2 diabetes on metformin, dapagliflozin and gliclazide (HbA1c 7.5%) listed for day-case laparoscopic inguinal hernia repair.",
+  "tags": [
+    "periop",
+    "diabetes",
+    "sglt2",
+    "preop"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 57,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 96
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative planning for groin hernia repair — has diabetes",
+    "hpi": "Symptomatic reducible right inguinal hernia listed for day-case laparoscopic (TAPP) repair. Type 2 diabetes for 8 years on metformin, dapagliflozin and gliclazide; no hypoglycaemia; HbA1c 7.5%. No cardiac history. Walks 3 km daily.",
+    "symptoms": [
+      "groin swelling"
+    ],
+    "negatives": [
+      "vomiting",
+      "irreducible lump"
+    ],
+    "exam": {
+      "general": "Well. HR 76, BP 136/84, RR 14, SpO2 98% on air, T 36.6°C. BMI 31.",
+      "abdomen": "Reducible right inguinal hernia with cough impulse."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 76,
+        "systolicBp": 136,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 8.1
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "hba1c",
+        "name": "HbA1c",
+        "value": 7.5,
+        "unit": "%",
+        "minutesAgo": 4320
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 8.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 82,
+        "unit": "µmol/L",
+        "minutesAgo": 4320
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.4,
+        "unit": "g/dL",
+        "minutesAgo": 4320
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Obesity (BMI 31)",
+      "Right inguinal hernia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Dapagliflozin",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "20 mg",
+        "frequency": "OD",
+        "indication": "Primary prevention"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Mechanic.",
+    "confirmedDiagnosis": {
+      "name": "Right inguinal hernia — day-case laparoscopic repair; type 2 diabetes on an SGLT2 inhibitor",
+      "icd10": "K40.90",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Reducible right inguinal hernia for day-case TAPP repair. Type 2 diabetes on metformin, dapagliflozin and gliclazide; HbA1c 7.5%."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "groin swelling"
+        ],
+        "durationDays": 300,
+        "painScore": 2,
+        "paneAnswers": {
+          "groin_swelling": true,
+          "groin_lump_reducible": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-urgent",
+        "severity": "quality",
+        "atMost": "priority",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-hba1c",
+          "severity": "quality",
+          "match": [
+            "hba1c"
+          ],
+          "guidelineRefs": [
+            "cpoc-diabetes-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-withhold-sglt2",
+          "severity": "critical",
+          "match": [
+            "re:(withh|omit|stop|hold|discontinu|suspend)\\w*[^.;\\n]{0,40}(sglt2|sglt-2|gliflozin)",
+            "re:(sglt2|sglt-2|gliflozin)[^.;\\n]{0,40}(withh|omit|stop|hold|discontinu|suspend)"
+          ],
+          "guidelineRefs": [
+            "cpoc-diabetes-2022",
+            "fda-sglt2-2020"
+          ],
+          "note": "SGLT2 inhibitors are withheld before surgery (CPOC: the day before and the day of surgery; FDA label: at least 3 days for dapagliflozin) because of euglycaemic ketoacidosis.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No SGLT2-inhibitor instruction anywhere. clinical-inference.ts never checks gliflozins; the diabetes prompts are HbA1c/eGFR/ACR monitoring. Dapagliflozin is not in the triage 'Diabetes medication mentioned' regex either (insulin/gliclazide only).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a peri-operative diabetes medication prompt (CPOC 2022): SGLT2i withheld (day before + day of surgery; FDA label 3–4 days) with ketone check; sulfonylurea omitted on the day; metformin by eGFR/missed meals; early on the list; CBG monitoring. Wording to be signed off by the surgeon (hazard H-10 applies to patient-facing text)."
+        },
+        {
+          "id": "mgmt-omit-sulfonylurea",
+          "severity": "quality",
+          "match": [
+            "re:(omit|withh|stop|hold)\\w*[^.;\\n]{0,40}(gliclazide|sulfonylurea|sulphonylurea)",
+            "re:(gliclazide|sulfonylurea|sulphonylurea)[^.;\\n]{0,40}(omit|withh|stop|hold)"
+          ],
+          "guidelineRefs": [
+            "cpoc-diabetes-2022"
+          ],
+          "note": "Sulfonylurea omitted on the day of surgery (hypoglycaemia while fasting).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No sulfonylurea instruction (hypoglycaemia while fasting).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mgmt-withhold-sglt2."
+        },
+        {
+          "id": "mgmt-ketone-check",
+          "severity": "quality",
+          "match": [
+            "ketone"
+          ],
+          "guidelineRefs": [
+            "cpoc-diabetes-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Ketones appear only in the hyperglycaemia prompts (glucose >11); glucose is 8.1 here.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mgmt-withhold-sglt2."
+        },
+        {
+          "id": "mgmt-glucose-monitoring",
+          "severity": "quality",
+          "match": [
+            "capillary glucose",
+            "cbg",
+            "blood glucose monitor",
+            "glucose monitoring",
+            "capillary blood glucose"
+          ],
+          "guidelineRefs": [
+            "cpoc-diabetes-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No peri-operative capillary glucose monitoring line.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mgmt-withhold-sglt2."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "cpoc-diabetes-2022",
+      "name": "CPOC guideline — perioperative care for people with diabetes mellitus undergoing elective and emergency surgery",
+      "year": 2022,
+      "section": "SGLT2 inhibitors: omit the day before and the day of surgery, check ketones; sulfonylureas omitted on the day of surgery; people with diabetes early on the list; capillary glucose monitoring; VRIII when more than one meal will be missed or in emergency surgery; type 1 diabetes: never omit basal insulin (continue long-acting insulin, usually at a reduced dose) alongside VRIII",
+      "citation": "Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022).",
+      "verified": false
+    },
+    {
+      "id": "fda-sglt2-2020",
+      "name": "FDA labelling change — SGLT2 inhibitors before scheduled surgery",
+      "year": 2020,
+      "section": "Canagliflozin, dapagliflozin and empagliflozin discontinued at least 3 days, and ertugliflozin at least 4 days, before scheduled surgery (euglycaemic ketoacidosis)",
+      "citation": "US Food and Drug Administration. FDA revises labels of SGLT2 inhibitors for diabetes to include warnings about too much acid in the blood and serious urinary tract infections; label update March 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base diabetes case: planned day-case surgery on three oral agents. The safety item is withholding the SGLT2 inhibitor (euglycaemic DKA); the quality items are sulfonylurea omission, ketone check and glucose monitoring.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

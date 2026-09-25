@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-anticoag-warfarin-af-no-bridging",
+  "condition": "Peri-operative anticoagulation — warfarin for non-valvular AF (no bridging)",
+  "category": "other",
+  "permutationOf": null,
+  "summary": "72-year-old woman on warfarin for non-valvular AF (CHA₂DS₂-VASc 3, no prior stroke), INR 2.4, listed for elective laparoscopic cholecystectomy.",
+  "tags": [
+    "periop",
+    "anticoagulated",
+    "warfarin",
+    "bridging",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 72,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment for planned gallbladder operation",
+    "hpi": "Recurrent biliary colic, listed for elective laparoscopic cholecystectomy in 3 weeks. Permanent atrial fibrillation on warfarin (target INR 2–3); no previous stroke, TIA or embolism; no valve disease. Hypertension. CHA₂DS₂-VASc 3. Walks to the market daily.",
+    "symptoms": [
+      "biliary colic"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "Well. Irregularly irregular pulse 78, BP 136/80, RR 14, SpO2 97% on air, T 36.6°C.",
+      "abdomen": "Soft, non-tender.",
+      "cardiovascular": "Irregular rhythm, no murmur.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 78,
+        "systolicBp": 136,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.8,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 240,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 2.4,
+        "unit": "",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 84,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Multiple mobile gallstones, gallbladder wall 2 mm, no pericholecystic fluid. CBD 4 mm. Liver normal.",
+        "minutesAgo": 43200
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation (permanent)",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Warfarin",
+        "dose": "as per INR",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Rate control"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Lives alone, independent.",
+    "confirmedDiagnosis": {
+      "name": "Pre-operative assessment — symptomatic gallstones on warfarin for non-valvular AF",
+      "icd10": "Z01.818",
+      "assessmentText": "Symptomatic cholelithiasis for elective laparoscopic cholecystectomy. Non-valvular AF on warfarin, CHA₂DS₂-VASc 3, no prior stroke/TIA. INR 2.4."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "biliary colic"
+        ],
+        "durationDays": 240,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "critical",
+          "match": [
+            "anticoag",
+            "warfarin"
+          ],
+          "guidelineRefs": [
+            "accp-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-cha2ds2-vasc",
+          "severity": "quality",
+          "score": "cha2ds2-vasc",
+          "guidelineRefs": [
+            "acc-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-inr",
+          "severity": "critical",
+          "match": [
+            "inr",
+            "prothrombin"
+          ],
+          "guidelineRefs": [
+            "accp-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-stop-warfarin-5-days",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withh|hold|omit|discontinu)\\w*[^.;\\n]{0,40}warfarin[^.;\\n]{0,40}(5|five) days",
+            "re:warfarin[^.;\\n]{0,40}(stop|withh|hold|omit|discontinu)\\w*[^.;\\n]{0,30}(5|five) days",
+            "re:(5|five) days (before|pre-?op)"
+          ],
+          "guidelineRefs": [
+            "accp-2022",
+            "acc-2017"
+          ],
+          "note": "Stop warfarin 5 days before surgery; check INR the day before.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The only anticoagulation plan line is 'Anticoagulant bridging: hold DOAC 48–72h pre-op (renal-adjusted); warfarin — bridge with LMWH per haematology protocol.' No stop-5-days or day-before INR instruction. The coagulopathy prompt (INR 2.4 > 1.5) adds 'Hold elective surgery until INR < 1.5' and 'PO Vitamin K 1–2mg' — reversal instead of planned interruption.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+        },
+        {
+          "id": "mgmt-resume-warfarin",
+          "severity": "quality",
+          "match": [
+            "re:(resume|restart|recommence)\\w*[^.;\\n]{0,40}(warfarin|anticoag)"
+          ],
+          "guidelineRefs": [
+            "accp-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No restart plan for warfarin after surgery.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bridging",
+          "severity": "critical",
+          "match": [
+            "re:bridg\\w*[^.;\\n]{0,15}\\b(with|using)\\s+(lmwh|heparin|enoxaparin|dalteparin|tinzaparin)",
+            "re:warfarin\\s*[-—–:,]*\\s*bridge"
+          ],
+          "unless": [
+            "no bridging",
+            "bridging not",
+            "not routinely bridge",
+            "without bridging",
+            "mechanical valve",
+            "mechanical heart valve"
+          ],
+          "guidelineRefs": [
+            "bridge-2015",
+            "accp-2022",
+            "acc-2017"
+          ],
+          "note": "BRIDGE: in AF without mechanical valve or recent stroke, heparin bridging adds major bleeding without reducing thromboembolism.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "anticoag_check prompt: 'warfarin — bridge with LMWH per haematology protocol' for non-valvular AF, CHA₂DS₂-VASc 3, no prior stroke — the BRIDGE population, where bridging increased major bleeding.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "accp-2022",
+      "name": "ACCP guideline — perioperative management of antithrombotic therapy",
+      "year": 2022,
+      "section": "VKA: stop 5 days before surgery; in AF suggest against heparin bridging; suggest bridging for mechanical mitral valve; DOAC: interrupt 1 day before low/moderate bleed-risk and 2 days before high bleed-risk procedures, no heparin bridging, no pre-operative coagulation testing; aspirin: continue in patients with coronary stents; P2Y12 inhibitors: stop clopidogrel/ticagrelor 5 days and prasugrel 7 days before surgery; defer elective surgery after recent stent",
+      "citation": "Douketis JD, Spyropoulos AC, Murad MH, et al. Perioperative management of antithrombotic therapy: an American College of Chest Physicians clinical practice guideline. Chest. 2022;162:e207–43.",
+      "verified": false
+    },
+    {
+      "id": "acc-2017",
+      "name": "2017 ACC expert consensus decision pathway — periprocedural management of anticoagulation in non-valvular AF",
+      "year": 2017,
+      "section": "Bridging generally not indicated in AF without prior stroke/TIA/embolism or mechanical valve; warfarin interruption timed to the INR; DOAC interruption by drug, renal function and bleeding risk",
+      "citation": "Doherty JU, Gluckman TJ, Hucker WJ, et al. J Am Coll Cardiol. 2017;69:871–98.",
+      "verified": false
+    },
+    {
+      "id": "bridge-2015",
+      "name": "BRIDGE trial — perioperative bridging anticoagulation in AF",
+      "year": 2015,
+      "section": "Forgoing bridging was non-inferior for arterial thromboembolism and reduced major bleeding in patients with AF interrupting warfarin",
+      "citation": "Douketis JD, Spyropoulos AC, Kaatz S, et al. N Engl J Med. 2015;373:823–33.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base anticoagulation case: warfarin interruption in non-valvular AF at moderate thrombotic risk. The guideline answer is stop 5 days before, no bridging, check INR, resume afterwards.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

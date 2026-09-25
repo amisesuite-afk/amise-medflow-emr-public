@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-preop-osa-stopbang",
+  "condition": "Pre-operative assessment — suspected obstructive sleep apnoea (STOP-Bang 8)",
+  "category": "other",
+  "permutationOf": "periop-preop-asa1-lap-chole",
+  "permutationLabel": "Suspected OSA, BMI 42, STOP-Bang 8",
+  "summary": "52-year-old man, BMI 42, loud snoring, witnessed apnoeas, daytime sleepiness, treated hypertension, neck 45 cm — STOP-Bang 8 — listed for laparoscopic cholecystectomy.",
+  "tags": [
+    "periop",
+    "preop",
+    "osa",
+    "stop-bang",
+    "obesity"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 129
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment for planned gallbladder operation",
+    "hpi": "Recurrent biliary colic, listed for laparoscopic cholecystectomy. Wife reports loud snoring and pauses in breathing at night; falls asleep watching television and once at traffic lights. Hypertension on amlodipine. Never had a sleep study. Walks slowly on the flat, breathless on one flight of stairs.",
+    "symptoms": [
+      "biliary colic",
+      "snoring",
+      "fatigue"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "BMI 42. Neck circumference 45 cm. Mallampati 3. HR 84, BP 148/92, RR 16, SpO2 95% on air, T 36.7°C.",
+      "abdomen": "Obese, soft, non-tender.",
+      "respiratory": "Chest clear.",
+      "cardiovascular": "Heart sounds normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 84,
+        "systolicBp": 148,
+        "diastolicBp": 92,
+        "respiratoryRate": 16,
+        "temperatureC": 36.7,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.2,
+        "unit": "g/dL",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 260,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 9,
+        "unit": "µmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 84,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 22,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Multiple mobile gallstones, gallbladder wall 2 mm, no pericholecystic fluid. CBD 4 mm. Liver normal.",
+        "minutesAgo": 43200
+      }
+    ],
+    "comorbidities": [
+      "Obesity (BMI 42)",
+      "Hypertension",
+      "Snoring with witnessed apnoeas (no sleep study)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Drinks 10 units/week. Lorry driver.",
+    "confirmedDiagnosis": {
+      "name": "Pre-operative assessment — symptomatic gallstones; suspected OSA (STOP-Bang 8)",
+      "icd10": "Z01.818",
+      "assessmentText": "Symptomatic cholelithiasis for laparoscopic cholecystectomy. High risk of obstructive sleep apnoea: STOP-Bang 8/8. Class III obesity."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "biliary colic",
+          "snoring",
+          "fatigue"
+        ],
+        "durationDays": 180,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-osa-risk",
+          "severity": "critical",
+          "match": [
+            "sleep apn",
+            "osa",
+            "stop-bang",
+            "stop bang",
+            "airway"
+          ],
+          "guidelineRefs": [
+            "sasm-2016",
+            "asa-osa-2014"
+          ],
+          "note": "Undiagnosed OSA raises the risk of post-operative respiratory events with opioids and sedation; it must be visible to the anaesthetist.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "STOP-Bang is suggested in the scales list ('snoring' chip, obesity), but nothing flags OSA as a peri-operative risk: no red flag, no alert. Triage adds 'Post-operative concern' (urgent) because the HPI says 'breathless on one flight of stairs'.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Raise an OSA red flag from STOP-Bang ≥5 or snoring + observed apnoea + BMI >35, carried into the anaesthetic/pre-op summary; see also Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-stop-bang",
+          "severity": "quality",
+          "score": "stop-bang",
+          "guidelineRefs": [
+            "stopbang-2008",
+            "sasm-2016"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-rec-asa",
+          "severity": "quality",
+          "score": "asa",
+          "guidelineRefs": [
+            "asa-ps-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-osa-plan",
+          "severity": "quality",
+          "match": [
+            "sleep study",
+            "polysomnograph",
+            "cpap",
+            "anaesthetic review",
+            "anaesthetist",
+            "post-operative monitoring",
+            "continuous pulse oximetry",
+            "opioid-sparing",
+            "opioid sparing"
+          ],
+          "guidelineRefs": [
+            "sasm-2016",
+            "asa-osa-2014"
+          ],
+          "note": "Risk-mitigation plan: anaesthetic awareness, opioid-sparing analgesia, post-operative monitoring; consider sleep study/CPAP where systemic disease is uncontrolled.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No OSA mitigation (anaesthetic review, opioid-sparing analgesia, post-operative monitoring, sleep study/CPAP) in any output; the lap chole template's post-op orders include PRN morphine.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an OSA branch to the operative templates: opioid-sparing multimodal analgesia, continuous oximetry after recovery, CPAP if established (SASM 2016, ASA 2014)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "sasm-2016",
+      "name": "SASM guideline — preoperative screening and assessment of adults with obstructive sleep apnoea",
+      "year": 2016,
+      "section": "Screen with a validated tool (STOP-Bang); high-risk patients: consider further evaluation/CPAP where there is uncontrolled systemic disease or impaired gas exchange; otherwise proceed with risk-mitigation strategies (opioid-sparing analgesia, post-operative monitoring)",
+      "citation": "Chung F, Memtsoudis SG, Ramachandran SK, et al. Anesth Analg. 2016;123:452–73.",
+      "verified": false
+    },
+    {
+      "id": "asa-osa-2014",
+      "name": "ASA practice guidelines — perioperative management of patients with obstructive sleep apnoea",
+      "year": 2014,
+      "section": "Preoperative identification; consider CPAP pre-operatively in severe OSA; minimise opioids; continuous monitoring after discharge from recovery while at increased risk",
+      "citation": "American Society of Anesthesiologists Task Force on Perioperative Management of patients with OSA. Anesthesiology. 2014;120:268–86.",
+      "verified": false
+    },
+    {
+      "id": "stopbang-2008",
+      "name": "STOP-Bang questionnaire",
+      "year": 2008,
+      "section": "Snoring, Tiredness, Observed apnoea, Pressure, BMI >35, Age >50, Neck circumference >40 cm, male Gender; 5–8 = high risk of moderate-severe OSA",
+      "citation": "Chung F, Yegneswaran B, Liao P, et al. Anesthesiology. 2008;108:812–21 (risk bands: Chung F et al. Chest 2016;149:631–8).",
+      "verified": false
+    },
+    {
+      "id": "asa-ps-2020",
+      "name": "ASA Physical Status Classification System",
+      "year": 2020,
+      "section": "ASA I healthy; ASA II mild systemic disease; ASA III severe systemic disease; ASA IV severe systemic disease that is a constant threat to life; E suffix for emergency surgery",
+      "citation": "American Society of Anesthesiologists. ASA Physical Status Classification System (last amended 13 December 2020).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: suspected OSA with class III obesity. Tests STOP-Bang suggestion, a visible OSA flag before anaesthesia and an OSA risk-mitigation plan.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

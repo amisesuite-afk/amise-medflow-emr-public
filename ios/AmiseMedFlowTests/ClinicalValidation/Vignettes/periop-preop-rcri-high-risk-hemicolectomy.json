@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-preop-rcri-high-risk-hemicolectomy",
+  "condition": "Pre-operative cardiac risk assessment (RCRI 5, poor functional capacity)",
+  "category": "other",
+  "permutationOf": "periop-preop-asa1-lap-chole",
+  "permutationLabel": "Elderly, IHD + HFrEF + insulin + CKD (RCRI 5), cancer surgery",
+  "summary": "76-year-old man with previous MI, HFrEF (EF 35%), insulin-treated diabetes and creatinine 190 µmol/L, unable to climb two flights, listed for laparoscopic right hemicolectomy for caecal cancer — RCRI 5.",
+  "tags": [
+    "periop",
+    "preop",
+    "cardiac-risk",
+    "rcri",
+    "elderly",
+    "ckd",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 81
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment before bowel cancer operation",
+    "hpi": "Caecal adenocarcinoma found on investigation of iron-deficiency anaemia; CT shows no metastases. Listed for laparoscopic right hemicolectomy in 3 weeks. Myocardial infarction 2019 treated with PCI; heart failure with ejection fraction 35% (echo 14 months ago). Breathless after one flight of stairs, cannot manage two; sleeps on two pillows. Insulin-treated type 2 diabetes. Chronic kidney disease. No chest pain at rest.",
+    "symptoms": [
+      "dyspnoea on exertion",
+      "orthopnoea"
+    ],
+    "negatives": [
+      "chest pain at rest",
+      "syncope"
+    ],
+    "exam": {
+      "general": "Pale. HR 68 regular, BP 132/78, RR 16, SpO2 95% on air, T 36.6°C.",
+      "cardiovascular": "Heart sounds normal, no murmur. Mild bilateral ankle oedema.",
+      "respiratory": "Fine crackles at both bases.",
+      "abdomen": "Soft, non-tender. No mass palpable."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 68,
+        "systolicBp": 132,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.6,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.8,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 7.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 310,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 190,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 11.2,
+        "unit": "mmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.0,
+        "unit": "mmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 138,
+        "unit": "mmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "hba1c",
+        "name": "HbA1c",
+        "value": 8.1,
+        "unit": "%",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 9.0,
+        "unit": "mmol/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT chest/abdomen/pelvis",
+        "modality": "CT",
+        "region": "Chest/abdomen/pelvis",
+        "result": "Caecal mass with local nodes, no liver or lung metastases.",
+        "minutesAgo": 20160
+      }
+    ],
+    "comorbidities": [
+      "Ischaemic heart disease — MI 2019 (PCI)",
+      "Heart failure (EF 35%)",
+      "Type 2 diabetes mellitus on insulin",
+      "Chronic kidney disease stage 3b",
+      "Hypertension",
+      "Caecal adenocarcinoma"
+    ],
+    "surgicalHistory": [
+      "PCI to LAD 2019"
+    ],
+    "medications": [
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Furosemide",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Insulin glargine",
+        "dose": "24 units",
+        "frequency": "nocte",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "80 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention"
+      },
+      {
+        "drug": "Ferrous sulfate",
+        "dose": "200 mg",
+        "frequency": "OD",
+        "indication": "Iron deficiency"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker (30 pack-years, stopped 2019). Lives with wife.",
+    "confirmedDiagnosis": {
+      "name": "Pre-operative assessment — caecal adenocarcinoma for laparoscopic right hemicolectomy (RCRI 5)",
+      "icd10": "C18.0",
+      "paneDiseaseId": "colorectal_cancer",
+      "assessmentText": "Caecal adenocarcinoma for laparoscopic right hemicolectomy. High cardiac risk: RCRI 5 (intraperitoneal surgery, IHD, heart failure, insulin, creatinine >177), functional capacity <4 METs."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "dyspnoea on exertion",
+          "orthopnoea"
+        ],
+        "durationDays": 60,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-rcri",
+          "severity": "quality",
+          "score": "rcri",
+          "guidelineRefs": [
+            "esc-ncs-2022",
+            "rcri-1999"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-rec-asa",
+          "severity": "quality",
+          "score": "asa",
+          "guidelineRefs": [
+            "asa-ps-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-natriuretic-peptide-or-troponin",
+          "severity": "quality",
+          "match": [
+            "bnp",
+            "natriuretic",
+            "troponin"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No output requests NT-proBNP/BNP or troponin; the only cardiac test is the age-based 'pre-operative cardiac baseline' ECG plan line. RCRI is suggested as a score but its result drives nothing.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "When RCRI ≥1 or known HF/IHD before intermediate/high-risk surgery, prompt ECG + NT-proBNP (± troponin) per ESC 2022; with known HF and poor functional capacity, prompt echocardiography."
+        },
+        {
+          "id": "inv-echocardiography",
+          "severity": "quality",
+          "match": [
+            "echocardiog",
+            "echo"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ],
+          "note": "Known HF with poor functional capacity before high-risk surgery: reassess LV function.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No echocardiography suggested for known HFrEF (EF 35%) with poor functional capacity before cancer surgery.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See inv-natriuretic-peptide-or-troponin."
+        },
+        {
+          "id": "inv-iron-studies",
+          "severity": "quality",
+          "match": [
+            "iron studies",
+            "ferritin",
+            "transferrin",
+            "iron profile",
+            "tsat"
+          ],
+          "guidelineRefs": [
+            "anaemia-consensus-2017"
+          ],
+          "note": "Hb 10.8 g/dL before major elective surgery: treat iron deficiency (IV iron when surgery is within weeks).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Hb 10.8 g/dL before major cancer surgery: only 'FBC (exclude iron-deficiency anaemia)' from the colorectal protocol; no ferritin/iron studies or pre-operative iron plan (the severe_anaemia prompt needs Hb <8).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ],
+          "note": "ESC 2022: 12-lead ECG before intermediate/high-risk surgery in patients with cardiovascular disease or risk factors. Graded as management because the web prompt delivers the ECG as a plan line (the harness files addToPlan actions under management).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-functional-capacity",
+          "severity": "quality",
+          "match": [
+            "functional capacity",
+            "mets",
+            "flights of stairs",
+            "two flights",
+            "exercise tolerance"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Functional capacity (METs / two flights) is never asked for or documented; the colorectal_cancer protocol and prompts have no pre-operative risk content.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a functional-capacity question to the pre-operative prompt set (ESC 2022)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-stop-aspirin",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withh|hold|omit|discontinu|suspend)\\w*[^.;\\n]{0,25}\\baspirin"
+          ],
+          "unless": [
+            "continue aspirin"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ],
+          "note": "Previous PCI: continue aspirin through non-cardiac surgery if bleeding risk allows.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-ncs-2022",
+      "name": "2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC)",
+      "year": 2022,
+      "section": "Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption",
+      "citation": "Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924.",
+      "verified": false
+    },
+    {
+      "id": "rcri-1999",
+      "name": "Revised Cardiac Risk Index (Lee)",
+      "year": 1999,
+      "section": "High-risk surgery (intraperitoneal, intrathoracic, suprainguinal vascular), ischaemic heart disease, heart failure, cerebrovascular disease, insulin-treated diabetes, creatinine >2 mg/dL (177 µmol/L)",
+      "citation": "Lee TH, Marcantonio ER, Mangione CM, et al. Circulation. 1999;100:1043–9.",
+      "verified": false
+    },
+    {
+      "id": "asa-ps-2020",
+      "name": "ASA Physical Status Classification System",
+      "year": 2020,
+      "section": "ASA I healthy; ASA II mild systemic disease; ASA III severe systemic disease; ASA IV severe systemic disease that is a constant threat to life; E suffix for emergency surgery",
+      "citation": "American Society of Anesthesiologists. ASA Physical Status Classification System (last amended 13 December 2020).",
+      "verified": false
+    },
+    {
+      "id": "anaemia-consensus-2017",
+      "name": "International consensus statement on the perioperative management of anaemia and iron deficiency",
+      "year": 2017,
+      "section": "Detect, evaluate and treat anaemia before elective major surgery; iron deficiency treated (IV iron when time is short); Hb <130 g/L treated as anaemia pre-operatively in both sexes",
+      "citation": "Muñoz M, Acheson AG, Auerbach M, et al. Anaesthesia. 2017;72:233–47.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: elderly, high cardiac risk (RCRI 5) and poor functional capacity before intraperitoneal cancer surgery, with CKD and pre-operative anaemia. Tests the cardiac work-up (ECG, natriuretic peptide/troponin, echo), functional capacity and that aspirin after PCI is not stopped.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

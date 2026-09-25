@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-abx-clean-mesh-hernia",
+  "condition": "Surgical antibiotic prophylaxis — clean surgery with mesh (open inguinal hernia repair)",
+  "category": "other",
+  "permutationOf": "periop-abx-penicillin-anaphylaxis-colectomy",
+  "permutationLabel": "Clean surgery with mesh, no allergy",
+  "summary": "56-year-old man, ASA I, for elective open Lichtenstein mesh repair of a reducible right inguinal hernia.",
+  "tags": [
+    "periop",
+    "abx-prophylaxis",
+    "hernia",
+    "preop"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 56,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 79
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative planning for groin hernia repair",
+    "hpi": "Right groin lump for 1 year, aching after lifting at work, always reduces. Listed for day-case open mesh repair (Lichtenstein). No urinary symptoms. Fit, walks 5 km daily.",
+    "symptoms": [
+      "groin swelling"
+    ],
+    "negatives": [
+      "vomiting",
+      "irreducible lump"
+    ],
+    "exam": {
+      "general": "Well. HR 70, BP 128/80, RR 14, SpO2 98% on air, T 36.6°C.",
+      "abdomen": "Reducible right indirect inguinal hernia with cough impulse. Left groin normal. Testes normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 70,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Warehouse worker.",
+    "confirmedDiagnosis": {
+      "name": "Right inguinal hernia — elective open mesh repair",
+      "icd10": "K40.90",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Reducible right indirect inguinal hernia, symptomatic. Elective open Lichtenstein mesh repair. ASA I."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "groin swelling"
+        ],
+        "durationDays": 365,
+        "painScore": 2,
+        "paneAnswers": {
+          "groin_swelling": true,
+          "groin_lump_reducible": true,
+          "cough_impulse": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine-or-priority",
+        "severity": "quality",
+        "atMost": "priority",
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-routine-coag",
+          "severity": "quality",
+          "match": [
+            "pt/inr",
+            "prothrombin",
+            "aptt",
+            "coagulation screen",
+            "clotting screen"
+          ],
+          "guidelineRefs": [
+            "nice-ng45"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt."
+        },
+        {
+          "id": "inv-no-preop-psa",
+          "severity": "quality",
+          "match": [
+            "psa",
+            "prostate specific"
+          ],
+          "guidelineRefs": [
+            "nice-ng45"
+          ],
+          "note": "PSA is not a pre-operative test (NICE NG45) and there are no urinary symptoms.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "'PSA (M)' comes from the psa_discussion preventative prompt (male ≥50) and the hernia template's pre-op step ('PSA if male ≥ 50 and not done').",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Remove PSA from the hernia pre-operative step; keep PSA discussion as an opt-in wellness prompt outside the surgical plan."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-single-dose-prophylaxis",
+          "severity": "quality",
+          "match": [
+            "at induction",
+            "single dose",
+            "single prophylactic",
+            "on induction"
+          ],
+          "guidelineRefs": [
+            "nice-ng125",
+            "sign-104"
+          ],
+          "note": "NICE NG125: prophylaxis for clean surgery involving a prosthesis (mesh), single dose on induction.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-postop-antibiotic-course",
+          "severity": "quality",
+          "match": [
+            "re:(antibiotic|co-amoxiclav|amoxiclav|cefuroxime|flucloxacillin)[^.;\\n]{0,40}(×|x|for)\\s*\\d+\\s*days"
+          ],
+          "guidelineRefs": [
+            "sign-104",
+            "ashp-2013"
+          ],
+          "note": "No post-operative antibiotic course after clean mesh repair.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng125",
+      "name": "NICE NG125 — Surgical site infections: prevention and treatment",
+      "year": 2019,
+      "section": "1.3 Antibiotic prophylaxis before clean surgery involving a prosthesis or implant, clean-contaminated and contaminated surgery; single dose IV on starting anaesthesia; do not use routinely for clean non-prosthetic uncomplicated surgery; take allergy and local resistance into account. 1.4 SSI treatment: antibiotic covering likely organisms, local resistance and culture results",
+      "citation": "National Institute for Health and Care Excellence. Surgical site infections: prevention and treatment (NG125). London: NICE; 2019 (updated 2020).",
+      "verified": false
+    },
+    {
+      "id": "sign-104",
+      "name": "SIGN 104 — Antibiotic prophylaxis in surgery",
+      "year": 2014,
+      "section": "Procedure table: laparoscopic cholecystectomy — prophylaxis not recommended in low-risk patients (consider in high risk); open inguinal/femoral hernia repair with mesh — recommended/consider; colorectal surgery — highly recommended; a single dose is sufficient for most procedures; no evidence for post-operative doses",
+      "citation": "Scottish Intercollegiate Guidelines Network. Antibiotic prophylaxis in surgery (SIGN 104). Edinburgh: SIGN; 2008, updated 2014.",
+      "verified": false
+    },
+    {
+      "id": "ashp-2013",
+      "name": "ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery",
+      "year": 2013,
+      "section": "Timing: within 60 minutes before incision; duration: single dose or < 24 h; beta-lactam allergy alternatives (colorectal: e.g. clindamycin or metronidazole with an aminoglycoside, aztreonam or a fluoroquinolone)",
+      "citation": "Bratzler DW, Dellinger EP, Olsen KM, et al. Am J Health Syst Pharm. 2013;70:195–283.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng45",
+      "name": "NICE NG45 — Routine preoperative tests for elective surgery",
+      "year": 2016,
+      "section": "Tables by surgical grade and ASA grade: ASA 1 minor/intermediate surgery — no routine FBC, U&E, ECG or haemostasis tests; do not routinely offer haemostasis tests (consider only for ASA 3–4 with chronic liver disease or when anticoagulant management needs it); ask women of childbearing potential about possible pregnancy and offer a test with consent",
+      "citation": "National Institute for Health and Care Excellence. Routine preoperative tests for elective surgery (NG45). London: NICE; 2016.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: clean surgery with a prosthesis where a single prophylactic dose is indicated and a post-operative course is not; also checks NICE NG45 test minimisation.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

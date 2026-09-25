@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-anticoag-apixaban-ckd-elderly",
+  "condition": "Peri-operative anticoagulation — apixaban, age 81, creatinine clearance ~30 mL/min",
+  "category": "other",
+  "permutationOf": "periop-anticoag-warfarin-af-no-bridging",
+  "permutationLabel": "Apixaban, age 81, CrCl ~30 mL/min",
+  "summary": "81-year-old woman on apixaban 2.5 mg BD for AF (creatinine 138 µmol/L, 52 kg) listed for elective open umbilical hernia repair (low/moderate bleeding risk).",
+  "tags": [
+    "periop",
+    "anticoagulated",
+    "doac",
+    "elderly",
+    "ckd"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 152,
+      "weightKg": 52
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative planning for umbilical hernia repair",
+    "hpi": "Painful umbilical hernia with two episodes of temporary irreducibility; listed for elective open repair. Atrial fibrillation on apixaban 2.5 mg twice daily (dose reduced for age and creatinine). CKD stage 3b. Walks with a stick; independent at home.",
+    "symptoms": [
+      "umbilical swelling"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "Frail-appearing but alert. Irregular pulse 80, BP 142/78, RR 16, SpO2 96% on air, T 36.5°C.",
+      "abdomen": "2 cm reducible umbilical hernia, mildly tender.",
+      "cardiovascular": "Irregularly irregular.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 80,
+        "systolicBp": 142,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.5,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.9,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 198,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 138,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 32,
+        "unit": "mL/min/1.73m²",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Chronic kidney disease stage 3b",
+      "Hypertension",
+      "Osteoarthritis"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "2.5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Rate control"
+      },
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS PRN",
+        "indication": "Osteoarthritis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Widowed, lives alone with daily help from daughter.",
+    "confirmedDiagnosis": {
+      "name": "Umbilical hernia — elective open repair; apixaban for AF, CrCl ~30 mL/min",
+      "icd10": "K42.9",
+      "paneDiseaseId": "umbilical_hernia",
+      "assessmentText": "Symptomatic umbilical hernia for elective open repair (low/moderate bleeding risk). AF on apixaban 2.5 mg BD; estimated creatinine clearance about 30 mL/min."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Umbilical / paraumbilical hernia",
+        "symptoms": [
+          "umbilical swelling"
+        ],
+        "durationDays": 200,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "critical",
+          "match": [
+            "anticoag",
+            "apixaban",
+            "doac"
+          ],
+          "guidelineRefs": [
+            "accp-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-cfs",
+          "severity": "quality",
+          "score": "cfs",
+          "guidelineRefs": [
+            "cpoc-bgs-frailty-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-renal-function",
+          "severity": "critical",
+          "match": [
+            "creatinine",
+            "egfr",
+            "renal function",
+            "crcl",
+            "creatinine clearance"
+          ],
+          "guidelineRefs": [
+            "pause-2019",
+            "accp-2022"
+          ],
+          "note": "DOAC interruption interval depends on renal function.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-routine-coag",
+          "severity": "quality",
+          "match": [
+            "pt/inr",
+            "prothrombin",
+            "aptt",
+            "coagulation screen",
+            "clotting screen"
+          ],
+          "guidelineRefs": [
+            "pause-2019",
+            "accp-2022"
+          ],
+          "note": "PAUSE/ACCP 2022: no routine pre-operative coagulation testing with standardised DOAC interruption.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PT/INR and APTT added by anticoag_check and preop_haem for a DOAC patient (PAUSE: not needed with standardised interruption).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-doac-interrupt",
+          "severity": "critical",
+          "match": [
+            "re:(hold|stop|withh|omit|interrupt)\\w*[^.;\\n]{0,40}(apixaban|doac)",
+            "re:(apixaban|doac)[^.;\\n]{0,40}(hold|stop|withh|omit|interrupt)"
+          ],
+          "guidelineRefs": [
+            "pause-2019",
+            "accp-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bridging",
+          "severity": "quality",
+          "match": [
+            "re:bridg\\w*[^.;\\n]{0,15}\\b(with|using)\\s+(lmwh|heparin|enoxaparin|dalteparin|tinzaparin)",
+            "re:warfarin\\s*[-—–:,]*\\s*bridge",
+            "anticoagulant bridging"
+          ],
+          "unless": [
+            "no bridging",
+            "bridging not",
+            "not routinely bridge",
+            "without bridging",
+            "mechanical valve",
+            "mechanical heart valve"
+          ],
+          "guidelineRefs": [
+            "pause-2019",
+            "accp-2022"
+          ],
+          "note": "No heparin bridging for DOAC interruption. Quality because the matched plan line names warfarin for the bridge, but it is headed \"Anticoagulant bridging\" for a DOAC patient.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "A DOAC patient gets the line headed 'Anticoagulant bridging' (warfarin bridge with LMWH). The DOAC part, 'hold DOAC 48–72h pre-op (renal-adjusted)', does not scale to bleeding risk (1 day for low/moderate risk per PAUSE).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "pause-2019",
+      "name": "PAUSE study — perioperative DOAC interruption without bridging or coagulation testing",
+      "year": 2019,
+      "section": "Apixaban/rivaroxaban/edoxaban omitted 1 day before low-bleed-risk and 2 days before high-bleed-risk procedures (dabigatran longer when CrCl <50 mL/min), no bridging, no pre-operative coagulation tests",
+      "citation": "Douketis JD, Spyropoulos AC, Duncan J, et al. JAMA Intern Med. 2019;179:1469–78.",
+      "verified": false
+    },
+    {
+      "id": "accp-2022",
+      "name": "ACCP guideline — perioperative management of antithrombotic therapy",
+      "year": 2022,
+      "section": "VKA: stop 5 days before surgery; in AF suggest against heparin bridging; suggest bridging for mechanical mitral valve; DOAC: interrupt 1 day before low/moderate bleed-risk and 2 days before high bleed-risk procedures, no heparin bridging, no pre-operative coagulation testing; aspirin: continue in patients with coronary stents; P2Y12 inhibitors: stop clopidogrel/ticagrelor 5 days and prasugrel 7 days before surgery; defer elective surgery after recent stent",
+      "citation": "Douketis JD, Spyropoulos AC, Murad MH, et al. Perioperative management of antithrombotic therapy: an American College of Chest Physicians clinical practice guideline. Chest. 2022;162:e207–43.",
+      "verified": false
+    },
+    {
+      "id": "cpoc-bgs-frailty-2021",
+      "name": "CPOC/BGS guideline — perioperative care for people living with frailty undergoing elective and emergency surgery",
+      "year": 2021,
+      "section": "Frailty screening (Clinical Frailty Scale) for people aged ≥65; comprehensive geriatric assessment; cognitive and delirium risk assessment; shared decision-making including treatment escalation; post-operative delirium prevention",
+      "citation": "Centre for Perioperative Care, British Geriatrics Society. London: CPOC; 2021.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: DOAC instead of warfarin, elderly, reduced renal function. Tests DOAC interruption (by drug, renal function and bleeding risk), renal function check, no bridging and no routine coagulation tests.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

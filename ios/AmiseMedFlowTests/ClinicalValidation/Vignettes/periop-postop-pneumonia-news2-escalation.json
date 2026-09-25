@@ -1,0 +1,490 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-pneumonia-news2-escalation",
+  "condition": "Post-operative pneumonia with NEWS2 ≥7 — ward escalation",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "69-year-old man with COPD, day 3 after laparotomy for a perforated duodenal ulcer: RR 28, SpO₂ 89% on 2 L oxygen, HR 112, BP 104/62, T 38.4°C, new confusion — NEWS2 15.",
+  "tags": [
+    "periop",
+    "postop",
+    "news2",
+    "pneumonia",
+    "escalation",
+    "copd"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 69,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 3
+    },
+    "chiefComplaint": "Breathless with a cough and new confusion after abdominal operation",
+    "hpi": "Day 3 after laparotomy and omental patch repair of a perforated duodenal ulcer. COPD (FEV1 55%), smoker. Productive cough with green sputum since last night, increasingly breathless, new confusion this morning. Not using the incentive spirometer because of wound pain.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Right chest"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Shortness of breath",
+        "Cough",
+        "Fever",
+        "Pleuritic pain"
+      ],
+      "timing": [
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Coughing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "shortness of breath",
+      "productive cough",
+      "fever",
+      "confusion"
+    ],
+    "negatives": [
+      "haemoptysis",
+      "calf pain"
+    ],
+    "exam": {
+      "general": "Tachypnoeic, confused (new). HR 112, BP 104/62, RR 28, SpO2 89% on 2 L nasal oxygen, T 38.4°C.",
+      "respiratory": "Coarse crackles and bronchial breathing at the right base.",
+      "abdomen": "Wound clean. Soft, appropriately tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 104,
+        "diastolicBp": 62,
+        "respiratoryRate": 28,
+        "temperatureC": 38.4,
+        "spo2": 89,
+        "avpu": "C",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 210,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 9.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Chest X-ray (portable)",
+        "modality": "XR",
+        "region": "Chest",
+        "result": "Right lower lobe consolidation. No free subdiaphragmatic gas beyond expected post-operative. No pneumothorax.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "COPD (FEV1 55%)",
+      "Perforated duodenal ulcer (repaired)"
+    ],
+    "surgicalHistory": [
+      "Laparotomy and omental patch repair of perforated DU (day 3)"
+    ],
+    "medications": [
+      {
+        "drug": "Tiotropium",
+        "dose": "18 micrograms",
+        "frequency": "OD",
+        "indication": "COPD"
+      },
+      {
+        "drug": "Salbutamol",
+        "dose": "100 micrograms",
+        "frequency": "PRN",
+        "indication": "COPD"
+      },
+      {
+        "drug": "Omeprazole",
+        "dose": "40 mg",
+        "frequency": "IV BD",
+        "indication": "Perforated DU"
+      },
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 30 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Hospital-acquired pneumonia (right lower lobe) with sepsis — day 3 after laparotomy; NEWS2 15",
+      "icd10": "J18.9",
+      "assessmentText": "Post-operative right lower lobe pneumonia with sepsis and new confusion, NEWS2 15. Emergency response: critical care outreach/ICU review, cultures and antibiotics, controlled oxygen (COPD: target 88–92% pending ABG)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "productive cough",
+          "fever",
+          "confusion"
+        ],
+        "durationDays": 1,
+        "painScore": 4,
+        "paneAnswers": {
+          "previous_surgery": true,
+          "fever": true,
+          "pleuritic_chest_pain": true,
+          "mechanism_blunt": false,
+          "chest_wall_tenderness": false
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pneumonia",
+          "severity": "quality",
+          "match": [
+            "pneumonia",
+            "chest infection",
+            "lower respiratory"
+          ],
+          "guidelineRefs": [
+            "nice-ng139"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: acute cholecystitis, acute cholangitis, inguinal hernia — no pneumonia node (symptom inference ranks pneumonia first). The escalation expectation passes only through 'Emergency laparotomy consent … ICU post-operatively' (negated peritonism) and the hypoxia prompt's 'ITU review'.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add hospital-acquired pneumonia to the post-operative differential (PANE node or post-op checklist)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "rcp-news2-2017"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen"
+          ],
+          "guidelineRefs": [
+            "rcp-news2-2017",
+            "bts-oxygen-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-news2",
+          "severity": "quality",
+          "score": "news2",
+          "guidelineRefs": [
+            "rcp-news2-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-abg",
+          "severity": "quality",
+          "match": [
+            "arterial blood gas",
+            "abg",
+            "blood gas"
+          ],
+          "guidelineRefs": [
+            "bts-oxygen-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture",
+            "sputum culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-escalation",
+          "severity": "critical",
+          "match": [
+            "critical care",
+            "re:\\b(icu|itu|hdu)\\b",
+            "intensive care",
+            "high dependency",
+            "outreach",
+            "medical emergency team",
+            "escalat"
+          ],
+          "guidelineRefs": [
+            "rcp-news2-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "piperacillin",
+            "pip-tazo",
+            "meropenem",
+            "co-amoxiclav",
+            "amoxiclav",
+            "ceftriaxone",
+            "cefuroxime",
+            "metronidazole",
+            "gentamicin",
+            "tazocin"
+          ],
+          "guidelineRefs": [
+            "nice-ng139",
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-controlled-oxygen",
+          "severity": "quality",
+          "match": [
+            "88–92",
+            "88-92",
+            "controlled oxygen",
+            "venturi"
+          ],
+          "guidelineRefs": [
+            "bts-oxygen-2017"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The hypoxia prompt's step text mentions 'COPD: target 88–92%', but the plan line it adds is 'Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%'; COPD in the PMH does not change it.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Hypoxia prompt: when COPD/hypercapnic risk is recorded, add 'controlled oxygen, target 88–92% until ABG' as the plan line (BTS 2017)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-high-target-in-copd",
+          "severity": "quality",
+          "match": [
+            "re:spo.{0,2}\\s*(≥|>=)\\s*94"
+          ],
+          "unless": [
+            "88",
+            "copd"
+          ],
+          "guidelineRefs": [
+            "bts-oxygen-2017"
+          ],
+          "note": "COPD: target 88–92% until blood gases are known (hypercapnic risk). Quality because hypercapnia is not yet established.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "'titrate to SpO₂ ≥ 94%' in a COPD patient.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mgmt-controlled-oxygen."
+        },
+        {
+          "id": "mgmt-no-emergency-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy"
+          ],
+          "unless": [
+            "hinchey",
+            "grade c",
+            "if peritonitis",
+            "if generalised peritonitis"
+          ],
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The pneumoperitoneum rule (hasRadResult 'subdiaphragmatic') fires on the CXR report 'No free subdiaphragmatic gas beyond expected post-operative', adding 'Emergency laparotomy consent — source control' and 'Do NOT delay theatre' to a post-operative pneumonia.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcp-news2-2017",
+      "name": "RCP — National Early Warning Score (NEWS) 2",
+      "year": 2017,
+      "section": "Aggregate ≥7: emergency response — urgent assessment by a team with critical-care competencies, continuous monitoring; 5–6 or a single red parameter: urgent response",
+      "citation": "Royal College of Physicians. National Early Warning Score (NEWS) 2. London: RCP; 2017.",
+      "verified": false
+    },
+    {
+      "id": "bts-oxygen-2017",
+      "name": "BTS guideline — oxygen use in adults in healthcare and emergency settings",
+      "year": 2017,
+      "section": "Target SpO₂ 94–98% for most; 88–92% for people at risk of hypercapnic respiratory failure (e.g. COPD) pending blood gases",
+      "citation": "O'Driscoll BR, Howard LS, Earis J, Mak V. Thorax. 2017;72(Suppl 1):ii1–90.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng139",
+      "name": "NICE NG139 — Pneumonia (hospital-acquired): antimicrobial prescribing",
+      "year": 2019,
+      "section": "Start antibiotics as soon as possible after diagnosis in people with hospital-acquired pneumonia; choice by severity and risk of resistance",
+      "citation": "National Institute for Health and Care Excellence. Pneumonia (hospital-acquired): antimicrobial prescribing (NG139). London: NICE; 2019.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines 2021",
+      "year": 2021,
+      "section": "Antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; source control as soon as practical; measure lactate; admit to ICU when needed",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base NEWS2-escalation case: post-operative pneumonia with a NEWS2 of 15 in a COPD patient. Tests emergency response, hypoxia alarm, escalation, antibiotics, blood gas and controlled oxygen.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-anticoag-warfarin-mechanical-mitral-bridging",
+  "condition": "Peri-operative anticoagulation — mechanical mitral valve (bridging indicated)",
+  "category": "other",
+  "permutationOf": "periop-anticoag-warfarin-af-no-bridging",
+  "permutationLabel": "Mechanical mitral valve — bridging indicated",
+  "summary": "59-year-old man with a mechanical mitral valve on warfarin (INR 3.1) listed for elective open incisional hernia repair with mesh.",
+  "tags": [
+    "periop",
+    "anticoagulated",
+    "warfarin",
+    "bridging",
+    "mechanical-valve"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 59,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative planning for hernia repair",
+    "hpi": "Symptomatic incisional hernia after a previous laparotomy, listed for elective open mesh repair. Mechanical mitral valve replacement (bileaflet) in 2016 for rheumatic mitral stenosis; warfarin, target INR 3.0. Sinus rhythm. No bleeding problems.",
+    "symptoms": [
+      "incisional swelling"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "Well. HR 72 regular, BP 130/80, RR 14, SpO2 98% on air, T 36.6°C.",
+      "cardiovascular": "Crisp mechanical valve clicks.",
+      "abdomen": "Reducible incisional hernia, 6 cm defect, upper midline scar.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 72,
+        "systolicBp": 130,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.1,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 230,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 3.1,
+        "unit": "",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 90,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Mechanical mitral valve replacement 2016 (rheumatic mitral stenosis)",
+      "Incisional hernia"
+    ],
+    "surgicalHistory": [
+      "Mitral valve replacement (mechanical) 2016",
+      "Laparotomy for perforated duodenal ulcer 2019"
+    ],
+    "medications": [
+      {
+        "drug": "Warfarin",
+        "dose": "as per INR",
+        "frequency": "OD",
+        "indication": "Mechanical mitral valve (target INR 3.0)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Farmer.",
+    "confirmedDiagnosis": {
+      "name": "Incisional hernia — elective open mesh repair; mechanical mitral valve on warfarin",
+      "icd10": "K43.2",
+      "paneDiseaseId": "incisional_hernia",
+      "assessmentText": "Symptomatic incisional hernia for elective open mesh repair. Mechanical mitral valve on warfarin — high thrombotic risk, bridging required."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Incisional / ventral hernia",
+        "symptoms": [
+          "incisional swelling"
+        ],
+        "durationDays": 400,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "critical",
+          "match": [
+            "anticoag",
+            "warfarin"
+          ],
+          "guidelineRefs": [
+            "accp-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "flag-mechanical-valve",
+          "severity": "quality",
+          "match": [
+            "mechanical valve",
+            "mechanical mitral",
+            "mechanical heart valve",
+            "prosthetic valve"
+          ],
+          "guidelineRefs": [
+            "esc-valve-2021"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The mechanical valve is not surfaced; triage reasons are 'GI or other bleeding' (from 'No bleeding problems'), the anticoagulant reason and post-op concern (from 'laparotomy'). The bridging expectation passes only because the generic prompt bridges every warfarin patient.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Read 'mechanical valve' from PMH into the anticoagulation rule (high thrombotic risk → bridging, VKA only)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-inr",
+          "severity": "critical",
+          "match": [
+            "inr",
+            "prothrombin"
+          ],
+          "guidelineRefs": [
+            "accp-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-bridging",
+          "severity": "critical",
+          "match": [
+            "re:bridg\\w*[^.;\\n]{0,20}(lmwh|heparin|enoxaparin|anticoag)",
+            "re:(lmwh|heparin|enoxaparin)[^.;\\n]{0,20}bridg",
+            "anticoagulant bridging"
+          ],
+          "guidelineRefs": [
+            "accp-2022",
+            "esc-valve-2021"
+          ],
+          "note": "Mechanical mitral valve: interrupt warfarin with therapeutic heparin bridging.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-specialist-input",
+          "severity": "quality",
+          "match": [
+            "cardiolog",
+            "haematolog",
+            "anticoagulation clinic"
+          ],
+          "guidelineRefs": [
+            "esc-valve-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-doac-switch",
+          "severity": "critical",
+          "match": [
+            "re:(switch|convert|change)\\w*[^.;\\n]{0,20}(to\\s+)?(apixaban|rivaroxaban|edoxaban|dabigatran|doac)"
+          ],
+          "guidelineRefs": [
+            "esc-valve-2021"
+          ],
+          "note": "DOACs are contraindicated with mechanical valves.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "accp-2022",
+      "name": "ACCP guideline — perioperative management of antithrombotic therapy",
+      "year": 2022,
+      "section": "VKA: stop 5 days before surgery; in AF suggest against heparin bridging; suggest bridging for mechanical mitral valve; DOAC: interrupt 1 day before low/moderate bleed-risk and 2 days before high bleed-risk procedures, no heparin bridging, no pre-operative coagulation testing; aspirin: continue in patients with coronary stents; P2Y12 inhibitors: stop clopidogrel/ticagrelor 5 days and prasugrel 7 days before surgery; defer elective surgery after recent stent",
+      "citation": "Douketis JD, Spyropoulos AC, Murad MH, et al. Perioperative management of antithrombotic therapy: an American College of Chest Physicians clinical practice guideline. Chest. 2022;162:e207–43.",
+      "verified": false
+    },
+    {
+      "id": "esc-valve-2021",
+      "name": "2021 ESC/EACTS guidelines — valvular heart disease",
+      "year": 2021,
+      "section": "Mechanical valves: VKA only (DOACs contraindicated); bridging with therapeutic UFH/LMWH when VKA is interrupted for surgery",
+      "citation": "Vahanian A, Beyersdorf F, Praz F, et al. Eur Heart J. 2022;43:561–632.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the one warfarin scenario where bridging is indicated (mechanical mitral valve). A generic \"bridge everyone\" rule passes here and fails the base case.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-abx-penicillin-anaphylaxis-colectomy",
+  "condition": "Surgical antibiotic prophylaxis — penicillin anaphylaxis before elective colectomy",
+  "category": "other",
+  "permutationOf": null,
+  "summary": "63-year-old woman with penicillin anaphylaxis listed for elective laparoscopic sigmoid colectomy for recurrent complicated diverticulitis.",
+  "tags": [
+    "periop",
+    "abx-prophylaxis",
+    "allergy",
+    "penicillin",
+    "colorectal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 163,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative planning for bowel resection",
+    "hpi": "Three admissions with left iliac fossa diverticulitis in 2 years, one with a pericolic abscess drained percutaneously. Colonoscopy: diverticular disease, no neoplasia. Listed for elective laparoscopic sigmoid colectomy with primary anastomosis. Anaphylaxis to penicillin in 2015 (throat swelling and collapse after amoxicillin, treated with adrenaline). Currently well, no pain.",
+    "symptoms": [],
+    "negatives": [
+      "abdominal pain",
+      "fever",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Well. HR 70, BP 134/82, RR 14, SpO2 98% on air, T 36.6°C.",
+      "abdomen": "Soft, non-tender. No masses."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 70,
+        "systolicBp": 134,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.0,
+        "unit": "g/dL",
+        "minutesAgo": 2880
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 2880
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 72,
+        "unit": "µmol/L",
+        "minutesAgo": 2880
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 3,
+        "unit": "mg/L",
+        "minutesAgo": 2880
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Sigmoid diverticular disease with wall thickening; no current abscess or free air.",
+        "minutesAgo": 43200
+      }
+    ],
+    "comorbidities": [
+      "Recurrent complicated sigmoid diverticulitis",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "CT-guided drainage of pericolic abscess 2025"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [
+      {
+        "name": "Penicillin",
+        "severity": "Severe",
+        "reaction": "Anaphylaxis — angio-oedema and collapse after amoxicillin (2015)"
+      }
+    ],
+    "nkda": false,
+    "socialHistory": "Non-smoker. Retired.",
+    "confirmedDiagnosis": {
+      "name": "Recurrent complicated sigmoid diverticulitis — elective laparoscopic sigmoid colectomy",
+      "icd10": "K57.32",
+      "paneDiseaseId": "diverticulitis",
+      "assessmentText": "Recurrent complicated sigmoid diverticulitis, quiescent. Elective laparoscopic sigmoid colectomy. Penicillin anaphylaxis — non-beta-lactam prophylaxis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Diverticular disease / diverticulitis",
+        "symptoms": [],
+        "durationDays": 730,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-penicillin-allergy",
+          "severity": "critical",
+          "match": [
+            "penicillin"
+          ],
+          "guidelineRefs": [
+            "nap6-2018",
+            "jtf-drug-allergy-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "emergencyLevel": {
+        "id": "level-not-urgent",
+        "severity": "quality",
+        "atMost": "priority",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage emergency_now (score 47) for an elective planning visit: 'Systemic red flag symptom' from 'collapse' in the allergy history, and 'Post-operative or recent-procedure concern' from 'drained percutaneously'.",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter."
+      }
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-emergency-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy"
+          ],
+          "unless": [
+            "hinchey",
+            "grade c",
+            "if peritonitis",
+            "if generalised peritonitis"
+          ],
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The CT report 'no current abscess or free air' matches hasRadResult('free air'), so the pneumoperitoneum prompt adds 'Emergency laparotomy consent', IV pip-tazo and 'Do NOT delay theatre' to an elective planning visit.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
+        },
+        {
+          "id": "mgmt-no-penicillin",
+          "severity": "critical",
+          "match": [
+            "co-amoxiclav",
+            "amoxiclav",
+            "amoxicillin",
+            "piperacillin",
+            "pip-tazo",
+            "tazocin",
+            "flucloxacillin",
+            "benzylpenicillin",
+            "phenoxymethylpenicillin",
+            "ampicillin"
+          ],
+          "unless": [
+            "penicillin allerg",
+            "if allergic",
+            "re:avoid[^.;\\n]{0,20}penicillin",
+            "non-allergic",
+            "if not allergic"
+          ],
+          "guidelineRefs": [
+            "jtf-drug-allergy-2022",
+            "nice-ng125"
+          ],
+          "note": "Penicillin anaphylaxis: no penicillin-containing prophylaxis or treatment regimen.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Penicillins despite recorded penicillin anaphylaxis: Plan tab (dx-variant 'diverticulitis_abscess' prefix 'IV antibiotics: piperacillin-tazobactam' and protocol 'oral co-amoxiclav'), protocol medications (co-amoxiclav, pip-tazo) and the negated-free-air prompt (pip-tazo). Nothing reads the allergy list. Same root cause as the seed finding 'Allergies: neither platform's plan templates check the recorded allergy'.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Allergy-aware plan generation: filter or substitute every drug line against the allergy record (penicillin class includes co-amoxiclav, pip-tazo, flucloxacillin, amoxicillin) and show the substitution."
+        }
+      ],
+      "mustInclude": [
+        {
+          "id": "mgmt-prophylaxis-timing",
+          "severity": "quality",
+          "match": [
+            "within 60 min",
+            "60 minutes",
+            "at induction",
+            "before incision",
+            "before skin incision",
+            "on induction"
+          ],
+          "guidelineRefs": [
+            "ashp-2013",
+            "nice-ng125"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No prophylaxis plan for the elective colectomy at all: the diverticulitis protocol is a treatment protocol for acute disease, and there is no colorectal operative template.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a surgical-prophylaxis prompt keyed on the planned procedure class (clean-contaminated colorectal → single IV dose within 60 min before incision, repeat for long cases) that reads the allergy record."
+        },
+        {
+          "id": "mgmt-non-penicillin-alternative",
+          "severity": "quality",
+          "match": [
+            "clindamycin",
+            "gentamicin",
+            "aztreonam",
+            "ciprofloxacin",
+            "vancomycin",
+            "teicoplanin",
+            "cefuroxime",
+            "cefazolin",
+            "ceftriaxone"
+          ],
+          "guidelineRefs": [
+            "ashp-2013",
+            "jtf-drug-allergy-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No non-beta-lactam alternative in the documented plan or panel. (The uncomplicated-diverticulitis dx-variant prefix has 'ciprofloxacin + metronidazole if penicillin allergy', but the detected variant here is the abscess one, whose prefix is pip-tazo.)",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "When a penicillin allergy is recorded, substitute the allergy alternative in every antibiotic line (ASHP 2013 table) and suppress penicillin lines."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng125",
+      "name": "NICE NG125 — Surgical site infections: prevention and treatment",
+      "year": 2019,
+      "section": "1.3 Antibiotic prophylaxis before clean surgery involving a prosthesis or implant, clean-contaminated and contaminated surgery; single dose IV on starting anaesthesia; do not use routinely for clean non-prosthetic uncomplicated surgery; take allergy and local resistance into account. 1.4 SSI treatment: antibiotic covering likely organisms, local resistance and culture results",
+      "citation": "National Institute for Health and Care Excellence. Surgical site infections: prevention and treatment (NG125). London: NICE; 2019 (updated 2020).",
+      "verified": false
+    },
+    {
+      "id": "ashp-2013",
+      "name": "ASHP/IDSA/SIS/SHEA clinical practice guidelines for antimicrobial prophylaxis in surgery",
+      "year": 2013,
+      "section": "Timing: within 60 minutes before incision; duration: single dose or < 24 h; beta-lactam allergy alternatives (colorectal: e.g. clindamycin or metronidazole with an aminoglycoside, aztreonam or a fluoroquinolone)",
+      "citation": "Bratzler DW, Dellinger EP, Olsen KM, et al. Am J Health Syst Pharm. 2013;70:195–283.",
+      "verified": false
+    },
+    {
+      "id": "sign-104",
+      "name": "SIGN 104 — Antibiotic prophylaxis in surgery",
+      "year": 2014,
+      "section": "Procedure table: laparoscopic cholecystectomy — prophylaxis not recommended in low-risk patients (consider in high risk); open inguinal/femoral hernia repair with mesh — recommended/consider; colorectal surgery — highly recommended; a single dose is sufficient for most procedures; no evidence for post-operative doses",
+      "citation": "Scottish Intercollegiate Guidelines Network. Antibiotic prophylaxis in surgery (SIGN 104). Edinburgh: SIGN; 2008, updated 2014.",
+      "verified": false
+    },
+    {
+      "id": "jtf-drug-allergy-2022",
+      "name": "AAAAI/ACAAI Joint Task Force practice parameter — drug allergy",
+      "year": 2022,
+      "section": "Penicillin allergy history: avoid penicillins after anaphylaxis; cephalosporins with dissimilar side chains may be given; document and act on the allergy record",
+      "citation": "Khan DA, Banerji A, Blumenthal KG, et al. Drug allergy: a 2022 practice parameter update. J Allergy Clin Immunol. 2022;150:1333–93.",
+      "verified": false
+    },
+    {
+      "id": "nap6-2018",
+      "name": "RCoA NAP6 — Perioperative anaphylaxis",
+      "year": 2018,
+      "section": "Antibiotics (teicoplanin, co-amoxiclav) are the commonest triggers; allergy history must be checked before induction; latex remains a cause and requires a latex-free pathway in known allergy",
+      "citation": "Royal College of Anaesthetists. Anaesthesia, surgery and life-threatening allergic reactions: 6th National Audit Project. London: RCoA; 2018.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base antibiotic-prophylaxis case: clean-contaminated colorectal surgery (prophylaxis indicated) in penicillin anaphylaxis. Tests the allergy alert, that no penicillin regimen is suggested, timing, and a non-beta-lactam alternative. The template picked is the diverticular one because that is the recorded diagnosis.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

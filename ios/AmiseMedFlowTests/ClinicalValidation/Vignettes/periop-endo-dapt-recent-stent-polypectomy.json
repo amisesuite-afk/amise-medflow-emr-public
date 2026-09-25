@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-endo-dapt-recent-stent-polypectomy",
+  "condition": "Endoscopy antithrombotic management — dual antiplatelet therapy 2 months after a drug-eluting stent, 20 mm polyp",
+  "category": "other",
+  "permutationOf": "periop-endo-polypectomy-clopidogrel",
+  "permutationLabel": "DAPT 2 months after DES, 20 mm polyp",
+  "summary": "58-year-old man on aspirin + clopidogrel 2 months after elective DES, FIT-positive, colonoscopy shows a 20 mm pedunculated sigmoid polyp needing polypectomy.",
+  "tags": [
+    "periop",
+    "endoscopy",
+    "antiplatelet",
+    "dapt",
+    "recent-stent",
+    "polypectomy",
+    "bsg-esge"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "endoscopy",
+      "visitType": "colonoscopy",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Bowel polyp found at colonoscopy — on two blood thinners after a heart stent",
+    "hpi": "FIT-positive on screening. Colonoscopy today (diagnostic) found a 20 mm pedunculated sigmoid polyp; not removed because of antiplatelet therapy. Drug-eluting stent to the right coronary artery 2 months ago for stable angina; aspirin and clopidogrel planned for 6 months. No bleeding, no angina since.",
+    "symptoms": [],
+    "negatives": [
+      "rectal bleeding",
+      "chest pain"
+    ],
+    "exam": {
+      "general": "Well. HR 70, BP 134/80, RR 14, SpO2 98% on air, T 36.6°C.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 70,
+        "systolicBp": 134,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.2,
+        "unit": "g/dL",
+        "minutesAgo": 20160
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 260,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20160
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Colonoscopy",
+        "modality": "Endoscopy",
+        "region": "Colon",
+        "result": "20 mm pedunculated sigmoid polyp (Paris 0-Ip) at 30 cm with a thick stalk, tattooed. Not removed.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Stable angina — drug-eluting stent 2 months ago",
+      "Hypertension",
+      "Type 2 diabetes mellitus (diet)"
+    ],
+    "surgicalHistory": [
+      "PCI with drug-eluting stent (RCA) 2 months ago"
+    ],
+    "medications": [
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Coronary stent"
+      },
+      {
+        "drug": "Clopidogrel",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Coronary stent (DAPT 6 months)"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "80 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker. Retired.",
+    "confirmedDiagnosis": {
+      "name": "Sigmoid polyp 20 mm — polypectomy planned; DES 2 months ago on aspirin + clopidogrel",
+      "icd10": "D12.5",
+      "assessmentText": "20 mm pedunculated sigmoid polyp. High-risk polypectomy. High thrombotic risk: DES 2 months ago on DAPT — continue aspirin, liaise with cardiology about clopidogrel timing; consider deferring polypectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colonoscopy (diagnostic / surveillance)",
+        "symptoms": [],
+        "durationDays": 14,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-antiplatelet-stent",
+          "severity": "critical",
+          "match": [
+            "antiplatelet",
+            "stent",
+            "dapt",
+            "clopidogrel"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-cardiology-liaison",
+          "severity": "critical",
+          "match": [
+            "cardiolog"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag",
+            "esc-ncs-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No output addresses DAPT 2 months after a DES before a high-risk polypectomy; triage emergency_now from 'GI or other bleeding' (the negated 'No bleeding').",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table."
+        },
+        {
+          "id": "mgmt-defer-or-plan",
+          "severity": "quality",
+          "match": [
+            "re:(defer|delay|postpone)\\w*[^.;\\n]{0,40}(polypectomy|procedure|resection)",
+            "after dual antiplatelet",
+            "once dapt"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No deferral or staged plan.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an antiplatelet prompt (aspirin, clopidogrel, ticagrelor, prasugrel) that reads stent type/date: continue aspirin; P2Y12 interruption only with cardiology agreement; defer elective surgery within 6 months of elective PCI / 12 months of ACS (ESC 2022); for endoscopy use the BSG/ESGE 2021 table."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-stop-aspirin",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withh|hold|omit|discontinu|suspend)\\w*[^.;\\n]{0,25}\\baspirin"
+          ],
+          "unless": [
+            "continue aspirin"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag",
+            "esc-ncs-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-unsupervised-p2y12-stop",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withh|hold|omit|discontinu|suspend)\\w*[^.;\\n]{0,40}clopidogrel",
+            "re:clopidogrel[^.;\\n]{0,40}(stop|withh|hold|omit|discontinu|suspend)"
+          ],
+          "unless": [
+            "cardiolog"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "note": "Stopping clopidogrel 2 months after a DES without cardiology agreement risks stent thrombosis.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-esge-2021-anticoag",
+      "name": "BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update)",
+      "year": 2021,
+      "section": "Low-risk procedures (diagnostic ± biopsy): continue P2Y12 inhibitors and warfarin (INR in the week before, within therapeutic range), omit the morning DOAC dose. High-risk procedures (polypectomy, EMR, ERCP with sphincterotomy): P2Y12 inhibitor stopped 7 days before when thrombotic risk is low; high thrombotic risk (coronary stents) — continue aspirin and liaise with the cardiologist about stopping the P2Y12 inhibitor; warfarin stopped 5 days before (INR <1.5), bridging only for high thrombotic risk; DOAC stopped before the procedure (interval by drug and renal function), no bridging",
+      "citation": "Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–28.",
+      "verified": false
+    },
+    {
+      "id": "esc-ncs-2022",
+      "name": "2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC)",
+      "year": 2022,
+      "section": "Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption",
+      "citation": "Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: high thrombotic risk (recent coronary stent) with a high-risk polypectomy. Tests the cardiology liaison, keeping aspirin and not stopping clopidogrel unilaterally.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

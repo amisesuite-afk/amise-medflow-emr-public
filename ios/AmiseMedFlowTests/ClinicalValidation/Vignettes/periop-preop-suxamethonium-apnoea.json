@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-preop-suxamethonium-apnoea",
+  "condition": "Suxamethonium apnoea history before emergency surgery (butyrylcholinesterase deficiency)",
+  "category": "other",
+  "permutationOf": "periop-preop-mh-susceptible",
+  "permutationLabel": "Suxamethonium apnoea, emergency appendicectomy with RSI",
+  "summary": "45-year-old woman with prolonged paralysis after suxamethonium at a previous caesarean section now needs emergency laparoscopic appendicectomy (rapid sequence induction).",
+  "tags": [
+    "periop",
+    "preop",
+    "anaesthetic-alert",
+    "emergency",
+    "suxamethonium"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "surgeryEmergency",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right lower abdominal pain",
+    "hpi": "30 hours of pain starting around the umbilicus and moving to the right iliac fossa, anorexia, one vomit. At a caesarean section in 2012 she stayed on a ventilator for 6 hours after the anaesthetic and was told she has 'suxamethonium sensitivity'; carries a card. Urine pregnancy test negative today.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Gradual"
+      ],
+      "site": [
+        "RLQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Anorexia",
+        "Vomiting",
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Coughing"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "right iliac fossa pain",
+      "anorexia",
+      "vomiting"
+    ],
+    "negatives": [
+      "vaginal discharge",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "HR 98, BP 124/78, RR 18, SpO2 98% on air, T 37.9°C.",
+      "abdomen": "Tender at McBurney's point with localised guarding. Rovsing's positive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 98,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 37.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 68,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.9,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine β-hCG",
+        "resultText": "Negative",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Right iliac fossa",
+        "result": "Non-compressible appendix 9 mm with periappendiceal fat stranding. Ovaries normal.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Suxamethonium apnoea (butyrylcholinesterase deficiency) — prolonged ventilation after suxamethonium 2012"
+    ],
+    "surgicalHistory": [
+      "Caesarean section 2012"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Teacher.",
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis — emergency laparoscopic appendicectomy; history of suxamethonium apnoea",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Acute appendicitis for emergency laparoscopic appendicectomy. Previous suxamethonium apnoea (probable butyrylcholinesterase deficiency) — avoid suxamethonium and mivacurium."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "anorexia",
+          "vomiting"
+        ],
+        "durationDays": 1,
+        "painScore": 6,
+        "paneAnswers": {
+          "pain_migration": true,
+          "rebound_tenderness": true,
+          "elevated_wbc": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "quality",
+          "match": [
+            "append"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-sux-apnoea",
+          "severity": "critical",
+          "match": [
+            "suxamethonium",
+            "butyrylcholinesterase",
+            "pseudocholinesterase",
+            "scoline",
+            "cholinesterase"
+          ],
+          "guidelineRefs": [
+            "bche-review-2019"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The suxamethonium-apnoea history (PMH and HPI) raises nothing; triage reasons are pregnancy (from 'urine pregnancy test negative'), pain and vomiting.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-avoid-suxamethonium-mivacurium",
+          "severity": "critical",
+          "match": [
+            "re:(avoid|no|not|without|contraindicat)\\w*[^.;\\n]{0,30}(suxamethonium|succinylcholine|mivacurium|scoline)",
+            "rocuronium"
+          ],
+          "guidelineRefs": [
+            "bche-review-2019"
+          ],
+          "note": "Rapid sequence induction without suxamethonium (e.g. rocuronium with sugammadex available).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The appendicectomy template specifies 'General anaesthesia + endotracheal intubation' with no neuromuscular-blocker caution; no rocuronium/sugammadex alternative for RSI.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bche-review-2019",
+      "name": "Butyrylcholinesterase deficiency and its clinical importance in anaesthesia (systematic review)",
+      "year": 2019,
+      "section": "Prolonged neuromuscular block after suxamethonium or mivacurium; avoid both in known or suspected deficiency; test the patient and relatives",
+      "citation": "Andersson ML, Møller AM, Wildgaard K. Anaesthesia. 2019;74:518–28.",
+      "verified": false
+    },
+    {
+      "id": "aa-mh-2021",
+      "name": "Association of Anaesthetists guideline — malignant hyperthermia 2020",
+      "year": 2021,
+      "section": "MH-susceptible patients and untested first-degree relatives of an MH-susceptible patient: trigger-free anaesthesia (no volatile agents, no suxamethonium), dantrolene immediately available, refer relatives to an MH unit for testing",
+      "citation": "Hopkins PM, Girard T, Dalay S, et al. Malignant hyperthermia 2020: Guideline from the Association of Anaesthetists. Anaesthesia. 2021;76:655–64.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation of the MH vignette: a different inherited anaesthetic hazard, in an emergency. The history is in the PMH and HPI; the check is whether any output surfaces it and adapts the RSI plan. Appendicectomy is correct here.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

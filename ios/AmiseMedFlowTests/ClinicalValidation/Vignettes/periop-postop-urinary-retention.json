@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-urinary-retention",
+  "condition": "Post-operative urinary retention after inguinal hernia repair",
+  "category": "urology",
+  "permutationOf": null,
+  "summary": "71-year-old man with untreated LUTS, 8 h after open inguinal mesh repair under GA with morphine and 1.5 L IV fluid: unable to void, suprapubic discomfort, bladder scan 920 mL.",
+  "tags": [
+    "periop",
+    "postop",
+    "urinary-retention",
+    "elderly",
+    "day-case"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "priority",
+      "isPostOp": true,
+      "postOpDays": 0
+    },
+    "chiefComplaint": "Unable to pass urine after hernia operation",
+    "hpi": "Day-case open right inguinal mesh repair under general anaesthetic this morning; 1.5 L IV fluid and morphine in recovery. Has not passed urine for 8 hours despite trying; lower abdominal discomfort and urge. Before surgery: poor stream and nocturia twice nightly, never treated.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Gradual"
+      ],
+      "site": [
+        "Suprapubic"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "urinary retention",
+      "suprapubic pain",
+      "poor urinary stream"
+    ],
+    "negatives": [
+      "fever",
+      "haematuria",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Uncomfortable. HR 84, BP 148/86, RR 16, SpO2 97% on air, T 36.8°C.",
+      "abdomen": "Palpable, dull, tender bladder to 3 cm below the umbilicus. Groin wound dry, no haematoma."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 84,
+        "systolicBp": 148,
+        "diastolicBp": 86,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Bladder scan",
+        "resultText": "920 mL",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Lower urinary tract symptoms (untreated)",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Open right inguinal mesh hernia repair (today)"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Morphine",
+        "dose": "5 mg",
+        "frequency": "PRN",
+        "indication": "Post-operative analgesia"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired. Lives with wife.",
+    "confirmedDiagnosis": {
+      "name": "Post-operative urinary retention — after open inguinal hernia repair",
+      "icd10": "R33.9",
+      "paneDiseaseId": "urinary_retention",
+      "assessmentText": "Acute post-operative urinary retention (bladder 920 mL) after hernia repair, opioids and IV fluid, background LUTS. Urethral catheter, record residual, alpha-blocker and trial without catheter."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "urinary retention",
+          "suprapubic pain",
+          "poor urinary stream"
+        ],
+        "durationDays": 0,
+        "painScore": 5,
+        "paneAnswers": {
+          "urinary_retention_symptoms": true,
+          "suprapubic_pain": true,
+          "prostate_symptoms": true,
+          "previous_surgery": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-retention-top3",
+          "severity": "critical",
+          "match": [
+            "retention"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "baldini-pour-2009"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage emergency_now (score 45 = age + pain + 'Post-operative or recent-procedure concern' 25): uncomfortable but stable retention.",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria."
+      }
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-acute-psa",
+          "severity": "quality",
+          "match": [
+            "re:\\bpsa\\b"
+          ],
+          "unless": [
+            "6 weeks",
+            "defer",
+            "after",
+            "reassay"
+          ],
+          "guidelineRefs": [
+            "pcrmp-2016"
+          ],
+          "note": "PSA is falsely raised by retention and catheterisation; defer it.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The urinary_retention protocol lists 'U&E, eGFR, PSA (once catheterised)' as an urgent investigation (it also says 'PSA reassay at 6 weeks'), and the preventative prompt adds PSA. PSA is falsely raised by retention and catheterisation.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Remove PSA from the acute retention investigations; keep 'PSA at ≥6 weeks if indicated' in follow-up."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-catheterise",
+          "severity": "critical",
+          "match": [
+            "catheter"
+          ],
+          "guidelineRefs": [
+            "baldini-pour-2009",
+            "eau-luts-2023"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-alpha-blocker-twoc",
+          "severity": "quality",
+          "match": [
+            "tamsulosin",
+            "alpha-blocker",
+            "alpha blocker",
+            "twoc",
+            "trial without catheter"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2023"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "baldini-pour-2009",
+      "name": "Postoperative urinary retention — anaesthetic and perioperative considerations (review)",
+      "year": 2009,
+      "section": "Bladder ultrasound; catheterise when bladder volume exceeds 600 mL and the patient cannot void; risk factors include age, male sex, hernia surgery, anaesthetic agents, opioids and IV fluid volume",
+      "citation": "Baldini G, Bagry H, Aprikian A, Carli F. Anesthesiology. 2009;110:1139–57.",
+      "verified": false
+    },
+    {
+      "id": "eau-luts-2023",
+      "name": "EAU guidelines — management of non-neurogenic male LUTS (acute urinary retention)",
+      "year": 2023,
+      "section": "Catheterise; alpha-blocker before a trial without catheter improves success",
+      "citation": "Gravas S, Gacci M, Gratzke C, et al. EAU Guidelines on the management of non-neurogenic male LUTS. Arnhem: EAU; 2023.",
+      "verified": false
+    },
+    {
+      "id": "pcrmp-2016",
+      "name": "PHE Prostate Cancer Risk Management Programme — PSA testing",
+      "year": 2016,
+      "section": "Defer PSA testing after urinary retention, catheterisation or active UTI (falsely raised)",
+      "citation": "Public Health England. Prostate cancer risk management programme: benefits and risks of PSA testing. London: PHE; 2016.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base post-operative urinary retention: common after hernia surgery in older men with LUTS. Tests diagnosis, catheterisation, alpha-blocker/TWOC and PSA timing.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

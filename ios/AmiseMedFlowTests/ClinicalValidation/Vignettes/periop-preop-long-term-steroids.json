@@ -1,0 +1,268 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-preop-long-term-steroids",
+  "condition": "Pre-operative assessment — long-term glucocorticoid therapy (adrenal suppression risk)",
+  "category": "other",
+  "permutationOf": "periop-preop-asa1-lap-chole",
+  "permutationLabel": "Prednisolone 10 mg for 2 years (adrenal suppression)",
+  "summary": "49-year-old woman on prednisolone 10 mg daily for 2 years (rheumatoid arthritis) listed for laparoscopic cholecystectomy.",
+  "tags": [
+    "periop",
+    "preop",
+    "immunosuppressed",
+    "steroids",
+    "adrenal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 49,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment for planned gallbladder operation",
+    "hpi": "Symptomatic gallstones, listed for laparoscopic cholecystectomy. Rheumatoid arthritis on prednisolone 10 mg daily for 2 years plus methotrexate weekly. Never had peri-operative steroid cover before. Climbs two flights of stairs slowly (knee pain). Post-menopausal.",
+    "symptoms": [
+      "biliary colic"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "Cushingoid facies. HR 78, BP 138/84, RR 14, SpO2 98% on air, T 36.6°C.",
+      "abdomen": "Soft, non-tender.",
+      "cardiovascular": "Heart sounds normal.",
+      "respiratory": "Chest clear.",
+      "msk": "Symmetrical MCP joint swelling."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 78,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.2,
+        "unit": "g/dL",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 260,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 9,
+        "unit": "µmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 84,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 22,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Multiple mobile gallstones, gallbladder wall 2 mm, no pericholecystic fluid. CBD 4 mm. Liver normal.",
+        "minutesAgo": 43200
+      }
+    ],
+    "comorbidities": [
+      "Rheumatoid arthritis",
+      "Long-term steroid therapy (prednisolone 10 mg for 2 years)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Prednisolone",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Rheumatoid arthritis"
+      },
+      {
+        "drug": "Methotrexate",
+        "dose": "15 mg",
+        "frequency": "weekly",
+        "indication": "Rheumatoid arthritis"
+      },
+      {
+        "drug": "Folic acid",
+        "dose": "5 mg",
+        "frequency": "weekly",
+        "indication": "Methotrexate"
+      },
+      {
+        "drug": "Alendronic acid",
+        "dose": "70 mg",
+        "frequency": "weekly",
+        "indication": "Bone protection"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker, occasional alcohol. Office worker.",
+    "confirmedDiagnosis": {
+      "name": "Pre-operative assessment — symptomatic gallstones on long-term prednisolone",
+      "icd10": "Z01.818",
+      "assessmentText": "Symptomatic cholelithiasis. Prednisolone 10 mg daily for 2 years: at risk of adrenal insufficiency; needs peri-operative glucocorticoid cover."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "biliary colic"
+        ],
+        "durationDays": 240,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-steroid-adrenal",
+          "severity": "quality",
+          "match": [
+            "steroid",
+            "adrenal",
+            "prednisolone",
+            "glucocorticoid"
+          ],
+          "guidelineRefs": [
+            "woodcock-steroids-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Long-term prednisolone is visible only as the generic triage reason 'Higher-risk comorbidity present'; no adrenal-insufficiency flag.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a steroid prompt: prednisolone ≥5 mg (or equivalent) for >4 weeks → adrenal suppression flag + peri-operative hydrocortisone plan (Woodcock 2020)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-steroid-cover",
+          "severity": "critical",
+          "match": [
+            "hydrocortisone",
+            "steroid cover",
+            "stress dose",
+            "glucocorticoid cover",
+            "peri-operative steroid",
+            "perioperative steroid"
+          ],
+          "guidelineRefs": [
+            "woodcock-steroids-2020"
+          ],
+          "note": "Prednisolone ≥5 mg for >4 weeks: hydrocortisone at induction and continued cover until eating and drinking (adrenal crisis risk).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No hydrocortisone / steroid-cover line in any output; clinical-inference.ts has no glucocorticoid rule (hasMed never checks prednisolone/hydrocortisone/dexamethasone).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See flag-steroid-adrenal. Do not state doses without the surgeon's template."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-stop-steroid",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withh|hold|omit)\\w*[^.;\\n]{0,25}(prednisolone|steroid)"
+          ],
+          "guidelineRefs": [
+            "woodcock-steroids-2020"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "woodcock-steroids-2020",
+      "name": "AAGBI/RCP/SfE guideline — glucocorticoids in the peri-operative period for adrenal insufficiency",
+      "year": 2020,
+      "section": "Patients on ≥5 mg prednisolone (or equivalent) for >4 weeks are at risk of adrenal insufficiency: hydrocortisone at induction and continued cover until eating and drinking, then usual dose; do not omit usual glucocorticoid",
+      "citation": "Woodcock T, Barker P, Daniel S, et al. Anaesthesia. 2020;75:654–63.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: immunosuppressed on long-term glucocorticoids. The index safety action is peri-operative steroid cover without omitting the usual dose.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

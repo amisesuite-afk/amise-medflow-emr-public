@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-vte-high-bleeding-risk-mechanical",
+  "condition": "VTE prophylaxis with high bleeding risk — day 1 after surgery for a bleeding duodenal ulcer",
+  "category": "other",
+  "permutationOf": "periop-vte-caprini-high-cancer-surgery",
+  "permutationLabel": "High bleeding risk after surgery for bleeding DU",
+  "summary": "64-year-old man, day 1 after laparotomy and under-running of a bleeding duodenal ulcer, transfused, platelets 68: pharmacological prophylaxis should wait; mechanical prophylaxis now.",
+  "tags": [
+    "periop",
+    "vte",
+    "bleeding-risk",
+    "postop"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 64,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 1
+    },
+    "chiefComplaint": "Ward review the day after emergency ulcer operation",
+    "hpi": "Day 1 after laparotomy, duodenotomy and under-running of a bleeding posterior duodenal ulcer after failed endoscopic therapy. Received 6 units of red cells and 1 pool of platelets. One small melaena stool this morning. Haemoglobin stable overnight. Mobilising to the chair.",
+    "symptoms": [
+      "melaena",
+      "abdominal pain"
+    ],
+    "negatives": [
+      "haematemesis",
+      "chest pain"
+    ],
+    "exam": {
+      "general": "Pale. HR 96, BP 118/70, RR 18, SpO2 97% on air, T 37.3°C.",
+      "abdomen": "Midline wound clean and dry, appropriately tender, soft. NG tube: bile only."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 96,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 37.3,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 8.4,
+        "unit": "g/dL",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 68,
+        "unit": "×10⁹/L",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.4,
+        "unit": "",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 96,
+        "unit": "µmol/L",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 12.8,
+        "unit": "mmol/L",
+        "minutesAgo": 120
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Bleeding duodenal ulcer (operated)",
+      "Osteoarthritis (NSAID use)"
+    ],
+    "surgicalHistory": [
+      "Laparotomy, duodenotomy and under-running of bleeding DU (day 1)"
+    ],
+    "medications": [
+      {
+        "drug": "Pantoprazole",
+        "dose": "8 mg/h",
+        "frequency": "IV infusion",
+        "indication": "Bleeding ulcer"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 20/day.",
+    "confirmedDiagnosis": {
+      "name": "Day 1 after under-running of bleeding duodenal ulcer — VTE prophylaxis decision (high bleeding risk)",
+      "icd10": "K26.4",
+      "paneDiseaseId": "upper_gi_bleed",
+      "assessmentText": "Post-operative day 1, bleeding duodenal ulcer under-run, ongoing minor melaena, platelets 68. Bleeding risk currently outweighs VTE risk: mechanical prophylaxis now, reassess daily for LMWH."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Upper GI bleed (haematemesis / melaena)",
+        "symptoms": [
+          "melaena",
+          "abdominal pain"
+        ],
+        "durationDays": 2,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-bleeding",
+          "severity": "critical",
+          "match": [
+            "bleed",
+            "haemorrh",
+            "melaena"
+          ],
+          "guidelineRefs": [
+            "nice-ng89"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-mechanical-prophylaxis",
+          "severity": "critical",
+          "match": [
+            "intermittent pneumatic",
+            "ipc",
+            "anti-embolism",
+            "ted stocking",
+            "ted stockings",
+            "compression stocking",
+            "mechanical prophylaxis",
+            "mechanical thromboprophylaxis"
+          ],
+          "guidelineRefs": [
+            "nice-ng89",
+            "accp-2012-gould"
+          ],
+          "note": "Pharmacological prophylaxis contraindicated by active bleeding risk: mechanical prophylaxis, reassess daily.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No VTE decision at all on post-operative day 1: the plan is the peptic_ulcer protocol (with 'OGD within 24 h' after an operation that already controlled the bleed). No LMWH is suggested either, so the no-LMWH check passes by omission.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See periop-vte-caprini-high-cancer-surgery; when bleeding risk outweighs VTE risk, suggest mechanical prophylaxis and a daily reassessment."
+        },
+        {
+          "id": "mgmt-reassess-vte-bleeding",
+          "severity": "quality",
+          "match": [
+            "reassess",
+            "re-assess",
+            "review daily",
+            "when bleeding risk",
+            "once haemostasis"
+          ],
+          "guidelineRefs": [
+            "nice-ng89"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No daily VTE/bleeding reassessment.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mgmt-mechanical-prophylaxis."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-lmwh-now",
+          "severity": "critical",
+          "match": [
+            "re:(enoxaparin|dalteparin|tinzaparin|lmwh)\\s*\\d",
+            "re:(start|commence|give)\\w*[^.;\\n]{0,20}(lmwh|enoxaparin|dalteparin|tinzaparin)"
+          ],
+          "unless": [
+            "once bleeding",
+            "when bleeding",
+            "when haemostasis",
+            "once haemostasis",
+            "if no bleeding",
+            "bleeding risk",
+            "hold",
+            "withh"
+          ],
+          "guidelineRefs": [
+            "nice-ng89"
+          ],
+          "note": "No unqualified LMWH on post-operative day 1 with ongoing melaena and platelets 68.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng89",
+      "name": "NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE",
+      "year": 2018,
+      "section": "Assess VTE and bleeding risk; abdominal surgery with VTE risk above bleeding risk: pharmacological prophylaxis (LMWH) for at least 7 days; extended to 28 days after major cancer surgery in the abdomen/pelvis; mechanical prophylaxis (anti-embolism stockings or IPC) when pharmacological prophylaxis is contraindicated by bleeding risk; reassess within 24 h and when the clinical situation changes",
+      "citation": "National Institute for Health and Care Excellence. VTE in over 16s (NG89). London: NICE; 2018 (updated 2019).",
+      "verified": false
+    },
+    {
+      "id": "accp-2012-gould",
+      "name": "ACCP 9th edition — prevention of VTE in non-orthopaedic surgical patients (Caprini)",
+      "year": 2012,
+      "section": "General and abdominal-pelvic surgery: Caprini ≥5 high risk → LMWH/LDUH plus mechanical prophylaxis; extended-duration (4 weeks) LMWH after abdominal/pelvic cancer surgery; high bleeding risk → mechanical prophylaxis until bleeding risk diminishes",
+      "citation": "Gould MK, Garcia DA, Wren SM, et al. Chest. 2012;141(2 Suppl):e227S–77S.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: bleeding risk outweighs VTE risk. The index action is mechanical prophylaxis with daily reassessment, and no unqualified LMWH.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

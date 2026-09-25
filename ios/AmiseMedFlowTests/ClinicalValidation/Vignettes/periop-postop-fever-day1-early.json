@@ -1,0 +1,382 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-fever-day1-early",
+  "condition": "Early post-operative fever (day 1) — non-infective",
+  "category": "other",
+  "permutationOf": null,
+  "summary": "44-year-old woman, day 1 after uncomplicated laparoscopic cholecystectomy: T 38.2°C, HR 94, reduced basal air entry, clean wounds.",
+  "tags": [
+    "periop",
+    "postop",
+    "fever"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 163,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "priority",
+      "isPostOp": true,
+      "postOpDays": 1
+    },
+    "chiefComplaint": "Temperature on the ward the day after surgery",
+    "hpi": "Day 1 after uncomplicated laparoscopic cholecystectomy (kept in for nausea). Temperature 38.2°C this morning. Shallow breathing because of port-site pain. Tolerating fluids, passing urine, mobilised to the bathroom. No rigors, no cough, no calf pain.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Fever"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "post-op fever"
+    ],
+    "negatives": [
+      "rigors",
+      "cough",
+      "calf pain",
+      "jaundice"
+    ],
+    "exam": {
+      "general": "Comfortable. HR 94, BP 124/76, RR 18, SpO2 95% on air, T 38.2°C.",
+      "respiratory": "Reduced air entry at both bases, no bronchial breathing.",
+      "abdomen": "Port sites clean and dry. Soft, appropriately tender around the port sites.",
+      "msk": "Calves soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 94,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 18,
+        "temperatureC": 38.2,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 46,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 12,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 96,
+        "unit": "U/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Laparoscopic cholecystectomy (day 1)"
+    ],
+    "medications": [
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      },
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS",
+        "indication": "Analgesia"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Early post-operative pyrexia (day 1) — probable basal atelectasis",
+      "icd10": "R50.82",
+      "assessmentText": "Day 1 post-operative pyrexia 38.2°C, haemodynamically normal, basal atelectasis likely; wounds clean. Chest physiotherapy, analgesia, mobilise; no antibiotics; reassess."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "post-op fever"
+        ],
+        "durationDays": 0,
+        "painScore": 3,
+        "paneAnswers": {
+          "previous_surgery": true,
+          "postop_fever": true,
+          "wound_erythema": false,
+          "wound_discharge": false
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-postop-causes",
+          "severity": "quality",
+          "match": [
+            "atelectasis",
+            "pneumonia",
+            "bile leak",
+            "leak",
+            "collection",
+            "surgical site"
+          ],
+          "guidelineRefs": [
+            "ogrady-fever-2008"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 after laparoscopic cholecystectomy: acute cholecystitis, acute cholangitis, liver abscess. Nothing reads the surgical history, so the removed gallbladder ranks first; no atelectasis/pneumonia node.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "PANE: condition on surgical history (no gallbladder diagnoses after cholecystectomy, no appendicitis after appendicectomy) and add early post-operative causes."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "ogrady-fever-2008"
+        ],
+        "note": "A well patient with a day-1 fever needs clinical review, not an emergency response.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage emergency_now (score 152) for T 38.2, HR 94 on day 1: 'Post-operative concern' (urgent) for any 'post-op' word, 'Post-op fever — source must be identified', 'Fever', and the anticoagulant reason (prophylactic enoxaparin).",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "Post-operative ward reviews: score post-op concern from physiology (NEWS2) rather than adding 'Post-operative concern' (urgent) for any 'post-op'/'wound' word; reserve emergency_now for physiological or peritonitic criteria."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-news2",
+          "severity": "quality",
+          "score": "news2",
+          "guidelineRefs": [
+            "rcp-news2-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-clinical-source-review",
+          "severity": "quality",
+          "match": [
+            "chest physio",
+            "physiotherapy",
+            "incentive spirometry",
+            "deep breathing",
+            "mobilis",
+            "examine the wound",
+            "wound review",
+            "source"
+          ],
+          "guidelineRefs": [
+            "ogrady-fever-2008"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No chest physiotherapy/mobilisation/wound review line; the Assessment panel shows the cholecystitis protocol (PANE top).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Post-operative fever prompt by day (early: atelectasis/inflammatory; day 5+: leak/SSI/collection; UTI, line, VTE)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-broad-spectrum",
+          "severity": "quality",
+          "match": [
+            "meropenem",
+            "vancomycin",
+            "piperacillin",
+            "pip-tazo",
+            "tazocin"
+          ],
+          "unless": [
+            "sepsis",
+            "deep incisional",
+            "organ-space",
+            "organ/space",
+            "mrsa"
+          ],
+          "guidelineRefs": [
+            "ogrady-fever-2008"
+          ],
+          "note": "No broad-spectrum antibiotics for a day-1 fever without a source.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Assessment panel (cholecystitis protocol from PANE top): '[immediate] IV antibiotics: co-amoxiclav 1.2 g TDS or piperacillin-tazobactam for severe' for a day-1 fever after cholecystectomy.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Assessment panel: follow the locked working diagnosis, not the PANE top (findings/hpb.md gap 7)."
+        },
+        {
+          "id": "mgmt-no-anticoag-bridging-prompt",
+          "severity": "quality",
+          "match": [
+            "anticoagulant bridging",
+            "re:bridg\\w*[^.;\\n]{0,15}\\bwith\\s+(lmwh|heparin)"
+          ],
+          "guidelineRefs": [
+            "nice-ng89"
+          ],
+          "note": "The patient is on prophylactic-dose enoxaparin only; a peri-operative anticoagulant bridging plan does not apply.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Prophylactic enoxaparin 40 mg triggers anticoag_check ('Anticoagulation monitoring + peri-operative bridging plan', PT/INR, 'warfarin — bridge with LMWH'). It fires in all 10 post-operative vignettes whose only anticoagulant is standard prophylactic enoxaparin.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+        },
+        {
+          "id": "mgmt-no-emergency-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy"
+          ],
+          "unless": [
+            "hinchey",
+            "grade c",
+            "if peritonitis",
+            "if generalised peritonitis"
+          ],
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ogrady-fever-2008",
+      "name": "ACCM/IDSA — evaluation of new fever in critically ill adult patients (2008 update)",
+      "year": 2008,
+      "section": "Fever in the first 48 h after surgery is usually non-infectious; evaluate clinically (chest, wound, lines, urine) before investigating or starting antibiotics",
+      "citation": "O'Grady NP, Barie PS, Bartlett JG, et al. Crit Care Med. 2008;36:1330–49.",
+      "verified": false
+    },
+    {
+      "id": "rcp-news2-2017",
+      "name": "RCP — National Early Warning Score (NEWS) 2",
+      "year": 2017,
+      "section": "Aggregate ≥7: emergency response — urgent assessment by a team with critical-care competencies, continuous monitoring; 5–6 or a single red parameter: urgent response",
+      "citation": "Royal College of Physicians. National Early Warning Score (NEWS) 2. London: RCP; 2017.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng89",
+      "name": "NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE",
+      "year": 2018,
+      "section": "Assess VTE and bleeding risk; abdominal surgery with VTE risk above bleeding risk: pharmacological prophylaxis (LMWH) for at least 7 days; extended to 28 days after major cancer surgery in the abdomen/pelvis; mechanical prophylaxis (anti-embolism stockings or IPC) when pharmacological prophylaxis is contraindicated by bleeding risk; reassess within 24 h and when the clinical situation changes",
+      "citation": "National Institute for Health and Care Excellence. VTE in over 16s (NG89). London: NICE; 2018 (updated 2019).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base post-operative fever case: early, non-infective. Tests over-triage and over-treatment. Every other post-operative complication vignette permutes this one.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

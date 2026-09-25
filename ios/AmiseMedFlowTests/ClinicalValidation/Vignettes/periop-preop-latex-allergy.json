@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-preop-latex-allergy",
+  "condition": "Pre-operative assessment — latex anaphylaxis",
+  "category": "other",
+  "permutationOf": "periop-preop-asa1-lap-chole",
+  "permutationLabel": "Latex anaphylaxis",
+  "summary": "34-year-old nurse with previous anaphylaxis to latex gloves listed for laparoscopic cholecystectomy.",
+  "tags": [
+    "periop",
+    "preop",
+    "allergy",
+    "latex"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment for planned gallbladder operation",
+    "hpi": "Symptomatic gallstones, listed for laparoscopic cholecystectomy. Anaphylaxis (wheeze, facial swelling, hypotension) when examined with latex gloves at a dental appointment in 2019; carries an adrenaline auto-injector. Also itching with bananas and avocado. Last menstrual period 12 days ago.",
+    "symptoms": [
+      "biliary colic"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "Well. HR 72, BP 118/74, RR 14, SpO2 99% on air, T 36.7°C. BMI 24.",
+      "abdomen": "Soft, non-tender. No masses.",
+      "cardiovascular": "Heart sounds normal.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 72,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.2,
+        "unit": "g/dL",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 260,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 9,
+        "unit": "µmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 84,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 22,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Multiple mobile gallstones, gallbladder wall 2 mm, no pericholecystic fluid. CBD 4 mm. Liver normal.",
+        "minutesAgo": 43200
+      }
+    ],
+    "comorbidities": [
+      "Latex anaphylaxis",
+      "Latex-fruit syndrome (banana, avocado)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Adrenaline auto-injector",
+        "dose": "300 micrograms",
+        "frequency": "PRN",
+        "indication": "Anaphylaxis"
+      }
+    ],
+    "allergies": [
+      {
+        "name": "Latex",
+        "severity": "Severe",
+        "reaction": "Anaphylaxis (bronchospasm, angio-oedema, hypotension) 2019"
+      }
+    ],
+    "nkda": false,
+    "socialHistory": "Non-smoker. Staff nurse.",
+    "confirmedDiagnosis": {
+      "name": "Pre-operative assessment — symptomatic gallstones; latex anaphylaxis",
+      "icd10": "Z01.818",
+      "assessmentText": "Symptomatic cholelithiasis. Latex anaphylaxis 2019 — latex-free theatre pathway."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "biliary colic"
+        ],
+        "durationDays": 240,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-latex-allergy",
+          "severity": "critical",
+          "match": [
+            "latex"
+          ],
+          "guidelineRefs": [
+            "nap6-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-latex-free",
+          "severity": "critical",
+          "match": [
+            "latex-free",
+            "latex free",
+            "latex-safe",
+            "latex safe"
+          ],
+          "guidelineRefs": [
+            "aagbi-anaphylaxis-2009",
+            "nap6-2018"
+          ],
+          "note": "Known latex anaphylaxis: latex-free theatre, ward and equipment.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The allergy is shown in the header ('Allergy: Latex') but nothing adapts the plan: the lap chole template is unchanged and no output mentions a latex-free theatre.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+        },
+        {
+          "id": "mgmt-first-on-list",
+          "severity": "quality",
+          "match": [
+            "first on the list",
+            "first on list",
+            "first case"
+          ],
+          "guidelineRefs": [
+            "aagbi-anaphylaxis-2009"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No 'first on the list' instruction.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nap6-2018",
+      "name": "RCoA NAP6 — Perioperative anaphylaxis",
+      "year": 2018,
+      "section": "Antibiotics (teicoplanin, co-amoxiclav) are the commonest triggers; allergy history must be checked before induction; latex remains a cause and requires a latex-free pathway in known allergy",
+      "citation": "Royal College of Anaesthetists. Anaesthesia, surgery and life-threatening allergic reactions: 6th National Audit Project. London: RCoA; 2018.",
+      "verified": false
+    },
+    {
+      "id": "aagbi-anaphylaxis-2009",
+      "name": "AAGBI safety guideline — suspected anaphylactic reactions associated with anaesthesia",
+      "year": 2009,
+      "section": "Patients with known latex allergy: latex-free environment and equipment, ideally first on the operating list",
+      "citation": "Association of Anaesthetists of Great Britain and Ireland. Suspected anaphylactic reactions associated with anaesthesia. Anaesthesia. 2009;64:199–211.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: a non-drug allergy that changes theatre set-up. Tests the allergy alert and whether any output adds a latex-free pathway.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

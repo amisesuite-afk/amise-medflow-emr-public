@@ -1,0 +1,440 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-pregnancy-emergency-laparotomy-sbo",
+  "condition": "Emergency laparotomy in pregnancy (29 weeks) — adhesive small-bowel obstruction",
+  "category": "gi-emergency",
+  "permutationOf": "periop-nela-frail-emergency-laparotomy",
+  "permutationLabel": "Pregnant (29 weeks), adhesive SBO",
+  "summary": "31-year-old at 29 weeks with adhesive small-bowel obstruction (previous open appendicectomy) failing conservative management, rising lactate — emergency laparotomy.",
+  "tags": [
+    "periop",
+    "pregnancy",
+    "emergency-laparotomy",
+    "sbo"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 29
+      },
+      "heightCm": 165,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "surgeryEmergency",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Colicky abdominal pain and vomiting in pregnancy",
+    "hpi": "29 weeks pregnant (G2P1). 36 hours of colicky central abdominal pain, bilious vomiting, distension, no flatus for 24 hours. Open appendicectomy for perforated appendicitis at 19. NG tube and IV fluids for 24 hours without improvement; pain now constant. Fetal movements present.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Gradual"
+      ],
+      "site": [
+        "Periumbilical",
+        "Diffuse"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea",
+        "Anorexia"
+      ],
+      "timing": [
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "constipation"
+    ],
+    "negatives": [
+      "vaginal bleeding",
+      "contractions",
+      "fever"
+    ],
+    "exam": {
+      "general": "HR 112, BP 104/66, RR 20, SpO2 98% on air, T 37.4°C.",
+      "abdomen": "Gravid uterus, fundus at 29 cm. Distended, tender right side above the uterus, high-pitched bowel sounds. Right iliac fossa scar."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 104,
+        "diastolicBp": 66,
+        "respiratoryRate": 20,
+        "temperatureC": 37.4,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.3,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 64,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "MRI abdomen (non-contrast)",
+        "modality": "MRI",
+        "region": "Abdomen",
+        "result": "Dilated fluid-filled small bowel loops to a transition point in the right iliac fossa near the scar; small volume free fluid; no closed loop seen. Viable singleton pregnancy.",
+        "minutesAgo": 180
+      }
+    ],
+    "comorbidities": [
+      "Pregnancy (29 weeks)"
+    ],
+    "surgicalHistory": [
+      "Open appendicectomy (perforated) age 19",
+      "Spontaneous vaginal delivery 2021"
+    ],
+    "medications": [
+      {
+        "drug": "Folic acid",
+        "dose": "400 micrograms",
+        "frequency": "OD",
+        "indication": "Pregnancy"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Lives with partner.",
+    "confirmedDiagnosis": {
+      "name": "Adhesive small-bowel obstruction at 29 weeks' gestation — emergency laparotomy",
+      "icd10": "K56.50",
+      "paneDiseaseId": "adhesion_obstruction",
+      "assessmentText": "Adhesive small-bowel obstruction at 29 weeks, failing conservative management with rising lactate and constant pain. Emergency laparotomy with obstetric team; fetal monitoring; left uterine displacement; VTE prophylaxis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "constipation"
+        ],
+        "durationDays": 1.5,
+        "painScore": 8,
+        "paneAnswers": {
+          "previous_surgery": true,
+          "colicky_pain": true,
+          "abdominal_distension": true,
+          "absolute_constipation": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-sbo-top3",
+          "severity": "critical",
+          "match": [
+            "obstruction",
+            "adhesi"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "acog-co775"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-pregnancy",
+          "severity": "critical",
+          "match": [
+            "pregnan"
+          ],
+          "guidelineRefs": [
+            "acog-co775"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-unqualified-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)"
+          ],
+          "unless": [
+            "mri",
+            "pregnan",
+            "if mri unavailable"
+          ],
+          "guidelineRefs": [
+            "acog-co775"
+          ],
+          "note": "MRI has already answered the question; CT is not contraindicated in pregnancy when needed, but should not be suggested unqualified.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PANE seeding, unqualified at 29 weeks although MRI has been done. The pelvic-free-fluid prompt also fires 'Ruptured ectopic protocol' at 29 weeks.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-obstetric-involvement",
+          "severity": "critical",
+          "match": [
+            "obstetric",
+            "fetal",
+            "foetal",
+            "ctg",
+            "cardiotocograph"
+          ],
+          "guidelineRefs": [
+            "acog-co775",
+            "sages-pregnancy-2017"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No obstetric team, CTG or fetal monitoring in any output; pregnancy is only a triage reason and the β-HCG prompt ('Urine pregnancy test — mandatory', 'exclude ectopic') for a known 29-week pregnancy.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Pregnancy branch for any operative plan: obstetric review, fetal monitoring by gestation, left uterine displacement, VTE prophylaxis, antenatal steroids when preterm delivery is possible, no NSAIDs from 20 weeks."
+        },
+        {
+          "id": "mgmt-vte-prophylaxis",
+          "severity": "quality",
+          "match": [
+            "lmwh",
+            "enoxaparin",
+            "dalteparin",
+            "tinzaparin",
+            "low molecular weight heparin",
+            "fondaparinux",
+            "heparin",
+            "thromboprophylaxis"
+          ],
+          "guidelineRefs": [
+            "rcog-gtg37a",
+            "sages-pregnancy-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-left-uterine-displacement",
+          "severity": "quality",
+          "match": [
+            "left lateral",
+            "uterine displacement",
+            "left tilt",
+            "aortocaval"
+          ],
+          "guidelineRefs": [
+            "sages-pregnancy-2017"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No positioning advice.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mgmt-obstetric-involvement."
+        },
+        {
+          "id": "mgmt-antenatal-steroids",
+          "severity": "quality",
+          "match": [
+            "antenatal corticosteroid",
+            "antenatal steroid",
+            "dexamethasone",
+            "betamethasone",
+            "fetal lung maturity"
+          ],
+          "guidelineRefs": [
+            "nice-ng25"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No antenatal corticosteroid consideration at 29 weeks.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mgmt-obstetric-involvement."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid",
+          "severity": "critical",
+          "match": [
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "nsaid",
+            "parecoxib",
+            "celecoxib"
+          ],
+          "unless": [
+            "re:(avoid|no|not|contraindicat)\\w*[^.;\\n]{0,25}(nsaid|ibuprofen|diclofenac)",
+            "not in pregnancy"
+          ],
+          "guidelineRefs": [
+            "fda-nsaid-2020"
+          ],
+          "note": "NSAIDs from 20 weeks: fetal renal dysfunction and oligohydramnios; at 29 weeks also ductus arteriosus constriction.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "acog-co775",
+      "name": "ACOG Committee Opinion 775 — Nonobstetric surgery during pregnancy",
+      "year": 2019,
+      "section": "A pregnant woman should never be denied indicated surgery; obstetric consultation before surgery; fetal heart rate monitoring appropriate to gestation and facilities when the fetus is viable",
+      "citation": "American College of Obstetricians and Gynecologists. Obstet Gynecol. 2019;133:e285–6.",
+      "verified": false
+    },
+    {
+      "id": "sages-pregnancy-2017",
+      "name": "SAGES guidelines — use of laparoscopy during pregnancy",
+      "year": 2017,
+      "section": "Left lateral positioning to minimise aortocaval compression; intra-operative and post-operative VTE prophylaxis; obstetric consultation; fetal heart monitoring",
+      "citation": "Pearl JP, Price RR, Tonkin AE, et al. Surg Endosc. 2017;31:3767–82.",
+      "verified": false
+    },
+    {
+      "id": "rcog-gtg37a",
+      "name": "RCOG Green-top Guideline 37a — reducing the risk of VTE during pregnancy and the puerperium",
+      "year": 2015,
+      "section": "Any surgical procedure in pregnancy is a transient risk factor: consider LMWH thromboprophylaxis",
+      "citation": "Royal College of Obstetricians and Gynaecologists. Green-top Guideline No. 37a. London: RCOG; 2015.",
+      "verified": false
+    },
+    {
+      "id": "fda-nsaid-2020",
+      "name": "FDA drug safety communication — NSAIDs from 20 weeks of pregnancy",
+      "year": 2020,
+      "section": "Avoid NSAIDs from about 20 weeks of pregnancy (fetal renal dysfunction, oligohydramnios)",
+      "citation": "US Food and Drug Administration. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng25",
+      "name": "NICE NG25 — Preterm labour and birth",
+      "year": 2022,
+      "section": "Maternal corticosteroids offered between 24+0 and 33+6 weeks when preterm birth is suspected, diagnosed, established or planned",
+      "citation": "National Institute for Health and Care Excellence. Preterm labour and birth (NG25). London: NICE; 2015 (updated 2022).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: emergency laparotomy in the third trimester. Tests the obstetric involvement, pregnancy flag, NSAID exclusion, VTE prophylaxis, left uterine displacement, antenatal steroids and imaging choice.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}
