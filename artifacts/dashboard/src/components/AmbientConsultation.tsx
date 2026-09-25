@@ -2261,6 +2261,9 @@ function PriorVisitStrip({ summary: s }: { summary: PriorEncounterSummary }) {
               v.spo2 !== null ? { label: 'SpO₂', value: `${v.spo2}%`, danger: v.spo2 < 94 } : null,
               v.tempC !== null ? { label: 'T', value: `${v.tempC}°C`, warn: v.tempC >= 38, danger: v.tempC >= 39 } : null,
               v.rr !== null ? { label: 'RR', value: fmt(v.rr, '/min')!, danger: v.rr > 24 } : null,
+              // NEWS2 consciousness / air-O₂ (vitals.avpu / on_supplemental_o2, Migration 91) — shown as recorded, not scored
+              v.avpu ? { label: 'ACVPU', value: v.avpu } : null,
+              typeof v.onSupplementalO2 === 'boolean' ? { label: 'Air/O₂', value: v.onSupplementalO2 ? 'Supplemental O₂' : 'Room air' } : null,
               v.weightKg !== null ? { label: 'Wt', value: fmt(v.weightKg, 'kg', 1)! } : null,
               v.bmi !== null ? { label: 'BMI', value: fmt(v.bmi, '', 1)!, warn: v.bmi >= 30, danger: v.bmi >= 35 } : null,
             ].filter((x): x is NonNullable<typeof x> => x !== null);

@@ -1,5 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { parseAvpu, parseOnSupplementalO2 } from '@/lib/vitals-news2-fields';
+import { usePatientNews2Scale2 } from '@/hooks/usePatientNews2Scale2';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import {
   alvaradoScore, interpretAlvarado, type AlvaradoInputs,
@@ -132,19 +134,27 @@ function ScoreRow({ label, value }: { label: string; value: string | number }) {
 // RCP NEWS2 (2017) via the shared `evaluateNews2`. Vitals not yet charted start EMPTY and are
 // reported as "not recorded" — they used to be pre-filled with normal values (RR 15, SpO₂ 98…),
 // which scored an unmeasured parameter as reassuringly normal (hazard log H-04).
+// Consciousness and air/O₂ are pre-filled from the saved vitals (Migration 91) when recorded;
+// SpO₂ Scale 2 follows the patient record (Migration 88) when the dashboard can read it.
 function News2Card() {
   const ctx = useAppContext();
+  const storedAvpu = parseAvpu(ctx.vitals.avpu);
+  const storedO2 = parseOnSupplementalO2(ctx.vitals.onSupplementalO2);
+  const patientScale2 = usePatientNews2Scale2(ctx.patientId);
   const [v, setV] = useState<News2Inputs>(() => ({
     respiratoryRate: _vn(ctx, 'respiratoryRate'),
     spo2:            _vn(ctx, 'spo2'),
-    supplementalO2:  false,
+    supplementalO2:  storedO2 ?? false,
     useSpO2Scale2:   false,
     systolicBp:      _vn(ctx, 'systolicBp'),
     heartRate:       _vn(ctx, 'heartRate'),
-    consciousnessAvpu: 'A' as const,
+    consciousnessAvpu: storedAvpu ?? 'A',
     temperatureC:    _vn(ctx, 'temperatureC'),
   }));
-  const prePop = !!(ctx.vitals.respiratoryRate || ctx.vitals.spo2 || ctx.vitals.systolicBp || ctx.vitals.heartRate || ctx.vitals.temperatureC);
+  useEffect(() => {
+    if (patientScale2.available) setV(p => ({ ...p, useSpO2Scale2: patientScale2.useScale2 }));
+  }, [patientScale2.available, patientScale2.useScale2]);
+  const prePop = !!(ctx.vitals.respiratoryRate || ctx.vitals.spo2 || ctx.vitals.systolicBp || ctx.vitals.heartRate || ctx.vitals.temperatureC || storedAvpu || storedO2 !== null);
   const evaluation = evaluateNews2Inputs(v);
   const score = evaluation.total;
   const result = interpretNews2(evaluation);
@@ -173,11 +183,17 @@ function News2Card() {
         </label>
       </div>
       <Chk label="On supplemental O₂" checked={v.supplementalO2} onChange={() => setV(p => ({ ...p, supplementalO2: !p.supplementalO2 }))} pts={2} />
-      <Chk
-        label="Use SpO₂ Scale 2 — ONLY for confirmed hypercapnic respiratory failure, on a clinician's decision (oxygen alone does not switch the scale)"
-        checked={v.useSpO2Scale2 === true}
-        onChange={() => setV(p => ({ ...p, useSpO2Scale2: !p.useSpO2Scale2 }))}
-      />
+      {patientScale2.available ? (
+        <div style={{ marginBottom: 6, fontSize: 13, color: '#6b7280' }}>
+          SpO₂ Scale {v.useSpO2Scale2 ? '2' : '1'} — from the patient record (clinician opt-in for confirmed hypercapnic respiratory failure)
+        </div>
+      ) : (
+        <Chk
+          label="Use SpO₂ Scale 2 — ONLY for confirmed hypercapnic respiratory failure, on a clinician's decision (oxygen alone does not switch the scale)"
+          checked={v.useSpO2Scale2 === true}
+          onChange={() => setV(p => ({ ...p, useSpO2Scale2: !p.useSpO2Scale2 }))}
+        />
+      )}
       <ScoreRow label="NEWS2 Score" value={score} />
       {evaluation.hasSingleParameterScore3 && (
         <div style={{ marginTop: 6, fontSize: 12, fontWeight: 700, color: '#b91c1c' }}>

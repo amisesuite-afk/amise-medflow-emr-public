@@ -8,6 +8,7 @@ import ExamPhotoPanel from '@/components/ExamPhotoPanel';
 import WoundAssessmentCard from '@/components/WoundAssessmentCard';
 import ExamGuidePanel from '@/components/ExamGuidePanel';
 import WheelPicker from '@/components/WheelPicker';
+import News2ObservationFields from '@/components/News2ObservationFields';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 
 // Systems always shown regardless of clinical context
@@ -734,6 +735,15 @@ export default function ExaminationTab() {
                         ))}
                       </div>
                     </div>
+                  </div>
+                  {/* NEWS2 consciousness + air/O₂ (Migration 91) */}
+                  <div style={{ marginTop: 8 }}>
+                    <News2ObservationFields
+                      compact
+                      avpu={vitals.avpu}
+                      onSupplementalO2={vitals.onSupplementalO2}
+                      onChange={updateVital}
+                    />
                   </div>
                 </div>
               )}

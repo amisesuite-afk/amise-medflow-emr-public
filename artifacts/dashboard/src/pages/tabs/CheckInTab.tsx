@@ -15,6 +15,7 @@ import {
 import type { Sex } from '@workspace/triage-engine';
 import { SL_COMMUNITIES } from '@/data/st-lucia';
 import PreVisitSummary from '@/components/PreVisitSummary';
+import News2ObservationFields from '@/components/News2ObservationFields';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -888,6 +889,12 @@ export default function CheckInTab() {
                     );
                   })}
                 </div>
+                {/* NEWS2 consciousness + air/O₂ (Migration 91) */}
+                <News2ObservationFields
+                  avpu={vitals.avpu}
+                  onSupplementalO2={vitals.onSupplementalO2}
+                  onChange={updateVital}
+                />
                 <button
                   type="button"
                   onClick={() => setPreVisitStatus('vitals_done')}

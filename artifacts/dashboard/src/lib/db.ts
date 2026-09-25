@@ -6,6 +6,11 @@
 import { supabase, type SiteCode } from './supabase';
 import { getApiOrigin } from './api-origin';
 import { staffAuthHeaders } from './staff-auth';
+import type { News2Avpu } from '@workspace/triage-engine';
+import {
+  news2FieldsToRow, news2FieldsFromRow, writeVitalsWithNews2Fallback,
+  selectVitalsWithNews2Fallback, isMissingColumnError, PATIENT_NEWS2_SCALE2_COLUMN,
+} from './vitals-news2-fields';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -78,6 +83,10 @@ export interface VitalsInput {
   glucoseMmol: string;
   weightKg: string;
   heightCm: string;
+  /** NEWS2 ACVPU ('' | 'A' | 'C' | 'V' | 'P' | 'U'). '' = not recorded. Column: vitals.avpu (Migration 91). */
+  avpu?: string;
+  /** NEWS2 air / oxygen ('' | 'air' | 'o2'). '' = not recorded. Column: vitals.on_supplemental_o2 (Migration 91). */
+  onSupplementalO2?: string;
 }
 
 export interface AssessmentInput {
@@ -190,7 +199,7 @@ export async function uploadPatientPhoto(
 
 export async function saveVitals(
   input: VitalsInput,
-): Promise<{ error: string | null }> {
+): Promise<{ error: string | null; droppedNews2Fields?: boolean }> {
   if (!supabase) return { error: notConfigured('saveVitals') };
 
   function n(v: string): number | null {
@@ -214,14 +223,17 @@ export async function saveVitals(
     glucose_mmol:       n(input.glucoseMmol),
     weight_kg:          n(input.weightKg),
     height_cm:          n(input.heightCm),
+    ...news2FieldsToRow(input.avpu, input.onSupplementalO2),
   };
 
   // Strip null fields
   Object.keys(row).forEach(k => { if (row[k] === null) delete row[k]; });
 
-  const { error } = await supabase.from('vitals').insert(row);
-  if (error) { console.error('[db] saveVitals:', error); return { error: error.message }; }
-  return { error: null };
+  // ACVPU / O₂ need Migration 91; without it the insert is retried without them.
+  const client = supabase;
+  const { error, droppedNews2Fields } = await writeVitalsWithNews2Fallback(row, r => client.from('vitals').insert(r));
+  if (error) { console.error('[db] saveVitals:', error); return { error: error.message ?? 'Save failed' }; }
+  return { error: null, droppedNews2Fields };
 }
 
 // ─── saveSymptoms ─────────────────────────────────────────────────────────────
@@ -906,6 +918,10 @@ export interface VitalSnapshot {
   rr: number | null;
   weightKg: number | null;
   bmi: number | null;
+  /** NEWS2 ACVPU (vitals.avpu, Migration 91). null = not recorded or column not on the server yet. */
+  avpu?: News2Avpu | null;
+  /** NEWS2 air / oxygen (vitals.on_supplemental_o2, Migration 91). null = not recorded. */
+  onSupplementalO2?: boolean | null;
 }
 
 export interface ClosedEncounterSnapshot {
@@ -926,7 +942,10 @@ export async function getLatestClosedEncounter(
 ): Promise<{ data: ClosedEncounterSnapshot | null; error: string | null }> {
   if (!supabase) return { data: null, error: notConfigured('getLatestClosedEncounter') };
 
-  const { data, error } = await supabase
+  // vitals.avpu / on_supplemental_o2 need Migration 91; without it the select is repeated
+  // without them so the prior-visit summary still loads.
+  const client = supabase;
+  const { data, error } = await selectVitalsWithNews2Fallback<unknown>(withNews2 => client
     .from('encounters')
     .select(`
       id, encounter_date, encounter_type, chief_complaint,
@@ -934,17 +953,17 @@ export async function getLatestClosedEncounter(
       encounter_medications(name),
       encounter_allergens(name),
       encounter_surgical_history(procedure),
-      vitals(bp_systolic, bp_diastolic, heart_rate, temperature_c, oxygen_saturation, respiratory_rate, weight_kg, bmi)
+      vitals(bp_systolic, bp_diastolic, heart_rate, temperature_c, oxygen_saturation, respiratory_rate, weight_kg, bmi${withNews2 ? ', avpu, on_supplemental_o2' : ''})
     `)
     .eq('patient_id', patient_id)
     .neq('status', 'open')
     .order('encounter_date', { ascending: false })
     .limit(1)
-    .maybeSingle();
+    .maybeSingle());
 
   if (error) {
     console.error('[db] getLatestClosedEncounter:', error);
-    return { data: null, error: error.message };
+    return { data: null, error: error.message ?? 'Load failed' };
   }
 
   if (!data) return { data: null, error: null };
@@ -954,6 +973,7 @@ export async function getLatestClosedEncounter(
     heart_rate: number | null; temperature_c: number | null;
     oxygen_saturation: number | null; respiratory_rate: number | null;
     weight_kg: number | null; bmi: number | null;
+    avpu?: string | null; on_supplemental_o2?: boolean | null;
   };
   const row = data as {
     id: string;
@@ -991,6 +1011,7 @@ export async function getLatestClosedEncounter(
           rr: v.respiratory_rate,
           weightKg: v.weight_kg,
           bmi: v.bmi,
+          ...news2FieldsFromRow(v),
         } satisfies VitalSnapshot;
       })(),
     },
@@ -1128,10 +1149,14 @@ export async function saveVitalsRecord(
     timestamp: string;
     sbp?: string; dbp?: string; hr?: string; temp?: string;
     spo2?: string; rr?: string; weight?: string;
+    /** NEWS2 ACVPU ('A'…'U'); absent = not recorded. */
+    avpu?: string;
+    /** NEWS2 air / oxygen ('air' | 'o2'); absent = not recorded. */
+    o2?: string;
   },
   patientId: string,
   encounterId: string,
-): Promise<{ error: string | null }> {
+): Promise<{ error: string | null; droppedNews2Fields?: boolean }> {
   if (!supabase) return { error: notConfigured('saveVitalsRecord') };
 
   const n = (v?: string): number | null => {
@@ -1156,10 +1181,46 @@ export async function saveVitalsRecord(
   for (const [col, val] of map) {
     if (val !== null) row[col] = val;
   }
+  Object.assign(row, news2FieldsToRow(rec.avpu, rec.o2));
 
-  const { error } = await supabase.from('vitals').insert(row);
-  if (error) { console.error('[db] saveVitalsRecord:', error); return { error: error.message }; }
-  return { error: null };
+  // ACVPU / O₂ need Migration 91; without it the insert is retried without them.
+  const client = supabase;
+  const { error, droppedNews2Fields } = await writeVitalsWithNews2Fallback(row, r => client.from('vitals').insert(r));
+  if (error) { console.error('[db] saveVitalsRecord:', error); return { error: error.message ?? 'Save failed' }; }
+  return { error: null, droppedNews2Fields };
+}
+
+// ─── loadPatientNews2Scale2 ───────────────────────────────────────────────────
+
+/**
+ * Reads the patient's NEWS2 SpO₂ Scale 2 opt-in (`patients.news2_spo2_scale2`, Migration 88,
+ * set by a clinician in the iOS app). `available: false` when the column is not on the server
+ * yet, the patient row cannot be read, or Supabase is not configured — the caller then keeps
+ * its manual opt-in. Read-only: the dashboard never writes this column.
+ */
+export async function loadPatientNews2Scale2(
+  patientId: string,
+): Promise<{ available: boolean; useScale2: boolean }> {
+  if (!supabase) return { available: false, useScale2: false };
+  try {
+    const { data, error } = await supabase
+      .from('patients')
+      .select(PATIENT_NEWS2_SCALE2_COLUMN)
+      .eq('id', patientId)
+      .maybeSingle();
+    if (error) {
+      if (!isMissingColumnError(error, [PATIENT_NEWS2_SCALE2_COLUMN])) {
+        console.error('[db] loadPatientNews2Scale2:', error);
+      }
+      return { available: false, useScale2: false };
+    }
+    const value = (data as Record<string, unknown> | null)?.[PATIENT_NEWS2_SCALE2_COLUMN];
+    if (typeof value !== 'boolean') return { available: false, useScale2: false };
+    return { available: true, useScale2: value };
+  } catch (err) {
+    console.error('[db] loadPatientNews2Scale2 (rejected):', err);
+    return { available: false, useScale2: false };
+  }
 }
 
 // ─── saveLabPanel ─────────────────────────────────────────────────────────────

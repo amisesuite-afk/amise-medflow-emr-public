@@ -4,9 +4,8 @@
  * Reads/writes directly to AppContext.
  */
 import { useAppContext } from '@/context/AppContext';
-import type { VitalsState } from '@/context/AppContext';
-
-type VitalKey = keyof VitalsState;
+import type { VitalKey } from '@/context/AppContext';
+import News2ObservationFields from '@/components/News2ObservationFields';
 
 const FIELDS: { key: VitalKey; label: string; unit: string; width: number }[] = [
   { key: 'systolicBp',     label: 'SBP',    unit: 'mmHg', width: 56 },
@@ -107,6 +106,12 @@ export default function VitalsStrip() {
         {FIELDS.map(f => field(f.key, f.label, f.unit, f.width))}
         {extraField('Wt', 'kg', weightKg, setWeightKg, 52)}
         {extraField('Ht', 'cm', heightCm, setHeightCm, 52)}
+        <News2ObservationFields
+          compact
+          avpu={vitals.avpu}
+          onSupplementalO2={vitals.onSupplementalO2}
+          onChange={updateVital}
+        />
         {bmi && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, justifyContent: 'flex-end', paddingBottom: 16 }}>
             <span style={{

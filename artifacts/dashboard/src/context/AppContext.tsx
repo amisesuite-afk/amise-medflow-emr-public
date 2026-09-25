@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { enqueue, flush, type SyncStatus } from '@/lib/sync-outbox';
 import '@/lib/sync-executors'; // registers outbox executors — side-effect import, must run before any save can fail
 import { registerBeforeSignOut } from '@/lib/secure-sign-out';
-import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
+import { EMPTY_VITALS, restoreVitalsState, type VitalsState, type VitalKey } from '@/lib/vitals-state';
+import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns, type News2Avpu } from '@workspace/triage-engine';
 import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, type EncounterSummary } from '@/lib/db';
@@ -72,6 +73,10 @@ export interface VitalRecord {
   gcs?: string;
   pain?: string;
   urine?: string;
+  /** NEWS2 ACVPU ('A'…'U'); absent = not recorded. Saved to vitals.avpu (Migration 91). */
+  avpu?: string;
+  /** NEWS2 air / oxygen ('air' | 'o2'); absent = not recorded. Saved to vitals.on_supplemental_o2. */
+  o2?: string;
   notes?: string;
 }
 
@@ -140,7 +145,7 @@ export const EMPTY_TRAUMA_DATA: TraumaData = {
   burnRegions: {}, burnTimeOfInjury: '', burnInhalation: false,
 };
 
-export type VitalsState = Record<keyof VitalSigns, string>;
+export { EMPTY_VITALS, restoreVitalsState, type VitalsState, type VitalKey } from '@/lib/vitals-state';
 
 function toNum(v: string): number | null {
   if (!v.trim()) return null;
@@ -283,7 +288,7 @@ interface CtxValue {
   isPostOp: boolean; setIsPostOp(v: boolean): void;
   postOpDays: string; setPostOpDays(v: string): void;
   pregnancyPossible: boolean; setPregnancyPossible(v: boolean): void;
-  vitals: VitalsState; updateVital(k: keyof VitalSigns, v: string): void;
+  vitals: VitalsState; updateVital(k: VitalKey, v: string): void;
 
   comorbidities: string[]; toggleComorbidity(v: string): void; setComorbidities(list: string[]): void;
   pmhNotes: string; setPmhNotes(v: string): void;
@@ -444,6 +449,10 @@ export interface PriorVitalSnapshot {
   rr: number | null;
   weightKg: number | null;
   bmi: number | null;
+  /** NEWS2 ACVPU from vitals.avpu (Migration 91); null/absent = not recorded. */
+  avpu?: News2Avpu | null;
+  /** NEWS2 air / oxygen from vitals.on_supplemental_o2 (Migration 91); null/absent = not recorded. */
+  onSupplementalO2?: boolean | null;
 }
 
 export interface PriorEncounterSummary {
@@ -573,9 +582,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isPostOp, setIsPostOp] = useState(false);
   const [postOpDays, setPostOpDays] = useState('');
   const [pregnancyPossible, setPregnancyPossible] = useState(false);
-  const [vitals, setVitals] = useState<VitalsState>({
-    systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '',
-  });
+  const [vitals, setVitals] = useState<VitalsState>(EMPTY_VITALS);
 
   const [comorbidities, setComorbidities] = useState<string[]>([]);
   const [pmhNotes, setPmhNotes] = useState('');
@@ -836,7 +843,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!raw) return;
       const d = JSON.parse(raw) as Record<string, unknown>;
       if (!d.patientName && !(Array.isArray(d.symptoms) && (d.symptoms as string[]).length > 0)) return;
-      if (d.vitals && typeof d.vitals === 'object') setVitals(d.vitals as VitalsState);
+      if (d.vitals && typeof d.vitals === 'object') setVitals(restoreVitalsState(d.vitals));
       if (Array.isArray(d.symptoms)) setSymptoms(d.symptoms as string[]);
       if (d.symptomDetails && typeof d.symptomDetails === 'object') setSymptomDetails(d.symptomDetails as Record<string, string[]>);
       if (typeof d.freeText === 'string') setFreeText(d.freeText);
@@ -1062,7 +1069,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return { ...c, [sym]: toggleList(cur, opt) };
     });
   }
-  function updateVital(k: keyof VitalSigns, v: string) { setVitals(c => ({ ...c, [k]: v })); }
+  function updateVital(k: VitalKey, v: string) { setVitals(c => ({ ...c, [k]: v })); }
   function toggleComorbidity(v: string) { setComorbidities(c => toggleList(c, v)); }
   function toggleFamilyHistory(v: string) { setFamilyHistory(c => toggleList(c, v)); }
   function toggleSurgical(v: string) { setSurgicalHistory(c => toggleList(c, v)); }
@@ -1109,7 +1116,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
     setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
-    setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
+    setVitals(EMPTY_VITALS);
     setComorbidities([]); setPmhNotes(''); setFamilyHistory([]); setFamilyHistoryNotes('');
     setSurgicalHistory([]); setSurgicalNotes(''); setRecentSurgeryDate(''); setMedications([]); setMedicationsText('');
     setAllergies(''); setToxicHabits([]); setOccupation(''); setHpiNotes('');

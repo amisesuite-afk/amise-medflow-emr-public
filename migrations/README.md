@@ -234,7 +234,9 @@ change. None has been applied to production until someone runs the workflow.
 - iOS (`SyncService+NEWS2Scale2.swift`): the patient pull selects the column and falls back to
   the old column list if the server does not have it yet. The flag is pushed in its own
   `update`, which fails harmlessly and is retried on the next sync until this migration is
-  applied. The web dashboard and API server do not read or write the column.
+  applied. The web dashboard reads it (read-only) since Migration 91's change: the NEWS2 panel
+  uses it as the patient's Scale 2 opt-in and falls back to the manual toggle when the column
+  is missing. The API server does not read or write it.
 
 ### Migration 89 — `supabase-staff-only-rls-migration.sql` (staff-only RLS, security finding S-2)
 
@@ -422,3 +424,21 @@ are overridden here, so this step must stay after every step that creates those 
   alone, so running after 89 is safe.
 - For a future forward reference, do the same with a new step appended at the end: guard the
   early step and create the object in the new file.
+
+### Migration 91 — `supabase-web-vitals-news2-fields-migration.sql` (web vitals NEWS2 fields)
+
+- Adds nullable `avpu text` (CHECK `avpu in ('A','C','V','P','U')`, constraint
+  `vitals_avpu_check`) and nullable `on_supplemental_o2 boolean` to the web dashboard's
+  `vitals` table. Same names and ACVPU values as the iOS `patient_vitals` table
+  (`supabase-patient-vitals-migration.sql`), which already has both.
+- Nullable on purpose: NULL is "not recorded", which NEWS2 scores 0 and lists as missing. A
+  default of room air would silently mark old scores complete (hazard log H-04). This differs
+  from `patient_vitals.on_supplemental_o2`, which is `NOT NULL DEFAULT false`.
+- Guarded with `to_regclass('public.vitals')`, `ADD COLUMN IF NOT EXISTS` and a
+  `pg_constraint` check before adding the CHECK, so a re-run is a no-op. Existing table: the
+  `vitals` grants and policies (narrowed by Migration 89) already cover the new columns.
+- Dashboard (`artifacts/dashboard/src/lib/vitals-news2-fields.ts`, used by `db.ts`): the
+  vitals entry forms capture ACVPU and air/O₂, `saveVitals`/`saveVitalsRecord` write them,
+  and the NEWS2 panels read them. Until this migration is applied, a write or read that
+  names a missing column (`42703` / `PGRST204`) is retried without the new fields, so saves
+  keep working and the NEWS2 panel keeps its manual pickers.

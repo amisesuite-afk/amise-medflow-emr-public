@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import News2ObservationFields from '@/components/News2ObservationFields';
 
 // ── Vitals definition (shared shape with ExaminationTab) ──────────────────────
 const VITAL_KEYS = [
@@ -257,6 +258,15 @@ export default function BriefTab() {
                 </label>
               );
             })}
+            {/* NEWS2 consciousness + air/O₂ (Migration 91) */}
+            <div style={{ gridColumn: '1 / -1' }}>
+              <News2ObservationFields
+                compact
+                avpu={vitals.avpu}
+                onSupplementalO2={vitals.onSupplementalO2}
+                onChange={updateVital}
+              />
+            </div>
           </div>
         )}
         {!hasVitals && !editVitals && (

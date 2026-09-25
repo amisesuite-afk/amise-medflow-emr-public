@@ -21,6 +21,8 @@ import {
   type ExtractedLabs, type ScoringVitals,
 } from '@/lib/clinical-scores';
 import { NEWS2_AVPU_LABELS, type News2Avpu } from '@workspace/triage-engine';
+import { news2OptionsFromVitals, resolveNews2Scale2 } from '@/lib/vitals-news2-fields';
+import { usePatientNews2Scale2 } from '@/hooks/usePatientNews2Scale2';
 
 // ── Colour tokens ─────────────────────────────────────────────────────────────
 const BADGE: Record<'green' | 'amber' | 'red', React.CSSProperties> = {
@@ -416,10 +418,15 @@ function PepRiskCard() {
 // NEWS2 PANEL (emergency)
 // ═══════════════════════════════════════════════════════════════════════════════
 // Royal College of Physicians NEWS2 (2017), scored by the shared `evaluateNews2` (via
-// `scoreNews2`). Consciousness and air/oxygen are not part of the saved vitals set, so they
-// are captured here and start as "not recorded": the score is then marked incomplete
-// rather than silently assuming Alert / room air (hazard log H-04). SpO₂ Scale 2 is an
-// explicit clinician opt-in, never inferred from oxygen use. Display only.
+// `scoreNews2`). Consciousness (ACVPU) and air/oxygen are part of the saved vitals
+// (VitalsState `avpu` / `onSupplementalO2` → vitals.avpu / on_supplemental_o2, Migration 91),
+// so a NEWS2 is complete once they have been recorded on any vitals form. The pickers here
+// show and edit the same stored values; until recorded they read "not recorded" and the
+// score is marked incomplete rather than silently assuming Alert / room air (hazard log
+// H-04). Before Migration 91 the values still live in the encounter's local vitals; only
+// the database copy is skipped. SpO₂ Scale 2 comes from the patient record
+// (patients.news2_spo2_scale2, Migration 88) when the dashboard can read it; otherwise it
+// is an explicit manual opt-in. Never inferred from oxygen use. Display only.
 function vitalNum(v: string | undefined): number | undefined {
   if (!v || !v.trim()) return undefined;
   const x = Number(v);
@@ -433,10 +440,11 @@ const NEWS2_SELECT: React.CSSProperties = {
 };
 
 function News2Card() {
-  const { vitals } = useAppContext();
-  const [avpu, setAvpu] = useState<News2Avpu | null>(null);
-  const [onOxygen, setOnOxygen] = useState<boolean | null>(null);
-  const [useScale2, setUseScale2] = useState(false);
+  const { vitals, updateVital, patientId } = useAppContext();
+  const { avpu, onOxygen } = news2OptionsFromVitals(vitals);
+  const patientScale2 = usePatientNews2Scale2(patientId);
+  const [manualScale2, setManualScale2] = useState(false);
+  const useScale2 = resolveNews2Scale2(patientScale2, manualScale2);
   const result = useMemo(() => {
     const sv: ScoringVitals = {
       temperatureC:    vitalNum(vitals.temperatureC),
@@ -472,7 +480,7 @@ function News2Card() {
           <select
             style={NEWS2_SELECT}
             value={avpu ?? ''}
-            onChange={e => setAvpu(e.target.value ? e.target.value as News2Avpu : null)}
+            onChange={e => updateVital('avpu', e.target.value)}
           >
             <option value="">Not recorded</option>
             {(Object.keys(NEWS2_AVPU_LABELS) as News2Avpu[]).map(k => (
@@ -485,18 +493,24 @@ function News2Card() {
           <select
             style={NEWS2_SELECT}
             value={onOxygen === null ? '' : onOxygen ? 'o2' : 'air'}
-            onChange={e => setOnOxygen(e.target.value === '' ? null : e.target.value === 'o2')}
+            onChange={e => updateVital('onSupplementalO2', e.target.value)}
           >
             <option value="">Not recorded</option>
             <option value="air">Room air</option>
             <option value="o2">Supplemental O₂ (+2)</option>
           </select>
         </label>
-        <Toggle
-          label="SpO₂ Scale 2 (confirmed hypercapnic resp. failure only)"
-          value={useScale2}
-          onChange={setUseScale2}
-        />
+        {patientScale2.available ? (
+          <span style={{ fontSize: 11, color: 'var(--text-muted, #94a3b8)' }}>
+            SpO₂ Scale {useScale2 ? '2' : '1'} — patient record (clinician opt-in)
+          </span>
+        ) : (
+          <Toggle
+            label="SpO₂ Scale 2 (confirmed hypercapnic resp. failure only)"
+            value={manualScale2}
+            onChange={setManualScale2}
+          />
+        )}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
         {Object.entries(result.breakdown).map(([k, v]) => (
