@@ -179,7 +179,7 @@ enum ClinicalAcuityEngine {
 
     /// Rule-set version (clinical-content/registry.json `ios-clinical-acuity-engine`). Bump it with
     /// the registry entry and a changelog line whenever a threshold or rule changes.
-    static let rulesVersion = "1.1.0"
+    static let rulesVersion = "1.2.0"
 
     /// Builds the inputs from the record the same way the consultation reads it.
     static func inputs(from p: Patient) -> AcuityInputs {

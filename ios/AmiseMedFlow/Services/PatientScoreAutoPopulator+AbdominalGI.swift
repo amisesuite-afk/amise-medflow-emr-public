@@ -55,8 +55,9 @@ extension PatientScoreAutoPopulator {
         var i = TokyoCholangitisInput()
         var f = ScoreAutoFill(); f.isAttempted = true
 
-        // Age >75
-        if patient.ageYears > 75 { i.ageAbove75 = true; f.autoFieldKeys.insert("ageAbove75") }
+        // Age ≥ 75 (TG18 / Kiriyama 2018 wording; the web auto-fill uses ≥ 75 — web-last-gaps.
+        // iOS used > 75 before; listed for sign-off.)
+        if patient.ageYears >= 75 { i.ageAbove75 = true; f.autoFieldKeys.insert("ageAbove75") }
 
         // Temperature >39°C from latest vitals
         if let t = patient.latestVitals?.temperatureCelsius, t > 39.0 {

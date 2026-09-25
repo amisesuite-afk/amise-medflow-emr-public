@@ -25,7 +25,8 @@ extension PatientScoreAutoPopulator {
         let text = NegationMatcher.joinClauses([patient.examGeneral, patient.examOther, patient.hpi, patient.assessmentText])
 
         if let sbp = vitals?.bpSystolic, sbp < 90 { o.cardiovascular = true }
-        if NegationMatcher.containsAnyAffirmed(text, ["noradrenaline", "norepinephrine", "vasopressor", "inotrope"]) {
+        // Metaraminol and vasopressin added for parity with the web auto-fill (tg18-autofill.ts, web-last-gaps).
+        if NegationMatcher.containsAnyAffirmed(text, ["noradrenaline", "norepinephrine", "vasopressor", "inotrope", "metaraminol", "vasopressin"]) {
             o.cardiovascular = true
         }
         if let avpu = vitals?.avpu, avpu != .alert { o.neurological = true }

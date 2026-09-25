@@ -182,7 +182,7 @@ extension ClinicalScoringEngine {
             .init(label: "Cholangitis confirmed (fever / Charcot's / imaging)", points: 1, present: i.cholangitisConfirmed),
             .init(label: "WBC >12 or <4 ×10⁹/L", points: 1, present: i.wbcAbove12OrBelow4),
             .init(label: "Temperature >39°C", points: 1, present: i.temperatureAbove39),
-            .init(label: "Age >75", points: 1, present: i.ageAbove75),
+            .init(label: "Age ≥75", points: 1, present: i.ageAbove75),
             .init(label: "Bilirubin >5 mg/dL (>85 μmol/L)", points: 1, present: i.bilirubinAbove5),
             .init(label: "Albumin <0.7 × LLN", points: 1, present: i.albuminBelow0_7xLLN),
             .init(label: "Cardiovascular dysfunction", points: 3, present: i.cardiovascularDysfunction),

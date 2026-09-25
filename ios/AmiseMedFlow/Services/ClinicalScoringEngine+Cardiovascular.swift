@@ -79,24 +79,29 @@ extension ClinicalScoringEngine {
         var recs: [String] = []
         var redFlags: [String] = []
 
+        // Two-level Wells (NICE NG158 2020; ESC 2019): ≤ 4 PE unlikely → D-dimer first, CTPA only
+        // if positive; > 4 PE likely → CTPA directly (web-last-gaps wording). The low / moderate
+        // risk bands are kept for display; both follow the "PE unlikely" pathway.
+        let unlikely = "Two-level Wells score (NICE NG158): Wells ≤ 4 (PE unlikely) → D-dimer, and CTPA only if it is positive"
+        let dDimerCaveat = "D-dimer is unhelpful after recent surgery and in pregnancy — go to imaging (CTPA, or V/Q in pregnancy or contrast allergy)"
         if score <= 1 {
             risk = .low
-            interpretation = "Wells PE \(score) — Low probability; D-dimer first"
-            recs = ["D-dimer: if negative → PE excluded",
-                    "If D-dimer positive → CT pulmonary angiography (CTPA)",
-                    "Consider V/Q if contrast allergy or pregnancy"]
+            interpretation = "Wells PE \(score) — PE unlikely (≤ 4); D-dimer first"
+            recs = [unlikely,
+                    dDimerCaveat]
         } else if score <= 4 {
             risk = .moderate
-            interpretation = "Wells PE \(score) — Moderate probability (~28%); CTPA or D-dimer"
-            recs = ["CTPA (preferred) or age-adjusted D-dimer",
-                    "If haemodynamically unstable → ECHO bedside / empirical anticoagulation",
-                    "LMWH or DOAC while awaiting imaging if high clinical concern"]
+            interpretation = "Wells PE \(score) — PE unlikely (≤ 4); D-dimer first"
+            recs = [unlikely,
+                    dDimerCaveat,
+                    "If haemodynamically unstable → bedside ECHO / empirical anticoagulation"]
         } else {
             risk = .high
-            interpretation = "Wells PE \(score) — High probability (>50%); immediate CTPA"
+            interpretation = "Wells PE \(score) — PE likely (> 4); CTPA directly"
             redFlags = ["High probability PE — anticoagulate empirically while awaiting CTPA",
                         "If haemodynamically unstable: consider thrombolysis or surgical embolectomy"]
-            recs = ["Immediate CTPA", "Empirical anticoagulation (LMWH or heparin IV) before imaging if safe",
+            recs = ["Two-level Wells score (NICE NG158): Wells > 4 (PE likely) → CTPA directly, with interim anticoagulation if CTPA is delayed",
+                    "Empirical anticoagulation (LMWH or heparin IV) before imaging if safe",
                     "If massive PE (SBP <90): thrombolysis (alteplase 100 mg IV) or embolectomy",
                     "Cardiology / respiratory / surgery referral",
                     "HDU monitoring: HR, SBP, O₂ sat continuous"]

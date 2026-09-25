@@ -155,7 +155,7 @@ extension ClinicalAcuityEngine {
         if preg.isPregnant {
             b.alert(nil, .obstetric,
                     "Pregnant\(preg.gestationWeeks.map { " (\($0) weeks)" } ?? "") — obstetric handover",
-                    "Pregnancy-aware plan: no NSAIDs from 20 weeks; LMWH, not DOACs or warfarin; avoid ionising imaging where an alternative exists (ultrasound / MRI).",
+                    "Pregnancy-aware plan: no NSAIDs from 20 weeks; anticoagulation with LMWH — DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic); avoid ionising imaging where an alternative exists (ultrasound / MRI).",
                     "Inform the obstetric team; document gestation and fetal assessment.")
         }
 
@@ -366,12 +366,13 @@ extension ClinicalAcuityEngine {
                    "retention", "renal colic", "ureteric", "colitis", "heart failure", "transient ischaemic", "tia",
                    "hyperglycaemi", "hyperemesis", "pyloric stenosis", "wound infection", "surgical site infection",
                    "anastomotic leak", "delirium", "dehydration", "mallory", "choledocholithiasis", "osteomyelitis",
-                   "diabetic foot infection", "stab wound", "gunshot", "penetrating", "non-accidental", "safeguarding",
+                   "diabetic foot infection", "infected diabetic foot", "exposed bone", "stab wound", "gunshot", "penetrating",
+                   "non-accidental", "safeguarding",
                    "acute hepatitis", "mesenteric", "jaundice", "pleural effusion", "empyema", "orchitis"]),
         (.priority, ["suspected", "carcinoma", "cancer", "malignan", "neoplasm", "tumour", "mass", "alarm feature", "anaemia",
                      "haematuria", "pharyngeal pouch", "dysphagia", "seizure", "tetanus-prone", "goitre", "compression",
                      "nipple discharge", "breast lump", "lump", "lymphoma", "melanoma", "polyp", "fit positive", "charcot",
-                     "foot ulcer", "asthma"]),
+                     "foot ulcer", "foot wound", "diabetic foot", "asthma"]),
     ]
 
     /// Words that keep a clause of the diagnosis acute when another clause is a history, a
