@@ -108,6 +108,32 @@ final class ConsultPathwayTests: XCTestCase {
         XCTAssertTrue(flags.contains { $0.title == "No ASA / RCRI recorded" })
     }
 
+    func testNegatedDiabetesAndSmokingAreNotRiskFlags() {
+        let p = patient()
+        p.pmhNotes = "No diabetes. Hypertension."
+        p.socialHistory = "Does not smoke"
+        let flags = VisitRiskAssessment.assess(p, pathway: .firstVisit)
+        XCTAssertFalse(flags.contains { $0.title == "Diabetes" })
+        XCTAssertFalse(flags.contains { $0.title == "Smoker" })
+
+        let q = patient("Second Patient")
+        q.pmhNotes = "Type 2 diabetes"
+        q.socialHistory = "Smokes 20 a day"
+        let qFlags = VisitRiskAssessment.assess(q, pathway: .firstVisit)
+        XCTAssertTrue(qFlags.contains { $0.title == "Diabetes" })
+        XCTAssertTrue(qFlags.contains { $0.title == "Smoker" })
+    }
+
+    func testScoreAutoFillIgnoresNegatedHistory() {
+        let p = patient()
+        p.pmhNotes = "No history of DVT or PE. No known malignancy."
+        XCTAssertFalse(p.clinicalTextContains(["dvt", "deep vein thrombosis", "pulmonary embolism"]))
+        XCTAssertFalse(p.clinicalTextContains(["cancer", "malignancy"]))
+        p.pmhNotes = "Previous DVT 2019. Breast cancer 2015."
+        XCTAssertTrue(p.clinicalTextContains(["dvt", "deep vein thrombosis", "pulmonary embolism"]))
+        XCTAssertTrue(p.clinicalTextContains(["cancer", "malignancy"]))
+    }
+
     func testMissingVitalsFlaggedForWardReview() {
         let flags = VisitRiskAssessment.assess(patient(setting: .inpatient), pathway: .wardReview)
         XCTAssertTrue(flags.contains { $0.title == "No vitals recorded" && $0.level == .moderate })

@@ -293,7 +293,8 @@ extension PatientStateVector {
 
 extension PMHFlags {
     static func parse(from text: String) -> PMHFlags {
-        let t = text.lowercased()
+        // Negation-aware (NegationMatcher): "No history of DVT" is not a prior DVT.
+        let t = NegationMatcher.Source(text)
         return PMHFlags(
             previousAbdominalSurgery: t.contains("laparotomy") || t.contains("appendicect") || t.contains("cholecystect") || t.contains("abdominal surgery"),
             heartDisease:    t.contains("ihd") || t.contains("ischaemic heart") || t.contains("mi ") || t.contains("heart failure") || t.contains("cad") || t.contains("coronary"),

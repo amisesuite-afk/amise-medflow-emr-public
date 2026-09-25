@@ -111,7 +111,8 @@ enum VisitRiskAssessment {
         }
 
         // Diabetes
-        let pmhText = (p.pmhEntries.map(\.condition) + [p.pmhNotes ?? ""]).joined(separator: " ").lowercased()
+        // Negation-aware, one clause per entry: "No diabetes" / "Non-diabetic" is not diabetes.
+        let pmhText = NegationMatcher.Source(NegationMatcher.joinClauses(p.pmhEntries.map(\.condition) + [p.pmhNotes ?? ""]))
         let onDiabetesMeds = meds.contains { m in ["insulin", "metformin", "gliclazide", "glibenclamide",
                                                     "sitagliptin", "empagliflozin", "dapagliflozin"].contains { m.contains($0) } }
         if pmhText.contains("diabet") || onDiabetesMeds {
@@ -132,8 +133,9 @@ enum VisitRiskAssessment {
         }
 
         // Smoking
+        // Negation-aware ("Does not smoke", "Non-smoker", "Never smoked"; "Ex-smoker" still counts).
         let social = (p.socialHistory ?? "").lowercased()
-        if social.contains("smok") && !social.contains("non-smok") && !social.contains("never smok") {
+        if NegationMatcher.containsAffirmed(social, "smok") && !social.contains("non-smok") && !social.contains("never smok") {
             flags.append(.init(level: .info, title: "Smoker",
                                detail: "Wound, respiratory and vascular risk; offer cessation support.",
                                icon: "smoke"))

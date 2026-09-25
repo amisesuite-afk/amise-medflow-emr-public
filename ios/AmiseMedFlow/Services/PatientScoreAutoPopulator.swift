@@ -78,8 +78,9 @@ final class ScoreAutoPopulateContext {
         self.patient = patient
     }
 
-    /// PMH notes, HPI, CC, working diagnosis, assessment and PMH entries, joined and lowercased.
-    private(set) lazy var clinicalText: String = self.patient.scoreClinicalTextBlock()
+    /// PMH notes, HPI, CC, working diagnosis, assessment and PMH entries, joined and lowercased,
+    /// tokenised once for negation-aware matching.
+    private(set) lazy var clinicalText: NegationMatcher.Source = NegationMatcher.Source(self.patient.scoreClinicalTextBlock())
     /// Drug + indication of every prescription, lowercased.
     private(set) lazy var prescriptionText: String = self.patient.scorePrescriptionText()
     /// Most recent vitals entry.
@@ -109,9 +110,12 @@ struct ScoreResultedLab {
 
 extension Patient {
     /// Searches PMH entries, PMH notes, HPI, CC, and working diagnosis for keywords.
+    /// Negation-aware (NegationMatcher): "No history of DVT", "denies chest pain", "no known
+    /// malignancy" do not auto-fill the criterion.
     func clinicalTextContains(_ keywords: [String]) -> Bool {
-        let blocks = ScoreAutoPopulateContext.active(for: self)?.clinicalText ?? scoreClinicalTextBlock()
-        return keywords.contains { blocks.contains($0) }
+        let blocks = ScoreAutoPopulateContext.active(for: self)?.clinicalText
+            ?? NegationMatcher.Source(scoreClinicalTextBlock())
+        return blocks.containsAny(keywords)
     }
 
     func prescriptionsContain(_ keywords: [String]) -> Bool {
@@ -145,7 +149,9 @@ extension Patient {
         ([pmhNotes, hpi, chiefComplaint, workingDiagnosis, assessmentText]
             .compactMap { $0 }
             + pmhEntries.map(\.condition))
-            .joined(separator: " ")
+            // A sentence break between fields keeps a negation inside its own field; the spaces
+            // keep space-delimited keywords (" mi ") matching at a field boundary as before.
+            .joined(separator: " .\n ")
             .lowercased()
     }
 

@@ -20,8 +20,11 @@ struct TriageResult {
 
 enum ClinicalPathwayEngine {
     static func assess(chiefComplaint: String, pmh: String = "") -> TriageResult {
-        let cc = chiefComplaint.lowercased()
-        let history = pmh.lowercased()
+        // Negation-aware keyword matching (NegationMatcher): "no jaundice", "No history of
+        // perforation", "no weight loss" do not count as the finding.
+        let ccText = NegationMatcher.Source(chiefComplaint)
+        let historyText = NegationMatcher.Source(pmh)
+        func has(_ kw: String) -> Bool { ccText.contains(kw) }
 
         var redFlags: [String] = []
         var suggestedAcuity: Acuity = .routine
@@ -37,20 +40,20 @@ enum ClinicalPathwayEngine {
                                "unable to open bowels", "complete obstruction", "high fever", "jaundice",
                                "cholangitis", "pancreatitis", "perforated"]
 
-        for kw in emergencyKeywords where cc.contains(kw) || history.contains(kw) {
+        for kw in emergencyKeywords where has(kw) || historyText.contains(kw) {
             redFlags.append("⚠️ \(kw.capitalized)")
             suggestedAcuity = .emergency
         }
 
         if suggestedAcuity != .emergency {
-            for kw in urgentKeywords where cc.contains(kw) {
+            for kw in urgentKeywords where has(kw) {
                 suggestedAcuity = .urgent
                 break
             }
         }
 
         // --- Pathway assignment ---
-        if cc.contains("append") || cc.contains("right iliac fossa") || cc.contains("rif pain") {
+        if has("append") || has("right iliac fossa") || has("rif pain") {
             pathway = "Appendicitis Pathway"
             differentials = [.init(name: "Acute appendicitis", probability: 68),
                              .init(name: "Mesenteric adenitis", probability: 45),
@@ -58,33 +61,33 @@ enum ClinicalPathwayEngine {
                              .init(name: "Ectopic pregnancy", probability: 22)]
             if suggestedAcuity == .routine { suggestedAcuity = .urgent }
             confidence = 72
-            if cc.contains("peritonitis") || cc.contains("perforation") {
+            if has("peritonitis") || has("perforation") {
                 redFlags.append("⚠️ Possible perforated appendicitis")
                 suggestedAcuity = .emergency
             }
-        } else if cc.contains("gall") || cc.contains("biliary") || cc.contains("cholecyst") || cc.contains("ruc pain") || cc.contains("right upper") {
+        } else if has("gall") || has("biliary") || has("cholecyst") || has("ruc pain") || has("right upper") {
             pathway = "Biliary Pathway"
             differentials = [.init(name: "Biliary colic", probability: 65),
                              .init(name: "Acute cholecystitis", probability: 55),
                              .init(name: "Choledocholithiasis", probability: 38),
                              .init(name: "Cholangitis", probability: 18)]
             confidence = 75
-            if cc.contains("cholangitis") || cc.contains("jaundice") {
+            if has("cholangitis") || has("jaundice") {
                 redFlags.append("⚠️ Possible Charcot's triad — exclude cholangitis")
                 suggestedAcuity = .urgent
             }
-        } else if cc.contains("hernia") {
+        } else if has("hernia") {
             pathway = "Hernia Pathway"
             differentials = [.init(name: "Inguinal hernia", probability: 72),
                              .init(name: "Femoral hernia", probability: 38),
                              .init(name: "Umbilical hernia", probability: 30),
                              .init(name: "Incisional hernia", probability: 22)]
             confidence = 85
-            if cc.contains("obstruct") || cc.contains("strangulat") || cc.contains("can't reduce") {
+            if has("obstruct") || has("strangulat") || has("can't reduce") {
                 redFlags.append("⚠️ Possible strangulated/obstructed hernia")
                 suggestedAcuity = .emergency
             }
-        } else if cc.contains("rectal bleed") || cc.contains("pr bleed") || cc.contains("melaena") || cc.contains("haematemesis") {
+        } else if has("rectal bleed") || has("pr bleed") || has("melaena") || has("haematemesis") {
             pathway = "GI Haemorrhage Pathway"
             differentials = [.init(name: "Haemorrhoids", probability: 58),
                              .init(name: "Diverticular bleed", probability: 42),
@@ -92,13 +95,13 @@ enum ClinicalPathwayEngine {
                              .init(name: "Peptic ulcer disease", probability: 28),
                              .init(name: "Angiodysplasia", probability: 18)]
             confidence = 70
-            if cc.contains("massive") || cc.contains("shocked") {
+            if has("massive") || has("shocked") {
                 redFlags.append("⚠️ Massive GI haemorrhage — resuscitate urgently")
                 suggestedAcuity = .emergency
             } else {
                 suggestedAcuity = .urgent
             }
-        } else if cc.contains("obstruct") || cc.contains("distension") || cc.contains("vomiting") && cc.contains("not open bowels") {
+        } else if has("obstruct") || has("distension") || has("vomiting") && has("not open bowels") {
             pathway = "Bowel Obstruction Pathway"
             differentials = [.init(name: "Adhesional obstruction", probability: 55),
                              .init(name: "Colorectal cancer", probability: 38),
@@ -107,11 +110,11 @@ enum ClinicalPathwayEngine {
                              .init(name: "Diverticular disease", probability: 18)]
             confidence = 65
             suggestedAcuity = .urgent
-            if cc.contains("volvulus") || cc.contains("ischaemia") {
+            if has("volvulus") || has("ischaemia") {
                 redFlags.append("⚠️ Possible closed-loop obstruction")
                 suggestedAcuity = .emergency
             }
-        } else if cc.contains("breast") || cc.contains("lump") && (cc.contains("axilla") || cc.contains("nipple")) {
+        } else if has("breast") || has("lump") && (has("axilla") || has("nipple")) {
             pathway = "Breast Surgery Pathway"
             differentials = [.init(name: "Fibroadenoma", probability: 45),
                              .init(name: "Breast cyst", probability: 38),
@@ -119,22 +122,22 @@ enum ClinicalPathwayEngine {
                              .init(name: "Mastitis / abscess", probability: 22),
                              .init(name: "Gynaecomastia", probability: 12)]
             confidence = 60
-            if cc.contains("skin tether") || cc.contains("nipple retract") || cc.contains("peau d'orange") {
+            if has("skin tether") || has("nipple retract") || has("peau d'orange") {
                 redFlags.append("⚠️ Signs suspicious for malignancy — urgent triple assessment")
                 suggestedAcuity = .priority
             }
-        } else if cc.contains("thyroid") || cc.contains("goitre") || cc.contains("neck swelling") {
+        } else if has("thyroid") || has("goitre") || has("neck swelling") {
             pathway = "Thyroid Pathway"
             differentials = [.init(name: "Multinodular goitre", probability: 55),
                              .init(name: "Solitary thyroid nodule", probability: 45),
                              .init(name: "Thyroid carcinoma", probability: 28),
                              .init(name: "Thyroiditis", probability: 22)]
             confidence = 70
-            if cc.contains("stridor") || cc.contains("dysphagia") || cc.contains("rapidly growing") {
+            if has("stridor") || has("dysphagia") || has("rapidly growing") {
                 redFlags.append("⚠️ Compressive/invasive — urgent assessment")
                 suggestedAcuity = .priority
             }
-        } else if cc.contains("pancreatit") || cc.contains("epigastric") && (cc.contains("severe") || cc.contains("radiating to back")) {
+        } else if has("pancreatit") || has("epigastric") && (has("severe") || has("radiating to back")) {
             pathway = "Pancreatitis Pathway"
             differentials = [.init(name: "Acute pancreatitis", probability: 65),
                              .init(name: "Peptic ulcer disease", probability: 32),
@@ -142,7 +145,7 @@ enum ClinicalPathwayEngine {
                              .init(name: "Myocardial infarction", probability: 14)]
             confidence = 68
             suggestedAcuity = .urgent
-        } else if cc.contains("colorectal") || cc.contains("change in bowel habit") || cc.contains("rectal mass") || cc.contains("weight loss") {
+        } else if has("colorectal") || has("change in bowel habit") || has("rectal mass") || has("weight loss") {
             pathway = "Colorectal Screening Pathway"
             differentials = [.init(name: "Diverticular disease", probability: 52),
                              .init(name: "IBS", probability: 48),
@@ -150,11 +153,11 @@ enum ClinicalPathwayEngine {
                              .init(name: "Polyps", probability: 35),
                              .init(name: "IBD", probability: 28)]
             confidence = 60
-            if cc.contains("weight loss") || cc.contains("iron deficiency") {
+            if has("weight loss") || has("iron deficiency") {
                 redFlags.append("⚠️ Red flag symptoms — urgent colonoscopy")
                 suggestedAcuity = .priority
             }
-        } else if cc.contains("abscess") || cc.contains("perianal") || cc.contains("fistula") || cc.contains("fissure") {
+        } else if has("abscess") || has("perianal") || has("fistula") || has("fissure") {
             pathway = "Anorectal Pathway"
             differentials = [.init(name: "Haemorrhoids", probability: 60),
                              .init(name: "Anal fissure", probability: 50),
@@ -162,20 +165,20 @@ enum ClinicalPathwayEngine {
                              .init(name: "Anal fistula", probability: 35),
                              .init(name: "Pilonidal disease", probability: 28)]
             confidence = 78
-            if cc.contains("sepsis") || cc.contains("necrotising") {
+            if has("sepsis") || has("necrotising") {
                 redFlags.append("⚠️ Possible necrotising infection — urgent surgical review")
                 suggestedAcuity = .emergency
             }
-        } else if cc.contains("ercp") || cc.contains("common bile duct") || cc.contains("cbd stone") {
+        } else if has("ercp") || has("common bile duct") || has("cbd stone") {
             pathway = "ERCP / Biliary Endoscopy Pathway"
             differentials = [.init(name: "Choledocholithiasis", probability: 72),
                              .init(name: "Biliary stricture", probability: 38),
                              .init(name: "Cholangiocarcinoma", probability: 22),
                              .init(name: "Post-ERCP pancreatitis", probability: 15)]
             confidence = 80
-        } else if cc.contains("reflux") || cc.contains("heartburn") || cc.contains("gerd") ||
-                  cc.contains("gord") || cc.contains("regurgitat") || cc.contains("indigestion") ||
-                  cc.contains("dyspepsia") || cc.contains("bloating") || cc.contains("oesophag") {
+        } else if has("reflux") || has("heartburn") || has("gerd") ||
+                  has("gord") || has("regurgitat") || has("indigestion") ||
+                  has("dyspepsia") || has("bloating") || has("oesophag") {
             pathway = "Upper GI / Reflux Pathway"
             differentials = [.init(name: "GERD / Oesophagitis", probability: 75),
                              .init(name: "Hiatus Hernia", probability: 55),
@@ -184,12 +187,12 @@ enum ClinicalPathwayEngine {
                              .init(name: "Barrett's Oesophagus", probability: 18),
                              .init(name: "Oesophageal Carcinoma", probability: 10)]
             confidence = 78
-            if cc.contains("dysphagia") || cc.contains("weight loss") || cc.contains("anaemia") ||
-               cc.contains("vomiting blood") || cc.contains("melaena") {
+            if has("dysphagia") || has("weight loss") || has("anaemia") ||
+               has("vomiting blood") || has("melaena") {
                 redFlags.append("⚠️ Red flag — urgent OGD within 2 weeks")
                 suggestedAcuity = .priority
             }
-        } else if cc.contains("dysphagia") || cc.contains("difficulty swallow") {
+        } else if has("dysphagia") || has("difficulty swallow") {
             pathway = "Upper GI / Dysphagia Pathway"
             differentials = [.init(name: "Oesophageal Carcinoma", probability: 45),
                              .init(name: "GERD / Oesophagitis", probability: 40),
@@ -197,7 +200,7 @@ enum ClinicalPathwayEngine {
                              .init(name: "Achalasia", probability: 28),
                              .init(name: "Eosinophilic Oesophagitis", probability: 20)]
             confidence = 70
-            if cc.contains("weight loss") || cc.contains("progressive") || cc.contains("solid") {
+            if has("weight loss") || has("progressive") || has("solid") {
                 redFlags.append("⚠️ Progressive dysphagia + weight loss — urgent OGD")
                 suggestedAcuity = .priority
             }
