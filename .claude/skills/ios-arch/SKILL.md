@@ -253,6 +253,21 @@ other tabs under "More"):
   the top of ColonoscopyFormView, and the consultation Plan tab); sign-off in Settings →
   Bowel Prep Protocols. Plan stored in `PathwayData.bowelPrep`. Tests: `BowelPrepTests.swift`.
 
+## Front-desk questionnaire: patient hand-over mode (privacy)
+
+The pre-consultation questionnaire (`AdaptiveQuestionnaireSheet`) is filled in by the patient on
+the front-desk iPad, so it must never expose another patient's data:
+- Present it only with `.patientHandoverPresentation(isPresented:patient:entryPoint:)`
+  (`Views/FrontDesk/PatientHandoverPresentation.swift`): full-screen cover on iPad, sheet with
+  interactive dismissal disabled on iPhone. Never `.sheet { AdaptiveQuestionnaireSheet(...) }`.
+- Leaving it ("Staff: exit", also on the post-submit thank-you screen) needs
+  `BiometricAuthService.verifyDeviceOwner(reason:)` (`.deviceOwnerAuthentication`; cancel = stay).
+  Walk-in answers are attached to a record only after staff exit (`WalkInAnswersAttachView`).
+- Patient lists for picking the questionnaire patient use `QuestionnairePatientSearch` (nothing
+  until 3+ name characters or an MRN, max 5). Tests: `AmiseMedFlowTests/QuestionnairePrivacyTests.swift`.
+- No photo library inside the questionnaire (camera only), no staff triage labels (acuity).
+- `PreConsultEntrySheet` is staff transcription of a paper form, not patient-facing.
+
 ## SwiftData deleted-model crashes
 
 Reading any attribute of a deleted model after save (before `@Query` refreshes) crashes

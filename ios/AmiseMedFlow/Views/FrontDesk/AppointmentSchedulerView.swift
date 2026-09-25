@@ -159,9 +159,10 @@ struct AppointmentSchedulerView: View {
                     )
                 }
             }
-            .sheet(isPresented: $showQuestionnaire) {
-                AdaptiveQuestionnaireSheet(patient: selectedPatient)
-            }
+            // Patient hand-over mode: full screen on iPad, staff-only exit.
+            .patientHandoverPresentation(isPresented: $showQuestionnaire,
+                                         patient: selectedPatient,
+                                         entryPoint: .scheduler)
             .sheet(isPresented: $showAddPatient) {
                 AddPatientView(
                     initialSetting: impliedSetting ?? .outpatient,

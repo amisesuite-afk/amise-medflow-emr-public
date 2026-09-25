@@ -169,9 +169,10 @@ struct FDPatientDemographicsPanel: View {
         .sheet(isPresented: $showScheduler) {
             AppointmentSchedulerView(initialPatient: patient)
         }
-        .sheet(isPresented: $showQuestionnaire) {
-            AdaptiveQuestionnaireSheet(patient: patient)
-        }
+        // Patient hand-over mode: full screen on iPad, staff-only exit.
+        .patientHandoverPresentation(isPresented: $showQuestionnaire,
+                                     patient: patient,
+                                     entryPoint: .demographics)
         .sheet(isPresented: $showMailComposer) {
             if let email = patient.email, !email.isEmpty {
                 MailComposer(

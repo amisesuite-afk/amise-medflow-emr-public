@@ -2,8 +2,8 @@
 // Phase 4–6 form sections, save, and note-builder for the adaptive questionnaire.
 
 import SwiftUI
-import PhotosUI
 import SwiftData
+import UIKit
 
 extension AdaptiveQuestionnaireSheet {
 
@@ -51,22 +51,18 @@ extension AdaptiveQuestionnaireSheet {
                 TextField("Current medications (name and dose)", text: $answers.medications, axis: .vertical)
                     .lineLimit(2...)
                 HStack(spacing: 12) {
-                    PhotosPicker(
-                        selection: $prescriptionPhotoItem,
-                        matching: .images,
-                        photoLibrary: .shared()
-                    ) {
-                        Label("Photo of prescription / medication bag",
-                              systemImage: "camera.badge.plus")
-                            .font(.system(size: 12))
-                            .foregroundStyle(AMColor.accent)
-                    }
-                    .onChange(of: prescriptionPhotoItem) { _, newItem in
-                        Task {
-                            if let data = try? await newItem?.loadTransferable(type: Data.self) {
-                                prescriptionImageData = data
-                            }
+                    // Camera only — never the photo library, which on a practice iPad can hold
+                    // other patients' clinical photos.
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        Button {
+                            showPrescriptionCamera = true
+                        } label: {
+                            Label("Photo of prescription / medication bag",
+                                  systemImage: "camera.badge.plus")
+                                .font(.system(size: 12))
+                                .foregroundStyle(AMColor.accent)
                         }
+                        .buttonStyle(.plain)
                     }
                     if prescriptionImageData != nil {
                         Label("Photo captured", systemImage: "checkmark.circle.fill")
@@ -124,19 +120,41 @@ extension AdaptiveQuestionnaireSheet {
         }
     }
 
+    // ── Submit ────────────────────────────────────────────────────────────────
+    // A registered patient's answers are written to their record now. A walk-in's answers (or
+    // answers for a record removed while open) are handed back unsaved: staff attach them to a
+    // record only after "Staff: exit" (WalkInAnswersAttachView), never while the patient holds
+    // the iPad.
+
+    func save() {
+        let submission = QuestionnaireSubmission(answers: answers,
+                                                 prescriptionImageData: prescriptionImageData)
+        if let patient = livePatient {
+            submission.apply(to: patient, context: context)
+            Task { await sync.syncIfAuthenticated() }
+            onSubmitted(submission, true)
+        } else {
+            onSubmitted(submission, false)
+        }
+    }
+}
+
+// MARK: - Submission
+
+/// The patient's finished answers, held in memory until they are written to a record.
+struct QuestionnaireSubmission {
+    var answers: EncounterAnswers
+    var prescriptionImageData: Data?
+
     // ── Save: single write to canonical Patient fields ────────────────────────
     // This is the ONLY place questionnaire data is written to the patient model.
     // Enforces the single-value-per-variable rule: no other path writes
     // chiefComplaint / hpi / pmhNotes during an encounter session.
 
-    func save() {
-        guard let patient else {
-            // Walk-in without a registered patient: questionnaire data cannot be
-            // persisted without a patient record. Dismiss — front desk should
-            // register the patient first, then open the questionnaire from their record.
-            dismiss()
-            return
-        }
+    @MainActor
+    func apply(to patient: Patient, context: ModelContext) {
+        guard patient.isLive else { return }
+        var answers = self.answers
 
         // Structured fields — direct write, no concatenation ambiguity.
         // These are the canonical values for chiefComplaint / hpi / pmhNotes.
@@ -198,17 +216,17 @@ extension AdaptiveQuestionnaireSheet {
 
         // Human-readable pre-visit note for the doctor
         let note = ClinicalNote(noteType: .other, patient: patient)
-        note.freeText = buildReadableNote()
+        note.freeText = Self.readableNote(for: answers)
         context.insert(note)
 
         patient.updatedAt   = .now
         patient.pendingSync = true
         try? context.save()
-        Task { await sync.syncIfAuthenticated() }
-        dismiss()
+        AuditLog.record("create", "clinical_note", patient: patient, resourceId: note.syncCode,
+                        details: ["source": "pre_visit_questionnaire"])
     }
 
-    func buildReadableNote() -> String {
+    static func readableNote(for answers: EncounterAnswers) -> String {
         var lines = ["PRE-VISIT QUESTIONNAIRE — \(DateFormatter.ectDateTime.string(from: .now)) ECT"]
         lines.append("")
         lines.append("CHIEF COMPLAINT: \(answers.chiefComplaintText)")

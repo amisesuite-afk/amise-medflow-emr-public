@@ -105,12 +105,12 @@ extension AdaptiveQuestionnaireSheet {
     }
 
     // ── Phase 0: patient header ───────────────────────────────────────────────
+    // Patient-facing: only this patient's own identifiers. No staff triage (acuity) label.
 
     @ViewBuilder
     func patientHeaderSection(_ patient: Patient) -> some View {
         Section {
             HStack(spacing: 8) {
-                AcuityPip(acuity: patient.acuity)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(patient.fullName).font(.subheadline.weight(.semibold))
                     HStack(spacing: 6) {

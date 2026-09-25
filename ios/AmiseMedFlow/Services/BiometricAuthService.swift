@@ -140,6 +140,53 @@ final class BiometricAuthService: ObservableObject {
     }
 }
 
+// MARK: - Staff verification (patient hand-over mode)
+//
+// Used when the iPad has been handed to a patient (pre-consultation questionnaire): leaving that
+// screen needs the device owner — Face ID / Touch ID, with the device passcode as fallback, which
+// `.deviceOwnerAuthentication` provides on its own. Unlike authenticate(), it never changes the
+// app-lock state.
+
+enum StaffVerificationResult: Equatable {
+    case verified
+    case cancelled            // user or system dismissed the prompt: stay where we are
+    case failed(String)       // show the message and stay
+}
+
+extension BiometricAuthService {
+
+    /// Asks iOS to confirm the device owner. `reason` is shown in the system prompt: never put
+    /// patient details in it.
+    static func verifyDeviceOwner(reason: String) async -> StaffVerificationResult {
+        let context = LAContext()
+        var policyError: NSError?
+
+        guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &policyError) else {
+            #if targetEnvironment(simulator)
+            return .verified
+            #else
+            return .failed("Set a device passcode in Settings → Face ID & Passcode to use staff exit.")
+            #endif
+        }
+
+        do {
+            let ok = try await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason)
+            return ok ? .verified : .failed("Staff authentication did not succeed. Try again.")
+        } catch let laError as LAError {
+            switch laError.code {
+            case .userCancel, .systemCancel, .appCancel:
+                return .cancelled
+            case .authenticationFailed:
+                return .failed("Staff authentication did not succeed. Try again.")
+            default:
+                return .failed(laError.localizedDescription)
+            }
+        } catch {
+            return .failed(error.localizedDescription)
+        }
+    }
+}
+
 // MARK: - Lock screen overlay
 
 struct AppLockScreen: View {

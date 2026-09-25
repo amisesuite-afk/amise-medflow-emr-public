@@ -1,27 +1,43 @@
 // AdaptiveQuestionnaireSheet.swift
-// Adaptive pre-encounter questionnaire sheet and reusable checkbox grid.
+// Adaptive pre-encounter questionnaire, filled in by the patient on the front-desk iPad.
+//
+// Patient hand-over mode: this view is only ever shown through `.patientHandoverPresentation`
+// (PatientHandoverPresentation.swift), which owns leaving it. There is no Cancel/dismiss here:
+// the only exits are "Staff: exit" (device-owner authentication, handled by the caller) and
+// submitting, after which the caller shows a neutral thank-you screen. Nothing in this view may
+// show another patient's data (no patient pickers, no photo library — the prescription photo
+// is taken with the camera only).
 
 import SwiftUI
-import PhotosUI
 import SwiftData
+import UIKit
 
 struct AdaptiveQuestionnaireSheet: View {
     var patient: Patient?
+    /// Called once the patient submits. `savedToRecord` is false for a walk-in (or a record that
+    /// was removed while open): staff attach the submission to a record after staff exit.
+    let onSubmitted: (_ submission: QuestionnaireSubmission, _ savedToRecord: Bool) -> Void
+    /// "Staff: exit" tapped: the caller authenticates the device owner before closing.
+    let onStaffExit: () -> Void
+    var isStaffExitInProgress: Bool = false
 
-    @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) var context
     @EnvironmentObject var sync: SyncService
 
     @State var answers = EncounterAnswers()
     @State var currentStepIndex = 0
     @State var symptomFilter = ""
-    @State var prescriptionPhotoItem: PhotosPickerItem?
+    @State var showPrescriptionCamera = false
     @State var prescriptionImageData: Data?
 
+    /// The patient, only while the record still exists (SwiftData crashes when a view reads a
+    /// deleted model). A record removed while open is treated like a walk-in.
+    var livePatient: Patient? { patient.flatMap { $0.isLive ? $0 : nil } }
+
     // Patient demographics used for gating — resolved once from the model
-    var patientSex: Sex { patient?.sex ?? .unspecified }
+    var patientSex: Sex { livePatient?.sex ?? .unspecified }
     var patientAge: Int {
-        guard let dob = patient?.dateOfBirth else { return 99 }
+        guard let dob = livePatient?.dateOfBirth else { return 99 }
         return Calendar.ect.dateComponents([.year], from: dob, to: .now).year ?? 99
     }
 
@@ -83,7 +99,7 @@ struct AdaptiveQuestionnaireSheet: View {
 
                 // ── Phase content ─────────────────────────────────────────
                 Form {
-                    if let patient {
+                    if let patient = livePatient {
                         patientHeaderSection(patient)
                     }
                     phaseGuidanceBanner
@@ -120,7 +136,7 @@ struct AdaptiveQuestionnaireSheet: View {
                     }
                     Spacer()
                     if isLastStep {
-                        Button("Save & Close") { save() }
+                        Button("Submit Answers") { save() }
                             .buttonStyle(.borderedProminent)
                             .tint(AMColor.accent)
                             .fontWeight(.semibold)
@@ -145,12 +161,24 @@ struct AdaptiveQuestionnaireSheet: View {
                 .padding(.horizontal, 24)
                 .padding(.vertical, 14)
             }
-            .navigationTitle(patient.map { "Questionnaire — \($0.fullName)" } ?? "Walk-In Questionnaire")
+            .navigationTitle(livePatient.map { "Questionnaire — \($0.fullName)" } ?? "Pre-Visit Questionnaire")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button { onStaffExit() } label: {
+                        Label("Staff: exit", systemImage: "lock.fill")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    .disabled(isStaffExitInProgress)
+                    .accessibilityHint("Staff authentication is required to leave the questionnaire.")
                 }
+            }
+            .fullScreenCover(isPresented: $showPrescriptionCamera) {
+                // Camera only: the photo library could show other patients' clinical images.
+                CameraPickerView { image in
+                    prescriptionImageData = image.jpegData(compressionQuality: 0.8)
+                }
+                .ignoresSafeArea()
             }
             .onChange(of: answers.ccCategory) { _, _ in
                 // When CC changes, clamp the step index to the new phase list length

@@ -307,6 +307,11 @@ private struct FDPatientRow: View {
 }
 
 // MARK: - Questionnaire tab
+// Privacy (surgeon's requirement): this tab is next to the patient who is about to receive the
+// iPad, so it never shows a browsable patient list. Names appear only after staff type a search
+// (3+ letters of the name, or an MRN), at most 5 at a time (QuestionnairePatientSearch). The
+// search is cleared when the questionnaire opens and when the tab disappears. The questionnaire
+// itself opens in patient hand-over mode (.patientHandoverPresentation).
 
 private struct FDQuestionnaireView: View {
     @Query private var queriedAllPatients: [Patient]
@@ -318,22 +323,31 @@ private struct FDQuestionnaireView: View {
     @State private var showForm = false
 
     private var filteredPatients: [Patient] {
-        let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        if q.isEmpty { return Array(allPatients.prefix(30)) }
-        return allPatients.filter {
-            $0.fullName.lowercased().contains(q) ||
-            ($0.mrn?.lowercased().contains(q) ?? false)
-        }.prefix(20).map { $0 }
+        QuestionnairePatientSearch.matches(query: searchQuery, in: allPatients)
+    }
+
+    private var trimmedQuery: String { QuestionnairePatientSearch.normalized(searchQuery) }
+
+    private var searchHint: String {
+        QuestionnairePatientSearch.isNameSearch(trimmedQuery)
+            ? "No match. Check the spelling or use the MRN."
+            : "Type at least \(QuestionnairePatientSearch.minimumNameLength) letters of the name, or the MRN."
     }
 
     var body: some View {
         NavigationStack {
             List {
-                Section("Find Patient") {
+                Section {
                     VStack(alignment: .leading, spacing: 8) {
-                        TextField("Search name or MRN…", text: $searchQuery)
+                        TextField("Name (3+ letters) or MRN…", text: $searchQuery)
                             .textFieldStyle(.roundedBorder)
                             .autocorrectionDisabled()
+
+                        if !trimmedQuery.isEmpty && filteredPatients.isEmpty {
+                            Text(searchHint)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
 
                         if !filteredPatients.isEmpty {
                             ForEach(filteredPatients) { patient in
@@ -342,7 +356,6 @@ private struct FDQuestionnaireView: View {
                                     showForm = true
                                 } label: {
                                     HStack {
-                                        AcuityPip(acuity: patient.acuity)
                                         VStack(alignment: .leading, spacing: 1) {
                                             Text(patient.fullName)
                                                 .font(.subheadline.weight(.semibold))
@@ -364,6 +377,10 @@ private struct FDQuestionnaireView: View {
                         }
                     }
                     .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                } header: {
+                    Text("Find Patient")
+                } footer: {
+                    Text("For privacy, no patient list is shown. At most \(QuestionnairePatientSearch.maxResults) matches appear.")
                 }
 
                 Section {
@@ -375,14 +392,28 @@ private struct FDQuestionnaireView: View {
                             .foregroundStyle(AMColor.accent)
                     }
                 } footer: {
-                    Text("Use this when the patient hasn't been registered yet. You can attach the answers to their record later.")
+                    Text("Use this when the patient hasn't been registered yet. After staff exit, you can attach the answers to their record.")
                 }
             }
             .navigationTitle("Questionnaire")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .sheet(isPresented: $showForm) {
-            AdaptiveQuestionnaireSheet(patient: selectedPatient)
+        .patientHandoverPresentation(isPresented: $showForm,
+                                     patient: selectedPatient,
+                                     entryPoint: .frontDeskTab)
+        .onChange(of: showForm) { _, isOpen in
+            if isOpen {
+                // Nothing from the search stays behind the questionnaire.
+                searchQuery = ""
+            } else {
+                selectedPatient = nil
+            }
+        }
+        .onDisappear {
+            searchQuery = ""
+            // Keep the patient while the questionnaire is open (a full-screen cover can make
+            // this tab disappear); it is cleared when the questionnaire closes.
+            if !showForm { selectedPatient = nil }
         }
     }
 }
