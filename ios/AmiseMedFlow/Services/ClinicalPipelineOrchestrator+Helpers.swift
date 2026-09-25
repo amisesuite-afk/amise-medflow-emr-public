@@ -52,7 +52,18 @@ extension ClinicalPipelineOrchestrator {
 
     // Determines which AutoFunctions are shown based on visit type.
     // Emergency surgery → all actions. Outpatient follow-up → no operative planning.
+    /// Critical alerts are never filtered out by the visit type (clinical validation 2026-09: an
+    /// endoscopy or bronchoscopy booking hid critical results such as a potassium of 7): any
+    /// critical alert the visit filter dropped is shown first.
     func filteredAutoActions(for visitType: VisitType?) -> [AutoAction] {
+        let filtered = visitFilteredAutoActions(for: visitType)
+        let dropped = autoActions.filter { a in
+            a.function == .alert && a.urgency == .critical && !filtered.contains { $0.id == a.id }
+        }
+        return dropped + filtered
+    }
+
+    private func visitFilteredAutoActions(for visitType: VisitType?) -> [AutoAction] {
         guard let vt = visitType else { return autoActions }
 
         switch vt {

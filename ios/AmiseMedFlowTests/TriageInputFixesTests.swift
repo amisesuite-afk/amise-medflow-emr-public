@@ -96,6 +96,37 @@ final class TriageInputFixesTests: XCTestCase {
         XCTAssertEqual(g.gestationWeeks, 22)
     }
 
+    // MARK: - Risk snapshot additions
+
+    func testRiskSnapshotFlagsPregnancySGLT2StentsAndAnaestheticHazards() {
+        let p = Patient(fullName: "Risk Test", sex: .female)
+        context.insert(p)
+        p.dateOfBirth = Calendar.current.date(byAdding: .year, value: -32, to: .now)
+        p.chiefComplaint = "Right upper quadrant pain, 30 weeks pregnant"
+        p.pmhNotes = "Drug-eluting stent 3 months ago. Malignant hyperthermia in her brother."
+        let rx = Prescription(drug: "Empagliflozin", dose: "10 mg", frequency: "OD", indication: "Diabetes")
+        context.insert(rx)
+        p.prescriptions.append(rx)
+        let titles = VisitRiskAssessment.assess(p, pathway: .procedure).map(\.title)
+        XCTAssertTrue(titles.contains("Pregnant (30 weeks)"), "\(titles)")
+        XCTAssertTrue(titles.contains("SGLT2 inhibitor"))
+        XCTAssertTrue(titles.contains("Coronary stent"))
+        XCTAssertTrue(titles.contains("Malignant hyperthermia risk"))
+        XCTAssertFalse(titles.contains("Could be pregnant?"))
+    }
+
+    func testAnticoagulantFlagHasNoBlanketBridging() {
+        let p = Patient(fullName: "Anticoag Test")
+        context.insert(p)
+        let rx = Prescription(drug: "Apixaban", dose: "5 mg", frequency: "BD", indication: "AF")
+        context.insert(rx)
+        p.prescriptions.append(rx)
+        let flag = VisitRiskAssessment.assess(p, pathway: .procedure).first { $0.title.hasPrefix("Anticoagulant") }
+        XCTAssertNotNil(flag)
+        XCTAssertFalse(flag?.detail.contains("hold/bridge plan") ?? true)
+        XCTAssertTrue(flag?.detail.contains("no bridging") ?? false)
+    }
+
     func testNegatedOrPastPregnancyIsNotPregnancy() {
         XCTAssertFalse(PregnancyContext.detect(texts: ["Not pregnant. Urine hCG negative."], sex: .female, ageYears: 30).isPregnant)
         XCTAssertFalse(PregnancyContext.detect(texts: ["Gestational diabetes in her last pregnancy"], sex: .female, ageYears: 38).isPregnant)

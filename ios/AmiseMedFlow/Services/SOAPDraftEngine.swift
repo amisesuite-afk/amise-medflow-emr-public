@@ -397,7 +397,9 @@ struct SOAPDraftEngine {
         let followUp = buildFollowUp(p)
         if !followUp.isEmpty { lines.append(followUp) }
 
-        return lines.joined(separator: "\n").ifEmpty("Plan to be determined following clinical review.")
+        let plan = lines.joined(separator: "\n").ifEmpty("Plan to be determined following clinical review.")
+        // Patient safety (clinical validation 2026-09): no adult doses for under-16s, pregnancy line.
+        return DiagnosisRadiationEngine.draftPlanSafety(plan, context: RadiationContext(patient: p))
     }
 
     static func buildFollowUp(_ p: Patient) -> String {

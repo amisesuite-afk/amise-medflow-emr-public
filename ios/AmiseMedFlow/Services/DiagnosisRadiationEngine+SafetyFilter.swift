@@ -161,6 +161,19 @@ extension DiagnosisRadiationEngine {
             referralSuggestions: referrals)
     }
 
+    /// Free-text plan drafts (SOAPDraftEngine): the same child-dose and pregnancy rules as the
+    /// cards, applied line by line.
+    static func draftPlanSafety(_ plan: String, context c: RadiationContext) -> String {
+        var text = plan
+        if c.pregnancy.isPregnant {
+            text = text.components(separatedBy: "\n").map { pregnancyLine($0, c.pregnancy) }.joined(separator: "\n")
+            let weeks = c.pregnancy.gestationWeeks.map { " (\($0) weeks)" } ?? ""
+            text = "PREGNANT\(weeks): obstetric team informed; drugs and imaging checked for pregnancy safety.\n" + text
+        }
+        if c.isChild { text = suppressAdultDoses(text) }
+        return text
+    }
+
     // MARK: Allergy helpers
 
     private struct AllergyTerms {

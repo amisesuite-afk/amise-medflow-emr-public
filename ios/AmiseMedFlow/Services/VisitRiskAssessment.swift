@@ -31,7 +31,7 @@ enum VisitRiskAssessment {
 
     static let anticoagulants = [
         "warfarin", "apixaban", "rivaroxaban", "dabigatran", "edoxaban",
-        "enoxaparin", "heparin", "clopidogrel", "ticagrelor", "prasugrel"
+        "enoxaparin", "heparin", "clopidogrel", "ticagrelor", "prasugrel", "aspirin"
     ]
 
     static func assess(_ p: Patient, pathway: ConsultPathway?) -> [RiskFlag] {
@@ -102,12 +102,64 @@ enum VisitRiskAssessment {
         let meds = p.prescriptions.map { $0.drug.lowercased() }
         let onAnticoag = anticoagulants.filter { a in meds.contains { $0.contains(a) } }
         if !onAnticoag.isEmpty {
+            // Procedure-specific, not a blanket "hold / bridge" (clinical validation G2.1/G2.2):
+            // BRIDGE / ACCP 2022 (no routine bridging for AF), PAUSE (DOAC interruption),
+            // BSG/ESGE 2021 (endoscopy), ESC/ESAIC 2022 (coronary stents).
             flags.append(.init(level: acutePathway ? .high : .moderate,
                                title: "Anticoagulant / antiplatelet: \(onAnticoag.joined(separator: ", "))",
                                detail: acutePathway
-                                   ? "Bleeding risk — check last dose, INR/renal function and hold/bridge plan."
-                                   : "Bleeding risk for any procedure.",
+                                   ? "Bleeding risk — check last dose, INR / renal function. Interruption is procedure-specific: DOACs no bridging (PAUSE); warfarin bridging only for high thrombotic risk (mechanical mitral valve, VTE <3 months); P2Y12 inhibitors — BSG/ESGE 2021 table; never stop within a coronary stent window without cardiology (ESC/ESAIC 2022). Active bleeding: reversal, not bridging."
+                                   : "Bleeding risk for any procedure — interruption plan by procedure bleeding risk; no routine bridging.",
                                icon: "drop.triangle"))
+        }
+
+        // Coronary stent windows — ESC/ESAIC 2022: defer elective surgery within 6 months of elective
+        // PCI / 12 months of ACS; do not stop P2Y12 inhibitors without cardiology agreement.
+        let pmhAll = NegationMatcher.Source(NegationMatcher.joinClauses(p.pmhEntries.map { Optional($0.condition) }
+                                                                        + [p.pmhNotes, p.surgicalHistory, p.hpi]))
+        if pmhAll.containsAny(["coronary stent", "drug-eluting stent", "des ", "pci", "angioplasty"]) {
+            flags.append(.init(level: .high, title: "Coronary stent",
+                               detail: "Elective surgery / high-risk endoscopy deferred within 6 months of elective PCI or 12 months of ACS; do not stop P2Y12 inhibitors without cardiology agreement (ESC/ESAIC 2022).",
+                               icon: "heart.text.square"))
+        }
+
+        // SGLT2 inhibitors — CPOC 2021: omit the day before and the day of surgery; euglycaemic DKA.
+        if meds.contains(where: { $0.contains("gliflozin") }) {
+            flags.append(.init(level: acutePathway || pathway == .wardReview ? .high : .moderate, title: "SGLT2 inhibitor",
+                               detail: "Omit the day before and the day of surgery (CPOC 2021); euglycaemic DKA risk — check blood ketones if unwell, even with normal glucose.",
+                               icon: "exclamationmark.triangle"))
+        }
+
+        // Long-term corticosteroids — SfE/AAGBI/RCP 2020: steroid cover; masking of peritonism and fever.
+        if meds.contains(where: { m in ["prednisolone", "hydrocortisone", "dexamethasone", "methylprednisolone"].contains { m.contains($0) } }) {
+            flags.append(.init(level: .moderate, title: "Long-term corticosteroid",
+                               detail: "Steroid cover (hydrocortisone) for surgery or acute illness (SfE/AAGBI/RCP 2020); steroids mask fever and peritonism.",
+                               icon: "pills"))
+        }
+
+        // Anaesthetic hazards (AAGBI): malignant hyperthermia, suxamethonium apnoea, latex allergy.
+        let hazardText = NegationMatcher.Source(NegationMatcher.joinClauses(
+            [pmhAll.lower as String?] + p.allergies.map { Optional("\($0.name) \($0.reaction)") }))
+        if hazardText.containsAny(["malignant hyperthermia", "mh-susceptible", "mh susceptible"]) {
+            flags.append(.init(level: .high, title: "Malignant hyperthermia risk",
+                               detail: "Trigger-free anaesthetic (no volatile agents, no suxamethonium); dantrolene available; inform the anaesthetist (AAGBI 2020).",
+                               icon: "flame"))
+        }
+        if hazardText.containsAny(["suxamethonium apnoea", "suxamethonium apnea", "pseudocholinesterase", "butyrylcholinesterase", "scoline apnoea"]) {
+            flags.append(.init(level: .high, title: "Suxamethonium apnoea",
+                               detail: "Avoid suxamethonium and mivacurium; inform the anaesthetist; test relatives.",
+                               icon: "lungs"))
+        }
+        if hazardText.contains("latex") {
+            flags.append(.init(level: .high, title: "Latex allergy",
+                               detail: "Latex-free theatre and first on the list (AAGBI).", icon: "hand.raised"))
+        }
+
+        // Children: paediatric thresholds and doses (never adult doses).
+        if let dob = p.dateOfBirth, dob <= .now, p.ageYears < 16 {
+            flags.append(.init(level: .moderate, title: "Child (\(p.ageYears) y)",
+                               detail: "Paediatric vital-sign thresholds; weight-based dosing — calculate per BNFc; infants: recognise and redirect.",
+                               icon: "figure.and.child.holdinghands"))
         }
 
         // Diabetes
@@ -141,8 +193,14 @@ enum VisitRiskAssessment {
                                icon: "smoke"))
         }
 
-        // Pregnancy potential before imaging / procedures
-        if acutePathway, p.sex == .female, p.dateOfBirth != nil, (12...55).contains(p.ageYears) {
+        // Pregnancy (read from the record text) — NICE NG133; MHRA; RCOG Green-top 37a/37b.
+        let pregnancy = PregnancyContext.detect(patient: p)
+        if pregnancy.isPregnant {
+            flags.append(.init(level: .high,
+                               title: "Pregnant\(pregnancy.gestationWeeks.map { " (\($0) weeks)" } ?? "")",
+                               detail: "Obstetric handover; no NSAIDs from 20 weeks; LMWH, not DOACs or warfarin; avoid ionising imaging where ultrasound / MRI answers the question; BP ≥160/110 = severe (NICE NG133).",
+                               icon: "figure.stand.dress"))
+        } else if acutePathway, p.sex == .female, p.dateOfBirth != nil, (12...55).contains(p.ageYears) {
             flags.append(.init(level: .moderate, title: "Could be pregnant?",
                                detail: "Confirm pregnancy status before imaging, drugs or procedures.",
                                icon: "questionmark.circle"))
