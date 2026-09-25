@@ -1184,7 +1184,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isPostOp,
     postOpDays: toNum(postOpDays),
     pregnancyPossible,
-  }), [age, sex, symptoms, symptomDetails, freeText, comorbidities, surgicalHistory, medications, medicationsText, allergies, toxicHabits, vitals, durationDays, painScore, isPostOp, postOpDays, pregnancyPossible]);
+    // The rest of the record for the emergency-recognition layer: triage level =
+    // max(text, vitals/NEWS2, BP, critical labs, ECG, confirmed diagnosis).
+    examText: [examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound]
+      .filter(Boolean).join('\n'),
+    investigationResults,
+    resultReports: radiologyRequests.filter(r => r.resultReceived && r.resultNotes).map(r => `${r.modality} ${r.anatomicalRegion}: ${r.resultNotes}`),
+    diagnosis: { text: assessment, icd10: [...icdCodes, workingDiagnosis?.icdCode ?? null] },
+    avpu: (['A', 'C', 'V', 'P', 'U'] as const).find(x => x === vitals.avpu) ?? null,
+    onSupplementalO2: vitals.onSupplementalO2 === 'o2' ? true : vitals.onSupplementalO2 === 'air' ? false : null,
+  }), [age, sex, symptoms, symptomDetails, freeText, comorbidities, surgicalHistory, medications, medicationsText, allergies, toxicHabits, vitals, durationDays, painScore, isPostOp, postOpDays, pregnancyPossible,
+    examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+    investigationResults, radiologyRequests, assessment, icdCodes, workingDiagnosis]);
 
   const triageResult = useMemo(() => adaptiveTriage(triageInput), [triageInput]);
 

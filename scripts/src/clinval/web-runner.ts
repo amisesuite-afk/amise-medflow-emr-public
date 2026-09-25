@@ -104,7 +104,20 @@ function vitalStrings(v: Vignette): Record<string, string> {
     systolicBp: s(lv?.systolicBp), diastolicBp: s(lv?.diastolicBp), heartRate: s(lv?.heartRate),
     temperatureC: s(lv?.temperatureC), respiratoryRate: s(lv?.respiratoryRate), spo2: s(lv?.spo2),
     glucoseMmol: s(lv?.glucoseMmol),
+    // VitalsState (vitals-state.ts): NEWS2 ACVPU and air/oxygen.
+    avpu: lv?.avpu ?? '', onSupplementalO2: lv?.onSupplementalO2 === true ? 'o2' : lv?.onSupplementalO2 === false ? 'air' : '',
   };
+}
+
+/** AppContext triageInput.examText: the examination fields joined (skin / other are written there too). */
+function examFields(v: Vignette): string {
+  const e = v.inputs.exam ?? {};
+  return [e.general, e.cardiovascular, e.respiratory, e.abdomen, e.neuro, e.msk, e.skin, e.other].filter(Boolean).join('\n');
+}
+
+/** AppContext triageInput.resultReports: received radiology / ECG results. */
+function resultReports(v: Vignette): string[] {
+  return (v.inputs.imaging ?? []).map(i => `${i.modality} ${i.region ?? ''}: ${i.result}`);
 }
 
 /** ConsultationViewData-style "name → result" map used by CDS and clinical prompts. */
@@ -223,6 +236,13 @@ export function runWeb(v: Vignette): EngineOutputs {
     isPostOp: inp.encounter.isPostOp ?? false,
     postOpDays: inp.encounter.postOpDays ?? null,
     pregnancyPossible: pregnancyPossible(v),
+    // AppContext: the rest of the record for the emergency-recognition layer.
+    examText: examFields(v),
+    investigationResults: investigationResults(v),
+    resultReports: resultReports(v),
+    diagnosis: { text: inp.confirmedDiagnosis?.assessmentText ?? inp.confirmedDiagnosis?.name ?? '', icd10: [inp.confirmedDiagnosis?.icd10 ?? null] },
+    avpu: lv?.avpu ?? null,
+    onSupplementalO2: lv?.onSupplementalO2 ?? null,
   };
   const triage = adaptiveTriage(triageInput);
   differentials['web.triageSurgical'] = dxList(triage.surgicalMatches.slice(0, 5).map(m => ({
@@ -325,6 +345,12 @@ export function runWeb(v: Vignette): EngineOutputs {
       modality: i.modality, anatomicalRegion: i.region ?? '', resultReceived: true, resultNotes: i.result, indication: i.name,
     })),
     vitals: vitalStrings(v), assessment,
+    // ClinicalPromptsStrip: HPI / free text, surgical history, allergies, ICD codes, post-op state,
+    // other examination text (for the emergency layer and the peri-operative alerts).
+    historyText: [inp.chiefComplaint, inp.hpi].filter(Boolean).join('. '),
+    surgicalHistory: inp.surgicalHistory ?? [], allergies: (inp.allergies ?? []).map(a => a.name),
+    icdCodes: icd ? [icd] : [], isPostOp: inp.encounter.isPostOp ?? false, postOpDays: inp.encounter.postOpDays ?? null,
+    examOther: [inp.exam?.skin, inp.exam?.other].filter(Boolean).join('\n'),
   };
   for (const p of computeClinicalPrompts(promptInput)) {
     const text = `${p.finding}${p.diagnosis ? ` (${p.diagnosis})` : ''}: ${p.text}`;

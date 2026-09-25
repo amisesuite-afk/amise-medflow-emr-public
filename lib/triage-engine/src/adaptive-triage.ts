@@ -2,6 +2,11 @@ import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPa
 import { matchSurgicalPathologies, SurgicalPathology } from './surgical-dictionary';
 import { screenForCancer, detectReferrals, CancerScreenResult, ReferralRecommendation, ScreeningInput } from './cancer-screening';
 import { joinClauses, testAffirmed } from './negation';
+import {
+  assessEmergencies, paediatricVitalLimits, textReportsFever, EMERGENCY_REDIRECT,
+  type EmergencyAssessment, type EmergencyLevel, type RecognisedEmergency, type SafeguardingFlag, type RiskModifier,
+} from './emergency-recognition';
+import type { News2Avpu, News2Evaluation } from './news2';
 
 export type Sex = 'female' | 'male' | 'other' | 'unknown';
 
@@ -32,6 +37,21 @@ export interface AdaptiveTriageInput {
   isPostOp?: boolean;
   postOpDays?: number | null;
   pregnancyPossible?: boolean;
+  /**
+   * The rest of the record, read by the emergency-recognition layer (emergency-recognition.ts):
+   * triage level = max(text rules, vital signs / NEWS2, blood pressure, critical labs, ECG,
+   * confirmed diagnosis). All optional: the front-desk and API callers pass only the complaint.
+   */
+  examText?: string;
+  /** Laboratory results, name → result text. */
+  investigationResults?: Record<string, string>;
+  /** Imaging / ECG / other report texts. */
+  resultReports?: string[];
+  /** Working / confirmed diagnosis: assessment text and ICD-10 codes. */
+  diagnosis?: { text?: string | null; icd10?: Array<string | null | undefined> } | null;
+  /** NEWS2 ACVPU and air/oxygen (null = not recorded). */
+  avpu?: News2Avpu | null;
+  onSupplementalO2?: boolean | null;
 }
 
 export interface VitalRedFlag {
@@ -61,6 +81,16 @@ export interface AdaptiveTriageResult {
   cancerScreen: CancerScreenResult | null;
   /** Internal medicine / allied referral recommendations when pathology is non-surgical. */
   referralRecommendations: ReferralRecommendation[];
+  /** Emergencies recognised from the whole record (recognise-and-redirect layer), most severe first. */
+  recognisedEmergencies: RecognisedEmergency[];
+  /** Safeguarding concerns (child maltreatment, domestic abuse). */
+  safeguardingFlags: SafeguardingFlag[];
+  /** Context that changes how findings should be read (immunosuppression, beta-blocker, …). */
+  riskModifiers: RiskModifier[];
+  /** NEWS2 when computed (adults ≥ 16, not pregnant, at least one observation). */
+  news2: News2Evaluation | null;
+  /** The 911 / emergency department redirect when the action is emergency_now, otherwise null. */
+  emergencyRedirect: string | null;
 }
 
 const ERCP_TERMS = /(jaundice|yellow eyes|yellow skin|dark urine|pale stool|bile duct|cbd|stone|mrcp|ercp|cholangitis|pancreatitis|biliary)/i;
@@ -70,7 +100,10 @@ const HERNIA_TERMS = /(hernia|groin swelling|umbilical swelling|incisional bulge
 const ENDOSCOPY_TERMS = /(colonoscopy|gastroscopy|ogd|endoscopy|occult blood|change in bowel|rectal bleed|dysphagia|reflux)/i;
 const DIABETIC_FOOT_TERMS = /(diabetic foot|foot ulcer|foot wound|gangrene|foot infection|osteomyelitis|exposed bone|spreading redness)/i;
 const GI_BLEED_TERMS = /(haematemesis|hematemesis|melaena|melena|rectal bleed|vomiting blood|black stool|blood in stool)/i;
-const CHEST_PAIN_TERMS = /(chest pain|crushing pain|left arm|jaw pain|tearing pain)/i;
+// "left arm" / "jaw pain" alone are not chest pain (SURGEON-DECISIONS E2): "Excision of lipoma
+// left arm" in the surgical history used to read as a cardiac event.
+const CHEST_PAIN_TERMS = /\b(chest pain|chest pressure|chest tightness|crushing (chest )?pain|tearing (chest |back )pain)\b/i;
+const BREATHLESS_TERMS = /\b(breathless\w*|short(ness)? of breath|dyspn(o)?ea|difficulty breathing|struggling to breathe)\b/i;
 
 interface NormalizedInput {
   age: number | null;
@@ -89,6 +122,8 @@ interface NormalizedInput {
   postOpDays: number | null;
   pregnancyPossible: boolean;
 }
+
+const LEVEL_RANK: Record<EmergencyLevel, number> = { priority: 1, urgent: 2, emergency: 3 };
 
 function cleanList(values?: string[]): string[] {
   return (values || []).map(v => v.trim()).filter(Boolean);
@@ -139,8 +174,26 @@ function addScore(condition: boolean, points: number, reason: string, state: { s
   state.reasons.push(reason);
 }
 
-function computeVitalRedFlags(v: Required<VitalSigns>): VitalRedFlag[] {
+/**
+ * Vital-sign red flags. Adult thresholds apply from 16 years; children use the age-banded limits
+ * of paediatricVitalLimits() (NICE NG51 high-risk heart / respiratory rate, which match NICE
+ * NG143 for under 5s; AHA PALS 2020 hypotension), so a normal infant heart rate is not "shock".
+ */
+function computeVitalRedFlags(v: Required<VitalSigns>, ageYears: number | null = null): VitalRedFlag[] {
   const flags: VitalRedFlag[] = [];
+  const L = paediatricVitalLimits(ageYears);
+  if (L) {
+    if (v.systolicBp !== null && v.systolicBp < L.sbpLow) flags.push({ label: 'Hypotension (for age)', severity: 'urgent', value: `SBP ${v.systolicBp} mmHg (< ${L.sbpLow}, ${L.band})` });
+    if (v.heartRate !== null && v.heartRate >= L.hrHigh) flags.push({ label: 'Tachycardia (for age)', severity: 'urgent', value: `HR ${v.heartRate} bpm (≥ ${L.hrHigh}, ${L.band})` });
+    if (v.heartRate !== null && v.heartRate < L.hrLow) flags.push({ label: 'Bradycardia (for age)', severity: 'urgent', value: `HR ${v.heartRate} bpm (< ${L.hrLow}, ${L.band})` });
+    if (v.respiratoryRate !== null && v.respiratoryRate >= L.rrHigh) flags.push({ label: 'Tachypnoea (for age)', severity: 'urgent', value: `RR ${v.respiratoryRate}/min (≥ ${L.rrHigh}, ${L.band})` });
+    if (v.temperatureC !== null && v.temperatureC >= 38) flags.push({ label: 'Fever', severity: 'priority', value: `Temp ${v.temperatureC}°C` });
+    if (v.spo2 !== null && v.spo2 < L.spo2Low) flags.push({ label: 'Critical hypoxia', severity: 'urgent', value: `SpO₂ ${v.spo2}%` });
+    else if (v.spo2 !== null && v.spo2 <= 95) flags.push({ label: 'Low SpO₂', severity: 'priority', value: `SpO₂ ${v.spo2}%` });
+    if (v.glucoseMmol !== null && v.glucoseMmol > 20) flags.push({ label: 'Hyperglycaemia', severity: 'urgent', value: `RBS ${v.glucoseMmol} mmol/L` });
+    if (v.glucoseMmol !== null && v.glucoseMmol < 3.5) flags.push({ label: 'Hypoglycaemia', severity: 'urgent', value: `RBS ${v.glucoseMmol} mmol/L` });
+    return flags;
+  }
   if (v.systolicBp !== null && v.systolicBp < 90) flags.push({ label: 'Hypotension', severity: 'urgent', value: `SBP ${v.systolicBp} mmHg` });
   if (v.heartRate !== null && v.heartRate > 120) flags.push({ label: 'Tachycardia', severity: 'urgent', value: `HR ${v.heartRate} bpm` });
   if (v.respiratoryRate !== null && v.respiratoryRate > 24) flags.push({ label: 'Tachypnoea', severity: 'urgent', value: `RR ${v.respiratoryRate}/min` });
@@ -184,17 +237,41 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   // The same items, one clause each, for the clinical (symptom) rules: those are negation-aware,
   // so "No bleeding", "no vomiting", "No chest pain described" do not score (negation.ts), and a
   // clause break keeps a negation in one item from reaching into the next.
+  // The past surgical history is NOT read by the symptom rules: "Excision of lipoma left arm"
+  // is not a cardiac event and "Laparotomy for bleeding ulcer 2010" is not a current bleed
+  // (clinical-validation findings; SURGEON-DECISIONS E2).
   const clinicalText = joinClauses([
     data.freeText,
     ...data.symptoms,
     ...data.comorbidities,
-    ...data.surgicalHistory,
     ...data.medications,
     ...data.toxicHabits,
   ]);
   const has = (pattern: RegExp) => testAffirmed(pattern, clinicalText);
   const redFlags = scanRedFlags(clinicalText);
-  const vitalRedFlags = computeVitalRedFlags(data.vitalSigns);
+
+  // Recognise-and-redirect layer: the whole record (history, exam, vitals, NEWS2, BP, labs, ECG,
+  // diagnosis). Its level is combined with every other source below as a maximum.
+  const emergency: EmergencyAssessment = assessEmergencies({
+    age: data.age,
+    sex: data.sex,
+    historyText: joinClauses([data.freeText, ...data.symptoms]),
+    examText: input.examText ?? '',
+    comorbidities: data.comorbidities,
+    surgicalHistory: data.surgicalHistory,
+    medications: data.medications,
+    allergies: data.allergies,
+    vitals: { ...data.vitalSigns, avpu: input.avpu ?? null, onSupplementalO2: input.onSupplementalO2 ?? null },
+    investigationResults: input.investigationResults,
+    resultReports: input.resultReports,
+    diagnosis: input.diagnosis ?? null,
+    pregnancyPossible: data.pregnancyPossible,
+    isPostOp: data.isPostOp,
+    postOpDays: data.postOpDays,
+  });
+  const ageYears = emergency.ageYears ?? data.age;
+  const vitalRedFlags = computeVitalRedFlags(data.vitalSigns, ageYears);
+  const limits = paediatricVitalLimits(ageYears);
 
   const state = { score: 0, reasons: [] as string[] };
 
@@ -226,21 +303,67 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   }
 
   addScore(data.pregnancyPossible, 12, 'Pregnancy possibility requires clinical review', state);
-  addScore(has(/(fever|chills|rigors)/i) && has(ERCP_TERMS), 35, 'Possible cholangitis pattern', state);
+  // A written temperature below 38.0 °C is not a fever ("fever 37.6" does not count).
+  const feverInText = textReportsFever(clinicalText) || has(/\b(chills|rigors?)\b/i);
+  addScore(feverInText && has(ERCP_TERMS), 35, 'Possible cholangitis pattern', state);
   addScore(has(/(vomiting|unable to keep fluids|dehydrated)/i), 15, 'Vomiting or possible dehydration', state);
   addScore(has(GI_BLEED_TERMS), 25, 'Possible gastrointestinal bleeding', state);
 
-  // Composite vital + symptom checks
+  // Composite vital + symptom checks (paediatric limits under 16).
   const v = data.vitalSigns;
   const hasFever = v.temperatureC !== null && v.temperatureC >= 38;
-  const hasHypotension = v.systolicBp !== null && v.systolicBp < 90;
-  const hasTachycardia = v.heartRate !== null && v.heartRate > 120;
+  const hasHypotension = v.systolicBp !== null && v.systolicBp < (limits?.sbpLow ?? 90);
+  const hasTachycardia = v.heartRate !== null && (limits ? v.heartRate >= limits.hrHigh : v.heartRate > 120);
 
   addScore(has(CHEST_PAIN_TERMS) && (v.spo2 !== null && v.spo2 < 95), 50, 'Chest pain with hypoxia — possible ACS / PE', state);
   addScore(has(ERCP_TERMS) && hasFever, 35, 'Jaundice with fever — cholangitis pattern', state);
   addScore(has(GI_BLEED_TERMS) && (hasHypotension || hasTachycardia), 60, 'GI bleed with haemodynamic instability — emergency', state);
   addScore(has(DIABETIC_FOOT_TERMS) && hasFever, 40, 'Diabetic foot infection with systemic fever', state);
   addScore(has(POST_OP_TERMS) && hasFever && (data.postOpDays === null || data.postOpDays <= 30), 35, 'Post-op fever — source must be identified', state);
+
+  // Breathlessness, NEWS2 and recognised emergencies set the level directly (the floor applied
+  // after the score thresholds below). They add reasons but no points, so several priority
+  // findings cannot add up to an "emergency" through the legacy score threshold.
+  // Breathlessness is graded by physiology, not treated as a post-operative concern in every
+  // context (clinical-validation acutemed decision 3): emergency when SpO₂ / RR / NEWS2 warrant.
+  let breathlessLevel: EmergencyLevel | null = null;
+  if (has(BREATHLESS_TERMS)) {
+    const news2Total = emergency.news2?.total ?? null;
+    const rrHigh = limits ? limits.rrHigh : 25;
+    const severe = (v.spo2 !== null && v.spo2 < 92) || (v.respiratoryRate !== null && v.respiratoryRate >= rrHigh)
+      || (news2Total !== null && news2Total >= 5);
+    const abnormal = (v.spo2 !== null && v.spo2 <= 95) || (v.respiratoryRate !== null && v.respiratoryRate >= (limits ? limits.rrHigh - 5 : 21))
+      || (v.heartRate !== null && (limits ? v.heartRate >= limits.hrHigh - 10 : v.heartRate > 110));
+    const noObs = v.spo2 === null && v.respiratoryRate === null;
+    if (severe) {
+      breathlessLevel = 'emergency';
+      addScore(true, 0, 'Breathlessness with abnormal physiology (SpO₂, respiratory rate or NEWS2)', state);
+    } else if (abnormal || noObs || data.isPostOp || has(POST_OP_TERMS)) {
+      breathlessLevel = 'urgent';
+      addScore(true, 0, noObs ? 'Breathlessness — record SpO₂, respiratory rate and NEWS2 now' : 'Breathlessness — same-day clinical assessment', state);
+    } else {
+      breathlessLevel = 'priority';
+      addScore(true, 0, 'Breathlessness with normal observations — clinical review', state);
+    }
+  }
+
+  // NEWS2 bands (RCP 2017): high → emergency response; medium or a single red score → urgent.
+  let news2Level: EmergencyLevel | null = null;
+  if (emergency.news2) {
+    const n = emergency.news2;
+    if (n.band === 'high') news2Level = 'emergency';
+    else if (n.band === 'medium' || n.band === 'low_medium') news2Level = 'urgent';
+    if (news2Level) addScore(true, 0, `${n.summary} — ${news2Level === 'emergency' ? 'emergency' : 'urgent'} response`, state);
+  }
+
+  for (const e of emergency.emergencies) {
+    addScore(true, 0,
+      `${e.level === 'emergency' ? 'Recognised emergency' : e.level === 'urgent' ? 'Urgent' : 'Priority'}: ${e.title} (${e.reasons.join('; ')})`, state);
+  }
+  for (const f of emergency.safeguarding) {
+    addScore(true, 0, `${f.title}: ${f.reasons.join('; ')} — follow the practice's safeguarding procedure`, state);
+  }
+  for (const m of emergency.riskModifiers) state.reasons.push(m.text);
 
   let appointmentType: AppointmentType = 'new_consult';
   if (/follow.?up|review/i.test(combined)) appointmentType = 'follow_up';
@@ -303,6 +426,24 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     }
   }
 
+  // Triage level = max(text rules, vital signs / NEWS2, blood pressure, critical labs, ECG,
+  // confirmed diagnosis). This only ever raises the level; nothing here lowers it.
+  let floor: EmergencyLevel | null = emergency.level;
+  for (const l of [breathlessLevel, news2Level]) {
+    if (l && (!floor || LEVEL_RANK[l] > LEVEL_RANK[floor])) floor = l;
+  }
+  if (floor === 'emergency') {
+    acuity = 'urgent';
+    recommendedAction = 'emergency_now';
+  } else if (floor === 'urgent' && recommendedAction !== 'emergency_now') {
+    acuity = 'priority';
+    recommendedAction = 'same_day_call';
+  } else if (floor === 'priority' && recommendedAction === 'routine_booking') {
+    acuity = 'review';
+    recommendedAction = 'priority_24_48h';
+  }
+
+  const redirectTitles = emergency.emergencies.filter(e => e.redirect).map(e => e.title);
   return {
     acuity,
     score: state.score,
@@ -313,7 +454,7 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     appointmentType,
     questionsToAsk,
     safetyMessage: recommendedAction === 'emergency_now'
-      ? 'Do not auto-book. Advise urgent emergency assessment / Tapion contact and alert clinical staff immediately.'
+      ? `${redirectTitles.length ? `Recognised emergency: ${redirectTitles.join('; ')}. ` : ''}Do not auto-book. ${EMERGENCY_REDIRECT} Alert clinical staff immediately; any first actions shown are suggestions for the clinician.`
       : 'Administrative triage aid only. Diagnosis and treatment decisions remain with Dr Kabiye or clinical staff.',
     frontDeskScript: buildFrontDeskScript(recommendedAction, questionsToAsk),
     suggestedBlocks,
@@ -322,6 +463,11 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     isPrimarilySurgical,
     cancerScreen: cancerScreen.triggered ? cancerScreen : null,
     referralRecommendations,
+    recognisedEmergencies: emergency.emergencies,
+    safeguardingFlags: emergency.safeguarding,
+    riskModifiers: emergency.riskModifiers,
+    news2: emergency.news2,
+    emergencyRedirect: recommendedAction === 'emergency_now' ? EMERGENCY_REDIRECT : null,
   };
 }
 
@@ -373,7 +519,7 @@ function buildSuggestedBlocks(data: NormalizedInput, combined: string, appointme
 function buildFrontDeskScript(action: AdaptiveTriageResult['recommendedAction'], questions: string[]): string {
   const questionLine = questions.length ? ` Please confirm: ${questions.slice(0, 4).join(' ')}` : '';
   if (action === 'emergency_now') {
-    return `Thank you for the message. Because of the symptoms mentioned, this needs urgent clinical attention and should not wait for routine booking. Please contact Tapion Hospital / emergency services now while I alert the clinical team.${questionLine}`;
+    return `Thank you for the message. Because of the symptoms mentioned, this needs urgent clinical attention and should not wait for routine booking. ${EMERGENCY_REDIRECT} I am alerting the clinical team now.${questionLine}`;
   }
   if (action === 'same_day_call') {
     return `Thank you. I will flag this for a same-day clinical call/review rather than routine booking.${questionLine}`;

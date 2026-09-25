@@ -1,6 +1,6 @@
 import { testAffirmed } from './negation';
 
-export const RULES_VERSION = '1.2.0';
+export const RULES_VERSION = '1.3.0';
 
 export type AppointmentType =
   | 'new_consult'
@@ -151,9 +151,13 @@ export const RED_FLAGS: RedFlag[] = [
     reason: 'Acute abdominal pain', severity: 'urgent' },
   { pattern: /\b(jaundice|yellow(ing)? (of )?(eyes|skin)|dark urine|pale stool|clay(-| )?colou?red stool)\b/i,
     reason: 'Possible biliary obstruction', severity: 'urgent' },
-  { pattern: /\b(after (my |the )?(surgery|operation|procedure)|post[- ]?op|wound (discharge|infected|opened|leaking|red|pus)|fever (after|since)|breathless|shortness of breath)\b/i,
+  // "breathless" / "shortness of breath" are no longer a post-operative concern in every context:
+  // adaptiveTriage grades breathlessness by physiology (SpO₂, RR, NEWS2) — v1.3.0.
+  { pattern: /\b(after (my |the )?(surgery|operation|procedure)|post[- ]?op|wound (discharge|infected|opened|leaking|red|pus)|fever (after|since))\b/i,
     reason: 'Post-operative concern', severity: 'urgent' },
-  { pattern: /\b(new lump|growing lump|breast lump|weight loss|losing weight|night sweats|cancer)\b/i,
+  // "cancer" in a relative's history or a screening request ("Father had stomach cancer",
+  // "bowel cancer screening") is not a possible malignancy in this patient — v1.3.0.
+  { pattern: /\b(new lump|growing lump|breast lump|weight loss|losing weight|night sweats|(?<!\b(?:father|mother|sister|brother|parent|parents|relative|relatives|family|aunt|uncle|grandmother|grandfather|cousin|friend|friends|daughter|son)\b[^.;\n]{0,40})cancer(?!\s+(screening|risk|check)))\b/i,
     reason: 'Possible malignancy', severity: 'priority' },
   { pattern: /\b(pregnant|pregnancy|expecting)\b/i,
     reason: 'Pregnancy mentioned — clinical review required', severity: 'review' },
@@ -161,8 +165,15 @@ export const RED_FLAGS: RedFlag[] = [
     reason: 'Mental health crisis', severity: 'urgent' },
   { pattern: /\b(dosage|dose of|increase my (med|dose)|what (medication|tablet|pill)|my results|biopsy result|test result)\b/i,
     reason: 'Clinical query — defer to doctor', severity: 'review' },
-  { pattern: /\b(chest pain|crushing pain|radiating to|left arm|jaw pain)\b/i,
+  // Narrowed (SURGEON-DECISIONS E2, v1.3.0): chest pain radiating to the arm, jaw or neck, or
+  // crushing / pressure-type chest pain. "radiating to" and "left arm" alone no longer count
+  // (biliary pain "radiating to the back"; "lipoma left arm"). Other chest pain is a priority
+  // flag below; the emergency layer (emergency-recognition.ts) adds ACS from ECG, troponin and
+  // anginal equivalents (ESC 2023).
+  { pattern: /\b(chest (pain|pressure|tightness|heaviness|discomfort)\b[^.;\n]{0,60}\b(radiat\w*|spread\w*|going|goes|shoot\w*)\b[^.;\n]{0,25}\b(arm|arms|jaw|neck)|crushing (central )?(chest )?pain|central crushing|chest (pressure|heaviness))\b/i,
     reason: 'Possible cardiac event', severity: 'urgent' },
+  { pattern: /\b(chest pain|chest tightness|chest discomfort)\b/i,
+    reason: 'Chest pain — 12-lead ECG to exclude a cardiac cause', severity: 'priority' },
   { pattern: /\b(fever|chills|rigors|confusion|collapse|fainting|syncope)\b/i,
     reason: 'Systemic red flag symptom', severity: 'priority' },
   { pattern: /\b(unable to pass stool|unable to pass gas|obstructed|strangulated|irreducible hernia|vomiting repeatedly)\b/i,
@@ -173,7 +184,8 @@ export const RED_FLAGS: RedFlag[] = [
     reason: 'Dysphagia — red flag symptom', severity: 'priority' },
   { pattern: /\b(haemoptysis|coughing blood|blood in sputum)\b/i,
     reason: 'Haemoptysis', severity: 'urgent' },
-  { pattern: /\b(change in bowel habit|rectal mass|blood in stool|mucus in stool)\b/i,
+  // "No change in bowel habit" is a pertinent negative ("no change" is otherwise a pseudo-negation).
+  { pattern: /\b((?<!\bno )change in bowel habit|rectal mass|blood in stool|mucus in stool)\b/i,
     reason: 'Lower GI red flag', severity: 'priority' },
 ];
 
@@ -305,12 +317,13 @@ export const PATHWAY_DEFINITIONS: Array<{
     id: 'chest_pain',
     title: 'Chest Pain Pathway',
     severity: 'urgent',
-    trigger: /(chest pain|crushing pain|left arm|jaw pain|tearing pain|cardiac)/i,
+    // v1.3.0: "left arm", "jaw pain" and "cardiac" alone no longer open the chest pain pathway.
+    trigger: /\b(chest pain|chest pressure|chest tightness|crushing (chest )?pain|tearing (chest |back )pain)\b/i,
     checklist: [
       'ECG within 10 minutes',
-      'Troponin (hs-cTnI/T) at 0h and 3h',
+      'High-sensitivity troponin: ESC 2023 0 h/1 h (or 0 h/2 h) algorithm',
       'SpO2, BP both arms, IV access',
-      'Aspirin 300mg if ACS suspected and no contraindication',
+      'Aspirin loading dose 150–300 mg (ESC 2023) if ACS suspected and no contraindication — clinician decision',
       'POCUS if available',
       'Call cardiology / emergency services immediately if STEMI',
     ],
