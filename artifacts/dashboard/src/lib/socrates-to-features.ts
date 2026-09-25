@@ -113,6 +113,7 @@ const CC_HINTS: Rule[] = [
 const NEURO_CTX = /weak|numb|speech|slurr|dysarthr|vision|visual|deficit|droop|symptom|tingl/i;
 const BREAST_CTX = /breast|nipple|areola|mastalg/i;
 const GROIN_CTX = /groin|inguinal|femoral/i;
+const WOUND_CTX = /\bwound\b|\bincision\b|post.?op|surgical site/i;
 
 const TEXT_RULES: Rule[] = [
   // Abdominal pain and site
@@ -448,6 +449,8 @@ const TEXT_RULES: Rule[] = [
   r(/\bwound (pain|is painful|tender)\b|\bpain(ful)? (at|around) the (wound|incision)\b/, 'wound_pain'),
   r(/\b(swelling|swollen) (at|around|of|under) the (wound|incision|scar|operation site)\b|\bwound (swelling|swollen)\b|\bneck swelling\b[^.]{0,30}\b(after|post|following)\b/, 'wound_swelling'),
   r(/\bdehisc\w*|\bwound (has )?(opened|come apart|gaping|separat\w*)\b|\bburst abdomen\b/, 'wound_dehiscence_sign'),
+  rq(WOUND_CTX, /\b(redness|erythema\w*|red|inflamed|warm|hot|indurat\w*)\b/, 'wound_erythema'),
+  rq(WOUND_CTX, /\b(discharg\w*|pus|purulent|oozing|leaking)\b/, 'wound_discharge'),
   r(/\bseroma\b|\bfluctuant (swelling|collection) (at|near|under) the (wound|scar)\b/, 'wound_seroma'),
   r(/\bnot (passing|passed) (flatus|wind)\b|\bnot tolerating (diet|oral|fluids)\b|\bhigh (ng|nasogastric) (output|aspirates?)\b|\bileus\b/, 'ileus_signs'),
 ];
