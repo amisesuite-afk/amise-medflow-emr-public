@@ -5,9 +5,18 @@
 | | |
 |---|---|
 | System | AMISE MedFlow EMR: dashboard, API server, front-desk and patient portal, iOS app |
-| Code baseline | `c9a7293` |
-| Status | Draft v0.1, 2026-09-24. **No entry has been reviewed or accepted by a Clinical Safety Officer (CSO).** All ratings are the author's proposal |
+| Code baseline | v0.1: `c9a7293`. v0.2 refresh: `cc83845` (tip of `claude/pr-37-gbg22z`), plus `23904fd` (questionnaire hand-over mode, merged on that branch after `cc83845`). Line numbers in unchanged text still refer to `c9a7293` and may have drifted |
+| Status | Draft v0.2, 2026-09-25 (v0.1: 2026-09-24). **No entry has been reviewed or accepted by a Clinical Safety Officer (CSO).** All ratings, including every v0.2 re-rating, are the author's proposal |
 | Companion | `clinical-safety-case.md` (argument and evidence), `data-inventory.md`, `security-controls.md` |
+
+**Status terms used in v0.2**
+
+| Term | Meaning |
+|---|---|
+| Fixed in code | The change is merged on `claude/pr-37-gbg22z`, with the commit and file cited. Not verified in production |
+| Pending migration | The code is ready but depends on Migrations 87–90, which are wired into `run-migrations.yml` and **not yet applied to production** (`migrations/README.md`) |
+| Pending surgeon decision | Waiting for a clinical decision by the practice owner. Not a CSO acceptance |
+| Open | No control added yet, or the control is partial |
 
 ## 1. Risk matrix
 
@@ -58,38 +67,40 @@ This is adapted from the DCB0129/DCB0160 guidance matrix. **The CSO must confirm
 
 ## 2. Summary
 
-| ID | Hazard | Initial | Residual | Status |
-|---|---|---|---|---|
-| H-01 | Patient-facing triage fails to identify an emergency | 4 | **3** | Open |
-| H-02 | AI urgency or extraction downgrades a deterministic or true severity | 3 | 2 | Open |
-| H-03 | Urgent result misclassified as routine in the Results Inbox | 3 | **3** | Open |
-| H-04 | NEWS2 under-scored because implementations are defective or inconsistent | 4 | **4** | **Open: confirmed defects** |
-| H-05 | Other clinical score calculated or auto-populated incorrectly | 3 | **3** | Open |
-| H-06 | Bayesian differential misleads the clinician (anchoring or omission) | 3 | **3** | Open |
-| H-07 | Drug-interaction checker gives false reassurance | 3 | **3** | Open: confirmed gap |
-| H-08 | Formulary or dosing reference content is wrong | 3 | **3** | Open |
-| H-09 | Automated outbound message bypasses the MODE gate or the content filter | 3 | **3** | Open: confirmed |
-| H-10 | Automated prep instructions give blanket medication-hold advice | 3 | **3** | Open: confirmed |
-| H-11 | Message or PHI sent to the wrong recipient | 3 | 2 | Open |
-| H-12 | Sync conflict reverts a correction, or a deletion does not propagate | 3 | **3** | Open: confirmed design |
-| H-13 | Loss of clinical data (store reset, dropped outbox, no PITR) | 3 | **3** | Open |
-| H-14 | Offline replay overwrites newer data | 3 | 3 | Open |
-| H-15 | Duplicate or split patient record hides allergies or history | 3 | **3** | Open |
-| H-16 | Wrong-patient data entry or display | 4 | **3** | Open |
-| H-17 | AI-drafted clinical document contains errors and is signed | 3 | **3** | Open |
-| H-18 | Transcription or voice-parsing error enters the record | 3 | 3 | Open |
-| H-19 | Unauthorised access to or disclosure of PHI | 3 | **3** | Open: see `security-controls.md` |
-| H-20 | System unavailable during clinical care | 2 | 2 | Open |
+"Residual v0.2" is the author's proposed re-rating after the controls added between `c9a7293` and `cc83845`. Where it differs from v0.1 it is in bold. The CSO must confirm each re-rating.
 
-**Highest residual risk, top 5.** Sorted by residual rating, then severity, then whether the defect is *confirmed in code* rather than theoretical:
+| ID | Hazard | Initial | Residual v0.1 | Residual v0.2 | Status (2026-09-25) |
+|---|---|---|---|---|---|
+| H-01 | Patient-facing triage fails to identify an emergency | 4 | 3 | 3 | Open. The `DISABLE_AI` fallback keeps the ER/911 redirect (`113b1d9`) |
+| H-02 | AI urgency or extraction downgrades a deterministic or true severity | 3 | 2 | 2 | Open. The urgency floor also applies to the `DISABLE_AI` fallback (`113b1d9`) |
+| H-03 | Urgent result misclassified as routine in the Results Inbox | 3 | 3 | 3 | Open. Unchanged |
+| H-04 | NEWS2 under-scored because implementations are defective or inconsistent | 4 | 4 | **2** | Fixed in code on iOS (`485f85d`, `2abb3cc`) and web (`e682e87`). Cloud sync of the Scale 2 flag pending Migration 88 (`48ef141`). CSO sign-off of the fix outstanding (A-4) |
+| H-05 | Other clinical score calculated or auto-populated incorrectly | 3 | 3 | 3 | Open. Specific fixes: qSOFA (`13166b8`), Glasgow-Imrie (`61780fa`), saved-score lookup (`0e62bf8`) |
+| H-06 | Bayesian differential misleads the clinician (anchoring or omission) | 3 | 3 | 3 | Open. The iOS disclaimer is still missing |
+| H-07 | Drug-interaction checker gives false reassurance | 3 | 3 | 3 (likelihood Medium → Low) | Fixed in code: class mapping and "absence of an alert" label on both platforms, plus a parity lint (`2f111c3`, `31521d3`, `19406ae`, `8e32180`). Pending surgeon decision: opioid + benzodiazepine grade. Pharmacist review open |
+| H-08 | Formulary or dosing reference content is wrong | 3 | 3 | 3 | Open. New dosing content: iOS bowel-prep regimens (`abda6b2`, `1f6e2fc`), each gated by surgeon sign-off |
+| H-09 | Automated outbound message bypasses the MODE gate or the content filter | 3 | 3 | **2** | Fixed in code (`e094063`): one MODE gate (`lib/outbound.ts`) on every api-server send. Open: one pattern source, a CI check for direct provider calls |
+| H-10 | Automated prep instructions give blanket medication-hold advice | 3 | 3 | **2** | Fixed in code in every patient text (`e094063`, `38a7891`, `996fe1b`, `b9ae85b`), with a CI lint and tests. The wording follows the surgeon's decisions |
+| H-11 | Message or PHI sent to the wrong recipient | 3 | 2 | 2 | Open. Unchanged |
+| H-12 | Sync conflict reverts a correction, or a deletion does not propagate | 3 | 3 | 3 | Partly fixed. Deletes propagate once Migration 87 is applied (`cad8d9c`, `48ac9f7`, `8f8a467`). Pull protection and peer pending rules (`e51e40c`, `dac2823`, `746d289`). **Open: longer-value-wins merge of allergies and narrative in peer sync** |
+| H-13 | Loss of clinical data (store reset, dropped outbox, no PITR) | 3 | 3 | 3 | Open. Sync fixes stop edits being stuck or never uploaded (`8e350a0`, `70ade9d`, `6d6782f`, `6a1e96c`, `cc83845`). PITR, bucket backups and the iOS store-reset alert are unchanged |
+| H-14 | Offline replay overwrites newer data | 3 | 3 | 3 | Partly fixed. iOS: `e51e40c`, `717a03e`, `9565db7`. Dashboard: 2 of 18 outbox executors check `updated_at` |
+| H-15 | Duplicate or split patient record hides allergies or history | 3 | 3 | 3 | Partly fixed: a duplicate holding any clinical data is never hidden (`79eaa1e`). No merge workflow yet |
+| H-16 | Wrong-patient data entry or display | 4 | 3 | 3 | Open on the web (localStorage encounter). iOS: guard for a patient deleted while the consultation is open (`705717f`, `925ef2f`) |
+| H-17 | AI-drafted clinical document contains errors and is signed | 3 | 3 | 3 | Open. The complete kill switch (`113b1d9`) is a control, not a fix |
+| H-18 | Transcription or voice-parsing error enters the record | 3 | 3 | 3 | Open. iOS dictation now on-device when supported (`16435f3`), a privacy gain only |
+| H-19 | Unauthorised access to or disclosure of PHI | 3 | 3 | 3 (**2** once Migration 89 is applied and `STAFF_MACHINE_TOKEN` is set) | S-1, S-3 and S-4 fixed in code. S-2 pending Migration 89. S-5 and S-6 open. Questionnaire hand-over mode added (`23904fd`) |
+| H-20 | System unavailable during clinical care | 2 | 2 | 2 | Open. New cause: staff without a `user_profiles` row are locked out once Migration 89 is applied |
 
-1. **H-04** NEWS2 under-scoring (rating 4)
-2. **H-10** Blanket insulin and diabetes-medication advice in automated prep messages, part of which bypasses the MODE gate (rating 3, confirmed, reaches patients with no human gate)
-3. **H-12** Sync merge reverts corrections, and deletions don't propagate (rating 3, confirmed)
-4. **H-07** Drug-interaction false reassurance: class names are not mapped to drugs (rating 3, confirmed)
-5. **H-09** Outbound automation bypasses MODE and FORBIDDEN_PATTERNS (rating 3, confirmed)
+**Highest residual risk, top 5 (v0.2).** Sorted by residual rating, then severity, then whether the defect is *confirmed in code* rather than theoretical:
 
-H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an information-security matter it is **critical**, and it is the first priority in `security-controls.md`.
+1. **H-19** PHI access control. Until Migration 89 is applied, a portal patient's own JWT can read every patient row directly from Supabase (S-2). A security finding rated **critical**; see `security-controls.md`
+2. **H-12** Peer-sync merge: the longer copy of allergies and history wins regardless of time, so a correction that shortens a field is reverted (rating 3, confirmed)
+3. **H-13** Data loss: PITR off, three storage buckets not backed up, and the iOS store resets silently (rating 3, confirmed)
+4. **H-07 / H-08** Interaction and dosing content is a partial list with no pharmacist review (rating 3)
+5. **H-16** Wrong-patient display: the web's in-progress encounter survives sign-out in localStorage (rating 3, initial 4)
+
+Dropped out of the v0.1 top 5: H-04, H-10 and H-09 (fixed in code), and H-07's class-name gap (fixed; the residual is content coverage).
 
 ---
 
@@ -123,6 +134,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   2. Make the "if in doubt call 911/999" advice persistent on every intake screen and in every automated acknowledgement.
   3. Measure time from submission to staff review. Define a service level for `priority` and `urgent` submissions.
   4. Include this feature in the medical-device assessment (`medical-device-positioning.md` §4).
+- **Status (v0.2).** Open. Actions 1-4 not started. New control: with `DISABLE_AI=true` the front-desk intake falls back to deterministic PANE triage, and an emergency still gets the fixed ER/911 redirect and escalates (`113b1d9`, `artifacts/front-desk/lib/claude.ts`, `lib/ai-gate.ts`). Residual unchanged at 3.
 
 ### H-02: AI urgency or extraction downgrades a deterministic or true severity
 
@@ -138,6 +150,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
 - **Further actions.**
   1. Add a unit test asserting the floor for every AI-urgency code path.
   2. Add a lint or grep check so no new route consumes an AI severity without the floor.
+- **Status (v0.2).** Open. With `DISABLE_AI=true` the questionnaire summary is a deterministic row whose urgency comes from the questionnaire red flags, so the floor still holds (`113b1d9`, `routes/questionnaire.ts`). Actions 1-2 not started.
 
 ### H-03: Urgent result misclassified as routine in the Results Inbox
 
@@ -158,6 +171,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   2. Add deterministic critical-value rules alongside the AI.
   3. Show a "no patient match" queue prominently.
   4. Track time to acknowledge each result.
+- **Status (v0.2).** Open. No change: the Results Inbox still defaults a missing AI urgency to `'routine'` (`ResultsInboxTab.tsx:699` at `cc83845`). With `DISABLE_AI=true`, folder-watcher extraction is skipped and documents wait for manual review (`investigations.ts`), which removes the AI misreading but not the default.
 
 ### H-04: NEWS2 under-scored because implementations are defective or inconsistent
 
@@ -185,6 +199,13 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   3. Make Scale 2 an explicit clinician selection, recorded with the observation.
   4. Add RCP worked examples as unit tests on both platforms.
   5. Have the CSO sign off the fix before ward use.
+- **Status (v0.2).** **Fixed in code** on both platforms; CSO sign-off outstanding.
+  - iOS (`485f85d`): every NEWS2 calculation (`VitalsEntry`, the Scores-screen engine and the live preview) uses one chart, `ios/AmiseMedFlow/Services/NEWS2Chart.swift`. The single-parameter red flag fires whatever else is missing. Scale 2 applies only when a clinician opts the patient in (`Patient.news2UseSpO2Scale2`, default off); oxygen alone keeps Scale 1 and adds 2 points. Bands follow RCP (0-4 low, a single 3 low-medium, 5-6 medium, 7+ high). A partial score is marked, for example "NEWS2 2 (Low — incomplete: RR, SpO2 not recorded)". The Scores form and auto-populator are wired to the same inputs, and "Save readings to Vitals" keeps the oxygen flag (`2abb3cc`). Tests: `ios/AmiseMedFlowTests/NEWS2Tests.swift`.
+  - Web (`e682e87`): `lib/triage-engine/src/news2.ts` (`evaluateNews2`), a TypeScript twin of `NEWS2Chart.swift`, now drives `ClinicalScoresPanel`, `ScalesTab` and `ClinicalAlgorithmPanel`. Consciousness and air/oxygen default to "not recorded", so the score is flagged incomplete rather than assuming Alert and room air. Tests: `artifacts/dashboard/src/lib/__tests__/news2.test.ts` ports every iOS boundary vector and checks the three panels agree.
+  - **Pending migration.** The Scale 2 flag syncs over peer sync and NAS backup today. Cloud sync needs Migration 88 (`48ef141`, `patients.news2_spo2_scale2`). Until then two devices that meet only through Supabase can score on different scales. The default is Scale 1, which over-scores rather than under-scores a hypercapnic patient.
+  - Action 1 is superseded (the panel is fixed, not hidden). Actions 2-4 are done. Action 5 is open.
+  - Remaining cause: the Swift and TypeScript twins could drift. The test vectors are copied, not shared, and no CI step compares the two engines.
+- **Residual risk (v0.2, proposed).** Major × Very low = **2**.
 
 ### H-05: Other clinical score calculated or auto-populated incorrectly
 
@@ -212,6 +233,12 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   2. Run cross-platform parity tests.
   3. Display "missing input" explicitly instead of scoring it as 0.
   4. Have the CSO review scores used for disposition decisions.
+- **Status (v0.2).** Open, with specific iOS fixes:
+  - qSOFA 2-3 without the "suspected infection" tick no longer reads "Low" (`13166b8`).
+  - Glasgow-Imrie uses the standard 8 PANCREAS criteria, including urea > 16 mmol/L, and 3 or more is severe in both Glasgow scores (`61780fa`, `2abb3cc`).
+  - Saved scores are found again: they were stored under one name and looked up under another, so recorded values never showed (`0e62bf8`).
+  - Boundary tests for Alvarado, qSOFA, Wells, Rockall, Glasgow-Blatchford, Glasgow-Imrie, BISAP and CURB-65 (`4370325`, `ScoringEngineReferenceTests`).
+  - Actions 1-4 are still open. The dashboard's `0`-as-missing issue (`ClinicalScoresPanel.tsx`) was not rechecked.
 
 ### H-06: Bayesian differential misleads the clinician (anchoring or omission)
 
@@ -237,6 +264,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   2. Consider showing ranked bands instead of exact percentages.
   3. Run a retrospective validation against audited local cases.
   4. See `medical-device-positioning.md`: this feature is the most likely to be regulated.
+- **Status (v0.2).** Open. No change. The iOS differential screens still have no adjacent disclaimer.
 
 ### H-07: Drug-interaction checker gives false reassurance
 
@@ -260,6 +288,15 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   2. Display a persistent "Absence of an alert does not mean no interaction" label.
   3. Share one rule set across platforms.
   4. Add tests for class-based pairs.
+- **Status (v0.2).** **Fixed in code** for the confirmed gap. Pharmacist review open; one grade pending a surgeon decision.
+  - Class-to-drug mapping: `artifacts/dashboard/src/lib/drug-classes.ts` (`2f111c3`) and its Swift port `ios/AmiseMedFlow/Services/DrugClasses.swift` (`31521d3`). Each class lists generics, older INNs and common Caribbean, UK and US brands, with a cited source (BNF / Stockley's, MHRA, SmPC, CredibleMeds). Members match as whole words. Warfarin + diclofenac, tramadol + sertraline and morphine + diazepam now alert.
+  - No original rule was removed or regraded. A "never-remove" test replays the old matcher and requires every old alert to still fire.
+  - False alerts removed on the web: "arb" inside carbamazepine or calcium carbonate, and "5-ASA" read as aspirin (`19406ae`).
+  - Parity: each platform gained the other's missing rules with the same grade and wording (`8e32180`). CI step `lint:interaction-parity` (`scripts/src/lint-interaction-parity.ts`) fails if a pair can be raised on one platform and not the other, if a term's members differ, or if a shared pair's grade differs.
+  - Both UIs show the class a drug matched through and a persistent "Absence of an alert does not mean there is no interaction" note (`DrugInteractionAlert.tsx`; iOS prescription list, add-prescription sheet and Allergies tab). Actions 1-4 done.
+  - **Pending surgeon decision:** opioid + benzodiazepine is "contraindicated" on the web and "major" on iOS. It is allow-listed in the parity lint (`GRADE_ALLOWLIST`) until the surgeon picks one.
+  - Still open: the rule set is a partial reference list, not a maintained database; no renal or hepatic checks; no pharmacist review (A-11).
+- **Residual risk (v0.2, proposed).** Major × Low = **3**. The likelihood falls from Medium to Low, but the matrix keeps the rating at 3 while coverage is partial.
 
 ### H-08: Formulary or dosing reference content is wrong
 
@@ -278,6 +315,10 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   1. Clinical pharmacist review of all dosing content, with a named source and a review date for each entry.
   2. Put content under change control (see the safety case, §7).
   3. Show the source and "last reviewed" date in the UI.
+- **Status (v0.2).** Open. Actions 1-3 not started.
+  - **New content in scope:** iOS bowel-preparation regimens (`ios/AmiseMedFlow/Services/BowelPrepProtocols.swift`; `abda6b2`, `1f6e2fc`). Six regimens with product examples, dose steps and a split-dose timetable, citing SmPC/label and ESGE 2019.
+  - Controls on that content: an explicit regimen choice is required; safety suggestions (eGFR < 30, heart failure, hypermagnesaemia, obstruction, dehydration, frailty, G6PD/PKU) are shown but never block; the diabetes flag gives no doses; each regimen needs surgeon sign-off in Settings, tied to a fingerprint of its wording that lapses if the wording changes; sheets are marked DRAFT until signed; each export is audit-logged. Tests: `BowelPrepTests.swift`.
+  - Surgeon sign-off of each regimen on the production devices is **to confirm**. Sign-off by the prescriber is not a pharmacist review.
 
 ### H-09: Automated outbound message bypasses the MODE gate or the content filter
 
@@ -306,6 +347,15 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   2. Gate every provider send behind one `outbound()` function that enforces MODE and `FORBIDDEN_PATTERNS`.
   3. Keep a single pattern source.
   4. Add a CI test that greps for direct provider calls.
+- **Status (v0.2).** **Fixed in code** in the api-server (`e094063`). Front-desk gaps remain open.
+  - One gate: `artifacts/api-server/src/lib/outbound.ts`. `outboundBlocked()` is consulted by SMS (`lib/sms.ts`), Gmail (`lib/gmail.ts`), WhatsApp via Meta and Telnyx (moved to `lib/whatsapp-send.ts`), Twilio TwiML replies, the pre-visit SMS and calendar writes (`lib/calendar.ts`, `routes/scheduling.ts`, `routes/booking.ts`). An unrecognised `MODE` fails closed to `dry_run`. `resolveEmailMode()` lets a caller's `force` tighten the mode, or send a staff-internal alert directly under `supervised`, but never lift `dry_run`. A malformed override such as `req.body.mode` is ignored.
+  - The 24-hour reminder email (`routes/cron.ts`) now follows `MODE`: skipped under `dry_run`, a Gmail draft under `supervised`, sent under `auto`. Sending directly under `supervised` needs `REMINDER_EMAIL_AUTO_SEND=true`, a practice-owner opt-in that is off by default.
+  - The Claude-drafted reminder body, and the email-intake urgent acknowledgement, are screened (`screenOutboundText()`). A quarantined draft is not sent; it is audit-logged with the matched rules and sent to staff as a `[REVIEW REQUIRED]` alert.
+  - The staff WhatsApp reply no longer marks a message resolved when the provider send failed.
+  - Tests: `artifacts/api-server/src/test/outbound-safety.test.ts`, `cron-reminders.test.ts`.
+  - Actions 1 and 2 done. **Open:** action 3 (the second pattern copy in `artifacts/front-desk/lib/constants.ts` still exists), action 4 (no CI grep for direct provider calls), and regex evasion.
+  - **Open, found in this refresh:** the front-desk app does not use the api-server gate. `artifacts/front-desk/lib/email.ts` sends unless `MODE` is exactly `dry_run`, so an unset or misspelt `MODE` on the front-desk Vercel project **sends**. `lib/twilio.ts` defaults an unset value to `dry_run` but also sends on a misspelt one. The production value is **to verify**.
+- **Residual risk (v0.2, proposed).** Significant × Low = **2**.
 
 ### H-10: Automated prep instructions give blanket medication-hold advice
 
@@ -322,6 +372,14 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
 - **Further actions.**
   1. **Clinical owner to review the wording now.** Replace the medication lines with "Your doctor will give you personal instructions about diabetes and blood-thinning medicines. Do not change them unless told to."
   2. Ensure every patient on insulin or an anticoagulant has a documented individual plan before an endoscopy slot is confirmed.
+- **Status (v0.2).** **Fixed in code** in every automated patient text found. The wording follows the surgeon's recorded decisions (commit messages `38a7891`, `996fe1b`); formal approval of the final text by the practice owner is still worth recording in the safety case.
+  - api-server prep templates (`artifacts/api-server/src/lib/sms.ts`, `e094063`): no line tells a patient to take, skip or stop a medicine. They now say "If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions."
+  - Front-desk booking emails, public endoscopy and pathway pages and the dashboard's staff prep text (`artifacts/front-desk/lib/instructions.ts`, `38a7891`).
+  - Fasting follows one rule everywhere: 6 hours for food and 2 hours for clear fluids for GA, sedation, OGD and ERCP; colonoscopy clear fluids until 2 hours before; flexible sigmoidoscopy a light breakfast; no "nil by mouth from midnight" (`ba47093`, `38a7891`, `996fe1b`).
+  - Booking types map to instruction sets explicitly, so OGD, flexible sigmoidoscopy, pre-op assessment and thyroid clinic no longer get another type's preparation (`b9ae85b`, `APPOINTMENT_INSTRUCTIONS`).
+  - Enforcement: `outbound-safety.test.ts` (api-server) and the CI step `lint:patient-instructions` (`scripts/src/lint-patient-instructions.ts`). The lint fails on any sentence pairing insulin, a diabetes medicine or a blood thinner with take/hold/stop/adjust/skip, on any fast-from-midnight line, and on a booking type without an explicit mapping.
+  - Action 1 done. **Open:** action 2 (a documented individual plan before an endoscopy slot is confirmed).
+- **Residual risk (v0.2, proposed).** Major × Very low = **2**.
 
 ### H-11: Message or PHI sent to the wrong recipient
 
@@ -340,6 +398,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   1. Confirm the recipient on first contact.
   2. Minimise the content of notifications and calendar events (initials only).
   3. Add a privacy-policy statement about SMS and WhatsApp risks, with patient consent.
+- **Status (v0.2).** Open. Actions 1-3 not started. Lock-screen notifications and calendar events still carry the patient's name.
 
 ### H-12: Sync conflict reverts a correction, or a deletion does not propagate
 
@@ -367,6 +426,14 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   2. Implement a server-side soft delete (`deleted_at`) that propagates.
   3. Show a "conflict" indicator.
   4. Add sync-merge unit tests.
+- **Status (v0.2).** Partly fixed. The confirmed core defect (longer copy wins) is **still open**.
+  - **Deletes (pending migration).** Migration 87 (`supabase-soft-delete-migration.sql`, `cad8d9c`) adds `deleted_at`/`deleted_by` to the five iOS-synced tables and a `soft_delete()` RPC that checks the role and writes an `audit_log` row in the same transaction. iOS sends its tombstones to it and removes rows deleted elsewhere on pull (`48ac9f7`). The web and API hide soft-deleted notes, and a deleted draft is never signed (`8f8a467`). Until Migration 87 is applied, the tombstones wait on the device and deletes stay local, as before.
+  - **Pull protection (fixed in code).** A cloud pull never overwrites a record with unsent local edits (`e51e40c`, `PatientPullMerge`). A push clears `pendingSync` only when the server returns the row and the record was not edited during the request.
+  - **Peer sync (fixed in code).** A peer apply never clears `pendingSync`, and a peer's unsent change stays pending on the receiver (`dac2823`, `PeerApplyPending`). Records created or edited offline are now exchanged, using a stamp of `max(updatedAt, syncedAt)` (`746d289`, `PeerSyncService+Versions.swift`). A newer record's blank admin fields no longer erase local values (`a672137`).
+  - **Child records (fixed in code).** Edits to prescriptions, vitals and billing items after the first upload now reach the server (`70ade9d`) and reach other devices on pull when the local copy is clean (`717a03e`, `ChildPullMerge`).
+  - Tests: `SyncMergeTests`, `PullProtectionTests`, `SyncGapsTests`, `SyncCompletenessTests` (action 4 done).
+  - **Still open:** `PeerSyncService+ApplyRecords.swift` still merges chief complaint, HPI, PMH, family and social history, **allergies**, investigations, PMH/PSH entries and the procedure-form blobs by "longer value wins regardless of timestamp". A correction that shortens one of these fields is reverted by a longer copy on another device (actions 1 and 3).
+- **Residual risk (v0.2).** Unchanged at Major × Medium = **3** until the length-based merge is replaced.
 
 ### H-13: Loss of clinical data
 
@@ -391,6 +458,13 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   3. Enable PITR (the owner's budget decision).
   4. Back up all buckets.
   5. Hold a quarterly restore drill.
+- **Status (v0.2).** Open. Actions 1-5 not started. Sync fixes that stop clinical edits being lost on the way to the server (fixed in code):
+  - one refused record no longer aborts the rest of every sync cycle, and a refused record keeps its local data and stays pending (`8e350a0`, `SyncService+Refusals.swift`);
+  - an UPDATE that RLS filters out (0 rows, no error) is recognised as a refusal instead of being retried silently for ever (`9565db7`);
+  - prescriptions were rejected by the server's route CHECK, and inserts with an empty dose or frequency were rejected by NOT NULL; both stayed pending for ever (`6a1e96c`, `cc83845`);
+  - booking-created patients sent an `appt:` placeholder as a row id, so their edits and child records never uploaded (`6d6782f`, `SyncRemoteIds.swift`).
+  - **New cause (pending surgeon decision).** After Migration 89, a front-desk device cannot write `hpi` or insert the pre-visit `clinical_notes` row, so the patient-reported HPI and the pre-visit note captured at the iPad front desk stay on the device and travel only by peer sync (`migrations/README.md`, "Open issue"). The surgeon needs to decide whether front desk may create that note.
+  - `sync_conflicts` exists in the schema but is still unused.
 
 ### H-14: Offline replay overwrites newer data
 
@@ -401,6 +475,9 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
 - **Initial risk.** Considerable × Medium = **3**.
 - **Residual risk.** Considerable × Medium = **3**.
 - **Further actions.** Use optimistic concurrency (an `updated_at` precondition) in the executors. Surface conflicts to the user.
+- **Status (v0.2).** Partly fixed.
+  - iOS (fixed in code): the pull never overwrites unsent edits (`e51e40c`); a clean prescription is updated from the server only when the server's `updated_at` is newer (`717a03e`); a push clears `pendingSync` only if the record did not change during the request.
+  - Dashboard (confirmed in this refresh): 2 of the 18 outbox executors in `artifacts/dashboard/src/lib/sync-executors.ts` (assessment and plan) pass `expectedUpdatedAt` and raise a conflict; the other 16 replay without a version check. Still open.
 
 ### H-15: Duplicate or split patient record hides allergies or history
 
@@ -422,6 +499,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   1. Require DOB and phone at registration.
   2. Add a staff-facing merge workflow with an audit record.
   3. Produce a periodic duplicate report.
+- **Status (v0.2).** Partly fixed. `hasClinicalData` now counts every clinically meaningful field, including allergies (and an explicit NKDA entry), chief complaint, PMH, exams and procedure forms. A copy holding any of them is never hidden or offered for removal, even when it shares an MRN (`79eaa1e`, `PatientDeduplication.swift`). An empty allergy list now reads "not recorded", never "NKDA" (`cd35bdf`). Actions 1-3 open.
 
 ### H-16: Wrong-patient data entry or display
 
@@ -443,6 +521,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   1. Bind locally cached encounter state to the patient id and user id, and clear it on sign-out.
   2. Show a persistent patient banner (name, DOB, MRN) on every clinical screen and printout.
   3. Require confirmation when attaching a result to a patient.
+- **Status (v0.2).** Open on the web: the in-progress encounter in localStorage is still not bound to a user or cleared on sign-out (`AuthContext.tsx` `signOut()` only calls `supabase.auth.signOut()`). iOS controls added: the Scores screen and the iPad and iPhone calendar consultations show "Record no longer available" if the patient is deleted or merged while open (`8e6f3dd`, `705717f`, `925ef2f`); duplicates holding clinical data are no longer hidden behind another record (`79eaa1e`). Actions 1-3 open.
 
 ### H-17: AI-drafted clinical document contains errors and is signed
 
@@ -462,6 +541,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
   1. Require an explicit review step that highlights AI-generated spans before signing.
   2. Record who approved which AI draft.
   3. Periodically audit a sample of AI drafts against source records.
+- **Status (v0.2).** Open. Actions 1-3 not started. New control: `DISABLE_AI=true` now switches off every AI call site in the api-server and front-desk, so the practice can stop AI drafting at once (`113b1d9`, `lib/ai-gate.ts`; coverage table in `data-inventory.md` §6).
 
 ### H-18: Transcription or voice-parsing error enters the record
 
@@ -477,6 +557,7 @@ H-19 (the PHI access-control gaps) is rated in patient-safety terms here. As an 
 - **Initial risk.** Major × Medium = **3**.
 - **Residual risk.** Major × Medium = **3**.
 - **Further actions.** Highlight numbers, drug names and laterality for confirmation. Use on-device recognition on iOS.
+- **Status (v0.2).** Open. iOS dictation now runs on-device whenever the recogniser supports it (`16435f3`, `SpeechService.swift`). That is a privacy gain, not an accuracy control. `DISABLE_TRANSCRIPTION=true` can switch off call transcription alone (`113b1d9`).
 
 ### H-19: Unauthorised access to or disclosure of PHI
 
@@ -496,6 +577,20 @@ The full analysis is in `security-controls.md` §3. In summary:
 | Residual risk | Considerable × Medium = **3**. **As a security finding this is critical; see `security-controls.md`** |
 | Further actions | See `security-controls.md` §3, items S-1 to S-6 |
 
+**Status (v0.2).** The list above is the v0.1 finding. Current state, detailed in `security-controls.md` §3:
+
+- **S-1 front-desk staff API: fixed in code** (`19a7479`). `artifacts/front-desk/lib/staff-auth.ts` (`requireStaff()`) validates the token and requires a staff `user_profiles` role on every `/api/staff/*` handler. The middleware no longer counts generic `sb-*` cookies, and the patient search strips PostgREST filter syntax.
+- **S-2 RLS vs portal patients: pending migration.** Migration 89 (`supabase-staff-only-rls-migration.sql`; `946bdbe`, `1a01b5d`, `aaa53c0`) makes every staff policy on about 55 PHI tables and the four storage buckets test `auth_role()`, stops new auth users getting a `front_desk` profile, and adds column guards on `patients` UPDATE. `lint:rls-policies` now fails if a required policy's last definition is open again (`dd49997`). **Until Migration 89 is applied, a portal patient can still read every patient, document and booking directly from Supabase with their own JWT.**
+- **S-3 `requireStaffAuth()`: fixed in code** (`f3338ca`, `e6cbf09`). A staff `user_profiles` role is required. The machine path takes `STAFF_MACHINE_TOKEN`, compared in constant time. That separation takes effect only once the variable is set on Render and the front-desk Vercel project; until then `CRON_SECRET` is still accepted.
+- **S-4 QR token leak: fixed in code** (`f430146`).
+- **S-5 peer-sync authentication: open.** The session still has no `securityIdentity` and admits peers by an email hash advertised in discovery info (`PeerSyncService.swift:83-91` at `cc83845`).
+- **S-6 web and API Sentry scrubbing: open.** Both still call `Sentry.init` with no `beforeSend`.
+- **New control:** questionnaire hand-over mode on iOS (`23904fd`). When the iPad is handed to a patient, no other patient's name is visible: no default patient list, search after 3+ letters or an MRN, at most 5 results, a full-screen cover, and a staff-only exit that needs Face ID, Touch ID or the device passcode. The prescription photo is camera-only, so the photo library cannot show other patients' images. Opening and leaving are audit-logged.
+
+| | |
+|---|---|
+| Residual risk (v0.2, proposed) | Considerable × Medium = **3** today. **2** (Considerable × Low) once Migration 89 is applied and `STAFF_MACHINE_TOKEN` is set, with S-5 and S-6 still open |
+
 ### H-20: System unavailable during clinical care
 
 - **Features.** The API on Render and Supabase.
@@ -508,6 +603,9 @@ The full analysis is in `security-controls.md` §3. In summary:
 - **Initial risk.** Considerable × Low = **2**.
 - **Residual risk.** Considerable × Low = **2**.
 - **Further actions.** A written downtime procedure (paper fallback, printed clinic list the day before).
+- **Status (v0.2).** Open. New causes:
+  - Once Migration 89 is applied, a staff account without a `user_profiles` row can sign in but sees no data. Run the pre-flight queries in `migrations/README.md` (Migration 89) first.
+  - The migration runner has never completed on production. It now applies to a fresh database and re-runs cleanly, checked in CI (`8824214`, `bf6f602`, `scripts/src/check-migrations-fresh.ts`). The first complete production run will apply every step that had been failing (including 68, 77 and 87–90), so it needs a planned window and a backup first.
 
 ---
 

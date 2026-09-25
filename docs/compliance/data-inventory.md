@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| Status | Draft v0.1, 2026-09-24 |
+| Status | Draft v0.2, 2026-09-25 (v0.1: 2026-09-24) |
 | Scope | Dashboard (`artifacts/dashboard`), API server (`artifacts/api-server`), front-desk / patient portal (`artifacts/front-desk`), iOS app (`ios/`), Supabase schema (`supabase-*.sql`), backup and CI workflows (`.github/workflows/`) |
-| Code baseline | `c9a7293` (the tip of `claude/pr-37-gbg22z` when this was written; this doc branch is cut from it). All file and line citations refer to that tree. |
+| Code baseline | v0.1: `c9a7293` (the tip of `claude/pr-37-gbg22z` when this was written). v0.2 refresh: `cc83845`, plus `23904fd` (questionnaire hand-over mode). Citations added in v0.2 carry a commit; older line numbers refer to `c9a7293` and may have drifted. |
 | Out of scope | `artifacts/tax-planner*` and the finance auditor. They hold practice financial data, not patient data, and have not been reviewed. |
 | Method | Static read of the code. Nothing here was checked against the live Supabase project, the Render or Vercel dashboards, or vendor contracts. Anything that can only be confirmed in a live system is marked **to confirm**. |
 
@@ -25,7 +25,7 @@
 | **Communications** | Emails, WhatsApp/SMS threads, AI-drafted replies, voicemail, **recordings of mobile-phone calls**, transcripts | Gmail, Twilio, Meta/Telnyx webhooks, an Android recorder upload | `routes/intake.ts`, `routes/whatsapp.ts`, `routes/call-recording.ts`, `routes/voice.ts`. Table `call_logs`, bucket `call-recordings` (`supabase-call-recordings-storage.sql`) |
 | **Scheduling** | Appointment requests, confirmed slots, theatre lists | Intake flows, staff, Google Calendar | Tables `appointment_requests`, `confirmed_appointments`, `theatre_sessions`, `theatre_cases`, `calendar_event_cache` |
 | **Billing** | Fee codes, invoices, insurance details | Staff | Tables `patient_billing_items`, `billing_charges` |
-| **Staff data** | Staff name, email, role, default site, login events | Supabase Auth | Table `user_profiles`. `audit_log` (user id and email, and IP and user-agent via `logAudit()`) |
+| **Staff data** | Staff name, email, role, default site, login events | Supabase Auth | Table `user_profiles`. `audit_log` (user id and email, and IP and user-agent via `logAudit()`). After Migration 89, profiles revoked from portal patients are kept in the admin-only `user_profiles_revoked` (`supabase-staff-only-rls-migration.sql`) |
 | **Patient-portal credentials** | Supabase Auth user for each portal patient, SMS login codes | Portal invite and login | `routes/portal.ts:57-80` (`auth.admin.inviteUserByEmail`). `patient-auth-migration.sql` (`patient_accounts`: scrypt hashes, 72-hour temporary passwords) |
 
 ---
@@ -55,10 +55,15 @@
   - sync tombstones (`SyncTombstones.swift`, record ids only)
   - the NAS server URL
   - the AI consent flag (`Views/AIConsentGate.swift`)
+  - the practice profile (`amf.practiceProfile`: practice and clinician identity, sites, contact lines; `Services/PracticeProfile.swift`, `53d1e52`). Practice data, not patient data
+  - sync refusals and appointment links (`SyncRefusals`, `AppointmentLinks`): local record ids only (`8e350a0`, `6d6782f`)
+  - bowel-prep regimen sign-offs: a fingerprint of each regimen's wording (`abda6b2`)
 - **Keychain.** Holds the NAS WebDAV username and password (`NASBackupService.swift:5-40, 95-112`). The Supabase session uses the SDK default store (**to confirm** that it is the Keychain).
 - **Other on-device copies of PHI:**
   - **Local notifications** show the patient's name and appointment type on the lock screen (`Services/NotificationService.swift:49, 71`).
   - **Calendar events** created through EventKit carry the patient's name and procedure (`Services/CalendarService.swift:81-84, 110, 139`). They sync to whichever calendar account the device uses: iCloud, Google or Exchange.
+
+- **Questionnaire hand-over (v0.2, `23904fd`).** While a patient holds the device, walk-in answers are kept **in memory only** and attached to a record, or discarded, after the staff exit. Nothing is written for a walk-in until then.
 
 ### 2.3 NAS backups
 
@@ -81,7 +86,7 @@ There are two separate mechanisms.
 
 - **IndexedDB outbox.** Database `amise-sync-outbox` (`artifacts/dashboard/src/lib/sync-outbox.ts`) holds failed autosave payloads, which include clinical content, until they replay. Entries are dropped after 5 retries (`MAX_RETRIES`).
 - **localStorage.** Holds the in-progress encounter (`amise-enc-v1`: vitals, symptoms, exam findings, free text), attachments, patient photo and exam photos (`artifacts/dashboard/src/context/AppContext.tsx:829-850, 1006, 1033-1035`), plus the check-in queue and follow-up lists (`CheckInTab.tsx:35`, `FollowUpQueueStrip.tsx:24`).
-- **Sign-out does not clear any of this.** `signOut()` (`artifacts/dashboard/src/context/AuthContext.tsx:170-174`) only calls `supabase.auth.signOut()`. No idle auto-logout was found.
+- **Sign-out does not clear any of this** (unchanged at `cc83845`). `signOut()` (`artifacts/dashboard/src/context/AuthContext.tsx:170-174`) only calls `supabase.auth.signOut()`. No idle auto-logout was found.
 - **Supabase session.** `persistSession: true` (`artifacts/dashboard/src/lib/supabase.ts:110`).
 
 ### 2.5 Audit trail
@@ -92,6 +97,12 @@ There are two separate mechanisms.
   - Some payloads contain PHI, such as `patientName` and `diagnosis` (`routes/generate-letter.ts:138`, `routes/discharge-summary.ts:175`).
 - **`phiAuditMiddleware`** (`artifacts/api-server/src/lib/phi-audit-middleware.ts`) logs authenticated GETs to PHI routes. **It does not see reads the dashboard makes directly against Supabase.** `artifacts/dashboard/src/lib/db.ts` makes about 65 direct `.from(...)` calls.
 - **Legacy tables.** `audit_logs` (plural, from the base schema) and `clinical_audit_log` also exist.
+- **New audit events since v0.1:**
+  - `soft_delete()` writes `action = 'soft_delete'` in the same transaction as the delete (Migration 87, pending);
+  - iOS billing-item and document deletes (`48ac9f7`);
+  - iOS bowel-prep sheet exports (`abda6b2`);
+  - questionnaire hand-over open, staff exit, and the note written from the answers, with fixed labels only and no answers (`23904fd`);
+  - quarantined AI reminder drafts, with the matched rule names (`e094063`).
 
 ### 2.6 Logs and telemetry
 
@@ -113,6 +124,8 @@ There are two separate mechanisms.
 | Clinical records (Supabase) | Indefinite. No purge job | The legal minimum and maximum for Saint Lucia medical records is **unknown / to confirm with counsel** |
 | `audit_log` | Indefinite. Append-only (no UPDATE or DELETE grant) | |
 | Questionnaire links | 7 days (`supabase-questionnaire-token-expiry-migration.sql:10`) | |
+| Soft-deleted rows (`clinical_notes`, `prescriptions`, `patient_vitals`, `patient_billing_items`, `patient_documents`) | Indefinite. Migration 87 sets `deleted_at`; nothing purges the row | Deletion hides a record; it does not erase it. The retention schedule (A-17) must say when, if ever, soft-deleted rows are purged |
+| `user_profiles_revoked` | Indefinite (Migration 89) | Kept so an admin can restore a wrongly revoked staff profile |
 | Portal temporary passwords | 72 hours (`patient-auth-migration.sql` header) | |
 | Server NAS backups | 30 daily, 12 monthly, 7 yearly (`.github/workflows/backup.yml:6`) | Yearly backups outlive any deletion made in the live database |
 | iOS WebDAV backups | Indefinite. No pruning found | |
@@ -129,15 +142,20 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
 
 - **Staff roles.** `user_profiles.role` is one of `front_desk` < `nurse` < `doctor` < `admin`.
 - **The UI gates sections by role.** For example, assessment, plan, prescriptions and the AI consultant need `doctor` (`roles.ts:36-47`). This gate exists **only in the browser**.
-- **Database, via row-level security:**
+- **Database, via row-level security. As applied in production today** (Migrations 87–90 not yet applied):
   - `patients` and `documents`: SELECT for any row where `auth.uid() is not null` (`supabase-schema.sql:319-320`, `supabase-clinical-records-migration.sql:312-313`).
   - `appointment_requests`: `staff_all ... using (true)` (`supabase-schema.sql:502`).
   - `clinical_notes`: narrowed by `auth_role()` and status. Drafts are visible to the author and admins only (`supabase-clinical-records-migration.sql:296-306`).
-- **There is no per-patient or per-tenant isolation.** Every authenticated staff user can read every patient.
-- **API server.** It connects as `service_role` and bypasses RLS. Its route gate, `requireStaffAuth()` (`artifacts/api-server/src/lib/supabase.ts:28-50`), accepts a Supabase user JWT whose user has a staff `user_profiles` role, or `x-staff-token` equal to `STAFF_MACHINE_TOKEN` (or to `CRON_SECRET` while `STAFF_MACHINE_TOKEN` is unset). Only one route checks the caller's role on the server: `routes/visit-lifecycle.ts:266-271`, which requires `doctor`.
-- **Patient-portal users are Supabase Auth users in the same project** (`routes/portal.ts:65`). They have "own record" policies (`supabase-patient-portal-migration.sql:41-87`). Postgres combines permissive policies with OR, so the staff policy `auth.uid() is not null` may also grant portal patients read access to **all** patient and document rows. **To confirm urgently.** See `security-controls.md` §3.
-- **iOS.** Signs in with the same Supabase Auth, so RLS applies. Peer-to-peer sync shares the full local dataset with nearby devices that present the same email hash (see `security-controls.md`).
-- **Front-desk staff API.** `/api/staff/*` runs with the service-role key and is gated only by the *presence* of a session cookie (`artifacts/front-desk/middleware.ts:6-12, 43-50`). See `security-controls.md` §3.
+- **Once Migration 89 is applied** (`supabase-staff-only-rls-migration.sql`, pending):
+  - staff policies on about 55 PHI tables and the four storage buckets require `auth_role() in ('front_desk','nurse','doctor','admin')`;
+  - a new auth user gets a staff profile only when an admin creates one, or sets `app_metadata.staff_role` through the admin API. Portal patients no longer get an automatic `front_desk` profile;
+  - `patients` UPDATE: front desk may change identity, contact, next-of-kin, insurance, scheduling and patient-reported intake columns only; a portal patient only their own contact and profile fields. Anything else fails with `42501`;
+  - soft deletes go through `soft_delete()` (Migration 87), which checks the role per table and refuses front desk.
+- **There is no per-patient or per-tenant isolation**, before or after Migration 89. Every staff user can read every patient. See `docs/MULTI-TENANCY-PLAN.md`.
+- **API server.** It connects as `service_role` and bypasses RLS (and the Migration 89 column guards). Its route gate, `requireStaffAuth()` (`artifacts/api-server/src/lib/supabase.ts`), accepts a Supabase user JWT whose user has a staff `user_profiles` role (`f3338ca`), or `x-staff-token` equal to `STAFF_MACHINE_TOKEN` (or to `CRON_SECRET` while `STAFF_MACHINE_TOKEN` is unset; `e6cbf09`). Only one route checks for a *specific* role on the server: `routes/visit-lifecycle.ts`, which requires `doctor`.
+- **Patient-portal users are Supabase Auth users in the same project** (`routes/portal.ts:65`). They have "own record" policies (`supabase-patient-portal-migration.sql:41-87`). Postgres combines permissive policies with OR, so until Migration 89 is applied the staff policy `auth.uid() is not null` **does** give portal patients read access to all patient, document and booking rows and bucket objects. This was confirmed in a local emulator, not in production. See `security-controls.md` S-2.
+- **iOS.** Signs in with the same Supabase Auth, so RLS applies. A front-desk device sends only the allow-listed patient columns (`FrontDeskPatientColumns`). Peer-to-peer sync shares the full local dataset with nearby devices that present the same email hash (see `security-controls.md` S-5, open).
+- **Front-desk staff API.** `/api/staff/*` runs with the service-role key. Each handler now validates the session and requires a staff role (`artifacts/front-desk/lib/staff-auth.ts`, `19a7479`). See `security-controls.md` S-1.
 
 ---
 
@@ -149,10 +167,10 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
 |---|---|---|---|---|
 | 1 | **Supabase** ✅ | Everything: all tables, storage objects, auth (staff and patients) | All apps | `artifacts/*/src/lib/supabase.ts`, `ios/AmiseMedFlow/Services/SupabaseConfig.swift`, `SyncService*.swift` |
 | 2 | **Google Gmail** ✅ | Reads the practice inbox: patient emails and lab-result attachments. Sends or drafts replies, reminders and prep instructions | Intake cron, reminders, document intake | `artifacts/api-server/src/lib/gmail.ts`, `lib/email-documents.ts`, `routes/intake.ts`, `routes/cron.ts`, `artifacts/front-desk/lib/email.ts` |
-| 3 | **Google Calendar** ✅ | Writes appointment events (patient name, appointment type, location). Reads busy slots | Booking and scheduling | `artifacts/api-server/src/lib/calendar.ts`, `routes/scheduling.ts` |
-| 4 | **Twilio** ✅⚙️ | Patient phone numbers and message bodies (SMS and WhatsApp). Inbound messages. Voice calls, voicemail recordings and optional Twilio transcription | `SMS_PROVIDER=twilio` and `MODE` not `dry_run` | `artifacts/api-server/src/lib/sms.ts:61-100`, `artifacts/front-desk/lib/twilio.ts`, `routes/calls.ts`, `routes/whatsapp.ts` |
-| 5 | **Meta (WhatsApp Cloud API)** ⚙️ | Patient phone numbers and reply text. Inbound messages via webhook | `WHATSAPP_ACCESS_TOKEN` set | `routes/whatsapp.ts:240-266, 544` |
-| 6 | **Telnyx** ⚙️ | Patient phone numbers and reply text | `TELNYX_API_KEY` set | `routes/whatsapp.ts:268-286` |
+| 3 | **Google Calendar** ✅ | Writes appointment events (patient name, appointment type, location). Reads busy slots | Booking and scheduling. Writes blocked under `MODE=dry_run` (`e094063`) | `artifacts/api-server/src/lib/calendar.ts`, `routes/scheduling.ts` |
+| 4 | **Twilio** ✅⚙️ | Patient phone numbers and message bodies (SMS and WhatsApp). Inbound messages. Voice calls, voicemail recordings and optional Twilio transcription | `SMS_PROVIDER=twilio` and `MODE` not `dry_run` (api-server: one gate, `lib/outbound.ts`; front-desk: its own check, see `security-controls.md` G-17). Transcription off with `DISABLE_TRANSCRIPTION` or `DISABLE_AI` | `artifacts/api-server/src/lib/sms.ts:61-100`, `artifacts/front-desk/lib/twilio.ts`, `routes/calls.ts`, `routes/whatsapp.ts` |
+| 5 | **Meta (WhatsApp Cloud API)** ⚙️ | Patient phone numbers and reply text. Inbound messages via webhook | `WHATSAPP_ACCESS_TOKEN` set, and `MODE` not `dry_run` (gated since `e094063`) | `lib/whatsapp-send.ts`, `routes/whatsapp.ts` |
+| 6 | **Telnyx** ⚙️ | Patient phone numbers and reply text | `TELNYX_API_KEY` set, and `MODE` not `dry_run` (gated since `e094063`) | `lib/whatsapp-send.ts` |
 | 7 | **Digicel SMS** ⛔ | **No data flows today.** `SMS_PROVIDER=digicel` throws "not implemented" | n/a | `artifacts/api-server/src/lib/sms.ts:103-105` |
 | 8 | **Anthropic (Claude)** ✅⚙️ | **Web and API: identifiable PHI is sent.** See §6 | `ANTHROPIC_API_KEY` set and `DISABLE_AI` not `true`. `DISABLE_AI=true` now covers every call site in the API and the front-desk intake (see §6) | See §6 |
 | 9 | **OpenAI Whisper** ⚙️ | Audio of uploaded mobile-phone call recordings, sent for transcription | `OPENAI_API_KEY` set, and neither `DISABLE_AI=true` nor `DISABLE_TRANSCRIPTION=true` | `routes/call-recording.ts` (`transcribeWithWhisper`) |
@@ -161,7 +179,7 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
 | 12 | **Render** ✅ | Hosts the API server. Processes all PHI handled by the API. Holds all secrets and stdout logs | Always | `render.yaml`, `docs/INCIDENT-RUNBOOK.md` |
 | 13 | **GitHub (Actions)** ✅ | The nightly backup runner handles a full DB dump (encrypted before upload, but plaintext in runner memory and disk during the job). Cron triggers and migrations run here too | Nightly and manual | `.github/workflows/backup.yml`, `cron.yml`, `run-migrations.yml` |
 | 14 | **Synology NAS (practice-owned)** ⚙️ | Full DB dumps (GPG), the `patient-documents` mirror (unencrypted, relying on volume encryption), and iOS JSON exports (plaintext) | Nightly, or user-initiated on iOS | See §2.3 |
-| 15 | **Apple** ✅ | **Speech recognition is server-based** (`requiresOnDeviceRecognition = false`, `ios/.../SpeechService.swift:158`), so dictated clinical speech goes to Apple. Device backups (iCloud) may include the SwiftData store. EventKit calendar events may sync to iCloud. Push and local notifications | iOS use | See §2.2 |
+| 15 | **Apple** ✅ | **Speech recognition is on-device whenever the recogniser supports it** (`16435f3`, `ios/.../SpeechService.swift`); otherwise dictated clinical speech goes to Apple's servers. Device backups (iCloud) may include the SwiftData store. EventKit calendar events may sync to iCloud. Push and local notifications | iOS use | See §2.2 |
 | 16 | **api.qrserver.com (goQR.me)** ⛔ | **No data flows today (fixed).** The dashboard used to send the patient's questionnaire URL, including its session token, to this third party to render a QR code. It now generates the QR code in the browser | n/a | `artifacts/dashboard/src/components/LocalQrCode.tsx`; CI lint `scripts/src/lint-no-external-qr.ts` |
 | 17 | **jsDelivr CDN** ✅ | The browser downloads the ONNX/WASM runtime for in-browser Whisper.js transcription. No PHI is sent; audio is processed locally (**to confirm**) | Dictation in non-Chrome browsers | `artifacts/dashboard/src/workers/asr-worker.ts:23` |
 | 18 | **Google Fonts** ✅ | Browser IP and user-agent only | Page load | Font links in the web apps |
@@ -237,3 +255,5 @@ The dashboard has no server-side AI calls. Its in-browser Whisper.js dictation r
 4. Legal basis and consent for recording staff mobile-phone calls with patients (`routes/call-recording.ts`).
 5. Statutory retention period for medical records in Saint Lucia, and for any future market.
 6. Whether `photo_url` public URLs from a private bucket are reachable without authentication.
+7. (v0.2) The `MODE` value on the front-desk Vercel project. Its email sender sends unless `MODE` is exactly `dry_run` (`security-controls.md` G-17).
+8. (v0.2) When Migrations 87–90 will be applied to production. Until Migration 89 runs, the portal-patient exposure in §4 stands.

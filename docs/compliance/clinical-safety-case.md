@@ -2,6 +2,8 @@
 
 # Clinical safety case report (DCB0129-style)
 
+> **Refresh note (2026-09-25).** This report is still v0.1 and has not been re-argued. Since it was written, the code has fixed H-04 (NEWS2), H-09 (outbound MODE gate) and H-10 (medication-hold advice), and the confirmed H-07 class-mapping gap. The v0.1 figures below (H-04 residual 4, the §6 top five, the C2 and C4 gaps) are superseded by **`hazard-log.md` v0.2**, whose re-ratings are proposals only. The conclusion stands: **the safety case is not yet made.** No CSO is in post and no hazard has been accepted.
+
 | | |
 |---|---|
 | Manufacturer | Amise Medical Services (Saint Lucia). Legal manufacturer entity **to confirm** |
