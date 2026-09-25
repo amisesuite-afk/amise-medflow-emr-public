@@ -15,7 +15,7 @@ struct PatientListView: View {
 
     // MARK: – Filter
 
-    private var filtered: [Patient] {
+    private func searchFiltered(_ allPatients: [Patient]) -> [Patient] {
         guard !searchText.isEmpty else { return allPatients }
         let q = searchText.lowercased()
         return allPatients.filter {
@@ -33,8 +33,10 @@ struct PatientListView: View {
         .emergency, .inpatient, .theatre, .endoscopy, .outpatient
     ]
 
-    private var sections: [(setting: ClinicalSetting, patients: [Patient])] {
-        Self.settingOrder.compactMap { setting in
+    /// Built once per render in `body` (it was built twice, each time filtering all patients again).
+    private func makeSections(from allPatients: [Patient]) -> [(setting: ClinicalSetting, patients: [Patient])] {
+        let filtered = searchFiltered(allPatients)
+        return Self.settingOrder.compactMap { setting in
             let patients = filtered
                 .filter { $0.setting == setting }
                 .sorted { $0.createdAt > $1.createdAt }
@@ -46,6 +48,8 @@ struct PatientListView: View {
     // MARK: – Body
 
     var body: some View {
+        let allPatients = self.allPatients
+        let sections = makeSections(from: allPatients)
         NavigationStack {
             List {
                 if searchText.isEmpty {
@@ -87,10 +91,13 @@ struct PatientListView: View {
             }
             .navigationTitle("Patients")
             .searchable(text: $searchText, prompt: "Search name, MRN, or complaint")
+            .onAppear { CrashReporting.breadcrumb("Opened patient list") }
             .task {
                 // Backfill MRNs for any patient created before auto-generation was wired up.
-                for p in allPatients where p.mrn == nil || p.mrn?.isEmpty == true {
-                    MRNGenerator.backfillIfNeeded(p, existing: allPatients)
+                // One live list for the whole loop (it was rebuilt for every patient backfilled).
+                let current = self.allPatients
+                for p in current where p.mrn == nil || p.mrn?.isEmpty == true {
+                    MRNGenerator.backfillIfNeeded(p, existing: current)
                 }
             }
             .toolbar {
@@ -130,25 +137,14 @@ struct PatientListView: View {
 struct PatientRow: View {
     let patient: Patient
 
+    /// Vitals newest first, sorted once per row render (the row used to sort them up to four
+    /// times per render and re-run the NEWS2 chart for every NEWS2 property it read).
     private var sortedVitals: [VitalsEntry] {
-        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }
+        ListPerf.newestFirst(patient.vitalsEntries.filter(\.isLive), by: { $0.recordedAt })
     }
 
-    private var latestVitals: VitalsEntry? { sortedVitals.first }
-
-    private var news2Trend: String {
-        let scores = sortedVitals.prefix(3).filter { $0.hasAnyValue }.map { $0.news2Score }
-        guard scores.count >= 2 else { return "" }
-        let delta = scores[0] - scores[1]
-        if delta > 0 { return "↑" }
-        if delta < 0 { return "↓" }
-        return "→"
-    }
-
-    private var news2TrendColor: Color {
-        let scores = sortedVitals.prefix(3).filter { $0.hasAnyValue }.map { $0.news2Score }
-        guard scores.count >= 2 else { return .secondary }
-        let delta = scores[0] - scores[1]
+    private func news2TrendColor(_ delta: Int?) -> Color {
+        guard let delta else { return .secondary }
         if delta > 0 { return .red }
         if delta < 0 { return .green }
         return .secondary
@@ -173,6 +169,9 @@ struct PatientRow: View {
 
     @ViewBuilder
     private var content: some View {
+        let vitals = sortedVitals
+        let ageDisplay = patient.ageDisplay
+        let investigations = patient.investigations   // decoded once (was twice per render)
         HStack(spacing: 0) {
             // Left accent stripe (mirrors web border-left)
             Rectangle()
@@ -208,7 +207,7 @@ struct PatientRow: View {
                 // Row 2: demographics · MRN · location pill · time
                 HStack(spacing: 4) {
                     let showSex = patient.sex != .unspecified
-                    if let age = patient.ageDisplay {
+                    if let age = ageDisplay {
                         Text(showSex ? "\(patient.sex.rawValue.prefix(1).uppercased()), \(age)" : age)
                             .font(.caption2).foregroundStyle(.secondary)
                     } else if showSex {
@@ -216,7 +215,7 @@ struct PatientRow: View {
                             .font(.caption2).foregroundStyle(.secondary)
                     }
                     if let mrn = patient.mrn, !mrn.isEmpty {
-                        if patient.ageDisplay != nil || showSex {
+                        if ageDisplay != nil || showSex {
                             Text("·").font(.caption2).foregroundStyle(.tertiary)
                         }
                         Text("#\(mrn)")
@@ -263,21 +262,25 @@ struct PatientRow: View {
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(AMColor.accent)
                     }
-                    if let v = latestVitals, v.hasAnyValue {
+                    if let latest = vitals.first, latest.hasAnyValue {
+                        let v = News2Snapshot(latest)
+                        let delta = ListPerf.news2TrendDelta(
+                            newestFirstScores: vitals.prefix(3).filter { $0.hasAnyValue }.map { $0.news2Score })
+                        let news2Trend = ListPerf.news2TrendArrow(delta)
                         Circle()
-                            .fill(Color(hex: v.news2Color))
+                            .fill(Color(hex: v.colorHex))
                             .frame(width: 6, height: 6)
-                        Text("NEWS2 \(v.news2Score)")
+                        Text("NEWS2 \(v.score)")
                             .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(Color(hex: v.news2Color))
+                            .foregroundStyle(Color(hex: v.colorHex))
                         if !news2Trend.isEmpty {
                             Text(news2Trend)
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(news2TrendColor)
+                                .foregroundStyle(news2TrendColor(delta))
                         }
-                        Text(v.news2RiskDisplay)
+                        Text(v.riskDisplay)
                             .font(.system(size: 9))
-                            .foregroundStyle(Color(hex: v.news2Color).opacity(0.8))
+                            .foregroundStyle(Color(hex: v.colorHex).opacity(0.8))
                     } else {
                         Circle()
                             .fill(Color.secondary.opacity(0.3))
@@ -304,13 +307,13 @@ struct PatientRow: View {
                             .foregroundStyle(.purple)
                             .labelStyle(.iconOnly)
                     }
-                    let critLabs = LabPanel.parse(from: patient.investigations)
+                    let critLabs = LabPanel.parse(from: investigations)
                     if critLabs.hasCriticalValues {
                         Label("Critical labs", systemImage: "flask.fill")
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(.red)
                             .labelStyle(.iconOnly)
-                    } else if patient.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
+                    } else if investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
                         Label("Pending labs", systemImage: "clock.badge.exclamationmark")
                             .font(.system(size: 9))
                             .foregroundStyle(.orange)

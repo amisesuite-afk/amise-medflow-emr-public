@@ -19,7 +19,9 @@ struct SectionPatientListView: View {
     @State private var showDuplicateReview = false
     @State private var locationFilter: ClinicalLocation? = nil
 
-    private var basePatients: [Patient] {
+    private var basePatients: [Patient] { sectionBase(from: allPatients) }
+
+    private func sectionBase(from allPatients: [Patient]) -> [Patient] {
         switch section {
         case .wardRounds:
             return allPatients
@@ -36,7 +38,9 @@ struct SectionPatientListView: View {
         }
     }
 
-    private var patients: [Patient] {
+    private var patients: [Patient] { filteredPatients(basePatients) }
+
+    private func filteredPatients(_ basePatients: [Patient]) -> [Patient] {
         var base = basePatients
         if let loc = locationFilter { base = base.filter { $0.location == loc } }
         guard !searchText.isEmpty else { return base }
@@ -51,7 +55,7 @@ struct SectionPatientListView: View {
     }
 
     // Locations that actually have patients in this section
-    private var presentLocations: [ClinicalLocation] {
+    private func presentLocations(in basePatients: [Patient]) -> [ClinicalLocation] {
         let locs = Set(basePatients.map { $0.location })
         return ClinicalLocation.allCases.filter { locs.contains($0) }
     }
@@ -67,6 +71,12 @@ struct SectionPatientListView: View {
     }
 
     var body: some View {
+        // Each list once per render: `basePatients` used to be rebuilt from all patients four or
+        // five times per render (location chips, empty checks, the list), on every keystroke.
+        let allPatients = self.allPatients
+        let base = sectionBase(from: allPatients)
+        let presentLocations = self.presentLocations(in: base)
+        let patients = filteredPatients(base)
         VStack(spacing: 0) {
             // Location filter strip — only shows when >1 location present
             if presentLocations.count > 1 {
@@ -120,9 +130,11 @@ struct SectionPatientListView: View {
         }
         .navigationTitle(section.rawValue)
         .searchable(text: $searchText, prompt: "Search name or complaint")
+        .onAppear { CrashReporting.breadcrumb("Opened \(section.rawValue) list") }
         .task {
-            for p in allPatients where p.mrn == nil || p.mrn?.isEmpty == true {
-                MRNGenerator.backfillIfNeeded(p, existing: allPatients)
+            let current = self.allPatients
+            for p in current where p.mrn == nil || p.mrn?.isEmpty == true {
+                MRNGenerator.backfillIfNeeded(p, existing: current)
             }
         }
         .toolbar {
