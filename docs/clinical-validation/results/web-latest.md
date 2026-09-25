@@ -1,8 +1,8 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-25T14:26:44.235Z.
+Generated 2026-09-25T14:28:11.156Z.
 
-- Harness clinval-web/1; 202 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
+- Harness clinval-web/1; 243 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 202 | 1598 | 996 | 563 | 39 | 255 | 0 | 560 | 3 | 0 |
+| web | 243 | 1954 | 1178 | 707 | 69 | 312 | 0 | 704 | 3 | 0 |
 
 ## Blocking failures
 
@@ -20,8 +20,19 @@ None.
 
 ## All critical failures (including known gaps and unverified)
 
+- `aaa-renal-colic-mimic` / **mnm-aaa** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#5 [known gap: PANE top 3: Renal colic (0.78), Inguinal/femoral hernia, Acute cholecystitis. Symptom inference ranks symptomatic AAA #3.]
+- `aaa-renal-colic-mimic` / **inv-aorta-imaging** (web, FAIL (known gap)): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: No engine suggests aortic ultrasound or CTA; the management panel shows the renal colic protocol (PANE top) and I71.3 maps to no protocol.]
+- `abscess-recurrent-mrsa-pwid` / **mgmt-mrsa-active-antibiotic** (web, FAIL (known gap)): no management item matched among 24 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The management panel shows the appendicitis protocol (PANE top 0.21, groin site → groin_swelling).]
+- `abscess-thigh-adult` / **mgmt-incision-drainage** (web, FAIL (known gap)): no management item output on web [known gap: ICD L02.415 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
 - `achalasia-pseudoachalasia-elderly` / **mnm-malignancy** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifier; no dysphagia feature). Symptom inference ranks occult malignancy and oesophageal/gastric carcinoma #1–2.]
 - `adrenal-suspected-phaeochromocytoma` / **mnm-phaeochromocytoma** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and applied no feature; the symptom engine ranks phaeochromocytoma #1 from the chips.]
+- `ali-embolic-af` / **dx-ali-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholecystitis, GORD, Acute diverticulitis — PANE has no ALI disease. Symptom inference ranks ALI #1.]
+- `ali-embolic-af` / **alarm-ali** (web, FAIL (known gap)): no alarm matched among 2 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
+- `ali-embolic-af` / **mgmt-heparin** (web, FAIL (known gap)): no management item matched among 9 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
+- `ali-embolic-af` / **mgmt-emergency-revascularisation** (web, FAIL (known gap)): no management item matched among 9 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
+- `ali-thrombotic-diabetic-claudicant` / **mnm-ali** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Peripheral Arterial Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Peripheral arterial disease, GORD — PANE has no ALI disease. Symptom inference ranks PAD #1 and ALI #2.]
+- `ali-thrombotic-diabetic-claudicant` / **mgmt-heparin** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: No protocol matches I74.3 and PANE top is below 0.20 (the PAD protocol would also lack heparin/ALI steps).]
+- `ali-thrombotic-diabetic-claudicant` / **mgmt-urgent-vascular** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: No protocol matches I74.3 and PANE top is below 0.20.]
 - `ami-embolic-af` / **mnm-mesenteric-ischaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never appear in the PANE top 3 (cholecystitis, appendicitis, GORD). Symptom inference ranks it #2.]
 - `ami-embolic-af` / **alarm-mesenteric** (web, FAIL (known gap)): no alarm matched among 7 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: No prompt or triage rule for 'pain out of proportion', AF + abdominal pain, or mesenteric ischaemia.]
 - `ami-embolic-af` / **inv-cta** (web, FAIL (known gap)): no investigation matched among 36 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: K55.0 maps to the ischaemic colitis protocol: 'CT abdomen/pelvis with IV contrast' (portal venous), not CT angiography.]
@@ -71,10 +82,31 @@ None.
 - `breast-nipple-discharge-bloody-single-duct` / **flag-2ww** (web, FAIL (known gap)): no red flag matched among 7 (web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: screenForCancer only counts nipple discharge together with a lump; NICE NG12 (≥50, unilateral nipple discharge) is not implemented. Triage score 0, routine.]
 - `breast-nipple-discharge-bloody-single-duct` / **inv-mammogram** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: N64.52 maps to no protocol and PANE did not reach duct_ectasia, so no imaging is proposed.]
 - `breast-nipple-discharge-bloody-single-duct` / **inv-uss** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: As above: no retroareolar ultrasound proposed.]
+- `burns-adult-flame-27pct` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: adaptiveTriage has no burn keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns same_day_call for a 27% TBSA burn (HR 118).]
+- `burns-adult-flame-27pct` / **mgmt-formal-fluids** (web, FAIL (known gap)): no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- `burns-adult-flame-27pct` / **mgmt-burns-referral** (web, FAIL (known gap)): no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- `burns-chemical-alkali` / **mgmt-copious-irrigation** (web, FAIL (known gap)): no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
+- `burns-chemical-alkali` / **mgmt-burns-referral** (web, FAIL (known gap)): no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
+- `burns-child-immersion-nai` / **flag-safeguarding** (web, FAIL (known gap)): no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
+- `burns-child-immersion-nai` / **mgmt-safeguarding-referral** (web, FAIL (known gap)): no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
+- `burns-child-immersion-nai` / **mgmt-paediatric-burns-referral** (web, FAIL (known gap)): no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
+- `burns-child-scald-12pct` / **mgmt-formal-fluids** (web, FAIL (known gap)): no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
+- `burns-child-scald-12pct` / **mgmt-paediatric-burns-referral** (web, FAIL (known gap)): no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
+- `burns-circumferential-forearm-hand` / **flag-circumferential** (web, FAIL (known gap)): no red flag matched among 5 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- `burns-circumferential-forearm-hand` / **mgmt-escharotomy** (web, FAIL (known gap)): no management item matched among 1 (web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- `burns-circumferential-forearm-hand` / **mgmt-burns-referral** (web, FAIL (known gap)): no management item matched among 1 (web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- `burns-inhalation-enclosed-space` / **flag-inhalation** (web, FAIL (known gap)): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+- `burns-inhalation-enclosed-space` / **mgmt-early-intubation** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+- `burns-inhalation-enclosed-space` / **mgmt-100-oxygen** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+- `burns-inhalation-enclosed-space` / **mgmt-burns-referral** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
 - `caecal-volvulus` / **mgmt-resection** (web, FAIL (known gap)): no management item matched among 44 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowel-obstruction steps.]
 - `cdiff-fulminant-colitis` / **mnm-cdiff** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Diverticulitis \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis".]
 - `cdiff-fulminant-colitis` / **mgmt-vancomycin-metronidazole** (web, FAIL (known gap)): no management item matched among 39 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". The only vancomycin is IV vancomycin in the septic-shock prompt, which does not treat CDI.]
 - `cdiff-fulminant-colitis` / **mgmt-surgical-consult** (web, FAIL (known gap)): no management item matched among 39 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).]
+- `cellulitis-sepsis-elderly-diabetic` / **dx-cellulitis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Liver Abscess \| 3. Acute Diverticulitis; also in web.symptomInference#3, web.passive#2 [known gap: PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis (fever/rigors dominate; the 'leg' site adds leg_swelling). The management panel therefore shows the cholangitis protocol. Symptom inference ranks cellulitis #3.]
+- `cellulitis-sepsis-elderly-diabetic` / **mnm-nsti** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Liver Abscess \| 3. Acute Diverticulitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis. Symptom inference ranks NSTI #4.]
+- `charcot-foot-cellulitis-mimic` / **mnm-charcot** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: No engine has Charcot neuro-osteoarthropathy (PANE, symptom inference, triage). Symptom inference ranks cellulitis, gout, Fournier's.]
+- `charcot-foot-cellulitis-mimic` / **mgmt-immobilise-offload** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
 - `cholangitis-tg18-charcot-sepsis` / **score-tg18-calculator** (web, FAIL (known gap)): expected = 2; got web.scaleCalculator.tg18-cholangitis=2 (Grade II — MODERATE); web.scoreCalculator.tg18-cholangitis=1 (Mild cholangitis — antibiotics ± elective drainage) [known gap: Web clinical-scores.ts (ClinicalScoresPanel) omits the WBC criterion from the Grade II count and returns Grade I; clinical-scales.ts is correct here.]
 - `cholangitis-tg18-grade3-reynolds` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 - `cholecystitis-high-risk-grade2-drainage` / **score-tg18-calculator** (web, FAIL (known gap)): expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Web calculator returns Grade I: it has no "duration >72 h" criterion (Grade II only on WBC >18).]
@@ -106,10 +138,16 @@ None.
 - `crohns-ileocaecal-abscess` / **mgmt-drainage** (web, FAIL (known gap)): no management item matched among 59 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The crohns_disease protocol says "Abscess or fistula — urgent imaging and intervention" (red flag) but no step for percutaneous drainage; the management panel shows the appendicitis protocol because PANE ranks appendicitis first (0.71).]
 - `crohns-ileocaecal-abscess` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergency surgical indication" and adds the full "LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN" whenever examAbdomen contains "guarding" or "rebound" — including negated text ("no guarding") and localised guarding from other causes.]
 - `crohns-ileocaecal-abscess` / **mgmt-no-steroids** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "budesonide 9 mg po (oral) od (once daily) - ileal disease flare - less systemic side effec..." (+1 more) [known gap: The crohns_disease protocol medications (prednisolone, budesonide, IV hydrocortisone "flare induction") are offered unconditionally, including for a septic abscess.]
+- `dfi-moderate-osteomyelitis` / **mnm-osteomyelitis** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3: Inguinal/femoral hernia, GORD, Acute cholecystitis — PANE has no diabetic-foot or osteomyelitis disease. Symptom inference and triage rank diabetic foot #1.]
+- `dfi-moderate-osteomyelitis` / **inv-foot-xray** (web, FAIL (known gap)): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- `dfi-severe-wet-gangrene-abscess` / **mnm-dfi** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis; also in web.symptomInference#4, web.passive#3, web.triageSurgical#1 [known gap: PANE top 3: Acute cholangitis, Acute cholecystitis, Acute diverticulitis (fever/rigors). Triage surgical matches rank diabetic foot #1; symptom inference #4.]
+- `dfi-severe-wet-gangrene-abscess` / **mgmt-urgent-surgery** (web, FAIL (known gap)): no management item matched among 26 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain. Prompts give generic sepsis antibiotics only; no drainage/debridement of the plantar abscess.]
 - `diverticulitis-abscess-drainage` / **mgmt-drainage-in-documented-plan** (web, FAIL (known gap)): no management item matched among 13 (web.plan) [known gap: Web: Assessment says 'modified Hinchey Ib'; the uncomplicated variant lists 'hinchey ib' (in the modified Hinchey scale Ib is a pericolic abscess) and is checked first, so the documented plan is the outpatient oral co-amoxiclav plan with no drainage.]
 - `diverticulitis-purulent-peritonitis` / **dx-diverticulitis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, appendicitis (features lif_pain, nausea_vomiting, fever) — the same likelihood problem as the base case.]
 - `diverticulitis-purulent-peritonitis` / **mgmt-emergency-surgery-in-documented-plan** (web, FAIL (known gap)): no management item matched among 14 (web.plan) [known gap: Web: 'hinchey iii' contains the abscess keyword 'hinchey i', and the abscess variant is checked before the peritonitis variant, so the documented plan (immediate/conservative/follow-up phases) has no emergency operation — only 'interval sigmoid colectomy 6–8 weeks'.]
 - `diverticulitis-uncomplicated-outpatient` / **dx-diverticulitis-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis (0.13), inguinal/femoral hernia, appendicitis, with lif_pain, nausea_vomiting and fever all extracted — LIF pain does not bring diverticulitis into the top 3. Symptom inference ranks diverticulitis #2.]
+- `dvt-pregnancy-22wk` / **mgmt-no-doac-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] direct oral anticoagulant (doac): rivaroxaban 15 mg bd for 21 days then 20 mg od; or apixaban 10 mg bd for 7 days then 5 mg b..." (+5 more) [known gap: The DVT plan offers rivaroxaban/apixaban as first line with no pregnancy check although the record says pregnant (22 weeks) and pregnancyPossible is true; the protocol has no pregnancy-aware variant.]
+- `dvt-pregnancy-22wk` / **mgmt-no-warfarin-in-pregnancy** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] alternative: lmwh bridging to warfarin (target inr 2-3) if doac contraindicated (severe renal failure, pregnancy)." (+2 more) [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy.]
 - `dysphagia-progressive-over55` / **dx-oesophageal-cancer-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Hiatus Hernia; also in web.symptomInference#1, web.passive#2 [known gap: PANE top 3: GORD, inguinal hernia, hiatus hernia. PANE never gets dysphagia_progressive: the "Dysphagia" CC template has no CC hint and the iOS dysphagia chip set has no "Dysphagia" association to scan, so only weight_loss/regurgitation/heartburn reach it; the male hernia prior modifier does the rest. Symptom inference ranks oesophageal/gastric carcinoma #1.]
 - `eoe-young-atopic-recurrent-bolus` / **inv-oesophageal-biopsies** (web, FAIL (known gap)): no investigation matched among 10 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K20.0 and nothing else asks for biopsies.]
 - `fistula-in-ano-complex-anterior-female` / **mgmt-seton-or-sparing** (web, FAIL (known gap)): no management item matched among 23 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: getProtocolByIcd("K60.3") returns the anal_fissure protocol (prefix K60 covers fissure K60.0–K60.2 and fistula K60.3–K60.5); there is no fistula-in-ano protocol, and the perianal_abscess protocol (which has fistula steps) is keyed to K61.]
@@ -192,6 +230,12 @@ None.
 - `mimic-ruptured-aaa` / **mgmt-vascular-repair** (web, FAIL (known gap)): no management item matched among 22 (web.clinicalPrompts) [known gap: Web: No protocol reaches the plan: ICD I71.3 does not start with the aortic protocol's only prefix 'I71.9', and PANE does not select aortic_aneurysm. Only prompts remain (no vascular surgery).]
 - `mimic-testicular-torsion` / **dx-torsion-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: appendicitis, inguinal/femoral hernia, cholecystitis; the SOCRATES site text 'right testicle (scrotal)' adds testicular features but not enough. Symptom inference ranks torsion #1.]
 - `mimic-testicular-torsion` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.]
+- `nsti-early-low-lrinec` / **mnm-nsti** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Cellulitis \| 3. Skin Abscess / Furuncle; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: Acute cholecystitis, Cellulitis, Skin abscess. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #2.]
+- `nsti-fournier-diabetic` / **mnm-fournier** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.]
+- `nsti-fournier-diabetic` / **mgmt-emergency-debridement** (web, FAIL (known gap)): no management item matched among 36 (web.clinicalPrompts) [known gap: ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- `nsti-fournier-diabetic` / **mgmt-clindamycin** (web, FAIL (known gap)): no management item matched among 36 (web.clinicalPrompts) [known gap: ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- `nsti-leg-diabetic-sepsis` / **dx-nsti-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholangitis, Acute cholecystitis, Acute appendicitis — even with crepitus, erythema, instability and raised WBC answered in PANE. NSTI prior is 0.003; fever/rigors favour biliary diseases and socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #1.]
+- `nsti-postop-abdominal-wall` / **dx-nsti-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Acute cholecystitis, Acute cholangitis, GORD. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the wound CC template adds wound_erythema/wound_discharge but SSI is not in the top 3 either. Symptom inference ranks "post-operative complication" #1 and has no NSTI.]
 - `pancreatitis-alcohol` / **mgmt-thiamine** (web, FAIL (known gap)): no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No thiamine anywhere for an alcohol-dependent, vomiting patient in early withdrawal.]
 - `pancreatitis-alcohol` / **mgmt-no-aggressive-fluids** (web, FAIL (known gap)): forbidden management item present in web.plan: "[immediate] aggressive iv fluid resuscitation (hartmann's 250-500 ml/h initial)." (+2 more) [known gap: Plan tab: "Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)".]
 - `pancreatitis-alcohol` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Appendicectomy operative plan fires on "guarding".]
@@ -230,11 +274,14 @@ None.
 - `ppu-elderly-steroids-masked` / **alarm-sepsis** (web, FAIL (known gap)): no alarm matched among 11 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Sepsis prompts need temperature ≥38 °C with HR >100 (or SBP <90 for the shock prompt); an afebrile patient with qSOFA 3, lactate 3.1 and AKI raises no sepsis alarm.]
 - `ppu-perforated-peptic-ulcer` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). The CC 'Sudden severe upper abdominal pain' misses the red-flag regex 'severe (abdominal\|belly\|stomach)? pain' because of the word 'upper'; HR 112 is below the >120 vital flag; rigidity/free air are not read by triage. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe upper abdominal pain' gives 'routine'.]
 - `ppu-septic-shock-delayed` / **dx-perforation-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Pancreatitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alcohol history). PANE has no perforation node and no feature for rigidity/free gas; symptom inference ranks perforated peptic ulcer #2.]
+- `raaa-shock` / **dx-aaa-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute pancreatitis (0.35), Peptic ulcer, GORD — even with pulsatile mass and instability answered; the aortic_aneurysm prior is 0.01 and epigastric pain radiating to the back favours pancreatitis. The management panel therefore shows the pancreatitis protocol. Symptom inference ranks ruptured AAA #1.]
+- `raaa-shock` / **mgmt-emergency-repair** (web, FAIL (known gap)): no management item matched among 31 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9; the panel shows pancreatitis from PANE) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
 - `sbo-strangulated-femoral-hernia` / **dx-hernia-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Small Bowel Obstruction — Adhesions \| 3. Post-operative Ileus; also in web.triageSurgical#1 [known gap: Web: PANE top 3: bowel obstruction, adhesive SBO, post-operative ileus. The SOCRATES site text 'Right groin lump' maps to groin_swelling but the obstruction features dominate; hernia appears only in the triage surgical match list. The 'hernia' symptom-branch details are not read by PANE.]
 - `sbo-strangulation` / **mgmt-emergency-surgery-in-documented-plan** (web, FAIL (known gap)): no management item matched among 14 (web.plan) [known gap: Web: detectDxVariants picks 'sbo_adhesional' (keyword 'small bowel obstruction' is checked before 'strangulation'), whose allowed phases exclude 'surgical'; the documented plan has no operation.]
 - `sbo-strangulation` / **mgmt-no-nom-trial-with-strangulation** (web, FAIL (known gap)): forbidden management item present in web.plan: "small bowel obstruction - non-operative trial (drip and suck)" (+1 more) [known gap: Web: Documented plan = 'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)' and the Gastrografin step, for CT-proven strangulation with lactate 4.1.]
 - `sigmoid-volvulus-base` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=27); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 27: age ≥70, vomiting). 'Massive distension' and 'no flatus or stool' are not red-flag phrases ('unable to pass gas/stool' is).]
 - `sigmoid-volvulus-base` / **mgmt-endoscopic-decompression** (web, FAIL (known gap)): no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a heading ('Sigmoid/Caecal Volvulus — Management:') followed by bowel-obstruction steps. Decompression appears only in the dx-variant urgency note.]
+- `svt-gsv-near-sfj` / **mgmt-anticoagulation** (web, FAIL (known gap)): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The varicose-veins protocol only mentions "superficial thrombophlebitis extending to SFJ" as a red flag.]
 - `thyroid-bethesda-1-nondiagnostic` / **mgmt-no-thyroidectomy-plan** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here after a non-diagnostic FNA.]
 - `thyroid-bethesda-2-benign` / **mgmt-no-thyroidectomy-plan** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here for benign cytology (rationale text: "Bethesda class III–VI or clinical thyroid malignancy").]
 - `thyroid-bethesda-6-papillary-cn1b` / **mgmt-no-hemithyroidectomy-prefix** (web, FAIL (known gap)): forbidden management item present in web.plan: "hemithyroidectomy (ipsilateral lobe + isthmus). intraoperative recurrent laryngeal nerve neuromonitoring." [known gap: Consequence of the variant bug: the plan opens with "Hemithyroidectomy (ipsilateral lobe + isthmus)" above the protocol's total-thyroidectomy steps.]
@@ -248,6 +295,16 @@ None.
 - `thyroid-rapid-enlargement-stridor` / **inv-core-biopsy** (web, FAIL (known gap)): no investigation matched among 35 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma.]
 - `thyroid-rapid-enlargement-stridor` / **mgmt-airway** (web, FAIL (known gap)): no management item matched among 48 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No airway step in any web output: triage has no stridor rule (the emergency comes from RR/SpO2), prompts have no airway rule, and the C73 protocol lists stridor only as a red flag.]
 - `thyroid-retrosternal-goitre-compression` / **flag-compression** (web, FAIL (known gap)): no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No red flag names tracheal compression, stridor or retrosternal extension; triage escalates only because "breathless" matches the post-operative-concern rule. E04.2 maps to no protocol.]
+- `trauma-head-injury-gcs12` / **flag-gcs** (web, FAIL (known gap)): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: No red flag mentions GCS 12: triage has no GCS input, and S06.0X1A maps to no protocol (the TBI protocol is registered as S09.9), so protocol red flags are absent; PANE (0.37) shows TBI only in the management panel.]
+- `trauma-paediatric-nai-bruising` / **flag-safeguarding** (web, FAIL (known gap)): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists in triage, prompts or protocols; T76.12XA maps to no protocol.]
+- `trauma-paediatric-nai-bruising` / **mgmt-safeguarding-referral** (web, FAIL (known gap)): no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding referral is suggested.]
+- `trauma-pregnancy-30wk-rtc` / **mnm-abruption** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Blunt Abdominal Trauma \| 3. Splenic Laceration [known gap: PANE has no placental abruption; top 3: Acute cholecystitis, Blunt abdominal trauma, Splenic laceration. Symptom inference ranks ectopic pregnancy #1 at 30 weeks.]
+- `trauma-pregnancy-30wk-rtc` / **inv-fetal-monitoring** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
+- `trauma-pregnancy-30wk-rtc` / **mgmt-uterine-displacement** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
+- `trauma-pregnancy-30wk-rtc` / **mgmt-obstetric-team** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
+- `trauma-splenic-injury-stable` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ urgent [known gap: adaptiveTriage has no trauma keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns routine_booking (score 8) for a CT-proven grade III splenic laceration.]
+- `trauma-stab-abdomen-evisceration` / **level-emergency** (web, FAIL (known gap)): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: adaptiveTriage has no stab/penetrating/evisceration keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns same_day_call for an eviscerated stab wound.]
+- `trauma-tension-pneumothorax` / **mgmt-adult-site-not-2nd-ics** (web, FAIL (known gap)): forbidden management item present in web.plan: "...te] tension pneumothorax: needle decompression (14g cannula 2nd ics mcl) → immediate clinical improvement → proceed to icd." (+2 more) [known gap: The pneumothorax protocol says "needle decompression (14G cannula 2nd ICS MCL)" for all patients (and a key point repeats it), while ATLS 10 moved the adult site to the 4th/5th ICS anterior to the mid-axillary line.]
 - `uc-acute-severe-truelove-witts` / **mgmt-no-appendicectomy** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergency surgical indication" and adds the full "LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN" whenever examAbdomen contains "guarding" or "rebound" — including negated text ("no guarding") and localised guarding from other causes.]
 - `uc-flare-cdiff` / **mnm-cdiff** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Haemorrhoids \| 3. Acute Appendicitis [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis".]
 - `uc-flare-cdiff` / **mgmt-cdi-treatment** (web, FAIL (known gap)): no management item matched among 28 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". No output treats CDI (no vancomycin/fidaxomicin).]
@@ -277,6 +334,147 @@ None.
 - `variceal-bleed-unrecognised-cirrhosis` / **mgmt-antibiotic-prophylaxis** (web, FAIL (known gap)): no management item matched among 21 (web.clinicalPrompts) [known gap: No management protocol loads: getProtocolByIcd has no I85 prefix (upper_gi_bleed covers K92.x only), and PANE top is <0.20. Only generic GI-bleed prompts remain (no terlipressin, antibiotics, EVL or 12 h endoscopy on the plan).]
 
 ## Results by condition and permutation
+
+### Symptomatic / leaking abdominal aortic aneurysm (renal colic mimic)
+
+#### `aaa-renal-colic-mimic` — Renal colic mimic, relative hypotension, no known stones
+
+67-year-old male smoker with first-ever left loin-to-groin pain, microscopic haematuria, BP 104/68 (usually 150s), HR 104, no previous stones.
+
+Permutation of `raaa-shock`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-aaa | mustNotMiss | critical | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Add an age ≥60 / no previous stones modifier that keeps aortic aneurysm in the PANE differential for loin pain, and a clinical prompt "first renal colic over 60 — exclude AAA (bedside USS)". |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
+| inv-aorta-imaging | investigationInclude | critical | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Add an "exclude AAA" investigation to the renal colic protocol for age ≥60 without known stones, and map I71.3. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
+| mgmt-vascular | managementInclude | quality | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 |  |
+| mgmt-no-colic-discharge | managementExclude | quality | PASS |  |  |
+
+Failure details:
+
+- **mnm-aaa** (web): not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#5 [known gap: PANE top 3: Renal colic (0.78), Inguinal/femoral hernia, Acute cholecystitis. Symptom inference ranks symptomatic AAA #3.]
+- **inv-aorta-imaging** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: No engine suggests aortic ultrasound or CTA; the management panel shows the renal colic protocol (PANE top) and I71.3 maps to no protocol.]
+- **mgmt-vascular** (web): no management item matched among 17 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Management panel shows the renal colic protocol; no vascular step.]
+
+Guidelines:
+
+- **esvs-aaa-2024** — ESVS 2024 clinical practice guidelines — abdominal aorto-iliac artery aneurysms (2024), Suspected rupture: immediate vascular surgical assessment and transfer to a vascular centre; permissive hypotension in the conscious patient; CT angiography only if the patient is stable enough; EVAR preferred when anatomy is suitable. Consider AAA in older patients presenting with flank/back pain mimicking renal colic. Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 Clinical Practice Guidelines on the Management of Abdominal Aorto-Iliac Artery Aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng156** — NICE NG156 — Abdominal aortic aneurysm: diagnosis and management (2020), Suspected symptomatic or ruptured AAA: immediate discussion with the regional vascular service; imaging should not delay transfer of an unstable patient; permissive hypotension. National Institute for Health and Care Excellence. Abdominal aortic aneurysm: diagnosis and management (NG156). London: NICE; 2020. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Renal Colic / Urolithiasis; 2. Inguinal / Femoral Hernia; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Renal colic / urolithiasis; 2. Renal cell carcinoma; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Bladder transitional cell carcinoma; 5. Prostate adenocarcinoma
+- differential web.passive: 1. Renal colic / urolithiasis; 2. Renal cell carcinoma; 3. Pyelonephritis; 4. Vasovagal / reflex syncope; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=92)
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: loin_pain, radiation_to_groin, haematuria
+- note: AssessmentTab ManagementPanel protocol: renal_colic (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+
+</details>
+
+### Skin abscess (MRSA risk)
+
+#### `abscess-recurrent-mrsa-pwid` — Injecting drug use, previous MRSA, SIRS, groin site
+
+34-year-old man who injects drugs: 3 days of a painful swelling in the right groin at an injection site, previous MRSA abscess; T 38.4 °C, HR 104; 5 cm fluctuant swelling with cellulitis.
+
+Permutation of `abscess-thigh-adult`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-abscess-top3 | mustRankTopK | critical | PASS | IDSA practice guideline 2014 |  |
+| mgmt-mrsa-active-antibiotic | managementInclude | critical | FAIL (known gap) | IDSA practice guideline 2014 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+| mnm-pseudoaneurysm | mustNotMiss | quality | FAIL (known gap) |  |  |
+| level-at-least-urgent | emergencyLevel | quality | PASS | IDSA practice guideline 2014 |  |
+| flag-ivdu | redFlags | quality | FAIL (known gap) |  | Handle negation in scanRedFlags and do not match cardiac keywords inside surgical history. |
+| inv-duplex-before-drainage | investigationInclude | quality | FAIL (known gap) |  |  |
+| inv-mrsa-culture | investigationInclude | quality | FAIL (known gap) | IDSA practice guideline 2014 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+| inv-bbv | investigationInclude | quality | FAIL (known gap) |  |  |
+| mgmt-incision-drainage | managementInclude | quality | FAIL (known gap) | IDSA practice guideline 2014 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+
+Failure details:
+
+- **mnm-pseudoaneurysm** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Skin Abscess / Furuncle \| 3. Acute Cholecystitis [known gap: No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin site chip adds groin_swelling).]
+- **flag-ivdu** (web): no red flag matched among 18 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: The 'IV drug use' toxic habit is not surfaced as a red flag. Triage also fires 'Possible cardiac event' from the words 'left arm' in the surgical history and 'GI or other bleeding' from 'No bleeding' (no negation).]
+- **inv-duplex-before-drainage** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No engine recommends imaging a groin injection-site swelling before incision.]
+- **inv-mrsa-culture** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE's top diagnosis (appendicitis, 0.21) drives the management panel instead.]
+- **inv-bbv** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No blood-borne virus screen suggested for a person who injects drugs.]
+- **mgmt-incision-drainage** (web): no management item matched among 24 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The management panel shows the appendicitis protocol (PANE top 0.21).]
+- **mgmt-mrsa-active-antibiotic** (web): no management item matched among 24 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The management panel shows the appendicitis protocol (PANE top 0.21, groin site → groin_swelling).]
+
+Guidelines:
+
+- **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Appendicitis; 2. Skin Abscess / Furuncle; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Skin abscess / furuncle; 2. Pilonidal sinus / abscess; 3. Perianal abscess; 4. Inguinal hernia (paediatric); 5. Varicocele
+- differential web.passive: 1. Skin abscess / furuncle; 2. Perianal abscess; 3. Pilonidal sinus / abscess; 4. Inguinal hernia (paediatric); 5. Febrile convulsion
+- differential web.triageSurgical: 1. Skin / soft tissue abscess; 2. Inguinal hernia
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=190)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 104 bpm [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]
+- recommended scores: qsofa, child-pugh, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: groin_swelling, fever
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Post-operative Follow-up (General) (5)
+
+</details>
+
+### Skin abscess
+
+#### `abscess-thigh-adult` — 
+
+28-year-old man: 5 days of an enlarging painful lump on the thigh, 4 cm fluctuant abscess with a 1 cm rim of erythema, afebrile, normal observations.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-abscess-top3 | mustRankTopK | critical | PASS | IDSA practice guideline 2014 |  |
+| mgmt-incision-drainage | managementInclude | critical | FAIL (known gap) | IDSA practice guideline 2014 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+| level-not-emergency | emergencyLevel | quality | PASS | IDSA practice guideline 2014 |  |
+| inv-pus-culture | investigationInclude | quality | FAIL (known gap) | IDSA practice guideline 2014 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **inv-pus-culture** (web): no investigation matched among 7 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD L02.415 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-incision-drainage** (web): no management item output on web [known gap: ICD L02.415 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+
+Guidelines:
+
+- **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Skin Abscess / Furuncle; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Skin abscess / furuncle; 2. Hidradenitis suppurativa; 3. Pilonidal sinus / abscess; 4. Perianal abscess; 5. Melanoma / skin malignancy
+- differential web.passive: 1. Skin abscess / furuncle; 2. Hidradenitis suppurativa; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Melanoma / skin malignancy
+- differential web.triageSurgical: 1. Skin / soft tissue abscess
+- emergency level: routine (acuity=routine, action=routine_booking, score=8)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Skin Lesion / Excision (5)
+
+</details>
 
 ### Pseudoachalasia (gastric cardia carcinoma)
 
@@ -446,6 +644,106 @@ Guidelines:
 - note: PANE features applied: (none)
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from ICD)
 - note: PlanTab protocol: adrenal_incidentaloma (from ICD)
+
+</details>
+
+### Acute limb ischaemia (embolic)
+
+#### `ali-embolic-af` — 
+
+76-year-old woman with atrial fibrillation (warfarin stopped after a fall): sudden left leg pain 4 h ago, pale, cold, pulseless below the femoral, numbness beyond the toes and weak toe dorsiflexion — Rutherford IIb.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-ali-top3 | mustRankTopK | critical | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| level-emergency | emergencyLevel | critical | PASS | ESVS 2020 clinical practice guidelines 2020 |  |
+| alarm-ali | mustAlarm | critical | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| mgmt-heparin | managementInclude | critical | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| mgmt-emergency-revascularisation | managementInclude | critical | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| flag-af-embolic-source | redFlags | quality | FAIL (known gap) |  | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| inv-cta-or-duplex | investigationInclude | quality | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| mgmt-no-claudication-plan | managementExclude | quality | PASS |  |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-ali-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholecystitis, GORD, Acute diverticulitis — PANE has no ALI disease. Symptom inference ranks ALI #1.]
+- **alarm-ali** (web): no alarm matched among 2 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
+- **flag-af-embolic-source** (web): no red flag matched among 12 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
+- **inv-cta-or-duplex** (web): no investigation matched among 21 (web.pane.seeded, web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
+- **mgmt-heparin** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
+- **mgmt-emergency-revascularisation** (web): no management item matched among 9 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
+
+Guidelines:
+
+- **esvs-ali-2020** — ESVS 2020 clinical practice guidelines — acute limb ischaemia (2020), Clinical diagnosis (pain, pallor, pulselessness, paraesthesia, paralysis, poikilothermia); Rutherford/TASC categories I, IIa, IIb, III; immediate IV heparin unless contraindicated; IIb (immediately threatened) needs emergency revascularisation; IIa urgent; imaging (CTA) must not delay revascularisation in IIb. Björck M, Earnshaw JJ, Acosta S, et al. European Society for Vascular Surgery (ESVS) 2020 Clinical Practice Guidelines on the Management of Acute Limb Ischaemia. Eur J Vasc Endovasc Surg. 2020;59:173–218. *(statement wording/numbering not yet verified against the source)*
+- **rutherford-1997** — Rutherford — recommended reporting standards for lower-extremity ischaemia (acute ischaemia categories) (1997), Acute limb ischaemia categories: I viable; IIa marginally threatened (minimal sensory loss, no weakness); IIb immediately threatened (sensory loss beyond toes, rest pain, mild–moderate weakness); III irreversible. Rutherford RB, Baker JD, Ernst C, et al. Recommended standards for reports dealing with lower extremity ischemia: revised version. J Vasc Surg. 1997;26:517–38. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. GORD / Reflux Oesophagitis; 3. Acute Diverticulitis
+- differential web.symptomInference: 1. Acute limb ischaemia; 2. Peripheral arterial disease / limb ischaemia; 3. Stroke / TIA; 4. Sciatica / lumbar radiculopathy; 5. Acute compartment syndrome
+- differential web.passive: 1. Acute limb ischaemia; 2. Peripheral arterial disease / limb ischaemia; 3. Stroke / TIA; 4. Sciatica / lumbar radiculopathy; 5. Acute compartment syndrome
+- differential web.triageSurgical: 1. Peripheral arterial / vascular disease
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=84)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: leg_swelling
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Peripheral Vascular Disease (10)
+
+</details>
+
+### Acute limb ischaemia (thrombotic, acute-on-chronic)
+
+#### `ali-thrombotic-diabetic-claudicant` — Diabetic claudicant, thrombosis in situ, Rutherford IIa
+
+68-year-old man with diabetes and known right superficial femoral disease: 2 days of new rest pain, cold pale right foot, numb toes, no weakness; pedal pulses absent with weak Doppler signals — Rutherford IIa.
+
+Permutation of `ali-embolic-af`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-ali | mustNotMiss | critical | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| level-at-least-urgent | emergencyLevel | critical | PASS | ESVS 2020 clinical practice guidelines 2020 |  |
+| mgmt-heparin | managementInclude | critical | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| mgmt-urgent-vascular | managementInclude | critical | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| flag-acute-ischaemia | redFlags | quality | FAIL (known gap) |  | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| inv-cta | investigationInclude | quality | PASS | ESVS 2020 clinical practice guidelines 2020 |  |
+| mgmt-no-routine-claudication-referral | managementExclude | quality | PASS |  |  |
+
+Failure details:
+
+- **mnm-ali** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Peripheral Arterial Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Peripheral arterial disease, GORD — PANE has no ALI disease. Symptom inference ranks PAD #1 and ALI #2.]
+- **flag-acute-ischaemia** (web): no red flag matched among 10 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches same_day_call from age, comorbidity and antiplatelet points.]
+- **mgmt-heparin** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: No protocol matches I74.3 and PANE top is below 0.20 (the PAD protocol would also lack heparin/ALI steps).]
+- **mgmt-urgent-vascular** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: No protocol matches I74.3 and PANE top is below 0.20.]
+
+Guidelines:
+
+- **esvs-ali-2020** — ESVS 2020 clinical practice guidelines — acute limb ischaemia (2020), Clinical diagnosis (pain, pallor, pulselessness, paraesthesia, paralysis, poikilothermia); Rutherford/TASC categories I, IIa, IIb, III; immediate IV heparin unless contraindicated; IIb (immediately threatened) needs emergency revascularisation; IIa urgent; imaging (CTA) must not delay revascularisation in IIb. Björck M, Earnshaw JJ, Acosta S, et al. European Society for Vascular Surgery (ESVS) 2020 Clinical Practice Guidelines on the Management of Acute Limb Ischaemia. Eur J Vasc Endovasc Surg. 2020;59:173–218. *(statement wording/numbering not yet verified against the source)*
+- **rutherford-1997** — Rutherford — recommended reporting standards for lower-extremity ischaemia (acute ischaemia categories) (1997), Acute limb ischaemia categories: I viable; IIa marginally threatened (minimal sensory loss, no weakness); IIb immediately threatened (sensory loss beyond toes, rest pain, mild–moderate weakness); III irreversible. Rutherford RB, Baker JD, Ernst C, et al. Recommended standards for reports dealing with lower extremity ischemia: revised version. J Vasc Surg. 1997;26:517–38. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Peripheral Arterial Disease; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Peripheral arterial disease / limb ischaemia; 2. Acute limb ischaemia; 3. Peripheral neuropathy; 4. Benign prostatic hyperplasia (BPH); 5. Prostate adenocarcinoma
+- differential web.passive: 1. Peripheral arterial disease / limb ischaemia; 2. Acute limb ischaemia; 3. Peripheral neuropathy; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
+- differential web.triageSurgical: 1. Peripheral arterial / vascular disease
+- emergency level: urgent (acuity=priority, action=same_day_call, score=39)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: web:wagner, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nocturnal_pain
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Peripheral Vascular Disease (15)
 
 </details>
 
@@ -2305,6 +2603,434 @@ Guidelines:
 
 </details>
 
+### Major thermal burn (flame), adult
+
+#### `burns-adult-flame-27pct` — 
+
+40-year-old man, 80 kg, petrol flash-flame in open air 2 h ago: 27 % TBSA (anterior trunk 18 %, right arm 9 %) mixed deep partial and full thickness; no inhalation features; HR 118, BP 128/76. Parkland 8,640 mL/24 h, 4,320 mL in the first 8 h from the burn.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | FAIL (known gap) | ATLS 10th edition 2018; American Burn Association 2006 | Add trauma/burns red-flag rules to rules.ts (burn with TBSA, stab/gunshot/penetrating wound, evisceration, high-energy mechanism, head injury on anticoagulant) at urgent severity, and a shock-index or relative-hypotension rule. |
+| mgmt-formal-fluids | managementInclude | critical | FAIL (known gap) | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026; ABA practice guideline 2008 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-burns-referral | managementInclude | critical | FAIL (known gap) | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| dx-major-burn-top3 | mustRankTopK | quality | FAIL (known gap) | ATLS 10th edition 2018 | In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal. Add a "Burn" CC template and symptom chip. |
+| flag-major-burn | redFlags | quality | FAIL (known gap) |  | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| inv-tbsa-assessment | investigationInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-from-time-of-burn | managementInclude | quality | FAIL (known gap) | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026; ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-urine-output-titration | managementInclude | quality | FAIL (known gap) | ABA practice guideline 2008; ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-tetanus | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-no-oral-fluids-only | managementExclude | quality | PASS | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026 |  |
+| mgmt-no-unrelated-plan | managementExclude | quality | PASS |  |  |
+| pathway-burns | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-major-burn-top3** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: GORD, Inguinal/femoral hernia, Acute cholecystitis — socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the burn features are answered but the thermal_burn_major prior is low and there is no burn CC template or chip.]
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: adaptiveTriage has no burn keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns same_day_call for a 27% TBSA burn (HR 118).]
+- **flag-major-burn** (web): no red flag matched among 7 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **inv-tbsa-assessment** (web): no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-formal-fluids** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-from-time-of-burn** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-urine-output-titration** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-burns-referral** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-tetanus** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+
+Guidelines:
+
+- **atls-10-burns** — ATLS 10th edition — thermal injuries (2018), Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.) *(statement wording/numbering not yet verified against the source)*
+- **aba-fluid-2008** — ABA practice guideline — burn shock resuscitation (2008), Formal resuscitation of large burns: crystalloid 2–4 mL/kg/%TBSA over the first 24 h from the time of burn, titrated to urine output (adults 0.5 mL/kg/h); avoid over-resuscitation. Pham TN, Cancio LC, Gibran NS. American Burn Association practice guidelines burn shock resuscitation. J Burn Care Res. 2008;29:257–66. *(statement wording/numbering not yet verified against the source)*
+- **burns-fluid-threshold** — Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) (2026), Formal IV fluid resuscitation only for burns ≥15% TBSA in adults and ≥10% in children, by the Parkland formula (4 mL/kg/%TBSA crystalloid over 24 h); half of the 24 h volume in the first 8 h from the time of burn, adjusted to urine output. The source statement (BBA / NNBC / local burns network) and the ≥ vs > wording are to be identified and verified by the surgeon. Amise Medical Services clinical-validation brief, 2026-09-25 (threshold to be traced to its published source). Parkland formula: Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150:874–94. *(statement wording/numbering not yet verified against the source)*
+- **aba-referral** — American Burn Association — burn centre referral criteria (2006), Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked). American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006. *(statement wording/numbering not yet verified against the source)*
+- **nnbc-2012** — National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance (2012), Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source). National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Inguinal / Femoral Hernia; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Hidradenitis suppurativa; 2. Acute compartment syndrome; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
+- differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=35)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, web:wagner, news2, clavien-dindo
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: heartburn
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Superficial partial-thickness scald, adult, below the formal fluid threshold
+
+#### `burns-adult-scald-14pct` — 14 % superficial partial thickness — no formal IV resuscitation
+
+35-year-old woman, 60 kg, hot-water scald to the fronts of both legs 1 h ago: 14 % TBSA superficial partial thickness, blistered, brisk capillary refill; observations normal.
+
+Permutation of `burns-adult-flame-27pct`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-not-emergency | emergencyLevel | quality | PASS | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026 |  |
+| mgmt-burns-discussion | managementInclude | quality | FAIL (known gap) | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-dressings | managementInclude | quality | FAIL (known gap) | ISBI Practice Guidelines for Burn Care 2016 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-no-formal-iv-resuscitation | managementExclude | quality | PASS | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026 |  |
+| pathway-burns | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mgmt-burns-discussion** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-dressings** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+
+Guidelines:
+
+- **burns-fluid-threshold** — Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) (2026), Formal IV fluid resuscitation only for burns ≥15% TBSA in adults and ≥10% in children, by the Parkland formula (4 mL/kg/%TBSA crystalloid over 24 h); half of the 24 h volume in the first 8 h from the time of burn, adjusted to urine output. The source statement (BBA / NNBC / local burns network) and the ≥ vs > wording are to be identified and verified by the surgeon. Amise Medical Services clinical-validation brief, 2026-09-25 (threshold to be traced to its published source). Parkland formula: Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150:874–94. *(statement wording/numbering not yet verified against the source)*
+- **aba-referral** — American Burn Association — burn centre referral criteria (2006), Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked). American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006. *(statement wording/numbering not yet verified against the source)*
+- **nnbc-2012** — National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance (2012), Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source). National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012. *(statement wording/numbering not yet verified against the source)*
+- **isbi-2016** — ISBI Practice Guidelines for Burn Care (2016), Initial assessment and resuscitation (TBSA estimation, fluid resuscitation guided by urine output, avoid over-resuscitation), inhalation injury, escharotomy, chemical and electrical injury. ISBI Practice Guidelines Committee. ISBI Practice Guidelines for Burn Care. Burns. 2016;42:953–1021. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Minor Thermal Burn (<20% TBSA); 2. Acute Cholecystitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Hidradenitis suppurativa; 2. Acute compartment syndrome; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
+- differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=35)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: web:wagner, news2, clavien-dindo
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: leg_swelling, heartburn
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Chemical (alkali) burn of face, eye and forearms
+
+#### `burns-chemical-alkali` — Alkali (sodium hydroxide) with eye involvement
+
+38-year-old cleaner splashed with oven cleaner (sodium hydroxide) 20 min ago: burns to both forearms and the right cheek (~5 % TBSA), right eye splashed, painful and red.
+
+Permutation of `burns-adult-flame-27pct`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-copious-irrigation | managementInclude | critical | FAIL (known gap) | ATLS 10th edition 2018; British Burn Association 2018 | Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes. |
+| mgmt-burns-referral | managementInclude | critical | FAIL (known gap) | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 | Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes. |
+| flag-chemical | redFlags | quality | FAIL (known gap) |  | Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes. |
+| inv-eye-ph | investigationInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes. |
+| mgmt-remove-clothing | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018; British Burn Association 2018 | Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes. |
+| mgmt-ophthalmology | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes. |
+| mgmt-no-neutralisation | managementExclude | quality | PASS | British Burn Association 2018; ATLS 10th edition 2018 |  |
+| pathway-burns | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **flag-chemical** (web): no red flag matched among 5 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
+- **inv-eye-ph** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
+- **mgmt-copious-irrigation** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
+- **mgmt-remove-clothing** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
+- **mgmt-ophthalmology** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
+- **mgmt-burns-referral** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
+
+Guidelines:
+
+- **atls-10-burns** — ATLS 10th edition — thermal injuries (2018), Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.) *(statement wording/numbering not yet verified against the source)*
+- **bba-first-aid-2018** — British Burn Association — First Aid clinical practice guidelines (2018), Cool the burn with cool running water for 20 minutes, effective up to 3 hours after injury; chemical burns: remove contaminated clothing and irrigate with copious running water; do not attempt neutralisation. British Burn Association. First Aid Clinical Practice Guidelines. Version 1. 2018. *(statement wording/numbering not yet verified against the source)*
+- **aba-referral** — American Burn Association — burn centre referral criteria (2006), Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked). American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006. *(statement wording/numbering not yet verified against the source)*
+- **nnbc-2012** — National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance (2012), Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source). National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Minor Thermal Burn (<20% TBSA); 2. Acute Cholecystitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Acute / chronic sinusitis; 2. Hidradenitis suppurativa; 3. Acute compartment syndrome; 4. Melanoma / skin malignancy; 5. Eczema / psoriasis / inflammatory dermatosis
+- differential web.passive: 1. Acute / chronic sinusitis; 2. Acute compartment syndrome; 3. Hidradenitis suppurativa; 4. Melanoma / skin malignancy; 5. Eczema / psoriasis / inflammatory dermatosis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=35)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: web:wagner, news2, clavien-dindo
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: heartburn
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Immersion scald in a toddler (suspected non-accidental injury)
+
+#### `burns-child-immersion-nai` — Immersion pattern, special areas, delayed presentation
+
+18-month-old girl, 11 kg, "climbed into a hot bath": symmetrical stocking-distribution scalds of both feet and ankles and the buttocks/perineum with sharp tide-marks and flexural sparing, presented 12 h later; about 8 % TBSA.
+
+Permutation of `burns-child-scald-12pct`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | PASS | NICE CG89 2009; American Burn Association 2006 |  |
+| flag-safeguarding | redFlags | critical | FAIL (known gap) | NICE CG89 2009 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
+| mgmt-safeguarding-referral | managementInclude | critical | FAIL (known gap) | NICE CG89 2009 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
+| mgmt-paediatric-burns-referral | managementInclude | critical | FAIL (known gap) | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | NICE CG89 2009 |  |
+| flag-special-areas | redFlags | quality | FAIL (known gap) | American Burn Association 2006 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
+| inv-skeletal-survey | investigationInclude | quality | FAIL (known gap) | RCR/RCPCH 2017 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
+| pathway-burns | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **flag-safeguarding** (web): no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
+- **flag-special-areas** (web): no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
+- **inv-skeletal-survey** (web): no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
+- **mgmt-safeguarding-referral** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
+- **mgmt-paediatric-burns-referral** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
+
+Guidelines:
+
+- **nice-cg89** — NICE CG89 — Child maltreatment: when to suspect maltreatment in under 18s (2009), Suspect maltreatment: bruising in a child who is not independently mobile; bruises on ears, neck, trunk, buttocks; explanation absent, inconsistent or implausible; delayed presentation; burns/scalds with immersion pattern (glove/stocking, symmetrical, buttocks/perineum/lower limbs, sharp demarcation) → follow local safeguarding procedures. National Institute for Health and Care Excellence. Child maltreatment: when to suspect maltreatment in under 18s (CG89). London: NICE; 2009 (updated 2017). *(statement wording/numbering not yet verified against the source)*
+- **rcr-rcpch-2017** — RCR/RCPCH — radiological investigation of suspected physical abuse in children (2017), Skeletal survey in children under 2 years with suspected physical abuse; CT head in children under 1 year with suspected physical abuse. The Royal College of Radiologists, Royal College of Paediatrics and Child Health. The radiological investigation of suspected physical abuse in children. London: RCR; 2017 (revised 2018). *(statement wording/numbering not yet verified against the source)*
+- **aba-referral** — American Burn Association — burn centre referral criteria (2006), Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked). American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006. *(statement wording/numbering not yet verified against the source)*
+- **nnbc-2012** — National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance (2012), Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source). National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Minor Thermal Burn (<20% TBSA); 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
+- differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=83)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 132 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, web:wagner, news2, clavien-dindo
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Scald burn in a child requiring formal fluid resuscitation
+
+#### `burns-child-scald-12pct` — Child 3 years, 15 kg, 12 % TBSA by Lund–Browder
+
+3-year-old boy, 15 kg, pulled a kettle onto himself 1 h ago: 12 % TBSA (Lund–Browder) partial-thickness scald to the anterior chest and right arm; HR 150, capillary refill 3 s. Parkland 720 mL/24 h plus maintenance fluid; urine output 1 mL/kg/h.
+
+Permutation of `burns-adult-flame-27pct`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | ATLS 10th edition 2018; Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026 |  |
+| mgmt-formal-fluids | managementInclude | critical | FAIL (known gap) | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026; ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-paediatric-burns-referral | managementInclude | critical | FAIL (known gap) | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| flag-paediatric-burn | redFlags | quality | FAIL (known gap) |  | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| inv-lund-browder | investigationInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-maintenance-fluid | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-child-urine-target | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
+| mgmt-no-oral-fluids-only | managementExclude | quality | PASS | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026 |  |
+| pathway-burns | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **flag-paediatric-burn** (web): no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
+- **inv-lund-browder** (web): no investigation matched among 13 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
+- **mgmt-formal-fluids** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
+- **mgmt-maintenance-fluid** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
+- **mgmt-child-urine-target** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
+- **mgmt-paediatric-burns-referral** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
+
+Guidelines:
+
+- **burns-fluid-threshold** — Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) (2026), Formal IV fluid resuscitation only for burns ≥15% TBSA in adults and ≥10% in children, by the Parkland formula (4 mL/kg/%TBSA crystalloid over 24 h); half of the 24 h volume in the first 8 h from the time of burn, adjusted to urine output. The source statement (BBA / NNBC / local burns network) and the ≥ vs > wording are to be identified and verified by the surgeon. Amise Medical Services clinical-validation brief, 2026-09-25 (threshold to be traced to its published source). Parkland formula: Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150:874–94. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-burns** — ATLS 10th edition — thermal injuries (2018), Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.) *(statement wording/numbering not yet verified against the source)*
+- **aba-referral** — American Burn Association — burn centre referral criteria (2006), Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked). American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006. *(statement wording/numbering not yet verified against the source)*
+- **nnbc-2012** — National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance (2012), Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source). National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Major Thermal Burn (>20% TBSA); 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Intussusception; 2. Inguinal hernia (paediatric); 3. Bacterial meningitis (paediatric); 4. Acute compartment syndrome; 5. Hidradenitis suppurativa
+- differential web.passive: 1. Intussusception; 2. Acute compartment syndrome; 3. Hidradenitis suppurativa; 4. Malrotation / midgut volvulus; 5. Melanoma / skin malignancy
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=95)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 150 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, web:wagner, news2, clavien-dindo
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Circumferential full-thickness burn of the forearm and hand
+
+#### `burns-circumferential-forearm-hand` — Circumferential full-thickness limb burn with distal ischaemia (6 % TBSA)
+
+45-year-old man, 90 kg, burning cooking oil 5 h ago: circumferential full-thickness burn of the right forearm and hand (6 % TBSA); hand cool, capillary refill 4 s, weak oximetry trace, pain on passive finger extension.
+
+Permutation of `burns-adult-flame-27pct`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | PASS | ATLS 10th edition 2018 |  |
+| flag-circumferential | redFlags | critical | FAIL (known gap) | ATLS 10th edition 2018; ISBI Practice Guidelines for Burn Care 2016 | Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA. |
+| mgmt-escharotomy | managementInclude | critical | FAIL (known gap) | ATLS 10th edition 2018; ISBI Practice Guidelines for Burn Care 2016 | Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA. |
+| mgmt-burns-referral | managementInclude | critical | FAIL (known gap) | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 | Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA. |
+| mgmt-elevation | managementInclude | quality | FAIL (known gap) | ISBI Practice Guidelines for Burn Care 2016 | Map T20–T25 site burn codes; add circumferential full-thickness → escharotomy and hand → burns referral to the burn protocols regardless of TBSA. |
+| pathway-burns | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **flag-circumferential** (web): no red flag matched among 5 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-escharotomy** (web): no management item matched among 1 (web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-burns-referral** (web): no management item matched among 1 (web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-elevation** (web): no management item matched among 1 (web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+
+Guidelines:
+
+- **atls-10-burns** — ATLS 10th edition — thermal injuries (2018), Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.) *(statement wording/numbering not yet verified against the source)*
+- **isbi-2016** — ISBI Practice Guidelines for Burn Care (2016), Initial assessment and resuscitation (TBSA estimation, fluid resuscitation guided by urine output, avoid over-resuscitation), inhalation injury, escharotomy, chemical and electrical injury. ISBI Practice Guidelines Committee. ISBI Practice Guidelines for Burn Care. Burns. 2016;42:953–1021. *(statement wording/numbering not yet verified against the source)*
+- **aba-referral** — American Burn Association — burn centre referral criteria (2006), Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked). American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006. *(statement wording/numbering not yet verified against the source)*
+- **nnbc-2012** — National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance (2012), Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source). National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Inguinal / Femoral Hernia; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Acute compartment syndrome; 2. Sciatica / lumbar radiculopathy; 3. Lumbar disc disease / sciatica; 4. Carpal tunnel syndrome; 5. Acute limb ischaemia
+- differential web.passive: 1. Acute compartment syndrome; 2. Sciatica / lumbar radiculopathy; 3. Lumbar disc disease / sciatica; 4. Acute limb ischaemia; 5. Carpal tunnel syndrome
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=35)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: web:wagner, news2, clavien-dindo
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: heartburn
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### High-voltage electrical injury
+
+#### `burns-electrical-high-voltage` — High-voltage electrical, small visible TBSA, myoglobinuria
+
+30-year-old lineman, 75 kg, 11 kV contact 1 h ago with brief loss of consciousness: charred entry wound right hand, exit wound left foot, 4 % visible TBSA; tense right forearm; dark brown urine, CK 18,000, K 5.6.
+
+Permutation of `burns-adult-flame-27pct`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | ATLS 10th edition 2018 |  |
+| flag-myoglobinuria | redFlags | critical | PASS | ATLS 10th edition 2018 |  |
+| inv-ecg-monitoring | investigationInclude | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-rhabdo-fluids | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-burns-referral | managementInclude | critical | PASS | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 |  |
+| mgmt-no-oral-fluids-only | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
+| dx-electrical-top3 | mustRankTopK | quality | FAIL (known gap) | ATLS 10th edition 2018 | In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal. |
+| inv-ck | investigationInclude | quality | PASS | ATLS 10th edition 2018 |  |
+| mgmt-fasciotomy | managementInclude | quality | PASS | ATLS 10th edition 2018 |  |
+| pathway-burns | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-electrical-top3** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis [known gap: PANE top 3: GORD, Inguinal/femoral hernia, Acute appendicitis — socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. The plan is correct only because ICD T75.4XXA maps to the electrical-burn protocol.]
+
+Guidelines:
+
+- **atls-10-burns** — ATLS 10th edition — thermal injuries (2018), Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.) *(statement wording/numbering not yet verified against the source)*
+- **aba-referral** — American Burn Association — burn centre referral criteria (2006), Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked). American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006. *(statement wording/numbering not yet verified against the source)*
+- **nnbc-2012** — National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance (2012), Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source). National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Inguinal / Femoral Hernia; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Acute compartment syndrome; 2. CBD stone / obstructive jaundice; 3. Sciatica / lumbar radiculopathy; 4. Osteomyelitis (paediatric); 5. Biliary atresia
+- differential web.passive: 1. Acute compartment syndrome; 2. CBD stone / obstructive jaundice; 3. Sciatica / lumbar radiculopathy; 4. Osteomyelitis (paediatric); 5. Biliary atresia
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=75)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Potassium 5.6 mmol/L — hyperkalaemia [web.clinicalPrompts.safety]
+- recommended scores: web:wagner, news2, clavien-dindo, asge-cbd
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: heartburn
+- note: AssessmentTab ManagementPanel protocol: electrical_burn (from ICD)
+- note: PlanTab protocol: electrical_burn (from ICD)
+- note: matchPathways: Wound Management (Acute / Chronic / SSI) (10), Jaundice Workup (5)
+
+</details>
+
+### Inhalation injury with facial and hand burns (enclosed-space fire)
+
+#### `burns-inhalation-enclosed-space` — Inhalation injury, carbon monoxide, face and hands
+
+52-year-old man, 85 kg, rescued from a burning house: singed nasal hairs, soot in the mouth, hoarse voice, carbonaceous sputum, early stridor; 18 % TBSA flame burns to face, neck, chest and both hands; SpO₂ 96 % on oxygen, COHb 18 %.
+
+Permutation of `burns-adult-flame-27pct`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | ATLS 10th edition 2018 |  |
+| flag-inhalation | redFlags | critical | FAIL (known gap) | ATLS 10th edition 2018 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
+| inv-cohb | investigationInclude | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-early-intubation | managementInclude | critical | FAIL (known gap) | ATLS 10th edition 2018; ISBI Practice Guidelines for Burn Care 2016 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
+| mgmt-100-oxygen | managementInclude | critical | FAIL (known gap) | ATLS 10th edition 2018 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
+| mgmt-burns-referral | managementInclude | critical | FAIL (known gap) | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
+| dx-burn-top3 | mustRankTopK | quality | PASS | ATLS 10th edition 2018 |  |
+| flag-special-areas | redFlags | quality | FAIL (known gap) | American Burn Association 2006 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
+| mgmt-formal-fluids | managementInclude | quality | FAIL (known gap) | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026; ABA practice guideline 2008 | Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum). |
+| pathway-burns | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **flag-inhalation** (web): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+- **flag-special-areas** (web): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+- **mgmt-early-intubation** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+- **mgmt-100-oxygen** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+- **mgmt-formal-fluids** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+- **mgmt-burns-referral** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
+
+Guidelines:
+
+- **atls-10-burns** — ATLS 10th edition — thermal injuries (2018), Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.) *(statement wording/numbering not yet verified against the source)*
+- **isbi-2016** — ISBI Practice Guidelines for Burn Care (2016), Initial assessment and resuscitation (TBSA estimation, fluid resuscitation guided by urine output, avoid over-resuscitation), inhalation injury, escharotomy, chemical and electrical injury. ISBI Practice Guidelines Committee. ISBI Practice Guidelines for Burn Care. Burns. 2016;42:953–1021. *(statement wording/numbering not yet verified against the source)*
+- **aba-referral** — American Burn Association — burn centre referral criteria (2006), Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked). American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006. *(statement wording/numbering not yet verified against the source)*
+- **nnbc-2012** — National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance (2012), Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source). National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012. *(statement wording/numbering not yet verified against the source)*
+- **aba-fluid-2008** — ABA practice guideline — burn shock resuscitation (2008), Formal resuscitation of large burns: crystalloid 2–4 mL/kg/%TBSA over the first 24 h from the time of burn, titrated to urine output (adults 0.5 mL/kg/h); avoid over-resuscitation. Pham TN, Cancio LC, Gibran NS. American Burn Association practice guidelines burn shock resuscitation. J Burn Care Res. 2008;29:257–66. *(statement wording/numbering not yet verified against the source)*
+- **burns-fluid-threshold** — Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) (2026), Formal IV fluid resuscitation only for burns ≥15% TBSA in adults and ≥10% in children, by the Parkland formula (4 mL/kg/%TBSA crystalloid over 24 h); half of the 24 h volume in the first 8 h from the time of burn, adjusted to urine output. The source statement (BBA / NNBC / local burns network) and the ≥ vs > wording are to be identified and verified by the surgeon. Amise Medical Services clinical-validation brief, 2026-09-25 (threshold to be traced to its published source). Parkland formula: Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150:874–94. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. GORD / Reflux Oesophagitis; 3. Major Thermal Burn (>20% TBSA)
+- differential web.symptomInference: 1. Croup / laryngotracheobronchitis; 2. Laryngitis / vocal cord pathology; 3. Epiglottitis; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Thyroid carcinoma
+- differential web.passive: 1. Croup / laryngotracheobronchitis; 2. Laryngitis / vocal cord pathology; 3. Epiglottitis; 4. Upper respiratory tract infection (URTI); 5. Thyroid carcinoma
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=95)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 124 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, web:wagner, news2, clavien-dindo, curb65
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: neck_lump, heartburn
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
 ### Caecal volvulus
 
 #### `caecal-volvulus` — Caecal volvulus (surgery, not endoscopy), woman of reproductive age
@@ -2442,6 +3168,164 @@ Guidelines:
 - note: PlanTab protocol: (none) (from ICD)
 - note: no web calculator for score form 'qsofa'
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
+
+</details>
+
+### Cellulitis
+
+#### `cellulitis-leg-adult` — 
+
+45-year-old woman: 2 days of a hot, red, tender right shin with a clear edge, tinea between the toes, T 37.8 °C, HR 92; no fluctuance, no crepitus; WBC 11.2, CRP 48.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cellulitis-top3 | mustRankTopK | critical | PASS | NICE NG141 2019; IDSA practice guideline 2014 |  |
+| mnm-dvt | mustNotMiss | quality | FAIL (known gap) | NICE NG158 2020 |  |
+| level-not-emergency | emergencyLevel | quality | FAIL (known gap) | NICE NG141 2019 | Require a diabetes context (comorbidity or diabetic-foot words other than 'spreading redness') for the diabetic-foot red flag. |
+| no-shock-alarm | mustNotAlarm | quality | PASS |  |  |
+| inv-mark-border | investigationInclude | quality | FAIL (known gap) | NICE NG141 2019 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+| mgmt-flucloxacillin | managementInclude | quality | FAIL (known gap) | NICE NG141 2019 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+| mgmt-safety-net-nsti | managementInclude | quality | FAIL (known gap) | NICE NG141 2019 | Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix. |
+| mgmt-no-debridement | managementExclude | quality | PASS |  |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mnm-dvt** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Cellulitis \| 3. GORD / Reflux Oesophagitis; also in web.triageSurgical#1 [known gap: PANE top 3: Acute cholecystitis, Cellulitis, GORD; DVT not listed. Triage surgical matches list DVT #1.]
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Over-triage: the HPI word 'spreading redness' matches the diabetic-foot red flag (rules.ts, urgent) → emergency_now in a non-diabetic with mild cellulitis.]
+- **inv-mark-border** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-flucloxacillin** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-safety-net-nsti** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+
+Guidelines:
+
+- **nice-ng141** — NICE NG141 — Cellulitis and erysipelas: antimicrobial prescribing (2019), Recommendations 1.1: mark the extent; consider admission for severe illness or sepsis; first-choice oral antibiotic for non-severe cellulitis in adults is flucloxacillin; IV options when severely unwell. National Institute for Health and Care Excellence. Cellulitis and erysipelas: antimicrobial prescribing (NG141). London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+- **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng158** — NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (2020), DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low. National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Cellulitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Pyelonephritis
+- differential web.passive: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Sickle cell vaso-occlusive crisis
+- differential web.triageSurgical: 1. Leg swelling — possible DVT
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=73)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, qsofa, news2, asa, stop-bang
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: leg_swelling, heartburn, fever
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Diabetic Foot (5)
+
+</details>
+
+### Cellulitis with sepsis
+
+#### `cellulitis-sepsis-elderly-diabetic` — Elderly, diabetic, sepsis (Eron III)
+
+78-year-old man with diabetes and heart failure: left leg cellulitis with confusion, T 39.2 °C, HR 118, RR 24, BP 94/56, lactate 3.8, WBC 19.
+
+Permutation of `cellulitis-leg-adult`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-cellulitis-top3 | mustRankTopK | critical | FAIL (known gap) | IDSA practice guideline 2014 | Weight skin features (erythema_surrounding, skin_ulceration) against systemic fever in PANE; do not let fever/rigors alone select a biliary disease without RUQ or jaundice features. |
+| mnm-nsti | mustNotMiss | critical | FAIL (known gap) | IDSA practice guideline 2014; WSES/SIS-E consensus conference 2018 |  |
+| level-emergency | emergencyLevel | critical | PASS | NICE NG51 2016; Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | NICE NG51 2016; Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| score-qsofa-calculator | scoreValue | critical | n/a | Sepsis-3 consensus definitions 2016 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021; NICE NG51 2016 |  |
+| mgmt-iv-antibiotics | managementInclude | critical | PASS | NICE NG141 2019; NICE NG51 2016; IDSA practice guideline 2014 |  |
+| flag-beta-blocker | redFlags | quality | FAIL (known gap) |  |  |
+| score-rec-qsofa | scoreRecommended | quality | PASS | Sepsis-3 consensus definitions 2016 |  |
+| score-qsofa-autofill | scoreValue | quality | n/a | Sepsis-3 consensus definitions 2016 |  |
+| inv-lactate | investigationInclude | quality | PASS | NICE NG51 2016 |  |
+| mgmt-fluids | managementInclude | quality | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-no-oral-only | managementExclude | quality | PASS |  |  |
+
+Failure details:
+
+- **dx-cellulitis-top3** (web): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Liver Abscess \| 3. Acute Diverticulitis; also in web.symptomInference#3, web.passive#2 [known gap: PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis (fever/rigors dominate; the 'leg' site adds leg_swelling). The management panel therefore shows the cholangitis protocol. Symptom inference ranks cellulitis #3.]
+- **mnm-nsti** (web): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Liver Abscess \| 3. Acute Diverticulitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis. Symptom inference ranks NSTI #4.]
+- **flag-beta-blocker** (web): no red flag matched among 19 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No engine flags that bisoprolol blunts the tachycardic response.]
+
+Guidelines:
+
+- **nice-ng141** — NICE NG141 — Cellulitis and erysipelas: antimicrobial prescribing (2019), Recommendations 1.1: mark the extent; consider admission for severe illness or sepsis; first-choice oral antibiotic for non-severe cellulitis in adults is flucloxacillin; IV options when severely unwell. National Institute for Health and Care Excellence. Cellulitis and erysipelas: antimicrobial prescribing (NG141). London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
+- **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+- **wses-sis-ssti-2018** — WSES/SIS-E consensus conference — management of skin and soft-tissue infections (2018), Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene. Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng51** — NICE NG51 — Sepsis: recognition, diagnosis and early management (2016), High-risk criteria (e.g. new altered mental state, RR ≥25, SBP ≤90, HR >130, lactate ≥2 with other criteria): blood cultures, IV antibiotics within 1 h, fluids, senior review. National Institute for Health and Care Excellence. Sepsis: recognition, diagnosis and early management (NG51). London: NICE; 2016 (updated). *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+- **sepsis-3** — Sepsis-3 consensus definitions (2016), qSOFA: RR ≥22, altered mentation, SBP ≤100 mmHg. Singer M, Deutschman CS, Seymour CW, et al. The Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). JAMA. 2016;315:801–10. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng158** — NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (2020), DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low. National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholangitis; 2. Liver Abscess; 3. Acute Diverticulitis
+- differential web.symptomInference: 1. Sepsis / systemic infection; 2. Fournier's gangrene; 3. Cellulitis / soft tissue infection; 4. Necrotising fasciitis; 5. Malaria
+- differential web.passive: 1. Sepsis / systemic infection; 2. Cellulitis / soft tissue infection; 3. Necrotising fasciitis; 4. Fournier's gangrene; 5. Malaria
+- differential web.triageSurgical: 1. Varicose veins with ulceration
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=78)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 19.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 168 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 39.2°C + HR 118 bpm [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, qsofa, gcs, web:wagner, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: leg_swelling, fever, rigors
+- note: AssessmentTab ManagementPanel protocol: cholangitis (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: no web calculator for score form 'qsofa'
+- note: no web calculator for score form 'sirs'
+- note: matchPathways: Varicose Veins (5)
+
+</details>
+
+### Active Charcot neuro-osteoarthropathy
+
+#### `charcot-foot-cellulitis-mimic` — Hot swollen foot with intact skin (Charcot, not cellulitis)
+
+58-year-old man with diabetes and neuropathy: 3 weeks of a warm, swollen, red right midfoot after a minor twist, intact skin, foot 3 °C warmer than the other, afebrile, CRP 9, WBC 7.8; X-ray subtle midfoot fragmentation.
+
+Permutation of `dfi-moderate-osteomyelitis`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-charcot | mustNotMiss | critical | FAIL (known gap) | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add active Charcot neuro-osteoarthropathy to PANE and symptom inference (warm swollen neuropathic foot, intact skin, temperature difference) and to the diabetic-foot protocol set. |
+| mgmt-immobilise-offload | managementInclude | critical | FAIL (known gap) | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| level-priority | emergencyLevel | quality | PASS | NICE NG19 2015 |  |
+| inv-mri | investigationInclude | quality | FAIL (known gap) | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-no-escalated-antibiotics | managementExclude | quality | PASS | IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) 2023 |  |
+
+Failure details:
+
+- **mnm-charcot** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: No engine has Charcot neuro-osteoarthropathy (PANE, symptom inference, triage). Symptom inference ranks cellulitis, gout, Fournier's.]
+- **inv-mri** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **mgmt-immobilise-offload** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+
+Guidelines:
+
+- **iwgdf-2023-charcot** — IWGDF guidelines on active Charcot neuro-osteoarthropathy (2023) (2023), Suspect active Charcot in a person with diabetes and neuropathy with a warm, swollen, red foot (intact skin); X-ray then MRI if X-ray normal; immediate offloading/immobilisation (non-removable knee-high device) while the diagnosis is confirmed. Wukich DK, Schaper NC, Gooday C, et al. Guidelines on the diagnosis and treatment of active Charcot neuro-osteoarthropathy in persons with diabetes mellitus (IWGDF 2023). Diabetes Metab Res Rev. 2024;40:e3646. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng19** — NICE NG19 — Diabetic foot problems: prevention and management (2015), Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services. National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. GORD / Reflux Oesophagitis; 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Cellulitis / soft tissue infection; 2. Gout / pseudogout; 3. Fournier's gangrene; 4. Peripheral neuropathy; 5. Rheumatoid arthritis
+- differential web.passive: 1. Cellulitis / soft tissue infection; 2. Peripheral neuropathy; 3. Gout / pseudogout; 4. Rheumatoid arthritis; 5. Septic arthritis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=52)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, web:wagner, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
 
@@ -3833,6 +4717,218 @@ Guidelines:
 
 </details>
 
+### Diabetes-related foot infection with osteomyelitis
+
+#### `dfi-moderate-osteomyelitis` — 
+
+61-year-old man with type 2 diabetes and neuropathy: plantar ulcer under the 1st metatarsal head for 6 weeks, cellulitis 3 cm around it, probe-to-bone positive, afebrile; X-ray cortical erosion of the 1st metatarsal head. IWGDF/IDSA grade 3(O).
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-osteomyelitis | mustNotMiss | critical | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-foot-xray | investigationInclude | critical | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| level-at-least-urgent | emergencyLevel | quality | PASS | NICE NG19 2015 |  |
+| flag-diabetic-foot | redFlags | quality | PASS |  |  |
+| inv-mri-or-bone-sample | investigationInclude | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-deep-tissue-culture | investigationInclude | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| inv-vascular-assessment | investigationInclude | quality | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-offloading | managementInclude | quality | FAIL (known gap) | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-mdt-foot | managementInclude | quality | FAIL (known gap) | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-antibiotic | managementInclude | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-iwgdf-grade | managementInclude | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023; IWGDF guidelines on the classification of foot ulcers in people with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mnm-osteomyelitis** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3: Inguinal/femoral hernia, GORD, Acute cholecystitis — PANE has no diabetic-foot or osteomyelitis disease. Symptom inference and triage rank diabetic foot #1.]
+- **inv-foot-xray** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **inv-mri-or-bone-sample** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **inv-deep-tissue-culture** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **inv-vascular-assessment** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **mgmt-offloading** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **mgmt-mdt-foot** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **mgmt-antibiotic** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **mgmt-iwgdf-grade** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain. The web CDS suggests the Wagner scale; IWGDF 2023 recommends IWGDF/IDSA for infection.]
+
+Guidelines:
+
+- **iwgdf-2023-infection** — IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) (2023), IWGDF/IDSA classification: 1 uninfected, 2 mild, 3 moderate (erythema >2 cm or deeper structures), 4 severe (with SIRS); (O) suffix for osteomyelitis; probe-to-bone plus plain X-ray, MRI when unclear; culture deep tissue (not swabs); do not give antibiotics for uninfected ulcers; urgent surgical consultation for severe infection, deep abscess, gas or necrotising infection, extensive gangrene. Senneville É, Albalawi Z, van Asten SA, et al. IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (IWGDF/IDSA 2023). Diabetes Metab Res Rev. 2024;40:e3687. *(statement wording/numbering not yet verified against the source)*
+- **iwgdf-2023-classification** — IWGDF guidelines on the classification of foot ulcers in people with diabetes (2023) (2023), Use SINBAD for communication between professionals; IWGDF/IDSA for infection; WIfI for peripheral artery disease; Wagner is not among the recommended systems. Monteiro-Soares M, Hamilton EJ, Russell DA, et al. Guidelines on the classification of foot ulcers in people with diabetes (IWGDF 2023 update). Diabetes Metab Res Rev. 2024;40:e3648. *(statement wording/numbering not yet verified against the source)*
+- **iwgdf-2023-pad** — Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) (2023), Assess every foot ulcer for PAD: pedal pulses plus Doppler waveforms, ABI and TBI (ABI unreliable when vessels are incompressible); toe pressure <30 mmHg or TBI <0.25 → urgent vascular imaging and consideration of revascularisation. Fitridge R, Chuter V, Mills J, et al. The intersocietal IWGDF, ESVS, SVS guidelines on peripheral artery disease in people with diabetes and a foot ulcer. Diabetes Metab Res Rev. 2024;40:e3686. *(statement wording/numbering not yet verified against the source)*
+- **iwgdf-2023-offloading** — IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) (2023), Neuropathic plantar forefoot/midfoot ulcer: non-removable knee-high offloading device first choice. Bus SA, Armstrong DG, Crews RT, et al. Guidelines on offloading foot ulcers in persons with diabetes (IWGDF 2023 update). Diabetes Metab Res Rev. 2024;40:e3647. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng19** — NICE NG19 — Diabetic foot problems: prevention and management (2015), Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services. National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. GORD / Reflux Oesophagitis; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Diabetic foot infection / ischaemia; 2. Peripheral neuropathy; 3. Peripheral arterial disease / limb ischaemia; 4. Benign prostatic hyperplasia (BPH); 5. Prostate adenocarcinoma
+- differential web.passive: 1. Diabetic foot infection / ischaemia; 2. Peripheral neuropathy; 3. Peripheral arterial disease / limb ischaemia; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
+- differential web.triageSurgical: 1. Diabetic foot ulcer; 2. Suspicious skin lesion / possible skin cancer
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=99)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; HbA1c 9.1% — poorly controlled diabetes [web.clinicalPrompts.safety]
+- recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Diabetic Foot (15), Wound Management (Acute / Chronic / SSI) (10)
+
+</details>
+
+### Severe diabetes-related foot infection (wet gangrene, deep abscess)
+
+#### `dfi-severe-wet-gangrene-abscess` — IWGDF/IDSA grade 4: wet gangrene, plantar abscess, sepsis
+
+72-year-old woman on insulin: wet gangrene of the 2nd–3rd toes, fluctuant plantar space swelling, cellulitis to the midfoot, foul smell; T 38.9 °C, HR 122, RR 24, BP 98/60; glucose 24, WBC 23, lactate 3.4; X-ray gas in the plantar soft tissues.
+
+Permutation of `dfi-moderate-osteomyelitis`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-dfi | mustNotMiss | critical | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| level-emergency | emergencyLevel | critical | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023; NICE NG19 2015 |  |
+| alarm-sepsis | mustAlarm | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-urgent-surgery | managementInclude | critical | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-iv-broad-spectrum | managementInclude | critical | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
+| mnm-nsti | mustNotMiss | quality | FAIL (known gap) | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
+| inv-vascular-imaging | investigationInclude | quality | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-vascular | managementInclude | quality | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-glycaemic | managementInclude | quality | PASS |  |  |
+
+Failure details:
+
+- **mnm-dfi** (web): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis; also in web.symptomInference#4, web.passive#3, web.triageSurgical#1 [known gap: PANE top 3: Acute cholangitis, Acute cholecystitis, Acute diverticulitis (fever/rigors). Triage surgical matches rank diabetic foot #1; symptom inference #4.]
+- **mnm-nsti** (web): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis [known gap: PANE top 3 omits NSTI/gas gangrene despite crepitus and soft-tissue gas.]
+- **inv-vascular-imaging** (web): no investigation matched among 32 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **mgmt-urgent-surgery** (web): no management item matched among 26 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain. Prompts give generic sepsis antibiotics only; no drainage/debridement of the plantar abscess.]
+- **mgmt-vascular** (web): no management item matched among 26 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+
+Guidelines:
+
+- **iwgdf-2023-infection** — IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) (2023), IWGDF/IDSA classification: 1 uninfected, 2 mild, 3 moderate (erythema >2 cm or deeper structures), 4 severe (with SIRS); (O) suffix for osteomyelitis; probe-to-bone plus plain X-ray, MRI when unclear; culture deep tissue (not swabs); do not give antibiotics for uninfected ulcers; urgent surgical consultation for severe infection, deep abscess, gas or necrotising infection, extensive gangrene. Senneville É, Albalawi Z, van Asten SA, et al. IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (IWGDF/IDSA 2023). Diabetes Metab Res Rev. 2024;40:e3687. *(statement wording/numbering not yet verified against the source)*
+- **iwgdf-2023-pad** — Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) (2023), Assess every foot ulcer for PAD: pedal pulses plus Doppler waveforms, ABI and TBI (ABI unreliable when vessels are incompressible); toe pressure <30 mmHg or TBI <0.25 → urgent vascular imaging and consideration of revascularisation. Fitridge R, Chuter V, Mills J, et al. The intersocietal IWGDF, ESVS, SVS guidelines on peripheral artery disease in people with diabetes and a foot ulcer. Diabetes Metab Res Rev. 2024;40:e3686. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng19** — NICE NG19 — Diabetic foot problems: prevention and management (2015), Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services. National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholangitis; 2. Acute Cholecystitis; 3. Acute Diverticulitis
+- differential web.symptomInference: 1. Sepsis / systemic infection; 2. Malaria; 3. Pyelonephritis; 4. Diabetic foot infection / ischaemia; 5. Infective endocarditis
+- differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Diabetic foot infection / ischaemia; 4. Pyelonephritis; 5. Infective endocarditis
+- differential web.triageSurgical: 1. Diabetic foot ulcer; 2. Foot gangrene / critical limb ischaemia; 3. Skin / soft tissue abscess; 4. Peripheral arterial / vascular disease
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=230)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; BGL 24 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 23 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 132 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.9°C + HR 122 bpm [web.clinicalPrompts.safety]
+- recommended scores: qsofa, web:wagner, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: fever, rigors
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Diabetic Foot (15), Peripheral Vascular Disease (10)
+
+</details>
+
+### Ischaemic diabetes-related foot ulcer (chronic limb-threatening ischaemia)
+
+#### `dfu-ischaemic-calcified-abpi` — Ischaemic ulcer, falsely normal ABPI (incompressible vessels)
+
+74-year-old man with diabetes and CKD: 8-week heel ulcer, no infection, absent pedal pulses, ABPI 1.4 (incompressible), toe pressure 24 mmHg, TBPI 0.18.
+
+Permutation of `dfi-moderate-osteomyelitis`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-limb-ischaemia | mustNotMiss | critical | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
+| level-at-least-priority | emergencyLevel | critical | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023; NICE NG19 2015 |  |
+| inv-toe-pressure-or-imaging | investigationInclude | critical | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
+| mgmt-vascular-referral | managementInclude | critical | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
+| mgmt-no-compression | managementExclude | critical | PASS | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
+| flag-incompressible | redFlags | quality | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 |  |
+| mgmt-no-antibiotics-uninfected | managementExclude | quality | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
+
+Failure details:
+
+- **flag-incompressible** (web): no red flag matched among 18 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring.]
+
+Guidelines:
+
+- **iwgdf-2023-pad** — Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) (2023), Assess every foot ulcer for PAD: pedal pulses plus Doppler waveforms, ABI and TBI (ABI unreliable when vessels are incompressible); toe pressure <30 mmHg or TBI <0.25 → urgent vascular imaging and consideration of revascularisation. Fitridge R, Chuter V, Mills J, et al. The intersocietal IWGDF, ESVS, SVS guidelines on peripheral artery disease in people with diabetes and a foot ulcer. Diabetes Metab Res Rev. 2024;40:e3686. *(statement wording/numbering not yet verified against the source)*
+- **iwgdf-2023-infection** — IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) (2023), IWGDF/IDSA classification: 1 uninfected, 2 mild, 3 moderate (erythema >2 cm or deeper structures), 4 severe (with SIRS); (O) suffix for osteomyelitis; probe-to-bone plus plain X-ray, MRI when unclear; culture deep tissue (not swabs); do not give antibiotics for uninfected ulcers; urgent surgical consultation for severe infection, deep abscess, gas or necrotising infection, extensive gangrene. Senneville É, Albalawi Z, van Asten SA, et al. IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (IWGDF/IDSA 2023). Diabetes Metab Res Rev. 2024;40:e3687. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng19** — NICE NG19 — Diabetic foot problems: prevention and management (2015), Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services. National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Arterial Ulcer; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Peripheral arterial disease / limb ischaemia; 2. Acute limb ischaemia; 3. Benign prostatic hyperplasia (BPH); 4. Prostate adenocarcinoma; 5. Colorectal carcinoma
+- differential web.passive: 1. Acute limb ischaemia; 2. Peripheral arterial disease / limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
+- differential web.triageSurgical: 1. Diabetic foot ulcer; 2. Peripheral arterial / vascular disease
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=78)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Creatinine 240 μmol/L — elevated [web.clinicalPrompts.safety]
+- recommended scores: web:wagner, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nocturnal_pain
+- note: AssessmentTab ManagementPanel protocol: arterial_ulcer (from ICD)
+- note: PlanTab protocol: arterial_ulcer (from ICD)
+- note: matchPathways: Diabetic Foot (10), Peripheral Vascular Disease (10), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Neuropathic diabetes-related foot ulcer (uninfected)
+
+#### `dfu-neuropathic-uninfected` — Uninfected neuropathic forefoot ulcer (IWGDF/IDSA 1)
+
+55-year-old woman with type 2 diabetes and neuropathy: 1 cm clean plantar ulcer under the 2nd metatarsal head, no erythema or discharge, pulses palpable, ABPI 1.05.
+
+Permutation of `dfi-moderate-osteomyelitis`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-priority-not-emergency | emergencyLevel | quality | FAIL (known gap) | NICE NG19 2015 | Grade the diabetic-foot red flag: ulcer alone → priority; infection, ischaemia, gangrene or fever → urgent. Handle negation. |
+| no-sepsis-alarm | mustNotAlarm | quality | PASS |  |  |
+| inv-vascular-assessment | investigationInclude | quality | FAIL (known gap) | Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-offloading | managementInclude | quality | FAIL (known gap) | IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) 2023 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-mdt-foot | managementInclude | quality | FAIL (known gap) | NICE NG19 2015 | Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA. |
+| mgmt-no-antibiotics | managementExclude | quality | PASS | IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) 2023 |  |
+
+Failure details:
+
+- **level-priority-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=92); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer; the negated 'no fever' also scores as 'Systemic red flag symptom'.]
+- **inv-vascular-assessment** (web): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **mgmt-offloading** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+- **mgmt-mdt-foot** (web): no management item matched among 8 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
+
+Guidelines:
+
+- **iwgdf-2023-infection** — IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023) (2023), IWGDF/IDSA classification: 1 uninfected, 2 mild, 3 moderate (erythema >2 cm or deeper structures), 4 severe (with SIRS); (O) suffix for osteomyelitis; probe-to-bone plus plain X-ray, MRI when unclear; culture deep tissue (not swabs); do not give antibiotics for uninfected ulcers; urgent surgical consultation for severe infection, deep abscess, gas or necrotising infection, extensive gangrene. Senneville É, Albalawi Z, van Asten SA, et al. IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (IWGDF/IDSA 2023). Diabetes Metab Res Rev. 2024;40:e3687. *(statement wording/numbering not yet verified against the source)*
+- **iwgdf-2023-offloading** — IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023) (2023), Neuropathic plantar forefoot/midfoot ulcer: non-removable knee-high offloading device first choice. Bus SA, Armstrong DG, Crews RT, et al. Guidelines on offloading foot ulcers in persons with diabetes (IWGDF 2023 update). Diabetes Metab Res Rev. 2024;40:e3647. *(statement wording/numbering not yet verified against the source)*
+- **iwgdf-2023-pad** — Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023) (2023), Assess every foot ulcer for PAD: pedal pulses plus Doppler waveforms, ABI and TBI (ABI unreliable when vessels are incompressible); toe pressure <30 mmHg or TBI <0.25 → urgent vascular imaging and consideration of revascularisation. Fitridge R, Chuter V, Mills J, et al. The intersocietal IWGDF, ESVS, SVS guidelines on peripheral artery disease in people with diabetes and a foot ulcer. Diabetes Metab Res Rev. 2024;40:e3686. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng19** — NICE NG19 — Diabetic foot problems: prevention and management (2015), Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services. National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. GORD / Reflux Oesophagitis; 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Peripheral neuropathy; 2. Peripheral arterial disease / limb ischaemia; 3. Breast carcinoma; 4. Uterine fibroids; 5. Acute cholecystitis
+- differential web.passive: 1. Peripheral neuropathy; 2. Peripheral arterial disease / limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
+- differential web.triageSurgical: 1. Diabetic foot ulcer
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=92)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: web:wagner, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Diabetic Foot (5), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
 ### Acute diverticulitis
 
 #### `diverticulitis-uncomplicated-outpatient` — Uncomplicated, immunocompetent, outpatient (base case)
@@ -4069,6 +5165,98 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from ICD)
 - note: PlanTab protocol: diverticulitis (from ICD)
 - note: matchPathways: Diverticular Disease / Diverticulitis (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Deep vein thrombosis in pregnancy
+
+#### `dvt-pregnancy-22wk` — Pregnant, 22 weeks
+
+31-year-old woman at 22 weeks' gestation: 3 days of left leg swelling (3.5 cm calf difference) and thigh pain; no PE symptoms.
+
+Permutation of `dvt-wells-likely`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-dvt-top3 | mustRankTopK | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
+| level-same-day | emergencyLevel | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
+| flag-pregnancy | redFlags | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
+| inv-compression-duplex | investigationInclude | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
+| mgmt-lmwh | managementInclude | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
+| mgmt-no-doac-in-pregnancy | managementExclude | critical | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Make the DVT/PE plans pregnancy-aware (pregnancy → LMWH only; hide DOAC and warfarin lines) and add a dx-variant or plan prefix for VTE in pregnancy. |
+| mgmt-no-warfarin-in-pregnancy | managementExclude | critical | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Rewrite the DVT protocol line: pregnancy → treatment-dose LMWH throughout pregnancy; warfarin is contraindicated antenatally. |
+| inv-no-ddimer-in-pregnancy | investigationExclude | quality | FAIL (known gap) | RCOG Green-top Guideline No. 37b 2015 | Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy. |
+
+Failure details:
+
+- **inv-no-ddimer-in-pregnancy** (web): forbidden investigation present in web.plan.investigations: "d-dimer (only if pre-test probability low/intermediate)" (+1 more) [known gap: The DVT protocol lists "D-dimer (only if pre-test probability low/intermediate)" without a pregnancy caveat.]
+- **mgmt-no-doac-in-pregnancy** (web): forbidden management item present in web.plan: "[conservative] direct oral anticoagulant (doac): rivaroxaban 15 mg bd for 21 days then 20 mg od; or apixaban 10 mg bd for 7 days then 5 mg b..." (+5 more) [known gap: The DVT plan offers rivaroxaban/apixaban as first line with no pregnancy check although the record says pregnant (22 weeks) and pregnancyPossible is true; the protocol has no pregnancy-aware variant.]
+- **mgmt-no-warfarin-in-pregnancy** (web): forbidden management item present in web.plan: "[conservative] alternative: lmwh bridging to warfarin (target inr 2-3) if doac contraindicated (severe renal failure, pregnancy)." (+2 more) [known gap: The DVT plan says "LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy)" and lists "Warfarin 5 mg OD — if DOAC contraindicated": read literally, it proposes warfarin in pregnancy.]
+
+Guidelines:
+
+- **rcog-gtg37b** — RCOG Green-top Guideline No. 37b — thromboembolic disease in pregnancy and the puerperium: acute management (2015), Suspected DVT in pregnancy: compression duplex ultrasound; D-dimer not recommended to diagnose VTE in pregnancy; treat with LMWH until excluded; DOACs are not recommended in pregnancy. Royal College of Obstetricians and Gynaecologists. Thromboembolic disease in pregnancy and the puerperium: acute management (Green-top Guideline No. 37b). London: RCOG; 2015. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng158** — NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (2020), DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low. National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Deep Vein Thrombosis; 2. Acute Cholecystitis; 3. Chronic Venous Insufficiency
+- differential web.symptomInference: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
+- differential web.passive: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
+- differential web.triageSurgical: 1. Leg swelling — possible DVT
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=112)
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: leg_swelling
+- note: AssessmentTab ManagementPanel protocol: deep_vein_thrombosis (from ICD)
+- note: PlanTab protocol: deep_vein_thrombosis (from ICD)
+- note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
+
+</details>
+
+### Deep vein thrombosis
+
+#### `dvt-wells-likely` — 
+
+48-year-old woman 3 weeks after knee arthroscopy under general anaesthetic, on the combined pill: left calf swelling 4 cm, pitting oedema, tenderness along the deep veins — Wells DVT 4 (likely).
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-dvt-top3 | mustRankTopK | critical | PASS | NICE NG158 2020 |  |
+| level-same-day | emergencyLevel | critical | PASS | NICE NG158 2020 |  |
+| inv-leg-ultrasound | investigationInclude | critical | PASS | NICE NG158 2020 |  |
+| flag-oestrogen | redFlags | quality | FAIL (known gap) |  | Handle negation in scanRedFlags; flag oestrogen-containing medication as a VTE risk factor. |
+| score-rec-wells-dvt | scoreRecommended | quality | PASS | NICE NG158 2020; Wells DVT score (two-level) 2003 |  |
+| mgmt-anticoagulation | managementInclude | quality | PASS | NICE NG158 2020 |  |
+
+Failure details:
+
+- **flag-oestrogen** (web): no red flag matched among 13 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The combined oral contraceptive is not flagged. Triage also scores 'Possible cardiac event' and 'Haemoptysis' from the negated text 'No chest pain, breathlessness or haemoptysis'.]
+
+Guidelines:
+
+- **nice-ng158** — NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (2020), DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low. National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **wells-dvt-2003** — Wells DVT score (two-level) (2003), Items: active cancer, paralysis/recent cast, bedridden ≥3 days or major surgery within 12 weeks, localised tenderness along deep veins, entire leg swollen, calf swelling ≥3 cm, pitting oedema, collateral superficial veins, previous DVT (+1 each); alternative diagnosis at least as likely (−2); ≥2 = likely. Wells PS, Anderson DR, Rodger M, et al. Evaluation of D-dimer in the diagnosis of suspected deep-vein thrombosis. N Engl J Med. 2003;349:1227–35. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Deep Vein Thrombosis; 2. Acute Cholecystitis; 3. Chronic Venous Insufficiency
+- differential web.symptomInference: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
+- differential web.passive: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
+- differential web.triageSurgical: 1. Leg swelling — possible DVT
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=88)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: leg_swelling
+- note: AssessmentTab ManagementPanel protocol: deep_vein_thrombosis (from ICD)
+- note: PlanTab protocol: deep_vein_thrombosis (from ICD)
+- note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
 
 </details>
 
@@ -6896,6 +8084,220 @@ Guidelines:
 
 </details>
 
+### Necrotising soft-tissue infection (necrotising fasciitis)
+
+#### `nsti-leg-diabetic-sepsis` — 
+
+52-year-old man with type 2 diabetes: 36 h of left leg pain out of proportion to a small graze, tense oedema, dusky skin, bullae and crepitus; T 38.9 °C, HR 118, BP 96/58; CRP 290, WBC 22, Na 131, creatinine 160, glucose 16 (LRINEC 11).
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-nsti-top3 | mustRankTopK | critical | FAIL (known gap) | WSES/SIS-E consensus conference 2018 | In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal. Review the necrotising_fasciitis prior and give crepitus_soft_tissue a stronger likelihood ratio. |
+| level-emergency | emergencyLevel | critical | PASS | WSES/SIS-E consensus conference 2018; Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| alarm-sepsis-shock | mustAlarm | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021; NICE NG51 2016 |  |
+| flag-nsti | redFlags | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-emergency-debridement | managementInclude | critical | PASS | WSES/SIS-E consensus conference 2018; IDSA practice guideline 2014 |  |
+| mgmt-clindamycin | managementInclude | critical | PASS | WSES/SIS-E consensus conference 2018; IDSA practice guideline 2014 |  |
+| mgmt-broad-spectrum | managementInclude | critical | PASS | WSES/SIS-E consensus conference 2018; IDSA practice guideline 2014 |  |
+| mgmt-no-wait-for-imaging | managementExclude | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| flag-diabetes | redFlags | quality | PASS |  |  |
+| score-rec-lrinec | scoreRecommended | quality | FAIL (known gap) | LRINEC score (Laboratory Risk Indicator for Necrotising Fasciitis) 2004 |  |
+| score-rec-qsofa | scoreRecommended | quality | PASS | Sepsis-3 consensus definitions 2016 |  |
+| score-qsofa-calculator | scoreValue | quality | n/a | Sepsis-3 consensus definitions 2016 |  |
+| inv-lactate | investigationInclude | quality | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-critical-care | managementInclude | quality | PASS | WSES/SIS-E consensus conference 2018 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-nsti-top3** (web): not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholangitis, Acute cholecystitis, Acute appendicitis — even with crepitus, erythema, instability and raised WBC answered in PANE. NSTI prior is 0.003; fever/rigors favour biliary diseases and socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #1.]
+- **score-rec-lrinec** (web): lrinec not recommended; recommended: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang [known gap: getCdsSuggestions has no LRINEC scale (clinical-cds.ts); iOS has one.]
+
+Guidelines:
+
+- **wses-sis-ssti-2018** — WSES/SIS-E consensus conference — management of skin and soft-tissue infections (2018), Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene. Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58. *(statement wording/numbering not yet verified against the source)*
+- **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+- **lrinec-2004** — LRINEC score (Laboratory Risk Indicator for Necrotising Fasciitis) (2004), Score items and weights: CRP ≥150 mg/L (4); WBC 15–25 (1), >25 (2); Hb 11–13.5 (1), <11 (2); Na <135 (2); creatinine >141 µmol/L (2); glucose >10 mmol/L (1). Wong CH, Khin LW, Heng KS, Tan KC, Low CO. The LRINEC (Laboratory Risk Indicator for Necrotizing Fasciitis) score: a tool for distinguishing necrotizing fasciitis from other soft tissue infections. Crit Care Med. 2004;32:1535–41. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng51** — NICE NG51 — Sepsis: recognition, diagnosis and early management (2016), High-risk criteria (e.g. new altered mental state, RR ≥25, SBP ≤90, HR >130, lactate ≥2 with other criteria): blood cultures, IV antibiotics within 1 h, fluids, senior review. National Institute for Health and Care Excellence. Sepsis: recognition, diagnosis and early management (NG51). London: NICE; 2016 (updated). *(statement wording/numbering not yet verified against the source)*
+- **sepsis-3** — Sepsis-3 consensus definitions (2016), qSOFA: RR ≥22, altered mentation, SBP ≤100 mmHg. Singer M, Deutschman CS, Seymour CW, et al. The Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). JAMA. 2016;315:801–10. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholangitis; 2. Acute Cholecystitis; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Necrotising fasciitis; 2. Cellulitis / soft tissue infection; 3. Fournier's gangrene; 4. Sepsis / systemic infection; 5. Malaria
+- differential web.passive: 1. Necrotising fasciitis; 2. Cellulitis / soft tissue infection; 3. Fournier's gangrene; 4. Sepsis / systemic infection; 5. Malaria
+- differential web.triageSurgical: 1. Leg swelling — possible DVT
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=118)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 22.4 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.9°C + HR 118 bpm [web.clinicalPrompts.safety]; BGL 16.2 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: leg_swelling, heartburn, fever, rigors
+- note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from ICD)
+- note: PlanTab protocol: necrotising_fasciitis (from ICD)
+- note: no web calculator for score form 'qsofa'
+- note: matchPathways: Varicose Veins (5)
+
+</details>
+
+#### `nsti-early-low-lrinec` — Early NSTI, LRINEC 0, minimal skin signs
+
+38-year-old woman, 18 h after a cat scratch to the forearm: severe pain out of proportion, woody induration beyond faint erythema, HR 112, T 38.2 °C; WBC 13, CRP 90, normal Na, creatinine, glucose, Hb 13.9 (LRINEC 0).
+
+Permutation of `nsti-leg-diabetic-sepsis`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-nsti | mustNotMiss | critical | FAIL (known gap) | WSES/SIS-E consensus conference 2018; NSTI diagnostic accuracy 2019 | In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal. |
+| level-emergency | emergencyLevel | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| flag-pain-out-of-proportion | redFlags | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| mgmt-surgical-exploration | managementInclude | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| mgmt-clindamycin | managementInclude | critical | PASS | WSES/SIS-E consensus conference 2018; IDSA practice guideline 2014 |  |
+| mgmt-no-lrinec-reassurance | managementExclude | critical | PASS | WSES/SIS-E consensus conference 2018; NSTI diagnostic accuracy 2019 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-no-oral-cellulitis-plan | managementExclude | quality | PASS |  |  |
+
+Failure details:
+
+- **mnm-nsti** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Cellulitis \| 3. Skin Abscess / Furuncle; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: Acute cholecystitis, Cellulitis, Skin abscess. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #2.]
+
+Guidelines:
+
+- **wses-sis-ssti-2018** — WSES/SIS-E consensus conference — management of skin and soft-tissue infections (2018), Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene. Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58. *(statement wording/numbering not yet verified against the source)*
+- **fernando-2019** — NSTI diagnostic accuracy — systematic review and meta-analysis (2019), LRINEC ≥6 has low sensitivity for NSTI; a low score does not exclude it; clinical suspicion should prompt surgical exploration. Fernando SM, Tran A, Cheng W, et al. Necrotizing soft tissue infection: diagnostic accuracy of physical examination, imaging, and LRINEC score: a systematic review and meta-analysis. Ann Surg. 2019;269:58–65. *(statement wording/numbering not yet verified against the source)*
+- **lrinec-2004** — LRINEC score (Laboratory Risk Indicator for Necrotising Fasciitis) (2004), Score items and weights: CRP ≥150 mg/L (4); WBC 15–25 (1), >25 (2); Hb 11–13.5 (1), <11 (2); Na <135 (2); creatinine >141 µmol/L (2); glucose >10 mmol/L (1). Wong CH, Khin LW, Heng KS, Tan KC, Low CO. The LRINEC (Laboratory Risk Indicator for Necrotizing Fasciitis) score: a tool for distinguishing necrotizing fasciitis from other soft tissue infections. Crit Care Med. 2004;32:1535–41. *(statement wording/numbering not yet verified against the source)*
+- **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Cellulitis; 3. Skin Abscess / Furuncle
+- differential web.symptomInference: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Pyelonephritis
+- differential web.passive: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Sickle cell vaso-occlusive crisis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=112)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.2°C + HR 112 bpm [web.clinicalPrompts.safety]
+- recommended scores: qsofa, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: heartburn, fever
+- note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from ICD)
+- note: PlanTab protocol: necrotising_fasciitis (from ICD)
+
+</details>
+
+### Fournier's gangrene (perineal necrotising fasciitis)
+
+#### `nsti-fournier-diabetic` — Fournier's gangrene, uncontrolled diabetes, septic shock
+
+64-year-old man with poorly controlled type 2 diabetes: 3 days of scrotal and perineal pain and swelling, a black patch on the scrotum, crepitus; T 38.7 °C, HR 124, BP 86/50; glucose 24.
+
+Permutation of `nsti-leg-diabetic-sepsis`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-fournier | mustNotMiss | critical | FAIL (known gap) | WSES/SIS-E consensus conference 2018 | Add a Fournier's gangrene disease (or map it to necrotising_fasciitis with scrotal/perineal features) and stop mapping a 'Groin' pain site to groin_swelling. |
+| level-emergency | emergencyLevel | critical | PASS | WSES/SIS-E consensus conference 2018; Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| alarm-sepsis-shock | mustAlarm | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-emergency-debridement | managementInclude | critical | FAIL (known gap) | WSES/SIS-E consensus conference 2018 | Add N49.3 (Fournier's gangrene) to the necrotising_fasciitis protocol icd10Prefixes. |
+| mgmt-clindamycin | managementInclude | critical | FAIL (known gap) | WSES/SIS-E consensus conference 2018; IDSA practice guideline 2014 | Add N49.3 to the necrotising_fasciitis protocol icd10Prefixes. |
+| mgmt-broad-spectrum | managementInclude | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| dx-fournier-top3 | mustRankTopK | quality | FAIL (known gap) | WSES/SIS-E consensus conference 2018 |  |
+| flag-hyperglycaemia | redFlags | quality | PASS |  |  |
+| inv-ketones-glucose | investigationInclude | quality | PASS |  |  |
+| mgmt-urology-colorectal | managementInclude | quality | FAIL (known gap) | WSES/SIS-E consensus conference 2018 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-fournier-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.]
+- **mnm-fournier** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.]
+- **mgmt-emergency-debridement** (web): no management item matched among 36 (web.clinicalPrompts) [known gap: ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-clindamycin** (web): no management item matched among 36 (web.clinicalPrompts) [known gap: ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-urology-colorectal** (web): no management item matched among 36 (web.clinicalPrompts) [known gap: ICD N49.3 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+
+Guidelines:
+
+- **wses-sis-ssti-2018** — WSES/SIS-E consensus conference — management of skin and soft-tissue infections (2018), Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene. Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58. *(statement wording/numbering not yet verified against the source)*
+- **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Cholangitis; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Testicular torsion / epididymo-orchitis; 4. Malaria; 5. Perianal abscess
+- differential web.passive: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Malaria; 4. Perianal abscess; 5. Meningitis / encephalitis
+- differential web.triageSurgical: 1. Perianal abscess; 2. Skin / soft tissue abscess
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=255)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Hyperglycaemia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Testicular / scrotal signs [web.clinicalPrompts.safety]; Fever 38.7°C + HR 124 bpm + SBP 86 mmHg — septic shock [web.clinicalPrompts.safety]; BGL 24.1 mmol/L — severe hyperglycaemia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 27.5 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 210 μmol/L — elevated [web.clinicalPrompts.safety]; Sodium 129 mmol/L — hyponatraemia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, gcs, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: groin_swelling, heartburn, radiation_to_groin, fever, rigors
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), Post-operative Follow-up (General) (5)
+
+</details>
+
+### Necrotising soft-tissue infection (post-operative abdominal wall)
+
+#### `nsti-postop-abdominal-wall` — Post-operative day 4 after laparotomy
+
+70-year-old woman on day 4 after Hartmann's procedure: wound pain out of proportion, dusky skin spreading beyond the wound, grey "dishwater" discharge, crepitus; HR 126, T 38.4 °C, BP 92/60, lactate 4.1.
+
+Permutation of `nsti-leg-diabetic-sepsis`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-nsti-top3 | mustRankTopK | critical | FAIL (known gap) | WSES/SIS-E consensus conference 2018 | In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal. |
+| level-emergency | emergencyLevel | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| alarm-sepsis-shock | mustAlarm | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
+| mgmt-return-to-theatre | managementInclude | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| mgmt-clindamycin | managementInclude | critical | PASS | WSES/SIS-E consensus conference 2018 |  |
+| mnm-anastomotic-or-collection | mustNotMiss | quality | FAIL (known gap) |  |  |
+| flag-penicillin-allergy | redFlags | quality | PASS |  |  |
+| mgmt-not-simple-ssi | managementExclude | quality | PASS |  |  |
+| pathway-ward-review | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-nsti-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Acute cholecystitis, Acute cholangitis, GORD. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the wound CC template adds wound_erythema/wound_discharge but SSI is not in the top 3 either. Symptom inference ranks "post-operative complication" #1 and has no NSTI.]
+- **mnm-anastomotic-or-collection** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 omits anastomotic leak and collections (see dx-nsti-top3).]
+
+Guidelines:
+
+- **wses-sis-ssti-2018** — WSES/SIS-E consensus conference — management of skin and soft-tissue infections (2018), Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene. Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58. *(statement wording/numbering not yet verified against the source)*
+- **idsa-ssti-2014** — IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update) (2014), Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF. Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52. *(statement wording/numbering not yet verified against the source)*
+- **ssc-2021** — Surviving Sepsis Campaign guidelines 2021 (2021), Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical. Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Cholangitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Post-operative complication; 2. Acute cholecystitis; 3. Diabetic foot infection / ischaemia; 4. Acute cholangitis; 5. Diverticulitis
+- differential web.passive: 1. Post-operative complication; 2. Diabetic foot infection / ischaemia; 3. Acute cholangitis; 4. Malaria; 5. Osteomyelitis (adult)
+- differential web.triageSurgical: 1. Diverticulitis of colon; 2. Wound concern (post-traumatic or surgical)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=214)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy [web.clinicalPrompts.safety]; WBC 24.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 150 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 126 bpm [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, clavien-dindo, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: wound_erythema, wound_discharge, heartburn, fever, rigors
+- note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from ICD)
+- note: PlanTab protocol: necrotising_fasciitis (from ICD)
+- note: matchPathways: Post-operative Follow-up (General) (10), Wound Management (Acute / Chronic / SSI) (10), Diverticular Disease / Diverticulitis (5)
+
+</details>
+
 ### Pancreatic head carcinoma (malignant obstructive jaundice)
 
 #### `painless-jaundice-pancreatic-head` — Base case — painless obstructive jaundice with Courvoisier gallbladder, weight loss and new-onset diabetes
@@ -7718,6 +9120,97 @@ Guidelines:
 
 </details>
 
+### Pleuritic chest pain, PE excluded clinically (PERC negative)
+
+#### `pe-perc-negative-low-risk` — Low pre-test probability, PERC negative
+
+28-year-old man with right pleuritic chest pain after a week of coughing; HR 84, SpO₂ 98 %, no risk factors — low clinical probability and PERC negative.
+
+Permutation of `pe-postop-day5`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-not-emergency | emergencyLevel | quality | FAIL (known gap) | Pulmonary Embolism Rule-out Criteria (PERC) 2004 | Handle negation ("no", "not", "denies") in scanRedFlags. |
+| inv-no-ctpa | investigationExclude | quality | PASS | Pulmonary Embolism Rule-out Criteria (PERC) 2004; NICE NG158 2020 |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=120); expected ≤ urgent [known gap: Over-triage from negation: 'Not breathless' matches the post-operative/breathless rule and 'No haemoptysis' the haemoptysis rule (both urgent) → emergency_now for a PERC-negative patient.]
+
+Guidelines:
+
+- **perc-2004** — Pulmonary Embolism Rule-out Criteria (PERC) (2004), In low pre-test probability only: age <50, HR <100, SpO₂ ≥95%, no haemoptysis, no oestrogen use, no prior VTE, no unilateral leg swelling, no surgery/trauma requiring hospitalisation within 4 weeks — all negative → no further testing. Kline JA, Mitchell AM, Kabrhel C, Richman PB, Courtney DM. Clinical criteria to prevent unnecessary diagnostic testing in emergency department patients with suspected pulmonary embolism. J Thromb Haemost. 2004;2:1247–55. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng158** — NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (2020), DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low. National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Appendicitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Spontaneous pneumothorax; 2. Croup / laryngotracheobronchitis; 3. Pulmonary embolism; 4. Pleural effusion; 5. Bronchiolitis (RSV)
+- differential web.passive: 1. Croup / laryngotracheobronchitis; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Bronchiolitis (RSV)
+- differential web.triageSurgical: 1. Leg swelling — possible DVT
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=120)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: heart, wells-pe, news2, curb65
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
+
+</details>
+
+### Pulmonary embolism (post-operative)
+
+#### `pe-postop-day5` — 
+
+62-year-old woman on day 5 after right hemicolectomy: sudden dyspnoea and right pleuritic chest pain, HR 118, RR 26, SpO₂ 91 %, BP 112/70 — Wells PE 7 (likely).
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pe-top3 | mustRankTopK | critical | PASS | NICE NG158 2020; 2019 ESC guidelines 2019 |  |
+| level-at-least-urgent | emergencyLevel | critical | PASS | NICE NG158 2020 |  |
+| alarm-hypoxia | mustAlarm | critical | PASS | 2019 ESC guidelines 2019 |  |
+| inv-ctpa | investigationInclude | critical | PASS | NICE NG158 2020; 2019 ESC guidelines 2019 |  |
+| mnm-anastomotic-leak-or-pneumonia | mustNotMiss | quality | FAIL (known gap) |  |  |
+| score-rec-wells-pe | scoreRecommended | quality | PASS | NICE NG158 2020; Wells PE score (two-level) 2000 |  |
+| mgmt-oxygen | managementInclude | quality | PASS | 2019 ESC guidelines 2019 |  |
+| mgmt-anticoagulation | managementInclude | quality | PASS | NICE NG158 2020; 2019 ESC guidelines 2019 |  |
+| mgmt-no-ddimer-gate | managementExclude | quality | FAIL (known gap) | NICE NG158 2020 | Use the two-level Wells PE: >4 → CTPA (interim anticoagulation if delayed); ≤4 → D-dimer, or PERC when clinical probability is low. |
+| pathway-ward-review | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mnm-anastomotic-leak-or-pneumonia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Pulmonary Embolism \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Acute cholecystitis, Pulmonary embolism, GORD. Note: without the PANE answers "no trauma" and "no chest-wall tenderness", PANE ranked traumatic pneumothorax, rib fractures and haemothorax above PE in a post-operative ward patient.]
+- **mgmt-no-ddimer-gate** (web): forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: The hypoxia and tachycardia clinical prompts (clinical-inference.ts) add 'CTPA if Wells score ≥ 2 and D-dimer positive' and 'CTPA if Wells score ≥ 2' — the DVT cut-off and a D-dimer gate for a Wells-likely patient.]
+
+Guidelines:
+
+- **nice-ng158** — NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (2020), DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low. National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023). *(statement wording/numbering not yet verified against the source)*
+- **esc-pe-2019** — 2019 ESC guidelines — acute pulmonary embolism (2019), Suspected PE without haemodynamic instability: clinical probability (Wells/Geneva), D-dimer only when probability is not high, CTPA; anticoagulation started while awaiting results in high/intermediate probability. Konstantinides SV, Meyer G, Becattini C, et al. 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism. Eur Heart J. 2020;41:543–603. *(statement wording/numbering not yet verified against the source)*
+- **wells-pe-2000** — Wells PE score (two-level) (2000), Clinical signs of DVT 3; PE most likely diagnosis 3; HR >100 1.5; immobilisation ≥3 days or surgery within 4 weeks 1.5; previous VTE 1.5; haemoptysis 1; malignancy 1; >4 = PE likely. Wells PS, Anderson DR, Rodger M, et al. Derivation of a simple clinical model to categorize patients probability of pulmonary embolism. Thromb Haemost. 2000;83:416–20. *(statement wording/numbering not yet verified against the source)*
+- **years-2017** — YEARS algorithm for suspected PE (2017), Three items (clinical signs of DVT, haemoptysis, PE most likely diagnosis) with D-dimer thresholds of 1000 ng/mL (no items) or 500 ng/mL (≥1 item). van der Hulle T, Cheung WY, Kooij S, et al. Simplified diagnostic management of suspected pulmonary embolism (the YEARS study): a prospective, multicentre, cohort study. Lancet. 2017;390:289–97. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Pulmonary Embolism; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Tension pneumothorax; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Empyema thoracis; 5. Pleural effusion
+- differential web.passive: 1. Tension pneumothorax; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Empyema thoracis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=307)
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy [web.clinicalPrompts.safety]; SpO₂ 91% — hypoxia [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: heart, wells-pe, wells-dvt, qsofa, news2, clavien-dindo, curb65, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: dyspnoea_pe
+- note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from ICD)
+- note: PlanTab protocol: pulmonary_embolism (from ICD)
+- note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
+
+</details>
+
 ### Perianal abscess with cellulitis in poorly controlled diabetes
 
 #### `perianal-abscess-diabetic-cellulitis` — Diabetes (HbA1c 86), cellulitis, systemic signs
@@ -8128,6 +9621,58 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from ICD)
 - note: PlanTab protocol: peptic_ulcer (from ICD)
 - note: matchPathways: Acute Abdomen (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Appendicitis (7)
+
+</details>
+
+### Ruptured abdominal aortic aneurysm
+
+#### `raaa-shock` — 
+
+74-year-old male smoker: sudden severe back and abdominal pain, collapse, BP 76/40, HR 128, tender pulsatile epigastric mass; bedside ultrasound 7.2 cm AAA.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-aaa-top3 | mustRankTopK | critical | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Give pulsatile_mass and haemodynamic_instability much stronger likelihood ratios for aortic_aneurysm (and none for pancreatitis), or add a hard rule: pulsatile mass + shock → AAA to the top. |
+| level-emergency | emergencyLevel | critical | PASS | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 |  |
+| alarm-shock | mustAlarm | critical | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
+| mgmt-emergency-repair | managementInclude | critical | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 | Add I71.3 (ruptured AAA) and I71.4 to the aortic_aneurysm protocol icd10Prefixes (or use the prefix I71). |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
+| alarm-raaa | mustAlarm | quality | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 |  |
+| inv-crossmatch | investigationInclude | quality | PASS |  |  |
+| mgmt-permissive-hypotension | managementInclude | quality | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 | Add I71.3/I71.4 to the aortic_aneurysm protocol. |
+| mgmt-no-large-fluid-bolus | managementExclude | quality | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 | Suppress the 1 L bolus line when AAA/aortic rupture is suspected (pulsatile mass, known AAA) and say "permissive hypotension — senior/vascular decision". |
+| mgmt-no-ct-before-theatre-unstable | managementExclude | quality | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
+| pathway-first-visit | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-aaa-top3** (web): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute pancreatitis (0.35), Peptic ulcer, GORD — even with pulsatile mass and instability answered; the aortic_aneurysm prior is 0.01 and epigastric pain radiating to the back favours pancreatitis. The management panel therefore shows the pancreatitis protocol. Symptom inference ranks ruptured AAA #1.]
+- **alarm-raaa** (web): no alarm matched among 9 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web alarms are the generic hypotension flag and "Emergency now"; nothing names ruptured AAA.]
+- **mgmt-emergency-repair** (web): no management item matched among 31 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9; the panel shows pancreatitis from PANE) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-permissive-hypotension** (web): no management item matched among 31 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-no-large-fluid-bolus** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." [known gap: The hypotension clinical prompt ('shock_non_infective', clinical-inference.ts) always adds 'Hartmann's 1L bolus', including for suspected ruptured AAA where permissive hypotension applies.]
+
+Guidelines:
+
+- **esvs-aaa-2024** — ESVS 2024 clinical practice guidelines — abdominal aorto-iliac artery aneurysms (2024), Suspected rupture: immediate vascular surgical assessment and transfer to a vascular centre; permissive hypotension in the conscious patient; CT angiography only if the patient is stable enough; EVAR preferred when anatomy is suitable. Consider AAA in older patients presenting with flank/back pain mimicking renal colic. Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 Clinical Practice Guidelines on the Management of Abdominal Aorto-Iliac Artery Aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng156** — NICE NG156 — Abdominal aortic aneurysm: diagnosis and management (2020), Suspected symptomatic or ruptured AAA: immediate discussion with the regional vascular service; imaging should not delay transfer of an unstable patient; permissive hypotension. National Institute for Health and Care Excellence. Abdominal aortic aneurysm: diagnosis and management (NG156). London: NICE; 2020. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Peptic Ulcer Disease; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Aortic dissection; 3. Vasovagal / reflex syncope; 4. Acute mesenteric ischaemia; 5. Diverticulitis
+- differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Vasovagal / reflex syncope; 3. Aortic dissection; 4. Acute appendicitis (paediatric); 5. Sickle cell vaso-occlusive crisis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=187)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; SBP 76 mmHg — hypotension [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, ranson, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, loin_pain, radiation_to_back, radiation_to_groin, nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
 
@@ -8584,6 +10129,51 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from ICD)
 - note: PlanTab protocol: bowel_obstruction (from ICD)
 - note: matchPathways: Bowel Obstruction (Small / Large) (17), Diverticular Disease / Diverticulitis (12), Acute Abdomen (7)
+
+</details>
+
+### Superficial vein thrombosis (great saphenous vein, near the saphenofemoral junction)
+
+#### `svt-gsv-near-sfj` — 
+
+58-year-old woman with varicose veins: 4 days of a painful red cord along the medial thigh; duplex shows great saphenous vein thrombus 15 cm long extending to within 2 cm of the saphenofemoral junction, deep veins clear.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mgmt-anticoagulation | managementInclude | critical | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 | Add an SVT protocol with ICD I80.0x (ESVS 2021 treatment thresholds). |
+| mnm-svt | mustNotMiss | quality | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 | Add superficial vein thrombosis (with SFJ/SPJ proximity) to PANE/symptom inference and a protocol (duplex; fondaparinux 45 days if ≥5 cm; therapeutic anticoagulation within 3 cm of the SFJ) with ICD I80.0x. |
+| level-at-least-priority | emergencyLevel | quality | PASS | ESVS 2021 clinical practice guidelines 2021 |  |
+| flag-sfj-extension | redFlags | quality | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 | Add an SVT protocol with ICD I80.0x. |
+| inv-duplex | investigationInclude | quality | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 | Add an SVT protocol with ICD I80.0x. |
+| mgmt-no-antibiotics | managementExclude | quality | PASS |  |  |
+
+Failure details:
+
+- **mnm-svt** (web): not in top 3 of web.pane: 1. Varicose Veins \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no superficial vein thrombosis disease; top 3: Varicose veins, Acute cholecystitis, GORD. Symptom inference has no SVT either.]
+- **flag-sfj-extension** (web): no red flag matched among 8 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **inv-duplex** (web): no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
+- **mgmt-anticoagulation** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The varicose-veins protocol only mentions "superficial thrombophlebitis extending to SFJ" as a red flag.]
+
+Guidelines:
+
+- **esvs-venous-2021** — ESVS 2021 clinical practice guidelines — venous thrombosis (2021), Superficial vein thrombosis: duplex ultrasound of both deep and superficial systems; SVT ≥5 cm → fondaparinux 2.5 mg daily for 45 days; SVT within 3 cm of the saphenofemoral junction → therapeutic anticoagulation as for DVT. Kakkos SK, Gohel M, Baekgaard N, et al. European Society for Vascular Surgery (ESVS) 2021 Clinical Practice Guidelines on the Management of Venous Thrombosis. Eur J Vasc Endovasc Surg. 2021;61:9–82. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Varicose Veins; 2. Acute Cholecystitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Sciatica / lumbar radiculopathy; 2. Systemic lupus erythematosus; 3. Scarlet fever; 4. Urticaria / allergic reaction; 5. Cellulitis / soft tissue infection
+- differential web.passive: 1. Scarlet fever; 2. Urticaria / allergic reaction; 3. Sciatica / lumbar radiculopathy; 4. Cellulitis / soft tissue infection; 5. Acute compartment syndrome
+- differential web.triageSurgical: 1. Leg swelling — possible DVT; 2. Varicose veins with ulceration
+- emergency level: urgent (acuity=priority, action=same_day_call, score=33)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: varicosities, leg_swelling, radiation_to_groin
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Varicose Veins (15)
 
 </details>
 
@@ -9132,6 +10722,535 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
 - note: PlanTab protocol: (none) (from ICD)
 - note: matchPathways: Thyroid / Neck Mass (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
+
+</details>
+
+### Blunt polytrauma with haemorrhagic shock (ATLS class III)
+
+#### `trauma-blunt-polytrauma-class3-shock` — 
+
+34-year-old motorcyclist hit by a car 40 min ago: GCS 13, RR 30, SpO₂ 92 % on oxygen, BP 88/50, HR 132, positive FAST (LUQ and Morison's pouch), pelvic tenderness, base deficit −8, lactate 5.2.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | ATLS 10th edition 2018; ATLS 10th edition 2018 |  |
+| alarm-shock | mustAlarm | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-primary-survey | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-blood-products | managementInclude | critical | PASS | ATLS 10th edition 2018; NICE NG39 2016 |  |
+| mgmt-laparotomy | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
+| dx-abdominal-trauma-top3 | mustRankTopK | quality | PASS | ATLS 10th edition 2018 |  |
+| flag-shock-class | redFlags | quality | FAIL (known gap) | ATLS 10th edition 2018 | Add an ATLS class estimate (HR, BP, pulse pressure, RR, GCS, base deficit) to the trauma red flags. |
+| inv-fast | investigationInclude | quality | PASS | ATLS 10th edition 2018 |  |
+| inv-crossmatch | investigationInclude | quality | PASS |  |  |
+| mgmt-txa | managementInclude | quality | PASS | CRASH-2 2011; NICE NG39 2016 |  |
+| mgmt-pelvic-binder | managementInclude | quality | FAIL (known gap) | NICE NG39 2016 | Add "pelvic binder if pelvic injury suspected with haemodynamic instability" to the blunt trauma protocol immediate phase. |
+| mgmt-no-ct-while-unstable | managementExclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Suppress non-trauma abdominal prompts when a trauma mechanism is recorded, and qualify every CT suggestion with "once haemodynamically stable". |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **flag-shock-class** (web): no red flag matched among 32 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine names the ATLS haemorrhage class; the protocol uses "SBP <90 + HR >120" for MTP.]
+- **mgmt-pelvic-binder** (web): no management item matched among 53 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The blunt abdominal trauma protocol does not mention a pelvic binder for pelvic tenderness in shock.]
+- **mgmt-no-ct-while-unstable** (web): forbidden management item present in web.clinicalPrompts: "• ct abdomen/pelvis with iv contrast - level (sbo/lbo), transition point, closed loop, ischaemia (..." [known gap: The bowel-obstruction clinical prompt fires on abdominal distension and adds 'CT abdomen/pelvis with IV contrast — level (SBO/LBO), transition point' to a haemodynamically unstable trauma patient.]
+
+Guidelines:
+
+- **atls-10-initial** — ATLS 10th edition — initial assessment and management (2018), Chapter 1: primary survey in order — control of exsanguinating external haemorrhage, airway with cervical spine restriction, breathing, circulation with haemorrhage control, disability, exposure (x/c-ABCDE); adjuncts (FAST, CXR, pelvic XR); resuscitation before definitive imaging in unstable patients. American College of Surgeons Committee on Trauma. Advanced Trauma Life Support (ATLS) Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 1. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-shock** — ATLS 10th edition — shock (2018), Chapter 3, Table 3-1: haemorrhage classes I (<15%), II (15–30%), III (31–40%), IV (>40%) with heart rate, blood pressure, pulse pressure, respiratory rate, urine output, GCS and base deficit; class III–IV need blood products / massive transfusion protocol; early haemorrhage control; minimise crystalloid; beta-blockers and age blunt the tachycardic response. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 3. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-abdomen** — ATLS 10th edition — abdominal and pelvic trauma (2018), Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5. *(statement wording/numbering not yet verified against the source)*
+- **crash-2** — CRASH-2 — tranexamic acid in bleeding trauma patients (2011), Tranexamic acid 1 g over 10 min then 1 g over 8 h, given within 3 h of injury; no benefit and possible harm when started after 3 h. CRASH-2 collaborators. The importance of early treatment with tranexamic acid in bleeding trauma patients: an exploratory analysis of the CRASH-2 randomised controlled trial. Lancet. 2011;377:1096–101. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng39** — NICE NG39 — Major trauma: assessment and initial management (2016), Pre-hospital/hospital: tranexamic acid as soon as possible in major haemorrhage; pelvic binder for suspected pelvic haemorrhage; ratio-based blood product resuscitation; restrictive crystalloid; whole-body CT for suspected multiple injuries once stable enough. National Institute for Health and Care Excellence. Major trauma: assessment and initial management (NG39). London: NICE; 2016. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Splenic Laceration; 2. Blunt Abdominal Trauma; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. ST-elevation myocardial infarction (STEMI); 2. Hypertensive emergency / hypertensive encephalopathy; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Epilepsy / seizure disorder; 5. Sickle cell vaso-occlusive crisis
+- differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Hypertensive emergency / hypertensive encephalopathy; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Epilepsy / seizure disorder; 5. Sickle cell vaso-occlusive crisis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=255)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; SBP 88 mmHg — hypotension [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; SpO₂ 92% — hypoxia [web.clinicalPrompts.safety]; HR 132 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: heart, ranson, qsofa, gcs, news2, curb65
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: blunt_abdominal_trauma (from ICD)
+- note: PlanTab protocol: blunt_abdominal_trauma (from ICD)
+- note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
+
+</details>
+
+### Blunt chest trauma with occult haemorrhagic shock in an anticoagulated older adult
+
+#### `trauma-elderly-occult-shock-warfarin` — 
+
+79-year-old man on warfarin and bisoprolol fell down 6 stairs: 4 left rib fractures and a small haemothorax, HR 86, BP 108/70 (usual 165/90), RR 24, SpO₂ 93 %, lactate 4.2, INR 3.4, Hb 10.2.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | ATLS 10th edition 2018; ATLS 10th edition 2018 |  |
+| flag-anticoagulant | redFlags | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-warfarin-reversal | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
+| flag-beta-blocker-masking | redFlags | quality | FAIL (known gap) | ATLS 10th edition 2018; ATLS 10th edition 2018 | Add a relative-hypotension/shock-index rule and a beta-blocker caveat for trauma in older adults. |
+| inv-ct-trauma | investigationInclude | quality | PASS | ATLS 10th edition 2018 |  |
+| mgmt-hdu-analgesia | managementInclude | quality | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-bridging-advice | managementExclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Make the anticoag_check prompt context-aware (trauma/bleeding → reversal). |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **flag-beta-blocker-masking** (web): no red flag matched among 23 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine flags relative hypotension (SBP 108 vs usual 165) or beta-blocker masking of tachycardia; triage relies on fixed thresholds.]
+- **mgmt-no-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "• anticoagulant bridging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haem..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K).]
+
+Guidelines:
+
+- **atls-10-geriatric** — ATLS 10th edition — geriatric trauma (2018), Chapter 11: blunted physiological response (beta-blockers, age) masks shock; "normal" blood pressure may represent hypotension; anticoagulation increases haemorrhage risk and needs early reversal; rib fractures carry higher morbidity in older patients. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 11. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-shock** — ATLS 10th edition — shock (2018), Chapter 3, Table 3-1: haemorrhage classes I (<15%), II (15–30%), III (31–40%), IV (>40%) with heart rate, blood pressure, pulse pressure, respiratory rate, urine output, GCS and base deficit; class III–IV need blood products / massive transfusion protocol; early haemorrhage control; minimise crystalloid; beta-blockers and age blunt the tachycardic response. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 3. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Rib Fractures; 2. Traumatic Pneumothorax; 3. Haemothorax
+- differential web.symptomInference: 1. Tension pneumothorax; 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. ST-elevation myocardial infarction (STEMI); 4. Spontaneous pneumothorax; 5. Empyema thoracis
+- differential web.passive: 1. Tension pneumothorax; 2. Pericarditis / myocarditis; 3. Empyema thoracis; 4. Spontaneous pneumothorax; 5. Acute coronary syndrome (ACS / NSTEMI / STEMI)
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=216)
+- alarms: Low SpO₂ [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; INR 3.4 — coagulopathy [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy [web.clinicalPrompts.safety]; SpO₂ 93% — hypoxia [web.clinicalPrompts.safety]
+- recommended scores: heart, wells-pe, cha2ds2-vasc, qsofa, curb65, news2, caprini, has-bled, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: dyspnoea_pe
+- note: AssessmentTab ManagementPanel protocol: rib_fractures (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Chest Pain — Emergency Redirect (5)
+
+</details>
+
+### Head injury in an anticoagulated older adult
+
+#### `trauma-head-injury-elderly-apixaban` — Elderly, apixaban, minor fall, GCS 15
+
+82-year-old woman on apixaban for AF tripped on a rug 3 h ago and hit her forehead: no loss of consciousness, no amnesia, no vomiting, GCS 15, forehead haematoma.
+
+Permutation of `trauma-head-injury-gcs12`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | PASS | NICE NG232 2023 |  |
+| flag-anticoagulant | redFlags | critical | PASS | NICE NG232 2023; ATLS 10th edition 2018 |  |
+| inv-ct-head | investigationInclude | critical | PASS | NICE NG232 2023 |  |
+| mgmt-no-discharge-without-ct | managementExclude | critical | PASS | NICE NG232 2023 |  |
+| inv-falls-ecg | investigationInclude | quality | FAIL (known gap) | ATLS 10th edition 2018 |  |
+| mgmt-reversal-plan | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018; ATLS 10th edition 2018 | Add "anticoagulated: urgent CT; reversal agent ready (andexanet/PCC for factor Xa inhibitors, idarucizumab for dabigatran, PCC + vitamin K for warfarin)" to the TBI protocol. |
+| mgmt-no-elective-bridging-advice | managementExclude | quality | FAIL (known gap) | ATLS 10th edition 2018 | Make the anticoag_check prompt context-aware: trauma/bleeding/head injury → reversal and CT; elective procedure → bridging plan. |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **inv-falls-ecg** (web): no investigation matched among 29 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No falls/syncope work-up (ECG, lying-standing BP) is suggested for an older adult with repeated falls on anticoagulation.]
+- **mgmt-reversal-plan** (web): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The TBI protocol has no anticoagulant-reversal step (DOAC reversal/PCC) and the anticoagulation prompt gives elective bridging advice instead.]
+- **mgmt-no-elective-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "• anticoagulant bridging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haem..." [known gap: The 'anticoag_check' clinical prompt (clinical-inference.ts) always proposes 'hold DOAC 48–72 h pre-op; warfarin — bridge with LMWH', including after a head injury on apixaban.]
+
+Guidelines:
+
+- **nice-ng232** — NICE NG232 — Head injury: assessment and early management (2023), Section 1.4 (adults): CT head within 1 h for GCS <13 on initial assessment, GCS <15 at 2 h, suspected open/depressed or basal skull fracture, post-traumatic seizure, focal deficit, >1 episode of vomiting; CT within 8 h for people with no other indication who are taking anticoagulants (wording — "perform" or "consider" — to be checked against the 2023 text). National Institute for Health and Care Excellence. Head injury: assessment and early management (NG232). London: NICE; 2023. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-geriatric** — ATLS 10th edition — geriatric trauma (2018), Chapter 11: blunted physiological response (beta-blockers, age) masks shock; "normal" blood pressure may represent hypotension; anticoagulation increases haemorrhage risk and needs early reversal; rib fractures carry higher morbidity in older patients. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 11. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-head** — ATLS 10th edition — head trauma (2018), Chapter 6: GCS, pupils, prevention of secondary brain injury (avoid hypoxia and hypotension), CT head, early neurosurgical consultation; reverse anticoagulation in intracranial haemorrhage. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 6. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Diverticulitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Stroke / TIA; 4. Meningitis / encephalitis; 5. Dengue fever
+- differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Meningitis / encephalitis; 4. Dengue fever; 5. Bacterial meningitis (paediatric)
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=51)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy [web.clinicalPrompts.safety]
+- recommended scores: cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: traumatic_brain_injury (from ICD)
+- note: PlanTab protocol: traumatic_brain_injury (from ICD)
+
+</details>
+
+### Traumatic brain injury (moderate)
+
+#### `trauma-head-injury-gcs12` — 
+
+24-year-old man assaulted, struck his head on the kerb: loss of consciousness ~2 min, vomited twice, GCS 12 (E3 V4 M5) on arrival, occipital boggy swelling.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | NICE NG232 2023; ATLS 10th edition 2018 |  |
+| flag-gcs | redFlags | critical | FAIL (known gap) | NICE NG232 2023 | Add S06 to the traumatic_brain_injury protocol prefixes and a GCS <13 / GCS <15 at 2 h red flag. |
+| inv-ct-head | investigationInclude | critical | PASS | NICE NG232 2023 |  |
+| dx-tbi-top3 | mustRankTopK | quality | PASS | NICE NG232 2023 |  |
+| score-rec-gcs | scoreRecommended | quality | PASS | NICE NG232 2023 |  |
+| inv-c-spine | investigationInclude | quality | PASS | NICE NG232 2023 |  |
+| mgmt-neurosurgery | managementInclude | quality | PASS | NICE NG232 2023; ATLS 10th edition 2018 |  |
+| mgmt-no-discharge | managementExclude | quality | PASS | NICE NG232 2023 |  |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **flag-gcs** (web): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: No red flag mentions GCS 12: triage has no GCS input, and S06.0X1A maps to no protocol (the TBI protocol is registered as S09.9), so protocol red flags are absent; PANE (0.37) shows TBI only in the management panel.]
+
+Guidelines:
+
+- **nice-ng232** — NICE NG232 — Head injury: assessment and early management (2023), Section 1.4 (adults): CT head within 1 h for GCS <13 on initial assessment, GCS <15 at 2 h, suspected open/depressed or basal skull fracture, post-traumatic seizure, focal deficit, >1 episode of vomiting; CT within 8 h for people with no other indication who are taking anticoagulants (wording — "perform" or "consider" — to be checked against the 2023 text). National Institute for Health and Care Excellence. Head injury: assessment and early management (NG232). London: NICE; 2023. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-head** — ATLS 10th edition — head trauma (2018), Chapter 6: GCS, pupils, prevention of secondary brain injury (avoid hypoxia and hypotension), CT head, early neurosurgical consultation; reverse anticoagulation in intracranial haemorrhage. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 6. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Traumatic Brain Injury; 2. Acute Appendicitis; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Meningitis / encephalitis; 3. Migraine; 4. Hypertrophic pyloric stenosis; 5. Bacterial meningitis (paediatric)
+- differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Meningitis / encephalitis; 3. Migraine; 4. Bacterial meningitis (paediatric); 5. Malaria
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=48)
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: gcs, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: traumatic_brain_injury (from PANE top)
+- note: PlanTab protocol: (none) (from ICD)
+
+</details>
+
+### Suspected non-accidental injury (infant bruising)
+
+#### `trauma-paediatric-nai-bruising` — 
+
+11-month-old boy, not yet crawling, brought 2 days after a reported "roll off the sofa": bruises on the left ear, cheek and trunk (fingertip pattern), irritable; explanation inconsistent with development.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| flag-safeguarding | redFlags | critical | FAIL (known gap) | NICE CG89 2009 | Add a NICE CG89 safeguarding prompt (age <1 or not independently mobile with bruising; ear/neck/trunk bruises; inconsistent history; delay; immersion scald pattern) that routes to the safeguarding lead. |
+| mgmt-safeguarding-referral | managementInclude | critical | FAIL (known gap) | NICE CG89 2009 | Add a NICE CG89 safeguarding prompt. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | NICE CG89 2009 |  |
+| mnm-nai | mustNotMiss | quality | FAIL (known gap) | NICE CG89 2009 | Add suspected physical abuse to the paediatric differential (bruising in a non-mobile infant, TEN-4 sites, inconsistent history, delayed presentation). |
+| level-at-least-urgent | emergencyLevel | quality | PASS | NICE CG89 2009 |  |
+| inv-skeletal-survey | investigationInclude | quality | FAIL (known gap) | RCR/RCPCH 2017 | Add RCR/RCPCH investigations to the safeguarding prompt. |
+| inv-ct-head-infant | investigationInclude | quality | FAIL (known gap) | RCR/RCPCH 2017 | Add RCR/RCPCH investigations to the safeguarding prompt. |
+| inv-clotting | investigationInclude | quality | FAIL (known gap) | NICE CG89 2009 | Add RCR/RCPCH investigations to the safeguarding prompt. |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mnm-nai** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis.]
+- **flag-safeguarding** (web): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists in triage, prompts or protocols; T76.12XA maps to no protocol.]
+- **inv-skeletal-survey** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No safeguarding investigations are suggested (skeletal survey, CT head <1 year, FBC/clotting).]
+- **inv-ct-head-infant** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No safeguarding investigations are suggested.]
+- **inv-clotting** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No safeguarding investigations are suggested.]
+- **mgmt-safeguarding-referral** (web): no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding referral is suggested.]
+
+Guidelines:
+
+- **nice-cg89** — NICE CG89 — Child maltreatment: when to suspect maltreatment in under 18s (2009), Suspect maltreatment: bruising in a child who is not independently mobile; bruises on ears, neck, trunk, buttocks; explanation absent, inconsistent or implausible; delayed presentation; burns/scalds with immersion pattern (glove/stocking, symmetrical, buttocks/perineum/lower limbs, sharp demarcation) → follow local safeguarding procedures. National Institute for Health and Care Excellence. Child maltreatment: when to suspect maltreatment in under 18s (CG89). London: NICE; 2009 (updated 2017). *(statement wording/numbering not yet verified against the source)*
+- **rcr-rcpch-2017** — RCR/RCPCH — radiological investigation of suspected physical abuse in children (2017), Skeletal survey in children under 2 years with suspected physical abuse; CT head in children under 1 year with suspected physical abuse. The Royal College of Radiologists, Royal College of Paediatrics and Child Health. The radiological investigation of suspected physical abuse in children. London: RCR; 2017 (revised 2018). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. GORD / Reflux Oesophagitis; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Intussusception; 2. Inguinal hernia (paediatric); 3. Malrotation / midgut volvulus; 4. Bacterial meningitis (paediatric); 5. Leukaemia / haematological malignancy
+- differential web.passive: 1. Intussusception; 2. Leukaemia / haematological malignancy; 3. Malrotation / midgut volvulus; 4. Inguinal hernia (paediatric); 5. Bacterial meningitis (paediatric)
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=60)
+- alarms: Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+
+</details>
+
+### Blunt abdominal trauma in pregnancy (suspected placental abruption)
+
+#### `trauma-pregnancy-30wk-rtc` — 
+
+29-year-old woman at 30 weeks, restrained front passenger in a collision 45 min ago: abdominal pain, uterine tenderness and tightenings, small vaginal bleed, HR 110, BP 102/64 (booking 118/74); blood group O RhD negative.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-abruption | mustNotMiss | critical | FAIL (known gap) | ATLS 10th edition 2018 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
+| level-emergency | emergencyLevel | critical | PASS | ATLS 10th edition 2018 |  |
+| flag-pregnancy | redFlags | critical | PASS | ATLS 10th edition 2018 |  |
+| inv-fetal-monitoring | investigationInclude | critical | FAIL (known gap) | ATLS 10th edition 2018 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
+| mgmt-uterine-displacement | managementInclude | critical | FAIL (known gap) | ATLS 10th edition 2018 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
+| mgmt-obstetric-team | managementInclude | critical | FAIL (known gap) | ATLS 10th edition 2018 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
+| inv-kleihauer | investigationInclude | quality | FAIL (known gap) | ATLS 10th edition 2018; BSH guideline 2014 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
+| inv-no-pregnancy-test | investigationExclude | quality | FAIL (known gap) |  | Skip the pregnancy-test prompt when pregnancy status is recorded as pregnant. |
+| mgmt-anti-d | managementInclude | quality | FAIL (known gap) | ATLS 10th edition 2018; BSH guideline 2014 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mnm-abruption** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Blunt Abdominal Trauma \| 3. Splenic Laceration [known gap: PANE has no placental abruption; top 3: Acute cholecystitis, Blunt abdominal trauma, Splenic laceration. Symptom inference ranks ectopic pregnancy #1 at 30 weeks.]
+- **inv-fetal-monitoring** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
+- **inv-kleihauer** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
+- **inv-no-pregnancy-test** (web): forbidden investigation present in web.clinicalPrompts: "urine pregnancy test (f)" [known gap: The reproductive-age prompt adds 'Urine pregnancy test (β-HCG) — mandatory' although the record says pregnant at 30 weeks.]
+- **mgmt-uterine-displacement** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
+- **mgmt-obstetric-team** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
+- **mgmt-anti-d** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
+
+Guidelines:
+
+- **atls-10-pregnancy** — ATLS 10th edition — trauma in pregnancy (2018), Chapter 12: resuscitate the mother first; manual uterine displacement / left lateral tilt after ~20 weeks to relieve aortocaval compression; early obstetric consultation; fetal monitoring (cardiotocography) for at least 6 h after injury beyond viability; Kleihauer–Betke test and anti-D immunoglobulin for Rh-negative mothers; consider placental abruption; indicated imaging must not be withheld. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 12. *(statement wording/numbering not yet verified against the source)*
+- **green-top-anti-d-2014** — BSH guideline — use of anti-D immunoglobulin for the prevention of haemolytic disease of the fetus and newborn (2014), Potentially sensitising events after 20 weeks (including abdominal trauma) in RhD-negative women: anti-D immunoglobulin and a test of fetomaternal haemorrhage volume (e.g. Kleihauer). Qureshi H, Massey E, Kirwan D, et al. BCSH guideline for the use of anti-D immunoglobulin for the prevention of haemolytic disease of the fetus and newborn. Transfus Med. 2014;24:8–20. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-initial** — ATLS 10th edition — initial assessment and management (2018), Chapter 1: primary survey in order — control of exsanguinating external haemorrhage, airway with cervical spine restriction, breathing, circulation with haemorrhage control, disability, exposure (x/c-ABCDE); adjuncts (FAST, CXR, pelvic XR); resuscitation before definitive imaging in unstable patients. American College of Surgeons Committee on Trauma. Advanced Trauma Life Support (ATLS) Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 1. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Blunt Abdominal Trauma; 3. Splenic Laceration
+- differential web.symptomInference: 1. Ectopic pregnancy; 2. Ovarian torsion / ovarian cyst; 3. Pelvic inflammatory disease (PID); 4. Endometriosis; 5. Acute cholecystitis
+- differential web.passive: 1. Ectopic pregnancy; 2. Ovarian torsion / ovarian cyst; 3. Acute appendicitis (paediatric); 4. Pelvic inflammatory disease (PID); 5. Acute cholecystitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=84)
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: suprapubic_pain, radiation_to_back
+- note: AssessmentTab ManagementPanel protocol: (none) (from ICD)
+- note: PlanTab protocol: (none) (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Splenic laceration (haemodynamically stable)
+
+#### `trauma-splenic-injury-stable` — 
+
+22-year-old man kicked in the left upper quadrant playing football: HR 96, BP 124/78, LUQ tenderness, left shoulder-tip pain; CT AAST grade III splenic laceration without contrast blush.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | FAIL (known gap) | WSES classification and guidelines 2017 | Add trauma/burns red-flag rules to rules.ts (burn with TBSA, stab/gunshot/penetrating wound, evisceration, high-energy mechanism, head injury on anticoagulant) at urgent severity, and a shock-index or relative-hypotension rule. |
+| mgmt-nom-monitoring | managementInclude | critical | PASS | WSES classification and guidelines 2017 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | WSES classification and guidelines 2017 |  |
+| dx-splenic-top3 | mustRankTopK | quality | PASS | WSES classification and guidelines 2017 |  |
+| inv-serial-hb | investigationInclude | quality | PASS | WSES classification and guidelines 2017 |  |
+| mgmt-no-routine-splenectomy | managementExclude | quality | PASS | WSES classification and guidelines 2017 |  |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **level-at-least-urgent** (web): web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ urgent [known gap: adaptiveTriage has no trauma keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns routine_booking (score 8) for a CT-proven grade III splenic laceration.]
+
+Guidelines:
+
+- **wses-spleen-2017** — WSES classification and guidelines — splenic trauma (adult and paediatric) (2017), Haemodynamically stable without other indications for laparotomy: non-operative management with close monitoring, serial examination and Hb, in a setting with immediate access to theatre and angiography; angioembolisation for contrast blush/pseudoaneurysm; haemodynamic instability or failed NOM → operative management (splenectomy); post-splenectomy vaccination. Coccolini F, Montori G, Catena F, et al. Splenic trauma: WSES classification and guidelines for adult and pediatric patients. World J Emerg Surg. 2017;12:40. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-abdomen** — ATLS 10th edition — abdominal and pelvic trauma (2018), Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Blunt Abdominal Trauma; 2. Acute Appendicitis; 3. Splenic Laceration
+- differential web.symptomInference: 1. Rotator cuff tear / shoulder impingement; 2. Acute appendicitis (paediatric); 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Acute cholecystitis; 5. Peptic ulcer disease
+- differential web.passive: 1. Rotator cuff tear / shoulder impingement; 2. Acute appendicitis (paediatric); 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Acute appendicitis
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=8)
+- alarms: Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: splenic_laceration (from ICD)
+- note: PlanTab protocol: splenic_laceration (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Splenic injury (haemodynamically unstable)
+
+#### `trauma-splenic-injury-unstable` — Unstable after 1 L crystalloid, FAST positive, no CT
+
+Same mechanism: HR 138, BP 78/42 after 1 L crystalloid, GCS 14, tender distended abdomen, FAST large free fluid.
+
+Permutation of `trauma-splenic-injury-stable`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | PASS | WSES classification and guidelines 2017; ATLS 10th edition 2018 |  |
+| alarm-shock | mustAlarm | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-operative | managementInclude | critical | PASS | WSES classification and guidelines 2017; ATLS 10th edition 2018 |  |
+| mgmt-blood-products | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-nom-unstable | managementExclude | critical | PASS | WSES classification and guidelines 2017 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
+| dx-splenic-top3 | mustRankTopK | quality | PASS | WSES classification and guidelines 2017 |  |
+| inv-no-ct-unstable | investigationExclude | quality | FAIL (known gap) | WSES classification and guidelines 2017; ATLS 10th edition 2018 | Qualify protocol CT investigations with "haemodynamically stable only". |
+| mgmt-txa | managementInclude | quality | PASS | CRASH-2 2011 |  |
+
+Failure details:
+
+- **inv-no-ct-unstable** (web): forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (aast grading)" (+2 more) [known gap: The splenic protocol lists "CT abdomen/pelvis with IV contrast (AAST grading)" without "if stable" in the unstable patient.]
+
+Guidelines:
+
+- **wses-spleen-2017** — WSES classification and guidelines — splenic trauma (adult and paediatric) (2017), Haemodynamically stable without other indications for laparotomy: non-operative management with close monitoring, serial examination and Hb, in a setting with immediate access to theatre and angiography; angioembolisation for contrast blush/pseudoaneurysm; haemodynamic instability or failed NOM → operative management (splenectomy); post-splenectomy vaccination. Coccolini F, Montori G, Catena F, et al. Splenic trauma: WSES classification and guidelines for adult and pediatric patients. World J Emerg Surg. 2017;12:40. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-abdomen** — ATLS 10th edition — abdominal and pelvic trauma (2018), Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-shock** — ATLS 10th edition — shock (2018), Chapter 3, Table 3-1: haemorrhage classes I (<15%), II (15–30%), III (31–40%), IV (>40%) with heart rate, blood pressure, pulse pressure, respiratory rate, urine output, GCS and base deficit; class III–IV need blood products / massive transfusion protocol; early haemorrhage control; minimise crystalloid; beta-blockers and age blunt the tachycardic response. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 3. *(statement wording/numbering not yet verified against the source)*
+- **crash-2** — CRASH-2 — tranexamic acid in bleeding trauma patients (2011), Tranexamic acid 1 g over 10 min then 1 g over 8 h, given within 3 h of injury; no benefit and possible harm when started after 3 h. CRASH-2 collaborators. The importance of early treatment with tranexamic acid in bleeding trauma patients: an exploratory analysis of the CRASH-2 randomised controlled trial. Lancet. 2011;377:1096–101. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Splenic Laceration; 2. Blunt Abdominal Trauma; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Rotator cuff tear / shoulder impingement; 2. Acute appendicitis (paediatric); 3. BPPV / labyrinthitis / vestibular neuritis; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Acute cholecystitis
+- differential web.passive: 1. Rotator cuff tear / shoulder impingement; 2. Acute appendicitis (paediatric); 3. BPPV / labyrinthitis / vestibular neuritis; 4. Acute cholecystitis; 5. Peptic ulcer disease
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=135)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; SBP 78 mmHg — hypotension [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Bowel obstruction — clinical or imaging evidence [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: ranson, qsofa, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nausea_vomiting
+- note: AssessmentTab ManagementPanel protocol: splenic_laceration (from PANE top)
+- note: PlanTab protocol: splenic_laceration (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Penetrating abdominal trauma (stab wound with evisceration)
+
+#### `trauma-stab-abdomen-evisceration` — 
+
+26-year-old man stabbed in the left upper quadrant 30 min ago: omentum eviscerated through a 3 cm wound, BP 100/64, HR 112, guarding.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-emergency | emergencyLevel | critical | FAIL (known gap) | ATLS 10th edition 2018; EAST practice management guideline 2010 | Add trauma/burns red-flag rules to rules.ts (burn with TBSA, stab/gunshot/penetrating wound, evisceration, high-energy mechanism, head injury on anticoagulant) at urgent severity, and a shock-index or relative-hypotension rule. |
+| mgmt-laparotomy | managementInclude | critical | PASS | ATLS 10th edition 2018; EAST practice management guideline 2010 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | ATLS 10th edition 2018 |  |
+| dx-penetrating-top3 | mustRankTopK | quality | FAIL (known gap) | ATLS 10th edition 2018 |  |
+| inv-cxr | investigationInclude | quality | PASS | ATLS 10th edition 2018 |  |
+| mgmt-tetanus | managementInclude | quality | PASS |  |  |
+| mgmt-antibiotics | managementInclude | quality | PASS |  |  |
+| mgmt-no-bedside-reduction | managementExclude | quality | PASS | ATLS 10th edition 2018 |  |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **dx-penetrating-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Inguinal/femoral hernia, Acute appendicitis, GORD; the SOCRATES mapper has no trauma features and PANE needs mechanism answers.]
+- **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: adaptiveTriage has no stab/penetrating/evisceration keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns same_day_call for an eviscerated stab wound.]
+
+Guidelines:
+
+- **atls-10-abdomen** — ATLS 10th edition — abdominal and pelvic trauma (2018), Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5. *(statement wording/numbering not yet verified against the source)*
+- **east-penetrating-2010** — EAST practice management guideline — selective non-operative management of penetrating abdominal trauma (2010), Haemodynamic instability, peritonitis or evisceration → laparotomy; stable patients without peritonitis may undergo serial examination (± CT, local wound exploration). Como JJ, Bokhari F, Chiu WC, et al. Practice management guidelines for selective nonoperative management of penetrating abdominal trauma. J Trauma. 2010;68:721–33. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Appendicitis; 3. GORD / Reflux Oesophagitis
+- differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Symptomatic / ruptured abdominal aortic aneurysm; 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Acute appendicitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=35)
+- alarms: Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: qsofa, ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: (none)
+- note: AssessmentTab ManagementPanel protocol: penetrating_abdominal_trauma (from ICD)
+- note: PlanTab protocol: penetrating_abdominal_trauma (from ICD)
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Penetrating abdominal trauma (stable anterior stab wound)
+
+#### `trauma-stab-abdomen-stable-snom` — Stable, no peritonism, no evisceration
+
+31-year-old man with a 1.5 cm anterior abdominal stab wound (right upper quadrant) 1 h ago; HR 84, BP 132/80, no peritonism, no evisceration.
+
+Permutation of `trauma-stab-abdomen-evisceration`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | PASS | EAST practice management guideline 2010 |  |
+| mgmt-serial-exam | managementInclude | critical | PASS | EAST practice management guideline 2010 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS | EAST practice management guideline 2010 |  |
+| inv-ct-or-lwe | investigationInclude | quality | PASS | EAST practice management guideline 2010 |  |
+| mgmt-no-mandatory-laparotomy | managementExclude | quality | PASS | EAST practice management guideline 2010 |  |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Guidelines:
+
+- **east-penetrating-2010** — EAST practice management guideline — selective non-operative management of penetrating abdominal trauma (2010), Haemodynamic instability, peritonitis or evisceration → laparotomy; stable patients without peritonitis may undergo serial examination (± CT, local wound exploration). Como JJ, Bokhari F, Chiu WC, et al. Practice management guidelines for selective nonoperative management of penetrating abdominal trauma. J Trauma. 2010;68:721–33. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-abdomen** — ATLS 10th edition — abdominal and pelvic trauma (2018), Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Inguinal / Femoral Hernia; 3. Acute Appendicitis
+- differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Symptomatic / ruptured abdominal aortic aneurysm; 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Acute appendicitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=30)
+- alarms: Generalised peritonism (guarding / rigidity) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: ruq_pain
+- note: AssessmentTab ManagementPanel protocol: penetrating_abdominal_trauma (from ICD)
+- note: PlanTab protocol: penetrating_abdominal_trauma (from ICD)
+- note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Tension pneumothorax (traumatic)
+
+#### `trauma-tension-pneumothorax` — 
+
+41-year-old driver after a frontal collision: severe dyspnoea, SpO₂ 84 % on oxygen, RR 36, HR 138, BP 80/50, trachea deviated to the left, absent breath sounds and hyper-resonance on the right, distended neck veins.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| mnm-pneumothorax | mustNotMiss | critical | PASS | ATLS 10th edition 2018 |  |
+| level-emergency | emergencyLevel | critical | PASS | ATLS 10th edition 2018 |  |
+| alarm-hypoxia-shock | mustAlarm | critical | PASS | ATLS 10th edition 2018 |  |
+| flag-tension | redFlags | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-immediate-decompression | managementInclude | critical | PASS | ATLS 10th edition 2018 |  |
+| mgmt-adult-site-not-2nd-ics | managementExclude | critical | FAIL (known gap) | ATLS 10th edition 2018 | Change the adult site to the 4th/5th ICS just anterior to the mid-axillary line (2nd ICS MCL for children); surgeon to confirm. |
+| inv-no-imaging-first | investigationExclude | quality | PASS | ATLS 10th edition 2018 |  |
+| pathway-trauma | pathway | quality | n/a |  |  |
+
+Failure details:
+
+- **mgmt-adult-site-not-2nd-ics** (web): forbidden management item present in web.plan: "...te] tension pneumothorax: needle decompression (14g cannula 2nd ics mcl) → immediate clinical improvement → proceed to icd." (+2 more) [known gap: The pneumothorax protocol says "needle decompression (14G cannula 2nd ICS MCL)" for all patients (and a key point repeats it), while ATLS 10 moved the adult site to the 4th/5th ICS anterior to the mid-axillary line.]
+
+Guidelines:
+
+- **atls-10-thorax** — ATLS 10th edition — thoracic trauma (2018), Chapter 4: tension pneumothorax is a clinical diagnosis treated by immediate decompression without waiting for imaging; in adults needle decompression at the 4th/5th intercostal space anterior to the mid-axillary line (2nd ICS mid-clavicular line remains acceptable in children), followed by chest tube. American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 4. *(statement wording/numbering not yet verified against the source)*
+- **atls-10-initial** — ATLS 10th edition — initial assessment and management (2018), Chapter 1: primary survey in order — control of exsanguinating external haemorrhage, airway with cervical spine restriction, breathing, circulation with haemorrhage control, disability, exposure (x/c-ABCDE); adjuncts (FAST, CXR, pelvic XR); resuscitation before definitive imaging in unstable patients. American College of Surgeons Committee on Trauma. Advanced Trauma Life Support (ATLS) Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 1. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (130 diseases, 135 features); triageRulesVersion=1.2.0
+- differential web.pane: 1. Traumatic Pneumothorax; 2. Haemothorax; 3. Rib Fractures
+- differential web.symptomInference: 1. ST-elevation myocardial infarction (STEMI); 2. Tension pneumothorax; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Cardiac tamponade; 5. Pericarditis / myocarditis
+- differential web.passive: 1. Spontaneous pneumothorax; 2. Tension pneumothorax; 3. ST-elevation myocardial infarction (STEMI); 4. Acute coronary syndrome (ACS / NSTEMI / STEMI); 5. Cardiac tamponade
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=300)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; SBP 80 mmHg — hypotension [web.clinicalPrompts.safety]; SpO₂ 84% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 138 bpm — unexplained tachycardia [web.clinicalPrompts.safety]
+- recommended scores: heart, wells-pe, qsofa, news2, curb65
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: dyspnoea_pe
+- note: AssessmentTab ManagementPanel protocol: pneumothorax_traumatic (from PANE top)
+- note: PlanTab protocol: pneumothorax_traumatic (from ICD)
+- note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
 
@@ -9951,9 +12070,31 @@ Guidelines:
 
 | Vignette | Expectation | Platform | Severity | Flag | Detail |
 |---|---|---|---|---|---|
+| `aaa-renal-colic-mimic` | mnm-aaa | web | critical | known gap | not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#5 [known gap: PANE top 3: Renal colic (0.78), Inguinal/femoral hernia, Acute chol |
+| `aaa-renal-colic-mimic` | inv-aorta-imaging | web | critical | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: No engine suggests aortic ultrasound or CTA; the management panel shows the renal colic protocol (PANE top) and I71.3 maps to no protocol.] |
+| `aaa-renal-colic-mimic` | mgmt-vascular | web | quality | known gap | no management item matched among 17 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Management panel shows the renal colic protocol; no vascular step.] |
+| `abscess-recurrent-mrsa-pwid` | mnm-pseudoaneurysm | web | quality | known gap | not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Skin Abscess / Furuncle \| 3. Acute Cholecystitis [known gap: No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin  |
+| `abscess-recurrent-mrsa-pwid` | flag-ivdu | web | quality | known gap | no red flag matched among 18 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: The 'IV drug use' toxic habit is not surfaced as a red flag. Triage also |
+| `abscess-recurrent-mrsa-pwid` | inv-duplex-before-drainage | web | quality | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No engine recommends imaging a groin injection-site swelling before incision.] |
+| `abscess-recurrent-mrsa-pwid` | inv-mrsa-culture | web | quality | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab n |
+| `abscess-recurrent-mrsa-pwid` | inv-bbv | web | quality | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No blood-borne virus screen suggested for a person who injects drugs.] |
+| `abscess-recurrent-mrsa-pwid` | mgmt-incision-drainage | web | quality | known gap | no management item matched among 24 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is  |
+| `abscess-recurrent-mrsa-pwid` | mgmt-mrsa-active-antibiotic | web | critical | known gap | no management item matched among 24 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is  |
+| `abscess-thigh-adult` | inv-pus-culture | web | quality | known gap | no investigation matched among 7 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD L02.415 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab no |
+| `abscess-thigh-adult` | mgmt-incision-drainage | web | critical | known gap | no management item output on web [known gap: ICD L02.415 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produ |
 | `achalasia-pseudoachalasia-elderly` | mnm-malignancy | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifi |
 | `achalasia-young` | dx-achalasia-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Hiatus Hernia [known gap: PANE top 3: cholecystitis, appendicitis, hiatus hernia — only weight_loss and regurgitation reach PANE (no dysphagia feature, see dysp |
 | `adrenal-suspected-phaeochromocytoma` | mnm-phaeochromocytoma | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and a |
+| `ali-embolic-af` | dx-ali-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholecystitis, GORD, Acute diverticulitis — PANE has n |
+| `ali-embolic-af` | alarm-ali | web | critical | known gap | no alarm matched among 2 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emerge |
+| `ali-embolic-af` | flag-af-embolic-source | web | quality | known gap | no red flag matched among 12 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: PANE has no acute limb ischaemia disease and no protocol ma |
+| `ali-embolic-af` | inv-cta-or-duplex | web | quality | known gap | no investigation matched among 21 (web.pane.seeded, web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency |
+| `ali-embolic-af` | mgmt-heparin | web | critical | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because th |
+| `ali-embolic-af` | mgmt-emergency-revascularisation | web | critical | known gap | no management item matched among 9 (web.clinicalPrompts) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because th |
+| `ali-thrombotic-diabetic-claudicant` | mnm-ali | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Peripheral Arterial Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Peripheral arterial di |
+| `ali-thrombotic-diabetic-claudicant` | flag-acute-ischaemia | web | quality | known gap | no red flag matched among 10 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there  |
+| `ali-thrombotic-diabetic-claudicant` | mgmt-heparin | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: No protocol matches I74.3 and PANE top is below 0.20 (the PAD protocol would also lack heparin/ALI steps).] |
+| `ali-thrombotic-diabetic-claudicant` | mgmt-urgent-vascular | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: No protocol matches I74.3 and PANE top is below 0.20.] |
 | `ami-embolic-af` | mnm-mesenteric-ischaemia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never  |
 | `ami-embolic-af` | alarm-mesenteric | web | critical | known gap | no alarm matched among 7 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: No prompt or triage rule for 'pain out of proportion', AF + abdominal pain, or mesenteric ischaemia.] |
 | `ami-embolic-af` | inv-cta | web | critical | known gap | no investigation matched among 36 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Web: K55.0 maps to the ischaemic colitis protocol: 'CT abdomen/pelvis with IV contrast' (portal venous), not CT angiography.] |
@@ -10072,6 +12213,45 @@ Guidelines:
 | `breast-pain-cyclical-alone` | dx-benign-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE applied no feature (template "Other / general surgical"); priors gi |
 | `breast-pain-cyclical-alone` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "friend had breast cancer" matches the "Possible malignancy" red flag.] |
 | `breast-pain-cyclical-alone` | mgmt-reassurance | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: N64.4 (mastodynia) maps to no protocol; no mastalgia guidance.] |
+| `burns-adult-flame-27pct` | dx-major-burn-top3 | web | quality | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: GORD, Inguinal/femoral hernia, Acute cholecystitis — socrates-to-features maps the 'Burning' character |
+| `burns-adult-flame-27pct` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: adaptiveTriage has no burn keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >12 |
+| `burns-adult-flame-27pct` | flag-major-burn | web | quality | known gap | no red flag matched among 7 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-bu |
+| `burns-adult-flame-27pct` | inv-tbsa-assessment | web | quality | known gap | no investigation matched among 17 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE  |
+| `burns-adult-flame-27pct` | mgmt-formal-fluids | web | critical | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-adult-flame-27pct` | mgmt-from-time-of-burn | web | quality | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-adult-flame-27pct` | mgmt-urine-output-titration | web | quality | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-adult-flame-27pct` | mgmt-burns-referral | web | critical | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-adult-flame-27pct` | mgmt-tetanus | web | quality | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: ICD T31.21 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-adult-scald-14pct` | mgmt-burns-discussion | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-adult-scald-14pct` | mgmt-dressings | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-chemical-alkali` | flag-chemical | web | quality | known gap | no red flag matched among 5 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0 |
+| `burns-chemical-alkali` | inv-eye-ph | web | quality | known gap | no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the A |
+| `burns-chemical-alkali` | mgmt-copious-irrigation | web | critical | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment manage |
+| `burns-chemical-alkali` | mgmt-remove-clothing | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment manage |
+| `burns-chemical-alkali` | mgmt-ophthalmology | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment manage |
+| `burns-chemical-alkali` | mgmt-burns-referral | web | critical | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment manage |
+| `burns-child-immersion-nai` | flag-safeguarding | web | critical | known gap | no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "c |
+| `burns-child-immersion-nai` | flag-special-areas | web | quality | known gap | no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "c |
+| `burns-child-immersion-nai` | inv-skeletal-survey | web | quality | known gap | no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — s |
+| `burns-child-immersion-nai` | mgmt-safeguarding-referral | web | critical | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding refe |
+| `burns-child-immersion-nai` | mgmt-paediatric-burns-referral | web | critical | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding refe |
+| `burns-child-scald-12pct` | flag-paediatric-burn | web | quality | known gap | no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) |
+| `burns-child-scald-12pct` | inv-lund-browder | web | quality | known gap | no investigation matched among 13 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE  |
+| `burns-child-scald-12pct` | mgmt-formal-fluids | web | critical | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-child-scald-12pct` | mgmt-maintenance-fluid | web | quality | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-child-scald-12pct` | mgmt-child-urine-target | web | quality | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-child-scald-12pct` | mgmt-paediatric-burns-referral | web | critical | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is |
+| `burns-circumferential-forearm-hand` | flag-circumferential | web | critical | known gap | no red flag matched among 5 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 s |
+| `burns-circumferential-forearm-hand` | mgmt-escharotomy | web | critical | known gap | no management item matched among 1 (web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, s |
+| `burns-circumferential-forearm-hand` | mgmt-burns-referral | web | critical | known gap | no management item matched among 1 (web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, s |
+| `burns-circumferential-forearm-hand` | mgmt-elevation | web | quality | known gap | no management item matched among 1 (web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, s |
+| `burns-electrical-high-voltage` | dx-electrical-top3 | web | quality | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis [known gap: PANE top 3: GORD, Inguinal/femoral hernia, Acute appendicitis — socrates-to-features maps the 'Burning' character c |
+| `burns-inhalation-enclosed-space` | flag-inhalation | web | critical | known gap | no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury p |
+| `burns-inhalation-enclosed-space` | flag-special-areas | web | quality | known gap | no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury p |
+| `burns-inhalation-enclosed-space` | mgmt-early-intubation | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan |
+| `burns-inhalation-enclosed-space` | mgmt-100-oxygen | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan |
+| `burns-inhalation-enclosed-space` | mgmt-formal-fluids | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan |
+| `burns-inhalation-enclosed-space` | mgmt-burns-referral | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan |
 | `caecal-volvulus` | mgmt-resection | web | critical | known gap | no management item matched among 44 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowe |
 | `caustic-ingestion-alkali` | inv-airway-assessment | web | quality | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No caustic-ingestion protocol or prompt; nothing mentions airway assessment.] |
 | `caustic-ingestion-alkali` | mgmt-psychiatric-assessment | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Only the triage reason "Mental health crisis"; no plan line.] |
@@ -10079,6 +12259,17 @@ Guidelines:
 | `cdiff-fulminant-colitis` | mnm-cdiff | web | critical | known gap | not in top 3 of web.pane: 1. Acute Diverticulitis \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inf |
 | `cdiff-fulminant-colitis` | mgmt-vancomycin-metronidazole | web | critical | known gap | no management item matched among 39 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". T |
 | `cdiff-fulminant-colitis` | mgmt-surgical-consult | web | critical | known gap | no management item matched among 39 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).] |
+| `cellulitis-leg-adult` | mnm-dvt | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Cellulitis \| 3. GORD / Reflux Oesophagitis; also in web.triageSurgical#1 [known gap: PANE top 3: Acute cholecystitis, Cellulitis, GORD; DVT not listed. Triage surgical matches list DVT |
+| `cellulitis-leg-adult` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=73); expected ≤ urgent [known gap: Over-triage: the HPI word 'spreading redness' matches the diabetic-foot red flag (rules.ts, urgent) → emergency_now in a non-diabetic with  |
+| `cellulitis-leg-adult` | inv-mark-border | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor |
+| `cellulitis-leg-adult` | mgmt-flucloxacillin | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment  |
+| `cellulitis-leg-adult` | mgmt-safety-net-nsti | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment  |
+| `cellulitis-sepsis-elderly-diabetic` | dx-cellulitis-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Liver Abscess \| 3. Acute Diverticulitis; also in web.symptomInference#3, web.passive#2 [known gap: PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis (fever/rigors domina |
+| `cellulitis-sepsis-elderly-diabetic` | mnm-nsti | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Liver Abscess \| 3. Acute Diverticulitis; also in web.symptomInference#4, web.passive#3 [known gap: PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis. Symptom inference r |
+| `cellulitis-sepsis-elderly-diabetic` | flag-beta-blocker | web | quality | known gap | no red flag matched among 19 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No engine flags that bisoprolol blunts the tachycardic resp |
+| `charcot-foot-cellulitis-mimic` | mnm-charcot | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: No engine has Charcot neuro-osteoarthropathy (PANE, symptom inference, triage). Symptom inference ranks celluliti |
+| `charcot-foot-cellulitis-mimic` | inv-mri | web | quality | known gap | no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
+| `charcot-foot-cellulitis-mimic` | mgmt-immobilise-offload | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
 | `cholangitis-tg18-charcot-sepsis` | score-tg18-calculator | web | critical | known gap | expected = 2; got web.scaleCalculator.tg18-cholangitis=2 (Grade II — MODERATE); web.scoreCalculator.tg18-cholangitis=1 (Mild cholangitis — antibiotics ± elective drainage) [known gap: Web clinical-scores.ts (ClinicalScoresPanel) omits the W |
 | `cholangitis-tg18-charcot-sepsis` | score-tg18-autofill | web | quality | known gap | expected = 2; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: Web clinical-scores needs manual imaging ticks before it will diagnose, so auto-fill reads "criteria not met".] |
 | `cholangitis-tg18-charcot-sepsis` | mgmt-drainage-in-generated-plan | web | quality | known gap | no management item matched among 13 (web.plan) [known gap: dx-variants: 'ascending cholangitis' is a Grade I keyword, Grade I is checked first, and Grade I phases exclude 'surgical', so ERCP disappears from the generated plan.] |
@@ -10164,6 +12355,25 @@ Guidelines:
 | `crohns-ileocaecal-abscess` | mgmt-drainage | web | critical | known gap | no management item matched among 59 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The crohns_disease protocol says "Abscess or fistula — urgent imaging and interven |
 | `crohns-ileocaecal-abscess` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergenc |
 | `crohns-ileocaecal-abscess` | mgmt-no-steroids | web | critical | known gap | forbidden management item present in web.protocol.medications: "budesonide 9 mg po (oral) od (once daily) - ileal disease flare - less systemic side effec..." (+1 more) [known gap: The crohns_disease protocol medications (prednisolone, bude |
+| `dfi-moderate-osteomyelitis` | mnm-osteomyelitis | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3: Inguinal/femoral hernia, GORD, Ac |
+| `dfi-moderate-osteomyelitis` | inv-foot-xray | web | critical | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
+| `dfi-moderate-osteomyelitis` | inv-mri-or-bone-sample | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
+| `dfi-moderate-osteomyelitis` | inv-deep-tissue-culture | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
+| `dfi-moderate-osteomyelitis` | inv-vascular-assessment | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
+| `dfi-moderate-osteomyelitis` | mgmt-offloading | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-fo |
+| `dfi-moderate-osteomyelitis` | mgmt-mdt-foot | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-fo |
+| `dfi-moderate-osteomyelitis` | mgmt-antibiotic | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-fo |
+| `dfi-moderate-osteomyelitis` | mgmt-iwgdf-grade | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-fo |
+| `dfi-severe-wet-gangrene-abscess` | mnm-dfi | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis; also in web.symptomInference#4, web.passive#3, web.triageSurgical#1 [known gap: PANE top 3: Acute cholangitis, Acute cholecystitis, Acute d |
+| `dfi-severe-wet-gangrene-abscess` | mnm-nsti | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis [known gap: PANE top 3 omits NSTI/gas gangrene despite crepitus and soft-tissue gas.] |
+| `dfi-severe-wet-gangrene-abscess` | inv-vascular-imaging | web | quality | known gap | no investigation matched among 32 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the tria |
+| `dfi-severe-wet-gangrene-abscess` | mgmt-urgent-surgery | web | critical | known gap | no management item matched among 26 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
+| `dfi-severe-wet-gangrene-abscess` | mgmt-vascular | web | quality | known gap | no management item matched among 26 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
+| `dfu-ischaemic-calcified-abpi` | flag-incompressible | web | quality | known gap | no red flag matched among 18 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ul |
+| `dfu-neuropathic-uninfected` | level-priority-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=92); expected ≥ priority, ≤ urgent [known gap: Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer;  |
+| `dfu-neuropathic-uninfected` | inv-vascular-assessment | web | quality | known gap | no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the tri |
+| `dfu-neuropathic-uninfected` | mgmt-offloading | web | quality | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
+| `dfu-neuropathic-uninfected` | mgmt-mdt-foot | web | quality | known gap | no management item matched among 8 (web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foo |
 | `diverticulitis-abscess-drainage` | mgmt-drainage-in-documented-plan | web | critical | known gap | no management item matched among 13 (web.plan) [known gap: Web: Assessment says 'modified Hinchey Ib'; the uncomplicated variant lists 'hinchey ib' (in the modified Hinchey scale Ib is a pericolic abscess) and is checked first, so the docum |
 | `diverticulitis-abscess-drainage` | variant-abscess | web | quality | known gap | detected diverticulitis_uncomplicated in group Diverticulitis; expected diverticulitis_abscess [known gap: Web: 'hinchey ib' is a keyword of diverticulitis_uncomplicated.] |
 | `diverticulitis-faecal-peritonitis-shock` | variant-peritonitis | web | quality | known gap | detected diverticulitis_abscess in group Diverticulitis; expected diverticulitis_peritonitis [known gap: Web: Substring 'hinchey i' ⊂ 'hinchey iv' selects diverticulitis_abscess.] |
@@ -10175,6 +12385,10 @@ Guidelines:
 | `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | web | quality | known gap | no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5– |
 | `diverticulitis-uncomplicated-outpatient` | mgmt-no-routine-antibiotics | web | quality | known gap | forbidden management item present in web.plan: "[conservative] uncomplicated: oral co-amoxiclav 625 mg tds for 5-7 days; liquid diet." (+1 more) [known gap: Web: '[conservative] Uncomplicated: oral co-amoxiclav 625 mg TDS for 5–7 days' in t |
 | `diverticulitis-uncomplicated-outpatient` | variant-uncomplicated | web | quality | known gap | detected (none) in group Diverticulitis; expected diverticulitis_uncomplicated [known gap: Web: Keyword 'uncomplicated diverticulitis' is not a substring of 'Uncomplicated acute sigmoid diverticulitis'; no variant is selected.] |
+| `dvt-pregnancy-22wk` | inv-no-ddimer-in-pregnancy | web | quality | known gap | forbidden investigation present in web.plan.investigations: "d-dimer (only if pre-test probability low/intermediate)" (+1 more) [known gap: The DVT protocol lists "D-dimer (only if pre-test probability low/intermediate)" without a pregnancy |
+| `dvt-pregnancy-22wk` | mgmt-no-doac-in-pregnancy | web | critical | known gap | forbidden management item present in web.plan: "[conservative] direct oral anticoagulant (doac): rivaroxaban 15 mg bd for 21 days then 20 mg od; or apixaban 10 mg bd for 7 days then 5 mg b..." (+5 more) [known gap: The DVT plan offers rivar |
+| `dvt-pregnancy-22wk` | mgmt-no-warfarin-in-pregnancy | web | critical | known gap | forbidden management item present in web.plan: "[conservative] alternative: lmwh bridging to warfarin (target inr 2-3) if doac contraindicated (severe renal failure, pregnancy)." (+2 more) [known gap: The DVT plan says "LMWH bridging to war |
+| `dvt-wells-likely` | flag-oestrogen | web | quality | known gap | no red flag matched among 13 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The combined oral contraceptive is not flagged. Tr |
 | `dyspepsia-young-no-alarm-test-and-treat` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=40); expected ≤ priority [known gap: Same-day call: adaptiveTriage reads CC+HPI free text without negation — "No family history of stomach cancer" gives "Possible malignancy"  |
 | `dyspepsia-young-no-alarm-test-and-treat` | inv-hpylori-non-invasive | web | quality | known gap | no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K30 (uninvestigated/functional dyspepsia); the GORD management panel (PANE top) lists H. pylori only as a routine investigation, which is n |
 | `dysphagia-progressive-over55` | dx-oesophageal-cancer-top3 | web | critical | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Hiatus Hernia; also in web.symptomInference#1, web.passive#2 [known gap: PANE top 3: GORD, inguinal hernia, hiatus hernia. PANE never gets dysphag |
@@ -10335,6 +12549,16 @@ Guidelines:
 | `mimic-testicular-torsion` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: Clinic |
 | `nsaid-associated-gastric-ulcer` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=52); expected ≤ priority [known gap: Emergency now (score 52): adaptiveTriage reads CC+HPI free text without negation — "No bleeding" matches the "GI or other bleeding" urgen |
 | `nsaid-associated-gastric-ulcer` | mgmt-ppi-8-weeks | web | quality | known gap | no management item matched among 42 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: peptic_ulcer protocol gives omeprazole 20 mg OD "4–8 weeks" in medications (matche |
+| `nsti-early-low-lrinec` | mnm-nsti | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Cellulitis \| 3. Skin Abscess / Furuncle; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: Acute cholecystitis, Cellulitis, Skin abscess. socrates-to-features maps  |
+| `nsti-fournier-diabetic` | dx-fournier-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. |
+| `nsti-fournier-diabetic` | mnm-fournier | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholangitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. |
+| `nsti-fournier-diabetic` | mgmt-emergency-debridement | web | critical | known gap | no management item matched among 36 (web.clinicalPrompts) [known gap: ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment ma |
+| `nsti-fournier-diabetic` | mgmt-clindamycin | web | critical | known gap | no management item matched among 36 (web.clinicalPrompts) [known gap: ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment ma |
+| `nsti-fournier-diabetic` | mgmt-urology-colorectal | web | quality | known gap | no management item matched among 36 (web.clinicalPrompts) [known gap: ICD N49.3 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only ge |
+| `nsti-leg-diabetic-sepsis` | dx-nsti-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholangitis \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholangitis, Acute cholecystitis, Acute appendicitis — even with  |
+| `nsti-leg-diabetic-sepsis` | score-rec-lrinec | web | quality | known gap | lrinec not recommended; recommended: wells-pe, wells-dvt, qsofa, web:wagner, news2, caprini, asa, rcri, stop-bang [known gap: getCdsSuggestions has no LRINEC scale (clinical-cds.ts); iOS has one.] |
+| `nsti-postop-abdominal-wall` | dx-nsti-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Acute cholecystitis, Acute cholangitis, GORD. socrates-to-features maps the 'Burning' character chip to the he |
+| `nsti-postop-abdominal-wall` | mnm-anastomotic-or-collection | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 omits anastomotic leak and collections (see dx-nsti-top3).] |
 | `painless-jaundice-elderly-metastatic` | flag-frailty | web | quality | known gap | no red flag matched among 28 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No frailty/perf |
 | `pancreatitis-alcohol` | mgmt-thiamine | web | critical | known gap | no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No thiamine anywhere for an alcohol-dependent, vomiting patient in early withdrawa |
 | `pancreatitis-alcohol` | mgmt-withdrawal | web | quality | known gap | no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No withdrawal assessment or management.] |
@@ -10391,6 +12615,9 @@ Guidelines:
 | `parathyroid-hypercalcaemic-crisis` | mgmt-no-thyroidectomy-template | web | critical | known gap | forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.] |
 | `parathyroid-primary-hpt-surgical-indications` | dx-hyperparathyroid-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3, web.passive#3 [known gap: PANE applied no feature (template "Other / general surgical"); hypercalc |
 | `parathyroid-primary-hpt-surgical-indications` | mgmt-no-thyroidectomy-template | web | critical | known gap | forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: detectDxVariants falls back to lower.includes("thyroid") for the Thyroid group: "parathyroidectomy"/"hyperparathyroidism" contain "thyroid", and "par |
+| `pe-perc-negative-low-risk` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=120); expected ≤ urgent [known gap: Over-triage from negation: 'Not breathless' matches the post-operative/breathless rule and 'No haemoptysis' the haemoptysis rule (both urg |
+| `pe-postop-day5` | mnm-anastomotic-leak-or-pneumonia | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Pulmonary Embolism \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Acute cholecystitis, Pulmonary embolism, GORD. Note: without the PANE answers "no trauma" and "no chest-wall  |
+| `pe-postop-day5` | mgmt-no-ddimer-gate | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism." (+1 more) [known gap: The hypoxia and tachycardia clinical prompts (clinical-inference.ts) add 'CTPA if |
 | `perianal-abscess-diabetic-cellulitis` | mnm-nsti | web | quality | known gap | not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Inguinal / Femoral Hernia \| 3. Pilonidal Disease; also in web.symptomInference#1, web.passive#2 [known gap: PANE does not carry necrotising infection for diabetic perianal sepsi |
 | `perianal-abscess-hiv` | mnm-anal-neoplasia | web | quality | known gap | not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Pilonidal Disease \| 3. Inguinal / Femoral Hernia; also in web.symptomInference#2, web.passive#2 [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC # |
 | `perianal-abscess-hiv` | level-same-day | web | critical | known gap | web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ urgent [known gap: Web adaptiveTriage has no perianal abscess/anorectal sepsis rule: the level depends on the pain score and incidental words (the base absces |
@@ -10408,6 +12635,11 @@ Guidelines:
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform.] |
 | `ppu-perforated-peptic-ulcer` | inv-no-urgent-ogd-in-perforation | web | quality | known gap | forbidden investigation present in web.plan.investigations: "upper gi endoscopy (ogd)" [known gap: Web: K27.5 maps to the peptic_ulcer protocol and its 'Upper GI endoscopy (OGD) (urgent)' investigation is shown for a free perforation; ICD K |
 | `ppu-septic-shock-delayed` | dx-perforation-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Pancreatitis; also in web.symptomInference#2, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, pancreatitis (alco |
+| `raaa-shock` | dx-aaa-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute pancreatitis (0.35), Peptic ulcer, GORD — even with pul |
+| `raaa-shock` | alarm-raaa | web | quality | known gap | no alarm matched among 9 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web alarms are the generic hypotension flag and "Emergency now"; nothing names ruptured AAA.] |
+| `raaa-shock` | mgmt-emergency-repair | web | critical | known gap | no management item matched among 31 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9; the panel shows pancreatitis  |
+| `raaa-shock` | mgmt-permissive-hypotension | web | quality | known gap | no management item matched among 31 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9) and the PANE top diagnosis is |
+| `raaa-shock` | mgmt-no-large-fluid-bolus | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 1l bolus - reassess bp and hr at 15 min." [known gap: The hypotension clinical prompt ('shock_non_infective', clinical-inference.ts) always  |
 | `rectal-bleeding-young-haemorrhoidal` | level-routine-or-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=115); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → em |
 | `rectal-bleeding-young-haemorrhoidal` | mgmt-no-resuscitation | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: Web computeClinicalPrompts fires the "GI haemorrhage" resuscitation prompt (2 large-bore  |
 | `rectal-prolapse-incarcerated` | dx-prolapse-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Haemorrhoids \| 2. Anal Fissure \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4, web.triageSurgical#1 [known gap: PANE ranks haemorrhoids/fissure: the "rectal prolapse" chip is not a PAN |
@@ -10432,6 +12664,10 @@ Guidelines:
 | `sigmoid-volvulus-base` | mgmt-endoscopic-decompression | web | critical | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a headi |
 | `sigmoid-volvulus-base` | mgmt-same-admission-resection | web | quality | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No sigmoid colectomy after decompression.] |
 | `sigmoid-volvulus-base` | mgmt-potassium | web | quality | known gap | no management item matched among 48 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No potassium replacement despite K 3.2.] |
+| `svt-gsv-near-sfj` | mnm-svt | web | quality | known gap | not in top 3 of web.pane: 1. Varicose Veins \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no superficial vein thrombosis disease; top 3: Varicose veins, Acute cholecystitis, GORD. Symptom inference has no S |
+| `svt-gsv-near-sfj` | flag-sfj-extension | web | quality | known gap | no red flag matched among 8 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the  |
+| `svt-gsv-near-sfj` | inv-duplex | web | quality | known gap | no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces a |
+| `svt-gsv-near-sfj` | mgmt-anticoagulation | web | critical | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only ge |
 | `thyroid-bethesda-1-nondiagnostic` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
 | `thyroid-bethesda-1-nondiagnostic` | mgmt-repeat-fna | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No output proposes a repeat FNA; E04.1 has no protocol.] |
 | `thyroid-bethesda-1-nondiagnostic` | mgmt-no-thyroidectomy-plan | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" f |
@@ -10469,6 +12705,33 @@ Guidelines:
 | `thyroid-rapid-enlargement-stridor` | mgmt-airway | web | critical | known gap | no management item matched among 48 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No airway step in any web output: triage has no stridor rule (the emergency comes  |
 | `thyroid-retrosternal-goitre-compression` | flag-compression | web | critical | known gap | no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No red flag names tracheal compression, stridor or retroste |
 | `thyroid-retrosternal-goitre-compression` | inv-ct | web | quality | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: CT neck/thorax appears only inside the thyroidectomy prompt plan text, not as an investigation.] |
+| `trauma-blunt-polytrauma-class3-shock` | flag-shock-class | web | quality | known gap | no red flag matched among 32 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine names the ATLS haemorrhage class; the protocol u |
+| `trauma-blunt-polytrauma-class3-shock` | mgmt-pelvic-binder | web | quality | known gap | no management item matched among 53 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The blunt abdominal trauma protocol does not mention a pelvic binder for pelvic te |
+| `trauma-blunt-polytrauma-class3-shock` | mgmt-no-ct-while-unstable | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• ct abdomen/pelvis with iv contrast - level (sbo/lbo), transition point, closed loop, ischaemia (..." [known gap: The bowel-obstruction clinical prompt fires on abdominal distensio |
+| `trauma-elderly-occult-shock-warfarin` | flag-beta-blocker-masking | web | quality | known gap | no red flag matched among 23 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine fl |
+| `trauma-elderly-occult-shock-warfarin` | mgmt-no-bridging-advice | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• anticoagulant bridging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haem..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a |
+| `trauma-head-injury-elderly-apixaban` | inv-falls-ecg | web | quality | known gap | no investigation matched among 29 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No falls/syncope work-up (ECG, lying-standing BP) is suggested for an older adult with repeated falls on anticoagulation.] |
+| `trauma-head-injury-elderly-apixaban` | mgmt-reversal-plan | web | quality | known gap | no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The TBI protocol has no anticoagulant-reversal step (DOAC reversal/PCC) and the an |
+| `trauma-head-injury-elderly-apixaban` | mgmt-no-elective-bridging-advice | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• anticoagulant bridging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haem..." [known gap: The 'anticoag_check' clinical prompt (clinical-inference.ts) |
+| `trauma-head-injury-gcs12` | flag-gcs | web | critical | known gap | no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.triage.emergency) [known gap: No red flag mentions GCS 12: triage has no GCS input, and S06.0X1A maps to no protocol (the TB |
+| `trauma-paediatric-nai-bruising` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis.] |
+| `trauma-paediatric-nai-bruising` | flag-safeguarding | web | critical | known gap | no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists in triage, prompts or protocols; T76.12XA maps to no protocol.] |
+| `trauma-paediatric-nai-bruising` | inv-skeletal-survey | web | quality | known gap | no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No safeguarding investigations are suggested (skeletal survey, CT head <1 year, FBC/clotting).] |
+| `trauma-paediatric-nai-bruising` | inv-ct-head-infant | web | quality | known gap | no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No safeguarding investigations are suggested.] |
+| `trauma-paediatric-nai-bruising` | inv-clotting | web | quality | known gap | no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No safeguarding investigations are suggested.] |
+| `trauma-paediatric-nai-bruising` | mgmt-safeguarding-referral | web | critical | known gap | no management item matched among 3 (web.clinicalPrompts) [known gap: No safeguarding referral is suggested.] |
+| `trauma-pregnancy-30wk-rtc` | mnm-abruption | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Blunt Abdominal Trauma \| 3. Splenic Laceration [known gap: PANE has no placental abruption; top 3: Acute cholecystitis, Blunt abdominal trauma, Splenic laceration. Symptom inference ra |
+| `trauma-pregnancy-30wk-rtc` | inv-fetal-monitoring | web | critical | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the preg |
+| `trauma-pregnancy-30wk-rtc` | inv-kleihauer | web | quality | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the preg |
+| `trauma-pregnancy-30wk-rtc` | inv-no-pregnancy-test | web | quality | known gap | forbidden investigation present in web.clinicalPrompts: "urine pregnancy test (f)" [known gap: The reproductive-age prompt adds 'Urine pregnancy test (β-HCG) — mandatory' although the record says pregnant at 30 weeks.] |
+| `trauma-pregnancy-30wk-rtc` | mgmt-uterine-displacement | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt onl |
+| `trauma-pregnancy-30wk-rtc` | mgmt-obstetric-team | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt onl |
+| `trauma-pregnancy-30wk-rtc` | mgmt-anti-d | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt onl |
+| `trauma-splenic-injury-stable` | level-at-least-urgent | web | critical | known gap | web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ urgent [known gap: adaptiveTriage has no trauma keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >12 |
+| `trauma-splenic-injury-unstable` | inv-no-ct-unstable | web | quality | known gap | forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (aast grading)" (+2 more) [known gap: The splenic protocol lists "CT abdomen/pelvis with IV contrast (AAST grading)" without "if stable" in the  |
+| `trauma-stab-abdomen-evisceration` | dx-penetrating-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Inguinal/femoral hernia, Acute appendicitis, GORD; the SOCRATES mapper has no trauma features and PANE  |
+| `trauma-stab-abdomen-evisceration` | level-emergency | web | critical | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: adaptiveTriage has no stab/penetrating/evisceration keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its |
+| `trauma-tension-pneumothorax` | mgmt-adult-site-not-2nd-ics | web | critical | known gap | forbidden management item present in web.plan: "...te] tension pneumothorax: needle decompression (14g cannula 2nd ics mcl) → immediate clinical improvement → proceed to icd." (+2 more) [known gap: The pneumothorax protocol says "needle dec |
 | `uc-acute-severe-truelove-witts` | mnm-infective | web | quality | known gap | not in top 3 of web.pane: 1. Ulcerative Colitis \| 2. Acute Cholecystitis \| 3. Acute Appendicitis; also in web.symptomInference#4, web.passive#2 [known gap: PANE has no infective colitis or C. difficile disease (see uc-flare-cdiff); sympto |
 | `uc-acute-severe-truelove-witts` | score-rec-truelove-witts | web | quality | known gap | truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson.] |
 | `uc-acute-severe-truelove-witts` | mgmt-no-appendicectomy | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "laparoscopic appendicectomy - operative plan ───────────────────────────────────────────── pre-operative: •..." [known gap: Web computeClinicalPrompts fires "Appendicitis — emergenc |
