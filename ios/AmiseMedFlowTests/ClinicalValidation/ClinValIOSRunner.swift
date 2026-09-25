@@ -237,8 +237,8 @@ enum ClinValIOSRunner {
             .filter { $0.status == .resulted && !$0.result.isEmpty }
             .map { "\($0.name): \($0.result)" }
             .joined(separator: ". ")
-        let examOtherText = [p.examCVS, p.examResp, p.examNeuro, p.examMSK, p.examSkin, p.examOther]
-            .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
+        // One clause per field: a negation in one exam field must not reach the next.
+        let examOtherText = NegationMatcher.joinClauses([p.examCVS, p.examResp, p.examNeuro, p.examMSK, p.examSkin, p.examOther])
         let parsed = ClinicalTextParser.parse(
             hpi: p.hpi,
             examGeneral: p.examGeneral,

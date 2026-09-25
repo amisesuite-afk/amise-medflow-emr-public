@@ -204,9 +204,8 @@ extension ConsultationView {
             .filter { $0.status == .resulted && !$0.result.isEmpty }
             .map { "\($0.name): \($0.result)" }
             .joined(separator: ". ")
-        let examOtherText = [patient.examCVS, patient.examResp, patient.examNeuro,
-                             patient.examMSK, patient.examSkin, patient.examOther]
-            .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
+        // One clause per field: a negation in one exam field must not reach the next.
+        let examOtherText = NegationMatcher.joinClauses([patient.examCVS, patient.examResp, patient.examNeuro, patient.examMSK, patient.examSkin, patient.examOther])
         let parsed = ClinicalTextParser.parse(
             hpi: patient.hpi,
             examGeneral: patient.examGeneral,

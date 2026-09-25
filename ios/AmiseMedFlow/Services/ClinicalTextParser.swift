@@ -1,6 +1,7 @@
 import Foundation
 
-// Keyword-based clinical NLP that runs entirely on-device.
+// Keyword-based clinical NLP that runs entirely on-device. Keywords are matched through
+// NegationMatcher, so documented negatives ("no guarding", "No crepitus") are not findings.
 // Parses free text (HPI, exam findings, notes) and returns:
 //   - featureAugments: additional SOCRATES-keyed features to pass to BayesianDiagnosisEngine
 //   - clinicalAlarms:  critical pattern detections requiring immediate action
@@ -39,16 +40,17 @@ enum ClinicalTextParser {
         examOther: String?,
         notes: String?
     ) -> ParseResult {
-        let text = [hpi, examGeneral, examAbdo, examOther, notes]
-            .compactMap { $0?.lowercased() }
-            .joined(separator: " ")
+        // Negation-aware (NegationMatcher, twin of the web negation.ts): "No crepitus", "no
+        // confusion", "Murphy's sign negative", "afebrile" are pertinent negatives, not findings.
+        // Each field is its own clause, so a negation at the end of one cannot reach the next.
+        let text = NegationMatcher.Source(NegationMatcher.joinClauses([hpi, examGeneral, examAbdo, examOther, notes]))
 
         var features: [String: Set<String>] = [:]
         var alarms: [ClinicalAlarm] = []
 
         func add(_ dim: String, _ chip: String) { features[dim, default: []].insert(chip) }
         func has(_ kw: String) -> Bool { text.contains(kw) }
-        func any(_ kws: [String]) -> Bool { kws.contains { text.contains($0) } }
+        func any(_ kws: [String]) -> Bool { text.containsAny(kws) }
         func all(_ kws: [String]) -> Bool { kws.allSatisfy { text.contains($0) } }
 
         // MARK: Site
@@ -341,8 +343,9 @@ enum ClinicalTextParser {
 
         // Imaging-confirmed perforation / pneumoperitoneum
         if any(["pneumoperitoneum", "free gas", "free air", "subdiaphragmatic air",
-                "confirmed perforation", "bowel perforation", "hollow viscus perforation"]) &&
-           !any(["no pneumoperitoneum", "no free gas", "no free air"]) {
+                "confirmed perforation", "bowel perforation", "hollow viscus perforation"]) {
+            // Negated mentions ("no free gas") no longer match, so the old "no free gas" guard is
+            // gone: it also hid a positive finding documented elsewhere in the text.
             alarms.append(ClinicalAlarm(
                 title: "Pneumoperitoneum — Perforation",
                 detail: "Free intraperitoneal gas confirmed on imaging",
