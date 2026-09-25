@@ -139,7 +139,7 @@ router.post('/api/visit/check-in/:appointmentId', async (req, res) => {
 router.post('/api/visit/complete/:encounterId', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
   const { encounterId } = req.params;
-  const { planType, description, followUpDate, followUpNotes, referralTo, referralSpecialty, referralReason, referralUrgency } = req.body ?? {};
+  const { planType, description, followUpDate, followUpNotes, referralTo, referralSpecialty, referralReason, referralUrgency, chiefComplaint } = req.body ?? {};
 
   try {
     const supa = getSupabaseAdmin();
@@ -195,10 +195,16 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
       .is('deleted_at', null);
     if (signNotesErr) logger.warn({ err: signNotesErr, encounterId }, '[visit/complete] clinical_notes sign failed');
 
-    // Close encounter
+    // Close encounter. The clinician's chief complaint for this visit is stored with it, so the
+    // next visit can tell a follow-up of this problem from a new complaint (dashboard
+    // VisitContinuityPanel, iOS VisitContinuity).
+    const cc = typeof chiefComplaint === 'string' ? chiefComplaint.trim().slice(0, 500) : '';
     const { error: closeErr } = await supa
       .from('encounters')
-      .update({ status: 'closed', closed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .update({
+        status: 'closed', closed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        ...(cc ? { chief_complaint: cc } : {}),
+      })
       .eq('id', encounterId);
 
     if (closeErr) throw closeErr;

@@ -146,6 +146,36 @@ describe('POST /api/visit/complete/:encounterId', () => {
     expect(res.body).toMatchObject({ encounterId: 'enc-1', status: 'closed' });
   });
 
+  it('stores the chief complaint on the closed encounter for the next visit (and only when sent)', async () => {
+    const closeQuery = makeQuery(empty());
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'open' })));
+    mockFrom.mockReturnValueOnce(makeQuery(empty()));       // plan upsert
+    mockFrom.mockReturnValueOnce(makeQuery(ok([])));        // sign notes
+    mockFrom.mockReturnValueOnce(closeQuery);               // close encounter
+    mockFrom.mockReturnValue(makeQuery(empty()));
+
+    const res = await request(app)
+      .post('/api/visit/complete/enc-1')
+      .set(AUTH)
+      .send({ description: 'Review in 2 weeks', chiefComplaint: '  RUQ pain after fatty food  ' });
+
+    expect(res.status).toBe(200);
+    expect(closeQuery.update).toHaveBeenCalledWith(expect.objectContaining({
+      status: 'closed', chief_complaint: 'RUQ pain after fatty food',
+    }));
+
+    // Without a complaint the stored one is left alone.
+    const closeQuery2 = makeQuery(empty());
+    mockFrom.mockReset();
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: 'enc-2', patient_id: 'pat-1', status: 'open' })));
+    mockFrom.mockReturnValueOnce(makeQuery(empty()));
+    mockFrom.mockReturnValueOnce(makeQuery(ok([])));
+    mockFrom.mockReturnValueOnce(closeQuery2);
+    mockFrom.mockReturnValue(makeQuery(empty()));
+    await request(app).post('/api/visit/complete/enc-2').set(AUTH).send({ chiefComplaint: '   ' });
+    expect(closeQuery2.update).toHaveBeenCalledWith(expect.not.objectContaining({ chief_complaint: expect.anything() }));
+  });
+
   it('returns 404 when encounter already closed or not found', async () => {
     mockFrom.mockReturnValueOnce(makeQuery(notFound()));
 
