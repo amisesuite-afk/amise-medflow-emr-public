@@ -1012,6 +1012,7 @@
     { "path": "ios/AmiseMedFlow/Services/PreConsultQuestionnairePDF+History.swift", "reason": "PDF rendering." },
     { "path": "ios/AmiseMedFlow/Services/QuestionnairePatientSearch.swift", "reason": "Patient search (privacy), not clinical content." },
     { "path": "ios/AmiseMedFlow/Services/SyncService+PathwayData.swift", "reason": "Sync of stored pathway data, not clinical content." },
-    { "path": "ios/AmiseMedFlow/Services/AIService.swift", "reason": "Disabled (AIError.disabled); prompts to be registered if AI is re-enabled." }
+    { "path": "ios/AmiseMedFlow/Services/AIService.swift", "reason": "Disabled (AIError.disabled); prompts to be registered if AI is re-enabled." },
+    { "path": "lib/triage-engine/src/negation.ts", "reason": "Negation-aware text matching used by the registered rule sets; no clinical rules, terms or thresholds of its own." }
   ]
 }
