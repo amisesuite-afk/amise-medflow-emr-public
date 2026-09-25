@@ -82,6 +82,26 @@ describe('contentProblems', () => {
     expect(out.some(s => s.includes('no citation'))).toBe(true);
   });
 
+  it('accepts postOpDay ranges and maskedBy on negative features (2.1.0)', () => {
+    const post = { ...good, key: 'postOpDay', value: '3-30', logLR: 3, likelihoodRatio: 2 };
+    const masked = { ...good, key: 'findingAbsent', logLR: -5, likelihoodRatio: 0.4, maskedBy: ['elderly', 'immunosuppressed'] };
+    expect(contentProblems(core([post, masked]))).toEqual([]);
+    expect(decodeProblems(core([post, masked]))).toEqual([]);
+  });
+
+  it('flags a malformed postOpDay value and an unknown or positive maskedBy', () => {
+    const out = contentProblems(core([
+      { ...good, key: 'postOpDay', value: 'day 5', logLR: 3, likelihoodRatio: 2 },
+      { ...good, maskedBy: ['elderly'] },
+      { ...good, key: 'notFinding', logLR: -8, likelihoodRatio: 0.2, maskedBy: ['pregnant'] },
+    ]));
+    expect(out.some(s => s.includes('postOpDay value "day 5"'))).toBe(true);
+    expect(out.some(s => s.includes('not negative'))).toBe(true);
+    expect(out.some(s => s.includes('maskedBy "pregnant"'))).toBe(true);
+    expect(decodeProblems(core([{ ...good, maskedBy: 'elderly' }])).map(p => p.kind))
+      .toContain('feature "maskedBy" not an array of strings');
+  });
+
   it('flags a presentation or supersedes entry naming an unknown candidate', () => {
     const d = core([good], { supersedes: ['Nowhere'] });
     (d.presentations[0].candidates as string[]).push('Missing');

@@ -239,6 +239,39 @@ final class BayesianDifferentialDatabaseTests: XCTestCase {
         XCTAssertFalse(chips.contains("hypoglycaemia"))
     }
 
+    // MARK: - DiagnosticDatabase.json 2.1.0 content (docs/clinical-validation/changes/ios-last-criticals.md)
+
+    func testGastricOutletObstructionIsListedForVomitingOfUndigestedFood() {
+        let results = Engine.infer(chiefComplaint: "Vomiting after every meal", socratesSelections: [:],
+                                   pmhNotes: "Dyspepsia", surgicalHistory: nil,
+                                   examAbdo: "Visible epigastric peristalsis, succussion splash.", examGeneral: nil,
+                                   investigations: [], ageYears: 69, sex: .male,
+                                   hpi: "Three weeks of vomiting undigested food eaten hours earlier. Lost 7 kg.")
+        XCTAssertTrue(results.prefix(3).contains { $0.name == "Gastric Outlet Obstruction" },
+                      results.map(\.name).joined(separator: ", "))
+    }
+
+    func testNeckHaematomaLeadsOnTheDayOfThyroidSurgery() {
+        let results = Engine.infer(chiefComplaint: "Neck swelling and difficulty breathing after thyroid surgery",
+                                   socratesSelections: [:], pmhNotes: "Graves' disease",
+                                   surgicalHistory: "Total thyroidectomy (today)",
+                                   examAbdo: nil, examGeneral: "Inspiratory stridor, tense swelling under the wound.",
+                                   investigations: [], ageYears: 51, sex: .female,
+                                   hpi: "Total thyroidectomy this morning; over 20 minutes the neck has swollen.")
+        XCTAssertEqual(results.first?.name, "Neck Haematoma after Neck Surgery (Airway Threat)",
+                       results.map(\.name).joined(separator: ", "))
+    }
+
+    func testMeasuredNormalGlucoseRulesOutHypoglycaemia() {
+        var glucose = InvestigationEntry(name: "Glucose", category: .blood, status: .resulted)
+        glucose.result = "17.8 mmol/L"
+        let results = Engine.infer(chiefComplaint: "Confusion", socratesSelections: [:],
+                                   pmhNotes: "Type 2 diabetes on insulin", surgicalHistory: nil,
+                                   examAbdo: nil, examGeneral: nil, investigations: [glucose],
+                                   ageYears: 78, sex: .male)
+        XCTAssertFalse(results.prefix(3).contains { $0.name == "Hypoglycaemia" }, results.map(\.name).joined(separator: ", "))
+    }
+
     // MARK: - Helpers
 
     private func scored(_ name: String, _ logPosterior: Int, urgency: Int = 0) -> Engine.ScoredCandidate {

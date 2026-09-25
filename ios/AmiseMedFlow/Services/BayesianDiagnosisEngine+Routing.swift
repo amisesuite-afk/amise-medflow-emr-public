@@ -80,7 +80,8 @@ extension BayesianDiagnosisEngine {
     /// (UK Kidney Association 2023); sodium <130 mmol/L (European hyponatraemia guideline
     /// 2014); adjusted calcium >2.6 mmol/L; glucose <4.0 (JBDS 2023; "glucose not low" at 4.0 or
     /// above, which the curated hypoglycaemia candidate reads), >11 and ≥30 mmol/L (JBDS HHS
-    /// 2022); haemoglobin <10 g/dL; INR >1.5; platelets <100 ×10⁹/L.
+    /// 2022); haemoglobin <10 g/dL; INR >1.5; platelets <100 ×10⁹/L; LRINEC ≥6 from the results
+    /// on file ("lrinec 6 or more", lrinecFromLabs).
     static func numericLabChips(_ lab: LabPanel) -> Set<String> {
         var chips = Set<String>()
         if let v = lab.wbc?.value { if v > 11 { chips.insert("raised wbc") }; if v < 4 { chips.insert("leukopenia") } }
@@ -113,7 +114,42 @@ extension BayesianDiagnosisEngine {
         }
         if let v = lab.inr?.value, v > 1.5 { chips.insert("raised inr") }
         if let v = lab.platelets?.value, v < 100 { chips.insert("thrombocytopenia") }
+        if let lrinec = lrinecFromLabs(lab), lrinec >= 6 { chips.insert("lrinec 6 or more") }
         return chips
+    }
+
+    /// LRINEC (Wong CH et al. Crit Care Med 2004;32:1535-41) from the results on file, scored by
+    /// the same calculator as the Scores screen (ClinicalScoringEngine.lrinec). Needs a CRP (4 of
+    /// the 13 points); an item without a result scores 0, so the score can only be under-read. The
+    /// published cut-off ≥6 (Fernando SM et al. Ann Surg 2019;269:58-65: sensitivity 68%,
+    /// specificity 85%) adds the "lrinec 6 or more" chip; a low score is never used against
+    /// necrotising infection (too insensitive to exclude it).
+    static func lrinecFromLabs(_ lab: LabPanel) -> Int? {
+        guard let crp = lab.crp?.value else { return nil }
+        var input = LRINECInput()
+        input.crpOver150 = crp >= 150
+        if let w = lab.wbc?.value {
+            input.wbcOver25 = w > 25
+            input.wbc15to25 = w >= 15 && w <= 25
+        }
+        if let h = lab.haemoglobin?.value {
+            let gdl = h >= 25 ? h / 10 : h
+            input.hbBelow11 = gdl < 11
+            input.hb11to13_5 = gdl >= 11 && gdl <= 13.5
+        }
+        if let na = lab.sodium?.value, na > 90 {
+            input.sodiumBelow135 = na < 135
+            input.sodium135to140 = na >= 135 && na <= 140
+        }
+        if let cr = lab.creatinine?.value {
+            input.creatinineOver177 = cr > 177
+            input.creatinine141to177 = cr > 141 && cr <= 177
+        }
+        if let g = lab.glucose?.value {
+            let mmol = g < 100 ? g : g / 18
+            input.glucoseOver10 = mmol > 10
+        }
+        return Int(ClinicalScoringEngine.lrinec(input).score)
     }
 
     // MARK: - Presentation safety nets (DiagnosticDatabase.json "presentations")

@@ -9,7 +9,8 @@
  *   PoolSpec { candidates: [CandidateSpec] }
  *   CandidateSpec { name, icd: String; logPrior: Int; urgency: Int?; features: [FeatureSpec];
  *     applicability: Applicability?; supersedes: [String]? }
- *   FeatureSpec { key, value: String; logLR: Int; evidenceLabel: String; citation: String? }
+ *   FeatureSpec { key, value: String; logLR: Int; evidenceLabel: String; citation: String?;
+ *     maskedBy: [String]? }
  *   Applicability { sex: String?; minAgeYears, maxAgeYears: Int?; pregnancy: String? }
  *   MatrixSpec { version, authority: String; systemIndex, specialtyIndex, ccToSystems,
  *     urgencyIndex: [String: [String]] }
@@ -22,7 +23,9 @@
  *
  * contentProblems() checks the 2.0.0 rules that the Swift code relies on but the decoder cannot:
  * presentations and supersedes name real candidates, curated features carry a likelihood ratio
- * and a citation that agree with logLR, applicability values are ones the engine understands.
+ * and a citation that agree with logLR, applicability values are ones the engine understands; and
+ * the 2.1.0 ones (BayesianDiagnosisEngine+Context.swift): a "postOpDay" value is "a-b" days, and
+ * "maskedBy" names known masking contexts on a negative feature only.
  */
 
 export interface DecodeProblem {
@@ -46,7 +49,11 @@ export const CORE_POOL = 'coreConditions';
 export const CORE_FEATURE_KEYS = new Set([
   'complaint', 'finding', 'findingAbsent', 'notFinding', 'associations', 'site', 'character',
   'onset', 'radiation', 'timing', 'age_over', 'age_under', 'sex_male', 'sex_female', 'inv',
+  'postOpDay',
 ]);
+
+/** BayesianDiagnosisEngine.MaskingContext raw values (a negative feature's "maskedBy"). */
+export const MASKING_CONTEXTS = new Set(['elderly', 'immunosuppressed', 'diabetes', 'female']);
 
 /**
  * Integer fields written with a decimal point or exponent ("logLR": 3.0). JSON.parse cannot tell
@@ -103,6 +110,7 @@ export function decodeProblems(db: unknown, rawText?: string): DecodeProblem[] {
           if (!isInt(f.logLR)) note('feature "logLR" missing or not an integer', `${fat}.logLR`);
           if (!isStr(f.evidenceLabel)) note('feature "evidenceLabel" missing or not a string', fat);
           if (!absent(f.citation) && !isStr(f.citation)) note('feature "citation" not a string', `${fat}.citation`);
+          if (!absent(f.maskedBy) && !isStrArray(f.maskedBy)) note('feature "maskedBy" not an array of strings', `${fat}.maskedBy`);
         });
       });
     }
@@ -168,6 +176,14 @@ export function contentProblems(db: Obj): string[] {
         out.push(`${where}: logLR ${f.logLR} does not equal round(ln(${lr}) × ${LOG_UNITS_PER_NAT})`);
       }
       if (isStr(f.value) && /[|&]\s*$|^\s*[|&]|\|\|/.test(f.value)) out.push(`${where}: empty alternative in "${f.value}"`);
+      if (f.key === 'postOpDay' && !(isStr(f.value) && /^\d+-\d+$/.test(f.value))) {
+        out.push(`${where}: postOpDay value "${f.value}" is not "a-b" (days after the operation)`);
+      }
+      if (!absent(f.maskedBy)) {
+        const masks = f.maskedBy as string[];
+        for (const m of masks) if (!MASKING_CONTEXTS.has(m)) out.push(`${where}: maskedBy "${m}" is not a masking context`);
+        if (!(typeof f.logLR === 'number' && f.logLR < 0)) out.push(`${where}: maskedBy on a feature that is not negative (only negative evidence is masked)`);
+      }
     }
   }
   const presentations = (db.presentations as Obj[] | undefined) ?? [];

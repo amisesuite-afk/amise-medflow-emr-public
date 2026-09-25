@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "updated": "2026-09-25",
   "sources": [
     "Per-feature literature citations in pools.*.candidates[].features[].citation (8,316 of 14,358 features carry one at 1.0.0; the rest, and every logPrior, have no recorded source)",
@@ -8,7 +8,7 @@
     "coreConditions (2.0.0): each feature has likelihoodRatio and citation; each candidate has source (guideline name and year) and prevalenceTier. Complaint-weight features cited EXPERT are engineering estimates awaiting clinical sign-off."
   ],
   "lastUpdated": "2026-09-25",
-  "note": "2.0.0 (unreviewed): decodes with the iOS Codable structs (integer logLR / logPrior, string value / evidenceLabel). logLR = round(ln(LR) x 5) throughout; 8 pools that were in natural-log units were converted. Every logPrior is a compressed prevalence tier (common 0, uncommon -5, rare -10; field prevalenceTier). 1.0.0 feature weights are capped (history/exam +-8, test result +-12, age/sex +-5, non-specific laboratory chip +5, bare test name +3; the former value is kept as originalLogLR). The curated pool coreConditions (per-feature LR and citation, candidate source, applicability, supersedes) and the top-level presentations list are routed from the chief complaint alone. Change log: docs/clinical-validation/changes/fix-ios-differential.md.",
+  "note": "2.1.0 (unreviewed): decodes with the iOS Codable structs (integer logLR / logPrior, string value / evidenceLabel). logLR = round(ln(LR) x 5) throughout; 8 pools that were in natural-log units were converted. Every logPrior is a compressed prevalence tier (common 0, uncommon -5, rare -10; field prevalenceTier). 1.0.0 feature weights are capped (history/exam +-8, test result +-12, age/sex +-5, non-specific laboratory chip +5, bare test name +3; the former value is kept as originalLogLR). The curated pool coreConditions (per-feature LR and citation, candidate source, applicability, supersedes) and the top-level presentations list are routed from the chief complaint alone. Change log: docs/clinical-validation/changes/fix-ios-differential.md. 2.1.0: curated content for the last iOS clinical-validation criticals (new Gastric Outlet Obstruction, post-operative day features \"postOpDay\", masking contexts \"maskedBy\" on negative features, strong report features tightened); change log docs/clinical-validation/changes/ios-last-criticals.md.",
   "conversionFormula": "logLR = round(ln(LR±) × 5)  [e.g. LR+ 3.0 → ln(3)×5 = 5.5 → 6; LR− 0.4 → ln(0.4)×5 = −4.6 → −5]",
   "pools": {
     "abdominalPain": {
@@ -125840,7 +125840,7 @@
             },
             {
               "key": "finding",
-              "value": "radiat&arm|radiat&jaw|left arm|both arms|jaw pain|arm pain",
+              "value": "radiat&arm|radiat&jaw|left arm|both arms|jaw pain|arm pain|jaw ache|ache in the jaw|ache in her jaw|ache in his jaw|pain in the jaw|pain in her jaw|pain in his jaw|jaw discomfort|arm ache|ache in the arm|ache in her arm|ache in his arm",
               "logLR": 5,
               "likelihoodRatio": 2.5,
               "evidenceLabel": "Pain radiating to the arm or jaw",
@@ -125856,7 +125856,7 @@
             },
             {
               "key": "finding",
-              "value": "exertion|on exercise|walking uphill",
+              "value": "exertion|on exercise|walking uphill|exertional|jaw&walk|arm&walk|chest&walk|jaw&exert|arm&exert|chest&exert|jaw&stairs|arm&stairs|chest&stairs|relieved by rest|eases with rest|settles with rest",
               "logLR": 4,
               "likelihoodRatio": 2.4,
               "evidenceLabel": "Exertional pain",
@@ -125864,7 +125864,7 @@
             },
             {
               "key": "finding",
-              "value": "pressure|tightness|heaviness|crushing|squeezing",
+              "value": "pressure|tightness|heaviness|heavy|crushing|squeezing",
               "logLR": 1,
               "likelihoodRatio": 1.3,
               "evidenceLabel": "Pressure-like pain",
@@ -125933,6 +125933,27 @@
               "likelihoodRatio": 0.3,
               "evidenceLabel": "No chest, arm, jaw, epigastric or breathing symptom",
               "citation": "Canto JG et al. Prevalence, clinical characteristics, and mortality among patients with myocardial infarction presenting without chest pain. JAMA 2000;283:3223-9"
+            },
+            {
+              "key": "finding",
+              "value": "epigastr&sweat|epigastr&clammy|epigastr&diaphores|indigestion&sweat|indigestion&clammy|indigestion&diaphores|upper abdominal&sweat|upper abdominal&clammy",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Epigastric pain or \"indigestion\" with sweating (inferior myocardial infarction can present this way)",
+              "citation": "Expert estimate pending the surgeon's review. Canto JG et al. Prevalence, clinical characteristics, and mortality among patients with myocardial infarction presenting without chest pain. JAMA 2000;283:3223-9; NICE CG95 (2010, updated 2016)"
+            },
+            {
+              "key": "findingAbsent",
+              "value": "chest pain",
+              "logLR": -3,
+              "likelihoodRatio": 0.5,
+              "evidenceLabel": "Chest pain documented absent",
+              "citation": "Expert estimate pending the surgeon's review. Canto JG et al. JAMA 2000;283:3223-9 (a third of MI without chest pain); Canto JG et al. Association of age and sex with myocardial infarction symptom presentation and in-hospital mortality. JAMA 2012;307:813-22",
+              "maskedBy": [
+                "diabetes",
+                "female",
+                "elderly"
+              ]
             }
           ]
         },
@@ -125963,7 +125984,7 @@
             },
             {
               "key": "finding",
-              "value": "calf swell|leg swell|swollen calf|swollen leg|calf tender|calf fuller|dvt|deep vein",
+              "value": "calf swell|leg swell|swollen calf|swollen leg|calf tender|calf fuller|dvt|deep vein|calf&swollen|calf&tender|leg&swollen",
               "logLR": 5,
               "likelihoodRatio": 2.5,
               "evidenceLabel": "Clinical signs of DVT",
@@ -126056,6 +126077,30 @@
               "likelihoodRatio": 0.2,
               "evidenceLabel": "No breathlessness, chest pain, syncope or hypoxaemia",
               "citation": "West J, Goodacre S, Sampson F. The value of clinical features in the diagnosis of acute pulmonary embolism: systematic review and meta-analysis. QJM 2007;100:763-9"
+            },
+            {
+              "key": "finding",
+              "value": "collaps|syncope|syncopal|faint|passed out|blacked out",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Collapse or syncope",
+              "citation": "Expert estimate pending the surgeon's review. Konstantinides SV et al. 2019 ESC Guidelines for acute pulmonary embolism. Eur Heart J 2020;41:543-603 (syncope is a presenting feature, associated with haemodynamic instability and RV dysfunction); Prandoni P et al. N Engl J Med 2016;375:1524-31"
+            },
+            {
+              "key": "finding",
+              "value": "rv dilat|rv dysfunction|rv strain|rv:lv|rv/lv|dilated&right ventric|right ventric&dilat|right ventricular dysfunction|right heart strain|septal flattening|mcconnell",
+              "logLR": 5,
+              "likelihoodRatio": 3,
+              "evidenceLabel": "Right ventricular dilatation or dysfunction on echocardiography or CT",
+              "citation": "Fields JM et al. Transthoracic echocardiography for diagnosing pulmonary embolism: a systematic review and meta-analysis. J Am Soc Echocardiogr 2017;30:714-23 (sensitivity 53%, specificity 83%); ESC 2019 PE guideline"
+            },
+            {
+              "key": "finding",
+              "value": "loud p2|jvp&raised&bp|jvp&raised&hypotens|raised jvp&hypotens|jvp&raised&shock|jvp&raised&clear",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Loud P2, or raised JVP with hypotension or clear lungs (right heart strain)",
+              "citation": "Expert estimate pending the surgeon's review. ESC 2019 PE guideline (obstructive shock: hypotension with signs of right ventricular failure)"
             }
           ]
         },
@@ -127020,7 +127065,7 @@
             },
             {
               "key": "finding",
-              "value": "pericardial rub|friction rub",
+              "value": "pericardial rub|pericardial friction rub",
               "logLR": 12,
               "likelihoodRatio": 10,
               "evidenceLabel": "Pericardial friction rub",
@@ -127123,6 +127168,14 @@
               "likelihoodRatio": 1.5,
               "evidenceLabel": "Faintness or collapse",
               "citation": "Resuscitation Council UK. Emergency treatment of anaphylaxis: guidelines for healthcare providers (2021)"
+            },
+            {
+              "key": "notFinding",
+              "value": "urticaria|hives|rash|flush|itch|angioedema|swell|swollen|lip|tongue|wheez|stridor|throat|allerg|anaphyla",
+              "logLR": -8,
+              "likelihoodRatio": 0.2,
+              "evidenceLabel": "No skin, mucosal or airway feature",
+              "citation": "Campbell RL et al. Evaluation of National Institute of Allergy and Infectious Diseases/Food Allergy and Anaphylaxis Network criteria for the diagnosis of anaphylaxis in emergency department patients. J Allergy Clin Immunol 2012;129:748-52; Cardona V et al. World Allergy Organization anaphylaxis guidance 2020"
             }
           ]
         },
@@ -127271,7 +127324,7 @@
             },
             {
               "key": "finding",
-              "value": "after vomiting|forceful vomiting|retching|following vomiting|vomiting&severe pain|vomited&pain",
+              "value": "after vomiting|forceful vomiting|retching|following vomiting|vomiting&severe pain|vomited&pain|after he vomited|after she vomited|after being sick|after he was sick|after she was sick|after retching|after a bout of vomiting",
               "logLR": 7,
               "likelihoodRatio": 4,
               "evidenceLabel": "Pain after forceful vomiting",
@@ -127279,7 +127332,7 @@
             },
             {
               "key": "finding",
-              "value": "surgical emphysema|subcutaneous emphysema|neck crepitus|crepitus in the neck|pneumomediastinum|mediastinal air|mediastinal gas",
+              "value": "surgical emphysema|subcutaneous emphysema|neck crepitus|crepitus in the neck|pneumomediastinum|mediastinal air|mediastinal gas|crepitus&neck|crepitus&clavic|supraclavicular crepitus|crepitus&chest wall",
               "logLR": 12,
               "likelihoodRatio": 10,
               "evidenceLabel": "Surgical emphysema or pneumomediastinum",
@@ -127316,6 +127369,14 @@
               "likelihoodRatio": 0.2,
               "evidenceLabel": "No chest pain, vomiting or instrumentation",
               "citation": "Søreide JA, Viste A. Esophageal perforation: diagnostic work-up and clinical decision-making in the first 24 hours. Scand J Trauma Resusc Emerg Med 2011;19:66"
+            },
+            {
+              "key": "finding",
+              "value": "odynophag|pain on swallowing|painful to swallow|painful swallowing|worse on swallowing|hurts to swallow",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Pain on swallowing",
+              "citation": "Expert estimate pending the surgeon's review. Søreide JA, Viste A. Esophageal perforation: diagnostic work-up and clinical decision-making in the first 24 hours. Scand J Trauma Resusc Emerg Med 2011;19:66"
             }
           ]
         },
@@ -127510,7 +127571,7 @@
             },
             {
               "key": "finding",
-              "value": "infarct|occlusion|restricted diffusion|acute ischaem",
+              "value": "cerebral infarct|infarct&brain|infarct&cerebr|infarct&ct head|infarct&mri|infarct&territory|lacunar|mca territory|restricted diffusion|acute ischaemic stroke|acute ischemic stroke|large vessel occlusion|m1 occlusion|mca occlusion|basilar occlusion|carotid occlusion",
               "logLR": 15,
               "likelihoodRatio": 20,
               "evidenceLabel": "Acute infarct on imaging",
@@ -128393,7 +128454,7 @@
             },
             {
               "key": "finding",
-              "value": "kussmaul|deep sighing|deep breathing|ketotic|pear drop|acetone",
+              "value": "kussmaul|deep sighing|ketotic|pear drop|acetone",
               "logLR": 9,
               "likelihoodRatio": 6,
               "evidenceLabel": "Kussmaul breathing or ketotic breath",
@@ -128417,7 +128478,7 @@
             },
             {
               "key": "finding",
-              "value": "ketones&raised|ketones 3|ketones 4|ketones 5|ketones 6|ketones 7|ketonaemia|ketonuria|ketones +|beta-hydroxybutyrate|metabolic acidosis|ph 7.0|ph 7.1|ph 7.2|bicarbonate 1|bicarbonate 9|bicarbonate 8",
+              "value": "ketones&raised|ketones 3|ketones 4|ketones 5|ketones 6|ketones 7|ketonaemia|ketonuria|ketones +|beta-hydroxybutyrate|ketoacidosis",
               "logLR": 12,
               "likelihoodRatio": 10,
               "evidenceLabel": "Ketonaemia or acidosis",
@@ -128441,11 +128502,19 @@
             },
             {
               "key": "notFinding",
-              "value": "diabet|glucose|ketone|ketotic|insulin|sugar|thirst|polyuria|kussmaul|gliflozin|sglt2|acidosis",
+              "value": "diabet|ketone|ketotic|ketoacid|insulin|elevated glucose|severe hyperglycaemia|hyperglycaem|high sugar|thirst|polyuria|kussmaul|gliflozin|sglt2|acidosis",
               "logLR": -6,
               "likelihoodRatio": 0.3,
               "evidenceLabel": "No diabetes, ketones or hyperglycaemia recorded",
               "citation": "JBDS-IP. The management of diabetic ketoacidosis in adults (2023 update)"
+            },
+            {
+              "key": "finding",
+              "value": "metabolic acidosis|ph 7.0|ph 7.1|ph 7.2|bicarbonate 1|bicarbonate 9|bicarbonate 8",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Metabolic acidosis (ketones not recorded)",
+              "citation": "Joint British Diabetes Societies Inpatient Care Group. The management of diabetic ketoacidosis in adults (2023): DKA needs ketonaemia ≥3.0 mmol/L or ketonuria ≥2+ as well as acidosis; acidosis alone has other causes"
             }
           ]
         },
@@ -128596,6 +128665,14 @@
               "likelihoodRatio": 0.3,
               "evidenceLabel": "No diabetes treatment or low glucose recorded",
               "citation": "JBDS-IP. The hospital management of hypoglycaemia in adults with diabetes mellitus (2023)"
+            },
+            {
+              "key": "finding",
+              "value": "glucose not low",
+              "logLR": -15,
+              "likelihoodRatio": 0.05,
+              "evidenceLabel": "Blood glucose 4.0 mmol/L or above at the time",
+              "citation": "Joint British Diabetes Societies for Inpatient Care. The hospital management of hypoglycaemia in adults with diabetes mellitus (2023): hypoglycaemia is a glucose below 4.0 mmol/L"
             }
           ],
           "supersedes": [
@@ -128702,7 +128779,7 @@
             },
             {
               "key": "finding",
-              "value": "cancer|malignan|myeloma|metasta|parathyroid",
+              "value": "cancer|malignan|myeloma|metasta|parathyroid|pth|hyperparathyroid",
               "logLR": 5,
               "likelihoodRatio": 2.5,
               "evidenceLabel": "Malignancy or parathyroid disease",
@@ -129353,6 +129430,30 @@
               "likelihoodRatio": 0.2,
               "evidenceLabel": "No skin redness, warmth or swelling",
               "citation": "Stevens DL et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the IDSA. Clin Infect Dis 2014;59:e10-52"
+            },
+            {
+              "key": "finding",
+              "value": "erythema&warm&tender|erythema&hot&tender|redness&warm&tender|redness&hot&tender|erythema&tender&swollen|red&hot&swollen",
+              "logLR": 5,
+              "likelihoodRatio": 3,
+              "evidenceLabel": "Spreading erythema with warmth and tenderness",
+              "citation": "Expert estimate pending the surgeon's review. Stevens DL et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the IDSA. Clin Infect Dis 2014;59:e10-52 (diagnosis rests on these signs)"
+            },
+            {
+              "key": "complaint",
+              "value": "red&swollen|red&hot|hot&swollen|redness&swelling|red&swelling|redness&swollen",
+              "logLR": 2,
+              "likelihoodRatio": 1.5,
+              "evidenceLabel": "A red and swollen (or hot) limb as the presenting complaint",
+              "citation": "Presentation-match weight: Expert estimate pending the surgeon's review (no published likelihood ratio)"
+            },
+            {
+              "key": "finding",
+              "value": "raised wbc|elevated crp",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Raised white cell count or CRP",
+              "citation": "Expert estimate pending the surgeon's review. IDSA 2014 SSTI guideline (systemic inflammation with local signs; separates cellulitis from stasis dermatitis and other mimics)"
             }
           ],
           "supersedes": [
@@ -129509,20 +129610,28 @@
               "citation": "Sartelli M et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg 2018;13:58"
             },
             {
-              "key": "finding",
-              "value": "lrinec",
-              "logLR": 2,
-              "likelihoodRatio": 1.5,
-              "evidenceLabel": "LRINEC recorded",
-              "citation": "Fernando SM et al. Necrotizing soft tissue infection: diagnostic accuracy of physical examination, imaging, and LRINEC score: a systematic review and meta-analysis. Ann Surg 2019;269:58-65"
-            },
-            {
               "key": "notFinding",
-              "value": "pain|swell|swollen|red |redness|erythema|skin|wound|necro|crepitus|bullae",
+              "value": "cellulitis|erythema|red |redness|skin|soft tissue|swell|swollen|wound infection|infected wound|wound&red|wound&discharg|necro|crepitus|bullae|blister|induration|woody|fasciitis|gas in|subcutaneous gas|perine|scrot|fournier",
               "logLR": -8,
               "likelihoodRatio": 0.2,
               "evidenceLabel": "No soft-tissue pain, swelling or skin change",
               "citation": "Fernando SM et al. Necrotizing soft tissue infection: diagnostic accuracy of physical examination, imaging, and LRINEC score: a systematic review and meta-analysis. Ann Surg 2019;269:58-65"
+            },
+            {
+              "key": "finding",
+              "value": "woody|induration beyond|beyond the erythema|beyond the redness|beyond the skin changes|beyond the margin|tender beyond|tenderness beyond|oedema beyond|swelling beyond|hard induration|tense oedema",
+              "logLR": 7,
+              "likelihoodRatio": 4,
+              "evidenceLabel": "Tenderness, induration or oedema beyond the erythema; woody induration",
+              "citation": "Wong CH et al. Necrotizing fasciitis: clinical presentation, microbiology, and determinants of mortality. J Bone Joint Surg Am 2003;85:1454-60; Stevens DL, Bryant AE. Necrotizing soft-tissue infections. N Engl J Med 2017;377:2253-65"
+            },
+            {
+              "key": "finding",
+              "value": "lrinec 6 or more|lrinec&high risk|lrinec&intermediate risk",
+              "logLR": 8,
+              "likelihoodRatio": 4.5,
+              "evidenceLabel": "LRINEC 6 or more (from the laboratory results)",
+              "citation": "Wong CH et al. The LRINEC (Laboratory Risk Indicator for Necrotizing Fasciitis) score. Crit Care Med 2004;32:1535-41; Fernando SM et al. Necrotizing soft tissue infection: diagnostic accuracy of physical examination, imaging, and LRINEC score: a systematic review and meta-analysis. Ann Surg 2019;269:58-65 (LRINEC >= 6: sensitivity 68.2%, specificity 84.8%). A low score is not used against the diagnosis."
             }
           ],
           "supersedes": [
@@ -129821,6 +129930,14 @@
               "likelihoodRatio": 1.5,
               "evidenceLabel": "Age 65 or over",
               "citation": "McDonald LC et al. IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update). Clin Infect Dis 2018;66:e1-48"
+            },
+            {
+              "key": "notFinding",
+              "value": "diarrhoea|diarrhea|loose stool|watery|difficile|c diff|c. diff|cdiff|toxin positive|pseudomembran|megacolon|colitis",
+              "logLR": -8,
+              "likelihoodRatio": 0.2,
+              "evidenceLabel": "No diarrhoea",
+              "citation": "McDonald LC et al. Clinical practice guidelines for Clostridium difficile infection in adults and children: 2017 update by IDSA and SHEA. Clin Infect Dis 2018;66:e1-e48 (test only with ≥3 unformed stools in 24 h; ileus without diarrhoea is rare)"
             }
           ]
         },
@@ -130042,7 +130159,7 @@
             },
             {
               "key": "finding",
-              "value": "non-compressible|noncompressible|thrombus in the|occlusive thrombus|femoral vein thromb|popliteal vein thromb",
+              "value": "non-compressible&vein|noncompressible&vein|non-compressible&femoral|non-compressible&popliteal|thrombus&femoral|thrombus&popliteal|thrombus&iliac|thrombus&tibial|thrombus&calf vein|thrombus&deep vein|occlusive thrombus&deep|femoral vein thromb|popliteal vein thromb",
               "logLR": 15,
               "likelihoodRatio": 20,
               "evidenceLabel": "Thrombus on duplex ultrasound",
@@ -130439,12 +130556,21 @@
               "likelihoodRatio": 0.2,
               "evidenceLabel": "No abdominal pain",
               "citation": "Björck M et al. ESVS 2017 Clinical Practice Guidelines: management of the diseases of mesenteric arteries and veins. Eur J Vasc Endovasc Surg 2017;53:460-510"
+            },
+            {
+              "key": "age_over",
+              "value": "75",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Age 75 or over",
+              "citation": "Kärkkäinen JM et al. Acute mesenteric ischemia is a more common cause than expected of acute abdomen in the elderly. J Gastrointest Surg 2015;19:1407-14 (over 75, more common than appendicitis or ruptured AAA)"
             }
           ],
           "supersedes": [
             "Acute Mesenteric Ischaemia (Vascular)",
             "Acute Mesenteric Ischaemia (Arterial Embolism)",
-            "Mesenteric Ischaemia"
+            "Mesenteric Ischaemia",
+            "Non-Occlusive Mesenteric Ischaemia (NOMI)"
           ]
         },
         {
@@ -130481,7 +130607,7 @@
             },
             {
               "key": "finding",
-              "value": "herald|small bleed|self-limiting",
+              "value": "herald|small bleed|self-limiting|no further bleeding|bleeding stopped|stopped bleeding|single episode|blood once",
               "logLR": 3,
               "likelihoodRatio": 2,
               "evidenceLabel": "Herald bleed",
@@ -130494,6 +130620,22 @@
               "likelihoodRatio": 2,
               "evidenceLabel": "Hypotension",
               "citation": "Chenu C et al. Aortoenteric fistula (review); ESVS 2020 Clinical Practice Guidelines on the management of vascular graft and endograft infections (Chakfé N et al. Eur J Vasc Endovasc Surg 2020;59:339-84)"
+            },
+            {
+              "key": "finding",
+              "value": "fever|febrile|pyrexia|rigor|elevated crp|raised crp|crp&raised|raised wbc",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Fever or raised inflammatory markers (graft infection)",
+              "citation": "Chakfé N et al. European Society for Vascular Surgery (ESVS) 2020 clinical practice guidelines on the management of vascular graft and endograft infections. Eur J Vasc Endovasc Surg 2020;59:339-84 (MAGIC criteria)"
+            },
+            {
+              "key": "notFinding",
+              "value": "haematemesis|hematemesis|vomited blood|vomiting blood|blood in vomit|coffee ground|melaena|melena|black stool|tarry|rectal bleed|blood per rectum|haematochezia|gi bleed|bleed",
+              "logLR": -8,
+              "likelihoodRatio": 0.2,
+              "evidenceLabel": "No gastrointestinal bleeding",
+              "citation": "Expert estimate pending the surgeon's review. ESVS 2020 graft infection guideline: aorto-enteric fistula presents with gastrointestinal bleeding (often a herald bleed)"
             }
           ],
           "supersedes": [
@@ -131088,7 +131230,7 @@
             },
             {
               "key": "finding",
-              "value": "cervical motion|cervical excitation|adnexal tender",
+              "value": "cervical motion|cervical excitation|adnexal tender|tender&adnexal",
               "logLR": 5,
               "likelihoodRatio": 3,
               "evidenceLabel": "Cervical motion or adnexal tenderness",
@@ -131133,6 +131275,14 @@
               "likelihoodRatio": 0.3,
               "evidenceLabel": "No pelvic pain, discharge or adnexal signs",
               "citation": "CDC Sexually Transmitted Infections Treatment Guidelines 2021 (pelvic inflammatory disease); BASHH UK PID guideline 2019"
+            },
+            {
+              "key": "finding",
+              "value": "tubo-ovarian|tuboovarian|pyosalpinx|adnexal abscess",
+              "logLR": 12,
+              "likelihoodRatio": 10,
+              "evidenceLabel": "Tubo-ovarian abscess or pyosalpinx on imaging",
+              "citation": "Expert estimate pending the surgeon's review. Lareau SM, Beigi RH. Pelvic inflammatory disease and tubo-ovarian abscess. Infect Dis Clin North Am 2008;22:693-708; BASHH PID guideline 2019"
             }
           ],
           "applicability": {
@@ -132075,6 +132225,14 @@
               "likelihoodRatio": 0.3,
               "evidenceLabel": "No jaundice or cholestasis",
               "citation": "Tokyo Guidelines 2018 (Yokoe M et al. J Hepatobiliary Pancreat Sci 2018;25:41-54; Kiriyama S et al. 2018;25:17-30)"
+            },
+            {
+              "key": "findingAbsent",
+              "value": "duct dilat|dilated cbd|cbd dilated|dilated bile duct|biliary dilat|dilated common bile duct|dilated duct",
+              "logLR": -3,
+              "likelihoodRatio": 0.5,
+              "evidenceLabel": "No bile duct dilatation on imaging",
+              "citation": "Expert estimate pending the surgeon's review. Kiriyama S et al. Tokyo Guidelines 2018: diagnostic criteria and severity grading of acute cholangitis. J Hepatobiliary Pancreat Sci 2018;25:17-30 (imaging criterion: biliary dilatation or the cause)"
             }
           ]
         },
@@ -132273,7 +132431,7 @@
             },
             {
               "key": "finding",
-              "value": "rigid|board-like|boardlike|peritonism|generalised tenderness|guarding",
+              "value": "rigid|board-like|boardlike|peritonism|peritonitis|generalised tenderness|generalised guarding|guarding&generalised|guarding&epigastr|epigastr&guarding|guarding&throughout|diffuse guarding",
               "logLR": 5,
               "likelihoodRatio": 3,
               "evidenceLabel": "Generalised peritonism",
@@ -132302,6 +132460,18 @@
               "likelihoodRatio": 0.2,
               "evidenceLabel": "No abdominal pain or peritonism",
               "citation": "Tarasconi A et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg 2020;15:3"
+            },
+            {
+              "key": "findingAbsent",
+              "value": "guarding|rigid|peritonism|peritonitic|board-like|rebound",
+              "logLR": -5,
+              "likelihoodRatio": 0.4,
+              "evidenceLabel": "No guarding, rigidity or peritonism",
+              "citation": "Expert estimate pending the surgeon's review. Tarasconi A et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg 2020;15:3; ReMine SG, McIlrath DC. Bowel perforation in steroid-treated patients. Ann Surg 1980;192:581-6",
+              "maskedBy": [
+                "elderly",
+                "immunosuppressed"
+              ]
             }
           ]
         },
@@ -132456,6 +132626,14 @@
               "likelihoodRatio": 2,
               "evidenceLabel": "Fever, tachycardia, leucocytosis or raised lactate (strangulation)",
               "citation": "WSES guidelines for emergency repair of complicated abdominal wall hernias (Birindelli A et al. World J Emerg Surg 2017;12:37)"
+            },
+            {
+              "key": "notFinding",
+              "value": "hernia|groin|bulge|irreducible|incarcerat|strangulat|obturator|femoral|inguinal|umbilic|incisional|scar|abdominal wall|lump&abdom|lump&tummy|lump&belly",
+              "logLR": -8,
+              "likelihoodRatio": 0.2,
+              "evidenceLabel": "No hernia, lump or groin / abdominal wall swelling",
+              "citation": "Expert estimate pending the surgeon's review. HerniaSurge Group. International guidelines for groin hernia management. Hernia 2018;22:1-165 (the diagnosis is clinical: a tender, irreducible lump); obturator hernia is a separate candidate"
             }
           ]
         },
@@ -132894,14 +133072,6 @@
             },
             {
               "key": "finding",
-              "value": "day 3|day 4|day 5|day 6|day 7|day 8|day 9",
-              "logLR": 3,
-              "likelihoodRatio": 2,
-              "evidenceLabel": "Post-operative days 3-9",
-              "citation": "Hyman N et al. Anastomotic leaks after intestinal anastomosis: it's later than you think. Ann Surg 2007;245:254-8; den Dulk M et al. Improved diagnosis and treatment of anastomotic leakage after colorectal surgery (DULK). Eur J Surg Oncol 2009;35:420-6"
-            },
-            {
-              "key": "finding",
               "value": "fever|pyrexia|febrile|tachycard|rigor|shivery",
               "logLR": 5,
               "likelihoodRatio": 3,
@@ -132926,7 +133096,7 @@
             },
             {
               "key": "finding",
-              "value": "leak|extraluminal|free fluid|collection|free air|free gas|faeculent drain|feculent drain",
+              "value": "anastomotic leak|leak&anastomo|extraluminal|contrast leak|collection&anastomo|fluid&anastomo|gas&anastomo|faeculent drain|feculent drain|faeculent&drain|feculent&drain",
               "logLR": 12,
               "likelihoodRatio": 10,
               "evidenceLabel": "Leak, collection or free gas on imaging / drain",
@@ -132939,6 +133109,22 @@
               "likelihoodRatio": 0.1,
               "evidenceLabel": "No operation with an anastomosis",
               "citation": "Hyman N et al. Anastomotic leaks after intestinal anastomosis: it's later than you think. Ann Surg 2007;245:254-8; den Dulk M et al. Improved diagnosis and treatment of anastomotic leakage after colorectal surgery (DULK). Eur J Surg Oncol 2009;35:420-6"
+            },
+            {
+              "key": "postOpDay",
+              "value": "3-30",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Day 3 to 30 after the operation",
+              "citation": "Hyman N et al. Anastomotic leaks after intestinal anastomosis: it's later than you think. Ann Surg 2007;245:254-8 (mean day of diagnosis 12.7; 42% after discharge)"
+            },
+            {
+              "key": "finding",
+              "value": "free fluid|collection|free air|free gas|pneumoperitoneum",
+              "logLR": 5,
+              "likelihoodRatio": 3,
+              "evidenceLabel": "Free fluid, free gas or a collection on imaging",
+              "citation": "Expert estimate pending the surgeon's review. den Dulk M et al. Improved diagnosis and treatment of anastomotic leakage after colorectal surgery. Eur J Surg Oncol 2009;35:420-6"
             }
           ]
         },
@@ -133177,7 +133363,7 @@
             },
             {
               "key": "finding",
-              "value": "howship|romberg|inner thigh|medial thigh|knee pain",
+              "value": "howship|romberg|inner thigh|medial thigh|inside of her&thigh|inside of his&thigh|inside of the&thigh|thigh&internal rotation|knee&internal rotation",
               "logLR": 10,
               "likelihoodRatio": 8,
               "evidenceLabel": "Inner thigh / knee pain (Howship-Romberg)",
@@ -133225,7 +133411,7 @@
             },
             {
               "key": "notFinding",
-              "value": "thigh|knee|obturator|hernia|groin",
+              "value": "thigh|obturator|hernia|groin|howship|romberg",
               "logLR": -6,
               "likelihoodRatio": 0.3,
               "evidenceLabel": "No thigh, knee or groin symptoms",
@@ -133583,6 +133769,22 @@
               "likelihoodRatio": 0.1,
               "evidenceLabel": "No recent neck surgery",
               "citation": "Iliff HA et al. Management of haematoma after thyroid surgery: systematic review and multidisciplinary consensus guidelines (DAS, BAETS, ENT UK). Anaesthesia 2022;77:82-95"
+            },
+            {
+              "key": "postOpDay",
+              "value": "0-1",
+              "logLR": 5,
+              "likelihoodRatio": 3,
+              "evidenceLabel": "Within a day of the operation",
+              "citation": "Iliff HA et al. Management of haematoma after thyroid surgery: systematic review and multidisciplinary consensus guidelines from the Difficult Airway Society, the British Association of Endocrine and Thyroid Surgeons and the British Association of Otorhinolaryngology, Head and Neck Surgery. Anaesthesia 2022;77:82-95 (most haematomas present within 6 h, nearly all within 24 h)"
+            },
+            {
+              "key": "postOpDay",
+              "value": "7-999",
+              "logLR": -8,
+              "likelihoodRatio": 0.2,
+              "evidenceLabel": "A week or more after the operation",
+              "citation": "Expert estimate pending the surgeon's review. Iliff HA et al. Anaesthesia 2022;77:82-95"
             }
           ]
         },
@@ -133730,7 +133932,7 @@
             },
             {
               "key": "finding",
-              "value": "stricture&malignant|carcinoma|adenocarcinoma|tumour|malignant stricture|irregular stricture|shouldering",
+              "value": "malignant stricture|irregular stricture|shouldered stricture|stricture&malignant|stricture&shoulder|oesophag&carcinoma|oesophag&adenocarcinoma|oesophag&tumour|oesophag&mass|gastric&carcinoma|gastric&adenocarcinoma|gastric&tumour|gastric&mass|stomach&carcinoma|stomach&tumour|stomach&mass|cardia&tumour|linitis",
               "logLR": 12,
               "likelihoodRatio": 10,
               "evidenceLabel": "Malignant-looking stricture or tumour",
@@ -134027,6 +134229,30 @@
               "likelihoodRatio": 1.5,
               "evidenceLabel": "Fever",
               "citation": "Tokyo Guidelines 2018 (Yokoe M et al. J Hepatobiliary Pancreat Sci 2018;25:41-54; Kiriyama S et al. 2018;25:17-30)"
+            },
+            {
+              "key": "findingAbsent",
+              "value": "gallstone|calculi|stones",
+              "logLR": 5,
+              "likelihoodRatio": 3,
+              "evidenceLabel": "No gallstones on imaging",
+              "citation": "Yokoe M et al. Tokyo Guidelines 2018: diagnostic criteria and severity grading of acute cholecystitis. J Hepatobiliary Pancreat Sci 2018;25:41-54; Barie PS, Eachempati SR. Acute acalculous cholecystitis. Gastroenterol Clin North Am 2010;39:343-57"
+            },
+            {
+              "key": "notFinding",
+              "value": "gallbladder|ruq|right upper|murphy|cholecyst|pericholecystic",
+              "logLR": -8,
+              "likelihoodRatio": 0.2,
+              "evidenceLabel": "No right upper quadrant sign or gallbladder finding",
+              "citation": "Expert estimate pending the surgeon's review. TG18 diagnostic criteria need a local sign or imaging"
+            },
+            {
+              "key": "notFinding",
+              "value": "icu|intensive care|itu|ventilat|critically ill|critical care|sepsis|septic|shock|burns|trauma|parenteral|tpn|post-operative|postoperative|noradrenaline|vasopressor|diabet|vasculitis",
+              "logLR": -6,
+              "likelihoodRatio": 0.3,
+              "evidenceLabel": "No critical illness, trauma, burns, parenteral nutrition, recent surgery or vascular risk",
+              "citation": "Expert estimate pending the surgeon's review. Barie PS, Eachempati SR. Gastroenterol Clin North Am 2010;39:343-57 (acalculous cholecystitis mostly in the critically ill; also older people with vascular disease or diabetes)"
             }
           ]
         },
@@ -134231,6 +134457,14 @@
               "likelihoodRatio": 2,
               "evidenceLabel": "Age over 60",
               "citation": "ACG Clinical Guideline: epidemiology, risk factors, patterns of presentation, diagnosis, and management of colon ischemia (Brandt LJ et al. Am J Gastroenterol 2015;110:18-44)"
+            },
+            {
+              "key": "notFinding",
+              "value": "bloody|blood in stool|blood in the stool|rectal bleed|passing blood|bright red|blood mixed|maroon|haematochezia|blood per rectum|diarrhoea|diarrhea|thumbprint|colitis|colonic ischaemia",
+              "logLR": -6,
+              "likelihoodRatio": 0.3,
+              "evidenceLabel": "No rectal bleeding or diarrhoea",
+              "citation": "Brandt LJ et al. ACG clinical guideline: epidemiology, risk factors, patterns of presentation, diagnosis, and management of colon ischemia (CI). Am J Gastroenterol 2015;110:18-44 (abdominal pain with rectal bleeding or bloody diarrhoea within 24 h in most)"
             }
           ]
         },
@@ -134378,7 +134612,7 @@
             },
             {
               "key": "finding",
-              "value": "liver abscess|hepatic abscess|collection&liver|liver&collection|lesion&segment|hypoechoic&lobe|segment vii|segment viii|multiloculated",
+              "value": "liver abscess|hepatic abscess|amoebic abscess|abscess&liver|abscess&right lobe|abscess&left lobe|collection&liver|liver&collection|lesion&segment|hypoechoic&liver|hypoechoic&hepatic|segment vii|segment viii|multiloculated&liver|multiloculated&hepatic",
               "logLR": 12,
               "likelihoodRatio": 12,
               "evidenceLabel": "Liver abscess on imaging",
@@ -134593,7 +134827,7 @@
             },
             {
               "key": "finding",
-              "value": "fragmentation|charcot|midfoot collapse|rocker|bone marrow oedema",
+              "value": "fragmentation&foot|fragmentation&midfoot|fragmentation&tars|charcot foot|charcot neuro|charcot arthropathy|charcot joint|midfoot collapse|rocker-bottom|rocker bottom|bone marrow oedema&foot|bone marrow oedema&midfoot|bone marrow oedema&tars",
               "logLR": 12,
               "likelihoodRatio": 10,
               "evidenceLabel": "Imaging signs of Charcot foot",
@@ -134610,6 +134844,88 @@
           ],
           "supersedes": [
             "Charcot Neuropathic Arthropathy"
+          ]
+        },
+        {
+          "name": "Gastric Outlet Obstruction",
+          "icd": "K31.1",
+          "logPrior": -5,
+          "prevalenceTier": "uncommon",
+          "urgency": 2,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "generalSurgery",
+            "upperGISurgery",
+            "gastroenterology"
+          ],
+          "source": "Prior tier uncommon. Koop AH, Palmer WC, Stancampiano FF. Gastric outlet obstruction: a red flag, potentially manageable. Cleve Clin J Med 2019;86:345-53 (causes: peptic ulcer disease, gastric and pancreatic cancer). Replaces the legacy entries of the same name.",
+          "features": [
+            {
+              "key": "complaint",
+              "value": "vomit|being sick|sick after|fullness|bloat|early satiety|keep food down",
+              "logLR": 2,
+              "likelihoodRatio": 1.5,
+              "evidenceLabel": "Vomiting, fullness or early satiety as the presenting complaint",
+              "citation": "Presentation-match weight: Expert estimate pending the surgeon's review (no published likelihood ratio)"
+            },
+            {
+              "key": "finding",
+              "value": "undigested|eaten hours|hours earlier|hours after eating|previous day|day before|projectile",
+              "logLR": 7,
+              "likelihoodRatio": 4,
+              "evidenceLabel": "Vomiting of undigested food eaten hours earlier",
+              "citation": "Expert estimate pending the surgeon's review. Koop AH, Palmer WC, Stancampiano FF. Gastric outlet obstruction: a red flag, potentially manageable. Cleve Clin J Med 2019;86:345-53"
+            },
+            {
+              "key": "finding",
+              "value": "succussion|visible peristalsis|visible gastric peristalsis|epigastric distension|upper abdominal fullness|epigastric fullness",
+              "logLR": 7,
+              "likelihoodRatio": 4,
+              "evidenceLabel": "Succussion splash, visible peristalsis or epigastric distension",
+              "citation": "Expert estimate pending the surgeon's review. Koop AH, Palmer WC, Stancampiano FF. Gastric outlet obstruction: a red flag, potentially manageable. Cleve Clin J Med 2019;86:345-53"
+            },
+            {
+              "key": "finding",
+              "value": "potassium 2.|potassium 3.0|potassium 3.1|potassium 3.2|potassium 3.3|potassium 3.4|hypokalaem|chloride 7|chloride 8|chloride 90|chloride 91|chloride 92|chloride 93|chloride 94|chloride 95|hypochloraem|bicarbonate 30|bicarbonate 31|bicarbonate 32|bicarbonate 33|bicarbonate 34|bicarbonate 35|bicarbonate 36|bicarbonate 37|bicarbonate 38|bicarbonate 39|bicarbonate 40|metabolic alkalosis",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Hypokalaemic, hypochloraemic metabolic alkalosis",
+              "citation": "Expert estimate pending the surgeon's review. Koop AH, Palmer WC, Stancampiano FF. Gastric outlet obstruction: a red flag, potentially manageable. Cleve Clin J Med 2019;86:345-53"
+            },
+            {
+              "key": "finding",
+              "value": "weight loss|losing weight|lost weight|lost 2|lost 3|lost 4|lost 5|lost 6|lost 7|lost 8|lost 9|lost 1",
+              "logLR": 2,
+              "likelihoodRatio": 1.5,
+              "evidenceLabel": "Weight loss",
+              "citation": "Expert estimate pending the surgeon's review. Koop AH, Palmer WC, Stancampiano FF. Gastric outlet obstruction: a red flag, potentially manageable. Cleve Clin J Med 2019;86:345-53"
+            },
+            {
+              "key": "finding",
+              "value": "peptic ulcer|duodenal ulcer|gastric ulcer|ulcer disease|indigestion|dyspeps|antacid|helicobacter|h. pylori|nsaid|gastric cancer|stomach cancer|pancreatic cancer",
+              "logLR": 2,
+              "likelihoodRatio": 1.5,
+              "evidenceLabel": "Peptic ulcer disease, long-standing dyspepsia or upper GI cancer",
+              "citation": "Expert estimate pending the surgeon's review. Koop AH, Palmer WC, Stancampiano FF. Gastric outlet obstruction: a red flag, potentially manageable. Cleve Clin J Med 2019;86:345-53"
+            },
+            {
+              "key": "finding",
+              "value": "bilious vomit|vomiting bile|green vomit|faeculent",
+              "logLR": -6,
+              "likelihoodRatio": 0.3,
+              "evidenceLabel": "Bilious or faeculent vomiting (obstruction beyond the duodenum)",
+              "citation": "Expert estimate pending the surgeon's review. Koop AH, Palmer WC, Stancampiano FF. Gastric outlet obstruction: a red flag, potentially manageable. Cleve Clin J Med 2019;86:345-53"
+            },
+            {
+              "key": "notFinding",
+              "value": "vomit|sick|retch|fullness|bloat|satiety|succussion|peristalsis|outlet|pyloric",
+              "logLR": -8,
+              "likelihoodRatio": 0.2,
+              "evidenceLabel": "No vomiting or fullness",
+              "citation": "Expert estimate pending the surgeon's review. Koop AH, Palmer WC, Stancampiano FF. Gastric outlet obstruction: a red flag, potentially manageable. Cleve Clin J Med 2019;86:345-53"
+            }
           ]
         }
       ]
@@ -137847,7 +138163,9 @@
         "Surgical Site Infection",
         "Necrotising Soft Tissue Infection (Necrotising Fasciitis)",
         "Septic Arthritis",
-        "Acute Gastroenteritis"
+        "Acute Gastroenteritis",
+        "Acute Cholecystitis",
+        "Acalculous Cholecystitis"
       ]
     },
     {
@@ -137877,7 +138195,8 @@
         "Bacterial Meningitis / Meningococcal Sepsis",
         "Oesophageal Perforation (Boerhaave)",
         "Testicular Torsion",
-        "Ovarian Torsion"
+        "Ovarian Torsion",
+        "Gastric Outlet Obstruction"
       ]
     },
     {
@@ -138349,7 +138668,8 @@
         "Iron Deficiency Anaemia",
         "Thyrotoxicosis",
         "Infantile Hypertrophic Pyloric Stenosis",
-        "Malrotation with Midgut Volvulus"
+        "Malrotation with Midgut Volvulus",
+        "Gastric Outlet Obstruction"
       ]
     }
   ]
