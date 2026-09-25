@@ -7,7 +7,20 @@ import SwiftData
 extension PatientOverviewContent {
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        // Never read a deleted record (removed or merged while open).
+        if patient.isLive { liveBody }
+    }
+
+    private var liveBody: some View {
+        // Each derived value once per render (see PatientOverviewContent.swift).
+        let latestVitals = self.latestVitals
+        let latestNEWS2 = latestVitals.map { News2Snapshot($0) }
+        let news2AlertLevel = (latestVitals?.hasAnyValue ?? false) ? (latestNEWS2?.score ?? 0) : 0
+        let criticalAllergies = self.criticalAllergies
+        let investigations = patient.investigations
+        let criticalLabPanel = LabPanel.parse(from: investigations)
+        let latestNote = self.latestNote
+        return VStack(alignment: .leading, spacing: 20) {
             // Header card — web-style with accent teal
             HStack(spacing: 16) {
                 ZStack {
@@ -84,7 +97,7 @@ extension PatientOverviewContent {
                                 Text(news2AlertLevel >= 7 ? "HIGH NEWS2 RISK" : "MEDIUM NEWS2 RISK")
                                     .font(.system(size: 11, weight: .heavy))
                                     .tracking(0.5)
-                                Text("Score \(news2AlertLevel) — \(latestVitals?.news2RiskDisplay ?? "")")
+                                Text("Score \(news2AlertLevel) — \(latestNEWS2?.riskDisplay ?? "")")
                                     .font(.caption2)
                             }
                             Spacer()
@@ -130,7 +143,7 @@ extension PatientOverviewContent {
                                 Text("CRITICAL LAB VALUES")
                                     .font(.system(size: 11, weight: .heavy))
                                     .tracking(0.5)
-                                Text(criticalLabSummary)
+                                Text(criticalLabSummary(criticalLabPanel))
                                     .font(.caption2)
                                     .lineLimit(2)
                             }
@@ -170,7 +183,7 @@ extension PatientOverviewContent {
             }
 
             // Resulted investigations with findings
-            let resultedInvs = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
+            let resultedInvs = investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
             if !resultedInvs.isEmpty {
                 overviewCard(title: "Investigation Results (\(resultedInvs.count))") {
                     VStack(alignment: .leading, spacing: 4) {
@@ -199,7 +212,7 @@ extension PatientOverviewContent {
             }
 
             // Pending investigations
-            let pendingInvs = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
+            let pendingInvs = investigations.filter { $0.status == .ordered || $0.status == .pending }
             if !pendingInvs.isEmpty {
                 overviewCard(title: "Pending Investigations (\(pendingInvs.count))") {
                     VStack(alignment: .leading, spacing: 4) {
@@ -268,13 +281,13 @@ extension PatientOverviewContent {
             }
 
             // Latest vitals
-            if let v = latestVitals {
+            if let v = latestVitals, let n = latestNEWS2 {
                 overviewCard(title: "Latest Vitals — \(v.recordedAt.formatted(.relative(presentation: .named)))") {
                     HStack {
                         Spacer()
-                        Text("NEWS2 \(v.news2Score) — \(v.news2RiskDisplay)")
+                        Text("NEWS2 \(n.score) — \(n.riskDisplay)")
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color(hex: v.news2Color))
+                            .foregroundStyle(Color(hex: n.colorHex))
                     }
                     if let bp = v.bpString {
                         LabeledContent("BP", value: "\(bp) mmHg")

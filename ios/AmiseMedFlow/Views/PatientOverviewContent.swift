@@ -10,12 +10,16 @@ import UIKit
 struct PatientOverviewContent: View {
     @Bindable var patient: Patient
 
+    // body reads these once per render into locals (they were read 3-10 times each: every read
+    // re-sorted the vitals or notes, re-ran the NEWS2 chart, or decoded the allergies /
+    // investigations JSON again).
+
     var latestVitals: VitalsEntry? {
-        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        ListPerf.newest(patient.vitalsEntries.filter(\.isLive), by: { $0.recordedAt })
     }
 
     var latestNote: ClinicalNote? {
-        patient.clinicalNotes.sorted { $0.createdAt > $1.createdAt }.first
+        ListPerf.newest(patient.clinicalNotes.filter(\.isLive), by: { $0.createdAt })
     }
 
     var criticalAllergies: [AllergyEntry] {
@@ -25,17 +29,7 @@ struct PatientOverviewContent: View {
         }
     }
 
-    var news2AlertLevel: Int {
-        guard let v = latestVitals, v.hasAnyValue else { return 0 }
-        return v.news2Score
-    }
-
-    var criticalLabPanel: LabPanel {
-        LabPanel.parse(from: patient.investigations)
-    }
-
-    var criticalLabSummary: String {
-        let labs = criticalLabPanel
+    func criticalLabSummary(_ labs: LabPanel) -> String {
         let tokens: [String?] = [
             labs.haemoglobin.flatMap { $0.value < 8 ? String(format: "Hb %.1f g/dL", $0.value) : nil },
             labs.platelets.flatMap { $0.value < 50 ? "Plt \(Int($0.value)) ×10⁹/L" : nil },
@@ -86,6 +80,7 @@ struct PatientOverviewContent: View {
 
     @ViewBuilder
     var checklistRow: some View {
+        let checkItems = self.checkItems   // built once (was twice per render)
         let pending = checkItems.filter { !$0.done }
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 5) {

@@ -81,9 +81,11 @@ struct PatientDetailView: View {
     }
 
     private var latestNews2: (score: Int, color: Color, risk: String)? {
-        guard let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+        // One pass and one NEWS2 evaluation (was a full sort and three evaluations).
+        guard let v = ListPerf.newest(patient.vitalsEntries.filter(\.isLive), by: { $0.recordedAt }),
               v.hasAnyValue else { return nil }
-        return (v.news2Score, Color(hex: v.news2Color), v.news2RiskDisplay)
+        let n = News2Snapshot(v)
+        return (n.score, Color(hex: n.colorHex), n.riskDisplay)
     }
 
     var body: some View {
@@ -119,7 +121,10 @@ struct PatientDetailView: View {
             .background(Color(.systemBackground))
             .navigationTitle(patient.fullName)
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear { AuditLog.record("view", "patient", patient: patient) }
+            .onAppear {
+                CrashReporting.breadcrumb("Opened patient record")
+                AuditLog.record("view", "patient", patient: patient)
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(role: .destructive) { showDeleteConfirm = true } label: {
@@ -152,9 +157,9 @@ struct PatientDetailView: View {
                     Button("Done") { dismiss() }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    ShareLink(item: patient.handoverText,
-                              subject: Text("Patient Handover — \(patient.fullName)"),
-                              message: Text(patient.handoverText)) {
+                    // Own view: the handover text reads most of the chart, and building it here
+                    // made every consultation keystroke re-render this whole sheet.
+                    PatientHandoverShareLink(patient: patient) {
                         Image(systemName: "square.and.arrow.up")
                     }
                 }

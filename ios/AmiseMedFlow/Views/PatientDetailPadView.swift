@@ -44,6 +44,26 @@ struct PatientDetailPadView: View {
     }
 
     var body: some View {
+        // Reading a deleted model's attributes crashes SwiftData (record removed or merged by
+        // sync or duplicate clean-up while it was open).
+        if patient.isLive {
+            liveBody
+        } else {
+            VStack(spacing: 12) {
+                ContentUnavailableView(
+                    "Record no longer available",
+                    systemImage: "person.crop.circle.badge.xmark",
+                    description: Text("This patient record was removed or merged.")
+                )
+                if let onBack {
+                    Button("Close") { onBack() }
+                        .padding(.bottom, 24)
+                }
+            }
+        }
+    }
+
+    private var liveBody: some View {
         VStack(spacing: 0) {
             // ── TOP: compact patient identifier strip ──────────────────────
             patientHeader
@@ -77,6 +97,7 @@ struct PatientDetailPadView: View {
             PatientSummaryEditorView(patient: patient)
         }
         .onAppear {
+            CrashReporting.breadcrumb("Opened patient record (iPad)")
             AuditLog.record("view", "patient", patient: patient)
             // If the saved selection is not visible for this role, reset to the first allowed section
             if let sel = selectedSection, !rightSections.contains(sel) {
@@ -175,9 +196,9 @@ struct PatientDetailPadView: View {
                 .buttonStyle(.plain)
                 .help("Clinical Summary")
 
-                ShareLink(item: patient.handoverText,
-                          subject: Text("Patient Handover — \(patient.fullName)"),
-                          message: Text(patient.handoverText)) {
+                // Own view: the handover text reads most of the chart, and building it here made
+                // every consultation keystroke re-render this whole screen.
+                PatientHandoverShareLink(patient: patient) {
                     Image(systemName: "square.and.arrow.up")
                         .foregroundStyle(AMColor.accent)
                 }
