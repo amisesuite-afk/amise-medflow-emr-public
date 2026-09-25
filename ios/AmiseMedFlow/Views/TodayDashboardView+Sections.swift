@@ -346,6 +346,7 @@ extension TodayDashboardView {
                     }
                     .padding(.vertical, 2)
                     .accessibilityElement(children: .combine)
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .accessibilityHint("Shows appointment actions")

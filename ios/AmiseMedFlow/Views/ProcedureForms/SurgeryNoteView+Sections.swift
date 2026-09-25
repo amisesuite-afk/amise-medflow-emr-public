@@ -150,6 +150,7 @@ extension SurgeryNoteView {
                         .foregroundStyle(.tertiary)
                 }
                 .padding(.vertical, 4)
+                .contentShape(Rectangle())   // whole row tappable, not only its text
             }
             .buttonStyle(.plain)
         } footer: {
@@ -261,6 +262,7 @@ extension SurgeryNoteView {
                         .buttonStyle(.plain)
                     }
                     .padding(.vertical, 4)
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .listRowBackground(AMColor.accentLt.opacity(0.25))

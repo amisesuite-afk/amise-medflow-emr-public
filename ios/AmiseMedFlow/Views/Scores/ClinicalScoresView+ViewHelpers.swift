@@ -122,6 +122,7 @@ extension ClinicalScoresView {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .padding(.horizontal)
@@ -237,6 +238,7 @@ extension ClinicalScoresView {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(displayScore != nil ? riskCol.opacity(0.4) : AMColor.line, lineWidth: 1)
             }
+            .contentShape(Rectangle())   // whole row tappable, not only its text
         }
         .buttonStyle(.plain)
         // "NEWS2 7, high risk" rather than "7" (the colour alone carried the band).

@@ -97,6 +97,7 @@ extension ConsultationView {
                                         .foregroundStyle(AMColor.accent)
                                 }
                             }
+                            .contentShape(Rectangle())   // whole row tappable, not only its text
                         }
                         .buttonStyle(.plain)
                     }

@@ -369,6 +369,7 @@ struct ReportImportFlowView: View {
                             Image(systemName: "checkmark.circle.fill").foregroundStyle(AMColor.accent)
                         }
                     }
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
             }

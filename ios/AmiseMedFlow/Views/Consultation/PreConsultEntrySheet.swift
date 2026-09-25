@@ -149,6 +149,7 @@ struct PreConsultEntrySheet: View {
                                         .foregroundStyle(AMColor.accent)
                                 }
                             }
+                            .contentShape(Rectangle())   // whole row tappable, not only its text
                         }
                         .buttonStyle(.plain)
                     }

@@ -85,6 +85,7 @@ extension ConsultationView {
                         Spacer()
                         Text(drug.commonDoses).font(.caption2).foregroundStyle(.tertiary)
                     }
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }.buttonStyle(.plain)
             }
 
@@ -189,6 +190,7 @@ extension ConsultationView {
                                 Text(name).font(.callout)
                                 Spacer()
                             }
+                            .contentShape(Rectangle())   // whole row tappable, not only its text
                         }.buttonStyle(.plain)
                     }
                 }
@@ -293,6 +295,7 @@ extension ConsultationView {
                                 .foregroundStyle(.primary)
                             Spacer()
                         }
+                        .contentShape(Rectangle())   // whole row tappable, not only its text
                     }.buttonStyle(.plain)
                 }
 
@@ -355,6 +358,7 @@ extension ConsultationView {
                                 .foregroundStyle(.primary)
                             Spacer()
                         }
+                        .contentShape(Rectangle())   // whole row tappable, not only its text
                     }.buttonStyle(.plain)
                 }
 

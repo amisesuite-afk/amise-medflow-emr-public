@@ -128,6 +128,7 @@ extension ClinicalScoresView {
                         Spacer()
                     }
                     .padding(.vertical, 4)
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
             }

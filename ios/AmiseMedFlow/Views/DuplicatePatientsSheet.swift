@@ -38,6 +38,7 @@ struct DuplicatePatientsBanner: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.orange)
                 }
+                .contentShape(Rectangle())   // whole row tappable, not only its text
             }
             .buttonStyle(.plain)
         }

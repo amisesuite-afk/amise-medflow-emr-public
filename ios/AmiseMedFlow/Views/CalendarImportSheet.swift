@@ -132,6 +132,7 @@ struct CalendarImportSheet: View {
             }
             .padding(.vertical, 4)
             .opacity(a.alreadyExists ? 0.5 : 1)
+            .contentShape(Rectangle())   // whole row tappable, not only its text
         }
         .buttonStyle(.plain)
     }

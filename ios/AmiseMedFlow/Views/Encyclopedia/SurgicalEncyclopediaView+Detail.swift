@@ -137,6 +137,7 @@ private struct RedFlagBanner: View {
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                 }
+                .contentShape(Rectangle())   // whole row tappable, not only its text
             }
             .buttonStyle(.plain)
 

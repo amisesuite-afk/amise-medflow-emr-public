@@ -64,6 +64,7 @@ extension ConsultationView {
                                 .foregroundStyle(.primary)
                             Spacer()
                         }
+                        .contentShape(Rectangle())   // whole row tappable, not only its text
                     }.buttonStyle(.plain)
                 }
 

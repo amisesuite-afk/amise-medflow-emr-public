@@ -219,6 +219,7 @@ struct TodayDashboardView: View {
                 }
                 .padding(.vertical, 6)
                 .accessibilityElement(children: .combine)
+                .contentShape(Rectangle())   // whole row tappable, not only its text
             }
             .buttonStyle(.plain)
             .listRowBackground(AMColor.accentLt.opacity(0.2))

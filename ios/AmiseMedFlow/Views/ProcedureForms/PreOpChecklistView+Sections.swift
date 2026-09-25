@@ -290,6 +290,7 @@ extension PreOpChecklistView {
                     .multilineTextAlignment(.leading)
                 Spacer()
             }
+            .contentShape(Rectangle())   // whole row tappable, not only its text
         }
         .buttonStyle(.plain)
     }

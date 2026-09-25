@@ -191,6 +191,7 @@ struct QuickAddSheet: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
+            .contentShape(Rectangle())   // whole row tappable, not only its text
         }
         .buttonStyle(.plain)
     }
@@ -357,6 +358,7 @@ struct QuickAddSheet: View {
                     AMColor.accentLt.opacity(0.5),
                     in: RoundedRectangle(cornerRadius: 10)
                 )
+                .contentShape(Rectangle())   // whole row tappable, not only its text
             }
             .buttonStyle(.plain)
 

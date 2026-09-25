@@ -59,6 +59,7 @@ private struct OperativeOptionCard: View {
                         .font(.system(size: 11))
                         .foregroundStyle(.teal)
                 }
+                .contentShape(Rectangle())   // whole row tappable, not only its text
             }
             .buttonStyle(.plain)
             .padding(.top, 4)

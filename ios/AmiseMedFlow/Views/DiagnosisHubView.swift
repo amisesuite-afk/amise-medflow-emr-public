@@ -340,6 +340,7 @@ struct DiagnosisHubView: View {
                     .stroke(color.opacity(0.15), lineWidth: 1)
             )
             .shadow(color: .black.opacity(0.03), radius: 3, y: 1)
+            .contentShape(Rectangle())   // whole row tappable, not only its text
         }
         .buttonStyle(.plain)
     }
