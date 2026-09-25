@@ -1,6 +1,6 @@
 {
   "type": "clinval-web-results",
-  "generatedAt": "2026-09-25T13:39:34.845Z",
+  "generatedAt": "2026-09-25T13:43:40.966Z",
   "harness": "clinval-web/1",
   "vignetteCount": 9,
   "results": [
@@ -13,7 +13,7 @@
       "category": "gi-emergency",
       "permutationOf": null,
       "permutationLabel": "Typical adult (base case)",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -910,7 +910,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Elderly, atypical (AF on apixaban)",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -1939,7 +1939,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Pregnant, second trimester (22 weeks)",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -2827,7 +2827,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "Charcot's triad with sepsis — TG18 Grade II (base case)",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -4045,7 +4045,7 @@
       "category": "hpb",
       "permutationOf": "cholangitis-tg18-charcot-sepsis",
       "permutationLabel": "TG18 Grade I (mild) — only one Grade II criterion (age ≥75)",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -5040,7 +5040,7 @@
       "category": "hpb",
       "permutationOf": "cholangitis-tg18-charcot-sepsis",
       "permutationLabel": "TG18 Grade III (severe) — Reynolds' pentad, septic shock, on apixaban",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -6456,7 +6456,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "TG18 Grade I (mild) — base case",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -7527,7 +7527,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "TG18 Grade II (moderate) — palpable tender RUQ mass is the only Grade II criterion",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -8502,7 +8502,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "TG18 Grade III (severe) — septic shock, confusion, AKI, thrombocytopenia; penicillin anaphylaxis",
-      "generatedAt": "2026-09-25T13:39:34.845Z",
+      "generatedAt": "2026-09-25T13:43:40.966Z",
       "outputs": {
         "differentials": {
           "web.pane": [
