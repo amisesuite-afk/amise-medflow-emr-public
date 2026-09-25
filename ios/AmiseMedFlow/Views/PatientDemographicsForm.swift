@@ -116,7 +116,7 @@ struct PatientDemographicsForm: View {
             }
             .onChange(of: patient.setting) { _, _ in touch() }
             Picker("Location", selection: $patient.location) {
-                ForEach(ClinicalLocation.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                ForEach(ClinicalLocation.selectable(including: patient.location), id: \.self) { Text($0.rawValue).tag($0) }
             }
             .onChange(of: patient.location) { _, _ in touch() }
             Picker("Acuity", selection: $patient.acuity) {

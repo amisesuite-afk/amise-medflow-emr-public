@@ -312,7 +312,7 @@ export const PATHWAY_DEFINITIONS: Array<{
       'POCUS if available',
       'Call cardiology / emergency services immediately if STEMI',
     ],
-    contacts: ['Victoria Hospital emergency: 455-6041', 'Emergency services: 911'],
+    contacts: ['Emergency services: 911', "Nearest emergency department: OKEU Hospital (Castries), St Jude's Hospital (Vieux Fort) or Tapion Hospital"],
     doctorNotes: 'HEART score for risk. STEMI → cath lab / thrombolysis. NSTEMI → dual antiplatelet, anticoagulation, early invasive strategy. Aortic dissection: CT angiography urgently.',
   },
 ];

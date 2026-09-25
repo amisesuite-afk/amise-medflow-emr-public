@@ -136,7 +136,7 @@ const PREP_FASTING =
 const PREP_MEDICATIONS =
   'MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.';
 const PREP_CONTINGENCIES =
-  'CONTINGENCIES: If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us immediately -- we may need to reschedule. If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately -- do not wait.';
+  'CONTINGENCIES: If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us immediately -- we may need to reschedule. If you have a medical emergency at any time, call 911 or go to the nearest emergency department (OKEU Hospital, St Jude\'s Hospital or Tapion Hospital) immediately -- do not wait.';
 
 const GENERAL_PREP = [
   PREP_WEAR,
@@ -204,7 +204,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'Your medicines will be reviewed at this visit. Your instructions for the day of your operation will be given to you separately.',
     'WHAT TO BRING: Valid photo ID, insurance card (if applicable), all your current medicines in their original packaging, any letter or information you have about your planned operation, and the results of any blood tests, ECG, or scans done for your operation.',
     'Arrive 10 minutes early for registration. You are welcome to bring a family member or trusted person for support.',
-    'If you develop any illness (fever, cough, cold) in the days before your operation, call us -- your operation may need to be postponed for your safety. If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately -- do not wait.',
+    'If you develop any illness (fever, cough, cold) in the days before your operation, call us -- your operation may need to be postponed for your safety. If you have a medical emergency at any time, call 911 or go to the nearest emergency department (OKEU Hospital, St Jude\'s Hospital or Tapion Hospital) immediately -- do not wait.',
   ].join('\n'),
 
   // Day-of-surgery preparation (staff-booked `surgery_theatre`, from the
@@ -244,7 +244,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'FASTING BLOOD TEST PREPARATION',
     'FASTING BLOOD TEST: Nothing to eat for 8-10 hours before your blood test. You may drink plain water. Please call the clinic if you take insulin or diabetes medicines, for instructions before fasting.',
     'WHAT TO BRING: Valid photo ID, insurance card (if applicable), and your blood test request form.',
-    'If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately -- do not wait.',
+    'If you have a medical emergency at any time, call 911 or go to the nearest emergency department (OKEU Hospital, St Jude\'s Hospital or Tapion Hospital) immediately -- do not wait.',
   ].join('\n'),
 
   new_consult: [
@@ -255,7 +255,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'Write down your main questions or concerns -- this helps us make the most of your appointment time.',
     'Arrive 10 minutes early to complete registration.',
     '',
-    'EMERGENCY: If your symptoms worsen before your appointment (severe pain, bleeding, vomiting blood, high fever, difficulty breathing), do NOT wait -- call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately.',
+    'EMERGENCY: If your symptoms worsen before your appointment (severe pain, bleeding, vomiting blood, high fever, difficulty breathing), do NOT wait -- call 911 or go to the nearest emergency department (OKEU Hospital, St Jude\'s Hospital or Tapion Hospital) immediately.',
   ].join('\n'),
 
   diabetic_foot: [
@@ -264,7 +264,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     'Wear loose-fitting shoes or sandals that are easy to remove.',
     'Do NOT apply any creams or ointments to the wound on the day of your appointment -- the doctor needs to see it as-is.',
     'Bring a list of all medications including insulin type, dose, and timing.',
-    'If you notice sudden worsening -- spreading redness, black areas, pus, fever, or inability to bear weight -- call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately. Do NOT wait for your appointment.',
+    'If you notice sudden worsening -- spreading redness, black areas, pus, fever, or inability to bear weight -- call 911 or go to the nearest emergency department (OKEU Hospital, St Jude\'s Hospital or Tapion Hospital) immediately. Do NOT wait for your appointment.',
     // GENERAL_PREP deliberately omitted: it carries sedation fasting and
     // transport rules, and a 6-hour fast is unnecessary (and a hypoglycaemia
     // risk) for a diabetic patient attending an outpatient foot review.

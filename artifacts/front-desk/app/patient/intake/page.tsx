@@ -932,7 +932,7 @@ export default function IntakePage() {
           {isReferral === true && (
             <div style={{ marginTop: 12 }}>
               <label style={{ ...lbl, fontSize: 12 }}>Referring doctor or facility</label>
-              <input style={inputSty} value={referralDoc} onChange={e => setReferralDoc(e.target.value)} placeholder="e.g. Dr Pierre, Victoria Hospital" />
+              <input style={inputSty} value={referralDoc} onChange={e => setReferralDoc(e.target.value)} placeholder="e.g. Dr Pierre, OKEU Hospital" />
             </div>
           )}
         </div>

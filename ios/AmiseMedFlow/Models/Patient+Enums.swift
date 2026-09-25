@@ -71,6 +71,16 @@ enum ClinicalLocation: String, Codable, CaseIterable {
         case .other:      return "OTH"
         }
     }
+
+    /// Locations offered when choosing a site. Victoria Hospital has closed (replaced by OKEU):
+    /// `.victoria` stays in the enum only because existing records and the server CHECK use it.
+    static var selectable: [ClinicalLocation] { allCases.filter { $0 != .victoria } }
+
+    /// `selectable`, plus `current` if it is a retired location, so editing an old record still
+    /// shows its saved value.
+    static func selectable(including current: ClinicalLocation) -> [ClinicalLocation] {
+        selectable.contains(current) ? selectable : selectable + [current]
+    }
 }
 
 enum Acuity: Int, Codable, CaseIterable, Comparable {

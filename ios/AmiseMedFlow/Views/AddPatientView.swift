@@ -134,7 +134,7 @@ struct AddPatientView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.secondary)
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                    ForEach(ClinicalLocation.allCases, id: \.self) { loc in
+                    ForEach(ClinicalLocation.selectable, id: \.self) { loc in
                         let sel = location == loc
                         let color = locationAccent(loc)
                         Button { location = loc } label: {
