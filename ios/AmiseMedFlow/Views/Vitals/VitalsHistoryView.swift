@@ -87,6 +87,7 @@ struct VitalsHistoryView: View {
         }
         .sheet(isPresented: $showEntry) {
             VitalsEntryView(patient: patient)
+                .pageSizedSheet()
         }
     }
 }

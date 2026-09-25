@@ -28,7 +28,7 @@ struct WardReviewPanel: View {
             actionSection
         }
         .onAppear(perform: load)
-        .sheet(isPresented: $showVitals) { VitalsEntryView(patient: patient) }
+        .sheet(isPresented: $showVitals) { VitalsEntryView(patient: patient).pageSizedSheet() }
     }
 
     private var statusSection: some View {

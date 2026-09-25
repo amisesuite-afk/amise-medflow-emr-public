@@ -134,6 +134,7 @@ struct WardRoundProgressSheet: View {
                 set: { if $0 == nil { showFullRecord = false } }))
             .sheet(isPresented: $showVitals, onDismiss: refreshFacts) {
                 VitalsEntryView(patient: patient)
+                    .pageSizedSheet()
             }
             .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         }
