@@ -1274,6 +1274,151 @@ export async function saveLabPanel(
   return { error: null };
 }
 
+// ─── Report import (lab / imaging report PDF, clinician-reviewed) ─────────────
+// Written only when the clinician taps Save on the review screen (ReportImportPanel). Payloads
+// are built by lib/report-import-save.ts. No values ever go into the audit log.
+
+/** Uploads a report PDF to the patient-documents bucket and records it in `documents`. */
+export async function uploadReportPdf(input: {
+  patientId: string;
+  encounterId: string | null;
+  file: Blob;
+  fileName: string;
+  documentType: 'lab_report' | 'imaging_report';
+  title: string;
+  notes: string;
+  userId: string | null;
+}): Promise<{ id: string | null; error: string | null }> {
+  if (!supabase) return { id: null, error: notConfigured('uploadReportPdf') };
+  const path = `${input.patientId}/${Date.now()}-${input.fileName}`;
+  const { error: uploadErr } = await supabase.storage
+    .from('patient-documents')
+    .upload(path, input.file, { contentType: 'application/pdf', upsert: false });
+  if (uploadErr) { console.error('[db] uploadReportPdf (storage):', uploadErr.message); return { id: null, error: uploadErr.message }; }
+  const { data, error } = await supabase.from('documents').insert({
+    patient_id:      input.patientId,
+    encounter_id:    input.encounterId,
+    document_type:   input.documentType,
+    title:           input.title,
+    file_name:       input.fileName,
+    storage_path:    path,
+    mime_type:       'application/pdf',
+    file_size_bytes: input.file.size,
+    source:          'uploaded',
+    notes:           input.notes,
+    created_by:      input.userId,
+  }).select('id').single();
+  if (error) {
+    console.error('[db] uploadReportPdf (documents):', error.message);
+    // Do not leave an orphan file behind the failed metadata insert.
+    void supabase.storage.from('patient-documents').remove([path]);
+    return { id: null, error: error.message };
+  }
+  return { id: (data as { id: string }).id, error: null };
+}
+
+export interface ImportedLabResultRow {
+  id: string;
+  test_name: string;
+  status: string;
+  collected_at: string | null;
+  reported_at: string | null;
+  created_at: string;
+  performing_lab: string | null;
+  notes: string | null;
+  is_abnormal: boolean;
+  is_critical: boolean;
+  linked_document_id: string | null;
+  analytes: Array<{ name?: unknown; value?: unknown; unit?: unknown; ref?: unknown; abnormal?: unknown; critical?: unknown; flag?: unknown }> | null;
+}
+
+/** Resulted lab rows with analytes for a patient (duplicate check + "Imported reports" list). */
+export async function loadPatientLabResults(patientId: string): Promise<ImportedLabResultRow[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('investigation_results')
+    .select('id, test_name, status, collected_at, reported_at, created_at, performing_lab, notes, is_abnormal, is_critical, linked_document_id, analytes')
+    .eq('patient_id', patientId)
+    .not('analytes', 'is', null)
+    .order('collected_at', { ascending: false, nullsFirst: false })
+    .limit(50);
+  if (error) { console.error('[db] loadPatientLabResults:', error.message); return []; }
+  return (data ?? []) as ImportedLabResultRow[];
+}
+
+export interface ImportedImagingRow {
+  id: string;
+  order_type: string;
+  body_area: string | null;
+  status: string;
+  performed_at: string | null;
+  performing_facility: string | null;
+  report_text: string | null;
+  notes: string | null;
+  linked_document_id: string | null;
+  created_at: string;
+}
+
+/** Imaging reports received for a patient ("Imported reports" list). */
+export async function loadPatientImagingReports(patientId: string): Promise<ImportedImagingRow[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('imaging_orders')
+    .select('id, order_type, body_area, status, performed_at, performing_facility, report_text, notes, linked_document_id, created_at')
+    .eq('patient_id', patientId)
+    .not('report_text', 'is', null)
+    .order('performed_at', { ascending: false, nullsFirst: false })
+    .limit(30);
+  if (error) { console.error('[db] loadPatientImagingReports:', error.message); return []; }
+  return (data ?? []) as ImportedImagingRow[];
+}
+
+/** Inserts an imported lab report (one row, multi-analyte). */
+export async function insertImportedLabResult(row: Record<string, unknown>): Promise<{ id: string | null; error: string | null }> {
+  if (!supabase) return { id: null, error: notConfigured('insertImportedLabResult') };
+  const { data, error } = await supabase.from('investigation_results').insert(row).select('id').single();
+  if (error) { console.error('[db] insertImportedLabResult:', error.message); return { id: null, error: error.message }; }
+  return { id: (data as { id: string }).id, error: null };
+}
+
+/** Inserts an imported imaging report. */
+export async function insertImportedImagingReport(row: Record<string, unknown>): Promise<{ id: string | null; error: string | null }> {
+  if (!supabase) return { id: null, error: notConfigured('insertImportedImagingReport') };
+  const { data, error } = await supabase.from('imaging_orders').insert(row).select('id').single();
+  if (error) { console.error('[db] insertImportedImagingReport:', error.message); return { id: null, error: error.message }; }
+  return { id: (data as { id: string }).id, error: null };
+}
+
+/** A short-lived link to a stored report PDF (opened in a new tab). */
+export async function reportPdfLink(documentId: string): Promise<string | null> {
+  if (!supabase) return null;
+  const { data: doc, error } = await supabase.from('documents').select('storage_path').eq('id', documentId).maybeSingle();
+  const path = (doc as { storage_path: string | null } | null)?.storage_path;
+  if (error || !path) return null;
+  const { data } = await supabase.storage.from('patient-documents').createSignedUrl(path, 300);
+  return data?.signedUrl ?? null;
+}
+
+/**
+ * Audit entry for a report import. `details` carries fixed labels and counts only (source,
+ * rows, identity, modality) — never names, values or report text.
+ */
+export function logReportImport(entry: {
+  resourceType: 'lab_result' | 'imaging_report' | 'document';
+  resourceId: string | null;
+  patientId: string;
+  details: Record<string, string | number>;
+}): void {
+  void writeAuditLog({
+    action:       'create',
+    resourceType: entry.resourceType,
+    resourceId:   entry.resourceId,
+    patientId:    entry.patientId,
+    details:      entry.details,
+    mode:         'report_import',
+  });
+}
+
 // ─── saveClinicalNote ─────────────────────────────────────────────────────────
 
 export interface ClinicalNoteRow {

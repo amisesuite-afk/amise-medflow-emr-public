@@ -104,8 +104,8 @@ function hasRadResult(
   );
 }
 
-/** Parse first numeric value from a lab result string. */
-function numLab(results: Record<string, string>, ...keyFragments: string[]): number | null {
+/** Parse first numeric value from a lab result string. Exported for the report-import tests. */
+export function numLab(results: Record<string, string>, ...keyFragments: string[]): number | null {
   for (const [k, v] of Object.entries(results)) {
     const kl = lo(k);
     if (keyFragments.some(f => kl.includes(lo(f)))) {
