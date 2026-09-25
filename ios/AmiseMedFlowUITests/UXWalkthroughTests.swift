@@ -148,11 +148,19 @@ final class UXWalkthroughTests: XCTestCase {
         ux.screen("Clinical scores")
 
         let suggested = ux.element(identifierPrefix: "scores.card.")
+        var usedNEWS2 = false
         if suggested.waitForExistence(timeout: 3) {
             ux.note("Diagnosis-driven score chosen: \(suggested.label)")
             try ux.tap(suggested, "Score: first diagnosis-driven suggestion")
         } else {
             ux.note("No diagnosis-driven score offered; NEWS2 used")
+            try ux.tap(ux.element("scores.monitor.news2"), "Score: NEWS2")
+            usedNEWS2 = true
+        }
+        if !usedNEWS2 && !ux.element("scores.result").waitForExistence(timeout: 5) {
+            ux.note("The suggested score showed no result without further input; NEWS2 used instead")
+            ux.snapshot("Suggested score form (no result yet)")
+            try ux.tap(ux.button(labeled: "Back to patient scores"), "Back to patient scores")
             try ux.tap(ux.element("scores.monitor.news2"), "Score: NEWS2")
         }
         try ux.waitFor(ux.element("scores.result"), "Score result card")
@@ -262,17 +270,15 @@ final class UXWalkthroughTests: XCTestCase {
             try ux.type("128", into: ux.element("vitals.bpSystolic"), "Systolic BP")
             try ux.type("82", into: ux.element("vitals.bpDiastolic"), "Diastolic BP")
             try ux.type("76", into: ux.element("vitals.heartRate"), "Heart rate")
+            // The live NEWS2 preview sits at the top of the form: capture it while it is on screen
+            // (scrolling the sheet back up could dismiss it).
+            let preview = ux.element("vitals.news2Preview")
+            ux.note("Live NEWS2 preview after BP and HR: " + (preview.exists ? preview.label : "not shown"))
+            ux.snapshot("Live NEWS2 preview")
             try ux.type("16", into: ux.element("vitals.respiratoryRate"), "Respiratory rate")
             try ux.type("36.9", into: ux.element("vitals.temperature"), "Temperature")
             try ux.type("98", into: ux.element("vitals.spo2"), "SpO2")
             ux.snapshot("Vitals entered")
-
-            ux.uncounted {
-                let preview = ux.element("vitals.news2Preview")
-                ux.bringOnScreen(preview, counted: false, searchUpwards: true)
-                ux.note("Live NEWS2 preview: " + (preview.exists ? preview.label : "not shown"))
-                ux.snapshot("Live NEWS2 preview")
-            }
 
             try ux.tap(ux.element("vitals.save"), "Save")
             try ux.waitFor(ux.element("vitals.add"), "Vitals history")
