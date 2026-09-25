@@ -73,6 +73,14 @@ final class ClinicalTextParserNegationTests: XCTestCase {
         XCTAssertTrue(alarmTitles(r).contains("Pneumoperitoneum — Perforation"))
     }
 
+    /// CT wording "free intraperitoneal gas" (clinical validation: perforated diverticulitis with
+    /// purulent peritonitis raised no perforation alarm).
+    func testFreeIntraperitonealGasRaisesThePerforationAlarm() {
+        let r = parse(notes: "CT abdomen/pelvis: Perforated sigmoid diverticulitis with free intraperitoneal gas and generalised free fluid")
+        XCTAssertTrue(alarmTitles(r).contains("Pneumoperitoneum — Perforation"))
+        XCTAssertFalse(alarmTitles(parse(notes: "CT abdomen: no free intraperitoneal gas")).contains("Pneumoperitoneum — Perforation"))
+    }
+
     // MARK: - Features
 
     func testMurphysSignNegativeIsNotAFeature() {

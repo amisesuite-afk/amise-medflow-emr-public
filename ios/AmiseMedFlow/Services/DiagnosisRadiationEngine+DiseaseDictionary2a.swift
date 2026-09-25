@@ -91,7 +91,8 @@ extension DiagnosisRadiationEngine {
             ],
             consentCategory: nil,
             urgencyNote: nil,
-            redFlags: ["Haematemesis / melaena → urgent OGD within 24h", "Perforation → emergency OT"],
+            redFlags: ["Haematemesis / melaena → urgent OGD within 24h", "Perforation → emergency OT",
+                       "NSAID use (including over-the-counter ibuprofen / diclofenac) — stop it; bleeding and perforation risk"],
             followUp: "OGD at 8 weeks for gastric ulcer. Breath test 4 weeks post-eradication.",
             guidelineReference: "NICE CG17; ACG 2017; Maastricht VI / Florence 2022"
         )),
@@ -119,7 +120,8 @@ extension DiagnosisRadiationEngine {
             ],
             consentCategory: nil,
             urgencyNote: nil,
-            redFlags: ["Progressive dysphagia → exclude carcinoma urgently (OGD within 2 weeks)"],
+            redFlags: ["Progressive dysphagia → exclude carcinoma urgently (OGD within 2 weeks)",
+                       "Weight loss, anaemia or age ≥ 55 with weight loss → suspected upper GI cancer: urgent 2-week OGD (NICE NG12)"],
             followUp: "Review 8 weeks. Barrett's: OGD surveillance per guideline.",
             guidelineReference: "NICE CG30; ACG 2022; BSG Barrett's Guidelines"
         )),

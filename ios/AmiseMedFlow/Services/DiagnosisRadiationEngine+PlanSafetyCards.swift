@@ -177,7 +177,8 @@ extension DiagnosisRadiationEngine {
 - Contrast swallow first; endoscopy with care
 - Symptomatic pouch: endoscopic stapling (diverticulotomy) or open cricopharyngeal myotomy ± excision; flexible endoscopic options (Z-POEM) in experienced centres (NICE IPG22)
 - Aspiration risk: dietetic and SALT review
-""", followUp: "ENT / upper GI clinic.",
+""", redFlags: ["Progressive dysphagia, weight loss or aspiration pneumonia → urgent assessment"],
+             followUp: "ENT / upper GI clinic.",
              ref: "NICE IPG22 (2003) Endoscopic stapling of pharyngeal pouch"),
 
         psCard(["gastric outlet obstruction", "pyloric obstruction"], "Gastric Outlet Obstruction", icd: "K31.1",
@@ -200,7 +201,8 @@ extension DiagnosisRadiationEngine {
 - Dysphagia at any age: urgent direct-access OGD (2-week) — not age-gated (NICE NG12)
 - Stricture: biopsy then dilatation; PPI for peptic stricture
 - Weight loss / anaemia: upper GI cancer pathway
-""", followUp: "Upper GI clinic with results.",
+""", redFlags: ["Dysphagia at any age → urgent 2-week OGD (suspected cancer pathway)"],
+             followUp: "Upper GI clinic with results.",
              ref: "NICE NG12 (2015, updated 2023) Suspected cancer: recognition and referral"),
 
         psCard(["gastric carcinoma", "gastric adenocarcinoma", "suspected gastric"], "Suspected Gastric Cancer", icd: "C16.9",
@@ -210,7 +212,8 @@ extension DiagnosisRadiationEngine {
              plan: """
 - Urgent direct-access OGD (2-week wait) for age ≥ 55 with weight loss and upper abdominal pain, reflux or dyspepsia (NICE NG12)
 - Confirmed cancer: staging CT ± staging laparoscopy / EUS; upper GI MDT; nutrition
-""", followUp: "Upper GI MDT.",
+""", redFlags: ["Age ≥ 55 with weight loss and upper abdominal pain → suspected cancer (2-week) pathway"],
+             followUp: "Upper GI MDT.",
              ref: "NICE NG12 (2015, updated 2023); BSG/AUGIS gastric cancer guidance"),
 
         psCard(["pancreatic head", "pancreatic cancer", "pancreatic adenocarcinoma", "pancreatic carcinoma", "malignant biliary obstruction",
@@ -281,7 +284,8 @@ extension DiagnosisRadiationEngine {
 - Overdue surveillance: book colonoscopy now
 - Aspirin: discuss daily aspirin for colorectal cancer prevention (NICE NG151; CAPP2)
 - Gynaecological risk discussion for women (endometrial / ovarian); family cascade testing
-""", followUp: "Surveillance colonoscopy every 2 years.",
+""", redFlags: ["Lynch syndrome (hereditary colorectal cancer risk) — overdue surveillance needs booking now"],
+             followUp: "Surveillance colonoscopy every 2 years.",
              ref: "BSG/ACPGBI/UKCGG hereditary CRC guideline (2019); NICE NG151 (2020)"),
 
         psCard(["fistula-in-ano", "fistula in ano", "anal fistula", "perianal fistula", "perianal crohn", "transsphincteric"],

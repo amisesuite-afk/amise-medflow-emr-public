@@ -100,7 +100,8 @@ extension DiagnosisRadiationEngine {
 - Bloody single-duct nipple discharge: mammography + ultrasound; microdochectomy (duct excision) or ductoscopy for diagnosis
 - Male breast mass: triple assessment; confirmed cancer → genetic referral (BRCA2)
 - Pregnancy: ultrasound first and core biopsy — diagnosis must not wait for delivery
-""", followUp: "Breast clinic with results; MDT outcome.",
+""", redFlags: ["Suspected cancer: urgent 2-week suspected cancer referral for a breast lump at age ≥ 30, skin changes, nipple retraction or bloody discharge (NICE NG12)"],
+              followUp: "Breast clinic with results; MDT outcome.",
               ref: "NICE NG12 (2015, updated 2023); Association of Breast Surgery best-practice diagnostic guidelines (2019)"),
     ]
 

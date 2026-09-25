@@ -178,7 +178,7 @@ enum ClinicalTextParser {
         if any(["raised amylase", "raised lipase", "elevated amylase", "elevated lipase"]) { add("inv", "Raised amylase/lipase") }
         if any(["dilated loop", "small bowel dilation", "air-fluid level", "air fluid level"]) { add("inv", "Bowel dilation on imaging") }
         if any(["gallstone", "cholelithiasis", "biliary calculi", "uss gallstone"]) { add("inv", "Gallstones on USS") }
-        if any(["free air", "free gas", "pneumoperitoneum", "subdiaphragmatic air"]) { add("inv", "Pneumoperitoneum") }
+        if any(["free air", "free gas", "pneumoperitoneum", "subdiaphragmatic air", "free intraperitoneal gas", "free intraperitoneal air", "extraluminal gas", "extraluminal air"]) { add("inv", "Pneumoperitoneum") }
         if any(["raised troponin", "troponin positive", "elevated troponin"]) { add("inv", "Positive troponin") }
         if any(["anaemia", "anemia", "low haemoglobin", "low hemoglobin", "hb low"]) { add("inv", "Anaemia") }
 
@@ -351,8 +351,12 @@ enum ClinicalTextParser {
         }
 
         // Imaging-confirmed perforation / pneumoperitoneum
+        // "Free intraperitoneal gas" / "extraluminal gas" (CT report wording) added after the
+        // clinical validation run: perforated diverticulitis with free intraperitoneal gas raised
+        // no perforation alarm.
         if any(["pneumoperitoneum", "free gas", "free air", "subdiaphragmatic air",
-                "confirmed perforation", "bowel perforation", "hollow viscus perforation"]) {
+                "free intraperitoneal gas", "free intraperitoneal air", "extraluminal gas", "extraluminal air",
+                "confirmed perforation", "bowel perforation", "hollow viscus perforation", "perforated viscus"]) {
             // Negated mentions ("no free gas") no longer match, so the old "no free gas" guard is
             // gone: it also hid a positive finding documented elsewhere in the text.
             alarms.append(ClinicalAlarm(

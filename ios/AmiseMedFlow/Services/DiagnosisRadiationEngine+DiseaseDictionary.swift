@@ -268,7 +268,8 @@ extension DiagnosisRadiationEngine {
             ],
             consentCategory: "Colorectal Resection",
             urgencyNote: "Urgent oncology referral. Target 2-week wait for staging CT.",
-            redFlags: ["Obstruction → stenting or emergency surgery", "Perforation → emergency OT + peritonitis management"],
+            redFlags: ["Obstruction → stenting or emergency surgery", "Perforation → emergency OT + peritonitis management",
+                       "Positive FIT (faecal immunochemical test ≥ 10 µg Hb/g) → suspected colorectal cancer pathway (NICE DG56)"],
             followUp: "MDT within 2 weeks. Surgery within 4–6 weeks of diagnosis. CEA quarterly.",
             guidelineReference: "NICE NG12; ESMO 2022; ASCO-SSO Guidelines"
         )),
