@@ -59,8 +59,9 @@ struct VitalsEntryView: View {
                                   : liveNews2.band > .low
                                       ? "exclamationmark.triangle"
                                       : "checkmark.circle")
-                                .font(.system(size: 13))
+                                .scaledFont(size: 13)
                                 .foregroundStyle(liveNews2Color)
+                                .accessibilityHidden(true)
                             VStack(alignment: .leading, spacing: 1) {
                                 Text("NEWS2: \(liveNews2.total) — \(liveNews2.band.label)")
                                     .font(.subheadline.weight(.semibold))
@@ -83,6 +84,9 @@ struct VitalsEntryView: View {
                         }
                         .padding(.vertical, 2)
                         .animation(.easeInOut(duration: 0.2), value: liveNews2.total)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(Text(liveNews2AccessibilityLabel))
+                        .accessibilityAddTraits(.updatesFrequently)
                     }
                 }
 
@@ -90,8 +94,11 @@ struct VitalsEntryView: View {
                 Section {
                     HStack {
                         TextField("Systolic", text: $bpSystolic).keyboardType(.numberPad)
+                            .accessibilityLabel("Systolic blood pressure, mmHg")
                         Text("/").foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
                         TextField("Diastolic", text: $bpDiastolic).keyboardType(.numberPad)
+                            .accessibilityLabel("Diastolic blood pressure, mmHg")
                     }
                     quickChips(bpPresets.map { "\($0.sys)/\($0.dia)" },
                                current: bpSystolic.isEmpty ? "" : "\(bpSystolic)/\(bpDiastolic)") { v in
@@ -103,24 +110,28 @@ struct VitalsEntryView: View {
                 // HR
                 Section {
                     TextField("e.g. 72", text: $heartRate).keyboardType(.numberPad)
+                        .accessibilityLabel("Heart rate, beats per minute")
                     quickChips(hrPresets, current: heartRate) { heartRate = $0 }
                 } header: { Text("Heart rate (bpm)") }
 
                 // RR
                 Section {
                     TextField("e.g. 16", text: $respiratoryRate).keyboardType(.numberPad)
+                        .accessibilityLabel("Respiratory rate, breaths per minute")
                     quickChips(rrPresets, current: respiratoryRate) { respiratoryRate = $0 }
                 } header: { Text("Respiratory rate (breaths/min)") }
 
                 // Temp
                 Section {
                     TextField("e.g. 36.8", text: $temperatureStr).keyboardType(.decimalPad)
+                        .accessibilityLabel("Temperature, degrees Celsius")
                     quickChips(tempPresets, current: temperatureStr) { temperatureStr = $0 }
                 } header: { Text("Temperature (°C)") }
 
                 // SpO2 + supplemental O₂
                 Section {
                     TextField("e.g. 98", text: $spo2).keyboardType(.numberPad)
+                        .accessibilityLabel("Oxygen saturation, percent")
                     quickChips(spo2Presets, current: spo2) { spo2 = $0 }
                     Toggle(isOn: $onSupplementalO2) {
                         Label("On supplemental O₂", systemImage: "wind")
@@ -162,6 +173,7 @@ struct VitalsEntryView: View {
                 // Weight — live BMI preview if height is on record
                 Section("Weight (kg)") {
                     TextField("e.g. 75.0", text: $weightKg).keyboardType(.decimalPad)
+                        .accessibilityLabel("Weight, kilograms")
                     if let wt = Double(weightKg), wt > 0,
                        let h = patient.heightCm, h > 0 {
                         let hm = h / 100.0
@@ -181,6 +193,7 @@ struct VitalsEntryView: View {
                 // Blood glucose — quick chips cover common clinical values
                 Section("Blood glucose (mmol/L)") {
                     TextField("e.g. 5.6", text: $glucoseMmol).keyboardType(.decimalPad)
+                        .accessibilityLabel("Blood glucose, millimoles per litre")
                     quickChips(glucosePresets, current: glucoseMmol) { glucoseMmol = $0 }
                 }
 
@@ -216,16 +229,24 @@ struct VitalsEntryView: View {
             HStack(spacing: 6) {
                 ForEach(values, id: \.self) { v in
                     let sel = v == current
-                    Button(v) { onTap(v) }
-                        .font(.caption2.weight(sel ? .semibold : .regular))
-                        .padding(.horizontal, 8).padding(.vertical, 3)
-                        .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                        .foregroundStyle(sel ? Color.white : AMColor.accent)
-                        .buttonStyle(.plain)
+                    Button { onTap(v) } label: {
+                        Text(v)
+                            .font(.caption2.weight(sel ? .semibold : .regular))
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                            .foregroundStyle(sel ? Color.white : AMColor.accent)
+                            // 44 pt tall hit area; the capsule keeps its size.
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(sel ? .isSelected : [])
                 }
             }
-            .padding(.vertical, 2)
         }
+        // The 44 pt chip targets reach into the row's own vertical inset, so the row keeps
+        // its height (the chips used to add 2 pt of padding here).
+        .padding(.vertical, -8)
     }
 
     // MARK: - Clinical scoring section (diagnosis-radiation driven)
@@ -243,6 +264,7 @@ struct VitalsEntryView: View {
             HStack(spacing: 10) {
                 Image(systemName: isSevere ? "exclamationmark.triangle.fill" : "checklist")
                     .foregroundStyle(isSevere ? .red : .teal)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(scoring.scoreName)
                         .font(.subheadline.weight(.semibold))
@@ -263,6 +285,13 @@ struct VitalsEntryView: View {
             }
             .padding(.vertical, 4)
             .animation(.easeInOut(duration: 0.15), value: liveScore)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text(A11yLabel.joined([
+                scoring.scoreName,
+                "\(liveScore) of \(scoring.maxScore)",
+                isSevere ? scoring.aboveThresholdLabel : scoring.belowThresholdLabel,
+                scoring.timingNote,
+            ])))
 
             ForEach(scoring.variables, id: \.id) { variable in
                 let isOn = Binding(
@@ -287,6 +316,7 @@ struct VitalsEntryView: View {
                 Image(systemName: "brain.head.profile")
                     .font(.caption)
                     .foregroundStyle(.teal)
+                    .accessibilityHidden(true)
                 Text("Clinical Scoring · \(radiation.conditionName)")
             }
             .foregroundStyle(.teal)
@@ -310,6 +340,17 @@ struct VitalsEntryView: View {
                             heartRate: Int(heartRate),
                             temperatureCelsius: Double(temperatureStr),
                             avpu: avpu)
+    }
+
+    /// "NEWS2 7, high risk", the single-parameter / incomplete notes, and that it is live.
+    private var liveNews2AccessibilityLabel: String {
+        let r = liveNews2
+        return A11yLabel.joined([
+            A11yLabel.news2(score: r.total, risk: r.band.label),
+            r.band == .lowMedium ? "Single parameter scoring 3, urgent ward-based response" : nil,
+            r.incompleteNote.map { "Partial score, \($0)" },
+            "Live score, updates as you type",
+        ])
     }
 
     private var spo2ScaleFooter: String {
