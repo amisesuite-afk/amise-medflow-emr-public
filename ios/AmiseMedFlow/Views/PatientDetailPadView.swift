@@ -4,6 +4,13 @@ import UIKit
 
 // PatientDetailPadView.swift
 // iPad/Mac patient detail view with horizontal top navigation bar.
+//
+// One navigation model for the consultation (UX review M4): the section bar has a single
+// "Consultation" entry; inside it, the pathway step bar is the only step navigation. The eleven
+// consultation steps (CC … Plan) are no longer separate section-bar items that each opened the
+// same ConsultationView. Overview links to a step still work: they open Consultation at that step.
+// One "Save" model too: the header's own "Save Visit" (which saved without the SOCRATES chips and
+// the differential) is gone; the consultation's "Save snapshot" and "Complete" are the only ones.
 
 // MARK: - iPad/Mac: patient detail with horizontal top nav bar
 
@@ -11,17 +18,21 @@ struct PatientDetailPadView: View {
     @Bindable var patient: Patient
     var onBack: (() -> Void)? = nil
     @State private var selectedSection: PatientDetailSection? = .overview
+    /// Step the Consultation section opens at (set by an Overview jump); nil = pathway's first step.
+    @State private var consultStep: ConsultTab? = nil
     @State private var summaryPDFData: Data? = nil
     @State private var showSummaryEditor = false
-    @State private var showSaveVisitConfirm = false
-    @State private var saveVisitFeedback = false
-    @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
 
     // Clinical sections — filtered by role and visit type
     private var rightSections: [PatientDetailSection] {
         let allowed = sync.currentUserRole.visiblePatientSections
+        // The single Consultation entry shows when the role may open any consultation step.
+        let consultationAllowed = allowed.contains(.consultation)
+            || allowed.contains(where: { $0.isConsultationStep })
         let sections = PatientDetailSection.allCases.filter { section in
+            if section.isConsultationStep { return false }
+            if section == .consultation { return consultationAllowed }
             guard allowed.contains(section) else { return false }
             switch section {
             case .trauma:  return patient.visitType == .trauma || patient.visitType == .burns
@@ -41,6 +52,17 @@ struct PatientDetailPadView: View {
             }
         }
         return sections
+    }
+
+    /// Every jump goes through here: a consultation step opens the Consultation section at it.
+    private func navigate(to section: PatientDetailSection) {
+        if let tab = section.consultTab {
+            consultStep = tab
+            selectedSection = .consultation
+        } else {
+            if section == .consultation { consultStep = nil }
+            selectedSection = section
+        }
     }
 
     var body: some View {
@@ -100,7 +122,7 @@ struct PatientDetailPadView: View {
             CrashReporting.breadcrumb("Opened patient record (iPad)")
             AuditLog.record("view", "patient", patient: patient)
             // If the saved selection is not visible for this role, reset to the first allowed section
-            if let sel = selectedSection, !rightSections.contains(sel) {
+            if let sel = selectedSection, !sel.isConsultationStep, !rightSections.contains(sel) {
                 selectedSection = rightSections.first
             }
         }
@@ -109,112 +131,82 @@ struct PatientDetailPadView: View {
     // MARK: Compact patient header strip
 
     private var patientHeader: some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
             if let onBack {
                 Button { onBack() } label: {
                     Image(systemName: "chevron.left")
                         .fontWeight(.semibold)
                         .foregroundStyle(AMColor.accent)
+                        .minimumTouchTarget()
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Back")
                 .accessibilityIdentifier("patient.back")
             }
 
             AcuityPip(acuity: patient.acuity)
+                .padding(.top, 6)
 
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 8) {
                     Text(patient.fullName)
                         .font(.headline)
                         .lineLimit(1)
-                    if patient.hasCriticalAllergy {
-                        Image(systemName: "exclamationmark.shield.fill")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(.red)
-                    }
-                    if patient.hasAnticoagulation {
-                        Image(systemName: "drop.fill")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(.purple)
-                    }
-                }
-                HStack(spacing: 8) {
                     Text([patient.sex.rawValue, patient.ageDisplay, patient.setting.rawValue]
                         .compactMap { $0 }.joined(separator: " · "))
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
                     if let mrn = patient.mrn, !mrn.isEmpty {
                         Text("MRN \(mrn)")
                             .font(.caption.weight(.medium))
                             .foregroundStyle(.secondary)
+                            .lineLimit(1)
                     }
                     if let dob = patient.dateOfBirth {
                         Text(dob, format: .dateTime.day().month(.abbreviated).year())
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                    if let dx = patient.workingDiagnosis {
+                        Text(dx)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.teal)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.teal.opacity(0.1), in: Capsule())
+                            .lineLimit(1)
                     }
                 }
+                // Safety strip (UX review M3): NEWS2 with band colour and age, every allergy (not
+                // only severe ones), the antithrombotic — text, not 11-pt icons.
+                RecordSafetyStrip(patient: patient)
             }
 
-            // NEWS2 in the iPad header (it was missing; UX review M3): score, band colour and the
-            // incomplete marker, at a readable Dynamic Type size.
-            RecordHeaderNEWS2(patient: patient)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(Color(.secondarySystemBackground), in: Capsule())
-
-            if let dx = patient.workingDiagnosis {
-                Text(dx)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.teal)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Color.teal.opacity(0.1), in: Capsule())
-                    .lineLimit(1)
-            }
-
-            Spacer()
+            Spacer(minLength: 8)
 
             HStack(spacing: 14) {
-                Button {
-                    showSaveVisitConfirm = true
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: saveVisitFeedback ? "archivebox.fill" : "archivebox")
-                        Text("Save Visit")
-                            .font(.system(size: 12, weight: .semibold))
-                    }
-                    .foregroundStyle(saveVisitFeedback ? Color.green : AMColor.accent)
-                }
-                .buttonStyle(.plain)
-                .help("Save Visit Snapshot")
-                .accessibilityIdentifier("patient.saveVisit")
-                .confirmationDialog("Save visit snapshot for \(patient.fullName)?",
-                                    isPresented: $showSaveVisitConfirm,
-                                    titleVisibility: .visible) {
-                    Button("Save Visit") { padSaveEncounter() }
-                    Button("Cancel", role: .cancel) {}
-                } message: {
-                    Text("Freezes the current consultation into the patient's history.")
-                }
-
                 Button { showSummaryEditor = true } label: {
                     Image(systemName: "doc.text.fill")
                         .foregroundStyle(AMColor.accent)
+                        .minimumTouchTarget()
                 }
                 .buttonStyle(.plain)
                 .help("Clinical Summary")
+                .accessibilityLabel("Clinical summary")
 
                 // Own view: the handover text reads most of the chart, and building it here made
                 // every consultation keystroke re-render this whole screen.
                 PatientHandoverShareLink(patient: patient) {
                     Image(systemName: "square.and.arrow.up")
                         .foregroundStyle(AMColor.accent)
+                        .minimumTouchTarget()
                 }
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 10)
+        .padding(.vertical, 8)
     }
 
     // MARK: Section nav (right panel)
@@ -224,28 +216,33 @@ struct PatientDetailPadView: View {
             HStack(spacing: 0) {
                 ForEach(rightSections) { section in
                     let sel = selectedSection == section
-                    Button { selectedSection = section } label: {
+                        || (section == .consultation && (selectedSection?.isConsultationStep ?? false))
+                    Button { navigate(to: section) } label: {
                         VStack(spacing: 3) {
                             Image(systemName: section.icon)
-                                .font(.system(size: 15, weight: sel ? .semibold : .regular))
+                                .font(.subheadline.weight(sel ? .semibold : .regular))
+                            // Dynamic Type text style (was fixed 9 pt; UX review m2).
                             Text(section.shortLabel)
-                                .font(.system(size: 9, weight: sel ? .bold : .semibold))
+                                .font(.caption2.weight(sel ? .bold : .semibold))
                                 .lineLimit(1)
                         }
                         .foregroundStyle(sel ? AMColor.sidebarActive : AMColor.sidebarText)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 9)
-                        .frame(minWidth: 62)
+                        .frame(minWidth: 62, minHeight: 44)
                         .background { sel ? AMColor.accent.opacity(0.18) : Color.clear }
                         .overlay(alignment: .bottom) {
                             if sel { Rectangle().fill(AMColor.accent).frame(height: 2) }
                         }
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(section.rawValue)
+                    .accessibilityAddTraits(sel ? .isSelected : [])
                     .accessibilityIdentifier("patient.section.\(String(describing: section))")
                 }
             }
         }
+        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
         .background(AMColor.sidebarBg)
         .overlay(alignment: .bottom) {
             Divider().overlay(AMColor.sidebarGroup.opacity(0.5))
@@ -259,9 +256,9 @@ struct PatientDetailPadView: View {
     @ViewBuilder
     private var sectionContent: some View {
         let section = selectedSection ?? .overview
-        if let tab = section.consultTab {
-            // All consultation-tab sections resolve through consultTab — 11 cases collapsed to one.
-            ConsultationView(patient: patient, startingTab: tab, embeddedInNav: true)
+        if section == .consultation || section.isConsultationStep {
+            // The one consultation: its pathway step bar is the only step navigation.
+            ConsultationView(patient: patient, startingTab: section.consultTab ?? consultStep, embeddedInNav: true)
         } else {
             nonConsultationContent(section)
         }
@@ -272,7 +269,7 @@ struct PatientDetailPadView: View {
     private func nonConsultationContent(_ section: PatientDetailSection) -> some View {
         switch section {
         case .overview:
-            DiagnosisHubView(patient: patient, onNavigate: { selectedSection = $0 })
+            DiagnosisHubView(patient: patient, onNavigate: { navigate(to: $0) })
         case .notes:
             NoteListView(patient: patient)
         case .vitals:
@@ -330,28 +327,4 @@ struct PatientDetailPadView: View {
             EmptyView()
         }
     }
-
-    // MARK: - Save Visit (iPad path — captures patient.* fields; SOCRATES chip state
-    // is not captured here since it lives in ConsultationView @State, but committed
-    // HPI text and all other structured fields are included)
-
-    private func padSaveEncounter() {
-        MRNGenerator.backfillIfNeeded(patient, in: context)
-        let encounter = Encounter(
-            visitType: patient.visitType ?? .newConsult,
-            acuity: patient.acuity,
-            setting: patient.setting,
-            location: patient.location
-        )
-        encounter.snapshot(from: patient, socratesSelections: [:], bayesianDx: [])
-        encounter.isComplete = true
-        patient.encounters.append(encounter)
-        context.insert(encounter)
-        AuditLog.record("create", "encounter", patient: patient, resourceId: encounter.syncCode,
-                        details: ["visit_type": encounter.visitType.rawValue])
-        try? context.save()
-        saveVisitFeedback = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { saveVisitFeedback = false }
-    }
 }
-

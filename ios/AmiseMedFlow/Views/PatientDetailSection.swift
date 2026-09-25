@@ -17,7 +17,11 @@ struct PDFDataWrapper: Identifiable {
 enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     // Summary
     case overview       = "Overview"
-    // Consultation sub-sections (map to ConsultTab)
+    // The one consultation entry in the iPad section bar (UX review M4): opens ConsultationView at
+    // the pathway's first step; the pathway step bar inside it is the only step navigation.
+    case consultation   = "Consultation"
+    // Consultation steps (map to ConsultTab). Not shown in the section bar any more: they are
+    // jump targets (Overview links) that open the Consultation section at that step.
     case cc             = "Chief Complaint"
     case hpi            = "History of Present Illness"
     case pmh            = "Past Medical History"
@@ -59,6 +63,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     var icon: String {
         switch self {
         case .overview:       "person.text.rectangle"
+        case .consultation:   "cross.case.fill"
         case .cc:             "text.bubble"
         case .hpi:            "doc.text"
         case .pmh:            "clock.arrow.circlepath"
@@ -98,6 +103,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     var shortLabel: String {
         switch self {
         case .overview:       "Overview"
+        case .consultation:   "Consultation"
         case .cc:             "CC"
         case .hpi:            "HPI"
         case .pmh:            "PMH/FHx"
@@ -150,5 +156,8 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         default:              nil
         }
     }
+
+    /// A consultation step (CC … Plan): reached through the single Consultation section.
+    var isConsultationStep: Bool { consultTab != nil }
 }
 
