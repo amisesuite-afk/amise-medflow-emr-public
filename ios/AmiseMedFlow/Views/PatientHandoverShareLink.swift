@@ -12,9 +12,9 @@ import SwiftData
 /// embedded consultation (HPI, exam, plan…) re-rendered the whole record screen - header, section
 /// bar, tab view and the consultation with it - and built the handover text twice. Here only this
 /// button re-renders, and the text is built once per render.
-struct PatientHandoverShareLink<Label: View>: View {
+struct PatientHandoverShareLink<LabelContent: View>: View {
     let patient: Patient
-    @ViewBuilder let label: () -> Label
+    @ViewBuilder let label: () -> LabelContent
 
     var body: some View {
         // Never read a deleted record (removed or merged while open).
