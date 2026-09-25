@@ -14,6 +14,7 @@
     "lint:no-external-qr": "tsx ./src/lint-no-external-qr.ts",
     "lint:interaction-parity": "tsx ./src/lint-interaction-parity.ts",
     "lint:report-import-parity": "tsx ./src/lint-report-import-parity.ts",
+    "lint:guideline-registry": "tsx ./src/lint-guideline-registry.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
