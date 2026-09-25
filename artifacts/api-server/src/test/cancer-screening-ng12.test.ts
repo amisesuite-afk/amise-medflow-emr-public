@@ -1,6 +1,10 @@
 /**
  * cancer-screening 1.1.0 (SURGEON-DECISIONS C9 / C1): the NICE NG12 rules the clinical validation
  * found missing, and the rules that read lab values (FIT, Hb + ferritin) instead of text.
+ *
+ * DRIFT NOTE: the iOS twin's tests (ios/AmiseMedFlowTests/SuspectedCancerScreeningTests.swift,
+ * engine ios/AmiseMedFlow/Services/SuspectedCancerScreening.swift) use the same vectors. Change
+ * both together.
  */
 import { describe, expect, it } from 'vitest';
 import {

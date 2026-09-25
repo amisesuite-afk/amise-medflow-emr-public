@@ -15,9 +15,9 @@
  * Free text is read with the shared negation-aware matcher (../negation.ts), whole-word:
  * "No family history of bowel cancer" and "Non-smoker" do not count.
  *
- * iOS parity: ios `ScreeningEngine` has NOT been changed (another owner). The differences, and
- * the exact iOS changes needed, are listed in docs/clinical-validation/changes/fix-web-screening.md.
- * TODO(parity): apply those changes to PathwayData.swift `ScreeningEngine.items`.
+ * iOS twin: `ScreeningEngine` in ios/AmiseMedFlow/Views/Consultation/PathwayData.swift follows
+ * these rows and wording from structured toggles (docs/clinical-validation/changes/
+ * ios-screening-parity.md lists the differences that remain). Change both together.
  */
 
 import { containsAffirmed, joinClauses } from '../negation';

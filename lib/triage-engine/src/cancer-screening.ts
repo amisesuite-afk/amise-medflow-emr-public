@@ -14,6 +14,11 @@
  * Every citation is unverified until the surgeon checks it (docs/clinical-validation).
  *
  * Asymptomatic, age-based screening (USPSTF) lives in ./screening/preventive.ts.
+ *
+ * iOS twin: ios/AmiseMedFlow/Services/SuspectedCancerScreening.swift (+Prompt.swift), registry
+ * `ios-suspected-cancer-screening`, same version number. Change both, and both test files
+ * (artifacts/api-server/src/test/cancer-screening-ng12.test.ts,
+ * ios/AmiseMedFlowTests/SuspectedCancerScreeningTests.swift), together.
  */
 
 import { Severity } from './rules';
