@@ -132428,9 +132428,9 @@
             {
               "key": "finding",
               "value": "hernia",
-              "logLR": 3,
-              "likelihoodRatio": 2,
-              "evidenceLabel": "Known hernia",
+              "logLR": 5,
+              "likelihoodRatio": 3,
+              "evidenceLabel": "Hernia at the painful site",
               "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia 2018;22:1-165"
             },
             {
@@ -132448,6 +132448,14 @@
               "likelihoodRatio": 2,
               "evidenceLabel": "Overlying skin change (strangulation)",
               "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia 2018;22:1-165"
+            },
+            {
+              "key": "finding",
+              "value": "elevated lactate|raised wbc|fever|tachycardia",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Fever, tachycardia, leucocytosis or raised lactate (strangulation)",
+              "citation": "WSES guidelines for emergency repair of complicated abdominal wall hernias (Birindelli A et al. World J Emerg Surg 2017;12:37)"
             }
           ]
         },
@@ -133583,7 +133591,7 @@
           "icd": "C73",
           "logPrior": -10,
           "prevalenceTier": "rare",
-          "urgency": 2,
+          "urgency": 3,
           "systems": [
             "thyroid",
             "oncological"
@@ -133604,7 +133612,7 @@
             },
             {
               "key": "finding",
-              "value": "rapid|growing fast|fast-growing|enlarging|weeks",
+              "value": "rapid|growing fast|fast-growing|enlarging|doubled|weeks",
               "logLR": 5,
               "likelihoodRatio": 3,
               "evidenceLabel": "Rapid growth",
@@ -133612,10 +133620,18 @@
             },
             {
               "key": "finding",
-              "value": "stridor|hoarse|noisy breathing|dysphagia|difficulty swallowing|hard|fixed",
-              "logLR": 3,
-              "likelihoodRatio": 2,
-              "evidenceLabel": "Stridor, hoarseness, dysphagia or fixed mass",
+              "value": "stridor|hoarse|noisy breathing|dysphagia|difficulty swallowing|food sticking",
+              "logLR": 5,
+              "likelihoodRatio": 3,
+              "evidenceLabel": "Stridor, hoarseness or dysphagia (local invasion)",
+              "citation": "Bible KC et al. 2021 American Thyroid Association guidelines for management of patients with anaplastic thyroid cancer. Thyroid 2021;31:337-86"
+            },
+            {
+              "key": "finding",
+              "value": "hard|fixed|irregular|craggy",
+              "logLR": 5,
+              "likelihoodRatio": 3,
+              "evidenceLabel": "Hard, fixed thyroid mass",
               "citation": "Bible KC et al. 2021 American Thyroid Association guidelines for management of patients with anaplastic thyroid cancer. Thyroid 2021;31:337-86"
             },
             {
@@ -133706,6 +133722,14 @@
             },
             {
               "key": "finding",
+              "value": "smok|cigarette|alcohol|units a week|heartburn|reflux",
+              "logLR": 2,
+              "likelihoodRatio": 1.5,
+              "evidenceLabel": "Smoking, alcohol or long-standing reflux",
+              "citation": "BSG/AUGIS guidelines for the management of oesophageal and gastric cancer (Allum WH et al. Gut 2011;60:1449-72)"
+            },
+            {
+              "key": "finding",
               "value": "stricture&malignant|carcinoma|adenocarcinoma|tumour|malignant stricture|irregular stricture|shouldering",
               "logLR": 12,
               "likelihoodRatio": 10,
@@ -133727,6 +133751,79 @@
             "Gastric Cancer",
             "Gastrointestinal Malignancy",
             "Gastric / Oesophageal Malignancy Bleed"
+          ]
+        },
+        {
+          "name": "Achalasia",
+          "icd": "K22.0",
+          "logPrior": -10,
+          "prevalenceTier": "rare",
+          "urgency": 0,
+          "systems": [
+            "gastrointestinal"
+          ],
+          "specialties": [
+            "upperGISurgery",
+            "gastroenterology"
+          ],
+          "source": "Prior tier rare. ACG achalasia guideline 2020; Chicago Classification v4.0 (2021).",
+          "features": [
+            {
+              "key": "complaint",
+              "value": "swallow|dysphagia|food sticking|regurgitat",
+              "logLR": 2,
+              "likelihoodRatio": 1.5,
+              "evidenceLabel": "Dysphagia or regurgitation",
+              "citation": "Presentation-match weight: expert estimate pending the surgeon's review (no published likelihood ratio)"
+            },
+            {
+              "key": "finding",
+              "value": "solids and liquids|liquids and solids|both solids|fluids as well|liquids stick|drinks stick|liquids too|liquids as much",
+              "logLR": 9,
+              "likelihoodRatio": 6,
+              "evidenceLabel": "Dysphagia to solids and liquids from the start",
+              "citation": "ACG Clinical Guidelines: diagnosis and management of achalasia (Vaezi MF et al. Am J Gastroenterol 2020;115:1393-411); Chicago Classification v4.0 (Yadlapati R et al. Neurogastroenterol Motil 2021;33:e14058)"
+            },
+            {
+              "key": "finding",
+              "value": "regurgitat|undigested",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Regurgitation of undigested food",
+              "citation": "ACG Clinical Guidelines: diagnosis and management of achalasia (Vaezi MF et al. Am J Gastroenterol 2020;115:1393-411); Chicago Classification v4.0 (Yadlapati R et al. Neurogastroenterol Motil 2021;33:e14058)"
+            },
+            {
+              "key": "finding",
+              "value": "at night&cough|pillow|nocturnal cough|aspiration",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Nocturnal regurgitation or aspiration",
+              "citation": "ACG Clinical Guidelines: diagnosis and management of achalasia (Vaezi MF et al. Am J Gastroenterol 2020;115:1393-411); Chicago Classification v4.0 (Yadlapati R et al. Neurogastroenterol Motil 2021;33:e14058)"
+            },
+            {
+              "key": "finding",
+              "value": "arches|stands up to|drinks water to|manoeuvre",
+              "logLR": 3,
+              "likelihoodRatio": 2,
+              "evidenceLabel": "Manoeuvres to clear the oesophagus",
+              "citation": "ACG Clinical Guidelines: diagnosis and management of achalasia (Vaezi MF et al. Am J Gastroenterol 2020;115:1393-411); Chicago Classification v4.0 (Yadlapati R et al. Neurogastroenterol Motil 2021;33:e14058)"
+            },
+            {
+              "key": "finding",
+              "value": "bird beak|bird-beak|aperistalsis|absent peristalsis|raised irp|achalasia",
+              "logLR": 12,
+              "likelihoodRatio": 10,
+              "evidenceLabel": "Barium bird-beak or manometric achalasia (Chicago v4.0)",
+              "citation": "ACG Clinical Guidelines: diagnosis and management of achalasia (Vaezi MF et al. Am J Gastroenterol 2020;115:1393-411); Chicago Classification v4.0 (Yadlapati R et al. Neurogastroenterol Motil 2021;33:e14058)"
+            },
+            {
+              "key": "finding",
+              "value": "liquids&go down|liquids&fine|liquids only",
+              "logLR": -3,
+              "likelihoodRatio": 0.5,
+              "evidenceLabel": "Liquids still pass (progressive solid dysphagia points to a stricture)",
+              "citation": "ACG Clinical Guidelines: diagnosis and management of achalasia (Vaezi MF et al. Am J Gastroenterol 2020;115:1393-411); Chicago Classification v4.0 (Yadlapati R et al. Neurogastroenterol Motil 2021;33:e14058)"
+            }
           ]
         },
         {
