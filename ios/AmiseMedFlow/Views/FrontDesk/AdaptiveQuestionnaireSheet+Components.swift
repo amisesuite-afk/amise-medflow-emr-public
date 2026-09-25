@@ -12,6 +12,14 @@ struct QCheckboxGrid: View {
     let options: [String]
     var selection: Binding<Set<String>>?
     var rawSelection: Binding<Set<String>>?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// Two columns; one at accessibility text sizes so each option reads on its own line.
+    private var columns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.flexible()), GridItem(.flexible())]
+    }
 
     init(label: String?, options: [String], selection: Binding<Set<String>>) {
         self.label = label
@@ -39,7 +47,8 @@ struct QCheckboxGrid: View {
                     .foregroundStyle(.secondary)
                     .padding(.top, 4)
             }
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+            // Row pitch is the 44 pt touch target (was 8 pt spacing between ~16 pt rows).
+            LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(options, id: \.self) { opt in
                     let sel = activeBinding.wrappedValue.contains(opt)
                     Button {
@@ -49,15 +58,20 @@ struct QCheckboxGrid: View {
                         HStack(spacing: 4) {
                             Image(systemName: sel ? "checkmark.circle.fill" : "circle")
                                 .foregroundStyle(sel ? AMColor.accent : .secondary)
-                                .font(.system(size: 14))
+                                .scaledFont(size: 14)
                             Text(opt)
                                 .font(.caption)
                                 .foregroundStyle(.primary)
                                 .multilineTextAlignment(.leading)
                             Spacer()
                         }
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    // The tick icon was the only sign of the choice.
+                    .accessibilityLabel(opt)
+                    .accessibilityAddTraits(sel ? .isSelected : [])
                 }
             }
         }

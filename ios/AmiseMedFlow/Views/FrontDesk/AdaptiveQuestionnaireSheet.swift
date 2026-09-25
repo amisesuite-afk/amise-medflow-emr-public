@@ -29,6 +29,8 @@ struct AdaptiveQuestionnaireSheet: View {
     @State var symptomFilter = ""
     @State var showPrescriptionCamera = false
     @State var prescriptionImageData: Data?
+    /// Step circles in the progress strip grow with Dynamic Type (28 pt at the default size).
+    @ScaledMetric(relativeTo: .caption2) var stepCircleSize: CGFloat = 28
 
     /// The patient, only while the record still exists (SwiftData crashes when a view reads a
     /// deleted model). A record removed while open is treated like a walk-in.
@@ -133,6 +135,7 @@ struct AdaptiveQuestionnaireSheet: View {
                         }
                         .buttonStyle(.bordered)
                         .tint(.secondary)
+                        .accessibilityLabel("Back to the previous step")
                     }
                     Spacer()
                     if isLastStep {
@@ -152,12 +155,16 @@ struct AdaptiveQuestionnaireSheet: View {
                             HStack(spacing: 4) {
                                 Text(currentPhase == .cc && answers.ccCategory == nil ? "Skip" : "Next")
                                 Image(systemName: "chevron.right")
+                                    .accessibilityHidden(true)
                             }
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(canAdvance ? AMColor.accent : .secondary)
+                        .accessibilityHint("Step \(safeIndex + 2) of \(phases.count): \(phases[min(safeIndex + 1, phases.count - 1)].title)")
                     }
                 }
+                // Patient-facing: large buttons so Back / Next / Submit are at least 44 pt tall.
+                .controlSize(.large)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 14)
             }

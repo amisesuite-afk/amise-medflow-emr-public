@@ -19,23 +19,33 @@ extension AdaptiveQuestionnaireSheet {
                             ZStack {
                                 Circle()
                                     .fill(done ? AMColor.accent : (current ? AMColor.accent.opacity(0.15) : Color.secondary.opacity(0.1)))
-                                    .frame(width: 28, height: 28)
+                                    .frame(width: stepCircleSize, height: stepCircleSize)
                                 if done {
                                     Image(systemName: "checkmark")
-                                        .font(.system(size: 11, weight: .bold))
+                                        .scaledFont(size: 11, weight: .bold)
                                         .foregroundStyle(.white)
                                 } else {
                                     Image(systemName: phase.icon)
-                                        .font(.system(size: 11, weight: current ? .semibold : .regular))
+                                        .scaledFont(size: 11, weight: current ? .semibold : .regular)
                                         .foregroundStyle(current ? AMColor.accent : .secondary)
                                 }
                             }
+                            // 8 pt at the default size; scales like caption2 (the strip scrolls
+                            // sideways, so longer titles never truncate).
                             Text(phase.title)
-                                .font(.system(size: 8, weight: current ? .bold : .regular))
+                                .scaledFont(size: 8, weight: current ? .bold : .regular, relativeTo: .caption2)
                                 .foregroundStyle(current ? AMColor.accent : (done ? .teal.opacity(0.6) : .secondary))
                                 .lineLimit(1)
                         }
                         .frame(minWidth: 64)
+                        // "Step 2 of 5, Pain Details, current step": the tick and colour were
+                        // the only signs of which steps are done.
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(Text(A11yLabel.joined([
+                            "Step \(idx + 1) of \(phases.count)",
+                            phase.title,
+                            done ? "completed" : (current ? "current step" : "not started"),
+                        ])))
                         if idx < phases.count - 1 {
                             Rectangle()
                                 .fill(done ? AMColor.accent.opacity(0.5) : Color.secondary.opacity(0.2))
@@ -87,14 +97,16 @@ extension AdaptiveQuestionnaireSheet {
         Section {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: info.icon)
-                    .font(.system(size: 22))
+                    .scaledFont(size: 22)
                     .foregroundStyle(AMColor.accent)
                     .frame(width: 30)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(info.headline)
-                        .font(.system(size: 14, weight: .semibold))
+                        .scaledFont(size: 14, weight: .semibold)
+                        .accessibilityAddTraits(.isHeader)
                     Text(info.detail)
-                        .font(.system(size: 12))
+                        .scaledFont(size: 12)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -123,9 +135,10 @@ extension AdaptiveQuestionnaireSheet {
                     }
                 }
             }
+            .accessibilityElement(children: .combine)
         } header: {
             Label("Patient", systemImage: "person.crop.circle")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
         }
     }
 
@@ -162,7 +175,7 @@ extension AdaptiveQuestionnaireSheet {
                 .lineLimit(2...)
         } header: {
             Label("Chief Complaint", systemImage: "1.circle.fill")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
         } footer: {
             if answers.ccCategory == nil {
                 Text("Select the primary reason for today's visit. All subsequent questions adapt to this selection.")
@@ -200,7 +213,8 @@ extension AdaptiveQuestionnaireSheet {
                     TextField("e.g. 6", value: $answers.painOnsetHoursAgo, format: .number)
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.trailing)
-                        .frame(width: 80)
+                        .frame(minWidth: 80, maxWidth: 140)   // room for the number at large text sizes
+                        .accessibilityLabel("Hours since onset")
                 }
             }
 
@@ -210,7 +224,7 @@ extension AdaptiveQuestionnaireSheet {
             }
         } header: {
             Label("Pain — Site & Onset", systemImage: "2.circle.fill")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
         }
 
         Section {
@@ -227,15 +241,19 @@ extension AdaptiveQuestionnaireSheet {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Severity: \(answers.severityAnswered ? "\(answers.painSeverity)/10" : "not yet set")")
                     .font(.subheadline)
+                    .accessibilityHidden(true)   // spoken on the slider
                 Slider(value: Binding(
                     get: { Double(answers.painSeverity) },
                     set: { answers.painSeverity = Int($0); answers.severityAnswered = true }
                 ), in: 0...10, step: 1)
                 .tint(answers.painSeverity >= 8 ? .red : answers.painSeverity >= 5 ? .orange : .green)
+                // A bare slider reads as a percentage.
+                .accessibilityLabel("Pain severity, 0 no pain to 10 worst imaginable")
+                .accessibilityValue(answers.severityAnswered ? "\(answers.painSeverity) out of 10" : "not yet set")
             }
         } header: {
             Label("Pain — Radiation, Timing & Severity", systemImage: "3.circle.fill")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
         }
 
         Section {
@@ -243,7 +261,7 @@ extension AdaptiveQuestionnaireSheet {
             QCheckboxGrid(label: "Makes it BETTER", options: cc.relieving, selection: $answers.painRelievedBy)
         } header: {
             Label("Exacerbating & Relieving Factors", systemImage: "arrow.up.arrow.down")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
         }
     }
 
@@ -257,7 +275,8 @@ extension AdaptiveQuestionnaireSheet {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
-                        .font(.system(size: 14))
+                        .scaledFont(size: 14)
+                        .accessibilityHidden(true)
                     TextField("Type to search or add a symptom…", text: $symptomFilter)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.words)
@@ -294,11 +313,12 @@ extension AdaptiveQuestionnaireSheet {
                     Text("Selected: \(answers.associatedSymptoms.sorted().joined(separator: " · "))")
                         .font(.caption2)
                         .foregroundStyle(AMColor.accent)
+                        .accessibilityLabel("Selected: \(answers.associatedSymptoms.sorted().joined(separator: ", "))")
                 }
 
             } header: {
                 Label("Associated Symptoms", systemImage: "list.bullet")
-                    .textCase(nil).font(.system(size: 11, weight: .semibold))
+                    .textCase(nil).scaledFont(size: 11, weight: .semibold)
             } footer: {
                 Text("Search or tap to select. Showing symptoms relevant to \(cc.rawValue.lowercased()).")
                     .font(.caption).foregroundStyle(.secondary)

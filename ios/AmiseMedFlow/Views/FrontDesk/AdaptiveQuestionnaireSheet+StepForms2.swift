@@ -24,7 +24,7 @@ extension AdaptiveQuestionnaireSheet {
             }
         } header: {
             Label("Red Flag Symptoms", systemImage: "exclamationmark.triangle.fill")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
                 .foregroundStyle(.orange)
         } footer: {
             Text("Report any that apply, even if not the main reason for today's visit.")
@@ -59,8 +59,10 @@ extension AdaptiveQuestionnaireSheet {
                         } label: {
                             Label("Photo of prescription / medication bag",
                                   systemImage: "camera.badge.plus")
-                                .font(.system(size: 12))
+                                .scaledFont(size: 12)
                                 .foregroundStyle(AMColor.accent)
+                                .frame(minHeight: 44)
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                     }
@@ -77,7 +79,7 @@ extension AdaptiveQuestionnaireSheet {
                 .lineLimit(2...)
         } header: {
             Label("Past Medical History", systemImage: "cross.case")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
         }
     }
 
@@ -95,7 +97,7 @@ extension AdaptiveQuestionnaireSheet {
             TextField("Occupation (optional)", text: $answers.occupation)
         } header: {
             Label("Social History", systemImage: "person.2")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
         }
 
         Section {
@@ -113,7 +115,7 @@ extension AdaptiveQuestionnaireSheet {
             }
         } header: {
             Label("Last Meal", systemImage: "fork.knife")
-                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
         } footer: {
             Text("Required if the patient may need surgery or anaesthesia today.")
                 .font(.caption).foregroundStyle(.secondary)

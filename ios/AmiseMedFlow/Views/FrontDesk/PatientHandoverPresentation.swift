@@ -195,6 +195,7 @@ private struct HandoverThankYouView: View {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 64))
                     .foregroundStyle(AMColor.accent)
+                    .accessibilityHidden(true)
                 Text("Thank you — please hand the \(deviceName) back to the front desk.")
                     .font(.title2.weight(.semibold))
                     .multilineTextAlignment(.center)
