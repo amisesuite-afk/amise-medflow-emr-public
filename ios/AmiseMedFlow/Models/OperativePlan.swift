@@ -52,7 +52,9 @@ final class OperativePlan {
         self.consentSigned = false
         self.anaesthesiaType = "General"
         self.positioning = "Supine"
-        self.antibioticProphylaxis = "Co-amoxiclav 1.2 g IV at induction"
+        // No blanket co-amoxiclav default (web-last-gaps parity; SIGN 104; HerniaSurge 2018): the
+        // surgeon records the agent when prophylaxis is indicated.
+        self.antibioticProphylaxis = "Per SIGN 104 / local antimicrobial policy: single dose at induction only if indicated (e.g. high-risk laparoscopic cholecystectomy, emergency or contaminated repair); not routine for low-risk lap chole or elective mesh repair"
         self.vteProphy = "TED stockings + LMWH"
         self.specialEquipment = ""
         self.surgicalTeamNote = ""
