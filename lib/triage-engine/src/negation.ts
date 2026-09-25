@@ -56,6 +56,11 @@ export interface AffirmedMatchOptions {
    * followed by more digits ("k35.3" finds "K35.30"). Ignored for RegExp terms.
    */
   wholeWord?: boolean;
+  /**
+   * Require a word boundary before a string term only ("thyroid" finds "thyroidectomy" but not
+   * "hyperparathyroidism"). Ignored for RegExp terms and when `wholeWord` is set.
+   */
+  wordStart?: boolean;
 }
 
 export interface AffirmedMatch {
@@ -386,6 +391,7 @@ function occurrences(lower: string, term: string | RegExp, opts: AffirmedMatchOp
     if (!t) return out;
     for (let i = lower.indexOf(t); i !== -1; i = lower.indexOf(t, i + 1)) {
       if (opts.wholeWord && !wholeWordOk(lower, i, t)) continue;
+      if (!opts.wholeWord && opts.wordStart && isWordChar(t[0]) && isWordChar(lower[i - 1])) continue;
       out.push({ index: i, text: t });
     }
     return out;
@@ -398,6 +404,16 @@ function occurrences(lower: string, term: string | RegExp, opts: AffirmedMatchOp
     out.push({ index: m.index, text: m[0] });
   }
   return out;
+}
+
+/** Every occurrence of `term` in `text` that is not negated (offsets into the lowercased text). */
+export function findAllAffirmed(text: string, term: string | RegExp, opts: AffirmedMatchOptions = {}): AffirmedMatch[] {
+  if (!text) return [];
+  const lower = text.toLowerCase();
+  const hits = occurrences(lower, term, opts);
+  if (!hits.length) return [];
+  const tokens = tokensFor(lower);
+  return hits.filter(h => !negatedAt(lower, h.index, h.index + h.text.length, tokens));
 }
 
 /** The first occurrence of `term` in `text` that is not negated, or null. */

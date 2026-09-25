@@ -13,6 +13,8 @@
  * all management options generically.
  */
 
+import { containsAffirmed, findAllAffirmed } from '@workspace/triage-engine';
+
 export interface DxVariant {
   id: string;
   label: string;
@@ -534,31 +536,86 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   },
 ];
 
-/** Detect the matching DxVariantGroup and the best variant from the assessment text. */
+// ── Keyword matching ──────────────────────────────────────────────────────────
+//
+// Keywords are matched as whole words/phrases and negation-aware (lib/triage-engine/src/
+// negation.ts). Plain substring matching read "irreducible inguinal hernia" as the keyword
+// "reducible inguinal", "Hinchey III" as "hinchey i", "Bethesda VI" as "bethesda v",
+// "parathyroidectomy" as "thyroidectomy", and "No cholangitis" as cholangitis.
+
+/** A severity keyword qualified by a degree word is a different category: "moderately severe". */
+const DEGREE_MODIFIER_BEFORE = /\b(?:moderately|mildly)[\s-]+$/;
+/** "strangulation risk", "risk of strangulation": the finding is not present, only a risk. */
+const RISK_BEFORE = /\b(?:risk|risks)\s+of\s+(?:\w+\s+)?$/;
+const RISK_AFTER = /^\s+risk\b/;
+
+/** Words of the group's base diagnosis, which say nothing about the variant. */
+function baseWords(group: DxVariantGroup): Set<string> {
+  return new Set(group.baseDiagnosis.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean));
+}
+
+/**
+ * How specific a keyword is for choosing a variant: its length in words, not counting the words
+ * of the group's base diagnosis ("tokyo grade iii" → 3 is more specific than "cholecystitis" → 0;
+ * "small bowel obstruction" → 1 says little more than "bowel obstruction").
+ */
+function keywordSpecificity(kw: string, base: Set<string>): number {
+  return kw.toLowerCase().split(/\s+/).filter(w => w && !base.has(w)).length;
+}
+
+/** True when `kw` appears in `text` as an affirmed whole-word mention of a present finding. */
+function keywordPresent(text: string, kw: string): boolean {
+  const lower = text.toLowerCase();
+  return findAllAffirmed(text, kw, { wholeWord: true }).some(m => {
+    const before = lower.slice(Math.max(0, m.index - 40), m.index);
+    const after = lower.slice(m.index + m.text.length, m.index + m.text.length + 12);
+    if (/^severe\b/.test(m.text) && DEGREE_MODIFIER_BEFORE.test(before)) return false;
+    if (RISK_BEFORE.test(before) || RISK_AFTER.test(after)) return false;
+    return true;
+  });
+}
+
+/**
+ * Detect the matching DxVariantGroup and the best variant from the assessment text.
+ *
+ * Group: the working diagnosis's disease id, then its ICD-10 code, are checked across ALL groups
+ * before the text fallback — a text mention in an earlier group ("…No cholangitis…") must not beat
+ * the coded diagnosis (K85 pancreatitis).
+ *
+ * Variant: among the variants whose keywords are present, the one with the most specific
+ * (longest, in words) keyword wins — see keywordSpecificity — not simply the first listed. On a
+ * tie the later-listed variant wins: variants are listed from least to most severe, so a tie errs
+ * towards the more severe plan ("strangulated … irreducible" → strangulated; "severe acute
+ * pancreatitis … pancreatic necrosis" → severe).
+ */
 export function detectDxVariants(
   assessment: string,
   icdCode?: string | null,
   diseaseId?: string | null,
 ): { group: DxVariantGroup; detectedVariant: DxVariant | null } | null {
   if (!assessment && !icdCode && !diseaseId) return null;
-  const lower = assessment.toLowerCase();
+  const text = assessment ?? '';
+  const code = icdCode ? icdCode.split(' ')[0] : '';
 
-  const group = DX_VARIANT_GROUPS.find(g => {
-    if (diseaseId && g.diseaseIds.some(id => diseaseId.startsWith(id))) return true;
-    if (icdCode) {
-      const code = icdCode.split(' ')[0];
-      if (g.icdPrefixes.some(pfx => code.startsWith(pfx))) return true;
-    }
-    return lower.includes(g.baseDiagnosis.toLowerCase());
-  });
+  const group =
+    (diseaseId ? DX_VARIANT_GROUPS.find(g => g.diseaseIds.some(id => diseaseId.startsWith(id))) : undefined)
+    ?? (code ? DX_VARIANT_GROUPS.find(g => g.icdPrefixes.some(pfx => code.startsWith(pfx))) : undefined)
+    ?? DX_VARIANT_GROUPS.find(g => containsAffirmed(text, g.baseDiagnosis, { wordStart: true }));
 
   if (!group) return null;
 
-  // Find the best variant — earlier entries in the array take precedence,
-  // so order from most-specific to least-specific within each group.
-  const detectedVariant = group.variants.find(v =>
-    v.detectKeywords.some(kw => lower.includes(kw.toLowerCase()))
-  ) ?? null;
+  const base = baseWords(group);
+  let detectedVariant: DxVariant | null = null;
+  let bestScore = -1;
+  for (const v of group.variants) {
+    for (const kw of v.detectKeywords) {
+      const score = keywordSpecificity(kw, base);
+      if (score >= bestScore && keywordPresent(text, kw)) {
+        detectedVariant = v;
+        bestScore = score;
+      }
+    }
+  }
 
   return { group, detectedVariant };
 }
