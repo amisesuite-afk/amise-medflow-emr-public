@@ -915,7 +915,7 @@
       "kind": "triage-rules",
       "contentVersion": "unversioned",
       "files": ["lib/triage-engine/src/adaptive-triage.ts"],
-      "tests": ["artifacts/api-server/src/test/triage-adaptive.test.ts", "artifacts/api-server/src/test/triage-emergency.test.ts"],
+      "tests": ["artifacts/api-server/src/test/triage-adaptive.test.ts", "artifacts/api-server/src/test/triage-emergency.test.ts", "artifacts/api-server/src/test/triage-screening-hooks.test.ts"],
       "ciChecks": ["api-server vitest", "clinval:web (level-* expectations)"],
       "guidelines": [
         { "name": "Royal College of Physicians NEWS2", "version": "2017", "section": "Chart 3 clinical response bands (high → emergency, medium / single red score → urgent)", "citation": "RCP 2017" },
@@ -930,7 +930,8 @@
       "changeAuthority": "Any repository committer. Ships on web/API deploy.",
       "notes": "Vital-sign thresholds are inline constants (adult); children under 16 use paediatricVitalLimits(). The level is the maximum of the text rules, vital signs / NEWS2, blood pressure, critical labs, ECG and confirmed diagnosis (emergency-recognition.ts).",
       "changelog": [
-        { "version": "unversioned", "date": "2026-09-25", "change": "Triage level = max(text rules, vitals / NEWS2 bands, BP, critical labs, ECG, confirmed diagnosis) via the emergency-recognition layer; new optional inputs (examText, investigationResults, resultReports, diagnosis, avpu, onSupplementalO2); paediatric vital limits under 16; breathlessness graded by physiology; past surgical history no longer read by the symptom rules; the cancer rules receive free text and lab values; 911 / OKEU / St Jude's / Tapion redirect wording. See docs/clinical-validation/changes/fix-web-triage.md." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "Triage level = max(text rules, vitals / NEWS2 bands, BP, critical labs, ECG, confirmed diagnosis) via the emergency-recognition layer; new optional inputs (examText, investigationResults, resultReports, diagnosis, avpu, onSupplementalO2); paediatric vital limits under 16; breathlessness graded by physiology; past surgical history no longer read by the symptom rules; the cancer rules receive free text and lab values; 911 / OKEU / St Jude's / Tapion redirect wording. See docs/clinical-validation/changes/fix-web-triage.md." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "Asymptomatic screening / risk requests (history states no symptoms, names a screening or family-history topic, no symptom chip) no longer get the 'Possible malignancy' flag from the bare word 'cancer' (kept with a lump, mass, weight loss, night sweats, bleeding, change in bowel habit, dysphagia or nipple discharge). Family-history entries in the past history are not the patient's higher-risk comorbidity. See docs/clinical-validation/changes/web-last-gaps.md." }
       ]
     },
     {

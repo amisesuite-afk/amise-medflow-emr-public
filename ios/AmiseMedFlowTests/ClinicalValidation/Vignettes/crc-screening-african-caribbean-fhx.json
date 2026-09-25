@@ -94,11 +94,7 @@
         "atMost": "priority",
         "guidelineRefs": [
           "uspstf-2021"
-        ],
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Over-triage: the words \"colorectal cancer\" in the family-history comorbidity trigger \"Possible malignancy\" (priority) → same_day_call for an asymptomatic screening request."
+        ]
       }
     },
     "management": {

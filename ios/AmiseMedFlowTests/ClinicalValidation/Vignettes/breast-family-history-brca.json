@@ -82,11 +82,7 @@
         "guidelineRefs": [
           "nice-cg164"
         ],
-        "note": "Asymptomatic: not an urgent or suspected-cancer referral.",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Triage same_day_call: the word \"cancer\" in the complaint (\"Worried about breast cancer\") matches the \"Possible malignancy\" red flag."
+        "note": "Asymptomatic: not an urgent or suspected-cancer referral."
       }
     },
     "management": {

@@ -105,6 +105,25 @@ const GI_BLEED_TERMS = /(haematemesis|hematemesis|melaena|melena|rectal bleed|vo
 const CHEST_PAIN_TERMS = /\b(chest pain|chest pressure|chest tightness|crushing (chest )?pain|tearing (chest |back )pain)\b/i;
 const BREATHLESS_TERMS = /\b(breathless\w*|short(ness)? of breath|dyspn(o)?ea|difficulty breathing|struggling to breathe)\b/i;
 
+/** A past-history entry about a relative, not the patient. */
+const FAMILY_ENTRY = /\b(family history|fam(ily)? hx|fhx|f\/h|mother|father|sister|brother|parents?|aunt|uncle|grand(mother|father|parent)s?|cousin|relatives?)\b/i;
+/** Malignancy features that keep the "Possible malignancy" flag in a screening request. */
+const MALIGNANCY_FEATURES = /\b(new lump|growing lump|breast lump|lump|mass|weight loss|losing weight|night sweats|bleeding|blood in|change in bowel habit|dysphagia|nipple discharge)\b/i;
+const SCREENING_TOPIC = /\b(screening|screen(ed)?|check-?up|risk|family history|genetic\w*|brca\w*|lynch|hereditary|mother|father|sister|brother|relatives?)\b/i;
+/** "No bowel symptoms", "asymptomatic", "no breast symptoms" — read literally (the negation is the point). */
+const STATES_ASYMPTOMATIC = /\b(asymptomatic|symptom[- ]free|no (?:[a-z]+ ){0,2}symptoms|no complaints)\b/i;
+/** Symptom chips that are administrative, not symptoms. */
+const ADMIN_CHIPS = /^(annual review|screening|check-?up|wellness|health check|follow[- ]?up|review)$/i;
+
+/**
+ * An asymptomatic screening or risk-assessment request: the history states there are no symptoms,
+ * names a screening / family-history topic, and no symptom chip is recorded.
+ */
+function isAsymptomaticScreeningRequest(data: NormalizedInput): boolean {
+  if (data.symptoms.some(s => !ADMIN_CHIPS.test(s.trim()))) return false;
+  return STATES_ASYMPTOMATIC.test(data.freeText) && SCREENING_TOPIC.test(data.freeText);
+}
+
 interface NormalizedInput {
   age: number | null;
   sex: Sex;
@@ -248,7 +267,16 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     ...data.toxicHabits,
   ]);
   const has = (pattern: RegExp) => testAffirmed(pattern, clinicalText);
-  const redFlags = scanRedFlags(clinicalText);
+  const scanned = scanRedFlags(clinicalText);
+  // An asymptomatic screening / risk request ("No bowel symptoms. Wants bowel cancer screening",
+  // "Asymptomatic; sister had colon cancer at 48") is not a possible malignancy in this patient:
+  // the bare word "cancer" is the topic of the visit, not a finding. The flag is kept whenever a
+  // malignancy feature (lump, weight loss, night sweats) or a symptom chip is recorded
+  // (clinical-validation screening over-triage; NICE NG12 lists symptoms, not a topic).
+  const asymptomaticScreening = isAsymptomaticScreeningRequest(data);
+  const redFlags = asymptomaticScreening
+    ? { ...scanned, matches: scanned.matches.filter(m => m.reason !== 'Possible malignancy' || testAffirmed(MALIGNANCY_FEATURES, clinicalText)) }
+    : scanned;
 
   // Recognise-and-redirect layer: the whole record (history, exam, vitals, NEWS2, BP, labs, ECG,
   // diagnosis). Its level is combined with every other source below as a maximum.
@@ -288,7 +316,9 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   addScore(data.age !== null && data.age >= 70, 12, 'Age 70 or older', state);
   addScore(data.age !== null && data.age >= 60 && data.age < 70, 7, 'Age 60 or older', state);
 
-  const comorbText = data.comorbidities.join(' ').toLowerCase();
+  // A relative's disease ("Family history of colorectal cancer (father, 58)") is a risk factor for
+  // screening, not this patient's comorbidity.
+  const comorbText = data.comorbidities.filter(c => !FAMILY_ENTRY.test(c)).join(' ').toLowerCase();
   addScore(/(diabetes|renal|kidney|ckd|dialysis|heart failure|afib|atrial fibrillation|stroke|cancer|chemotherapy|immunosuppressed|steroid|cirrhosis|liver disease)/.test(comorbText), 12, 'Higher-risk comorbidity present', state);
 
   const medText = data.medications.join(' ').toLowerCase();

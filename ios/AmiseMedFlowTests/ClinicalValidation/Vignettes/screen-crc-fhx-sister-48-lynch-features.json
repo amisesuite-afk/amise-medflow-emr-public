@@ -84,12 +84,7 @@
         "guidelineRefs": [
           "mstf-fhx-2017"
         ],
-        "atMost": "priority",
-        "knownGap": [
-          "web"
-        ],
-        "knownGapNote": "Over-triage: the family-history comorbidity text contains 'cancer', which scanRedFlags reads as 'Possible malignancy' (priority), and 'cancer' also counts as a higher-risk comorbidity → same_day_call for an asymptomatic screening consultation.",
-        "proposedFix": "Treat topic words ('cancer screening', a relative's cancer) as context rather than a current malignancy red flag, and treat 'no change in bowel habit' as negated (the matcher currently handles 'no change' as a pseudo-negation)."
+        "atMost": "priority"
       }
     },
     "management": {
