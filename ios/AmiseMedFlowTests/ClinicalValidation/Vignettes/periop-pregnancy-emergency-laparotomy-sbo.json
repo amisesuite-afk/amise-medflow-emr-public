@@ -235,10 +235,9 @@
           ],
           "note": "MRI has already answered the question; CT is not contraindicated in pregnancy when needed, but should not be suggested unqualified.",
           "knownGap": [
-            "web",
             "ios"
           ],
-          "knownGapNote": "'CT abdomen/pelvis with IV contrast' from the bowel_obstruction protocol investigations and PANE seeding, unqualified at 29 weeks although MRI has been done. The pelvic-free-fluid prompt also fires 'Ruptured ectopic protocol' at 29 weeks. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: \"ct abdomen/pelvis with contrast (defines level, cause, strangulation - sensitivity 94%)\"",
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: \"ct abdomen/pelvis with contrast (defines level, cause, strangulation - sensitivity 94%)\"",
           "proposedFix": "When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6)."
         }
       ]

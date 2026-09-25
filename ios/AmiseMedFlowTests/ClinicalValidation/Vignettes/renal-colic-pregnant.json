@@ -240,10 +240,6 @@
             "eau-urolith-2024"
           ],
           "note": "EAU 2024: ultrasound first, MRI second, low-dose CT as a last resort in pregnancy.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: PANE seeds \"CT KUB (non-contrast)\" (renal_colic) and \"CT abdomen/pelvis with IV contrast\" (appendicitis) as urgent orders in a 26-week pregnancy.",
           "proposedFix": "Do not seed ionising imaging when pregnant (HpiTab.seedInvestigationsFromPane); prefer the USS KUB line."
         }
       ]

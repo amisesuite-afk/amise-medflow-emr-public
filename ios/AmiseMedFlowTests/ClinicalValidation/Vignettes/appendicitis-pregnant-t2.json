@@ -189,7 +189,7 @@
           "match": ["re:\\bct\\b"],
           "unless": ["pregnan", "mri unavailable", "mri not available", "if mri"],
           "note": "CT is not contraindicated in pregnancy (ACOG CO 723) but MRI is preferred after an inconclusive US; an unqualified CT suggestion in a pregnant patient is a quality gap, not a hard error.",
-          "knownGap": ["ios", "web"],
+          "knownGap": ["ios"],
           "knownGapNote": "CT with IV contrast is suggested without a pregnancy qualifier."
         },
         {
