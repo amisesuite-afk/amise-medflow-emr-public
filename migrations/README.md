@@ -454,3 +454,21 @@ are overridden here, so this step must stay after every step that creates those 
   no-op. No CHECK — values are the app's labels, an append-only list. Migration 89's front-desk
   column guard already allows `visit_type`.
 - Independent of 87–91: safe to apply on its own first, which unblocks iOS cloud sync.
+
+### Migration 93 — `supabase-ios-sync-columns-migration.sql` (iOS sync column reconciliation)
+
+- Adds, only where missing, every column the iOS app selects or pushes (138 columns over
+  `patients`, `clinical_notes`, `prescriptions`, `patient_vitals`, `patient_billing_items`,
+  `patient_documents`, `patient_operative_plans`, `appointment_requests`, `audit_log`,
+  `user_profiles`). The list is the same as the read-only check `docs/sql/check-ios-columns.sql`;
+  types come from the repo's own table definitions (e.g. `mallampati_score integer`,
+  `temperature_c numeric(4,1)`, `amount_xcd numeric(10,2)`, `who_checklist jsonb`).
+- Why: the production runner has never completed, so the live schema lags the repo. Each missing
+  column fails the whole iOS pull or push (seen 2026-09-25: `patients.visit_type`, then
+  `patients.mallampati_score`).
+- `ADD COLUMN IF NOT EXISTS` leaves an existing column untouched; each table is skipped unless it
+  exists as a real table (not a view). New columns are nullable with no default. Primary keys are
+  not touched, and Migration 89's front-desk column guard is unchanged (clinical columns stay
+  outside the allow-list).
+- Independent of 87–92 and safe to apply on its own: it unblocks iOS cloud sync. When the app
+  syncs a new column, add it to both `docs/sql/check-ios-columns.sql` and a new migration.
