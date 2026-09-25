@@ -569,35 +569,58 @@
     },
     {
       "id": "pane-engine-disease-model",
-      "title": "Web Bayesian differential (pane-engine): diseases, priors, feature sensitivities, prior modifiers, stopping rules",
+      "title": "Web Bayesian differential (pane-engine): diseases, priors, feature likelihoods, prior modifiers, applicability, stopping rules; PANE feature mapper",
       "platforms": ["web"],
       "kind": "bayesian-model-data",
-      "contentVersion": "unversioned",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/pane-engine/src/constants.ts", "type": "regex", "pattern": "PANE_MODEL_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "lib/pane-engine/src/vademecum/specialties/*.ts",
         "lib/pane-engine/src/vademecum/_other.ts",
         "lib/pane-engine/src/vademecum/index.ts",
         "lib/pane-engine/src/vademecum/registry.ts",
+        "lib/pane-engine/src/vademecum/priors.ts",
         "lib/pane-engine/src/engine/bayes.ts",
         "lib/pane-engine/src/engine/infoGain.ts",
+        "lib/pane-engine/src/engine/likelihood.ts",
         "lib/pane-engine/src/engine/modifiers.ts",
-        "lib/pane-engine/src/constants.ts"
+        "lib/pane-engine/src/constants.ts",
+        "artifacts/dashboard/src/lib/socrates-to-features.ts"
       ],
       "tests": [
         "lib/pane-engine/src/__tests__/bayes.test.ts",
         "lib/pane-engine/src/__tests__/infoGain.test.ts",
-        "lib/pane-engine/src/__tests__/registry.test.ts"
+        "lib/pane-engine/src/__tests__/registry.test.ts",
+        "lib/pane-engine/src/__tests__/model-integrity.test.ts",
+        "lib/pane-engine/src/__tests__/neutrality.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/socrates-to-features.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/pane-mapping-negation.test.ts",
+        "scripts/src/clinval/pane-neutrality.test.ts"
       ],
-      "ciChecks": ["lint:dx-phases (disease ids)"],
-      "guidelines": [],
-      "citationStatus": "none",
+      "ciChecks": ["lint:dx-phases (disease ids)", "pane-engine vitest (model integrity, neutrality)", "scripts vitest (clinval PANE top-3 floors per category)"],
+      "guidelines": [
+        { "name": "ESC Guidelines for the management of acute coronary syndromes", "version": "2023", "section": "Diagnosis; atypical presentations", "citation": "Byrne RA et al. Eur Heart J 2023;44:3720-3826 (acs node; Panju et al. JAMA 1998 for LRs)" },
+        { "name": "ESC Guidelines on acute pulmonary embolism", "version": "2019", "section": "Clinical presentation", "citation": "Konstantinides SV et al. Eur Heart J 2020;41:543-603 (PE node; PIOPED II, Stein et al. Am J Med 2007)" },
+        { "name": "NICE NG51 Sepsis; Sepsis-3; Surviving Sepsis Campaign", "version": "2016 (2024 update); 2016; 2021", "section": "Recognition, risk stratification", "citation": "sepsis node, vital-sign features" },
+        { "name": "NICE NG128 Stroke and TIA; NICE NG228 SAH; NICE NG240 bacterial meningitis", "version": "2019/2022; 2022; 2024", "section": "Recognition", "citation": "stroke, tia, sah, meningitis nodes (Goldstein & Simel JAMA 2005; Perry JAMA 2013; van de Beek NEJM 2004)" },
+        { "name": "JBDS-IP DKA, HHS and hypoglycaemia guidelines", "version": "2023, 2022, 2022", "section": "Diagnostic criteria", "citation": "dka, hhs, hypoglycaemia nodes and glucose / ketone features" },
+        { "name": "NICE NG133 Hypertension in pregnancy; RCOG GTG 63 antepartum haemorrhage; RCOG GTG 69 hyperemesis; NICE NG126 ectopic pregnancy", "version": "2019 (2023); 2011; 2016 (2024); 2019 (2023)", "section": "Diagnosis", "citation": "obstetric nodes; BP ≥ 160/110 severe in pregnancy" },
+        { "name": "APLS; BAPS / BSPGHAN; EULAR/PRINTO/PRES", "version": "6th ed. 2016; 2010", "section": "Paediatric surgical emergencies; IgA vasculitis classification", "citation": "intussusception, pyloric stenosis, malrotation, HSP nodes; paediatric vital-sign thresholds" },
+        { "name": "EAU Urolithiasis / Urological Infections; NICE NG111; GIRFT CES pathway; NICE NG234", "version": "2024; 2018; 2023; 2023", "section": "Diagnosis", "citation": "pyelonephritis, infected obstructed kidney, cauda equina, MSCC nodes (Deyo et al. JAMA 1992)" },
+        { "name": "ESVS AAA / acute limb ischaemia / mesenteric guidelines; WSES 2017 complicated hernia; BSG 2019 LGIB; ESGE 2016 foreign body; ASCRS anal cancer 2018", "version": "2017-2024", "section": "Presentation", "citation": "vascular, hernia and GI nodes added in 1.0.0" },
+        { "name": "Primatesta & Goldacre, Int J Epidemiol 1996 (inguinal hernia lifetime risk); IDF Diabetes Atlas", "version": "1996; 10th ed. 2021", "section": "Epidemiology", "citation": "bounded sex likelihood ratios; Caribbean diabetes tier adjustment" }
+      ],
+      "citationStatus": "file-header",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
-      "reviewEvidence": "None.",
+      "reviewEvidence": "None. Clinval web suite (397 vignettes) run 2026-09-25: PANE top-3 expectations 134/353 → 328/353. Values are approximations of published ranges and need surgeon sign-off.",
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "130 diseases, 135 features, 710 disease-feature sensitivities, 58 prior modifiers ('Caribbean burden-of-disease data', no citation). Unlisted features default to sensitivity 0.30 (DEFAULT_SENSITIVITY). Stops at posterior 0.85 or 8 questions."
+      "notes": "Model 1.0.0: 187 diseases plus _other_, 426 features (surgical, medical, obstetric, paediatric, neurological, vascular), prior tiers (vademecum/priors.ts), unmodelled findings scored at the finding's background rate (engine/likelihood.ts; was a flat 0.30), bounded sex likelihood ratios and age/sex/pregnancy applicability (engine/modifiers.ts), feature mapper reads chips, vitals, history, results and free text (socrates-to-features.ts). Stops at posterior 0.85 or 8 questions.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Condition-neutral model (clinval C6): neutral background rates for unmodelled findings instead of 0.30; frequency-tier priors with no specialty boost (cholecystitis 0.15 → 0.015, GORD 0.12 → 0.03, PUD 0.10 → 0.015 …); sex modifiers bounded as likelihood ratios (inguinal hernia ×5/×0.3 → ×1.8/×0.2; gynaecological ×2.5 and breast ×1.8 boosts removed); applicability (sex, age, pregnancy); 57 new nodes (ACS, dissection, heart failure, AF, cardiac syncope, hypertensive emergency, pneumonia, asthma, COPD, sepsis, anaphylaxis, gastroenteritis, C. difficile, AKI, hyperkalaemia, hypercalcaemia, hyponatraemia, DKA, HHS, hypoglycaemia, phaeochromocytoma, stroke, TIA, SAH, meningitis, seizure, cauda equina, MSCC, pre-eclampsia/HELLP, abruption, hyperemesis, intussusception, pyloric stenosis, malrotation, HSP, mesenteric ischaemia, limb ischaemia, aorto-enteric fistula, femoral aneurysm, SVT, pyelonephritis, infected obstructed kidney, biliary colic, variceal bleed, perforated ulcer, food bolus, lower GI bleed, anal cancer, Fournier's, sigmoid volvulus, toxic megacolon, incarcerated hernia, post-operative collection and pneumonia, DFI, Charcot, inguinal nodes, anaplastic thyroid); feature mapper reads the whole consultation record. Versioned from unversioned." }
+      ]
     },
     {
       "id": "pane-engine-orphan-vademecum",
