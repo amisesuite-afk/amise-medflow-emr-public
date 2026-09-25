@@ -688,10 +688,10 @@
       "title": "Triage rules: red-flag patterns, slot rules, exclusions, pathway definitions, reminder cascade, forbidden patterns",
       "platforms": ["web", "api", "front-desk"],
       "kind": "triage-rules",
-      "contentVersion": "1.2.0",
+      "contentVersion": "1.3.0",
       "versionStamp": { "file": "lib/triage-engine/src/rules.ts", "type": "regex", "pattern": "RULES_VERSION\\s*=\\s*'([^']+)'" },
       "files": ["lib/triage-engine/src/rules.ts"],
-      "tests": ["artifacts/api-server/src/test/triage-rules.test.ts"],
+      "tests": ["artifacts/api-server/src/test/triage-rules.test.ts", "artifacts/api-server/src/test/triage-emergency.test.ts"],
       "ciChecks": ["api-server vitest"],
       "guidelines": [],
       "citationStatus": "none",
@@ -701,7 +701,10 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on web/API/front-desk deploy.",
-      "notes": "The only rule set with a version constant today (RULES_VERSION). It is not surfaced to users or recorded with a triage result."
+      "notes": "The only rule set with a version constant today (RULES_VERSION). It is not surfaced to users or recorded with a triage result.",
+      "changelog": [
+        { "version": "1.3.0", "date": "2026-09-25", "change": "SURGEON-DECISIONS E2: cardiac red flag narrowed to chest pain radiating to arm/jaw/neck or crushing/pressure chest pain ('radiating to' and 'left arm' alone removed); plain chest pain is a priority flag (ECG). 'breathless' / 'shortness of breath' removed from the post-operative concern (graded by physiology in adaptive-triage). 'cancer' in a relative's history or a screening request and 'no change in bowel habit' no longer flag. Chest pain pathway trigger narrowed; its checklist uses the ESC 2023 0 h/1 h troponin algorithm and aspirin 150–300 mg (ESC 2023). Details: docs/clinical-validation/changes/fix-web-triage.md." }
+      ]
     },
     {
       "id": "apcq-question-bank",
@@ -729,9 +732,12 @@
       "kind": "triage-rules",
       "contentVersion": "unversioned",
       "files": ["lib/triage-engine/src/adaptive-triage.ts"],
-      "tests": ["artifacts/api-server/src/test/triage-adaptive.test.ts"],
-      "ciChecks": ["api-server vitest"],
-      "guidelines": [],
+      "tests": ["artifacts/api-server/src/test/triage-adaptive.test.ts", "artifacts/api-server/src/test/triage-emergency.test.ts"],
+      "ciChecks": ["api-server vitest", "clinval:web (level-* expectations)"],
+      "guidelines": [
+        { "name": "Royal College of Physicians NEWS2", "version": "2017", "section": "Chart 3 clinical response bands (high → emergency, medium / single red score → urgent)", "citation": "RCP 2017" },
+        { "name": "NICE NG51 sepsis; NICE NG143 fever in under 5s; AHA PALS", "version": "2024 / 2021 / 2020", "section": "Paediatric heart-rate, respiratory-rate and hypotension limits (paediatricVitalLimits in emergency-recognition.ts)", "citation": "NICE NG51, NG143; AHA PALS 2020" }
+      ],
       "citationStatus": "partial",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
@@ -739,7 +745,35 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on web/API deploy.",
-      "notes": "Vital-sign thresholds are inline constants."
+      "notes": "Vital-sign thresholds are inline constants (adult); children under 16 use paediatricVitalLimits(). The level is the maximum of the text rules, vital signs / NEWS2, blood pressure, critical labs, ECG and confirmed diagnosis (emergency-recognition.ts).",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "Triage level = max(text rules, vitals / NEWS2 bands, BP, critical labs, ECG, confirmed diagnosis) via the emergency-recognition layer; new optional inputs (examText, investigationResults, resultReports, diagnosis, avpu, onSupplementalO2); paediatric vital limits under 16; breathlessness graded by physiology; past surgical history no longer read by the symptom rules; the cancer rules receive free text and lab values; 911 / OKEU / St Jude's / Tapion redirect wording. See docs/clinical-validation/changes/fix-web-triage.md." }
+      ]
+    },
+    {
+      "id": "emergency-recognition",
+      "title": "Recognise-and-redirect emergency layer: medical, obstetric, paediatric, neurological and surgical emergencies, safeguarding flags, risk modifiers",
+      "platforms": ["web", "api"],
+      "kind": "triage-rules",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/triage-engine/src/emergency-recognition.ts", "type": "regex", "pattern": "EMERGENCY_RULES_VERSION\\s*=\\s*'([^']+)'" },
+      "files": ["lib/triage-engine/src/emergency-recognition.ts"],
+      "tests": ["artifacts/api-server/src/test/triage-emergency.test.ts", "artifacts/dashboard/src/lib/__tests__/clinical-prompts-emergency.test.ts"],
+      "ciChecks": ["api-server vitest", "dashboard vitest", "clinval:web (level-*, alarm-*, flag-*, inv-*, mgmt-* expectations)"],
+      "guidelines": [
+        { "name": "Per rule (guideline and year in the rule and its actions)", "version": "per rule", "section": "ESC 2023 ACS; NICE NG128; NICE NG228; NICE NG240; GIRFT CES 2023; NICE NG234; NICE NG51; ESC 2024 AF; RCUK 2021 anaphylaxis; ESH 2023 / NICE NG136; NICE NG133; JBDS 2023 / 2022 / 2021; UKKA 2023; Society for Endocrinology 2016; European hyponatraemia guideline 2014; BTS/SIGN 158; ESC 2021 HF; ESC 2019 PE; NICE NG126; EAU 2024; NICE NG143; NICE NG12; ESVS 2017 / 2020 / 2024; WSES; ATLS 10; NICE NG232; National Burn Care referral guidance 2012; NICE CG103; NICE CG89; NICE PH50; NICE NG217; RCOG GTG 63 / 69; ACG 2024", "citation": "See docs/clinical-validation/changes/fix-web-triage.md" }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Clinical-validation vignettes (clinval:web) exercise the rules; not a clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-10-31",
+      "changeAuthority": "Any repository committer. Ships on web/API deploy.",
+      "notes": "First actions are suggestions only; the redirect names 911 and OKEU, St Jude's or Tapion Hospital. Doses only where the named guideline states them; under-16s get weight-based dosing per BNFc, except the RCUK 2021 age-banded IM adrenaline doses. Safeguarding flags say 'follow the practice's safeguarding procedure' — the practice must supply its local contacts.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS C1–C3, G1.1, G1.3, G3 and the prompt/alarm parts of G2). See docs/clinical-validation/changes/fix-web-triage.md." }
+      ]
     },
     {
       "id": "cancer-screening",
@@ -1072,7 +1106,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "Duplicates many iOS ClinicalScoringEngine scores with no parity check."
+      "notes": "Duplicates many iOS ClinicalScoringEngine scores with no parity check.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "C8: TG18 cholecystitis Grade II reads palpable tender mass, duration > 72 h and marked local inflammation (gangrenous / emphysematous / abscess) besides WBC > 18 (Yokoe 2018). TG18 cholangitis Grade II needs any two criteria and the WBC criterion was added (Kiriyama 2018); the ScalesTab fever criterion is ≥ 39 °C. ABCD2 interpretation defers to NICE NG128 (not for triage)." }
+      ]
     },
     {
       "id": "web-clinical-cds",
@@ -1085,8 +1122,8 @@
         "artifacts/dashboard/src/lib/clinical-inference.ts",
         "artifacts/dashboard/src/lib/transcript-dx-mapper.ts"
       ],
-      "tests": [],
-      "ciChecks": [],
+      "tests": ["artifacts/dashboard/src/lib/__tests__/clinical-prompts-emergency.test.ts", "artifacts/dashboard/src/lib/__tests__/clinical-inference-negation.test.ts"],
+      "ciChecks": ["dashboard vitest", "clinval:web"],
       "guidelines": [],
       "citationStatus": "partial",
       "lastReviewed": "unknown",
@@ -1095,7 +1132,10 @@
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "transcript-dx-mapper maps transcript text to pane-engine features and pathognomonic findings."
+      "notes": "transcript-dx-mapper maps transcript text to pane-engine features and pathognomonic findings.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "Prompts: emergency / safeguarding prompts from emergency-recognition.ts; operative templates only with a supporting working diagnosis; no adult doses under 16; no NSAIDs in pregnancy; β-HCG never assumed; COPD 88–92% (BTS 2017); no fluid bolus with heart-failure signs or PE; anaphylaxis and AAA before fluids; calcium gluconate 10% 30 mL (UKKA 2023); hyponatraemia volume status first (European 2014); procedure-specific anticoagulation (BSG/ESGE 2021, ACCP 2022, PAUSE) and stent-window plans (ESC/ESAIC 2022); dilated-CBD threshold; tetanus, asplenia, VTE, anaesthetic-hazard, obstetric-handover prompts. CDS: ABCD2 suggestion removed (NICE NG128). See docs/clinical-validation/changes/fix-web-triage.md." }
+      ]
     },
     {
       "id": "web-decision-support-pathways",
