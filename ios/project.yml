@@ -143,6 +143,33 @@ targets:
     dependencies:
       - target: AmiseMedFlow
 
+  # UI walkthrough (XCUITest): launches the app in DEBUG demo mode (-UITestDemoMode, synthetic
+  # in-memory data, no sync) and screenshots each step. Run through the AmiseMedFlowUIWalkthrough
+  # scheme only (ios/ui-walkthrough.sh, .github/workflows/ios-ui-walkthrough.yml), so the
+  # AmiseMedFlow scheme's unit tests are unchanged.
+  AmiseMedFlowUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: AmiseMedFlowUITests
+        excludes:
+          - "**/.DS_Store"
+
+    settings:
+      base:
+        PRODUCT_NAME: AmiseMedFlowUITests
+        PRODUCT_BUNDLE_IDENTIFIER: com.amise.medflow.uitests
+        SWIFT_VERSION: "5.0"
+        DEVELOPMENT_TEAM: A5KKWX89SG
+        GENERATE_INFOPLIST_FILE: "YES"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        TEST_TARGET_NAME: AmiseMedFlow
+
+    dependencies:
+      - target: AmiseMedFlow
+
 schemes:
   AmiseMedFlow:
     build:
@@ -161,3 +188,16 @@ schemes:
       config: Debug
     archive:
       config: Release
+
+  # UI walkthrough only (Debug: demo mode exists only in DEBUG builds).
+  AmiseMedFlowUIWalkthrough:
+    build:
+      targets:
+        AmiseMedFlow: all
+        AmiseMedFlowUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - AmiseMedFlowUITests
