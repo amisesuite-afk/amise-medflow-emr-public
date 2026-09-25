@@ -149,55 +149,27 @@ intussusception, pyloric stenosis, malrotation (bilious vomiting in an infant); 
 (NICE NG143); safeguarding (child protection, domestic violence — the practice must supply local
 contacts); tetanus-prone wound; post-splenectomy vaccination; post-operative delirium.
 
-## G. Phase 2 — beyond surgery (acute medicine, perioperative, endocrine/renal/urology/neurology, screening/obstetrics/paediatrics)
+## H. Sign-off register for merged fixes
 
-154 more vignettes (397 in total). The engines are surgical: most medical, obstetric and paediatric
-emergencies are not recognised. Details in `findings/acutemed.md`, `periop.md`, `endorenal.md`,
-`prevobspaed.md`.
+Each merged fix keeps its full list under "Needs sign-off" in its change log. Nothing listed there is treated as
+approved. Reply with the file and item numbers you approve (for example "fix-web-triage 1–6 approved; 7 no").
 
-### G1. Scope (decide these first; the rest follows from them)
+| Change log | Area | What needs your decision |
+|---|---|---|
+| [fix-web-screening](changes/fix-web-screening.md#needs-sign-off) | Preventive and cancer screening (web) | USPSTF as primary source, NG12 rectal-bleeding/IDA thresholds, PSA start age, universal hepatitis B, diabetes from 35 (10 items) |
+| [fix-web-triage](changes/fix-web-triage.md#needs-sign-off) | Triage level, emergency recognition | Safeguarding contacts, CBD, troponin, sepsis, potassium and calcium thresholds, scrotal/pelvic pain as emergencies, aspirin in ACS, paediatric vital bands (14 items) |
+| [fix-web-differential](changes/fix-web-differential.md#needs-sign-off) | Web differential (PANE 1.0.0) | Every likelihood, prior tiers, pregnancy multiplier, age and sex ratios, Caribbean diabetes tier, ICD T31.20 (11 items) |
+| [fix-ios-triage-cards](changes/fix-ios-triage-cards.md#needs-sign-off) | iOS triage cards and safety checks | Burns fluids, redirect wording and hospitals, sepsis, BP and lab thresholds, paediatric bands, drug-allergy rules, doses written into cards (14 items) |
+| [fix-ios-differential](changes/fix-ios-differential.md#needs-sign-off) | iOS differential (DiagnosticDatabase 2.0.0) | Using the database at all; priors, weight caps, 121 curated candidates, every citation |
 
-| # | Question |
-|---|---|
-| G1.1 | Medical, obstetric and paediatric emergencies: a separate "recognise and redirect to 911 / emergency department" layer (fits an outpatient surgical clinic), or full diagnosis and management content? |
-| G1.2 | Which first actions may the clinic suggest before transfer (IM adrenaline, aspirin, oxygen)? Is adrenaline stocked at Rodney Bay and Tapion? |
-| G1.3 | Should vital signs (NEWS2), blood pressure, critical labs (K⁺, glucose/ketones, calcium, troponin) and ECG changes drive the triage level? Today triage reads text only. |
-| G1.4 | Children: below what age/weight are adult templates and doses suppressed? Recognition-and-redirect only for infants? |
-| G1.5 | Pregnancy: recognition and obstetric handover only, or management content? |
+Decided so far:
 
-### G2. Unsafe content to correct
-
-| # | Now | Proposed | Source (unverified) |
-|---|---|---|---|
-| G2.1 | One anticoagulation template for everyone: bridges warfarin in plain AF and before diagnostic OGD; vitamin K for a therapeutic INR; no stop/restart timing | Procedure-specific plan: no bridging for most AF (BRIDGE); DOAC intervals (PAUSE); BSG/ESGE 2021 low/high-risk endoscopy table | ACC 2017; ACCP 2022; BSG/ESGE 2021 |
-| G2.2 | Recent coronary stent ignored; clopidogrel not stopped before EMR | Hard stop inside stent windows (6 months elective PCI, 12 months ACS) unless cardiology agrees | ESC/ESAIC 2022 |
-| G2.3 | No SGLT2 inhibitor rule; euglycaemic DKA not recognised (glucose-only DKA triggers) | SGLT2i withholding rule (CPOC: day before and day of surgery, or FDA label 3–4 days); ketone/pH-based DKA recognition | CPOC 2021; JBDS 2023 |
-| G2.4 | HHS gets the DKA insulin rate | Saline first, osmolality, lower insulin rate | JBDS HHS 2022 |
-| G2.5 | Anaesthetic hazards (malignant hyperthermia, suxamethonium apnoea, latex, STOP-Bang, steroid cover) never reach the plan | Plan alerts; who acknowledges | AAGBI |
-| G2.6 | No VTE prophylaxis in any operative plan (even Caprini 11 with cancer) | VTE line in every operative plan; renal adjustment of enoxaparin | NICE NG89 |
-| G2.7 | Alteplase offered 6 days after laparotomy without the contraindication | State recent major surgery as a contraindication | ESC 2019 PE |
-| G2.8 | COPD with CO₂ retention: oxygen to ≥ 94 % | 88–92 %, controlled, blood gas | BTS 2017 oxygen |
-| G2.9 | Anaphylaxis not named; low BP gets a 1 L fluid bolus, no adrenaline | Recognise anaphylaxis; IM adrenaline first | Resus Council UK 2021 |
-| G2.10 | Pulmonary oedema and high-risk PE offered fluid boluses | No bolus when heart-failure signs or suspected PE are recorded | ESC 2021 HF; ESC 2019 PE |
-| G2.11 | Pregnancy: DOAC/warfarin for PE at 30 weeks; ibuprofen at 32–34 weeks; no BP alarm at 172/114 (threshold 180); eclampsia without magnesium; "β-HCG confirmed negative" at 32 weeks; CT at 10 and 26 weeks | LMWH; no NSAIDs from 20 weeks; 160/110 threshold with pre-eclampsia/HELLP wording; magnesium; obstetric review | RCOG; NICE NG133 |
-| G2.12 | Children get adult doses and adult vital-sign thresholds (all 11 under-16 vignettes) | Weight-based dosing; paediatric thresholds | BNFc; APLS |
-| G2.13 | Hyperkalaemia: calcium gluconate 10 mL of 10 % (web prompt and iOS AKI card) | 30 mL of 10 % | UKKA 2023 |
-| G2.14 | iOS SAH card: "IV nimodipine 60 mg 4-hourly" (oral dose with IV route) | Oral 60 mg 4-hourly | NICE NG228 |
-| G2.15 | Stroke: ABCD2 suggested | Remove ABCD2 (NICE advises against) | NICE NG128 |
-| G2.16 | Hyponatraemia: fluid restriction offered to a volume-depleted ileostomy patient; 3 % infusion instead of 150 mL bolus; thiazide not stopped | Volume status first; bolus regimen; stop thiazide | European 2014 |
-| G2.17 | Obstructed infected kidney: no nephrostomy/stent; anuric solitary kidney gets diclofenac | Urgent decompression; no NSAID in AKI | EAU 2024 |
-| G2.18 | Haemorrhage on apixaban: elective "hold / bridge" line | Reversal advice | — |
-| G2.19 | Web screening prompts out of date (bowel screening from 50, annual mammogram, no HPV, PSA and colonoscopy past 80; nothing for AAA, hepatitis B/C, HIV, post-polypectomy, Lynch) | Choose USPSTF/ACG/MSTF or NICE/BSG; port the iOS screening engine (already mostly USPSTF) to web | USPSTF |
-
-### G3. Missing recognition (add as "recognise and redirect" at minimum)
-
-Acute coronary syndrome (ECG/troponin prompt); stroke (FAST, time window); thunderclap headache/SAH;
-meningitis; cauda equina; spinal cord compression; sepsis without fever (NEWS2); new/unstable AF;
-anaphylaxis; hypertensive emergency; DKA/HHS/hypoglycaemia (no treatment prompt today); hyperkalaemia;
-hypercalcaemia of malignancy; pre-eclampsia/HELLP; ovarian torsion; ectopic in the main differential;
-intussusception, pyloric stenosis, malrotation (bilious vomiting in an infant); febrile infant
-(NICE NG143); safeguarding (child protection, domestic violence — the practice must supply local
-contacts); tetanus-prone wound; post-splenectomy vaccination; post-operative delirium.
+- **2026-09-25, practice owner:** patient pre-procedure text may tell patients to stop herbal remedies, bush teas and
+  supplements 2 weeks before a planned operation or a procedure with sedation or anaesthetic. It must give the reason and the
+  circumstances. Prescribed medicines stay under hazard H-10: no take/hold/stop wording.
+- **2026-09-25, practice owner:** the differential is neutral across all conditions, not only surgical ones. Non-surgical emergencies are recognised and redirected. The triage level is the highest
+  of text, vitals, BP, labs, ECG and diagnosis. Under-16s get "weight-based dosing — calculate per BNFc". Pregnancy filters the lists. These are
+  the defaults the fixes above were built on; the individual weights and wordings still need item-by-item sign-off.
 
 ## F. Software bugs fixed (no clinical decision needed)
 
