@@ -135,7 +135,7 @@ enum DiagnosisRadiationEngine {
 
     /// Content version (clinical-content/registry.json `ios-diagnosis-radiation-engine`). Bump it
     /// with the registry entry and a changelog line whenever a card or the safety filter changes.
-    static let contentVersion = "1.1.0"
+    static let contentVersion = "1.2.0"
 
     // MARK: Public API
 
