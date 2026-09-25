@@ -27,8 +27,10 @@ import Foundation
 
 enum PlanSafetyFilter {
 
-    /// Content version (clinical-content/registry.json `ios-plan-safety-filter`).
-    static let version = "1.0.0"
+    /// Content version (clinical-content/registry.json `ios-plan-safety-filter`). 1.1.0 adds the
+    /// web prompt-parity rules (PlanSafetyFilter+PromptParity.swift, twin of the web-last-gaps
+    /// changes to `artifacts/dashboard/src/lib/clinical-inference.ts`).
+    static let version = "1.1.0"
 
     // MARK: Types
 
@@ -78,6 +80,22 @@ enum PlanSafetyFilter {
         var assessment: String
         var renalImpairment: Bool
         var egfr: Double?
+        // Web prompt-parity inputs (PlanSafetyFilter+PromptParity.swift; web-last-gaps).
+        /// Working diagnosis, assessment and resulted imaging / endoscopy reports (not lowercased;
+        /// read with NegationMatcher).
+        var obstructionText: String = ""
+        /// Abdominal and general examination text.
+        var exam: String = ""
+        /// Chief complaint, HPI, working diagnosis and assessment (injury, collapse, large bleed).
+        var historyAll: String = ""
+        /// Past medical / surgical history entries that are the patient's own (entries naming a
+        /// relative removed — web adaptive-triage FAMILY_ENTRY).
+        var ownHistory: [String] = []
+        var systolicBP: Int? = nil
+        var heartRate: Int? = nil
+        var haemoglobinGdl: Double? = nil
+        var potassium: Double? = nil
+        var bilirubin: Double? = nil
     }
 
     // MARK: Text helpers
@@ -132,8 +150,10 @@ enum PlanSafetyFilter {
     /// "penicillin allergy", "NSAID-induced", "non-penicillin": the drug is named but not given.
     /// iOS addition to the web list: "NSAID contraindicated", "if NSAID not tolerated" name the
     /// drug to rule it out.
+    /// 1.1.0 (iOS): "NSAIDs avoided", "… withheld" (the web-last-gaps template wording) name the drug
+    /// to rule it out too.
     private static let notGivenAfter =
-        #"^[\s-]*(?:allerg\w*|hypersensitiv\w*|sensitiv\w*|intoleran\w*|induced|associated|related|exposure|history|free\b|contraindicat\w*|not tolerated)"#
+        #"^[\s-]*(?:allerg\w*|hypersensitiv\w*|sensitiv\w*|intoleran\w*|induced|associated|related|exposure|history|free\b|contraindicat\w*|not tolerated|avoided\b|withheld\b)"#
 
     /// First affirmed (not "avoid X" / "no X" / "X allergy") mention of any term.
     static func affirmedMention(_ text: String, _ terms: [String]) -> String? {
@@ -236,7 +256,8 @@ enum PlanSafetyFilter {
             AllergyClass(id: "penicillin", label: "penicillin", triggers: pen + ["beta-lactam", "β-lactam"], members: pen,
                          caution: ceph + carbapenems,
                          cautionText: "Penicillin allergy recorded: check the reaction type — after an immediate (anaphylactic) penicillin reaction avoid cephalosporins and carbapenems unless there is no alternative (BNF).",
-                         alternative: "Choose a non-penicillin regimen per local antimicrobial policy / microbiology advice (check the reaction type — BNF)."),
+                         // Web wording (web-last-gaps, clinical-inference.ts penicillin line).
+                         alternative: "use a non-penicillin alternative per the local antimicrobial guideline (after anaphylaxis, avoid cephalosporins and carbapenems too unless allergy advice says otherwise); check the reaction type (BNF)."),
             AllergyClass(id: "cephalosporin", label: "cephalosporin", triggers: ceph, members: ceph, caution: [], cautionText: nil,
                          alternative: "Choose a non-cephalosporin regimen per local antimicrobial policy / microbiology advice."),
             AllergyClass(id: "carbapenem", label: "carbapenem", triggers: carbapenems, members: carbapenems, caution: [], cautionText: nil,
@@ -364,7 +385,16 @@ enum PlanSafetyFilter {
             text: text,
             assessment: assessment,
             renalImpairment: renal,
-            egfr: c.egfr)
+            egfr: c.egfr,
+            obstructionText: NegationMatcher.joinClauses([c.diagnosis, c.assessment, c.imagingText]),
+            exam: c.examText,
+            historyAll: NegationMatcher.joinClauses([c.chiefComplaint, c.freeText, c.diagnosis, c.assessment]),
+            ownHistory: ownHistoryEntries(c.pmhText),
+            systolicBP: c.systolicBP,
+            heartRate: c.heartRate,
+            haemoglobinGdl: c.haemoglobinGdl,
+            potassium: c.potassium,
+            bilirubin: c.bilirubin)
     }
 
     // MARK: Line filter (allergy, pregnancy, renal, paediatric)
@@ -454,7 +484,11 @@ enum PlanSafetyFilter {
             }
         }
 
-        var text = line
+        // Web prompt-parity rules (web-last-gaps): D-dimer in pregnancy, occult-malignancy CT in
+        // pregnancy, colonic stent contraindications, UKKA 2023 potassium bands, NSAID exclusions.
+        if let rule = promptParityRule(line, s, prefix: prefix) { return rule }
+
+        var text = ultrasoundFirstAnnotation(line, s)
         if s.pregnancy == .pregnant && !pregnancySpecific, let w = s.gestationWeeks, w < 20 {
             let nsaid = affirmedMentions(line, nsaids)
             if !nsaid.isEmpty {
@@ -525,7 +559,10 @@ enum PlanSafetyFilter {
     /// "low bleeding-risk procedure", "risk of bleeding", "bleeding history" — not active bleeding.
     static let notActiveBleeding = #"\b(?:(?:low|high|moderate|increased|minimal)[- ])?bleed(?:ing)?[- ]risk\b|\brisk of (?:\w+ )?(?:bleed\w*|haemorrhag\w*|hemorrhag\w*)|\bbleeding (?:history|disorder|tendency|problems?)\b|\bpost[- ]?(?:polypectomy|procedure) bleed\w* risk\b"#
     static let acuteIllnessText = #"\b(sepsis|septic|shock|hypotensi\w*|acute kidney injury|aki|ketoacidosis|dka|hhs|peritonitis|emergency|lactate\s*[4-9])\b"#
-    static let bleedingText = #"\b(haemoperitoneum|hemoperitoneum|haemorrhag\w*|hemorrhag\w*|bleed\w*|haematemesis|hematemesis|melaena|melena|haematochezia|haematoma|hematoma|haemothorax|hemothorax|haematuria|hematuria|intracranial|head injury|subdural|extradural)\b"#
+    /// A head injury without a documented bleed is not active bleeding: it takes the
+    /// injury-on-an-anticoagulant line (web-last-gaps; NICE NG232) — "head injury" was removed from
+    /// this list in 1.1.0. Intracranial / subdural / extradural bleeds and a haemothorax still count.
+    static let bleedingText = #"\b(haemoperitoneum|hemoperitoneum|haemorrhag\w*|hemorrhag\w*|bleed\w*|haematemesis|hematemesis|melaena|melena|haematochezia|haematoma|hematoma|haemothorax|hemothorax|haematuria|hematuria|intracranial|subdural|extradural)\b"#
 
     static func activeBleeding(_ s: Signals) -> Bool {
         findingPresent(replaceAll(notActiveBleeding, in: s.assessment, with: " "), bleedingText)

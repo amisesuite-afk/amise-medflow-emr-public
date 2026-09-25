@@ -41,6 +41,21 @@ struct RadiationContext {
     var freeText: String = ""
     /// Latest eGFR / creatinine clearance on record, mL/min.
     var egfr: Double? = nil
+    // Read by the web prompt-parity rules (PlanSafetyFilter+PromptParity; web-last-gaps). Set by
+    // `init(patient:)`; empty / nil when a caller built the context by hand.
+    /// Chief complaint (injury on an anticoagulant; GI bleeding history).
+    var chiefComplaint: String = ""
+    /// Abdominal and general examination text (peritonism, incarceration, jaundice).
+    var examText: String = ""
+    /// Resulted imaging and endoscopy reports (obstruction site, caecal diameter, perforation).
+    var imagingText: String = ""
+    /// Latest recorded systolic BP and heart rate (GI bleeding: haemodynamically significant or stable).
+    var systolicBP: Int? = nil
+    var heartRate: Int? = nil
+    /// Latest haemoglobin in g/dL (a value above 25 is read as g/L), potassium (mmol/L) and bilirubin.
+    var haemoglobinGdl: Double? = nil
+    var potassium: Double? = nil
+    var bilirubin: Double? = nil
 
     var isChild: Bool { (ageYears ?? 99) < 16 }
 
@@ -64,6 +79,19 @@ struct RadiationContext {
         self.assessment = p.assessmentText ?? ""
         self.freeText = NegationMatcher.joinClauses([p.hpi, p.socialHistory])
         self.egfr = p.latestLab(named: ["egfr"]) ?? p.latestLab(named: ["crcl", "creatinine clearance"])
+        self.chiefComplaint = p.chiefComplaint ?? ""
+        self.examText = NegationMatcher.joinClauses([p.examAbdo, p.examGeneral])
+        let entries = p.investigations
+        self.imagingText = NegationMatcher.joinClauses(entries
+            .filter { $0.status == .resulted && !$0.category.holdsLabValues }
+            .map { Optional($0.result) })
+        let latest = p.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+        self.systolicBP = latest?.bpSystolic
+        self.heartRate = latest?.heartRate
+        let labs = LabPanel.parse(from: entries)
+        self.haemoglobinGdl = labs.haemoglobin.map { $0.value > 25 ? $0.value / 10 : $0.value }
+        self.potassium = labs.potassium?.value
+        self.bilirubin = labs.bilirubin?.value
     }
 }
 
@@ -103,6 +131,9 @@ extension DiagnosisRadiationEngine {
     // MARK: Filter
 
     static func applySafety(_ r: DiagnosisRadiation, _ c: RadiationContext) -> DiagnosisRadiation {
+        // Web-last-gaps card adjustments first (operative-template lines, stable GI bleeding,
+        // pregnancy / child investigations), so the filters below see every added line.
+        let r = promptParityCard(r, c)
         var lines = r.planTemplate.components(separatedBy: "\n")
         var header: [String] = []
 
@@ -115,6 +146,11 @@ extension DiagnosisRadiationEngine {
                 for a in allergyTerms {
                     if let hit = a.members.first(where: { termAppears($0, in: lower) }), !isExemption(lower) {
                         flagged += 1
+                        // Penicillin class: the web wording (web-last-gaps; practice rule C5) — the
+                        // line is withheld and the alternative route named.
+                        if a.label.hasSuffix("(penicillin class)") {
+                            return "\(indent(of: line))⚠ ALLERGY — \(a.label): the penicillin-class antibiotic proposed here is withheld (\(a.reason)): use a non-penicillin alternative per the local antimicrobial guideline (after anaphylaxis, avoid cephalosporins and carbapenems too unless allergy advice says otherwise)."
+                        }
                         return "\(indent(of: line))⚠ ALLERGY — \(a.label): \(hit) not suggested (\(a.reason)); choose an alternative (BNF / local antimicrobial guideline)."
                     }
                 }
@@ -130,7 +166,7 @@ extension DiagnosisRadiationEngine {
             let weeks = c.pregnancy.gestationWeeks.map { " (\($0) weeks)" } ?? ""
             // Worded so that no drug reads as a recommendation (clinical validation: "no ACE
             // inhibitors" matched the forbidden-item check).
-            header.append("- PREGNANT\(weeks): inform the obstetric team; plan checked for pregnancy safety — no NSAIDs from 20 weeks; anticoagulation with LMWH only (DOACs and warfarin are teratogenic / contraindicated); ACE-i/ARB contraindicated; ultrasound or MRI in preference to ionising imaging.")
+            header.append("- PREGNANT\(weeks): inform the obstetric team; plan checked for pregnancy safety — no NSAIDs from 20 weeks; anticoagulation with LMWH — DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic) (RCOG GTG 37a/b); ACE-i/ARB contraindicated; ultrasound or MRI in preference to ionising imaging.")
             lines = lines.map { pregnancyLine($0, c.pregnancy) }
         }
 
@@ -310,7 +346,7 @@ extension DiagnosisRadiationEngine {
             return "\(indent(of: line))⚠ PREGNANCY (≥20 weeks): NSAID removed — NSAIDs are avoided from 20 weeks (MHRA 2020; NICE); use paracetamol, opioid if needed."
         }
         if has(["apixaban", "rivaroxaban", "edoxaban", "dabigatran", "doac", "doacs", "warfarin"]) {
-            return "\(indent(of: line))⚠ PREGNANCY: DOAC / warfarin line removed (teratogenic — contraindicated in pregnancy) — treatment-dose LMWH by weight instead (RCOG Green-top 37a/37b); obstetric haematology input."
+            return "\(indent(of: line))⚠ PREGNANCY: DOAC / warfarin line removed — DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic): anticoagulation with treatment-dose LMWH by weight instead (RCOG GTG 37a/b); obstetric haematology input."
         }
         if has(["ace inhibitor", "ace-i", "acei", "ramipril", "lisinopril", "enalapril", "perindopril", "losartan", "candesartan",
                 "valsartan", "irbesartan", "arb"]) {

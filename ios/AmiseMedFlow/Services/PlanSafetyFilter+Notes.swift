@@ -83,6 +83,12 @@ extension PlanSafetyFilter {
         if onVKA && (proc != .none || bleeding) && !inv.contains("inr") && !inv.contains("coagulation") {
             extra.append((name: "INR (warfarin)", rationale: bleeding ? "Reversal decision (BSH; BSG/ESGE 2021)" : "Day before the procedure — proceed when < 1.5 (BSG/ESGE 2021; ACCP 2022)"))
         }
+        // NICE NG45 (web-last-gaps): haemostasis tests before surgery only with liver disease,
+        // heparin, a bleeding disorder, jaundice or an emergency operation (warfarin: the INR above).
+        if proc == .surgery && !onVKA && coagulationIndicated(s, emergency: emergency)
+            && !["inr", "coagulation", "clotting", "aptt", "prothrombin"].contains(where: { inv.contains($0) }) {
+            extra.append((name: "Clotting screen (PT/INR, APTT)", rationale: "NICE NG45: liver disease, heparin, a bleeding disorder, jaundice or an emergency operation"))
+        }
         if !drugsPresent(s.meds, doacs).isEmpty && (proc != .none || bleeding)
             // "U&E" alone does not prompt the creatinine clearance the DOAC timing needs.
             && !inv.contains("renal function") && !inv.contains("creatinine") && !inv.contains("egfr") && !inv.contains("crcl") {
@@ -124,6 +130,11 @@ extension PlanSafetyFilter {
             }
             return notes
         }
+
+        // An injury on an anticoagulant (fall, head injury, fracture) is not an elective
+        // peri-procedural question: exclude bleeding and keep reversal ready (web-last-gaps;
+        // NICE NG232 2023; ACC 2020 ECDP). PlanSafetyFilter+PromptParity.swift.
+        if let n = injuryOnAnticoagulantNote(s) { return [n] }
 
         if procedure == .none { return notes }
 
@@ -269,13 +280,15 @@ extension PlanSafetyFilter {
     static func vteNote(_ s: Signals, shape: PlanShape, bleeding: Bool) -> Note? {
         if s.child { return nil } // NICE NG89 covers people aged 16 and over.
         let anticoagulated = !drugsPresent(s.meds, vka + doacs).isEmpty
-        let renal: String
-        if let e = s.egfr, e < 30 {
-            renal = "eGFR/CrCl \(Int(e.rounded())) mL/min: enoxaparin 20 mg SC once daily or unfractionated heparin (BNF)"
-        } else if test(#"\b(dialysis|haemodialysis|hemodialysis|esrf|eskd)\b"#, s.text) {
-            renal = "on dialysis: unfractionated heparin 5000 units SC 8–12-hourly or a renal-adjusted LMWH per the renal team (BNF)"
+        // Pharmacological part by renal function (web operative templates, web-last-gaps: dialysis
+        // is checked first, and the renally adjusted lines carry no enoxaparin 40 mg example).
+        let pharmacological: String
+        if test(#"\b(dialysis|haemodialysis|hemodialysis|esrf|eskd)\b"#, s.text) {
+            pharmacological = "plus pharmacological prophylaxis dose-adjusted for renal failure — unfractionated heparin 5000 units SC 8–12-hourly or a renally adjusted LMWH on dialysis, per the renal team / local protocol (BNF)"
+        } else if let e = s.egfr, e < 30 {
+            pharmacological = "plus LMWH dose-adjusted for renal function — eGFR/CrCl \(Int(e.rounded())) mL/min: enoxaparin 20 mg SC once daily or unfractionated heparin (BNF)"
         } else {
-            renal = "dose-adjust in renal impairment — CrCl < 30 mL/min: 20 mg once daily (BNF)"
+            pharmacological = "plus LMWH — e.g. enoxaparin 40 mg SC once daily, dose-adjust in renal impairment — CrCl < 30 mL/min: 20 mg once daily (BNF)"
         }
         var parts = ["VTE prophylaxis (NICE NG89): assess VTE and bleeding risk on admission and after surgery (NG89, 2018)."]
         if bleeding {
@@ -283,7 +296,7 @@ extension PlanSafetyFilter {
         } else if anticoagulated {
             parts.append("On therapeutic anticoagulation: see the anticoagulation plan; while it is interrupted after surgery use mechanical prophylaxis and prophylactic-dose LMWH when bleeding risk allows.")
         } else {
-            parts.append("Mechanical prophylaxis (anti-embolism stockings or intermittent pneumatic compression) unless contraindicated (e.g. peripheral arterial disease), plus LMWH — e.g. enoxaparin 40 mg SC once daily, \(renal) — from 6–12 h after surgery if bleeding risk allows, for at least 7 days.")
+            parts.append("Mechanical prophylaxis (anti-embolism stockings or intermittent pneumatic compression) unless contraindicated (e.g. peripheral arterial disease), \(pharmacological) — from 6–12 h after surgery if bleeding risk allows, for at least 7 days.")
         }
         if shape.cancer {
             parts.append("Major abdominal or pelvic cancer surgery: extend pharmacological prophylaxis to 28 days after surgery.")
@@ -299,7 +312,7 @@ extension PlanSafetyFilter {
             if (s.gestationWeeks ?? 20) >= 20 {
                 parts.append("From 20 weeks: left lateral tilt or manual uterine displacement whenever supine (aortocaval compression); no NSAIDs.")
             }
-            parts.append("Prefer ultrasound or MRI to CT where they answer the question; DOACs and warfarin (teratogenic) are contraindicated — LMWH if anticoagulation is needed.")
+            parts.append("Prefer ultrasound or MRI to CT where they answer the question; anticoagulation with LMWH — DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic) (RCOG GTG 37a/b).")
             if operative, (s.gestationWeeks.map { $0 >= 24 && $0 < 34 } ?? true) {
                 parts.append("If 24–34 weeks and preterm delivery is possible, the obstetric team to consider antenatal corticosteroids.")
             }

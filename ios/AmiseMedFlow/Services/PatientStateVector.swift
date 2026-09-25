@@ -261,7 +261,10 @@ extension PatientStateVector {
         psv.allergiesRaw = patient.allergiesJson
 
         // PMH flags from raw text
-        psv.pmh = PMHFlags.parse(from: patient.pmhNotes ?? "")
+        // A relative's disease ("Family history of colorectal cancer (father, 58)") is not the
+        // patient's comorbidity (web adaptive-triage, web-last-gaps): entries naming a relative are
+        // removed before the flags are read.
+        psv.pmh = PMHFlags.parse(from: PlanSafetyFilter.removingRelativeEntries(patient.pmhNotes ?? ""))
 
         // Latest vitals snapshot
         if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
