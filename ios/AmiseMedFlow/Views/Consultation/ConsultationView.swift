@@ -232,6 +232,8 @@ struct ConsultationView: View {
         }
         .onChange(of: patient.workingDiagnosis) { _, _ in
             dismissedRadiation = false
+            // The confirmed diagnosis is one of the triage-level inputs.
+            runPathway()
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in handleChiefComplaintChange(newCC) }
         .onChange(of: patient.hpi) { _, _ in
@@ -268,6 +270,8 @@ struct ConsultationView: View {
             await MainActor.run {
                 guard patient.isLive else { return }
                 refreshBayesian()
+                // HPI, examination and results feed the triage level too (ClinicalAcuityEngine).
+                runPathway()
             }
         }
     }

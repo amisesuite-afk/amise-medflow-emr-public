@@ -134,12 +134,12 @@ extension ConsultationView {
         touch()
     }
 
+    /// Triage level = the highest of CC keywords, vitals/NEWS2, BP, critical labs, ECG, text
+    /// alarms, recognition rules and the confirmed diagnosis (ClinicalAcuityEngine). It can raise
+    /// the recorded acuity but never lowers it (the clinician confirms).
     func runPathway() {
         isAssessing = true
-        let result = ClinicalPathwayEngine.assess(
-            chiefComplaint: patient.chiefComplaint ?? "",
-            pmh: patient.pmhNotes ?? ""
-        )
+        let result = ClinicalAcuityEngine.assess(patient: patient).triageResult
         triageResult = result
         if result.suggestedAcuity < patient.acuity { patient.acuity = result.suggestedAcuity; touch() }
         isAssessing = false

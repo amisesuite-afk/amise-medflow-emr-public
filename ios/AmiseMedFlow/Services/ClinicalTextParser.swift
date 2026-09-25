@@ -52,6 +52,14 @@ enum ClinicalTextParser {
         func has(_ kw: String) -> Bool { text.contains(kw) }
         func any(_ kws: [String]) -> Bool { text.containsAny(kws) }
         func all(_ kws: [String]) -> Bool { kws.allSatisfy { text.contains($0) } }
+        // A written temperature is a fever only at 38.0 °C or above (NICE NG143 / NG51 use 38 °C),
+        // or when it is described as raised; "Temperature 36.9°C" is not a fever (clinical
+        // validation 2026-09: the bare word "temperature" used to count as a fever).
+        let temps = recordedTemperatures(text.lower)
+        let feverByValue = temps.contains { $0 >= 38.0 }
+        let hypothermiaByValue = temps.contains { $0 < 36.0 }
+        let feverWords = any(["fever", "pyrexia", "febrile", "hyperthermia", "raised temperature",
+                              "high temperature", "temperature raised", "temperature elevated", "elevated temperature"])
 
         // MARK: Site
         if any(["rlq", "right iliac fossa", "right lower quadrant", "mcburney", "right iliac"]) { add("site", "RLQ") }
@@ -88,7 +96,7 @@ enum ClinicalTextParser {
         // MARK: Associations
         if has("nausea") { add("associations", "Nausea") }
         if any(["vomit", "emesis", "sick", "retching"]) { add("associations", "Vomiting") }
-        if any(["fever", "pyrexia", "febrile", "hyperthermia", "temperature"]) { add("associations", "Fever") }
+        if feverWords || feverByValue { add("associations", "Fever") }
         if any(["rigor", "shiver", "chills", "sweats"]) { add("associations", "Rigors") }
         if any(["anorexia", "no appetite", "poor appetite", "off food", "not eating", "reduced appetite"]) { add("associations", "Anorexia") }
         if any(["weight loss", "losing weight", "lost weight", "unintentional weight"]) { add("associations", "Weight loss") }
@@ -126,7 +134,8 @@ enum ClinicalTextParser {
         if any(["opening bowels", "defaecation", "defecation", "after bowel movement"]) { add("relieving", "Defaecation") }
         if any(["vomiting relieves", "better after vomiting"]) { add("relieving", "Vomiting") }
         if any(["nothing relieves", "nothing makes it better", "no relief"]) { add("relieving", "Nothing") }
-        if any(["rest", "resting", "bed rest", "better with rest"]) { add("relieving", "Rest") }
+        // Whole word: "rest" used to match inside "arrest" ("cardiac arrest" read as relieved by rest).
+        if text.contains("rest", wholeWord: true) || any(["resting", "bed rest", "better with rest"]) { add("relieving", "Rest") }
 
         // MARK: Severity (numeric pain scores in text)
         let severityPhrases = ["1/10", "2/10", "3/10"]
@@ -212,7 +221,7 @@ enum ClinicalTextParser {
         }
 
         // Sepsis criteria
-        let hasFeverOrHypothermia = any(["fever", "pyrexia", "febrile", "temperature 38", "temperature 39", "hypothermia", "temperature 35"])
+        let hasFeverOrHypothermia = feverWords || feverByValue || hypothermiaByValue || has("hypothermia")
         let hasTachycardiaOrHypotension = any(["tachycardia", "hypotension", "bp drop", "septic", "shock"])
         let hasOrganDysfunction = any(["confusion", "altered gcs", "reduced consciousness", "oliguria", "elevated lactate", "raised lactate"])
         if hasFeverOrHypothermia && (hasTachycardiaOrHypotension || hasOrganDysfunction) {
@@ -373,5 +382,33 @@ enum ClinicalTextParser {
             clinicalAlarms: alarms,
             ccHint: ccHint
         )
+    }
+
+    // MARK: - Recorded temperatures
+
+    private static let temperaturePatterns: [NSRegularExpression] = [
+        // "temperature 38.4", "temp: 39", "T 38.2°C", "temperature of 37.9 °C"
+        #"\b(?:temperature|temp|t)\s*(?:of|was|is|:|=)?\s*(\d{2}(?:[.,]\d{1,2})?)"#,
+        // "38.6°C", "39 °C", "38.5 degrees C", "37.9ºC" (the unit is required: "45 degrees" of
+        // hip flexion is not a temperature)
+        #"(\d{2}(?:[.,]\d{1,2})?)\s*(?:°|º|degrees?)\s*(?:c\b|celsius)"#,
+        // "febrile 38.5", "pyrexial 39.1"
+        #"\b(?:febrile|pyrexial|pyrexia of|fever of)\s*(\d{2}(?:[.,]\d{1,2})?)"#,
+    ].compactMap { try? NSRegularExpression(pattern: $0, options: [.caseInsensitive]) }
+
+    /// Temperatures (°C, 30–43) written in the text. Values outside that range are not
+    /// temperatures ("T 12" is a vertebra, "temp 100" a Fahrenheit value we do not convert).
+    static func recordedTemperatures(_ text: String) -> [Double] {
+        let ns = text as NSString
+        var values: [Double] = []
+        for re in temperaturePatterns {
+            for m in re.matches(in: text, range: NSRange(location: 0, length: ns.length)) where m.numberOfRanges > 1 {
+                let r = m.range(at: 1)
+                guard r.location != NSNotFound else { continue }
+                let raw = ns.substring(with: r).replacingOccurrences(of: ",", with: ".")
+                if let v = Double(raw), v >= 30, v <= 43 { values.append(v) }
+            }
+        }
+        return values
     }
 }

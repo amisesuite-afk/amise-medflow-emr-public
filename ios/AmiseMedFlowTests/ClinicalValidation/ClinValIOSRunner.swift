@@ -11,7 +11,8 @@
 //                        RiskSnapshotCard: VisitRiskAssessment.assess(_:pathway:); allergy banner
 //   2. Chief complaint   ConsultationView.handleChiefComplaintChange: early BayesianDiagnosisEngine.infer
 //                        (CC + PMH/PSHx only, prefix 4); ConsultationView+Sheets.runPathway:
-//                        ClinicalPathwayEngine.assess (acuity lowered, never raised)
+//                        ClinicalAcuityEngine.assess (acuity raised, never lowered); run again after
+//                        the diagnosis is confirmed (step 5b) — that level is the graded one
 //   3. HPI / exam / Ix   ConsultationView+DiagnosisTab.refreshBayesian: ClinicalTextParser.parse →
 //                        feature augments → BayesianDiagnosisEngine.infer (top 5) + clinical alarms
 //   4. Pipeline          ClinicalPipelineOrchestrator.runNow (Diagnosis tab: Clinical Actions prefix 6,
@@ -221,16 +222,11 @@ enum ClinValIOSRunner {
             )
             out.differentials["ios.ccEarly"] = dxItems(Array(early.prefix(4)))
         }
-        let triage = ClinicalPathwayEngine.assess(chiefComplaint: p.chiefComplaint ?? "", pmh: p.pmhNotes ?? "")
-        out.emergencyLevel = ClinValLevel(
-            level: levelName(triage.suggestedAcuity),
-            raw: "ClinicalPathwayEngine suggestedAcuity=\(triage.suggestedAcuity.label), pathway=\(triage.pathway)",
-            source: "ios.triage")
-        for f in triage.redFlags { out.redFlags.append(.init(source: "ios.triage", text: f)) }
-        out.differentials["ios.triage"] = triage.differentials.enumerated().map {
-            ClinValDxItem(rank: $0.offset + 1, name: $0.element.name, id: nil, icd10: nil, score: Double($0.element.probability))
-        }
-        if triage.suggestedAcuity < p.acuity { p.acuity = triage.suggestedAcuity }
+        // ConsultationView+Sheets.runPathway (CC debounce): ClinicalAcuityEngine, which raises the
+        // recorded acuity and never lowers it. The level graded below is the one after the
+        // diagnosis is confirmed (step 5b), when the view runs runPathway again.
+        let earlyTriage = ClinicalAcuityEngine.assess(patient: p).triageResult
+        if earlyTriage.suggestedAcuity < p.acuity { p.acuity = earlyTriage.suggestedAcuity }
 
         // 3. refreshBayesian (ConsultationView+DiagnosisTab).
         let invResultsText = p.investigations
@@ -337,6 +333,26 @@ enum ClinValIOSRunner {
             p.workingDiagnosisICD = dx.icd10
             p.assessmentText = dx.assessmentText
         }
+
+        // 5b. ConsultationView.onChange(workingDiagnosis) → runPathway: the triage level is the
+        // highest of CC keywords, vitals/NEWS2, BP, labs, ECG, text alarms, recognition rules and
+        // the confirmed diagnosis (ClinicalAcuityEngine). The triage card shows its red flags and alerts.
+        let acuity = ClinicalAcuityEngine.assess(patient: p)
+        let triage = acuity.triageResult
+        out.emergencyLevel = ClinValLevel(
+            level: levelName(triage.suggestedAcuity),
+            raw: "ClinicalAcuityEngine level=\(triage.suggestedAcuity.label); pathway=\(triage.pathway); "
+                + "because: \(triage.levelReasons.prefix(4).joined(separator: " | "))",
+            source: "ios.triage")
+        for f in triage.redFlags { out.redFlags.append(.init(source: "ios.triage", text: f)) }
+        for a in triage.alerts {
+            out.alarms.append(ClinValAlarm(source: "ios.acuity", title: a.title, detail: a.summary,
+                                           severity: a.level.map { levelName($0) } ?? "info"))
+        }
+        out.differentials["ios.triage"] = triage.differentials.enumerated().map {
+            ClinValDxItem(rank: $0.offset + 1, name: $0.element.name, id: nil, icd10: nil, score: Double($0.element.probability))
+        }
+        if triage.suggestedAcuity < p.acuity { p.acuity = triage.suggestedAcuity }
 
         // 6. Plan tab: diagnosis radiation.
         if let r = DiagnosisRadiationEngine.radiate(workingDiagnosis: p.workingDiagnosis, ageYears: p.ageYears, sex: p.sex) {

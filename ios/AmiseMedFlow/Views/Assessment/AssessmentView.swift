@@ -189,10 +189,8 @@ struct AssessmentView: View {
         Section("Clinical Pathway Engine") {
             Button {
                 isAssessing = true
-                let result = ClinicalPathwayEngine.assess(
-                    chiefComplaint: patient.chiefComplaint ?? "",
-                    pmh: patient.pmhNotes ?? ""
-                )
+                // Highest of CC keywords, vitals, BP, labs, ECG, alarms and diagnosis.
+                let result = ClinicalAcuityEngine.assess(patient: patient).triageResult
                 triageResult = result
                 // Auto-suggest acuity — surgeon always confirms
                 if result.suggestedAcuity < patient.acuity {

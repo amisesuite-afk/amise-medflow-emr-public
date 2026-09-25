@@ -16,14 +16,24 @@ struct TriageResult {
     let pathway: String
     let confidencePercent: Int
     let differentials: [DifferentialDx]
+    /// Why the level is what it is (ClinicalAcuityEngine: "vitals: NEWS2 7", "labs: potassium 7.1").
+    var levelReasons: [String] = []
+    /// Recognised emergencies and critical findings (ClinicalAcuityEngine), shown on the triage card.
+    var alerts: [AcuityAlert] = []
 }
 
+/// Chief-complaint keyword triage. This is ONE input to the triage level: the level the app
+/// shows and records comes from `ClinicalAcuityEngine`, which takes the highest of these keywords,
+/// the vital signs (NEWS2 / paediatric thresholds), blood pressure, critical labs, ECG, the text
+/// alarms and the confirmed diagnosis.
 enum ClinicalPathwayEngine {
+    /// `pmh` is accepted for source compatibility but no longer escalates the level: a past
+    /// "perforation" or "peritonitis" in the history is not a current emergency (clinical
+    /// validation 2026-09 — a PMH line made the present visit an emergency).
     static func assess(chiefComplaint: String, pmh: String = "") -> TriageResult {
         // Negation-aware keyword matching (NegationMatcher): "no jaundice", "No history of
         // perforation", "no weight loss" do not count as the finding.
         let ccText = NegationMatcher.Source(chiefComplaint)
-        let historyText = NegationMatcher.Source(pmh)
         func has(_ kw: String) -> Bool { ccText.contains(kw) }
 
         var redFlags: [String] = []
@@ -35,12 +45,12 @@ enum ClinicalPathwayEngine {
         // --- Red flag detection ---
         let emergencyKeywords = ["rigidity", "peritonitis", "septic shock", "haemodynamic instability",
                                   "perforation", "massive haemorrhage", "ruptured", "acute abdomen",
-                                  "strangulated", "ischemia", "bowel necrosis"]
+                                  "strangulated", "ischemia", "ischaemia", "bowel necrosis"]
         let urgentKeywords = ["acute", "severe pain", "vomiting blood", "haematemesis", "melaena",
                                "unable to open bowels", "complete obstruction", "high fever", "jaundice",
                                "cholangitis", "pancreatitis", "perforated"]
 
-        for kw in emergencyKeywords where has(kw) || historyText.contains(kw) {
+        for kw in emergencyKeywords where has(kw) {
             redFlags.append("⚠️ \(kw.capitalized)")
             suggestedAcuity = .emergency
         }

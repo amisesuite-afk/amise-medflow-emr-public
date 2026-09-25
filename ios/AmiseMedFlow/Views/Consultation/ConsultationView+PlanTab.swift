@@ -194,9 +194,40 @@ extension ConsultationView {
                     ForEach(result.redFlags, id: \.self) { Text("• \($0)").font(.caption).foregroundStyle(.red) }
                 }
             }
+
+            // Recognised emergencies and critical findings (ClinicalAcuityEngine): suggested first
+            // actions for the clinician, and the 911 / emergency-department redirect where the
+            // clinic does not manage the emergency.
+            if !result.alerts.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(result.alerts) { alert in
+                        acuityAlertRow(alert)
+                    }
+                }
+            }
         } header: {
             Label("Pathway: \(result.pathway)", systemImage: "waveform.path.ecg.rectangle")
         }
+    }
+
+    func acuityAlertRow(_ alert: AcuityAlert) -> some View {
+        let isEmergency = alert.level == .emergency
+        let tint: Color = isEmergency ? Color.red : Color.orange
+        return VStack(alignment: .leading, spacing: 3) {
+            Label(alert.title, systemImage: isEmergency ? "exclamationmark.octagon.fill" : "exclamationmark.triangle.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(tint)
+            if !alert.detail.isEmpty {
+                Text(alert.detail).font(.caption2).foregroundStyle(.secondary)
+            }
+            if !alert.action.isEmpty {
+                Text("Suggested first actions: \(alert.action)").font(.caption2)
+            }
+            if let redirect = alert.redirect {
+                Text(redirect).font(.caption.weight(.bold)).foregroundStyle(tint)
+            }
+        }
+        .accessibilityElement(children: .combine)
     }
 
 
