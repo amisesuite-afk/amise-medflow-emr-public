@@ -1,8 +1,8 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-25T21:54:20.047Z.
+Generated 2026-09-25T23:19:58.014Z.
 
-- Harness clinval-web/1; 397 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
+- Harness clinval-web/1; 409 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 397 | 3087 | 2919 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
+| web | 409 | 3101 | 2933 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
 
 ## Blocking failures
 
@@ -2788,7 +2788,7 @@ Permutation of `appendicitis-adult-typical`.
 | score-rec-pas | scoreRecommended | quality | FAIL (known gap) | WSES Jerusalem guidelines 2020; Pediatric Appendicitis Score (PAS) 2002 |  |
 | inv-ultrasound | investigationInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
-| mgmt-no-unqualified-ct-child | managementExclude | quality | PASS | WSES Jerusalem guidelines 2020 | Keep the investigation 'conditional' text in PlanTab.buildPlanText and add a paediatric qualifier (US first; CT only if US non-diagnostic). |
+| mgmt-no-unqualified-ct-child | managementExclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
 | mgmt-no-routine-postop-antibiotics | managementExclude | quality | PASS | WSES Jerusalem guidelines 2020 |  |
 | pathway-first-visit | pathway | quality | n/a |  |  |
 | variant-uncomplicated | dxVariant | quality | PASS | WSES Jerusalem guidelines 2020 |  |
@@ -4850,7 +4850,7 @@ Permutation of `cholecystitis-tg18-grade1`.
 | inv-blood-cultures | investigationInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-antibiotics | managementInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
 | mgmt-glycaemic-plan | managementInclude | quality | PASS |  |  |
-| mgmt-no-nsaid-ckd | managementExclude | quality | PASS |  | Operative-plan templates: omit NSAIDs when comorbidities include CKD or age ≥75, rather than a free-text "if eGFR normal" caveat. |
+| mgmt-no-nsaid-ckd | managementExclude | quality | PASS |  |  |
 | variant-grade2 | dxVariant | quality | PASS | Tokyo Guidelines 2018 2018 | dx-variants.ts: check Grade III → II → I, and remove the bare "cholecystitis" keyword from Grade I. |
 
 Failure details:
@@ -6398,7 +6398,7 @@ Permutation of `dvt-wells-likely`.
 | mgmt-lmwh | managementInclude | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 | mgmt-no-doac-in-pregnancy | managementExclude | critical | PASS | RCOG Green-top Guideline No. 37b 2015 | Make the DVT/PE plans pregnancy-aware (pregnancy → LMWH only; hide DOAC and warfarin lines) and add a dx-variant or plan prefix for VTE in pregnancy. |
 | mgmt-no-warfarin-in-pregnancy | managementExclude | critical | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
-| inv-no-ddimer-in-pregnancy | investigationExclude | quality | PASS | RCOG Green-top Guideline No. 37b 2015 | Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy. |
+| inv-no-ddimer-in-pregnancy | investigationExclude | quality | PASS | RCOG Green-top Guideline No. 37b 2015 |  |
 
 Guidelines:
 
@@ -12510,7 +12510,7 @@ Guidelines:
 | mgmt-no-appendicectomy | managementExclude | critical | PASS |  |  |
 | mgmt-urinalysis | managementInclude | quality | PASS | NICE NG148 2019 |  |
 | mgmt-volume-assessment | managementInclude | quality | PASS | KDIGO clinical practice guideline 2012 |  |
-| mgmt-no-insulin-dextrose-mild-k | managementExclude | quality | PASS | UK Kidney Association 2020 | Grade the hyperkalaemia prompt by UKKA 2020 bands: mild 5.5–5.9 → treat the cause and recheck; moderate/severe → insulin-glucose (±calcium with ECG changes). |
+| mgmt-no-insulin-dextrose-mild-k | managementExclude | quality | PASS | UK Kidney Association 2020 |  |
 | pathway-ward-review | pathway | quality | n/a |  |  |
 
 Guidelines:
@@ -13904,6 +13904,418 @@ Guidelines:
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Acute gallstone pancreatitis first labelled biliary colic
+
+#### `reasoning-closure-biliary-colic-lipase` — 
+
+44-year-old woman confirmed as biliary colic in clinic; the bloods sent at the visit return with lipase 1850 U/L.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| alert-favours-pancreatitis | reasoningInclude | critical | PASS | Classification of acute pancreatitis 2013 |  |
+| alert-names-lipase | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **atlanta-2012** — Classification of acute pancreatitis — revised Atlanta classification (2013), Diagnosis: 2 of 3 (pain, lipase/amylase > 3 x ULN, imaging). Banks PA et al. Gut 2013;62:102-111 *(statement wording/numbering not yet verified against the source)*
+- **croskerry-2003** — The importance of cognitive errors in diagnosis and strategies to minimize them (2003), Premature closure; cognitive forcing strategies. Croskerry P. Acad Med 2003;78:775-780 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Perforated Peptic Ulcer / Perforated Viscus
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: priority (acuity=review, action=priority_24_48h, score=15)
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 1850 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, epigastric_pain, radiation_to_back, fatty_food_trigger, sudden_onset, acute_onset, nausea_vomiting, relief_sitting_forward, abdominal_tenderness, elevated_amylase, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
+- note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
+- note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
+
+</details>
+
+### NSTEMI presenting as epigastric pain, first labelled gastritis
+
+#### `reasoning-closure-gastritis-troponin` — 
+
+62-year-old diabetic man confirmed as gastritis; troponin returns at 480 ng/L.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| alert-favours-acs | reasoningInclude | critical | PASS | ESC Guidelines for the management of acute coronary syndromes 2023 |  |
+
+Guidelines:
+
+- **esc-acs-2023** — ESC Guidelines for the management of acute coronary syndromes (2023), Atypical presentations; hs-troponin. Byrne RA et al. Eur Heart J 2023;44:3720-3826 *(statement wording/numbering not yet verified against the source)*
+- **croskerry-2003** — The importance of cognitive errors in diagnosis and strategies to minimize them (2003), Premature closure; cognitive forcing strategies. Croskerry P. Acad Med 2003;78:775-780 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Acute Pancreatitis; 3. Perforated Peptic Ulcer / Perforated Viscus
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=19)
+- alarms: Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: web:wagner, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: epigastric_pain, sudden_onset, acute_onset, abdominal_pain, nausea_vomiting, diaphoresis, known_diabetes, known_hypertension, vascular_risk, pallor, abdominal_tenderness, smoker, raised_troponin, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: gastritis (from the confirmed diagnosis)
+- note: PlanTab protocol: gastritis (from the confirmed diagnosis)
+- note: Seeded investigations: gastritis (confirmed); 0 stat test(s) held back
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
+
+</details>
+
+### DKA first labelled gastroenteritis
+
+#### `reasoning-closure-gastroenteritis-dka` — 
+
+23-year-old woman with type 1 diabetes confirmed as gastroenteritis; blood glucose 27 mmol/L, ketones 5.4, bicarbonate 9.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| alert-favours-dka | reasoningInclude | critical | PASS | The management of diabetic ketoacidosis in adults 2023 |  |
+
+Guidelines:
+
+- **jbds-dka-2023** — The management of diabetic ketoacidosis in adults (2023), Diagnostic criteria. JBDS-IP 2023 *(statement wording/numbering not yet verified against the source)*
+- **croskerry-2003** — The importance of cognitive errors in diagnosis and strategies to minimize them (2003), Premature closure; cognitive forcing strategies. Croskerry P. Acad Med 2003;78:775-780 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Hyperosmolar Hyperglycaemic State (HHS); 3. Hyperemesis Gravidarum
+- differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Breast carcinoma; 3. Acute cholecystitis; 4. Uterine fibroids; 5. Endometriosis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=63)
+- alarms: Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Diabetic ketoacidosis [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: ranson, qsofa, web:wagner, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nausea_vomiting, abdominal_pain, known_diabetes, insulin_or_sulfonylurea, periumbilical_pain, dehydration, polyuria_polydipsia, hyperglycaemia, ketonaemia, metabolic_acidosis, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: infective_colitis (from the confirmed diagnosis)
+- note: PlanTab protocol: infective_colitis (from the confirmed diagnosis)
+- note: Seeded investigations: infective_colitis (confirmed); 0 stat test(s) held back
+- note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Leaking AAA first labelled renal colic, NEWS2 rising
+
+#### `reasoning-closure-renal-colic-news2-rising` — 
+
+71-year-old man confirmed as left renal colic; NEWS2 climbs from 1 to 8 over two hours.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| alert-news2-rising | reasoningInclude | critical | PASS | National Early Warning Score (NEWS) 2 2017; Abdominal aortic aneurysm: diagnosis and management 2020 |  |
+
+Guidelines:
+
+- **rcp-news2-2017** — National Early Warning Score (NEWS) 2 (2017), Clinical response thresholds. Royal College of Physicians, London 2017 *(statement wording/numbering not yet verified against the source)*
+- **nice-ng156** — Abdominal aortic aneurysm: diagnosis and management (2020), 1.3 Symptomatic AAA. NICE NG156 *(statement wording/numbering not yet verified against the source)*
+- **croskerry-2003** — The importance of cognitive errors in diagnosis and strategies to minimize them (2003), Premature closure; cognitive forcing strategies. Croskerry P. Acad Med 2003;78:775-780 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 3. Oesophageal Perforation (Boerhaave)
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=102)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; SBP 88 mmHg — hypotension [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 124 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: qsofa, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: loin_pain, radiation_to_groin, sudden_onset, acute_onset, severe_pain, known_hypertension, vascular_risk, diaphoresis, pale_clammy, pallor, smoker, anaemia, tachycardia, haemodynamic_instability, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: renal_colic (from the confirmed diagnosis)
+- note: PlanTab protocol: renal_colic (from the confirmed diagnosis)
+- note: Seeded investigations: renal_colic (confirmed); 0 stat test(s) held back
+
+</details>
+
+### Epigastric pain to the back: lipase before imaging
+
+#### `reasoning-next-test-epigastric-lipase` — 
+
+45-year-old man with epigastric pain through to the back after a weekend of heavy drinking; no bloods yet.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| next-test-lipase | reasoningInclude | quality | PASS | Classification of acute pancreatitis 2013 |  |
+| no-ct-first | reasoningExclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **atlanta-2012** — Classification of acute pancreatitis — revised Atlanta classification (2013), Diagnosis. Banks PA et al. Gut 2013;62:102-111 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Acute / Chronic Gastritis; 3. Biliary Colic / Symptomatic Cholelithiasis
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Reducible groin / abdominal hernia; 3. Gout / pseudogout; 4. Breast carcinoma; 5. Hepatocellular carcinoma (HCC)
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: priority (acuity=review, action=priority_24_48h, score=15)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Alcohol excess [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, epigastric_pain, radiation_to_back, acute_onset, nausea_vomiting, abdominal_tenderness, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (leading differential); 1 stat test(s) held back
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Right iliac fossa pain in a woman of reproductive age: pregnancy test first
+
+#### `reasoning-next-test-rif-pain-woman` — 
+
+24-year-old woman with 18 hours of right iliac fossa pain; last period six weeks ago; pregnancy status not yet known.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| next-test-pregnancy | reasoningInclude | quality | PASS | Ectopic pregnancy and miscarriage: diagnosis and initial management 2019 |  |
+
+Guidelines:
+
+- **nice-ng126** — Ectopic pregnancy and miscarriage: diagnosis and initial management (2019), 1.2 Early pregnancy — pregnancy test. NICE NG126 (2019, updated 2023) *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Ectopic Pregnancy; 2. Acute Appendicitis; 3. Ovarian Torsion
+- differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Breast carcinoma; 3. Acute cholecystitis; 4. Uterine fibroids; 5. Endometriosis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=12)
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, rlq_pain, acute_onset, missed_period, nausea_vomiting, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: ectopic_pregnancy (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: ectopic_pregnancy (leading differential); 3 stat test(s) held back
+- note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Aorto-enteric fistula (herald bleed after aortic graft)
+
+#### `reasoning-zebra-aortoenteric-fistula` — 
+
+70-year-old man with an open AAA repair and aortic graft in 2019 presents with a small haematemesis and melaena.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| zebra-aef | reasoningInclude | critical | PASS | ESVS 2020 clinical practice guidelines on the management of vascular graft and endograft infections 2020 |  |
+
+Guidelines:
+
+- **esvs-2020** — ESVS 2020 clinical practice guidelines on the management of vascular graft and endograft infections (2020), Aorto-enteric fistula. Chakfé N et al. Eur J Vasc Endovasc Surg 2020;59:339-384 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Aorto-enteric Fistula (after aortic graft); 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Oesophageal Variceal Haemorrhage (Portal Hypertension)
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=104)
+- alarms: Emergency now [web.triage.emergency]; GI bleeding after aortic graft — aorto-enteric fistula until proven otherwise [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; GI bleeding — haemodynamically stable [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: glasgow-blatchford, news2, rockall, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nausea_vomiting, haematemesis, melaena, antiplatelet_use, aortic_graft, previous_surgery, pallor, pr_bleeding, anaemia, tachycardia, trauma_mechanism, recent_surgery, stoma
+- note: AssessmentTab ManagementPanel protocol: aortoenteric_fistula (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: aortoenteric_fistula (leading differential); 2 stat test(s) held back
+- note: matchPathways: GI Bleeding (Upper and Lower) (10)
+
+</details>
+
+### Primary aldosteronism (hypertension with hypokalaemia)
+
+#### `reasoning-zebra-conn-hypokalaemia` — 
+
+41-year-old woman with hypertension on three drugs and a potassium of 2.9 mmol/L, seen for an incidental adrenal nodule.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| zebra-conn | reasoningInclude | quality | PASS | The management of primary aldosteronism: case detection, diagnosis, and treatment 2016 |  |
+
+Guidelines:
+
+- **es-pa-2016** — The management of primary aldosteronism: case detection, diagnosis, and treatment (2016), Case detection. Funder JW et al. J Clin Endocrinol Metab 2016;101:1889-1916 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Renal Colic / Urolithiasis; 2. Adrenal Incidentaloma; 3. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis)
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: known_hypertension, vascular_risk, acei_arb_use, diuretic_use, hyponatraemia_drug, loin_pain, colicky_pain, adrenal_mass, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: renal_colic (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: renal_colic (leading differential); 0 stat test(s) held back
+
+</details>
+
+### Eosinophilic oesophagitis (recurrent food bolus in an atopic young man)
+
+#### `reasoning-zebra-eoe-food-bolus` — 
+
+26-year-old man with asthma and eczema, third food bolus impaction this year.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| zebra-eoe | reasoningInclude | quality | PASS | Updated international consensus diagnostic criteria for eosinophilic esophagitis (AGREE) 2018 |  |
+
+Guidelines:
+
+- **agree-2018** — Updated international consensus diagnostic criteria for eosinophilic esophagitis (AGREE) (2018), Clinical features. Dellon ES et al. Gastroenterology 2018;155:1022-1033 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Oesophageal Stricture (Benign); 2. Oesophageal Carcinoma; 3. Acute Asthma Exacerbation
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Dysphagia / oesophageal stricture
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=80)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: dysphagia, known_asthma, atopy, fever, dysphagia_solids, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: oesophageal_stricture (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: oesophageal_stricture (leading differential); 0 stat test(s) held back
+- note: matchPathways: Foreign Body Ingestion / Food Bolus (10), IBD — Surgical Complications (Crohn's / UC) (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
+
+</details>
+
+### Herb-induced liver injury (bush tea)
+
+#### `reasoning-zebra-herbal-liver-injury` — 
+
+50-year-old woman with jaundice and ALT 650 U/L; drinks a bush tea daily and takes a herbal slimming supplement.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| zebra-hili | reasoningInclude | quality | PASS | EASL Clinical Practice Guidelines: drug-induced liver injury 2019 |  |
+
+Guidelines:
+
+- **easl-dili-2019** — EASL Clinical Practice Guidelines: drug-induced liver injury (2019), Herbal and dietary supplements. J Hepatol 2019;70:1222-1261 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Hepatitis; 2. Choledocholithiasis; 3. Acute Cholangitis
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Endometriosis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=70)
+- alarms: Emergency now [web.triage.emergency]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: asge-cbd, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: jaundice, fatigue, dark_urine, alcohol_use, raised_liver_enzymes, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: acute_hepatitis (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: acute_hepatitis (leading differential); 0 stat test(s) held back
+- note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Pancreatic Mass / Cyst (17)
+
+</details>
+
+### Phaeochromocytoma (paroxysmal headache, sweating, palpitations)
+
+#### `reasoning-zebra-phaeo-episodes` — 
+
+38-year-old woman with attacks of pounding headache, sweating and palpitations; BP 220/120 during an attack.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| zebra-phaeo | reasoningInclude | quality | PASS | Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline 2014 |  |
+
+Guidelines:
+
+- **es-pheo-2014** — Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline (2014), Who should be tested. Lenders JWM et al. J Clin Endocrinol Metab 2014;99:1915-1942 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Phaeochromocytoma / Paraganglioma; 2. Hypoglycaemia; 3. Hyperthyroidism / Thyrotoxicosis (Graves, Toxic Nodule)
+- differential web.symptomInference: 1. Uterine fibroids; 2. Acute cholecystitis; 3. Systemic lupus erythematosus; 4. Breast carcinoma; 5. Endometriosis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, web:gad7
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: headache, palpitations, diaphoresis, paroxysmal_episodes, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: adrenal_incidentaloma (leading differential); 0 stat test(s) held back
+
+</details>
+
+### Recurrent acute pancreatitis without gallstones or alcohol (hypertriglyceridaemia)
+
+#### `reasoning-zebra-recurrent-pancreatitis` — 
+
+36-year-old man with a third episode of acute pancreatitis; no gallstones on ultrasound, denies alcohol excess, triglycerides 18 mmol/L.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| zebra-htg | reasoningInclude | quality | PASS | American College of Gastroenterology guidelines: management of acute pancreatitis 2024 |  |
+
+Guidelines:
+
+- **acg-2024** — American College of Gastroenterology guidelines: management of acute pancreatitis (2024), Aetiology. Tenner S et al. Am J Gastroenterol 2024;119:419-437 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Biliary Colic / Symptomatic Cholelithiasis; 3. Sphincter of Oddi Dysfunction
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Acute biliary pancreatitis
+- emergency level: urgent (acuity=priority, action=same_day_call, score=27)
+- alarms: Severe hypertriglyceridaemia [web.clinicalPrompts.safety]; Amylase 1200 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: ranson, web:wagner, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, epigastric_pain, radiation_to_back, nausea_vomiting, known_diabetes, abdominal_tenderness, elevated_amylase, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (leading differential); 1 stat test(s) held back
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
 
