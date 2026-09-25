@@ -1,6 +1,7 @@
 import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPanel } from './rules';
 import { matchSurgicalPathologies, SurgicalPathology } from './surgical-dictionary';
 import { screenForCancer, detectReferrals, CancerScreenResult, ReferralRecommendation, ScreeningInput } from './cancer-screening';
+import { joinClauses, testAffirmed } from './negation';
 
 export type Sex = 'female' | 'male' | 'other' | 'unknown';
 
@@ -152,11 +153,11 @@ function computeVitalRedFlags(v: Required<VitalSigns>): VitalRedFlag[] {
   return flags;
 }
 
-function detectPathways(combined: string, v: Required<VitalSigns>): PathwayPanel[] {
+function detectPathways(clinicalText: string, v: Required<VitalSigns>): PathwayPanel[] {
   const result: PathwayPanel[] = [];
   const vSummary = { sbp: v.systolicBp, hr: v.heartRate, temp: v.temperatureC, spo2: v.spo2 };
   for (const def of PATHWAY_DEFINITIONS) {
-    if (!def.trigger.test(combined)) continue;
+    if (!testAffirmed(def.trigger, clinicalText)) continue;
     if (def.compositeCheck && !def.compositeCheck(vSummary)) continue;
     result.push({
       id: def.id,
@@ -180,7 +181,19 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     ...data.medications,
     ...data.toxicHabits,
   ].join(' ');
-  const redFlags = scanRedFlags(combined);
+  // The same items, one clause each, for the clinical (symptom) rules: those are negation-aware,
+  // so "No bleeding", "no vomiting", "No chest pain described" do not score (negation.ts), and a
+  // clause break keeps a negation in one item from reaching into the next.
+  const clinicalText = joinClauses([
+    data.freeText,
+    ...data.symptoms,
+    ...data.comorbidities,
+    ...data.surgicalHistory,
+    ...data.medications,
+    ...data.toxicHabits,
+  ]);
+  const has = (pattern: RegExp) => testAffirmed(pattern, clinicalText);
+  const redFlags = scanRedFlags(clinicalText);
   const vitalRedFlags = computeVitalRedFlags(data.vitalSigns);
 
   const state = { score: 0, reasons: [] as string[] };
@@ -208,14 +221,14 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   addScore(data.painScore !== null && data.painScore >= 8, 20, 'Severe pain score', state);
   addScore(data.painScore !== null && data.painScore >= 5 && data.painScore < 8, 8, 'Moderate pain score', state);
 
-  if (data.isPostOp || POST_OP_TERMS.test(combined)) {
+  if (data.isPostOp || has(POST_OP_TERMS)) {
     addScore(true, data.postOpDays !== null && data.postOpDays <= 14 ? 25 : 15, 'Post-operative or recent-procedure concern', state);
   }
 
   addScore(data.pregnancyPossible, 12, 'Pregnancy possibility requires clinical review', state);
-  addScore(/(fever|chills|rigors)/i.test(combined) && ERCP_TERMS.test(combined), 35, 'Possible cholangitis pattern', state);
-  addScore(/(vomiting|unable to keep fluids|dehydrated)/i.test(combined), 15, 'Vomiting or possible dehydration', state);
-  addScore(GI_BLEED_TERMS.test(combined), 25, 'Possible gastrointestinal bleeding', state);
+  addScore(has(/(fever|chills|rigors)/i) && has(ERCP_TERMS), 35, 'Possible cholangitis pattern', state);
+  addScore(has(/(vomiting|unable to keep fluids|dehydrated)/i), 15, 'Vomiting or possible dehydration', state);
+  addScore(has(GI_BLEED_TERMS), 25, 'Possible gastrointestinal bleeding', state);
 
   // Composite vital + symptom checks
   const v = data.vitalSigns;
@@ -223,11 +236,11 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   const hasHypotension = v.systolicBp !== null && v.systolicBp < 90;
   const hasTachycardia = v.heartRate !== null && v.heartRate > 120;
 
-  addScore(CHEST_PAIN_TERMS.test(combined) && (v.spo2 !== null && v.spo2 < 95), 50, 'Chest pain with hypoxia — possible ACS / PE', state);
-  addScore(ERCP_TERMS.test(combined) && hasFever, 35, 'Jaundice with fever — cholangitis pattern', state);
-  addScore(GI_BLEED_TERMS.test(combined) && (hasHypotension || hasTachycardia), 60, 'GI bleed with haemodynamic instability — emergency', state);
-  addScore(DIABETIC_FOOT_TERMS.test(combined) && hasFever, 40, 'Diabetic foot infection with systemic fever', state);
-  addScore(POST_OP_TERMS.test(combined) && hasFever && (data.postOpDays === null || data.postOpDays <= 30), 35, 'Post-op fever — source must be identified', state);
+  addScore(has(CHEST_PAIN_TERMS) && (v.spo2 !== null && v.spo2 < 95), 50, 'Chest pain with hypoxia — possible ACS / PE', state);
+  addScore(has(ERCP_TERMS) && hasFever, 35, 'Jaundice with fever — cholangitis pattern', state);
+  addScore(has(GI_BLEED_TERMS) && (hasHypotension || hasTachycardia), 60, 'GI bleed with haemodynamic instability — emergency', state);
+  addScore(has(DIABETIC_FOOT_TERMS) && hasFever, 40, 'Diabetic foot infection with systemic fever', state);
+  addScore(has(POST_OP_TERMS) && hasFever && (data.postOpDays === null || data.postOpDays <= 30), 35, 'Post-op fever — source must be identified', state);
 
   let appointmentType: AppointmentType = 'new_consult';
   if (/follow.?up|review/i.test(combined)) appointmentType = 'follow_up';
@@ -251,12 +264,12 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     recommendedAction = 'priority_24_48h';
   }
 
-  const activePathways = detectPathways(combined, data.vitalSigns);
+  const activePathways = detectPathways(clinicalText, data.vitalSigns);
   const missingCriticalFields = buildMissingFields(data, combined);
   const questionsToAsk = buildQuestions(data, combined, missingCriticalFields);
   // "Magnet first step": flag patients whose complaint matches a known
   // surgical pathology as early as booking/check-in, with suggested codes.
-  const surgicalMatches = matchSurgicalPathologies(combined);
+  const surgicalMatches = matchSurgicalPathologies(clinicalText);
   const isPrimarilySurgical = surgicalMatches.length > 0;
 
   const suggestedBlocks = buildSuggestedBlocks(data, combined, appointmentType, surgicalMatches);

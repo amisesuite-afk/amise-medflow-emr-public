@@ -47,6 +47,7 @@ describe('explicit negations do not match', () => {
     ['Non-smoker', 'smok'],
     ['Appendicitis excluded on CT', 'appendicitis'],
     ['He doesn\'t have a fever', 'fever'],
+    ['Has not been vomiting', 'vomiting'],
   ];
   it.each(cases)('%s — %s', (text, term) => {
     expect(containsAffirmed(text, term)).toBe(false);
@@ -123,6 +124,10 @@ describe('hedges and pseudo-negations are not negations', () => {
     ['Unable to pass flatus', 'flatus'],
     ['Nil by mouth, guarding in RIF', 'guarding'],
     ['No doubt peritonitis', 'peritonitis'],
+    ["It hasn't stopped bleeding", 'bleeding'],
+    ['Vomiting has not settled', 'vomiting'],
+    ["I don't know if it is bleeding", 'bleeding'],
+    ['Bleeding has not yet settled', 'bleeding'],
     ['Ex-smoker', 'smok'],
   ];
   it.each(kept)('%s — %s', (text, term) => {

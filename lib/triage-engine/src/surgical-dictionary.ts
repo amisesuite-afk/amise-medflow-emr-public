@@ -10,6 +10,7 @@
  */
 
 import { Severity } from './rules';
+import { testAffirmed } from './negation';
 
 export type SurgicalCategory =
   | 'Hernia & Abdominal Wall'
@@ -628,7 +629,8 @@ const PRIORITY_WEIGHT: Record<SurgicalPathology['surgicalPriority'], number> = {
 export function matchSurgicalPathologies(text: string): SurgicalPathology[] {
   if (!text.trim()) return [];
   return SURGICAL_PATHOLOGIES
-    .filter(p => p.keywords.test(text))
+    // Negation-aware: "no strangulation", "not incarcerated" must not match (negation.ts).
+    .filter(p => testAffirmed(p.keywords, text))
     .sort((a, b) => PRIORITY_WEIGHT[b.surgicalPriority] - PRIORITY_WEIGHT[a.surgicalPriority]);
 }
 

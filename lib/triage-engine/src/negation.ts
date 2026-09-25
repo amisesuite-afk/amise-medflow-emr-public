@@ -117,7 +117,7 @@ const PSEUDO_AFTER: Record<string, ReadonlySet<string>> = {
   no: new Set(['change', 'changes', 'increase', 'improvement', 'better', 'relief', 'doubt', 'significant']),
   not: new Set([
     'only', 'improving', 'improved', 'improve', 'relieved', 'settling', 'settled', 'responding', 'responded',
-    'controlled', 'certain', 'sure', 'clear', 'excluded', 'ruled', 'necessarily', 'yet', 'been',
+    'controlled', 'certain', 'sure', 'clear', 'excluded', 'ruled', 'necessarily',
   ]),
   without: new Set(['improvement', 'relief', 'response', 'delay']),
   nil: new Set(['by']),
@@ -217,11 +217,27 @@ function cueAt(tokens: Token[], i: number): number | null {
   return Object.prototype.hasOwnProperty.call(PRE_CUES, w) ? PRE_CUES[w] : null;
 }
 
+/**
+ * After "not", "never" or a negating contraction: a double negative or a hedge ("hasn't stopped
+ * bleeding", "not settling", "don't know if it's bleeding") — the finding is present or uncertain.
+ */
+const PSEUDO_AFTER_VERB_NEGATION = new Set([
+  'stopped', 'stopping', 'stop', 'gone', 'going', 'settled', 'settling', 'eased', 'easing', 'better', 'improved',
+  'improving', 'resolved', 'resolving', 'subsided', 'subsiding', 'relieved', 'controlled', 'responding', 'responded',
+  'know', 'think', 'remember', 'sure', 'certain',
+]);
+
 function isPseudoNegation(tokens: Token[], cueIdx: number): boolean {
-  const pseudo = PSEUDO_AFTER[tokens[cueIdx].text];
-  if (!pseudo) return false;
+  const cue = tokens[cueIdx].text;
   const n = nextWordIndex(tokens, cueIdx);
-  return n >= 0 && pseudo.has(tokens[n].text);
+  if (n < 0) return false;
+  const next = tokens[n].text;
+  if (PSEUDO_AFTER[cue]?.has(next)) return true;
+  if ((cue === 'not' || cue === 'never' || NEGATING_CONTRACTIONS.has(cue)) && PSEUDO_AFTER_VERB_NEGATION.has(next)) return true;
+  // "doesn't seem to have stopped", "has not yet settled": look one word further.
+  const n2 = nextWordIndex(tokens, n);
+  return (cue === 'not' || NEGATING_CONTRACTIONS.has(cue)) && n2 >= 0 && PSEUDO_AFTER_VERB_NEGATION.has(tokens[n2].text)
+    && (next === 'yet' || next === 'really' || next === 'fully' || next === 'completely' || next === 'been' || next === 'had');
 }
 
 function preNegated(tokens: Token[], wordStart: number): boolean {

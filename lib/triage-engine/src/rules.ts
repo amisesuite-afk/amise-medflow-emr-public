@@ -1,3 +1,5 @@
+import { testAffirmed } from './negation';
+
 export const RULES_VERSION = '1.2.0';
 
 export type AppointmentType =
@@ -335,8 +337,12 @@ export function isPublicHoliday(date: Date): boolean {
   return PUBLIC_HOLIDAYS_SLU.includes(iso);
 }
 
+/**
+ * Red flags in free text. Negated mentions ("no bleeding", "denies chest pain", "no weight loss")
+ * do not count — see negation.ts for the rule; uncertain negation keeps the flag.
+ */
 export function scanRedFlags(text: string): { flagged: boolean; matches: RedFlag[] } {
-  const matches = RED_FLAGS.filter(rf => rf.pattern.test(text));
+  const matches = RED_FLAGS.filter(rf => testAffirmed(rf.pattern, text));
   return { flagged: matches.length > 0, matches };
 }
 

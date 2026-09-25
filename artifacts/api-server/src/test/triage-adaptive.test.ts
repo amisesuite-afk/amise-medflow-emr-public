@@ -66,6 +66,31 @@ describe('adaptiveTriage — pain score', () => {
   });
 });
 
+describe('adaptiveTriage — negated free text does not score (clinical validation, 2026-09)', () => {
+  it('pertinent negatives alone do not escalate', () => {
+    const r = adaptiveTriage({
+      ...base,
+      symptoms: ['heartburn'],
+      freeText: 'Heartburn for 3 months. No difficulty swallowing, no weight loss, no vomiting, no black stools.',
+    });
+    expect(r.reasons).not.toContain('GI or other bleeding');
+    expect(r.reasons).not.toContain('Vomiting or possible dehydration');
+    expect(r.reasons).not.toContain('Possible gastrointestinal bleeding');
+    expect(r.reasons).not.toContain('Possible malignancy');
+    expect(r.recommendedAction).not.toBe('emergency_now');
+  });
+
+  it('a negation in the free text does not reach a symptom chip', () => {
+    const r = adaptiveTriage({ ...base, symptoms: ['vomiting'], freeText: 'No fever' });
+    expect(r.reasons).toContain('Vomiting or possible dehydration');
+  });
+
+  it('positive findings still escalate', () => {
+    const r = adaptiveTriage({ ...base, freeText: 'Haematemesis this morning, no abdominal pain.' });
+    expect(r.recommendedAction).toBe('emergency_now');
+  });
+});
+
 describe('adaptiveTriage — vital red flags', () => {
   it('SBP < 90 → urgent vital flag', () => {
     const r = adaptiveTriage({ ...base, vitalSigns: { systolicBp: 80 } });
