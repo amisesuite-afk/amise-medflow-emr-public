@@ -3,6 +3,14 @@
 Prepared for Dr Dawit Kabiye as part of consultation testing. Review date 25 September 2026.
 Branch `ux-review`, based on `claude/pr-37-gbg22z` at `60e2b15`.
 
+> **Status (branch `ux-safety-fixes`).** C1–C4 and M8 are fixed on the web, and M1–M3 on iOS
+> (M3: NEWS2 in the iPad header and readable on iPhone; the rest of the proposed safety strip is
+> not done). The web screenshots in `docs/clinical-validation/ux/web/` were re-taken after the
+> fixes, and the walkthrough now ticks suggested tests and confirms the suggested diagnosis, so
+> the numbering changed after step 16. The `D/nn` and `P/nn` references below point to the
+> original set, which is in git history at commit `ad11177`. Encounters saved before the fixes
+> keep any content that was filled automatically; it is not rewritten.
+
 ## 1. Scope and method
 
 **What was reviewed.** The surgeon's core outpatient task, a first-visit surgical consultation:

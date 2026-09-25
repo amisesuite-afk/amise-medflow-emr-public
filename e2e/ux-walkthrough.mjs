@@ -210,6 +210,8 @@ async function walkthrough(browser, viewport) {
   const headerAfterCreate = await page.locator('body').innerText();
   if (/\bNKDA\b/.test(headerAfterCreate.slice(0, 400))) {
     ux.note('Header shows "NKDA" for a new patient whose allergies were never asked or recorded.');
+  } else if (/Allergies: not recorded/.test(headerAfterCreate.slice(0, 400))) {
+    ux.note('Header shows "Allergies: not recorded" for a new patient (no NKDA until recorded).');
   }
 
   // Visit type
@@ -251,30 +253,60 @@ async function walkthrough(browser, viewport) {
   // Exam
   await ux.click(pill(page, 'Exam'), 'Pathway: Exam');
   {
-    const badge = await page.locator('text=/systems? documented/').first().textContent().catch(() => null);
-    if (badge) ux.note(`Exam badge before any finding was entered: "${badge.trim()}"`);
+    const badge = await page.locator('text=/systems? documented/').first().textContent({ timeout: 2000 }).catch(() => null);
+    ux.note(badge ? `Exam badge before any finding was entered: "${badge.trim()}"`
+                  : 'Exam report before any finding was entered: no systems documented (nothing pre-filled)');
+    const notExamined = await page.locator('text="Not examined"').count();
+    if (notExamined) ux.note(`Exam systems shown as "Not examined" on first open: ${notExamined}`);
   }
   await ux.shot('Exam');
   await ux.click(btn(page, /^Tender RUQ$/), 'Exam finding: Tender RUQ');
   await ux.click(btn(page, /^Murphy's sign \+$/), "Exam finding: Murphy's sign +");
   await ux.shot('Exam findings selected', { newScreen: false });
 
-  // Investigations
+  // Investigations — the complaint's tests are SUGGESTIONS; tick to order (UX review C3)
   await ux.click(pill(page, 'Labs'), 'Pathway: Labs');
+  {
+    const labPanel = page.locator('[data-testid="suggested-investigations-lab"]');
+    if (await labPanel.count()) {
+      const badge = await labPanel.locator('text=/Suggested for/').first().textContent().catch(() => '');
+      const n = await labPanel.locator('input[type="checkbox"]').count();
+      ux.note(`Labs: ${n} suggested tests (${(badge ?? '').trim()}), none ordered until ticked`);
+    } else {
+      ux.note('Labs: no suggested-investigations panel');
+    }
+  }
   await ux.shot('Labs');
+  for (const t of ['LFTs', 'FBC']) {
+    await ux.click(page.locator('[data-testid="suggested-investigations-lab"] label').filter({ hasText: new RegExp(`^${t}\\b`) }), `Tick suggested lab: ${t}`);
+  }
+  await ux.click(btn(page, /^Order ticked \(\d+\)$/), 'Order ticked labs');
+  await ux.shot('Labs ordered', { newScreen: false });
   await ux.click(pill(page, 'Imaging'), 'Pathway: Imaging');
   await ux.shot('Imaging');
+  await ux.click(page.locator('[data-testid="suggested-investigations-imaging"] label').filter({ hasText: /USS abdomen/ }), 'Tick suggested imaging: USS abdomen');
+  await ux.click(btn(page, /^Order ticked \(\d+\)$/), 'Order ticked imaging');
+  await ux.shot('Imaging ordered', { newScreen: false });
 
   // Assessment
   await ux.click(pill(page, 'Assessment'), 'Pathway: Assessment');
   await ux.shot('Assessment');
   const primaryDx = page.locator('text=PRIMARY DX').first();
+  const dxSuggestion = page.locator('[data-testid="dx-suggestion"]');
   if (await primaryDx.isVisible().catch(() => false)) {
     const dxRow = await primaryDx.locator('xpath=..').innerText().catch(() => '');
     ux.note(`Working diagnosis already set before the clinician chose one: "${dxRow.replace(/\s+/g, ' ').trim()}" `
             + '(header shows it as the locked diagnosis).');
     await primaryDx.scrollIntoViewIfNeeded().catch(() => {});
     await ux.shot('Working diagnosis pre-set', { newScreen: false });
+  } else if (await dxSuggestion.count()) {
+    // UX review C4: a sign only SUGGESTS the diagnosis; the clinician confirms it.
+    const sug = ((await dxSuggestion.first().textContent()) ?? '').replace(/\s+/g, ' ').trim();
+    ux.note(`Diagnosis offered as a suggestion (not set): "${sug.slice(0, 110)}"`);
+    await dxSuggestion.first().scrollIntoViewIfNeeded().catch(() => {});
+    await ux.shot('Diagnosis suggested - confirm', { newScreen: false });
+    await ux.click(dxSuggestion.locator('button').filter({ hasText: /Confirm diagnosis/ }), 'Confirm suggested diagnosis');
+    await ux.shot('Diagnosis confirmed', { newScreen: false });
   } else {
     await ux.type(page.locator('input[placeholder^="Search diagnosis by name or ICD-10"]'), 'cholecystitis', 'Diagnosis search');
     await ux.shot('Diagnosis search results', { newScreen: false });
@@ -326,7 +358,7 @@ async function walkthrough(browser, viewport) {
       const exam = (text.split(/PHYSICAL EXAMINATION/i)[1] ?? '').split(/INVESTIGATIONS/i)[0];
       const examLines = exam.split('\n').map(l => l.trim()).filter(l => /^[A-Z][A-Za-z /]+:/.test(l));
       if (examLines.length) {
-        ux.note(`Summary examination lists ${examLines.length} systems (only the abdomen was examined in this walkthrough): `
+        ux.note(`Summary examination lists ${examLines.length} system(s) (only the abdomen was examined in this walkthrough): `
                 + examLines.map(l => l.split(':')[0]).join(', '));
       }
       if (examLines.some(l => /^Wound:/i.test(l))) {
@@ -337,7 +369,7 @@ async function walkthrough(browser, viewport) {
       const orderedItems = (firstHeadingAfter > 0 ? ordered.slice(0, firstHeadingAfter) : ordered.slice(0, 30))
         .filter(l => !/^(LABORATORY|IMAGING|RADIOLOGY)$/i.test(l));
       if (orderedItems.length) {
-        ux.note(`Summary "Investigations ordered" lists ${orderedItems.length} items although none were ordered by hand: `
+        ux.note(`Summary "Investigations ordered" lists ${orderedItems.length} items (the walkthrough ticked LFTs, FBC and USS abdomen): `
                 + orderedItems.slice(0, 12).join('; '));
       }
       const allergies = (text.split(/ALLERGIES/i)[1] ?? '').trim().split('\n')[0];
@@ -349,6 +381,13 @@ async function walkthrough(browser, viewport) {
   await ux.click(btn(page, /Edit encounter/), 'Back to the encounter');
   await ux.click(btn(page, /In progress — Close/), 'Close encounter');
   await ux.shot('Close encounter');
+  // In-app sign-off (UX review M8): what is still missing, a review tick, then Sign & close.
+  const signOff = page.locator('[data-testid="encounter-signoff"]');
+  if (await signOff.count()) {
+    const missing = ((await signOff.innerText().catch(() => '')) ?? '').split('\n').map(l => l.trim()).filter(Boolean);
+    ux.note(`Sign-off dialog: ${missing.slice(0, 8).join(' | ')}`);
+    await ux.click(signOff.locator('input[type="checkbox"]'), 'Tick "I have reviewed this encounter"');
+  }
   const confirm = page.locator('button').filter({ hasText: /^(✓\s*)?(Close encounter|Confirm|Yes, close|Complete|Sign & close)/i });
   if (await confirm.filter({ visible: true }).count()) {
     await ux.click(confirm, 'Confirm close');
