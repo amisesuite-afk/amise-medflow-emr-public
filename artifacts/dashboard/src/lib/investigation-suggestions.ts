@@ -8,9 +8,11 @@
  * the clinician ticks are ordered. Nothing here writes to the record.
  */
 import { getMatrixByName } from '@/lib/cc-matrices';
-import { getProtocol } from '@workspace/pane-engine';
+import { adaptInvestigationForPatient } from '@workspace/pane-engine';
+import type { PlanPatientContext } from '@workspace/pane-engine';
+import type { SeededInvestigation } from '@/lib/plan-builder';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
-import { isAlreadyOrdered, splitEssentialSecondary } from '@/lib/investigation-merge';
+import { isAlreadyOrdered } from '@/lib/investigation-merge';
 
 export type InvestigationKind = 'lab' | 'imaging';
 export type InvestigationUrgency = 'stat' | 'urgent' | 'routine';
@@ -19,8 +21,10 @@ export interface SuggestedInvestigation {
   label: string;
   kind: InvestigationKind;
   urgency: InvestigationUrgency;
-  /** Why it is suggested, e.g. "Biliary colic" or "Acute cholecystitis (differential)". */
+  /** Why it is suggested, e.g. "Biliary colic" or "Acute cholecystitis (leading differential)". */
   suggestedFor: string[];
+  /** Patient-specific caveat (pregnancy, child, contrast allergy — plan-safety filter), or null. */
+  caveat: string | null;
 }
 
 interface RadiologyLike { modality: string; anatomicalRegion: string; clinicalQuestion?: string }
@@ -28,8 +32,13 @@ interface RadiologyLike { modality: string; anatomicalRegion: string; clinicalQu
 export interface SuggestionInput {
   /** Chief complaint names (procedureData.cc[].complaint). */
   complaints: string[];
-  /** Leading differentials (unconfirmed) — only their stat/urgent protocol tests are suggested. */
-  differentials?: Array<{ id: string; label: string }>;
+  /**
+   * Tests seeded from the diagnosis — `seedInvestigations()` in plan-builder.ts: the confirmed
+   * diagnosis, else the leading differential only, adapted to the patient on record.
+   */
+  seeded?: SeededInvestigation[];
+  /** The patient on record: the complaint's imaging gets the same pregnancy / child caveats. */
+  patient?: PlanPatientContext | null;
   orderedInvestigations: string[];
   radiologyRequests: RadiologyLike[];
 }
@@ -48,16 +57,22 @@ function alreadyOrdered(label: string, kind: InvestigationKind, input: Suggestio
  */
 export function suggestInvestigations(input: SuggestionInput): SuggestedInvestigation[] {
   const out: SuggestedInvestigation[] = [];
-  const add = (label: string, urgency: InvestigationUrgency, reason: string) => {
+  const add = (label: string, urgency: InvestigationUrgency, reason: string, caveat: string | null) => {
     const kind: InvestigationKind = isImagingInvestigation(label) ? 'imaging' : 'lab';
     if (alreadyOrdered(label, kind, input)) return;
     const dup = out.find(s => s.kind === kind && (s.label.toLowerCase() === label.toLowerCase() || isAlreadyOrdered(label, [s.label])));
     if (dup) {
       if (!dup.suggestedFor.includes(reason)) dup.suggestedFor.push(reason);
       if (URGENCY_RANK[urgency] < URGENCY_RANK[dup.urgency]) dup.urgency = urgency;
+      if (!dup.caveat && caveat) dup.caveat = caveat;
       return;
     }
-    out.push({ label, kind, urgency, suggestedFor: [reason] });
+    out.push({ label, kind, urgency, suggestedFor: [reason], caveat });
+  };
+  const complaintCaveat = (label: string): string | null => {
+    if (!input.patient) return null;
+    const adapted = adaptInvestigationForPatient({ label, urgency: 'routine' }, input.patient).label;
+    return adapted === label ? null : adapted.slice(label.length).replace(/^\s*—\s*/, '').trim() || null;
   };
 
   for (const complaint of input.complaints) {
@@ -67,19 +82,12 @@ export function suggestInvestigations(input: SuggestionInput): SuggestedInvestig
     const reason = tpl.id === 'other_surgical' ? name : tpl.name;
     for (const l of [...tpl.labs, ...tpl.imaging]) {
       const label = l.trim();
-      if (label) add(label, 'routine', reason);
+      if (label) add(label, 'routine', reason, complaintCaveat(label));
     }
   }
 
-  const diffItems: Array<{ label: string; urgency: InvestigationUrgency; reason: string }> = [];
-  for (const d of input.differentials ?? []) {
-    const protocol = getProtocol(d.id);
-    if (!protocol?.investigations.length) continue;
-    const { essential } = splitEssentialSecondary(protocol.investigations);
-    for (const inv of essential) diffItems.push({ label: inv.label, urgency: inv.urgency, reason: `${d.label} (differential)` });
-  }
-  diffItems.sort((a, b) => URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency]);
-  for (const i of diffItems) add(i.label, i.urgency, i.reason);
+  const seeded = [...(input.seeded ?? [])].sort((a, b) => URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency]);
+  for (const i of seeded) add(i.label, i.urgency, i.reason, i.caveat);
 
   return out;
 }

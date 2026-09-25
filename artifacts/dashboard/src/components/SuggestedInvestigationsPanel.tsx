@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { DISEASES, applyModifiers, topDiagnoses } from '@workspace/pane-engine';
 import { parseImagingToRequest } from '@/lib/imaging-utils';
+import { managementPanelSource } from '@/lib/management-panel-source';
+import { seedInvestigations } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import {
   suggestInvestigations, orderTickedSuggestions,
   type InvestigationKind, type SuggestedInvestigation,
@@ -16,31 +19,42 @@ const URGENCY_STYLE: Record<SuggestedInvestigation['urgency'], { color: string; 
 };
 
 /**
- * Suggested (not ordered) investigations for the current chief complaint(s) and the leading
- * differentials. The clinician ticks what to order; only ticked items reach the record
- * (UX review C3, CLAUDE.md human authority: never order without explicit approval).
+ * Suggested (not ordered) investigations for the current chief complaint(s) and the diagnosis:
+ * the confirmed diagnosis when there is one, otherwise the leading differential only (never every
+ * top-3 differential), adapted to the patient on record (plan-builder.ts seedInvestigations: no
+ * stat test from a diagnosis that is only being considered, pregnancy / child imaging caveats).
+ * The clinician ticks what to order; only ticked items reach the record (UX review C3, CLAUDE.md
+ * human authority: never order without explicit approval).
  */
 export default function SuggestedInvestigationsPanel({ kind }: { kind: InvestigationKind }) {
   const {
-    procedureData, paneState, age, sex, encounterStatus,
+    procedureData, paneState, age, sex, pregnancyPossible, encounterStatus,
+    workingDiagnosis, icdCodes,
     orderedInvestigations, setOrderedInvestigations,
     radiologyRequests, setRadiologyRequests,
   } = useAppContext();
+  const planPatient = usePlanPatientContext();
   const [ticked, setTicked] = useState<Set<string>>(new Set());
 
   const complaints = ((procedureData['cc'] as CCEntry[] | undefined) ?? []).map(e => e.complaint);
 
-  const differentials = useMemo(() => {
-    if (!paneState || Object.keys(paneState.answered ?? {}).length === 0) return [];
-    const diseases = applyModifiers(DISEASES, parseInt(age, 10) || null, sex);
-    return topDiagnoses(paneState, diseases, 3).map(r => ({ id: r.disease.id, label: r.disease.label }));
-  }, [paneState, age, sex]);
+  const leader = useMemo(() => {
+    if (!paneState || Object.keys(paneState.answered ?? {}).length === 0) return null;
+    const diseases = applyModifiers(DISEASES, parseInt(age, 10) || null, sex, undefined, { pregnancyPossible });
+    const top = topDiagnoses(paneState, diseases, 1)[0];
+    return top ? { diseaseId: top.disease.id, probability: top.probability } : null;
+  }, [paneState, age, sex, pregnancyPossible]);
+
+  const seeded = useMemo(
+    () => seedInvestigations(managementPanelSource(workingDiagnosis, icdCodes, leader), planPatient, { leader }).items,
+    [workingDiagnosis, icdCodes, leader, planPatient],
+  );
 
   const suggestions = useMemo(
-    () => suggestInvestigations({ complaints, differentials, orderedInvestigations, radiologyRequests })
+    () => suggestInvestigations({ complaints, seeded, patient: planPatient, orderedInvestigations, radiologyRequests })
       .filter(s => s.kind === kind),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(complaints), differentials, orderedInvestigations, radiologyRequests, kind],
+    [JSON.stringify(complaints), seeded, planPatient, orderedInvestigations, radiologyRequests, kind],
   );
 
   if (suggestions.length === 0) return null;
@@ -109,6 +123,9 @@ export default function SuggestedInvestigationsPanel({ kind }: { kind: Investiga
                 <span style={{ fontSize: 10, color: URGENCY_STYLE[s.urgency].color }}>({URGENCY_STYLE[s.urgency].label})</span>
                 {s.suggestedFor.length > 1 && (
                   <span style={{ fontSize: 10, color: '#94a3b8' }}>also: {s.suggestedFor.slice(1).join(', ')}</span>
+                )}
+                {s.caveat && (
+                  <span data-testid="suggested-investigation-caveat" style={{ fontSize: 10.5, color: '#b45309' }}>⚠ {s.caveat}</span>
                 )}
               </label>
             ))}

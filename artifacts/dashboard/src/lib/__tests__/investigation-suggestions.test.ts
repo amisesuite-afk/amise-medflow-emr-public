@@ -5,6 +5,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { suggestInvestigations, orderTickedSuggestions } from '@/lib/investigation-suggestions';
+import { planPatientContext, seedInvestigations } from '@/lib/plan-builder';
 import { computeSectionDone, type CompletionFields } from '@/lib/workflow-completion';
 import { parseImagingToRequest } from '@/lib/imaging-utils';
 import { effectBodies, functionBody, readSrc } from './helpers/source-scan';
@@ -35,16 +36,27 @@ describe('suggestInvestigations', () => {
     expect(s.map(x => x.label)).toEqual(['Amylase', 'CRP']);
   });
 
-  it('differential tests are suggested (stat/urgent only), with the differential named', () => {
-    const s = suggestInvestigations({
-      complaints: [], differentials: [{ id: 'cholecystitis', label: 'Acute cholecystitis' }],
-      orderedInvestigations: [], radiologyRequests: [],
-    });
+  it('tests seeded from the diagnosis are suggested (stat/urgent only), with the diagnosis named', () => {
+    const seeded = seedInvestigations(
+      { diseaseId: 'cholecystitis', icdCode: null, source: 'pane' }, planPatientContext({ age: 50, sex: 'male' }),
+    ).items;
+    const s = suggestInvestigations({ complaints: [], seeded, orderedInvestigations: [], radiologyRequests: [] });
     expect(s.length).toBeGreaterThan(0);
     for (const x of s) {
-      expect(x.urgency).not.toBe('routine');
-      expect(x.suggestedFor).toEqual(['Acute cholecystitis (differential)']);
+      expect(x.urgency).toBe('urgent'); // considered diagnosis: no stat, and routine stays tap-to-add
+      expect(x.suggestedFor[0]).toMatch(/\(leading differential\)$/);
     }
+  });
+
+  it('a complaint\'s ionising imaging carries the pregnancy caveat; the orderable label stays clean', () => {
+    const patient = planPatientContext({ age: 28, sex: 'female', hpiNotes: '24 weeks pregnant' });
+    const s = suggestInvestigations({ complaints: ['Acute abdominal pain'], patient, orderedInvestigations: [], radiologyRequests: [] });
+    const ct = s.find(x => x.label === 'CT abdomen/pelvis (contrast)');
+    expect(ct?.caveat).toMatch(/pregnancy: only if ultrasound\/MRI cannot answer/);
+    expect(s.find(x => x.label === 'USS abdomen')?.caveat).toBeNull();
+    // No patient on record: no caveats.
+    const plain = suggestInvestigations({ complaints: ['Acute abdominal pain'], orderedInvestigations: [], radiologyRequests: [] });
+    expect(plain.every(x => x.caveat === null)).toBe(true);
   });
 });
 

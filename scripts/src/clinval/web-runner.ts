@@ -15,7 +15,9 @@
  *   Management          AssessmentTab ManagementPanel (all phases) and PlanTab buildPlanText
  *                       (lib/plan-builder.ts: confirmed diagnosis → resolveProtocol, adapted to the
  *                       patient on record, phases filtered by the detected dx variant);
- *                       PrescriptionsTab protocol medicines; HpiTab seeded investigations
+ *                       PrescriptionsTab protocol medicines; suggested (seeded) investigations
+ *                       (SuggestedInvestigationsPanel → plan-builder.ts seedInvestigations: the
+ *                       confirmed diagnosis, else the PANE leader only, adapted to the patient)
  *   Calculators         ScalesTab (clinical-scales.ts) and ClinicalScoresPanel (clinical-scores.ts)
  *
  * The dashboard code itself is not modified or wrapped; if a call site changes, update the
@@ -23,7 +25,7 @@
  */
 
 import {
-  DISEASES, FEATURES, adaptProtocolForPatient, applyModifiers, getProtocol, initPaneState, topDiagnoses, updatePosterior,
+  DISEASES, FEATURES, adaptProtocolForPatient, applyModifiers, initPaneState, topDiagnoses, updatePosterior,
 } from '../../../lib/pane-engine/src/index';
 import type { ManagementProtocol, PaneState } from '../../../lib/pane-engine/src/index';
 import { RULES_VERSION, adaptiveTriage, matchPathways } from '../../../lib/triage-engine/src/index';
@@ -35,7 +37,9 @@ import { getCdsSuggestions } from '../../../artifacts/dashboard/src/lib/clinical
 import type { CdsContext } from '../../../artifacts/dashboard/src/lib/clinical-cds';
 import { detectDxVariants } from '../../../artifacts/dashboard/src/lib/dx-variants';
 import { managementPanelSource } from '../../../artifacts/dashboard/src/lib/management-panel-source';
-import { buildPlanSections, planPatientContext, planProtocolFor, safetyLines } from '../../../artifacts/dashboard/src/lib/plan-builder';
+import {
+  buildPlanSections, planPatientContext, planProtocolFor, safetyLines, seedInvestigations,
+} from '../../../artifacts/dashboard/src/lib/plan-builder';
 import type { PlanPatientContext } from '../../../lib/pane-engine/src/index';
 import { computeClinicalPrompts } from '../../../artifacts/dashboard/src/lib/clinical-inference';
 import type { InferenceInput as PromptInput } from '../../../artifacts/dashboard/src/lib/clinical-inference';
@@ -369,12 +373,19 @@ export function runWeb(v: Vignette): EngineOutputs {
     for (const p of panelProtocol.keyPoints) management.push({ source: 'web.managementPanel.keyPoints', text: p });
   }
 
-  // HpiTab.seedInvestigationsFromPane: stat/urgent investigations of the top-3 PANE protocols.
-  for (const { disease } of paneTop) {
-    const p = getProtocol(disease.id);
-    for (const inv of p?.investigations ?? []) {
-      if (inv.urgency !== 'routine') investigations.push({ source: 'web.pane.seeded', text: `${inv.label} (${disease.id})` });
-    }
+  // Suggested investigations seeded from the diagnosis (SuggestedInvestigationsPanel →
+  // plan-builder.ts seedInvestigations): the confirmed diagnosis, else the PANE leader (≥ 0.20,
+  // managementPanelSource) — one diagnosis, adapted to the patient, no stat test from a diagnosis
+  // that is only being considered. (Before 2026-09-25: stat/urgent tests of every top-3 protocol, raw.)
+  const seed = seedInvestigations(panelSource, planPatient, {
+    leader: paneTop[0] ? { diseaseId: paneTop[0].disease.id, probability: paneTop[0].probability } : null,
+  });
+  notes.push(`Seeded investigations: ${seed.protocol?.diseaseId ?? '(none)'}${seed.confirmed ? ' (confirmed)' : ' (leading differential)'}; ${seed.heldBack.length} stat test(s) held back`);
+  for (const inv of seed.items) {
+    investigations.push({
+      source: 'web.pane.seeded',
+      text: `${inv.label}${inv.caveat ? ` — ${inv.caveat}` : ''} (${seed.protocol?.diseaseId ?? ''})`,
+    });
   }
 
   const cdsCtx: CdsContext = {
