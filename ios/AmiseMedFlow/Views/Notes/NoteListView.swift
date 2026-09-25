@@ -6,6 +6,8 @@ struct NoteListView: View {
     @Environment(\.modelContext) private var context
 
     @State private var editingNote:    ClinicalNote?
+    /// A note created by "New note": discarded on close if still empty (ClinicalNote+EmptyDraft).
+    @State private var newDraft:       ClinicalNote?
     @State private var shareURL:       URL?
     @State private var showShareSheet  = false
     @State private var showStorageBlocked = false
@@ -132,7 +134,10 @@ struct NoteListView: View {
                 .padding(.bottom, 24)
             }
         }
-        .sheet(item: $editingNote) { note in
+        .sheet(item: $editingNote, onDismiss: {
+            newDraft?.discardIfEmptyDraft(in: context)
+            newDraft = nil
+        }) { note in
             NoteEditorView(note: note)
         }
         .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
@@ -167,6 +172,7 @@ struct NoteListView: View {
     private func addNote(type: NoteType) {
         let note = ClinicalNote(noteType: type, patient: patient)
         context.insert(note)
+        newDraft = note
         editingNote = note
     }
 

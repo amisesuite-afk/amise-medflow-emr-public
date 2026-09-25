@@ -95,6 +95,12 @@ final class ClinicalNote {
     var contentForSync: String {
         if noteType.isStructured {
             var parts: [String] = []
+            // A structured note can hold text in freeText (e.g. the SOAP record archived with a
+            // consultation PDF). It goes first, before any section marker, so restoreSOAPFields
+            // puts it back into freeText and the round trip is stable.
+            if let f = freeText?.trimmingCharacters(in: .whitespacesAndNewlines), !f.isEmpty {
+                parts.append(f)
+            }
             if let s = subjective,  !s.isEmpty { parts.append("S:\n\(s)") }
             if let o = objective,   !o.isEmpty { parts.append("O:\n\(o)") }
             if let a = assessment,  !a.isEmpty { parts.append("A:\n\(a)") }

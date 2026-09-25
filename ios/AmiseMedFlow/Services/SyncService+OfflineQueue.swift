@@ -11,7 +11,9 @@ extension SyncService {
 
     func recountPending(context: ModelContext) {
         let patients = (try? context.fetch(FetchDescriptor<Patient>()))?.filter(\.isLive) ?? []
-        let notes    = (try? context.fetch(FetchDescriptor<ClinicalNote>()))?.filter { $0.isLive && $0.pendingSync } ?? []
+        // An empty note that never reached the server has nothing to send: not "pending".
+        let notes    = (try? context.fetch(FetchDescriptor<ClinicalNote>()))?
+            .filter { $0.isLive && $0.pendingSync && !$0.isEmptyUnsentDraft } ?? []
         let rxs      = (try? context.fetch(FetchDescriptor<Prescription>()))?.filter { $0.isLive && $0.pendingSync } ?? []
         let vitals   = (try? context.fetch(FetchDescriptor<VitalsEntry>()))?.filter { $0.isLive && $0.pendingSync } ?? []
         let plans    = (try? context.fetch(FetchDescriptor<OperativePlan>()))?.filter { $0.isLive && $0.pendingSync } ?? []

@@ -114,7 +114,8 @@ extension SyncService {
             add(p.id, kind: "Patient", refusedKind: .patient, patient: p, isChild: false,
                 ownRemoteId: p.remoteId, updatedAt: p.updatedAt, isEmpty: false)
         }
-        for n in (try? context.fetch(FetchDescriptor<ClinicalNote>())) ?? [] where n.isLive && n.pendingSync {
+        for n in (try? context.fetch(FetchDescriptor<ClinicalNote>())) ?? []
+            where n.isLive && n.pendingSync && !n.isEmptyUnsentDraft {
             add(n.id, kind: "Note", refusedKind: .clinicalNote, patient: n.patient, isChild: true,
                 ownRemoteId: n.remoteId, updatedAt: n.updatedAt, isEmpty: n.isEmpty)
         }
@@ -136,5 +137,10 @@ extension SyncService {
                 ownRemoteId: b.remoteId, updatedAt: b.updatedAt ?? b.addedAt, isEmpty: false)
         }
         return out.sorted { $0.updatedAt > $1.updatedAt }
+    }
+
+    /// Empty notes that never reached the server (not counted as pending; can be discarded).
+    func emptyDraftNotes(context: ModelContext) -> [ClinicalNote] {
+        ((try? context.fetch(FetchDescriptor<ClinicalNote>())) ?? []).filter(\.isEmptyUnsentDraft)
     }
 }

@@ -244,16 +244,19 @@ extension ConsultationView {
     func exportConsultationPDF() -> PDFDataWrapper? {
         let data = ProcedureFormPDF.consultationReport(patient: patient, date: .now)
 
-        // Archive a SOAP note record alongside the PDF export
-        let note = ClinicalNote(noteType: .soap, patient: patient)
+        // Archive a SOAP note record alongside the PDF export — only when there is something to
+        // archive (an empty note would sit on the device as "pending" with nothing to send).
         let parts: [String] = [
             patient.chiefComplaint.map { "CC: \($0)" },
             patient.hpi.map { "HPI:\n\($0)" },
             patient.workingDiagnosis.map { "Diagnosis: \($0)" },
             patient.managementPlan.map { "Plan:\n\($0)" },
         ].compactMap { $0 }
-        note.freeText = parts.joined(separator: "\n\n")
-        context.insert(note); touch()
+        if !parts.isEmpty {
+            let note = ClinicalNote(noteType: .soap, patient: patient)
+            note.freeText = parts.joined(separator: "\n\n")
+            context.insert(note); touch()
+        }
         return PDFDataWrapper(data: data)
     }
 

@@ -219,7 +219,7 @@ extension ClinicalNote {
     func restoreSOAPFields(from content: String) {
         let note = self
         // Content is formatted by contentForSync: "S:\n...\n\nO:\n...\n\nA:\n...\n\nP:\n..."
-        var s = "", o = "", a = "", p = ""
+        var s = "", o = "", a = "", p = "", preamble = ""
         var current: Character? = nil
         var buffer = ""
 
@@ -229,7 +229,8 @@ extension ClinicalNote {
             case "O": o = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
             case "A": a = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
             case "P": p = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
-            default: break
+            // Text before the first section marker is the note's freeText (contentForSync).
+            default: preamble = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
             }
         }
 
@@ -248,6 +249,8 @@ extension ClinicalNote {
         note.objective  = o.isEmpty ? nil : o
         note.assessment = a.isEmpty ? nil : a
         note.plan       = p.isEmpty ? nil : p
+        // Only set, never clear: a local freeText older than this format was never sent.
+        if !preamble.isEmpty { note.freeText = preamble }
     }
 
 
