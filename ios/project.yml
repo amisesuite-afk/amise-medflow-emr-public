@@ -129,6 +129,13 @@ targets:
       - path: AmiseMedFlowTests
         excludes:
           - "**/.DS_Store"
+          - "ClinicalValidation/Vignettes"
+          - "ClinicalValidation/Vignettes/**"
+      # Clinical validation vignettes (JSON), copied into the test bundle as a "Vignettes" folder
+      # reference so ClinicalValidationTests can enumerate them. The web harness reads the same files.
+      - path: AmiseMedFlowTests/ClinicalValidation/Vignettes
+        type: folder
+        buildPhase: resources
 
     settings:
       base:

@@ -117,3 +117,25 @@ jobs:
           grep -E "error:|Test Case .* failed" test.log | sed 's|.*/AmiseMedFlow[A-Za-z]*/||' | sort -u || true
           echo "==== TOTALS ===="
           grep -E "Executed [0-9]+ test|\*\* TEST (SUCCEEDED|FAILED) \*\*" test.log | tail -3 || true
+
+      # Clinical validation (ClinicalValidationTests): one "CLINVAL|{json}" line per vignette in the
+      # test log. Collected for scripts/src/clinval/report.ts; never changes the job result.
+      - name: Extract clinical validation results
+        if: always()
+        working-directory: ios
+        run: |
+          grep -a -o 'CLINVAL|{.*}' test.log 2>/dev/null | sed 's/^CLINVAL|//' > clinval-ios.jsonl || true
+          if [ ! -s clinval-ios.jsonl ] && [ -s clinval-ios-direct.jsonl ]; then
+            cp clinval-ios-direct.jsonl clinval-ios.jsonl
+          fi
+          echo "Vignette results: $(wc -l < clinval-ios.jsonl | tr -d ' ')"
+          grep -a -o 'CLINVAL-SUMMARY|{.*}' test.log 2>/dev/null | tail -1 || true
+
+      - name: Upload clinical validation results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: clinval-ios
+          path: ios/clinval-ios.jsonl
+          if-no-files-found: warn
+          retention-days: 30

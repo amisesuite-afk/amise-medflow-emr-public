@@ -7,6 +7,9 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 
+# Clinical validation output (ClinicalValidationTests / CI artifact)
+clinval-ios*.jsonl
+
 # Secrets — never commit
 Configuration.xcconfig
 
