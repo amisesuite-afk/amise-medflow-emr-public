@@ -216,7 +216,11 @@ extension DiagnosisRadiationEngine {
         let s = PlanSafetyFilter.signals(c)
         let card = c.diagnosis.isEmpty ? nil
             : radiate(workingDiagnosis: c.diagnosis, ageYears: c.ageYears ?? 0, sex: c.sex, context: nil)
-        let shape = card.map { planShape($0, c) } ?? PlanSafetyFilter.PlanShape()
+        var shape = card.map { planShape($0, c) } ?? PlanSafetyFilter.PlanShape()
+        if card == nil {
+            let dx = c.diagnosis.lowercased()
+            shape.cancer = ["carcinoma", "cancer", "malignan", "neoplasm", "tumour"].contains { dx.contains($0) }
+        }
         text = PlanSafetyFilter.adaptText(text, s, pregnancySpecific: shape.pregnancySpecific,
                                           herniaCard: card?.conditionName.lowercased().contains("hernia") ?? false)
         let safetyLines = PlanSafetyFilter.planLines(PlanSafetyFilter.evaluate(s, shape: shape).notes)

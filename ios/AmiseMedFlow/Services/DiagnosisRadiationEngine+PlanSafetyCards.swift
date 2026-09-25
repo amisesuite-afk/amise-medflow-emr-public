@@ -25,7 +25,7 @@ extension DiagnosisRadiationEngine {
             guidelineReference: ref))
     }
 
-    static let _planSafetyEntries: [Entry] = _planSafetyRetentionEntries + _planSafetyPeriopEntries + _planSafetyGIEntries + _planSafetyEndocrineBreastEntries
+    static let _planSafetyEntries: [Entry] = _planSafetyRetentionEntries + _planSafetyNSAPEntries + _planSafetyPeriopEntries + _planSafetyGIEntries + _planSafetyEndocrineBreastEntries
         + _planSafetyOtherEntries
 
     // MARK: - Peri-operative
@@ -127,6 +127,22 @@ extension DiagnosisRadiationEngine {
 - Alpha-blocker (tamsulosin) before a trial without catheter (TWOC) in men (EAU)
 """, followUp: "TWOC before discharge or within 1 week; urology if failed TWOC.",
              ref: "EAU non-neurogenic male LUTS guideline (2023); BAUS retention guidance"),
+    ]
+
+    // MARK: - Non-specific abdominal pain
+
+    static let _planSafetyNSAPEntries: [Entry] = [
+        psCard(["non-specific lower abdominal pain", "non-specific abdominal pain", "nonspecific abdominal pain"],
+             "Non-specific Abdominal Pain", icd: "R10.30",
+             inv: [SI(name: "Urinalysis (dipstick) ± urine culture", category: .other, rationale: "UTI / ureteric colic"),
+                   SI(name: "Pregnancy test (urine or serum β-hCG) in women of reproductive age", category: .blood, rationale: "Ectopic pregnancy must be excluded (NICE NG126)"),
+                   SI(name: "FBC, CRP", category: .blood, rationale: "Inflammation; AIR / Alvarado components")],
+             plan: """
+- Low probability of appendicitis (AIR ≤ 4, Alvarado ≤ 4): no operation; discharge with safety-net advice and review within 24–48 h, or observe if the diagnosis is uncertain (WSES 2020)
+- Women of reproductive age: pregnancy test result before discharge or imaging; consider gynaecological causes (ovulation pain, ovarian cyst)
+- Return urgently if the pain worsens, localises, or fever or vomiting develops
+""", followUp: "Review within 24–48 h if symptoms persist.",
+             ref: "WSES Jerusalem guidelines 2020 (appendicitis scores); NICE NG126 (2019, updated 2023)"),
     ]
 
     // MARK: - Upper GI, HPB, colorectal, anorectal

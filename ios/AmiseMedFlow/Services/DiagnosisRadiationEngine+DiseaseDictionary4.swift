@@ -139,11 +139,12 @@ extension DiagnosisRadiationEngine {
         // UROLOGY / RENAL
         // ══════════════════════════════════════════════════════════════
 
-        Entry(keywords: ["renal colic", "kidney stone", "ureteric calculus", "ureteric stone", "nephrolithiasis", "loin to groin pain"], radiation: .init(
+        Entry(keywords: ["renal colic", "ureteric colic", "kidney stone", "ureteric calculus", "ureteric stone", "nephrolithiasis", "loin to groin pain"], radiation: .init(
             conditionName: "Renal Colic / Ureteric Calculus",
             icd10Primary: "N20.1",
             investigations: [
-                .init(name: "CT KUB (non-contrast)", category: .imaging, rationale: "Gold standard — sensitivity >95%; stone size, site, obstruction"),
+                .init(name: "CT KUB (low-dose non-contrast) — not in pregnancy or children (ultrasound first)", category: .imaging, rationale: "Gold standard — sensitivity >95%; stone size, site, obstruction (EAU 2024)"),
+                .init(name: "Renal tract ultrasound (first-line in pregnancy and children)", category: .imaging, rationale: "Hydronephrosis; no ionising radiation (EAU 2024)"),
                 .init(name: "Urine dipstick + MC&S", category: .other, rationale: "Haematuria; exclude infection (infected stone → emergency)"),
                 .init(name: "FBC / U&E / Creatinine / CRP", category: .blood, rationale: "Renal function; sepsis assessment; AKI from obstruction"),
                 .init(name: "Serum calcium / Uric acid / Parathyroid hormone", category: .blood, rationale: "Metabolic workup — recurrent stones or bilateral"),
@@ -191,6 +192,7 @@ extension DiagnosisRadiationEngine {
                 .init(name: "Renal Ultrasound", category: .imaging, rationale: "Obstruction (hydronephrosis) — postrenal AKI → relieve urgently"),
                 .init(name: "ECG", category: .other, rationale: "Hyperkalaemia — peaked T waves, wide QRS → emergency"),
                 .init(name: "Calcium / Phosphate / Bicarbonate / Lactate", category: .blood, rationale: "Metabolic complications of AKI"),
+                .init(name: "Myeloma screen: serum protein electrophoresis, serum free light chains, urine Bence Jones protein", category: .blood, rationale: "Unexplained AKI with hypercalcaemia, anaemia or bone pain / lytic lesions"),
             ],
             planTemplate: """
 - IDENTIFY & TREAT CAUSE:
@@ -199,7 +201,7 @@ extension DiagnosisRadiationEngine {
   • POSTRENAL (obstruction): urgent renal USS → nephrostomy/stent if hydronephrosis; obstructed infected or solitary kidney → emergency decompression (EAU 2024); bladder outflow obstruction → urethral catheter, monitor for post-obstructive diuresis (hourly urine output, replace losses); avoid NSAIDs in AKI
   • Stop / withhold NSAIDs, ACE inhibitors, ARBs, diuretics and metformin during AKI; restart when renal function recovers (NICE NG148); urinalysis (dipstick) for every patient with AKI
 - FLUID MANAGEMENT:
-  • Hypovolaemia: 500 mL 0.9% NaCl bolus → reassess response (JVP, UO, BP)
+  • Hypovolaemia (e.g. diarrhoea, high-output stoma): volume replacement — 500 mL 0.9% sodium chloride (or balanced crystalloid) bolus → reassess response (JVP, UO, BP)
   • Oliguric AKI (UO <0.5 mL/kg/h): assess volume status; diuretics only for fluid overload, not to treat AKI (NICE NG148)
   • Fluid overload: fluid restrict ± furosemide; consider dialysis
 - HYPERKALAEMIA MANAGEMENT:
