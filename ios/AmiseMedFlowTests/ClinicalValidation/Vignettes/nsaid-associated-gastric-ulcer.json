@@ -181,11 +181,7 @@
           "guidelineRefs": [
             "nice-cg184"
           ],
-          "note": "Continuing the NSAID risks bleeding or perforation.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.pipeline.alert)"
+          "note": "Continuing the NSAID risks bleeding or perforation."
         }
       ],
       "emergencyLevel": {

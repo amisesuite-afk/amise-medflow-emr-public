@@ -240,11 +240,7 @@
             "chest-icp-2020"
           ],
           "note": "Broader differential in the immunocompromised host: Pneumocystis, drug (methotrexate) pneumonitis.",
-          "proposedFix": "Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "proposedFix": "Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis)."
         }
       ]
     }

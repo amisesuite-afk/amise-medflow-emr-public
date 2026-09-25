@@ -239,11 +239,7 @@
           ],
           "guidelineRefs": [
             "wses-diverticulitis-2020"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 4 (ios.pipeline.alert, ios.acuity)"
+          ]
         }
       ]
     },

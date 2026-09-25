@@ -203,11 +203,7 @@
           ],
           "guidelineRefs": [
             "eau-nmibc-2024"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

@@ -216,11 +216,7 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "proposedFix": "See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "proposedFix": "See periop-nela-frail-emergency-laparotomy/mgmt-geriatric-input."
         },
         {
           "id": "mgmt-delirium-prevention",
@@ -235,11 +231,7 @@
             "nice-cg103",
             "cpoc-bgs-frailty-2021"
           ],
-          "proposedFix": "See flag-delirium-risk.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "proposedFix": "See flag-delirium-risk."
         },
         {
           "id": "mgmt-shared-decision",
@@ -254,11 +246,7 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "proposedFix": "See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "proposedFix": "See periop-nela-frail-emergency-laparotomy/mgmt-shared-decision."
         }
       ],
       "mustExclude": [

@@ -228,9 +228,7 @@
           "severity": "quality",
           "match": ["lactate", "ct angiogra", "cta"],
           "guidelineRefs": ["esvs-2017"],
-          "note": "ESVS 2017: CT angiography when mesenteric ischaemia is suspected; lactate is supportive but not sensitive.",
-          "knownGap": ["ios"],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 15 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
+          "note": "ESVS 2017: CT angiography when mesenteric ischaemia is suspected; lactate is supportive but not sensitive."
         }
       ],
       "mustExclude": []

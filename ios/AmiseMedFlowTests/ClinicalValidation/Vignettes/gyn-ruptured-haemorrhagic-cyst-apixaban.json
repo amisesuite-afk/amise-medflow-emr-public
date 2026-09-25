@@ -287,11 +287,7 @@
           "note": "Stop the anticoagulant. A peri-operative \"hold 48–72 h pre-op\" line counts here, although it is not written for active bleeding.",
           "match": [
             "re:(hold|stop|withhold|omit|suspend)[^\\n]{0,25}(anticoag|apixaban|doac)"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-gynaecology",

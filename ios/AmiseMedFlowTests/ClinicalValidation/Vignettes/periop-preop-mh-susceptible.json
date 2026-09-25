@@ -177,11 +177,7 @@
           ],
           "guidelineRefs": [
             "aa-mh-2021"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-mh-unit-referral",
@@ -196,11 +192,7 @@
           "guidelineRefs": [
             "aa-mh-2021"
           ],
-          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
         }
       ],
       "mustExclude": [

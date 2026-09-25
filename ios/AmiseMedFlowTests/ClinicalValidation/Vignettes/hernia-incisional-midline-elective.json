@@ -193,11 +193,7 @@
           "guidelineRefs": [
             "ehs-incisional-2023"
           ],
-          "note": "CT defines defect width, loss of domain and content for planning.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "CT defines defect width, loss of domain and content for planning."
         }
       ]
     },
@@ -215,11 +211,7 @@
           ],
           "guidelineRefs": [
             "ehs-incisional-2023"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-mesh",
@@ -229,11 +221,7 @@
           ],
           "guidelineRefs": [
             "ehs-incisional-2023"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         }
       ]
     }

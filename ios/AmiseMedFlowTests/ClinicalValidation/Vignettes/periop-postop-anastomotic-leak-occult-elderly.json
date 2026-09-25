@@ -265,11 +265,7 @@
           ],
           "guidelineRefs": [
             "woodcock-steroids-2020"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

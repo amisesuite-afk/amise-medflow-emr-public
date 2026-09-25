@@ -191,11 +191,7 @@
             "tsh",
             "thyroid function",
             "re:\\btfts?\\b"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         },
         {
           "id": "inv-ct",
@@ -205,11 +201,7 @@
           ],
           "guidelineRefs": [
             "nice-ng145-2019"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         }
       ]
     },
@@ -234,11 +226,7 @@
             "anaesthe",
             "sternotomy",
             "cardiothoracic"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         }
       ]
     }

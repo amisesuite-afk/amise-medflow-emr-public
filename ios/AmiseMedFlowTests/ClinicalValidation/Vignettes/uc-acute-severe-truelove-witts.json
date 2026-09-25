@@ -319,11 +319,7 @@
             "bsg-ibd-2019",
             "ecco-infections-2021"
           ],
-          "note": "Unprepared flexible sigmoidoscopy with biopsies (including for CMV) within 72 h.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
+          "note": "Unprepared flexible sigmoidoscopy with biopsies (including for CMV) within 72 h."
         },
         {
           "id": "inv-axr",
@@ -336,11 +332,7 @@
           ],
           "guidelineRefs": [
             "bsg-ibd-2019"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
+          ]
         }
       ]
     },

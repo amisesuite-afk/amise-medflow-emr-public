@@ -196,11 +196,7 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags)"
+          ]
         }
       ]
     },

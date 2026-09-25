@@ -301,11 +301,7 @@
             "lateral tilt",
             "uterine displacement",
             "left uterine"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.alvarado, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

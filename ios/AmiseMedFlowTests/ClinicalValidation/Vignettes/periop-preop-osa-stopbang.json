@@ -210,11 +210,7 @@
             "sasm-2016",
             "asa-osa-2014"
           ],
-          "note": "Risk-mitigation plan: anaesthetic awareness, opioid-sparing analgesia, post-operative monitoring; consider sleep study/CPAP where systemic disease is uncontrolled.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          "note": "Risk-mitigation plan: anaesthetic awareness, opioid-sparing analgesia, post-operative monitoring; consider sleep study/CPAP where systemic disease is uncontrolled."
         }
       ],
       "mustExclude": [

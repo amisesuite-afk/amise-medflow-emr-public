@@ -349,11 +349,7 @@
           ],
           "guidelineRefs": [
             "esmo-2023-pancreas"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         },
         {
           "id": "inv-eus-tissue",
@@ -367,11 +363,7 @@
           ],
           "guidelineRefs": [
             "nice-ng85"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         },
         {
           "id": "inv-coagulation",
@@ -382,11 +374,7 @@
             "clotting",
             "vitamin k"
           ],
-          "note": "Cholestatic coagulopathy (INR 1.3) before any procedure.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "Cholestatic coagulopathy (INR 1.3) before any procedure."
         }
       ]
     },

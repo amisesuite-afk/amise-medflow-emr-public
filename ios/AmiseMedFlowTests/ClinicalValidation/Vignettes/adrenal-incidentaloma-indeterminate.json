@@ -154,11 +154,7 @@
           ],
           "guidelineRefs": [
             "ese-adrenal-2023"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
+          ]
         },
         {
           "id": "inv-arr",
@@ -182,11 +178,7 @@
           ],
           "guidelineRefs": [
             "ese-adrenal-2023"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
+          ]
         }
       ],
       "mustExclude": [

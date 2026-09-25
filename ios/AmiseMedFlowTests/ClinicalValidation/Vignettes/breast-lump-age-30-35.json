@@ -134,11 +134,7 @@
             "nice-ng12"
           ],
           "note": "NICE NG12: aged 30 and over with an unexplained breast lump with or without pain → suspected cancer pathway referral.",
-          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)"
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
         }
       ]
     },

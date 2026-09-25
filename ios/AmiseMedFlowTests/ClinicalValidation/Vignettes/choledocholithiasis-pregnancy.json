@@ -293,11 +293,7 @@
           "guidelineRefs": [
             "asge-2012-pregnancy"
           ],
-          "proposedFix": "Choledocholithiasis protocol: pregnancy branch per ASGE 2012 (therapeutic ERCP, minimal fluoroscopy, obstetric input).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          "proposedFix": "Choledocholithiasis protocol: pregnancy branch per ASGE 2012 (therapeutic ERCP, minimal fluoroscopy, obstetric input)."
         },
         {
           "id": "mgmt-obstetric-involvement",

@@ -261,11 +261,7 @@
             "esge-2018-stenting",
             "nice-ng85"
           ],
-          "note": "SEMS for palliation of malignant distal biliary obstruction (jaundice, pruritus, cholangitis risk). Quality because best supportive care without drainage is a valid shared decision in a frail patient.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "SEMS for palliation of malignant distal biliary obstruction (jaundice, pruritus, cholangitis risk). Quality because best supportive care without drainage is a valid shared decision in a frail patient."
         },
         {
           "id": "mgmt-palliative-care",
@@ -278,11 +274,7 @@
           ],
           "guidelineRefs": [
             "esmo-2023-pancreas"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-mdt",
@@ -294,11 +286,7 @@
           ],
           "guidelineRefs": [
             "nice-ng85"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

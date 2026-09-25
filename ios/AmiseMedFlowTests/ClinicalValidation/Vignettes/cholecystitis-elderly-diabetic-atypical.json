@@ -399,11 +399,7 @@
             "diabet",
             "sliding scale",
             "vrii"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.tg18-cholecystitis, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

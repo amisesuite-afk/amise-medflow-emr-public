@@ -154,11 +154,7 @@
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
           ],
-          "note": "Check the INR is within the therapeutic range in the week before.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 30 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
+          "note": "Check the INR is within the therapeutic range in the week before."
         }
       ]
     },
@@ -173,11 +169,7 @@
           ],
           "guidelineRefs": [
             "bsg-esge-2021-anticoag"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

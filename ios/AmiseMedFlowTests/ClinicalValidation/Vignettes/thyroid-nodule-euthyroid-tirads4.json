@@ -186,11 +186,7 @@
             "acr-tirads-2017",
             "bta-2014"
           ],
-          "note": "As an investigation order. The recommendation itself is checked under management (mgmt-us-fna-recommended).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "As an investigation order. The recommendation itself is checked under management (mgmt-us-fna-recommended)."
         },
         {
           "id": "inv-fna",
@@ -203,11 +199,7 @@
           "guidelineRefs": [
             "acr-tirads-2017"
           ],
-          "note": "As an investigation order. ACR TI-RADS: TR4 nodules ≥1.5 cm meet the FNA threshold.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "As an investigation order. ACR TI-RADS: TR4 nodules ≥1.5 cm meet the FNA threshold."
         }
       ],
       "mustExclude": [

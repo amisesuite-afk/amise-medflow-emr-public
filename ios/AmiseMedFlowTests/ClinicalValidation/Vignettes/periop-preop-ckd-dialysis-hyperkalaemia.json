@@ -232,11 +232,7 @@
             "ukka-hyperk-2020"
           ],
           "note": "Dialysis patients: dialysis is the definitive treatment of hyperkalaemia; schedule dialysis before surgery.",
-          "proposedFix": "In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+          "proposedFix": "In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'."
         }
       ],
       "mustExclude": [
@@ -275,11 +271,7 @@
           "guidelineRefs": [
             "nice-ng203"
           ],
-          "note": "NSAIDs harm residual renal function in dialysis patients. The lap chole template qualifies ibuprofen \"(if eGFR normal)\", which counts as qualified.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ...\""
+          "note": "NSAIDs harm residual renal function in dialysis patients. The lap chole template qualifies ibuprofen \"(if eGFR normal)\", which counts as qualified."
         },
         {
           "id": "mgmt-no-appendicectomy",

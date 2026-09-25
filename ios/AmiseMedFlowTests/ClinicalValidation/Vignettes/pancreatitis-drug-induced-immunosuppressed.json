@@ -299,11 +299,7 @@
           "guidelineRefs": [
             "steroid-periop-2020"
           ],
-          "note": "On prednisolone 20 mg: do not stop abruptly; IV hydrocortisone if vomiting prevents oral steroid.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "note": "On prednisolone 20 mg: do not stop abruptly; IV hydrocortisone if vomiting prevents oral steroid."
         }
       ],
       "mustExclude": [

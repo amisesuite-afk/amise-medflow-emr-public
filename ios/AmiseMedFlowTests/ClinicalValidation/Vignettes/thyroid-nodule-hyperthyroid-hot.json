@@ -180,11 +180,7 @@
             "ata-2015",
             "ata-hyper-2016"
           ],
-          "note": "ATA 2015: if the serum TSH is subnormal, a radionuclide thyroid scan should be obtained.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "note": "ATA 2015: if the serum TSH is subnormal, a radionuclide thyroid scan should be obtained."
         }
       ],
       "mustExclude": [
@@ -221,11 +217,7 @@
           ],
           "guidelineRefs": [
             "ata-hyper-2016"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-definitive",
@@ -238,11 +230,7 @@
           ],
           "guidelineRefs": [
             "ata-hyper-2016"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
+          ]
         }
       ]
     }

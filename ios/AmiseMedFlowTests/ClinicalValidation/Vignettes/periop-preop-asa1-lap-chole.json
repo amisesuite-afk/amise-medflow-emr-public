@@ -208,11 +208,7 @@
           "guidelineRefs": [
             "nice-ng45"
           ],
-          "note": "NICE NG45: on the day of surgery ask women of childbearing potential whether they could be pregnant and offer a test with consent.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 7 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions)"
+          "note": "NICE NG45: on the day of surgery ask women of childbearing potential whether they could be pregnant and offer a test with consent."
         }
       ]
     },

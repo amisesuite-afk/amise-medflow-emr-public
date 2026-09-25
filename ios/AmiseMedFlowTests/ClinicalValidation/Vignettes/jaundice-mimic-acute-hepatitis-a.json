@@ -294,11 +294,7 @@
           ],
           "guidelineRefs": [
             "acg-2017-lft"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.pipeline.voi)"
+          ]
         },
         {
           "id": "inv-inr",
@@ -378,11 +374,7 @@
             "contacts",
             "household"
           ],
-          "note": "Hepatitis A is notifiable; contact vaccination.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "Hepatitis A is notifiable; contact vaccination."
         }
       ]
     }

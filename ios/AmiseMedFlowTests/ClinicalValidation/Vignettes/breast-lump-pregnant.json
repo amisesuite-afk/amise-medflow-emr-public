@@ -130,11 +130,7 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.acuity)"
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
         },
         {
           "id": "flag-pregnancy",

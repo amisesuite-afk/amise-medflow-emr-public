@@ -109,11 +109,7 @@
           "guidelineRefs": [
             "bsg-hereditary-2020"
           ],
-          "note": "Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Triage itself never names Lynch syndrome. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)"
+          "note": "Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Triage itself never names Lynch syndrome. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified."
         }
       ]
     },
@@ -145,11 +141,7 @@
           "guidelineRefs": [
             "bsg-hereditary-2020"
           ],
-          "note": "BSG/ACPGBI/UKCGG 2020: colonoscopy every 2 years from age 25 for path_MLH1/path_MSH2 carriers.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "BSG/ACPGBI/UKCGG 2020: colonoscopy every 2 years from age 25 for path_MLH1/path_MSH2 carriers."
         },
         {
           "id": "mgmt-aspirin-discussion",
@@ -160,11 +152,7 @@
           "guidelineRefs": [
             "bsg-hereditary-2020"
           ],
-          "note": "Aspirin chemoprevention is recommended for Lynch syndrome (dose per current guidance; not asserted here).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "Aspirin chemoprevention is recommended for Lynch syndrome (dose per current guidance; not asserted here)."
         }
       ]
     }

@@ -203,11 +203,7 @@
           "guidelineRefs": [
             "esc-he-2019"
           ],
-          "note": "Encephalopathy: brain imaging to exclude stroke/haemorrhage.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.radiation)"
+          "note": "Encephalopathy: brain imaging to exclude stroke/haemorrhage."
         }
       ]
     },
@@ -240,11 +236,7 @@
           ],
           "guidelineRefs": [
             "esh-esc-2018"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          ]
         },
         {
           "id": "mgmt-critical-care",
@@ -259,11 +251,7 @@
           ],
           "guidelineRefs": [
             "esc-he-2019"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

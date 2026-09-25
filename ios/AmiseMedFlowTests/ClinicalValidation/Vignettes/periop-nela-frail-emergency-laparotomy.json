@@ -357,11 +357,7 @@
             "rcs-highrisk-2011",
             "nela-standards"
           ],
-          "proposedFix": "See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "proposedFix": "See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing)."
         },
         {
           "id": "mgmt-geriatric-input",
@@ -376,11 +372,7 @@
             "cpoc-bgs-frailty-2021",
             "nela-standards"
           ],
-          "proposedFix": "Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "proposedFix": "Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021)."
         },
         {
           "id": "mgmt-shared-decision",
@@ -397,11 +389,7 @@
           "guidelineRefs": [
             "cpoc-bgs-frailty-2021"
           ],
-          "proposedFix": "Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "proposedFix": "Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery."
         },
         {
           "id": "mgmt-doac-plan",
@@ -414,11 +402,7 @@
             "esc-ncs-2022"
           ],
           "note": "Apixaban taken this morning: document timing and the haemostatic plan for emergency surgery.",
-          "proposedFix": "Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "proposedFix": "Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022)."
         }
       ],
       "mustExclude": [

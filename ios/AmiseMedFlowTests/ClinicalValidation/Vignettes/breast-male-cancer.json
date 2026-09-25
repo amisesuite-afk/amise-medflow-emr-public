@@ -205,11 +205,7 @@
             "brca",
             "genetic"
           ],
-          "note": "Male breast cancer with a family history: BRCA2 testing.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "note": "Male breast cancer with a family history: BRCA2 testing."
         }
       ],
       "mustExclude": [

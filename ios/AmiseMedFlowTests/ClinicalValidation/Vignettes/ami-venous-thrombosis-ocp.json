@@ -298,10 +298,6 @@
           ],
           "guidelineRefs": [
             "esvs-2017"
-          ],
-          "knownGapNote": "Web: No prompt to stop the oestrogen-containing pill. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)",
-          "knownGap": [
-            "ios"
           ]
         }
       ],

@@ -232,11 +232,7 @@
           "guidelineRefs": [
             "nice-ng148"
           ],
-          "note": "Urine dipstick for every AKI. Graded as management because the web prompt delivers it as a plan line.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 28 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Urine dipstick for every AKI. Graded as management because the web prompt delivers it as a plan line."
         },
         {
           "id": "mgmt-volume-assessment",

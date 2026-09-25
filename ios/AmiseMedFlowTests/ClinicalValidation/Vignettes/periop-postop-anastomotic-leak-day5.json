@@ -296,11 +296,7 @@
           "guidelineRefs": [
             "isrec-2010",
             "wses-iai-2017"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 2 (ios.pipeline.decisions, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

@@ -300,11 +300,7 @@
           ],
           "guidelineRefs": [
             "halt-it-2020"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no routine tranexamic acid (halt-it 2020; esge 2021)\""
+          ]
         }
       ]
     }

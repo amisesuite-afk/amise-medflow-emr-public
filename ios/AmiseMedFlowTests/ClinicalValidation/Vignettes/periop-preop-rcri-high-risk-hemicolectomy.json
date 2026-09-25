@@ -243,11 +243,7 @@
           ],
           "guidelineRefs": [
             "esc-ncs-2022"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          ]
         },
         {
           "id": "inv-echocardiography",
@@ -260,11 +256,7 @@
             "esc-ncs-2022"
           ],
           "note": "Known HF with poor functional capacity before high-risk surgery: reassess LV function.",
-          "proposedFix": "See inv-natriuretic-peptide-or-troponin.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "proposedFix": "See inv-natriuretic-peptide-or-troponin."
         },
         {
           "id": "inv-iron-studies",
@@ -280,11 +272,7 @@
             "anaemia-consensus-2017"
           ],
           "note": "Hb 10.8 g/dL before major elective surgery: treat iron deficiency (IV iron when surgery is within weeks).",
-          "proposedFix": "Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+          "proposedFix": "Pre-operative anaemia prompt for major elective surgery: Hb <130 g/L → ferritin/TSAT and IV iron when surgery is within weeks (international consensus 2017)."
         }
       ]
     },
@@ -315,11 +303,7 @@
           "guidelineRefs": [
             "esc-ncs-2022"
           ],
-          "proposedFix": "Add a functional-capacity question to the pre-operative prompt set (ESC 2022).",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+          "proposedFix": "Add a functional-capacity question to the pre-operative prompt set (ESC 2022)."
         }
       ],
       "mustExclude": [

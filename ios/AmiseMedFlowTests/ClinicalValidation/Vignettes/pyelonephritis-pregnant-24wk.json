@@ -314,11 +314,7 @@
           "guidelineRefs": [
             "nice-ng111"
           ],
-          "note": "Not a NICE NG111 option for pyelonephritis in pregnancy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"or trimethoprim 200 mg bd × 7 days (if low resistance)\""
+          "note": "Not a NICE NG111 option for pyelonephritis in pregnancy."
         },
         {
           "id": "mgmt-no-nsaid-pregnancy",

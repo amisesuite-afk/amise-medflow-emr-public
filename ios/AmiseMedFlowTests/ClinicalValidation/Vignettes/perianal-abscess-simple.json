@@ -222,11 +222,7 @@
           "guidelineRefs": [
             "ascrs-abscess-2022"
           ],
-          "note": "ASCRS 2022: antibiotics after drainage only for cellulitis, systemic signs of infection or immunosuppression.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"do not prescribe antibiotics without drainage - ineffective alone\""
+          "note": "ASCRS 2022: antibiotics after drainage only for cellulitis, systemic signs of infection or immunosuppression."
         }
       ]
     }

@@ -228,11 +228,7 @@
           "severity": "quality",
           "match": [
             "blood culture"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation)"
+          ]
         },
         {
           "id": "inv-colonoscopy-after",

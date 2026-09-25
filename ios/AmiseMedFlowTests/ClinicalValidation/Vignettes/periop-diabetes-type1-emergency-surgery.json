@@ -216,11 +216,7 @@
           "guidelineRefs": [
             "cpoc-diabetes-2022"
           ],
-          "proposedFix": "Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation)"
+          "proposedFix": "Emit ketone testing as an investigation (addToInvestigations) in the hyperglycaemia prompt."
         }
       ]
     },
