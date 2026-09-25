@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "id": "choledocholithiasis-asge-low-risk",
+  "condition": "Symptomatic gallstones (ASGE low risk for choledocholithiasis)",
+  "category": "hpb",
+  "permutationOf": "choledocholithiasis-asge-high-risk",
+  "permutationLabel": "ASGE 2019 low risk (age ≤55, normal LFTs, normal CBD) → cholecystectomy without CBD evaluation",
+  "summary": "41-year-old woman with a single episode of biliary pain three weeks ago; normal LFTs; ultrasound shows gallstones and a 4 mm CBD.",
+  "tags": [
+    "biliary",
+    "asge",
+    "over-investigation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 41,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "One episode of right upper abdominal pain three weeks ago",
+    "hpi": "Single episode of severe right upper quadrant pain after a large meal three weeks ago, lasting 3 hours, settled with analgesia in the emergency department. No jaundice, dark urine, pale stools or fever since.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Episodic",
+        "Post-prandial"
+      ],
+      "exacerbating": [
+        "Fatty food"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "nausea"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "dark urine"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft and non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 68,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 10,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 80,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "ggt",
+        "name": "GGT",
+        "value": 28,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 22,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 35,
+        "unit": "U/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 20160,
+        "result": "Several gallstones; normal gallbladder wall. CBD 4 mm, no duct stone. Liver and pancreas normal."
+      }
+    ],
+    "comorbidities": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Bank clerk. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Symptomatic cholelithiasis",
+      "icd10": "K80.20",
+      "assessmentText": "Symptomatic cholelithiasis — ASGE 2019 low risk for choledocholithiasis (normal LFTs, CBD 4 mm, age 41)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "Episodic",
+            "Constant",
+            "Severe (7–9)",
+            "Back",
+            "Nausea",
+            "Post-meal",
+            "Fatty meal",
+            "Analgesia"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true,
+          "fever": false,
+          "jaundice": false
+        },
+        "durationDays": 21,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "adaptiveTriage emergency_now: \"No jaundice, dark urine, pale stools or fever since\" fires biliary-obstruction and cholangitis-pattern rules.",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-dilated-cbd-alarm",
+          "severity": "quality",
+          "match": [
+            "dilated common bile duct",
+            "dilated cbd"
+          ],
+          "note": "CBD 4 mm (normal).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "\"Dilated CBD\" prompt fires on \"CBD 4 mm, no duct stone\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says \"dilated\" without negation) instead of firing on any \"cbd\"/\"common bile duct\" mention; make its ERCP action conditional (\"if a stone is confirmed/ASGE high risk\")."
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-routine-mrcp",
+          "severity": "quality",
+          "match": [
+            "mrcp",
+            "endoscopic ultrasound",
+            "re:\\beus\\b"
+          ],
+          "unless": [
+            "if ",
+            "should",
+            "abnormal",
+            "dilat",
+            "jaundice"
+          ],
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "note": "ASGE low risk: no further CBD evaluation before cholecystectomy. Quality (cost and delay).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "MRCP seeded from the choledocholithiasis protocol (PANE #2) for an ASGE low-risk patient.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "HpiTab.seedInvestigationsFromPane: keep protocol conditionals (\"if CBD dilated/LFTs abnormal\") instead of seeding unconditionally."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-chole",
+          "severity": "quality",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "asge-2019",
+            "nice-cg188"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-ercp",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "endoscopic retrograde"
+          ],
+          "unless": [
+            "cholangitis",
+            "obstruct",
+            "if ",
+            "only",
+            "persistent",
+            "not indicated",
+            "no ercp",
+            "not routine",
+            "unless",
+            "fails",
+            "failed",
+            "confirmed",
+            "positive"
+          ],
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "note": "ERCP has no role at ASGE low risk; an unconditional ERCP suggestion exposes the patient to post-ERCP pancreatitis without benefit.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "\"ERCP — therapeutic: stone extraction or stenting\" from the false dilated-CBD prompt.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says \"dilated\" without negation) instead of firing on any \"cbd\"/\"common bile duct\" mention; make its ERCP action conditional (\"if a stone is confirmed/ASGE high risk\")."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "asge-2019",
+      "name": "ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis",
+      "year": 2019,
+      "section": "Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation",
+      "citation": "Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg188",
+      "name": "NICE CG188 — Gallstone disease: diagnosis and management",
+      "year": 2014,
+      "section": "Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: ASGE low risk. Guideline-concordant care is cholecystectomy without MRCP/EUS/ERCP. Tests over-investigation, including false \"dilated CBD\" alarms triggered by any mention of the CBD in a normal ultrasound report.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

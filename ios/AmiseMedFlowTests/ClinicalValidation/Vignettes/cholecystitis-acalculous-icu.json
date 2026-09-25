@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 1,
+  "id": "cholecystitis-acalculous-icu",
+  "condition": "Acute acalculous cholecystitis",
+  "category": "hpb",
+  "permutationOf": "cholecystitis-tg18-grade1",
+  "permutationLabel": "Acalculous, critically ill (ICU day 9 after polytrauma) — TG18 Grade III",
+  "summary": "44-year-old ventilated polytrauma patient on ICU day 9 on parenteral nutrition: new fever 38.9 °C, rising noradrenaline, bilirubin 48, WBC 22; ultrasound shows a distended gallbladder with sludge, 6 mm wall and pericholecystic fluid, no stones.",
+  "tags": [
+    "biliary",
+    "icu",
+    "acalculous",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "New fever and rising liver tests in ICU",
+    "hpi": "Day 9 in ICU after a road traffic collision (pelvic and femoral fractures, splenectomy day 1). Ventilated and sedated, on parenteral nutrition. Over 24 hours: new fever to 38.9°C, noradrenaline increased from 0.05 to 0.18 µg/kg/min, rising bilirubin and ALP. Lines changed 2 days ago; chest X-ray unchanged; urine clear.",
+    "socrates": {},
+    "symptoms": [
+      "fever"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Sedated and ventilated. Temperature 38.9°C, pulse 118/min, BP 96/58 on noradrenaline. Mildly jaundiced.",
+      "abdomen": "Distended; fullness and apparent tenderness (grimace) in the right upper quadrant with a palpable gallbladder. Laparotomy wound clean."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 118,
+        "systolicBp": 96,
+        "diastolicBp": 58,
+        "respiratoryRate": 18,
+        "temperatureC": 38.9,
+        "spo2": 95,
+        "avpu": "U",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 22.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 260,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 48,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 210,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 88,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 110,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 190,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.2,
+        "unit": "",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.8,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 52,
+        "unit": "U/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen (bedside)",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 30,
+        "result": "Distended gallbladder (11 cm) with echogenic sludge and no calculi; wall thickened to 6 mm with pericholecystic fluid. No intra- or extrahepatic duct dilatation."
+      }
+    ],
+    "comorbidities": [
+      "Polytrauma",
+      "Post-splenectomy"
+    ],
+    "surgicalHistory": [
+      "Trauma laparotomy and splenectomy (ICU day 1)",
+      "Pelvic external fixation"
+    ],
+    "medications": [
+      {
+        "drug": "Noradrenaline",
+        "dose": "0.18 µg/kg/min",
+        "frequency": "infusion",
+        "indication": "Vasopressor"
+      },
+      {
+        "drug": "Propofol",
+        "dose": "infusion",
+        "frequency": "continuous",
+        "indication": "Sedation"
+      },
+      {
+        "drug": "Parenteral nutrition",
+        "dose": "",
+        "frequency": "continuous",
+        "indication": "Nutrition"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Construction worker.",
+    "scoreForms": {
+      "tg18-cholecystitis": {
+        "localSigns": true,
+        "systemicSigns": true,
+        "imagingCharacteristic": true,
+        "wbcAbove18": true,
+        "palpableTenderRUQMass": true,
+        "durationOver72h": false,
+        "markedLocalInflammation": false,
+        "organDysfunction": [
+          "cardiovascular"
+        ]
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute acalculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute acalculous cholecystitis in a critically ill ICU patient — Tokyo (TG18) Grade III (cardiovascular dysfunction: rising noradrenaline requirement)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fever",
+          "jaundice"
+        ],
+        "symptomDetails": {},
+        "examFindings": {
+          "general": [
+            "Jaundiced",
+            "GCS < 15"
+          ],
+          "abdomen": [
+            "Distended",
+            "Tender RUQ",
+            "Mass palpable"
+          ]
+        },
+        "durationDays": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholecystitis-top3",
+          "severity": "critical",
+          "match": [
+            "cholecystitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "note": "A sedated patient cannot give SOCRATES; the diagnosis rests on fever, a palpable gallbladder and ultrasound.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "tg18-mgmt-cholecystitis",
+          "ssc-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "note": "New fever with a rising vasopressor requirement is septic shock until proven otherwise.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "critical",
+          "score": "tg18-cholecystitis",
+          "mode": "calculator",
+          "equals": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "note": "Cardiovascular dysfunction (any noradrenaline) = Grade III.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "tg18-antimicrobial"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-gallbladder-drainage",
+          "severity": "critical",
+          "match": [
+            "cholecystostomy",
+            "gallbladder drainage",
+            "ptgbd",
+            "re:gallbladder (aspiration|drain)",
+            "percutaneous transhepatic gallbladder"
+          ],
+          "guidelineRefs": [
+            "tg18-gb-drainage",
+            "tg18-mgmt-cholecystitis"
+          ],
+          "note": "Source control in a critically ill patient with acalculous cholecystitis: percutaneous gallbladder drainage.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial",
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-unqualified-early-lc",
+          "severity": "quality",
+          "match": [
+            "re:early (laparoscopic )?cholecystectomy"
+          ],
+          "unless": [
+            "if fit",
+            "unfit",
+            "grade i",
+            "when stable",
+            "delayed",
+            "favourable"
+          ],
+          "guidelineRefs": [
+            "tg18-gb-drainage"
+          ],
+          "note": "Early LC is not the default for an unstable ventilated patient; an unqualified early-LC line is noise that competes with drainage.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Assessment panel key point \"Early laparoscopic cholecystectomy (within 72 h) reduces complications\" is shown unqualified for a ventilated Grade III patient.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Cholecystitis protocol key points: qualify early LC by grade and fitness (TG18: CCI/ASA-PS; drainage for Grade III/unfit/acalculous critically ill)."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview",
+      "unverified": [
+        "ios"
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-grade3",
+      "severity": "quality",
+      "equals": "cholecystitis_grade3",
+      "guidelineRefs": [
+        "tg18-mgmt-cholecystitis"
+      ],
+      "knownGap": [
+        "web"
+      ],
+      "knownGapNote": "Grade I variant selected (bare \"cholecystitis\" keyword checked first), so the Plan tab drops the conservative phase that holds percutaneous cholecystostomy.",
+      "proposedFix": "dx-variants.ts: check Grade III → II → I; add \"acalculous\" to Grade III keywords when organ dysfunction is documented."
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis",
+      "year": 2018,
+      "section": "Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction",
+      "citation": "Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis",
+      "year": 2018,
+      "section": "Grade I: early LC if CCI ≤5 / ASA-PS ≤2; Grade II: early LC in an advanced centre if fit, otherwise antibiotics and urgent/early gallbladder drainage when not responding; Grade III: organ support, antibiotics, drainage unless favourable organ dysfunction",
+      "citation": "Okamoto K, Suzuki K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:55–72.",
+      "verified": false
+    },
+    {
+      "id": "tg18-gb-drainage",
+      "name": "Tokyo Guidelines 2018 — management strategies for gallbladder drainage in acute cholecystitis",
+      "year": 2018,
+      "section": "Percutaneous transhepatic gallbladder drainage (PTGBD) as first-line drainage in high-risk surgical patients; acalculous cholecystitis in the critically ill",
+      "citation": "Mori Y, Itoi T, Baron TH, et al. J Hepatobiliary Pancreat Sci. 2018;25:87–95.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis",
+      "year": 2018,
+      "section": "Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Blood cultures before antimicrobials; antimicrobials within 1 h for shock; source control; noradrenaline first-line vasopressor",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: acalculous cholecystitis in the critically ill — no pain history, no stones, septic. Tests that the engines can reach the diagnosis without SOCRATES, recognise sepsis, grade III, and recommend percutaneous drainage rather than an operation.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

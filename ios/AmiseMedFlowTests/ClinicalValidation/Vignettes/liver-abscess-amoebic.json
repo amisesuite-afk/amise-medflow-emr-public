@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "id": "liver-abscess-amoebic",
+  "condition": "Amoebic liver abscess",
+  "category": "hpb",
+  "permutationOf": "liver-abscess-pyogenic",
+  "permutationLabel": "Amoebic (Caribbean context) — serology positive, single homogeneous right-lobe abscess",
+  "summary": "32-year-old man from rural Saint Lucia with 2 weeks of fever and RUQ pain after dysentery a month ago; T 38.6 °C; WBC 15.8, ALP 210; E. histolytica serology positive; ultrasound: single 6 cm homogeneous hypoechoic lesion in segment VIII.",
+  "tags": [
+    "liver",
+    "abscess",
+    "amoebic",
+    "tropical"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 32,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Fever and right upper abdominal pain for two weeks",
+    "hpi": "Two weeks of fever and right upper quadrant pain worse on breathing and lying on the right side. Bloody diarrhoea for a week about a month ago, settled without treatment. Lives in a rural community with a shared water supply. No jaundice.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Fever",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "fever",
+      "right upper quadrant pain",
+      "loss of appetite"
+    ],
+    "negatives": [
+      "jaundice",
+      "rigors"
+    ],
+    "exam": {
+      "general": "Unwell. Temperature 38.6°C, pulse 104/min, BP 124/78, RR 18.",
+      "abdomen": "Tender hepatomegaly with point tenderness over the right lower intercostal spaces. No peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 104,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 38.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 180,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 210,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 70,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 18,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 31,
+        "unit": "g/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "amoebicSerology",
+        "name": "Entamoeba histolytica serology (ELISA)",
+        "resultText": "Positive",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 30,
+        "result": "Single 6 × 5 cm round, homogeneous, hypoechoic subcapsular lesion in segment VIII of the right lobe with fine internal echoes and no septa — appearances of an amoebic abscess. No duct dilatation. Gallbladder normal."
+      }
+    ],
+    "comorbidities": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Banana farmer, rural Saint Lucia. Alcohol occasionally.",
+    "confirmedDiagnosis": {
+      "name": "Amoebic liver abscess",
+      "icd10": "A06.4",
+      "paneDiseaseId": "liver_abscess",
+      "assessmentText": "Amoebic liver abscess (E. histolytica serology positive), single 6 cm abscess in segment VIII. No rupture."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fever",
+          "right upper quadrant pain",
+          "abdominal pain",
+          "loss of appetite"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "> 3 days",
+            "Constant",
+            "Dull",
+            "Moderate (4–6)",
+            "Shoulder tip",
+            "Fever",
+            "Anorexia",
+            "Deep breathing"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Hepatomegaly"
+          ]
+        },
+        "paneAnswers": {
+          "elevated_wbc": true,
+          "us_gallstones": false,
+          "murphy_sign": false,
+          "jaundice": false
+        },
+        "durationDays": 14,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-liver-abscess-top3",
+          "severity": "critical",
+          "match": [
+            "liver abscess",
+            "hepatic abscess",
+            "amoeb"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "review-amoebiasis-2003"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "review-amoebiasis-2003"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "note": "Exclude a pyogenic (or mixed) abscess.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-metronidazole",
+          "severity": "critical",
+          "match": [
+            "tinidazole",
+            "re:metronidazole[^.;\\n]{0,60}(amoeb|800 ?mg|750 ?mg)",
+            "re:amoeb[^.;\\n]{0,60}metronidazole"
+          ],
+          "guidelineRefs": [
+            "review-amoebiasis-2003"
+          ],
+          "note": "Amoebicidal metronidazole (e.g. 750–800 mg TDS). A generic anaerobic-cover metronidazole in a sepsis or peritonism bundle does not count.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "A06.4 has no protocol mapping (getProtocolByIcd) and PANE ranks appendicitis first (0.38), so the Assessment panel shows the appendicitis protocol; the only metronidazole is anaerobic cover in a sepsis bundle.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "lib/pane-engine management index: map A06.4 to the liver_abscess protocol (amoebic branch: metronidazole 750–800 mg TDS 7–10 days then a luminal agent) and see mgmt-no-appendicectomy."
+        },
+        {
+          "id": "mgmt-luminal-agent",
+          "severity": "quality",
+          "match": [
+            "paromomycin",
+            "diloxanide",
+            "iodoquinol",
+            "luminal"
+          ],
+          "guidelineRefs": [
+            "review-amoebiasis-2003"
+          ],
+          "note": "A luminal amoebicide after metronidazole prevents relapse and onward transmission.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No luminal amoebicide anywhere (the liver_abscess protocol also omits it).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "liver_abscess protocol: add paromomycin or diloxanide furoate after metronidazole for amoebic abscess."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-drainage",
+          "severity": "quality",
+          "match": [
+            "percutaneous drainage",
+            "drain insertion",
+            "surgical drainage",
+            "re:aspiration\\s*/\\s*drain"
+          ],
+          "unless": [
+            "if no response",
+            "not respond",
+            "fail",
+            "rupture",
+            "left lobe",
+            "only if",
+            "amoebic abscess: metronidazole"
+          ],
+          "guidelineRefs": [
+            "review-amoebiasis-2003"
+          ],
+          "note": "Uncomplicated amoebic abscess responds to metronidazole; aspiration is for non-response at 3–5 days, left-lobe abscess or imminent rupture.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Assessment panel shows the appendicitis protocol (\"Laparoscopic appendicectomy\") because PANE ranks appendicitis first for fever + RUQ pain.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "review-amoebiasis-2003",
+      "name": "Amebiasis (narrative review — no formal international guideline exists)",
+      "year": 2003,
+      "section": "Amoebic liver abscess: serology; metronidazole (or tinidazole) followed by a luminal agent (paromomycin, diloxanide furoate) to eradicate intestinal carriage; aspiration only for no response, left-lobe or imminent rupture",
+      "citation": "Haque R, Huston CD, Hughes M, Houpt E, Petri WA Jr. N Engl J Med. 2003;348:1565–1573.",
+      "verified": false
+    },
+    {
+      "id": "review-liver-abscess-2015",
+      "name": "Hepatic abscess: diagnosis and management (narrative review — no formal international guideline exists)",
+      "year": 2015,
+      "section": "Pyogenic abscess: blood cultures, CT, antibiotics for 4–6 weeks, percutaneous drainage/aspiration for larger abscesses, look for a biliary or colonic source; multiple cholangitic abscesses: treat the biliary obstruction",
+      "citation": "Lardière-Deguelte S, Ragot E, Amroun K, et al. J Visc Surg. 2015;152:231–243.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: amoebic abscess, relevant to the Caribbean setting. The distinguishing guideline actions are metronidazole followed by a luminal agent, with drainage reserved for non-response or high-risk location.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

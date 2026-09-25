@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 1,
+  "id": "biliary-colic-incidental-polyp",
+  "condition": "Biliary colic (symptomatic gallstones)",
+  "category": "hpb",
+  "permutationOf": "biliary-colic-uncomplicated",
+  "permutationLabel": "Incidental finding — 12 mm gallbladder polyp alongside gallstones",
+  "summary": "56-year-old man with typical biliary colic; ultrasound shows gallstones and an incidental 12 mm sessile gallbladder polyp. Normal bloods.",
+  "tags": [
+    "biliary",
+    "outpatient",
+    "incidental",
+    "malignancy-risk"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 56,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Episodes of right upper abdominal pain after meals",
+    "hpi": "Three episodes in two months of right upper quadrant pain after meals lasting a few hours, with nausea; settles fully. No fever, jaundice or weight loss. Ultrasound shows gallstones and a 12 mm polyp in the gallbladder.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Episodic",
+        "Post-prandial"
+      ],
+      "exacerbating": [
+        "Fatty food"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "nausea"
+    ],
+    "negatives": [
+      "fever",
+      "jaundice",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Well, not jaundiced.",
+      "abdomen": "Soft, non-tender at rest. No mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 72,
+        "systolicBp": 136,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 3,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 12,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 94,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 28,
+        "unit": "U/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 20160,
+        "result": "Several mobile gallstones. Separate 12 mm sessile, non-mobile, non-shadowing polyp on the fundal wall with internal vascularity. Wall otherwise 2 mm. CBD 5 mm. Liver normal."
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Accountant. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Biliary colic with a 12 mm gallbladder polyp",
+      "icd10": "K80.20",
+      "assessmentText": "Symptomatic cholelithiasis (biliary colic) with an incidental 12 mm sessile gallbladder polyp."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "Episodic",
+            "Dull",
+            "Moderate (4–6)",
+            "Shoulder tip",
+            "Nausea",
+            "Post-meal",
+            "Fatty meal"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true,
+          "fatty_food_trigger": true,
+          "fever": false,
+          "jaundice": false
+        },
+        "durationDays": 60,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "adaptiveTriage emergency_now (score 125) for a pain-free outpatient: \"No fever, jaundice or weight loss\" fires biliary-obstruction and malignancy rules.",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+      },
+      "redFlags": [
+        {
+          "id": "flag-polyp",
+          "severity": "quality",
+          "match": [
+            "polyp",
+            "gallbladder cancer",
+            "gallbladder carcinoma"
+          ],
+          "guidelineRefs": [
+            "esgar-polyp-2022"
+          ],
+          "note": "A polyp ≥10 mm carries a malignancy risk and changes the indication/urgency and the histology plan.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No engine mentions the 12 mm polyp (no polyp rule in triage, prompts or protocols).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts: add a radiology-result prompt for gallbladder polyp with size parsing (≥10 mm → cholecystectomy if fit; 6–9 mm → surveillance; ESGAR/EAES/EFISDS/ESGE 2022)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "esgar-polyp-2022",
+            "nice-cg188"
+          ],
+          "note": "Two independent indications: symptomatic gallstones and a polyp ≥10 mm. Critical because a missed polyp-driven cholecystectomy risks a missed gallbladder cancer.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-histology",
+          "severity": "quality",
+          "match": [
+            "histolog",
+            "histopatholog"
+          ],
+          "guidelineRefs": [
+            "esgar-polyp-2022"
+          ],
+          "note": "The specimen must be reviewed histologically (polyp ≥10 mm).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esgar-polyp-2022",
+      "name": "ESGAR/EAES/EFISDS/ESGE joint guideline — management and follow-up of gallbladder polyps (update)",
+      "year": 2022,
+      "section": "Cholecystectomy for polyps ≥10 mm (if fit), and for polyps with gallbladder symptoms; histology of the specimen",
+      "citation": "Foley KG, Lahaye MJ, Thoeni RF, et al. Eur Radiol. 2022;32:3358–3368.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg188",
+      "name": "NICE CG188 — Gallstone disease: diagnosis and management",
+      "year": 2014,
+      "section": "Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: same presentation plus an incidental 12 mm gallbladder polyp. Tests whether the engines surface the polyp (malignancy risk) and keep cholecystectomy with histology in the plan; no engine is expected to know gallbladder polyp thresholds today.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

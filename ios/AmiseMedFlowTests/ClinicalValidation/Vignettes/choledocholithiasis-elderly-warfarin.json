@@ -1,0 +1,413 @@
+{
+  "schemaVersion": 1,
+  "id": "choledocholithiasis-elderly-warfarin",
+  "condition": "Choledocholithiasis",
+  "category": "hpb",
+  "permutationOf": "choledocholithiasis-asge-high-risk",
+  "permutationLabel": "Elderly (79) on warfarin (INR 2.6) — ASGE high risk; anticoagulation plan before sphincterotomy",
+  "summary": "79-year-old man with AF on warfarin (INR 2.6): painless-ish jaundice with RUQ discomfort; bilirubin 70, ALP 360; ultrasound shows a 12 mm CBD with stones; afebrile.",
+  "tags": [
+    "biliary",
+    "elderly",
+    "anticoagulated",
+    "ercp"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Jaundice with right upper abdominal discomfort",
+    "hpi": "Four days of yellow eyes with right upper quadrant discomfort, dark urine and pale stools. No fever or rigors. Atrial fibrillation on warfarin (target INR 2–3), hypertension, type 2 diabetes on metformin. Previous stroke 2021.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Jaundice",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "jaundice",
+      "right upper quadrant pain",
+      "dark urine",
+      "pale stool"
+    ],
+    "negatives": [
+      "fever",
+      "rigors"
+    ],
+    "exam": {
+      "general": "Jaundiced. Irregularly irregular pulse 88/min, BP 146/84, temperature 36.9°C.",
+      "abdomen": "Mild right upper quadrant tenderness. No palpable gallbladder."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 88,
+        "systolicBp": 146,
+        "diastolicBp": 84,
+        "respiratoryRate": 16,
+        "temperatureC": 36.9,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 70,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 360,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "ggt",
+        "name": "GGT",
+        "value": 410,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 190,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 15,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 2.6,
+        "unit": "",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 220,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 30,
+        "result": "Gallstones. CBD dilated to 12 mm containing several shadowing stones (largest 9 mm). Intrahepatic duct dilatation. No pancreatic mass seen."
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension",
+      "Type 2 diabetes mellitus",
+      "Previous stroke"
+    ],
+    "medications": [
+      {
+        "drug": "Warfarin",
+        "dose": "as per INR",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with wife, independent.",
+    "confirmedDiagnosis": {
+      "name": "Choledocholithiasis",
+      "icd10": "K80.50",
+      "paneDiseaseId": "choledocholithiasis",
+      "assessmentText": "Choledocholithiasis — ASGE 2019 high risk (duct stones on ultrasound, bilirubin 70 µmol/L with CBD 12 mm). No cholangitis. On warfarin, INR 2.6."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": [
+          "jaundice",
+          "right upper quadrant pain",
+          "dark urine",
+          "pale stool"
+        ],
+        "symptomDetails": {
+          "jaundice": [
+            "Dark urine",
+            "Pale stool",
+            "Abdominal pain"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Jaundiced"
+          ],
+          "cardiovascular": [
+            "Irregular rhythm"
+          ],
+          "abdomen": [
+            "Tender RUQ"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true,
+          "fever": false
+        },
+        "durationDays": 4,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cbd-stone-top3",
+          "severity": "critical",
+          "match": [
+            "choledocholithiasis",
+            "cbd stone",
+            "bile duct stone",
+            "common bile duct"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-malignant-obstruction",
+          "severity": "quality",
+          "match": [
+            "pancreatic carcinoma",
+            "pancreatic cancer",
+            "pancreatic adenocarcinoma",
+            "periampullary",
+            "re:pancrea\\w*[^,]{0,20}(carcinoma|cancer|malignan|neoplas|tumou?r|adenocarcinoma)",
+            "cholangiocarcinoma",
+            "malignan"
+          ],
+          "note": "Age 79 with obstructive jaundice: malignancy must stay in the differential.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: choledocholithiasis, inguinal hernia, cholecystitis — no malignant cause for obstructive jaundice at 79 (symptom inference #4 has one).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "PANE: age modifier for pancreatic/biliary malignancy with jaundice; recalibrate the inguinal hernia prior (0.15) that fills the top 3 in unrelated presentations."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "asge-2019"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "critical",
+          "match": [
+            "warfarin",
+            "anticoag",
+            "inr"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "note": "Therapeutic INR before a high-bleeding-risk sphincterotomy.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-inr",
+          "severity": "critical",
+          "match": [
+            "inr",
+            "coagulation",
+            "clotting",
+            "prothrombin"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ercp",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "endoscopic retrograde"
+          ],
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-anticoagulation-plan",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withhold|hold|omit|suspend)[^.;\\n]{0,30}warfarin",
+            "re:warfarin[^.;\\n]{0,40}(stop|withh|hold|omit|suspend|bridg|revers)",
+            "bridging",
+            "re:inr[^.;\\n]{0,20}(<|below|under)\\s*1\\.5",
+            "vitamin k",
+            "anticoagulation plan",
+            "anticoagulant management"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "note": "BSG/ESGE 2021: ERCP with sphincterotomy is a high-risk procedure — stop warfarin 5 days before and check INR <1.5 (bridging not needed for AF without other high-risk features). Proceeding with INR 2.6 risks post-sphincterotomy haemorrhage.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "asge-2019",
+      "name": "ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis",
+      "year": 2019,
+      "section": "Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation",
+      "citation": "Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15.",
+      "verified": false
+    },
+    {
+      "id": "bsg-esge-2021-anticoag",
+      "name": "BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update)",
+      "year": 2021,
+      "section": "ERCP with sphincterotomy is a high-risk procedure: stop warfarin 5 days before and check INR <1.5; bridging only for high thrombotic risk; DOACs stopped per renal function",
+      "citation": "Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–1628.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: elderly anticoagulated patient. The diagnosis and ERCP indication are unchanged; the safety content is the peri-procedural anticoagulation plan and keeping malignancy in the differential at 79.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

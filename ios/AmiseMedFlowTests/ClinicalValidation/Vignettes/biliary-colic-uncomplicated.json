@@ -1,0 +1,478 @@
+{
+  "schemaVersion": 1,
+  "id": "biliary-colic-uncomplicated",
+  "condition": "Biliary colic (symptomatic gallstones)",
+  "category": "hpb",
+  "permutationOf": null,
+  "permutationLabel": "Base case — uncomplicated biliary colic, outpatient",
+  "summary": "38-year-old woman with four post-prandial episodes of RUQ pain over three months, pain-free now; normal observations, WBC, CRP and LFTs; ultrasound shows gallstones with a normal wall and a 4 mm CBD.",
+  "tags": [
+    "biliary",
+    "outpatient",
+    "elective"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 163,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Episodes of right upper abdominal pain after meals",
+    "hpi": "Four episodes over three months of severe right upper quadrant pain starting 30–60 minutes after fatty meals, lasting 2–4 hours, radiating to the right shoulder blade, with nausea. Completely well between episodes; the last episode was 5 days ago. No fever, no jaundice, no dark urine or pale stools. GP ultrasound shows gallstones. LMP 2 weeks ago.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "RUQ",
+        "Epigastric"
+      ],
+      "character": [
+        "Sharp",
+        "Pressure"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Episodic",
+        "Post-prandial"
+      ],
+      "exacerbating": [
+        "Fatty food",
+        "Eating"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "nausea"
+    ],
+    "negatives": [
+      "fever",
+      "jaundice",
+      "dark urine",
+      "pale stools"
+    ],
+    "exam": {
+      "general": "Well, afebrile, not jaundiced. BMI 31.",
+      "abdomen": "Soft. Mild right upper quadrant tenderness on deep palpation only; Murphy's sign negative. No mass, no guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 76,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 7.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 4,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 11,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 88,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 24,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 38,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine pregnancy test",
+        "resultText": "Negative",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 10080,
+        "result": "Multiple mobile gallstones up to 12 mm. Gallbladder wall 2 mm, no pericholecystic fluid, sonographic Murphy's negative. CBD 4 mm. Liver and pancreas unremarkable."
+      }
+    ],
+    "comorbidities": [
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher. Non-smoker. Alcohol 2–3 units a week.",
+    "confirmedDiagnosis": {
+      "name": "Biliary colic — symptomatic gallstones",
+      "icd10": "K80.20",
+      "assessmentText": "Biliary colic (symptomatic cholelithiasis). No features of cholecystitis, choledocholithiasis or pancreatitis. Normal LFTs, CBD 4 mm."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "Episodic",
+            "Sharp",
+            "Severe (7–9)",
+            "Shoulder tip",
+            "Nausea",
+            "Post-meal",
+            "Fatty meal",
+            "Analgesia"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Tender RUQ"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true,
+          "fatty_food_trigger": true,
+          "murphy_sign": false,
+          "fever": false,
+          "jaundice": false
+        },
+        "durationDays": 90,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-biliary-colic-top3",
+          "severity": "quality",
+          "match": [
+            "biliary colic",
+            "cholelithiasis",
+            "gallstone",
+            "symptomatic gallstones"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-cg188"
+          ],
+          "note": "The index diagnosis. Quality: labelling biliary colic as cholecystitis over-treats but does not miss a dangerous condition.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no biliary colic / symptomatic cholelithiasis node: ranks Acute Cholecystitis (0.73) first for a pain-free outpatient with normal WBC/CRP.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "lib/pane-engine vademecum hepatobiliary.ts: add a \"biliary_colic\" (symptomatic cholelithiasis, K80.20) disease with episodic post-prandial RUQ pain, us_gallstones, absent fever/elevated WBC, and a protocol (elective lap chole, NICE CG188)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "nice-cg188"
+        ],
+        "note": "Pain-free outpatient with normal observations and bloods: elective pathway. Over-triage to emergency is noise, not harm.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "adaptiveTriage returns emergency_now (score 140): \"No fever, no jaundice\" in the HPI fires \"Possible biliary obstruction\" and \"Possible cholangitis pattern\", and \"radiating to the right shoulder blade\" fires \"Possible cardiac event\".",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "lib/triage-engine rules.ts RED_FLAGS and adaptive-triage.ts: negation-aware matching; restrict the cardiac rule's \"radiating to\" to chest-pain context."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-sepsis-alarm",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic",
+            "emergency now"
+          ],
+          "note": "Afebrile, normal WBC/CRP, pain-free.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Triage \"Emergency now\" alarm fires (negated fever/jaundice in the HPI).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+        },
+        {
+          "id": "no-dilated-cbd-alarm",
+          "severity": "quality",
+          "match": [
+            "dilated common bile duct",
+            "dilated cbd"
+          ],
+          "note": "The CBD measures 4 mm (normal). A \"dilated CBD\" alarm here is a false positive that drives MRCP/ERCP.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "\"Dilated CBD → MRCP + ERCP\" safety prompt fires on \"CBD 4 mm\" (any mention of the CBD).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts dilated_cbd prompt: parse the CBD diameter from the report (dilated only if >6 mm with gallbladder in situ, or the report says \"dilated\" without negation) instead of firing on any \"cbd\"/\"common bile duct\" mention; make its ERCP action conditional (\"if a stone is confirmed/ASGE high risk\")."
+        },
+        {
+          "id": "no-cholangitis-alarm",
+          "severity": "quality",
+          "match": [
+            "cholangitis",
+            "charcot"
+          ],
+          "guidelineRefs": [
+            "nice-cg188"
+          ],
+          "note": "Afebrile, anicteric, pain-free: the HPI records \"No fever, no jaundice\". A Charcot/cholangitis alarm here comes from negated words.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "\"Charcot's triad → Acute Cholangitis\" fires: hasFever matches \"afebrile\" (contains \"febrile\"), hasJaundice matches \"not jaundiced\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-return-precautions",
+          "severity": "quality",
+          "match": [
+            "jaundice",
+            "fever",
+            "rigors"
+          ],
+          "guidelineRefs": [
+            "nice-cg188"
+          ],
+          "note": "Safety-netting: fever, jaundice or persistent pain should prompt urgent return.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-asge-cbd",
+          "severity": "quality",
+          "score": "asge-cbd",
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "note": "ASGE 2019 risk stratification for CBD stones (here: low risk) before cholecystectomy.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-lfts",
+          "severity": "quality",
+          "match": [
+            "lft",
+            "liver function",
+            "bilirubin"
+          ],
+          "guidelineRefs": [
+            "nice-cg188"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-ultrasound",
+          "severity": "quality",
+          "match": [
+            "ultrasound",
+            "uss"
+          ],
+          "guidelineRefs": [
+            "nice-cg188"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-elective-lap-chole",
+          "severity": "quality",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "nice-cg188"
+          ],
+          "note": "NICE CG188: offer laparoscopic cholecystectomy for symptomatic gallbladder stones.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "unless": [
+            "if cholangitis",
+            "if febrile",
+            "if fever",
+            "if cholecystitis",
+            "no antibiotic",
+            "not indicated"
+          ],
+          "note": "No infection: antibiotics for uncomplicated biliary colic are not indicated (stewardship).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Assessment panel shows the cholecystitis protocol (PANE top) with IV co-amoxiclav/pip-tazo; the Murphy's-sign prompt (fired by \"Murphy's sign negative\") adds IV co-amoxiclav.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Full LAPAROSCOPIC APPENDICECTOMY operative plan prompt: hasAppendicitisIndication fires on \"no guarding\" in the exam text.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg188",
+      "name": "NICE CG188 — Gallstone disease: diagnosis and management",
+      "year": 2014,
+      "section": "Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014.",
+      "verified": false
+    },
+    {
+      "id": "asge-2019",
+      "name": "ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis",
+      "year": 2019,
+      "section": "Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation",
+      "citation": "Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for the gallstone spectrum: a pain-free outpatient with symptomatic gallstones and no complication. Tests that the engines name biliary colic (PANE has no biliary-colic node), do not escalate or alarm, do not add antibiotics, and offer elective laparoscopic cholecystectomy. The exam text contains a negated sign (\"Murphy's sign negative\") to probe negation handling.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

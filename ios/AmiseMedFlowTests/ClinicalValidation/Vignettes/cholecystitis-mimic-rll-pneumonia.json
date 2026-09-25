@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 1,
+  "id": "cholecystitis-mimic-rll-pneumonia",
+  "condition": "Right lower lobe community-acquired pneumonia (mimic of cholecystitis)",
+  "category": "hpb",
+  "permutationOf": "cholecystitis-tg18-grade1",
+  "permutationLabel": "Dangerous mimic — right lower lobe pneumonia with RUQ pain and fever, normal gallbladder",
+  "summary": "47-year-old man with 3 days of fever 38.9 °C, RUQ pain worse on deep breathing, productive cough and breathlessness; RR 26, SpO₂ 91%, crackles at the right base; ultrasound shows a normal gallbladder and a small right pleural effusion. No chest X-ray yet.",
+  "tags": [
+    "mimic",
+    "respiratory",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 47,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right upper abdominal pain and fever",
+    "hpi": "Three days of fever with rigors and right upper abdominal pain that is worse on deep breathing and coughing. Cough productive of rusty sputum and increasing breathlessness. Nausea, no vomiting, no jaundice. Smoker.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RUQ",
+        "Right side"
+      ],
+      "character": [
+        "Sharp",
+        "Stabbing"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Coughing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "fever",
+      "rigors",
+      "productive cough",
+      "shortness of breath"
+    ],
+    "negatives": [
+      "jaundice",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Flushed, tachypnoeic. Temperature 38.9°C, pulse 112/min, BP 118/72, RR 26, SpO2 91% on air.",
+      "respiratory": "Bronchial breathing and coarse crackles at the right base; dull to percussion at the right base.",
+      "abdomen": "Tender right upper quadrant without guarding; Murphy's sign negative. Liver not enlarged."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 112,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 26,
+        "temperatureC": 38.9,
+        "spo2": 91,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 17.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 240,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 18,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 42,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 110,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 30,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 8.2,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 98,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 20,
+        "result": "Normal gallbladder: no stones, wall 2 mm, no pericholecystic fluid, sonographic Murphy’s negative. CBD 4 mm. Small right pleural effusion with adjacent consolidated lung."
+      }
+    ],
+    "comorbidities": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Farmer. Smokes 15 a day.",
+    "confirmedDiagnosis": {
+      "name": "Right lower lobe community-acquired pneumonia",
+      "icd10": "J18.1",
+      "assessmentText": "Right lower lobe community-acquired pneumonia with parapneumonic effusion presenting as right upper quadrant pain. Normal gallbladder on ultrasound."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "fever",
+          "rigors",
+          "productive cough",
+          "shortness of breath",
+          "pleuritic chest pain"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "1–3 days",
+            "Constant",
+            "Sharp",
+            "Moderate (4–6)",
+            "Fever",
+            "Rigors",
+            "Nausea",
+            "Deep breathing",
+            "Coughing"
+          ],
+          "shortness of breath": [
+            "Gradual",
+            "Cough",
+            "Fever"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Crackles (R)",
+            "Dull to percussion"
+          ],
+          "abdomen": [
+            "Tender RUQ"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": false,
+          "murphy_sign": false
+        },
+        "toxicHabits": [
+          "Tobacco"
+        ],
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pneumonia",
+          "severity": "critical",
+          "match": [
+            "pneumonia",
+            "chest infection",
+            "lower respiratory",
+            "lrti",
+            "consolidation"
+          ],
+          "guidelineRefs": [
+            "nice-cg191"
+          ],
+          "note": "Pleuritic RUQ pain, productive cough, hypoxia and right basal signs with a normal gallbladder.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no pneumonia node (top 3: liver abscess, appendicitis, inguinal hernia). Symptom inference ranks community-acquired pneumonia #1 but it is a secondary view.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "lib/pane-engine: add a \"pneumonia\" mimic node (cough, pleuritic pain, dyspnoea, hypoxia, basal crackles) or surface the symptom-inference #1 when it is not in the PANE top 3."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-cg191"
+        ],
+        "note": "Hypoxic (SpO₂ 91%), RR 26: same-day treatment.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "quality",
+          "match": [
+            "spo2",
+            "spo₂",
+            "hypox",
+            "oxygen",
+            "saturation",
+            "tachypn",
+            "respiratory rate"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-curb65",
+          "severity": "quality",
+          "score": "curb65",
+          "guidelineRefs": [
+            "nice-cg191"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-chest-xray",
+          "severity": "critical",
+          "match": [
+            "cxr",
+            "chest x-ray",
+            "chest xray",
+            "chest radiograph",
+            "re:\\bx-?ray\\b[^.;\\n]{0,20}chest"
+          ],
+          "guidelineRefs": [
+            "nice-cg191"
+          ],
+          "note": "The single test that makes the diagnosis; NICE CG191 recommends a chest X-ray to confirm pneumonia.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No CXR investigation for pneumonia; a CXR appears only as plan text in the hypoxia/sepsis prompts (\"CXR — identify cause\", \"Erect CXR — exclude free air and basal pneumonia\"). Partial mitigation.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts: RUQ/upper abdominal pain + (cough or pleuritic pain or SpO₂ <94% or basal crackles) → \"CXR (exclude basal pneumonia)\" as an investigation (addToInvestigations)."
+        },
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "nice-cg191"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role"
+          ],
+          "note": "The gallbladder is normal on ultrasound: a cholecystectomy suggestion is a wrong-diagnosis operative plan.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Gallstone operative plan and consent prompt fire (hasGallstoneIndication: the \"right upper quadrant pain\" symptom chip, and \"Murphy's sign negative\" matches \"murphy\") despite a normal gallbladder on US.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Appendicectomy operative plan fires on \"without guarding\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg191",
+      "name": "NICE CG191 — Pneumonia in adults: diagnosis and management",
+      "year": 2014,
+      "section": "Chest X-ray to confirm community-acquired pneumonia; CRB-65/CURB-65 severity assessment; antibiotics within 4 hours",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG191, December 2014 (updated 2022).",
+      "verified": false
+    },
+    {
+      "id": "tg18-dx-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis",
+      "year": 2018,
+      "section": "Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction",
+      "citation": "Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic for acute cholecystitis: right lower lobe pneumonia gives RUQ pain and fever. Cough, pleuritic pain, hypoxia, right basal signs and a normal gallbladder should redirect the engines to pneumonia and a chest X-ray, and away from a cholecystectomy plan.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

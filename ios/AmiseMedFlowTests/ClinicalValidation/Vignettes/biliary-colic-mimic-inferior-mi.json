@@ -1,0 +1,435 @@
+{
+  "schemaVersion": 1,
+  "id": "biliary-colic-mimic-inferior-mi",
+  "condition": "Inferior ST-elevation myocardial infarction (mimic of biliary pain)",
+  "category": "hpb",
+  "permutationOf": "biliary-colic-uncomplicated",
+  "permutationLabel": "Dangerous mimic — inferior STEMI presenting as epigastric pain in a diabetic with known gallstones",
+  "summary": "63-year-old diabetic smoker with known gallstones: 2 h of epigastric pressure, nausea and sweating; pale, clammy, HR 54, BP 98/60. Lipase and LFTs normal. No ECG yet.",
+  "tags": [
+    "mimic",
+    "cardiac",
+    "diabetes",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Upper abdominal pain with nausea and sweating",
+    "hpi": "Two hours of constant epigastric pressure-like pain that came on at rest, with nausea and sweating. He thinks it is \"his gallstones again\" (gallstones on ultrasound two years ago). No vomiting, no jaundice, no fever. Type 2 diabetic on metformin and gliclazide, hypertensive, smokes 20 a day. Felt lightheaded when he stood up.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "nausea",
+      "sweating",
+      "lightheadedness"
+    ],
+    "negatives": [
+      "vomiting",
+      "jaundice",
+      "fever"
+    ],
+    "exam": {
+      "general": "Pale, clammy and sweaty. Pulse 54 regular, BP 98/60.",
+      "cardiovascular": "Heart sounds normal. JVP not raised. No murmur.",
+      "respiratory": "Chest clear.",
+      "abdomen": "Soft. Mild epigastric tenderness, no guarding. Murphy's sign negative."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 54,
+        "systolicBp": 98,
+        "diastolicBp": 60,
+        "respiratoryRate": 20,
+        "temperatureC": 36.6,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 10.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 6,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 41,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 13,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 31,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 90,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 14.1,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 96,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension",
+      "Gallstones"
+    ],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Mechanic. Smokes 20 cigarettes a day. Alcohol occasionally.",
+    "confirmedDiagnosis": {
+      "name": "Inferior ST-elevation myocardial infarction",
+      "icd10": "I21.1",
+      "assessmentText": "Inferior STEMI (ECG: ST elevation II, III, aVF) presenting as epigastric pain. Known gallstones incidental."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "epigastric pain",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Sudden",
+            "< 6 hours",
+            "Constant",
+            "Dull",
+            "Severe (7–9)",
+            "No radiation",
+            "Nausea",
+            "Continuous",
+            "Nothing helps"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Pale",
+            "Diaphoretic"
+          ],
+          "cardiovascular": [
+            "Bradycardia"
+          ],
+          "abdomen": [
+            "Soft",
+            "Epigastric tenderness"
+          ]
+        },
+        "toxicHabits": [
+          "Tobacco"
+        ],
+        "durationDays": 0.1,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-acs",
+          "severity": "critical",
+          "match": [
+            "myocardial",
+            "coronary",
+            "acs",
+            "stemi",
+            "infarct",
+            "angina",
+            "re:\\bmi\\b"
+          ],
+          "guidelineRefs": [
+            "esc-2023-acs"
+          ],
+          "note": "Epigastric pain with diaphoresis, bradycardia and hypotension in a diabetic smoker is ACS until an ECG says otherwise.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no ACS/MI node (top 3: inguinal hernia, cholecystitis, GORD); symptom inference top 5 has no cardiac diagnosis either.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "lib/pane-engine: add an \"acute_coronary_syndrome\" mimic node (epigastric pain, diaphoresis, age, diabetes, smoking modifiers) or a hard safety rule in clinical-inference.ts: epigastric/upper abdominal pain + (diaphoresis or HR <60/>100 or SBP <100) + age ≥40/diabetes → \"Exclude ACS: ECG within 10 min + troponin\"."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-2023-acs"
+        ],
+        "note": "Suspected ACS with hypotension and bradycardia: immediate ECG and cardiology. iOS (predicted from ClinicalPathwayEngine keywords, not yet observed): routine — no keyword in the CC.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-cardiac-or-haemodynamic",
+          "severity": "quality",
+          "match": [
+            "cardiac",
+            "acs",
+            "myocard",
+            "ischaem",
+            "chest pain",
+            "bradycard",
+            "hypotension",
+            "haemodynamic"
+          ],
+          "guidelineRefs": [
+            "esc-2023-acs"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Only the generic \"Emergency now\" alarm; no cardiac or haemodynamic alarm (SBP 98 and HR 54 are above the vital red-flag cut-offs).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mnm-acs."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "12-lead",
+            "12 lead"
+          ],
+          "guidelineRefs": [
+            "esc-2023-acs"
+          ],
+          "note": "ESC 2023: 12-lead ECG within 10 minutes of first medical contact.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The only ECG is a plan line \"12-lead ECG — pre-operative cardiac baseline (age ≥ 40)\", not an urgent investigation for ACS.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mnm-acs: ECG as a stat investigation for epigastric pain with cardiac risk features."
+        },
+        {
+          "id": "inv-troponin",
+          "severity": "critical",
+          "match": [
+            "troponin"
+          ],
+          "guidelineRefs": [
+            "esc-2023-acs"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No troponin anywhere.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See mnm-acs."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-reperfusion-cardiology",
+          "severity": "critical",
+          "match": [
+            "cardiology",
+            "cardiologist",
+            "pci",
+            "reperfusion",
+            "thromboly",
+            "cath lab",
+            "angiograph",
+            "aspirin",
+            "antiplatelet"
+          ],
+          "guidelineRefs": [
+            "esc-2023-acs"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No protocol for I21.1 and no prompt: no cardiology/reperfusion/antiplatelet output.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "getProtocolByIcd: map I20–I24 to an ACS protocol (or a \"not a surgical diagnosis — refer cardiology\" stub)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "defer",
+            "elective",
+            "after recovery",
+            "once recovered"
+          ],
+          "note": "A cholecystectomy plan for a patient with an evolving STEMI is a wrong-diagnosis operative plan.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Gallstone operative-plan prompt fires (\"Plan laparoscopic cholecystectomy — early or interval\") because \"Murphy's sign negative\" matches \"murphy\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Appendicectomy operative plan fires on \"no guarding\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-2023-acs",
+      "name": "ESC Guidelines for the management of acute coronary syndromes",
+      "year": 2023,
+      "section": "12-lead ECG within 10 minutes of first medical contact; high-sensitivity troponin; immediate reperfusion strategy for STEMI; atypical (epigastric) presentations in women, older and diabetic patients",
+      "citation": "Byrne RA, Rossello X, Coughlan JJ, et al. Eur Heart J. 2023;44:3720–3826.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic for the gallstone cluster. Diabetic patients (and women and the elderly) often present ACS as epigastric pain; known gallstones anchor the clinician on biliary pain. The engines must put ACS in the differential, escalate to emergency, and recommend an ECG and troponin before any biliary work-up.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

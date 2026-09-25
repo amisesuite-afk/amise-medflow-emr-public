@@ -1,0 +1,565 @@
+{
+  "schemaVersion": 1,
+  "id": "liver-abscess-pyogenic",
+  "condition": "Pyogenic liver abscess",
+  "category": "hpb",
+  "permutationOf": null,
+  "permutationLabel": "Base case — pyogenic liver abscess (7 cm, multiloculated) in a diabetic",
+  "summary": "58-year-old man with poorly controlled diabetes: 10 days of fever, rigors and RUQ pain; T 39.1 °C, HR 112, RR 22; WBC 21.3, CRP 290, ALP 260; ultrasound: 7 × 6 cm multiloculated abscess in segment VII.",
+  "tags": [
+    "liver",
+    "abscess",
+    "sepsis",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Fever with shivering and right upper abdominal pain for ten days",
+    "hpi": "Ten days of fevers with rigors, right upper quadrant pain, anorexia and malaise. Poorly controlled type 2 diabetes (HbA1c 10%). No diarrhoea, no recent travel, no biliary history. Right shoulder-tip pain on deep breaths.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "fever",
+      "rigors",
+      "right upper quadrant pain",
+      "loss of appetite",
+      "malaise"
+    ],
+    "negatives": [
+      "jaundice",
+      "diarrhoea"
+    ],
+    "exam": {
+      "general": "Unwell, sweaty. Temperature 39.1°C, pulse 112/min, BP 112/68, RR 22, SpO2 95%.",
+      "abdomen": "Tender hepatomegaly (3 cm) with intercostal tenderness over the right lower ribs. No peritonism.",
+      "respiratory": "Dull to percussion at the right base."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 112,
+        "systolicBp": 112,
+        "diastolicBp": 68,
+        "respiratoryRate": 22,
+        "temperatureC": 39.1,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 18.4
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 21.3,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 290,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 260,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 88,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 28,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 26,
+        "unit": "g/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 18.4,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 98,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.3,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 180,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.2,
+        "unit": "",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 20,
+        "result": "7 × 6 cm complex multiloculated hypoechoic collection with internal debris in segment VII of the liver, consistent with abscess. Small right pleural effusion. Gallbladder normal, no duct dilatation."
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus (poorly controlled)",
+      "Hypertension"
+    ],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Market trader. Alcohol 10 units a week.",
+    "confirmedDiagnosis": {
+      "name": "Pyogenic liver abscess",
+      "icd10": "K75.0",
+      "paneDiseaseId": "liver_abscess",
+      "assessmentText": "Pyogenic liver abscess, segment VII, 7 cm multiloculated, with sepsis, in a poorly controlled diabetic."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fever",
+          "rigors",
+          "right upper quadrant pain",
+          "abdominal pain",
+          "loss of appetite",
+          "malaise"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "> 3 days",
+            "Constant",
+            "Dull",
+            "Moderate (4–6)",
+            "Shoulder tip",
+            "Fever",
+            "Rigors",
+            "Anorexia",
+            "Deep breathing"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Diaphoretic"
+          ],
+          "abdomen": [
+            "Tender RUQ",
+            "Hepatomegaly"
+          ],
+          "respiratory": [
+            "Dull to percussion"
+          ]
+        },
+        "paneAnswers": {
+          "elevated_wbc": true,
+          "us_gallstones": false,
+          "murphy_sign": false,
+          "jaundice": false
+        },
+        "durationDays": 10,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-liver-abscess-top3",
+          "severity": "critical",
+          "match": [
+            "liver abscess",
+            "hepatic abscess",
+            "amoeb"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "review-liver-abscess-2015"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ssc-2021"
+        ],
+        "note": "Sepsis from an undrained abscess.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "note": "SIRS with lactate 2.3 and a source; quality because the organ-dysfunction threshold for Sepsis-3 is borderline.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-diabetes",
+          "severity": "quality",
+          "match": [
+            "diabet",
+            "glucose",
+            "hyperglyc"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "review-liver-abscess-2015"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b",
+            "computed tomograph"
+          ],
+          "guidelineRefs": [
+            "review-liver-abscess-2015"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-amoebic-serology",
+          "severity": "quality",
+          "match": [
+            "amoebic serology",
+            "amoeb",
+            "entamoeba"
+          ],
+          "guidelineRefs": [
+            "review-amoebiasis-2003"
+          ],
+          "note": "Caribbean practice: exclude amoebic abscess before drainage decisions.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-aspirate-culture",
+          "severity": "quality",
+          "match": [
+            "aspirat",
+            "pus culture",
+            "fluid c&s",
+            "aspiration fluid"
+          ],
+          "guidelineRefs": [
+            "review-liver-abscess-2015"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "guidelineRefs": [
+            "idsa-2010-ciai",
+            "review-liver-abscess-2015"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-percutaneous-drainage",
+          "severity": "critical",
+          "match": [
+            "percutaneous",
+            "aspiration",
+            "re:\\bdrain"
+          ],
+          "guidelineRefs": [
+            "idsa-2010-ciai",
+            "review-liver-abscess-2015"
+          ],
+          "note": "Source control for a 7 cm multiloculated abscess: image-guided aspiration/drainage.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-prolonged-course",
+          "severity": "quality",
+          "match": [
+            "4-6 weeks",
+            "4–6 weeks",
+            "re:[46]\\s*-?\\s*weeks",
+            "prolonged"
+          ],
+          "guidelineRefs": [
+            "review-liver-abscess-2015"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-source-search",
+          "severity": "quality",
+          "match": [
+            "colonoscopy",
+            "biliary source",
+            "source",
+            "portal"
+          ],
+          "guidelineRefs": [
+            "review-liver-abscess-2015"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-glycaemic-control",
+          "severity": "quality",
+          "match": [
+            "insulin",
+            "glucose",
+            "glycaemic",
+            "diabet"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-open-surgery-first",
+          "severity": "quality",
+          "match": [
+            "laparotomy",
+            "open drainage",
+            "hepatectomy",
+            "liver resection"
+          ],
+          "unless": [
+            "rupture",
+            "fail",
+            "if ",
+            "unsuccessful"
+          ],
+          "guidelineRefs": [
+            "idsa-2010-ciai"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Peritonism prompt (\"No peritonism\" in the exam text) adds \"Emergency laparotomy consent — source control\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "review-liver-abscess-2015",
+      "name": "Hepatic abscess: diagnosis and management (narrative review — no formal international guideline exists)",
+      "year": 2015,
+      "section": "Pyogenic abscess: blood cultures, CT, antibiotics for 4–6 weeks, percutaneous drainage/aspiration for larger abscesses, look for a biliary or colonic source; multiple cholangitic abscesses: treat the biliary obstruction",
+      "citation": "Lardière-Deguelte S, Ragot E, Amroun K, et al. J Visc Surg. 2015;152:231–243.",
+      "verified": false
+    },
+    {
+      "id": "idsa-2010-ciai",
+      "name": "SIS/IDSA guidelines — complicated intra-abdominal infection",
+      "year": 2010,
+      "section": "Source control (percutaneous drainage preferred when feasible) plus antimicrobial therapy; blood cultures",
+      "citation": "Solomkin JS, Mazuski JE, Bradley JS, et al. Clin Infect Dis. 2010;50:133–164.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Blood cultures before antimicrobials; antimicrobials within 1 h for shock; source control; noradrenaline first-line vasopressor",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    },
+    {
+      "id": "review-amoebiasis-2003",
+      "name": "Amebiasis (narrative review — no formal international guideline exists)",
+      "year": 2003,
+      "section": "Amoebic liver abscess: serology; metronidazole (or tinidazole) followed by a luminal agent (paromomycin, diloxanide furoate) to eradicate intestinal carriage; aspiration only for no response, left-lobe or imminent rupture",
+      "citation": "Haque R, Huston CD, Hughes M, Houpt E, Petri WA Jr. N Engl J Med. 2003;348:1565–1573.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for liver abscess. There is no formal international guideline; expectations follow the SIS/IDSA source-control principles and review consensus: blood cultures, antibiotics, image-guided drainage for a large multiloculated abscess, a 4–6-week course, and a search for the source. Amoebic serology reflects Caribbean practice.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

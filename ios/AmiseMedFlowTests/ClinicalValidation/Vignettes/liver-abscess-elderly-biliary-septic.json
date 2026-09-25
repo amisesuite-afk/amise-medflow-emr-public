@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 1,
+  "id": "liver-abscess-elderly-biliary-septic",
+  "condition": "Pyogenic liver abscess (cholangitic, multiple)",
+  "category": "hpb",
+  "permutationOf": "liver-abscess-pyogenic",
+  "permutationLabel": "Elderly (79) septic shock — multiple small cholangitic abscesses from an occluded biliary stent",
+  "summary": "79-year-old man with a plastic biliary stent overdue for exchange: confusion, fever 39.4 °C, BP 84/48 on noradrenaline, lactate 4.6, creatinine 190, platelets 88; CT: multiple ≤2 cm abscesses in the right lobe, dilated ducts with an occluded stent.",
+  "tags": [
+    "liver",
+    "abscess",
+    "sepsis",
+    "elderly",
+    "ercp"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 168,
+      "weightKg": 62
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Fever and confusion",
+    "hpi": "ERCP with a plastic stent 5 months ago for bile duct stones; stent exchange was due at 3 months but missed. Two days of fevers and rigors, now drowsy and confused. Oliguric today.",
+    "socrates": {},
+    "symptoms": [
+      "fever",
+      "rigors",
+      "confusion",
+      "reduced urine output"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Drowsy, confused (GCS 13). Temperature 39.4°C, pulse 124/min, BP 84/48 despite 30 mL/kg crystalloid; noradrenaline started. Mildly jaundiced. Septic shock.",
+      "abdomen": "Tender hepatomegaly, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 124,
+        "systolicBp": 84,
+        "diastolicBp": 48,
+        "respiratoryRate": 26,
+        "temperatureC": 39.4,
+        "spo2": 93,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 23,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 310,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 64,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 480,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 190,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 88,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.6,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.5,
+        "unit": "",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 25,
+        "unit": "g/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen (contrast)",
+        "modality": "CT",
+        "region": "Abdomen",
+        "minutesAgo": 30,
+        "result": "Multiple small (≤2 cm) rim-enhancing abscesses clustered in the right lobe. Intrahepatic duct dilatation with an occluded plastic CBD stent and residual duct stones. Pneumobilia absent."
+      }
+    ],
+    "comorbidities": [
+      "Choledocholithiasis (biliary stent in situ)",
+      "Hypertension",
+      "Chronic kidney disease stage 2"
+    ],
+    "surgicalHistory": [
+      "ERCP, sphincterotomy and plastic biliary stent (5 months ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with wife.",
+    "confirmedDiagnosis": {
+      "name": "Multiple pyogenic (cholangitic) liver abscesses with septic shock",
+      "icd10": "K75.0",
+      "paneDiseaseId": "liver_abscess",
+      "assessmentText": "Multiple cholangitic pyogenic liver abscesses with septic shock (noradrenaline, confusion, AKI, thrombocytopenia) from an occluded plastic biliary stent with retained duct stones."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fever",
+          "rigors",
+          "confusion",
+          "jaundice"
+        ],
+        "symptomDetails": {
+          "jaundice": [
+            "Fever",
+            "Rigors",
+            "Prior ERCP"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Jaundiced",
+            "GCS < 15"
+          ],
+          "abdomen": [
+            "Hepatomegaly",
+            "Tender RUQ"
+          ]
+        },
+        "paneAnswers": {
+          "elevated_wbc": true,
+          "jaundice": true,
+          "fever": true,
+          "rigors": true,
+          "previous_surgery": true
+        },
+        "durationDays": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-liver-abscess-or-cholangitis-top3",
+          "severity": "critical",
+          "match": [
+            "liver abscess",
+            "hepatic abscess",
+            "amoeb",
+            "cholangitis"
+          ],
+          "unless": [
+            "sclerosing"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "review-liver-abscess-2015",
+            "tg18-dx-cholangitis"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-sepsis",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no sepsis node (top 3: cholangitis, inguinal hernia, diverticulitis).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "PANE or a CDS rule: surface sepsis/septic shock when qSOFA ≥2 or vasopressors are documented."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ssc-2021"
+        ],
+        "note": "iOS (predicted, not observed): routine — \"Fever and confusion\" contains no emergency or urgent keyword.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-haemodynamic",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "tg18-mgmt-cholangitis"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-organ-support",
+          "severity": "critical",
+          "match": [
+            "icu",
+            "intensive care",
+            "hdu",
+            "high dependency",
+            "critical care",
+            "itu"
+          ],
+          "unless": [
+            "laparotomy",
+            "post-operatively",
+            "post-op"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "note": "Critical-care admission for septic shock now — an \"ICU post-operatively\" line attached to a laparotomy consent does not count.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-biliary-drainage",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "stent exchange",
+            "biliary drainage",
+            "biliary decompression",
+            "percutaneous transhepatic",
+            "re:\\bptc\\b"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholangitis",
+            "review-liver-abscess-2015"
+          ],
+          "note": "Multiple small cholangitic abscesses are treated by draining the obstructed biliary tree (stent exchange), not by percutaneous drainage of each abscess.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "review-liver-abscess-2015",
+      "name": "Hepatic abscess: diagnosis and management (narrative review — no formal international guideline exists)",
+      "year": 2015,
+      "section": "Pyogenic abscess: blood cultures, CT, antibiotics for 4–6 weeks, percutaneous drainage/aspiration for larger abscesses, look for a biliary or colonic source; multiple cholangitic abscesses: treat the biliary obstruction",
+      "citation": "Lardière-Deguelte S, Ragot E, Amroun K, et al. J Visc Surg. 2015;152:231–243.",
+      "verified": false
+    },
+    {
+      "id": "tg18-dx-cholangitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholangitis",
+      "year": 2018,
+      "section": "Grade II: any two of WBC >12,000 or <4,000/mm³, fever ≥39 °C, age ≥75, total bilirubin ≥5 mg/dL, hypoalbuminaemia (<0.7 × LLN); Grade III: organ dysfunction",
+      "citation": "Kiriyama S, Kozaka K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:17–30.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholangitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for acute cholangitis",
+      "year": 2018,
+      "section": "Grade II: early biliary drainage; Grade III: organ support then urgent biliary drainage",
+      "citation": "Miura F, Okamoto K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:31–40.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Blood cultures before antimicrobials; antimicrobials within 1 h for shock; source control; noradrenaline first-line vasopressor",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: elderly patient in septic shock with a biliary source. Source control is urgent biliary drainage (stent exchange) with organ support and antibiotics; tests shock recognition and the biliary-source branch.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

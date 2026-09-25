@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "id": "pancreatitis-mimic-ruptured-aaa",
+  "condition": "Ruptured abdominal aortic aneurysm (mimic of acute pancreatitis)",
+  "category": "hpb",
+  "permutationOf": "pancreatitis-gallstone-mild",
+  "permutationLabel": "Dangerous mimic — ruptured AAA: epigastric pain to the back, collapse, hypotension, amylase mildly raised",
+  "summary": "74-year-old hypertensive smoker with sudden epigastric pain radiating to the back and a collapse at home; BP 86/50, HR 118, pale; amylase 240 (2.4 × ULN), Hb 9.8, lactate 4.1. No imaging yet.",
+  "tags": [
+    "mimic",
+    "vascular",
+    "must-not-miss",
+    "shock"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 96
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Sudden upper abdominal pain going through to the back, with a collapse",
+    "hpi": "Sudden severe epigastric pain radiating straight through to the back 90 minutes ago, then collapsed at home and was briefly unresponsive. Now pale and sweaty. Hypertension, smoker 50 pack-years, ischaemic heart disease. Not a drinker, no gallstones known.",
+    "socrates": {
+      "onset": [
+        "Sudden"
+      ],
+      "site": [
+        "Epigastric",
+        "Periumbilical"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "back pain",
+      "collapse",
+      "sweating"
+    ],
+    "negatives": [
+      "vomiting",
+      "jaundice"
+    ],
+    "exam": {
+      "general": "Pale, clammy, alert but anxious. Pulse 118/min, BP 86/50, RR 24. Haemodynamically unstable.",
+      "abdomen": "Obese. Epigastric tenderness and a vague expansile fullness above the umbilicus; difficult to assess. No peritonism.",
+      "cardiovascular": "Femoral pulses present but weak."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 118,
+        "systolicBp": 86,
+        "diastolicBp": 50,
+        "respiratoryRate": 24,
+        "temperatureC": 36.2,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 240,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 90,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.8,
+        "unit": "g/dL",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 130,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "Ischaemic heart disease",
+      "Peripheral arterial disease"
+    ],
+    "medications": [
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "IHD"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "IHD"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired docker. Smoker 50 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Ruptured abdominal aortic aneurysm",
+      "icd10": "I71.3",
+      "paneDiseaseId": "aortic_aneurysm",
+      "assessmentText": "Ruptured abdominal aortic aneurysm (bedside ultrasound: 7.5 cm infrarenal aneurysm with retroperitoneal haematoma). Mildly raised amylase is not pancreatitis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "epigastric pain",
+          "back pain",
+          "syncope"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Sudden",
+            "< 6 hours",
+            "Constant",
+            "Sharp",
+            "Worst ever (10)",
+            "Back",
+            "Nausea",
+            "Continuous",
+            "Nothing helps"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Pale",
+            "Diaphoretic"
+          ],
+          "abdomen": [
+            "Epigastric tenderness",
+            "Mass palpable"
+          ]
+        },
+        "paneAnswers": {
+          "pulsatile_mass": true,
+          "haemodynamic_instability": true
+        },
+        "toxicHabits": [
+          "Tobacco"
+        ],
+        "durationDays": 0.06,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-aaa",
+          "severity": "critical",
+          "match": [
+            "aortic aneurysm",
+            "aaa",
+            "aortic rupture",
+            "ruptured aneurysm",
+            "aortic dissection",
+            "aort"
+          ],
+          "guidelineRefs": [
+            "esvs-2024-aaa"
+          ],
+          "note": "Epigastric/back pain with collapse and hypotension in an elderly smoker is a ruptured AAA until proven otherwise; amylase can be mildly raised.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE ranks acute pancreatitis first; aortic_aneurysm has a post-modifier prior of 0.0024 for a 74-year-old male smoker and stays out of the top 3 even with the PANE answers pulsatile_mass and haemodynamic_instability = true. Symptom inference ranks ruptured AAA #1 (secondary view).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "lib/pane-engine: age/sex/smoking prior modifiers for aortic_aneurysm and a much stronger pulsatile_mass/haemodynamic_instability likelihood ratio; or a hard safety rule (age ≥60 + epigastric/back pain + SBP <90 or collapse → \"Exclude ruptured AAA: bedside US/CTA, vascular surgeon\")."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esvs-2024-aaa"
+        ],
+        "note": "iOS (predicted, not observed): routine — no emergency keyword (\"collapse\" is not in the list).",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-haemodynamic",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock",
+            "aaa",
+            "aneurysm",
+            "haemorrhag"
+          ],
+          "guidelineRefs": [
+            "esvs-2024-aaa"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-aortic-imaging",
+          "severity": "critical",
+          "match": [
+            "aort",
+            "aaa",
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "bedside ultrasound",
+            "re:\\bfast\\b",
+            "focused assessment"
+          ],
+          "guidelineRefs": [
+            "esvs-2024-aaa"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No aortic imaging suggested (the protocol for the confirmed I71.3 is not reached: no ICD mapping for I71.3, PANE not converged).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "getProtocolByIcd: map I71.x to the aortic_aneurysm protocol; see mnm-aaa."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vascular-emergency",
+          "severity": "critical",
+          "match": [
+            "vascular",
+            "evar",
+            "open repair",
+            "theatre",
+            "aneurysm repair"
+          ],
+          "guidelineRefs": [
+            "esvs-2024-aaa"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No vascular/EVAR/theatre output.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "See inv-aortic-imaging."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-aggressive-fluids",
+          "severity": "critical",
+          "match": [
+            "aggressive",
+            "re:250\\s*-\\s*500\\s*ml"
+          ],
+          "unless": [
+            "avoid aggressive",
+            "not aggressive",
+            "rather than aggressive",
+            "no aggressive"
+          ],
+          "guidelineRefs": [
+            "esvs-2024-aaa"
+          ],
+          "note": "Ruptured AAA: permissive hypotension until proximal control. A pancreatitis-style \"aggressive fluid\" instruction can precipitate further bleeding.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-2024-aaa",
+      "name": "ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms",
+      "year": 2024,
+      "section": "Suspected rupture: immediate vascular surgical assessment, permissive hypotension, CT angiography if stable, EVAR preferred when anatomy suitable",
+      "citation": "Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. Eur J Vasc Endovasc Surg. 2024;67:192–331.",
+      "verified": false
+    },
+    {
+      "id": "atlanta-2012",
+      "name": "Revised Atlanta classification of acute pancreatitis (2012)",
+      "year": 2012,
+      "section": "Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score",
+      "citation": "Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic for acute pancreatitis: a ruptured AAA gives epigastric pain to the back with a mildly raised amylase. Collapse, shock and a pulsatile mass must redirect the engines to an aortic emergency, and away from pancreatitis fluid protocols.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

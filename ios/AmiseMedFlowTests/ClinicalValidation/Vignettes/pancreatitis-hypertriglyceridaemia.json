@@ -1,0 +1,572 @@
+{
+  "schemaVersion": 1,
+  "id": "pancreatitis-hypertriglyceridaemia",
+  "condition": "Acute pancreatitis (hypertriglyceridaemia)",
+  "category": "hpb",
+  "permutationOf": "pancreatitis-gallstone-mild",
+  "permutationLabel": "Hypertriglyceridaemia (TG 31.4 mmol/L) with uncontrolled diabetes — lipaemic sample, amylase only 1.4 × ULN",
+  "summary": "34-year-old woman with poorly controlled type 2 diabetes (HbA1c 11.2%), severe epigastric pain and vomiting; lipaemic serum, amylase 140 (<3 × ULN) but lipase 820; triglycerides 31.4 mmol/L, glucose 22.6; no gallstones.",
+  "tags": [
+    "pancreatitis",
+    "hypertriglyceridaemia",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 158,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Severe upper abdominal pain and vomiting",
+    "hpi": "One day of severe epigastric pain through to the back with vomiting. Type 2 diabetes, stopped her metformin months ago; thirsty and passing a lot of urine. One previous episode of \"pancreatitis of unknown cause\" two years ago. Minimal alcohol. LMP 1 week ago.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Sitting forward"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "back pain",
+      "vomiting",
+      "polyuria",
+      "polydipsia"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever"
+    ],
+    "exam": {
+      "general": "Obese, dry. Eruptive xanthomata on the buttocks and elbows. Temperature 37.4°C, pulse 102/min, BP 134/82, RR 18.",
+      "abdomen": "Epigastric tenderness with guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 102,
+        "systolicBp": 134,
+        "diastolicBp": 82,
+        "respiratoryRate": 18,
+        "temperatureC": 37.4,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 22.6
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 140,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 820,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "triglycerides",
+        "name": "Triglycerides",
+        "value": 31.4,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipaemia",
+        "name": "Sample appearance",
+        "resultText": "Grossly lipaemic serum — analyser interference possible",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 22.6,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "hba1c",
+        "name": "A1c (glycated)",
+        "value": 11.2,
+        "unit": "%",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 21,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 48,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "calcium",
+        "name": "Calcium",
+        "value": 2.05,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 5.6,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 78,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 36,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine pregnancy test",
+        "resultText": "Negative",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 60,
+        "result": "Fatty liver. Gallbladder normal, no gallstones or sludge. CBD 4 mm. Pancreas bulky."
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus (poorly controlled)",
+      "Obesity",
+      "Hyperlipidaemia"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Receptionist. Alcohol rarely. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute pancreatitis due to hypertriglyceridaemia",
+      "icd10": "K85.80",
+      "paneDiseaseId": "pancreatitis",
+      "assessmentText": "Mild acute pancreatitis (revised Atlanta 2012) secondary to severe hypertriglyceridaemia (TG 31.4 mmol/L) with uncontrolled type 2 diabetes. No gallstones."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "epigastric pain",
+          "back pain",
+          "vomiting",
+          "polyuria",
+          "polydipsia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Sudden",
+            "6–24 hours",
+            "Constant",
+            "Severe (7–9)",
+            "Back",
+            "Nausea",
+            "Vomiting",
+            "Continuous",
+            "Leaning forward"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness",
+            "Guarding"
+          ]
+        },
+        "paneAnswers": {
+          "elevated_amylase": true,
+          "us_gallstones": false
+        },
+        "durationDays": 1,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pancreatitis-top3",
+          "severity": "critical",
+          "match": [
+            "pancreatitis"
+          ],
+          "unless": [
+            "chronic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "atlanta-2012"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "acg-2024"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-hypertriglyceridaemia",
+          "severity": "critical",
+          "match": [
+            "triglycerid",
+            "hypertriglyceridaemia",
+            "hypertriglyceridemia",
+            "lipaem",
+            "lipem"
+          ],
+          "guidelineRefs": [
+            "acg-2024",
+            "endo-htg-2012"
+          ],
+          "note": "TG ≥11.3 mmol/L (1000 mg/dL) is a recognised cause of AP. Unrecognised, the aetiology is missed and the patient re-presents (she already has one \"unexplained\" episode). Lipaemia can also make amylase falsely low.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "TG 31.4 mmol/L is not flagged by any output (no TG rule in prompts, triage or protocol); the lipase prompt reads the first lab named amylase/lipase (amylase 140), so no pancreatitis prompt fires either.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts: add a triglycerides ≥11.3 mmol/L (1000 mg/dL) prompt (\"hypertriglyceridaemia-induced pancreatitis: insulin/dextrose infusion, consider apheresis, lipid clinic\"); make numLab take the highest ×ULN of amylase and lipase rather than the first key."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-bisap",
+          "severity": "quality",
+          "score": "bisap",
+          "guidelineRefs": [
+            "bisap-2008",
+            "acg-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-triglycerides",
+          "severity": "quality",
+          "match": [
+            "triglycerid"
+          ],
+          "guidelineRefs": [
+            "acg-2024"
+          ],
+          "note": "Already measured here; the engines should still list triglycerides in the aetiology work-up.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No triglycerides in the pancreatitis protocol investigations.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Pancreatitis protocol: add triglycerides."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-tg-lowering",
+          "severity": "quality",
+          "match": [
+            "insulin infusion",
+            "re:insulin[^.;\\n]{0,30}(infusion|vrii|variable)",
+            "fibrate",
+            "fenofibrate",
+            "plasmapheresis",
+            "apheresis",
+            "triglyceride-lowering",
+            "lipid-lowering"
+          ],
+          "guidelineRefs": [
+            "endo-htg-2012",
+            "acg-2024"
+          ],
+          "note": "Insulin infusion (with dextrose) lowers TG and treats the hyperglycaemia; apheresis in selected cases; long-term TG-lowering. Quality: the evidence for specific acute therapies is limited.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-aggressive-fluids",
+          "severity": "critical",
+          "match": [
+            "aggressive",
+            "re:250\\s*-\\s*500\\s*ml"
+          ],
+          "unless": [
+            "avoid aggressive",
+            "not aggressive",
+            "rather than aggressive",
+            "no aggressive"
+          ],
+          "guidelineRefs": [
+            "waterfall-2022",
+            "acg-2024"
+          ],
+          "note": "WATERFALL (NEJM 2022) was stopped for harm: aggressive resuscitation (20 mL/kg bolus then 3 mL/kg/h) caused more fluid overload (20.5% vs 6.3%) without benefit. ACG 2024 recommends moderate, goal-directed fluids. A plan that says \"aggressive\" or 250–500 mL/h is a fluid-overload hazard.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Plan tab: \"Aggressive IV fluid resuscitation (Hartmann's 250–500 ml/h)\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate."
+        },
+        {
+          "id": "mgmt-no-prophylactic-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "unless": [
+            "re:(avoid|no|not)[^.;\\n]{0,25}(antibiotic|antimicrobial|prophyla)",
+            "re:(antibiotic|antimicrobial|carbapenem|meropenem)s?[^.;\\n]{0,40}(only if|unless|not (routinely|recommended|indicated|required))",
+            "if infected",
+            "infected necrosis",
+            "cholangitis",
+            "if suspected infect",
+            "at induction",
+            "complicated cholecystitis only"
+          ],
+          "guidelineRefs": [
+            "acg-2024",
+            "iap-apa-2013",
+            "nice-ng104",
+            "aga-2018"
+          ],
+          "note": "Prophylactic antibiotics are not recommended in acute pancreatitis, including predicted severe disease and sterile necrosis; they are reserved for infected necrosis or a concurrent infection such as cholangitis.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "quality",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "unless": [
+            "gallstone",
+            "biliary",
+            "if "
+          ],
+          "note": "No gallstones.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Gallstone operative plan and consent fire from the US text \"no gallstones or sludge\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Appendicectomy operative plan fires on \"guarding\".",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-mild",
+      "severity": "quality",
+      "equals": "pancreatitis_mild",
+      "guidelineRefs": [
+        "atlanta-2012"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atlanta-2012",
+      "name": "Revised Atlanta classification of acute pancreatitis (2012)",
+      "year": 2012,
+      "section": "Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score",
+      "citation": "Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111.",
+      "verified": false
+    },
+    {
+      "id": "acg-2024",
+      "name": "ACG Guideline — management of acute pancreatitis (2024)",
+      "year": 2024,
+      "section": "Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear",
+      "citation": "Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437.",
+      "verified": false
+    },
+    {
+      "id": "endo-htg-2012",
+      "name": "Endocrine Society clinical practice guideline — evaluation and treatment of hypertriglyceridaemia",
+      "year": 2012,
+      "section": "Severe hypertriglyceridaemia (≥1000 mg/dL, 11.3 mmol/L) carries a risk of pancreatitis; screen for secondary causes (uncontrolled diabetes); triglyceride-lowering therapy",
+      "citation": "Berglund L, Brunzell JD, Goldberg AC, et al. J Clin Endocrinol Metab. 2012;97:2969–2989.",
+      "verified": false
+    },
+    {
+      "id": "waterfall-2022",
+      "name": "WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022)",
+      "year": 2022,
+      "section": "Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded",
+      "citation": "de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000.",
+      "verified": false
+    },
+    {
+      "id": "iap-apa-2013",
+      "name": "IAP/APA evidence-based guidelines for the management of acute pancreatitis",
+      "year": 2013,
+      "section": "No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off)",
+      "citation": "Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng104",
+      "name": "NICE NG104 — Pancreatitis",
+      "year": 2018,
+      "section": "Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG104, September 2018.",
+      "verified": false
+    },
+    {
+      "id": "bisap-2008",
+      "name": "BISAP score — early prediction of mortality in acute pancreatitis",
+      "year": 2008,
+      "section": "BUN >25 mg/dL, impaired mental status, SIRS, age >60, pleural effusion within 24 h; ≥3 = increased mortality",
+      "citation": "Wu BU, Johannes RS, Sun X, et al. Gut. 2008;57:1698–1703.",
+      "verified": false
+    },
+    {
+      "id": "aga-2018",
+      "name": "AGA Institute guideline on initial management of acute pancreatitis",
+      "year": 2018,
+      "section": "Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention",
+      "citation": "Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: hypertriglyceridaemia with uncontrolled diabetes. Amylase is only 1.4 × ULN (lipaemic interference); lipase is diagnostic. Tests that the engines recognise the aetiology from the TG value and do not anchor on amylase or gallstones.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "id": "choledocholithiasis-asge-intermediate",
+  "condition": "Choledocholithiasis (suspected)",
+  "category": "hpb",
+  "permutationOf": "choledocholithiasis-asge-high-risk",
+  "permutationLabel": "ASGE 2019 intermediate risk (age >55, abnormal LFTs, CBD 7 mm, no stone seen) → MRCP/EUS or IOC, not ERCP",
+  "summary": "62-year-old man with two biliary episodes this week, now pain-free and not jaundiced; bilirubin 30 µmol/L (1.75 mg/dL), ALT 140, ALP 190; ultrasound shows gallstones and a 7 mm CBD without a visible stone.",
+  "tags": [
+    "biliary",
+    "asge",
+    "over-investigation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 62,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 85
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Two episodes of right upper abdominal pain this week",
+    "hpi": "Two episodes of severe right upper quadrant pain this week, each lasting about 4 hours, the second with dark urine for a day. Now pain-free. No fever, no visible jaundice, stools normal.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Episodic"
+      ],
+      "exacerbating": [
+        "Fatty food"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "nausea",
+      "dark urine"
+    ],
+    "negatives": [
+      "fever",
+      "jaundice",
+      "pale stools"
+    ],
+    "exam": {
+      "general": "Well, not clinically jaundiced. Afebrile.",
+      "abdomen": "Soft, minimal right upper quadrant tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 74,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 30,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 190,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "ggt",
+        "name": "GGT",
+        "value": 260,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 140,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 9,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 45,
+        "unit": "U/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 60,
+        "result": "Gallstones in a normal-walled gallbladder. CBD 7 mm; the distal duct is obscured by bowel gas and no duct stone is seen. No intrahepatic duct dilatation."
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "medications": [
+      {
+        "drug": "Losartan",
+        "dose": "50 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired teacher.",
+    "confirmedDiagnosis": {
+      "name": "Suspected choledocholithiasis — ASGE intermediate risk",
+      "icd10": "K80.50",
+      "paneDiseaseId": "choledocholithiasis",
+      "assessmentText": "Symptomatic gallstones with suspected choledocholithiasis — ASGE 2019 intermediate risk (age >55, abnormal liver tests, CBD 7 mm, no stone seen). For MRCP or EUS before cholecystectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "nausea",
+          "dark urine"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "Episodic",
+            "Colicky",
+            "Severe (7–9)",
+            "Shoulder tip",
+            "Nausea",
+            "Fatty meal"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Tender RUQ"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true,
+          "fever": false,
+          "jaundice": false
+        },
+        "durationDays": 5,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-asge-cbd",
+          "severity": "quality",
+          "score": "asge-cbd",
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-mrcp-or-eus",
+          "severity": "critical",
+          "match": [
+            "mrcp",
+            "endoscopic ultrasound",
+            "re:\\beus\\b",
+            "intraoperative cholangi",
+            "intra-operative cholangi",
+            "re:\\bioc\\b",
+            "laparoscopic ultrasound"
+          ],
+          "guidelineRefs": [
+            "asge-2019",
+            "bsg-2017-cbds"
+          ],
+          "note": "ASGE intermediate risk: EUS or MRCP (or intra-operative cholangiography/laparoscopic US) to confirm a duct stone before any ERCP.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-unconditional-ercp",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "endoscopic retrograde"
+          ],
+          "unless": [
+            "cholangitis",
+            "obstruct",
+            "if ",
+            "only",
+            "persistent",
+            "not indicated",
+            "no ercp",
+            "not routine",
+            "unless",
+            "fails",
+            "failed",
+            "confirmed",
+            "positive"
+          ],
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "note": "ASGE 2019 (intermediate risk): do not proceed straight to ERCP — about half of these patients have no stone, and ERCP carries a 3–10% risk of post-ERCP pancreatitis, bleeding and perforation. An unconditional ERCP line in the plan is a patient-safety defect.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Plan tab: \"[surgical] ERCP + sphincterotomy and stone extraction.\" unconditionally for ASGE intermediate risk (no stone seen), before MRCP/EUS.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Choledocholithiasis protocol and dx-variants: add ASGE 2019 risk variants (high → ERCP; intermediate → EUS/MRCP or IOC/LCBDE, ERCP only if a stone is confirmed; low → LC ± IOC), fed by the existing asgeCbd scale."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustInclude": [
+        {
+          "id": "mgmt-cholecystectomy",
+          "severity": "quality",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "nice-cg188",
+            "asge-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "asge-2019",
+      "name": "ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis",
+      "year": 2019,
+      "section": "Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation",
+      "citation": "Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15.",
+      "verified": false
+    },
+    {
+      "id": "bsg-2017-cbds",
+      "name": "BSG updated guideline on the management of common bile duct stones",
+      "year": 2017,
+      "section": "MRCP/EUS when CBDS suspected but not confirmed; cholecystectomy after ERCP clearance (within 2 weeks) unless unfit",
+      "citation": "Williams E, Beckingham I, El Sayed G, et al. Gut. 2017;66:765–782.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg188",
+      "name": "NICE CG188 — Gallstone disease: diagnosis and management",
+      "year": 2014,
+      "section": "Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: ASGE intermediate risk. The distinguishing guideline decision is to image the duct (MRCP/EUS or IOC) rather than go straight to ERCP. Tests whether the plan adapts to the risk stratum.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}
