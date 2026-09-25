@@ -102,7 +102,10 @@ describe('AppContext follows the split', () => {
     expect(clear).toContain('resetEncounterState()');
     // Loaded per patient by effects keyed on patientId, not reset here.
     const byEffect = new Set(['recentEncounters', 'recentEncountersPatientId']);
-    expect(PATIENT_SCOPED_FIELDS.filter(f => !byEffect.has(f) && !clear.includes(setter(f)))).toEqual([]);
+    // A field whose public setter also schedules a save (lifestyleHistory) is cleared through its raw
+    // state setter (setXState) so clearing the patient never writes an empty record.
+    const cleared = (f: string) => clear.includes(setter(f)) || clear.includes(setter(f).replace('(', 'State('));
+    expect(PATIENT_SCOPED_FIELDS.filter(f => !byEffect.has(f) && !cleared(f))).toEqual([]);
   });
 
   it('beginEncounter() goes through switchEncounter and is on the context', () => {
