@@ -261,6 +261,9 @@ extension ConsultationView {
 
     var diagnosisTab: some View {
         List {
+            // NICE NG12 suspected-cancer criteria (FIT, IDA, rectal bleeding, nipple, haematuria …):
+            // dismissible prompt, nothing added until tapped.
+            SuspectedCancerSection(patient: patient)
             if !bayesianDx.isEmpty {
                 Section {
                     ForEach(bayesianDx) { result in
