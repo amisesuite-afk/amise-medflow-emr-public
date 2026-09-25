@@ -41,4 +41,10 @@ describe('front-desk staff idle timeout', () => {
     expect(comp).toContain("window.location.replace('/staff/login?reason=idle')");
     expect(comp).toMatch(/!pathname\.startsWith\('\/staff\/login'\)/);
   });
+
+  it('the staff login form really calls submit() (onSubmit={void submit} passed undefined)', () => {
+    const login = read('app/staff/login/page.tsx');
+    expect(login).not.toMatch(/on[A-Z]\w*=\{void \w+\}/);
+    expect(login).toContain('onSubmit={e => void submit(e)}');
+  });
 });

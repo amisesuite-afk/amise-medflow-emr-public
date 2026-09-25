@@ -123,7 +123,7 @@ function LoginContent() {
         )}
         {err && <div style={s.err}>{err}</div>}
 
-        <form onSubmit={void submit}>
+        <form onSubmit={e => void submit(e)}>
           <div style={{ marginBottom: 16 }}>
             <label style={s.label}>Staff email</label>
             <input
