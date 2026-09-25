@@ -1,6 +1,6 @@
 {
   "type": "clinval-web-results",
-  "generatedAt": "2026-09-25T21:50:50.160Z",
+  "generatedAt": "2026-09-25T21:54:20.047Z",
   "harness": "clinval-web/1",
   "vignetteCount": 397,
   "results": [
@@ -13,7 +13,7 @@
       "category": "vascular",
       "permutationOf": "raaa-shock",
       "permutationLabel": "Renal colic mimic, relative hypotension, no known stones",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -613,7 +613,7 @@
       "category": "soft-tissue",
       "permutationOf": "abscess-thigh-adult",
       "permutationLabel": "Injecting drug use, previous MRSA, SIRS, groin site",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -1218,7 +1218,7 @@
       "condition": "Skin abscess",
       "category": "soft-tissue",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -1661,7 +1661,7 @@
       "category": "upper-gi",
       "permutationOf": "achalasia-young",
       "permutationLabel": "Age 71, short history, rapid weight loss — pseudoachalasia (cardia cancer)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -2227,7 +2227,7 @@
       "condition": "Achalasia",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -2810,7 +2810,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-acs-typical-chest-pain",
       "permutationLabel": "Elderly diabetic woman, no chest pain",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -3511,7 +3511,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-acs-typical-chest-pain",
       "permutationLabel": "Pregnant, 33 weeks (SCAD)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -4142,7 +4142,7 @@
       "condition": "Acute coronary syndrome (typical presentation)",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -4786,7 +4786,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-af-new-onset-rapid",
       "permutationLabel": "Asymptomatic, found at pre-op assessment, elderly",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -5349,7 +5349,7 @@
       "condition": "New-onset atrial fibrillation with rapid ventricular rate",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -5992,7 +5992,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-af-new-onset-rapid",
       "permutationLabel": "Haemodynamically unstable, elderly, off anticoagulation",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -6823,7 +6823,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-ahf-pulmonary-oedema",
       "permutationLabel": "Elderly HFpEF, referred as bilateral cellulitis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -7501,7 +7501,7 @@
       "condition": "Acute heart failure with pulmonary oedema",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -8285,7 +8285,7 @@
       "condition": "Anaphylaxis (adult, first dose of amoxicillin)",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -9034,7 +9034,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-anaphylaxis-adult-amoxicillin",
       "permutationLabel": "Child (7 years), food trigger",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -9534,7 +9534,7 @@
       "condition": "Acute severe asthma",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -10142,7 +10142,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-asthma-acute-severe",
       "permutationLabel": "Life-threatening (silent chest)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -10746,7 +10746,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-asthma-acute-severe",
       "permutationLabel": "Pregnant, 24 weeks, moderate",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -11156,7 +11156,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-cap-low-severity",
       "permutationLabel": "Child, presenting as abdominal pain",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -11753,7 +11753,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-cap-low-severity",
       "permutationLabel": "Elderly, CURB65 5, septic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -12630,7 +12630,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-cap-low-severity",
       "permutationLabel": "Immunosuppressed (methotrexate + steroids), blunted fever",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -13312,7 +13312,7 @@
       "condition": "Community-acquired pneumonia (low severity, CURB65 0)",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -13904,7 +13904,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-dvt-labelled-cellulitis",
       "permutationLabel": "True cellulitis, DVT unlikely",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -14421,7 +14421,7 @@
       "condition": "COPD exacerbation with hypercapnic respiratory failure",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -15147,7 +15147,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-copd-hypercapnic-exacerbation",
       "permutationLabel": "Mild, outpatient",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -15662,7 +15662,7 @@
       "condition": "Deep vein thrombosis referred as cellulitis",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -16228,7 +16228,7 @@
       "condition": "Acute gastroenteritis with dehydration and AKI (elderly, on ACE inhibitor/diuretic/metformin)",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -16970,7 +16970,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-gastroenteritis-elderly-aki",
       "permutationLabel": "Diabetic on SGLT2 inhibitor, euglycaemic DKA mimic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -17779,7 +17779,7 @@
       "condition": "Hypertensive emergency (encephalopathy / malignant hypertension)",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -18430,7 +18430,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-htn-emergency-encephalopathy",
       "permutationLabel": "Pregnant, 35 weeks, HELLP mimicking biliary pain",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -19108,7 +19108,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-htn-emergency-encephalopathy",
       "permutationLabel": "Asymptomatic, pre-operative (not an emergency)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -19567,7 +19567,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-pe-ocp-long-haul",
       "permutationLabel": "Elderly, presenting as syncope",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -20287,7 +20287,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-pe-ocp-long-haul",
       "permutationLabel": "High-risk PE with shock, active cancer",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -21101,7 +21101,7 @@
       "condition": "Pulmonary embolism (outpatient, provoked: oestrogen + long-haul flight)",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -21859,7 +21859,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-pe-ocp-long-haul",
       "permutationLabel": "Post-operative mimic (after laparoscopic cholecystectomy)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -22580,7 +22580,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-pe-ocp-long-haul",
       "permutationLabel": "Pregnant, 30 weeks",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -23280,7 +23280,7 @@
       "condition": "Sepsis without fever in an older person (urinary source)",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -24038,7 +24038,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-sepsis-afebrile-elderly-urinary",
       "permutationLabel": "Asplenic (post-splenectomy), septic shock",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -24691,7 +24691,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-sepsis-afebrile-elderly-urinary",
       "permutationLabel": "Neutropenic, on chemotherapy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -25228,7 +25228,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-syncope-exertional-high-risk",
       "permutationLabel": "Elderly, bradycardic, on a beta-blocker",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -25783,7 +25783,7 @@
       "condition": "Exertional syncope (high risk, suspected aortic stenosis)",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -26274,7 +26274,7 @@
       "category": "general-medicine",
       "permutationOf": "acutemed-syncope-exertional-high-risk",
       "permutationLabel": "Young woman, typical reflex syncope (low risk)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -26731,7 +26731,7 @@
       "condition": "Adrenal incidentaloma (indeterminate, hypertensive)",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -27275,7 +27275,7 @@
       "category": "breast-endocrine",
       "permutationOf": "adrenal-incidentaloma-indeterminate",
       "permutationLabel": "Suspected phaeochromocytoma, on a beta-blocker",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -27972,7 +27972,7 @@
       "category": "urology",
       "permutationOf": "aki-prerenal-diarrhoea-acei-nsaid",
       "permutationLabel": "Elderly man, painless chronic retention, AKI stage 3",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -28604,7 +28604,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "Elderly, volume depletion, ACE inhibitor + NSAID + diuretic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -29237,7 +29237,7 @@
       "condition": "Acute limb ischaemia (embolic)",
       "category": "vascular",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -29813,7 +29813,7 @@
       "category": "vascular",
       "permutationOf": "ali-embolic-af",
       "permutationLabel": "Diabetic claudicant, thrombosis in situ, Rutherford IIa",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -30341,7 +30341,7 @@
       "category": "vascular",
       "permutationOf": null,
       "permutationLabel": "Embolic, AF off anticoagulation, normal lactate (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -31056,7 +31056,7 @@
       "category": "vascular",
       "permutationOf": "ami-embolic-af",
       "permutationLabel": "Late: transmural infarction with septic shock",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -32113,7 +32113,7 @@
       "category": "vascular",
       "permutationOf": "ami-embolic-af",
       "permutationLabel": "Mesenteric venous thrombosis, young woman on the combined pill",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -32641,7 +32641,7 @@
       "condition": "Anal squamous cell carcinoma",
       "category": "anorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -33281,7 +33281,7 @@
       "condition": "Anal fissure — acute, posterior midline",
       "category": "anorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -33777,7 +33777,7 @@
       "category": "anorectal",
       "permutationOf": "anal-fissure-acute-posterior",
       "permutationLabel": "Atypical: lateral, painless, indurated; HIV",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -34259,7 +34259,7 @@
       "category": "anorectal",
       "permutationOf": "anal-fissure-acute-posterior",
       "permutationLabel": "Chronic (> 8 weeks), failed diltiazem; female, two vaginal deliveries",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -34738,7 +34738,7 @@
       "condition": "Acute aortic dissection",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -35308,7 +35308,7 @@
       "condition": "Secondary aorto-enteric fistula",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -35809,7 +35809,7 @@
       "category": "gi-emergency",
       "permutationOf": null,
       "permutationLabel": "Typical adult (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -36689,7 +36689,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Woman, CT-confirmed uncomplicated, no appendicolith (antibiotics-first candidate)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -37429,7 +37429,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Appendicolith on CT (antibiotics-first caution)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -38109,7 +38109,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Elderly, atypical (AF on apixaban)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -39056,7 +39056,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Perforated, generalised peritonitis with sepsis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -40035,7 +40035,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Immunosuppressed (renal transplant, steroids), diabetic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -40833,7 +40833,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Child (9 years), ultrasound-confirmed",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -41615,7 +41615,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Complicated: perforated with 5.5 cm abscess",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -42311,7 +42311,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Pregnant, second trimester (22 weeks)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -43152,7 +43152,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Intermediate score band (Alvarado 6, AIR 5): imaging needed",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -43736,7 +43736,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-adult-typical",
       "permutationLabel": "Low-risk score band (Alvarado 3, AIR 1), woman",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -44193,7 +44193,7 @@
       "category": "hpb",
       "permutationOf": "biliary-colic-uncomplicated",
       "permutationLabel": "Incidental finding — asymptomatic gallstones (no treatment)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -44737,7 +44737,7 @@
       "category": "hpb",
       "permutationOf": "biliary-colic-uncomplicated",
       "permutationLabel": "Incidental finding — 12 mm gallbladder polyp alongside gallstones",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -45279,7 +45279,7 @@
       "category": "hpb",
       "permutationOf": "biliary-colic-uncomplicated",
       "permutationLabel": "Dangerous mimic — inferior STEMI presenting as epigastric pain in a diabetic with known gallstones",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -45929,7 +45929,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "Base case — uncomplicated biliary colic, outpatient",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -46575,7 +46575,7 @@
       "condition": "Spontaneous oesophageal perforation (Boerhaave's syndrome)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -47447,7 +47447,7 @@
       "category": "upper-gi",
       "permutationOf": "boerhaave-classic-mackler",
       "permutationLabel": "Presents as cardiac chest pain; emphysema subtle, no imaging yet",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -48164,7 +48164,7 @@
       "category": "upper-gi",
       "permutationOf": "boerhaave-classic-mackler",
       "permutationLabel": "Presents as epigastric pain after alcohol with raised amylase",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -48828,7 +48828,7 @@
       "condition": "Lactational breast abscess",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -49355,7 +49355,7 @@
       "category": "breast-endocrine",
       "permutationOf": "breast-abscess-lactational",
       "permutationLabel": "Non-lactational, smoker, recurrent",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -49914,7 +49914,7 @@
       "condition": "Family history of breast cancer (possible BRCA)",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -50241,7 +50241,7 @@
       "condition": "Inflammatory breast cancer",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -50894,7 +50894,7 @@
       "category": "breast-endocrine",
       "permutationOf": "breast-lump-under-30",
       "permutationLabel": "Age 32 (NG12 threshold)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -51356,7 +51356,7 @@
       "category": "breast-endocrine",
       "permutationOf": "breast-lump-under-30",
       "permutationLabel": "Age 58, suspicious features",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -51952,7 +51952,7 @@
       "category": "breast-endocrine",
       "permutationOf": "breast-lump-under-30",
       "permutationLabel": "Pregnant, 22 weeks",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -52457,7 +52457,7 @@
       "condition": "Breast lump, age under 30 (probable fibroadenoma)",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -52933,7 +52933,7 @@
       "category": "breast-endocrine",
       "permutationOf": "breast-male-gynaecomastia",
       "permutationLabel": "Unilateral hard eccentric mass",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -53469,7 +53469,7 @@
       "condition": "Gynaecomastia (drug-induced)",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -53971,7 +53971,7 @@
       "condition": "Bloody single-duct nipple discharge",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -54488,7 +54488,7 @@
       "condition": "Cyclical breast pain (mastalgia) without a lump",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -54837,7 +54837,7 @@
       "condition": "Major thermal burn (flame), adult",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -55524,7 +55524,7 @@
       "category": "trauma-burns",
       "permutationOf": "burns-adult-flame-27pct",
       "permutationLabel": "14 % superficial partial thickness — no formal IV resuscitation",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -55986,7 +55986,7 @@
       "category": "trauma-burns",
       "permutationOf": "burns-adult-flame-27pct",
       "permutationLabel": "Alkali (sodium hydroxide) with eye involvement",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -56485,7 +56485,7 @@
       "category": "trauma-burns",
       "permutationOf": "burns-child-scald-12pct",
       "permutationLabel": "Immersion pattern, special areas, delayed presentation",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -56952,7 +56952,7 @@
       "category": "trauma-burns",
       "permutationOf": "burns-adult-flame-27pct",
       "permutationLabel": "Child 3 years, 15 kg, 12 % TBSA by Lund–Browder",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -57577,7 +57577,7 @@
       "category": "trauma-burns",
       "permutationOf": "burns-adult-flame-27pct",
       "permutationLabel": "Circumferential full-thickness limb burn with distal ischaemia (6 % TBSA)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -58079,7 +58079,7 @@
       "category": "trauma-burns",
       "permutationOf": "burns-adult-flame-27pct",
       "permutationLabel": "High-voltage electrical, small visible TBSA, myoglobinuria",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -58733,7 +58733,7 @@
       "category": "trauma-burns",
       "permutationOf": "burns-adult-flame-27pct",
       "permutationLabel": "Inhalation injury, carbon monoxide, face and hands",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -59514,7 +59514,7 @@
       "category": "colorectal",
       "permutationOf": "sigmoid-volvulus-base",
       "permutationLabel": "Caecal volvulus (surgery, not endoscopy), woman of reproductive age",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -60078,7 +60078,7 @@
       "category": "other",
       "permutationOf": "cauda-equina-syndrome-disc",
       "permutationLabel": "Presents as painless retention (CES-R), woman",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -60507,7 +60507,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "Incomplete CES (CES-I) from L4/5 disc",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -60996,7 +60996,7 @@
       "condition": "Caustic (alkali) ingestion",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -61600,7 +61600,7 @@
       "category": "gi-emergency",
       "permutationOf": "infective-colitis-bloody-diarrhoea",
       "permutationLabel": "Fulminant CDI (hypotension, ileus, WBC 32, lactate 3.2) after antibiotics",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -62344,7 +62344,7 @@
       "condition": "Cellulitis",
       "category": "soft-tissue",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -62930,7 +62930,7 @@
       "category": "soft-tissue",
       "permutationOf": "cellulitis-leg-adult",
       "permutationLabel": "Elderly, diabetic, sepsis (Eron III)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -63743,7 +63743,7 @@
       "category": "soft-tissue",
       "permutationOf": "dfi-moderate-osteomyelitis",
       "permutationLabel": "Hot swollen foot with intact skin (Charcot, not cellulitis)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -64199,7 +64199,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "Charcot's triad with sepsis — TG18 Grade II (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -65301,7 +65301,7 @@
       "category": "hpb",
       "permutationOf": "cholangitis-tg18-charcot-sepsis",
       "permutationLabel": "TG18 Grade I (mild) — only one Grade II criterion (age ≥75)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -66164,7 +66164,7 @@
       "category": "hpb",
       "permutationOf": "cholangitis-tg18-charcot-sepsis",
       "permutationLabel": "TG18 Grade III (severe) — Reynolds' pentad, septic shock, on apixaban",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -67596,7 +67596,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "Acalculous, critically ill (ICU day 9 after polytrauma) — TG18 Grade III",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -68542,7 +68542,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "Elderly (81) diabetic, atypical — afebrile, vague pain, off food; TG18 Grade II by WBC >18",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -69476,7 +69476,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "High surgical risk (84, CCI 8, ASA IV) — TG18 Grade II not responding to antibiotics → percutaneous drainage",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -70483,7 +70483,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "Immunosuppressed (renal transplant: tacrolimus, MMF, prednisolone) — masked signs, gangrenous change = Grade II",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -71304,7 +71304,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "Dangerous mimic — right lower lobe pneumonia with RUQ pain and fever, normal gallbladder",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -72069,7 +72069,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "Pregnancy, 22 weeks — TG18 Grade I",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -72910,7 +72910,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "TG18 Grade I (mild) — base case",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -73797,7 +73797,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "TG18 Grade II (moderate) — palpable tender RUQ mass is the only Grade II criterion",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -74718,7 +74718,7 @@
       "category": "hpb",
       "permutationOf": "cholecystitis-tg18-grade1",
       "permutationLabel": "TG18 Grade III (severe) — septic shock, confusion, AKI, thrombocytopenia; penicillin anaphylaxis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -75980,7 +75980,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "Base case — ASGE 2019 high risk (CBD stone on ultrasound; bilirubin >4 mg/dL with dilated CBD), no cholangitis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -76623,7 +76623,7 @@
       "category": "hpb",
       "permutationOf": "choledocholithiasis-asge-high-risk",
       "permutationLabel": "ASGE 2019 intermediate risk (age >55, abnormal LFTs, CBD 7 mm, no stone seen) → MRCP/EUS or IOC, not ERCP",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -77287,7 +77287,7 @@
       "category": "hpb",
       "permutationOf": "choledocholithiasis-asge-high-risk",
       "permutationLabel": "ASGE 2019 low risk (age ≤55, normal LFTs, normal CBD) → cholecystectomy without CBD evaluation",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -77860,7 +77860,7 @@
       "category": "hpb",
       "permutationOf": "choledocholithiasis-asge-high-risk",
       "permutationLabel": "Elderly (79) on warfarin (INR 2.6) — ASGE high risk; anticoagulation plan before sphincterotomy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -78614,7 +78614,7 @@
       "category": "hpb",
       "permutationOf": "choledocholithiasis-asge-high-risk",
       "permutationLabel": "Pregnancy, 26 weeks — ASGE high risk, obstructive jaundice",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -79270,7 +79270,7 @@
       "condition": "Colorectal cancer — symptomatic, FIT positive",
       "category": "colorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -80116,7 +80116,7 @@
       "category": "colorectal",
       "permutationOf": "crc-cibh-fit-positive-older",
       "permutationLabel": "FIT ≥ 10 is the only red flag",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -80627,7 +80627,7 @@
       "category": "colorectal",
       "permutationOf": "crc-cibh-fit-positive-older",
       "permutationLabel": "Iron-deficiency anaemia, post-menopausal, no GI symptoms",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -81169,7 +81169,7 @@
       "condition": "Lynch syndrome — colonoscopic surveillance",
       "category": "colorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -81502,7 +81502,7 @@
       "category": "colorectal",
       "permutationOf": "crc-cibh-fit-positive-older",
       "permutationLabel": "Age 50–59, no change in bowel habit",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -82216,7 +82216,7 @@
       "category": "colorectal",
       "permutationOf": "crc-cibh-fit-positive-older",
       "permutationLabel": "FIT < 10 but rectal mass on DRE",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -82859,7 +82859,7 @@
       "category": "colorectal",
       "permutationOf": "crc-lynch-surveillance-overdue",
       "permutationLabel": "No symptoms; father CRC at 58; no national programme",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -83234,7 +83234,7 @@
       "category": "colorectal",
       "permutationOf": "crc-cibh-fit-positive-older",
       "permutationLabel": "Age 34, attributed to piles",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -83738,7 +83738,7 @@
       "condition": "Crohn’s disease with ileocaecal abscess",
       "category": "colorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -84488,7 +84488,7 @@
       "category": "anorectal",
       "permutationOf": "crohns-ileocaecal-abscess",
       "permutationLabel": "Perianal disease, complex fistula",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -85103,7 +85103,7 @@
       "condition": "Diabetes-related foot infection with osteomyelitis",
       "category": "soft-tissue",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -85813,7 +85813,7 @@
       "category": "soft-tissue",
       "permutationOf": "dfi-moderate-osteomyelitis",
       "permutationLabel": "IWGDF/IDSA grade 4: wet gangrene, plantar abscess, sepsis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -86682,7 +86682,7 @@
       "category": "vascular",
       "permutationOf": "dfi-moderate-osteomyelitis",
       "permutationLabel": "Ischaemic ulcer, falsely normal ABPI (incompressible vessels)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -87349,7 +87349,7 @@
       "category": "soft-tissue",
       "permutationOf": "dfi-moderate-osteomyelitis",
       "permutationLabel": "Uninfected neuropathic forefoot ulcer (IWGDF/IDSA 1)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -87903,7 +87903,7 @@
       "category": "colorectal",
       "permutationOf": "diverticulitis-uncomplicated-outpatient",
       "permutationLabel": "Complicated: 6 cm pericolic abscess (modified Hinchey Ib)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -88576,7 +88576,7 @@
       "category": "colorectal",
       "permutationOf": "diverticulitis-uncomplicated-outpatient",
       "permutationLabel": "Hinchey IV with septic shock (elderly, diabetic)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -89577,7 +89577,7 @@
       "category": "colorectal",
       "permutationOf": "diverticulitis-uncomplicated-outpatient",
       "permutationLabel": "Immunosuppressed (renal transplant, steroids), mild symptoms",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -90319,7 +90319,7 @@
       "category": "colorectal",
       "permutationOf": "diverticulitis-uncomplicated-outpatient",
       "permutationLabel": "Perforated, purulent peritonitis (Hinchey III)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -91104,7 +91104,7 @@
       "category": "colorectal",
       "permutationOf": null,
       "permutationLabel": "Uncomplicated, immunocompetent, outpatient (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -91743,7 +91743,7 @@
       "category": "general-medicine",
       "permutationOf": "dka-type1-young-typical",
       "permutationLabel": "Type 2 diabetes on empagliflozin, post-operative day 2, glucose 10.2",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -92617,7 +92617,7 @@
       "category": "general-medicine",
       "permutationOf": "dka-type1-young-typical",
       "permutationLabel": "Pregnant, 28 weeks, pump failure",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -93291,7 +93291,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "Type 1 diabetes, typical DKA precipitated by gastroenteritis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -94171,7 +94171,7 @@
       "category": "vascular",
       "permutationOf": "dvt-wells-likely",
       "permutationLabel": "Pregnant, 22 weeks",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -94736,7 +94736,7 @@
       "condition": "Deep vein thrombosis",
       "category": "vascular",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -95308,7 +95308,7 @@
       "condition": "Uninvestigated dyspepsia (no alarm features)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -95743,7 +95743,7 @@
       "condition": "Oesophageal carcinoma (progressive dysphagia)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -96409,7 +96409,7 @@
       "category": "upper-gi",
       "permutationOf": "dysphagia-progressive-over55",
       "permutationLabel": "Age 38, no weight loss (NG12 applies at any age)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -96911,7 +96911,7 @@
       "category": "upper-gi",
       "permutationOf": "food-bolus-complete-obstruction",
       "permutationLabel": "Young atopic man, recurrent impaction (resolved) — eosinophilic oesophagitis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -97320,7 +97320,7 @@
       "category": "urology",
       "permutationOf": "mimic-testicular-torsion",
       "permutationLabel": "Reverse mimic: gradual onset STI epididymo-orchitis with normal Doppler",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -97900,7 +97900,7 @@
       "category": "anorectal",
       "permutationOf": "fistula-in-ano-simple-low",
       "permutationLabel": "Complex: anterior, female, high transsphincteric, obstetric injury",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -98306,7 +98306,7 @@
       "condition": "Fistula-in-ano — simple, low intersphincteric",
       "category": "anorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -98701,7 +98701,7 @@
       "condition": "Oesophageal food bolus obstruction",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -99115,7 +99115,7 @@
       "condition": "Fournier’s gangrene (necrotising soft-tissue infection of the perineum)",
       "category": "anorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -99962,7 +99962,7 @@
       "category": "anorectal",
       "permutationOf": "fournier-gangrene",
       "permutationLabel": "Early, no crepitus, on empagliflozin — dangerous mimic of a perianal abscess",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -100751,7 +100751,7 @@
       "condition": "Gastric outlet obstruction",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -101317,7 +101317,7 @@
       "category": "upper-gi",
       "permutationOf": "gord-no-alarm-empirical-ppi",
       "permutationLabel": "Age 63 with new weight loss (alarm feature)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -101862,7 +101862,7 @@
       "condition": "Gastro-oesophageal reflux disease (no alarm features)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -102368,7 +102368,7 @@
       "condition": "Common femoral artery aneurysm mimicking a groin hernia",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -102993,7 +102993,7 @@
       "condition": "Inguinal lymphadenopathy (suspected lymphoma) mimicking a hernia",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -103584,7 +103584,7 @@
       "condition": "Testicular torsion presenting as groin pain",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -104085,7 +104085,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "Adult with known dermoid cyst (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -104628,7 +104628,7 @@
       "category": "other",
       "permutationOf": "gyn-ovarian-torsion-dermoid",
       "permutationLabel": "Premenarchal 11-year-old, labelled gastroenteritis, Doppler flow present",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -105156,7 +105156,7 @@
       "category": "other",
       "permutationOf": "gyn-pid-young-woman",
       "permutationLabel": "Tubo-ovarian abscess, sepsis, copper IUD in situ",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -105889,7 +105889,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "Mild–moderate PID, outpatient-treatable (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -106500,7 +106500,7 @@
       "category": "other",
       "permutationOf": "gyn-ovarian-torsion-dermoid",
       "permutationLabel": "Haemoperitoneum from a corpus luteum cyst in a woman on apixaban",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -107171,7 +107171,7 @@
       "category": "upper-gi",
       "permutationOf": "h-pylori-positive-eradication",
       "permutationLabel": "Penicillin anaphylaxis recorded",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -107608,7 +107608,7 @@
       "category": "upper-gi",
       "permutationOf": "dyspepsia-young-no-alarm-test-and-treat",
       "permutationLabel": "Stool antigen positive — eradication regimen and test of cure",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -108040,7 +108040,7 @@
       "category": "urology",
       "permutationOf": "haematuria-visible-smoker-2ww",
       "permutationLabel": "Anticoagulated (apixaban), clot retention",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -108700,7 +108700,7 @@
       "category": "urology",
       "permutationOf": null,
       "permutationLabel": "Smoker, 66, culture-negative painless visible haematuria",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -109300,7 +109300,7 @@
       "category": "anorectal",
       "permutationOf": "haemorrhoids-grade3-over-50",
       "permutationLabel": "Anticoagulated (warfarin), age 71",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -109985,7 +109985,7 @@
       "condition": "Haemorrhoids — grade III, age 58",
       "category": "anorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -110568,7 +110568,7 @@
       "category": "anorectal",
       "permutationOf": "haemorrhoids-grade3-over-50",
       "permutationLabel": "Acutely thrombosed external haemorrhoid at 48 h",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -110988,7 +110988,7 @@
       "condition": "Femoral hernia",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -111562,7 +111562,7 @@
       "category": "hernia",
       "permutationOf": "hernia-femoral-elderly-woman",
       "permutationLabel": "Presents as SBO (Richter), anticoagulated",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -112332,7 +112332,7 @@
       "condition": "Incarcerated inguinal hernia (no strangulation)",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -112903,7 +112903,7 @@
       "category": "hernia",
       "permutationOf": "hernia-groin-incarcerated",
       "permutationLabel": "Strangulated (SIRS, lactate 4.2, CT ischaemia)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -113797,7 +113797,7 @@
       "condition": "Midline incisional hernia",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -114421,7 +114421,7 @@
       "condition": "Inguinal hernia (elective, minimally symptomatic)",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -115021,7 +115021,7 @@
       "category": "hernia",
       "permutationOf": "hernia-inguinal-elective-minimal-symptoms",
       "permutationLabel": "Woman (femoral hernia risk)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -115589,7 +115589,7 @@
       "condition": "Obturator hernia with small bowel obstruction",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -116204,7 +116204,7 @@
       "category": "hernia",
       "permutationOf": "hernia-paediatric-inguinal-infant",
       "permutationLabel": "Incarcerated, 7-month-old girl",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -116694,7 +116694,7 @@
       "condition": "Paediatric inguinal hernia (infant)",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -117149,7 +117149,7 @@
       "condition": "Parastomal hernia",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -117658,7 +117658,7 @@
       "category": "hernia",
       "permutationOf": "hernia-umbilical-adult-elective",
       "permutationLabel": "Incarcerated, obese, penicillin-allergic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -118372,7 +118372,7 @@
       "condition": "Umbilical hernia (adult, elective)",
       "category": "hernia",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -118880,7 +118880,7 @@
       "category": "hernia",
       "permutationOf": "hernia-umbilical-adult-elective",
       "permutationLabel": "Cirrhosis with tense ascites",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -119596,7 +119596,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "Elderly, type 2 diabetes, sepsis-precipitated HHS",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -120341,7 +120341,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "Bone metastases, PTH suppressed, AKI",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -120963,7 +120963,7 @@
       "category": "general-medicine",
       "permutationOf": "hypercalcaemia-malignancy-bone-mets",
       "permutationLabel": "Elderly, AKI, undiagnosed myeloma presenting as constipation",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -121593,7 +121593,7 @@
       "category": "general-medicine",
       "permutationOf": "hyperkalaemia-severe-ckd-acei",
       "permutationLabel": "Post-operative day 3, oliguric AKI stage 3, nephrotoxins",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -122358,7 +122358,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "CKD 4, ACE inhibitor + spironolactone + trimethoprim, ECG changes",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -123053,7 +123053,7 @@
       "category": "general-medicine",
       "permutationOf": "stroke-acute-fast-positive",
       "permutationLabel": "Mimic: insulin-treated diabetic with focal deficit and glucose 1.9",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -123585,7 +123585,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "Elderly, CKD 4, gliclazide, poor intake",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -124182,7 +124182,7 @@
       "category": "general-medicine",
       "permutationOf": "hyponatraemia-severe-postop-seizure",
       "permutationLabel": "Elderly, chronic, thiazide + SSRI, moderately severe symptoms",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -124773,7 +124773,7 @@
       "category": "general-medicine",
       "permutationOf": "hyponatraemia-severe-postop-seizure",
       "permutationLabel": "Hypovolaemic: high-output stoma with AKI",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -125350,7 +125350,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "Acute post-operative hyponatraemia with seizure",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -126036,7 +126036,7 @@
       "condition": "Infective colitis with bloody diarrhoea (possible STEC)",
       "category": "colorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -126555,7 +126555,7 @@
       "condition": "Iron-deficiency anaemia (occult GI blood loss)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -127105,7 +127105,7 @@
       "condition": "Ischaemic colitis (left-sided, non-gangrenous)",
       "category": "colorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -127786,7 +127786,7 @@
       "category": "vascular",
       "permutationOf": "ischaemic-colitis-left",
       "permutationLabel": "Isolated right colon ischaemia, AF off anticoagulation, lactate 4.1",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -128564,7 +128564,7 @@
       "category": "hpb",
       "permutationOf": "painless-jaundice-pancreatic-head",
       "permutationLabel": "Dangerous mimic — acute hepatitis A: fever, RUQ pain and jaundice (pseudo-Charcot), ALT 2850, normal CBD, reactive gallbladder wall thickening",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -129198,7 +129198,7 @@
       "category": "colorectal",
       "permutationOf": "lbo-obstructing-sigmoid-cancer",
       "permutationLabel": "Impending caecal perforation (closed loop, 13.5 cm, pneumatosis), sepsis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -130001,7 +130001,7 @@
       "category": "colorectal",
       "permutationOf": null,
       "permutationLabel": "Obstructing sigmoid cancer, no perforation (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -130857,7 +130857,7 @@
       "category": "colorectal",
       "permutationOf": "lbo-obstructing-sigmoid-cancer",
       "permutationLabel": "Right-sided (hepatic flexure) obstructing cancer",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -131415,7 +131415,7 @@
       "category": "colorectal",
       "permutationOf": "lgib-oakland-low-risk-discharge",
       "permutationLabel": "Recurrent occult/overt bleeding, aortic stenosis, aspirin",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -132096,7 +132096,7 @@
       "category": "colorectal",
       "permutationOf": "lgib-oakland-low-risk-discharge",
       "permutationLabel": "Stable major bleed (Oakland > 8), DOAC",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -132702,7 +132702,7 @@
       "condition": "Acute lower gastrointestinal bleeding — minor, low risk (Oakland ≤ 8)",
       "category": "colorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -133169,7 +133169,7 @@
       "category": "colorectal",
       "permutationOf": "lgib-oakland-low-risk-discharge",
       "permutationLabel": "Day 6 after EMR, clopidogrel restarted",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -133808,7 +133808,7 @@
       "category": "gi-emergency",
       "permutationOf": "lgib-oakland-low-risk-discharge",
       "permutationLabel": "Unstable (shock index > 1 after resuscitation), elderly",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -134535,7 +134535,7 @@
       "category": "gi-emergency",
       "permutationOf": "lgib-unstable-cta-first",
       "permutationLabel": "Anticoagulated (warfarin, INR 4.6)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -135394,7 +135394,7 @@
       "category": "hpb",
       "permutationOf": "liver-abscess-pyogenic",
       "permutationLabel": "Amoebic (Caribbean context) — serology positive, single homogeneous right-lobe abscess",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -135933,7 +135933,7 @@
       "category": "hpb",
       "permutationOf": "liver-abscess-pyogenic",
       "permutationLabel": "Elderly (79) septic shock — multiple small cholangitic abscesses from an occluded biliary stent",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -136876,7 +136876,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "Base case — pyogenic liver abscess (7 cm, multiloculated) in a diabetic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -137820,7 +137820,7 @@
       "condition": "Mallory-Weiss tear",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -138369,7 +138369,7 @@
       "category": "other",
       "permutationOf": "meningitis-meningococcal-young",
       "permutationLabel": "Elderly and immunosuppressed: Listeria cover",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -139014,7 +139014,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "Young adult, non-blanching rash, shock",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -139669,7 +139669,7 @@
       "condition": "Acute myocardial infarction presenting as epigastric pain",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -140319,7 +140319,7 @@
       "category": "vascular",
       "permutationOf": "mimic-ruptured-aaa",
       "permutationLabel": "Stable symptomatic AAA presenting as 'renal colic'",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -141022,7 +141022,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "Type 1 diabetic, severe DKA with abdominal pain and guarding",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -141873,7 +141873,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "RIF pain labelled appendicitis, pregnancy status unknown (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -142523,7 +142523,7 @@
       "category": "other",
       "permutationOf": "mimic-ectopic-pregnancy",
       "permutationLabel": "Ruptured, haemorrhagic shock (positive hCG)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -143319,7 +143319,7 @@
       "category": "general-medicine",
       "permutationOf": "mimic-inferior-mi",
       "permutationLabel": "Elderly diabetic woman, ECG shows inferior STEMI",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -143954,7 +143954,7 @@
       "category": "general-medicine",
       "permutationOf": null,
       "permutationLabel": "Epigastric 'indigestion', no ECG yet (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -144607,7 +144607,7 @@
       "category": "vascular",
       "permutationOf": null,
       "permutationLabel": "Flank pain labelled renal colic, shocked (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -145445,7 +145445,7 @@
       "category": "urology",
       "permutationOf": null,
       "permutationLabel": "Adolescent with lower abdominal pain and vomiting",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -145942,7 +145942,7 @@
       "category": "other",
       "permutationOf": "mscc-prostate-cancer-weakness",
       "permutationLabel": "Previous breast cancer, pain only, no deficit",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -146445,7 +146445,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "Known prostate cancer, established neurological deficit",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -146910,7 +146910,7 @@
       "condition": "NSAID-associated gastric ulcer (uncomplicated)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -147543,7 +147543,7 @@
       "category": "soft-tissue",
       "permutationOf": "nsti-leg-diabetic-sepsis",
       "permutationLabel": "Early NSTI, LRINEC 0, minimal skin signs",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -148115,7 +148115,7 @@
       "category": "soft-tissue",
       "permutationOf": "nsti-leg-diabetic-sepsis",
       "permutationLabel": "Fournier's gangrene, uncontrolled diabetes, septic shock",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -149137,7 +149137,7 @@
       "condition": "Necrotising soft-tissue infection (necrotising fasciitis)",
       "category": "soft-tissue",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -150094,7 +150094,7 @@
       "category": "soft-tissue",
       "permutationOf": "nsti-leg-diabetic-sepsis",
       "permutationLabel": "Post-operative day 4 after laparotomy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -151010,7 +151010,7 @@
       "category": "trauma-burns",
       "permutationOf": "trauma-pregnancy-30wk-rtc",
       "permutationLabel": "33 weeks, pushed by partner, concealed abruption (no vaginal bleeding), fetal bradycardia",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -151619,7 +151619,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-pregnant-t2",
       "permutationLabel": "32 weeks, right upper quadrant/flank pain, MRI-confirmed",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -152400,7 +152400,7 @@
       "category": "other",
       "permutationOf": "mimic-ectopic-pregnancy",
       "permutationLabel": "Levonorgestrel IUS, \"cannot be pregnant\", left-sided pain, stable",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -152837,7 +152837,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "34 weeks, epigastric/RUQ pain referred as \"gallbladder\" (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -153476,7 +153476,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "10 weeks, dehydration, ketonuria, 7% weight loss (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -154098,7 +154098,7 @@
       "category": "other",
       "permutationOf": "obs-hellp-ruq-pain-34wk",
       "permutationLabel": "Day 6 after delivery, normotensive in pregnancy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -154585,7 +154585,7 @@
       "category": "gi-emergency",
       "permutationOf": "appendicitis-paediatric-9y",
       "permutationLabel": "4-year-old, 3 days, labelled gastroenteritis, perforated with abscess",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -155420,7 +155420,7 @@
       "category": "general-medicine",
       "permutationOf": "mimic-dka-abdominal-pain",
       "permutationLabel": "9-year-old, undiagnosed diabetes, referred as \"?appendicitis\"",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -156212,7 +156212,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "7-week-old at a hernia review with fever, poor feeding and drowsiness (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -156679,7 +156679,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "6-year-old, purpura, arthralgia, colicky pain and nephritis (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -157204,7 +157204,7 @@
       "category": "gi-emergency",
       "permutationOf": null,
       "permutationLabel": "Classic presentation, 9-month-old (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -157785,7 +157785,7 @@
       "category": "gi-emergency",
       "permutationOf": "paed-intussusception-infant-classic",
       "permutationLabel": "Lethargy and pallor only, no crying episodes, referred as \"?sepsis\"",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -158209,7 +158209,7 @@
       "category": "gi-emergency",
       "permutationOf": "paed-malrotation-volvulus-bilious-neonate",
       "permutationLabel": "3-week-old on Gaviscon for \"reflux\", green vomits today, well-looking",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -158698,7 +158698,7 @@
       "category": "gi-emergency",
       "permutationOf": null,
       "permutationLabel": "12-day-old with sudden bilious vomiting (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -159288,7 +159288,7 @@
       "category": "trauma-burns",
       "permutationOf": "trauma-paediatric-nai-bruising",
       "permutationLabel": "3-year-old, \"fell off the sofa\", bilious vomiting 36 h later, duodenal haematoma",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -159887,7 +159887,7 @@
       "category": "gi-emergency",
       "permutationOf": null,
       "permutationLabel": "5-week-old with hypochloraemic hypokalaemic alkalosis (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -160371,7 +160371,7 @@
       "category": "hpb",
       "permutationOf": "painless-jaundice-pancreatic-head",
       "permutationLabel": "Elderly (84), frail (CFS 6), metastatic on CT — palliative biliary drainage, not resection",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -161161,7 +161161,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "Base case — painless obstructive jaundice with Courvoisier gallbladder, weight loss and new-onset diabetes",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -162023,7 +162023,7 @@
       "category": "hpb",
       "permutationOf": "painless-jaundice-pancreatic-head",
       "permutationLabel": "Non-jaundiced — age ≥60 with weight loss, back pain and new-onset diabetes (NICE NG12 urgent CT)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -162656,7 +162656,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Alcohol-induced, mild — alcohol dependence (thiamine, withdrawal, brief intervention); no gallstones",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -163450,7 +163450,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Immunosuppressed — azathioprine-induced pancreatitis in Crohn’s disease on prednisolone",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -164224,7 +164224,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Elderly (79) with HFrEF on apixaban — BISAP 4 at presentation (predicted severe)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -165177,7 +165177,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Gallstone pancreatitis with concurrent cholangitis (TG18 Grade II) → ERCP within 24 h",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -166195,7 +166195,7 @@
       "category": "hpb",
       "permutationOf": null,
       "permutationLabel": "Base case — mild acute biliary pancreatitis (revised Atlanta 2012), BISAP 1",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -167037,7 +167037,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Hypertriglyceridaemia (TG 31.4 mmol/L) with uncontrolled diabetes — lipaemic sample, amylase only 1.4 × ULN",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -167905,7 +167905,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Dangerous mimic — ruptured AAA: epigastric pain to the back, collapse, hypotension, amylase mildly raised",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -168713,7 +168713,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Moderately severe (Atlanta): transient renal failure <48 h and an acute necrotic collection — sterile",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -169546,7 +169546,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Pregnancy, 21 weeks — mild gallstone pancreatitis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -170376,7 +170376,7 @@
       "category": "hpb",
       "permutationOf": "pancreatitis-gallstone-mild",
       "permutationLabel": "Severe (Atlanta): persistent respiratory and renal failure >48 h, 40% necrosis, no cholangitis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -171470,7 +171470,7 @@
       "category": "breast-endocrine",
       "permutationOf": "parathyroid-primary-hpt-surgical-indications",
       "permutationLabel": "Hypercalcaemic crisis (Ca 3.84, AKI, drowsy)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -172153,7 +172153,7 @@
       "condition": "Primary hyperparathyroidism meeting surgical criteria",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -172770,7 +172770,7 @@
       "category": "vascular",
       "permutationOf": "pe-postop-day5",
       "permutationLabel": "Low pre-test probability, PERC negative",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -173074,7 +173074,7 @@
       "condition": "Pulmonary embolism (post-operative)",
       "category": "vascular",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -173898,7 +173898,7 @@
       "category": "anorectal",
       "permutationOf": "perianal-abscess-simple",
       "permutationLabel": "Diabetes (HbA1c 86), cellulitis, systemic signs",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -174613,7 +174613,7 @@
       "category": "anorectal",
       "permutationOf": "perianal-abscess-simple",
       "permutationLabel": "Immunosuppressed (HIV, CD4 140)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -175102,7 +175102,7 @@
       "condition": "Perianal abscess",
       "category": "anorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -175522,7 +175522,7 @@
       "category": "other",
       "permutationOf": "periop-abx-penicillin-anaphylaxis-colectomy",
       "permutationLabel": "Clean surgery with mesh, no allergy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -176062,7 +176062,7 @@
       "condition": "Surgical antibiotic prophylaxis — penicillin anaphylaxis before elective colectomy",
       "category": "other",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -176669,7 +176669,7 @@
       "category": "other",
       "permutationOf": "periop-anticoag-warfarin-af-no-bridging",
       "permutationLabel": "Apixaban, age 81, CrCl ~30 mL/min",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -177363,7 +177363,7 @@
       "condition": "Peri-operative anticoagulation — warfarin for non-valvular AF (no bridging)",
       "category": "other",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -178016,7 +178016,7 @@
       "category": "other",
       "permutationOf": "periop-anticoag-warfarin-af-no-bridging",
       "permutationLabel": "Mechanical mitral valve — bridging indicated",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -178623,7 +178623,7 @@
       "category": "other",
       "permutationOf": "periop-diabetes-sglt2-preop-withhold",
       "permutationLabel": "Post-operative euglycaemic DKA (SGLT2i continued)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -179539,7 +179539,7 @@
       "condition": "Peri-operative diabetes — SGLT2 inhibitor, metformin and sulfonylurea before day-case surgery",
       "category": "other",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -180224,7 +180224,7 @@
       "category": "other",
       "permutationOf": "periop-diabetes-sglt2-preop-withhold",
       "permutationLabel": "Type 1 diabetes, emergency appendicectomy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -180943,7 +180943,7 @@
       "category": "other",
       "permutationOf": "periop-endo-polypectomy-clopidogrel",
       "permutationLabel": "DAPT 2 months after DES, 20 mm polyp",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -181477,7 +181477,7 @@
       "category": "other",
       "permutationOf": "periop-endo-polypectomy-clopidogrel",
       "permutationLabel": "Warfarin, diagnostic OGD ± biopsy (low-risk procedure)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -182059,7 +182059,7 @@
       "category": "other",
       "permutationOf": "periop-endo-polypectomy-clopidogrel",
       "permutationLabel": "Apixaban, ERCP with sphincterotomy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -182741,7 +182741,7 @@
       "condition": "Endoscopy antithrombotic management — clopidogrel before EMR of a 25 mm polyp",
       "category": "other",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -183199,7 +183199,7 @@
       "category": "other",
       "permutationOf": "periop-nela-frail-emergency-laparotomy",
       "permutationLabel": "Elective, CFS 5 with dementia",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -183787,7 +183787,7 @@
       "condition": "Emergency laparotomy in a frail older patient (NELA high risk) — perforated diverticulitis on apixaban",
       "category": "gi-emergency",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -184903,7 +184903,7 @@
       "condition": "Post-operative acute kidney injury (KDIGO stage 2) with nephrotoxic drugs",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -185588,7 +185588,7 @@
       "category": "gi-emergency",
       "permutationOf": "periop-postop-fever-day1-early",
       "permutationLabel": "Day 5 anastomotic leak with sepsis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -186385,7 +186385,7 @@
       "category": "gi-emergency",
       "permutationOf": "periop-postop-anastomotic-leak-day5",
       "permutationLabel": "Elderly, beta-blocker + steroids, afebrile, delirium",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -187192,7 +187192,7 @@
       "condition": "Hypoactive post-operative delirium in an 86-year-old",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -187828,7 +187828,7 @@
       "condition": "Early post-operative fever (day 1) — non-infective",
       "category": "other",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -188357,7 +188357,7 @@
       "condition": "Prolonged post-operative ileus (day 4)",
       "category": "gi-emergency",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -189057,7 +189057,7 @@
       "category": "vascular",
       "permutationOf": "pe-postop-day5",
       "permutationLabel": "Obstructive shock, thrombolysis contraindicated (surgery 6 days ago)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -190095,7 +190095,7 @@
       "condition": "Post-operative pneumonia with NEWS2 ≥7 — ward escalation",
       "category": "general-medicine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -190992,7 +190992,7 @@
       "category": "soft-tissue",
       "permutationOf": "periop-postop-ssi-superficial",
       "permutationLabel": "Organ-space SSI with sepsis, insulin-treated diabetes",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -191887,7 +191887,7 @@
       "category": "soft-tissue",
       "permutationOf": "periop-postop-fever-day1-early",
       "permutationLabel": "Superficial incisional SSI, day 6",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -192449,7 +192449,7 @@
       "condition": "Post-operative urinary retention after inguinal hernia repair",
       "category": "urology",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -193048,7 +193048,7 @@
       "category": "gi-emergency",
       "permutationOf": "periop-nela-frail-emergency-laparotomy",
       "permutationLabel": "Pregnant (29 weeks), adhesive SBO",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -193788,7 +193788,7 @@
       "condition": "Pre-operative assessment (ASA I, elective laparoscopic cholecystectomy)",
       "category": "other",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -194305,7 +194305,7 @@
       "category": "other",
       "permutationOf": "periop-preop-asa1-lap-chole",
       "permutationLabel": "ESRF on haemodialysis, K⁺ 6.2",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -194967,7 +194967,7 @@
       "category": "other",
       "permutationOf": "periop-preop-asa1-lap-chole",
       "permutationLabel": "Latex anaphylaxis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -195457,7 +195457,7 @@
       "category": "other",
       "permutationOf": "periop-preop-asa1-lap-chole",
       "permutationLabel": "Prednisolone 10 mg for 2 years (adrenal suppression)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -196005,7 +196005,7 @@
       "category": "other",
       "permutationOf": "periop-preop-asa1-lap-chole",
       "permutationLabel": "Untested first-degree relative of an MH-susceptible patient",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -196478,7 +196478,7 @@
       "category": "other",
       "permutationOf": "periop-preop-asa1-lap-chole",
       "permutationLabel": "Suspected OSA, BMI 42, STOP-Bang 8",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -197026,7 +197026,7 @@
       "category": "other",
       "permutationOf": "periop-preop-asa1-lap-chole",
       "permutationLabel": "Elderly, IHD + HFrEF + insulin + CKD (RCRI 5), cancer surgery",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -197741,7 +197741,7 @@
       "category": "other",
       "permutationOf": "periop-preop-asa1-lap-chole",
       "permutationLabel": "DES 3 months after NSTEMI on aspirin + ticagrelor",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -198329,7 +198329,7 @@
       "category": "other",
       "permutationOf": "periop-preop-mh-susceptible",
       "permutationLabel": "Suxamethonium apnoea, emergency appendicectomy with RSI",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -199003,7 +199003,7 @@
       "condition": "VTE risk and thromboprophylaxis — major pelvic cancer surgery (Caprini 11)",
       "category": "other",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -199667,7 +199667,7 @@
       "category": "other",
       "permutationOf": "periop-vte-caprini-high-cancer-surgery",
       "permutationLabel": "High bleeding risk after surgery for bleeding DU",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -200305,7 +200305,7 @@
       "condition": "Pharyngeal pouch (Zenker's diverticulum)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -200727,7 +200727,7 @@
       "condition": "Acute pilonidal abscess",
       "category": "anorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -201123,7 +201123,7 @@
       "category": "colorectal",
       "permutationOf": "crc-lynch-surveillance-overdue",
       "permutationLabel": "BSG 2020 high-risk findings (advanced adenoma)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -201498,7 +201498,7 @@
       "category": "upper-gi",
       "permutationOf": "ppu-perforated-peptic-ulcer",
       "permutationLabel": "Elderly on steroids + NSAIDs: signs masked, afebrile sepsis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -202432,7 +202432,7 @@
       "category": "upper-gi",
       "permutationOf": null,
       "permutationLabel": "NSAID-related perforation, generalised peritonitis (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -203292,7 +203292,7 @@
       "category": "upper-gi",
       "permutationOf": "ppu-perforated-peptic-ulcer",
       "permutationLabel": "Delayed presentation with septic shock",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -204295,7 +204295,7 @@
       "category": "urology",
       "permutationOf": null,
       "permutationLabel": "Young woman, not pregnant, systemically unwell",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -204855,7 +204855,7 @@
       "category": "urology",
       "permutationOf": "pyelonephritis-adult-female",
       "permutationLabel": "Pregnant, 24 weeks",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -205446,7 +205446,7 @@
       "condition": "Ruptured abdominal aortic aneurysm",
       "category": "vascular",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -206336,7 +206336,7 @@
       "category": "anorectal",
       "permutationOf": "lgib-oakland-low-risk-discharge",
       "permutationLabel": "Clinic, 24-year-old, no red flags",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -206837,7 +206837,7 @@
       "condition": "Incarcerated full-thickness rectal prolapse",
       "category": "anorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -207399,7 +207399,7 @@
       "category": "urology",
       "permutationOf": "renal-colic-typical",
       "permutationLabel": "Infected obstructed kidney, septic, diabetic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -208172,7 +208172,7 @@
       "category": "urology",
       "permutationOf": "renal-colic-typical",
       "permutationLabel": "Pregnant, 26 weeks",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -208559,7 +208559,7 @@
       "category": "urology",
       "permutationOf": "renal-colic-typical",
       "permutationLabel": "Solitary kidney, CKD 3b, anticoagulated (apixaban), anuric",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -209264,7 +209264,7 @@
       "category": "urology",
       "permutationOf": null,
       "permutationLabel": "Typical, afebrile, 5 mm distal stone",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -209824,7 +209824,7 @@
       "category": "other",
       "permutationOf": "sah-thunderclap-headache",
       "permutationLabel": "Late presentation (day 5) at a surgical follow-up clinic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -210308,7 +210308,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "Thunderclap headache with meningism, 4 h",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -210856,7 +210856,7 @@
       "category": "gi-emergency",
       "permutationOf": null,
       "permutationLabel": "Adhesive SBO, no strangulation (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -211512,7 +211512,7 @@
       "category": "gi-emergency",
       "permutationOf": "sbo-adhesive-base",
       "permutationLabel": "Failed Gastrografin challenge (contrast not in colon at 24 h), day 3",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -212170,7 +212170,7 @@
       "category": "gi-emergency",
       "permutationOf": "sbo-adhesive-base",
       "permutationLabel": "Malignant (peritoneal carcinomatosis), palliative goals",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -212819,7 +212819,7 @@
       "category": "gi-emergency",
       "permutationOf": "sbo-adhesive-base",
       "permutationLabel": "Hernia cause: strangulated femoral hernia (elderly, anticoagulated)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -213592,7 +213592,7 @@
       "category": "gi-emergency",
       "permutationOf": "sbo-adhesive-base",
       "permutationLabel": "Strangulation (fever, tachycardia, peritonism, lactate, CT signs)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -214484,7 +214484,7 @@
       "category": "gi-emergency",
       "permutationOf": "sbo-adhesive-base",
       "permutationLabel": "Virgin abdomen, CT mass lesion (elderly, weight loss)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -215112,7 +215112,7 @@
       "category": "vascular",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Man aged 68, 30 pack-years, quit 10 years ago",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -215511,7 +215511,7 @@
       "category": "breast-endocrine",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Woman aged 42, breast screening",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -215894,7 +215894,7 @@
       "category": "breast-endocrine",
       "permutationOf": "breast-family-history-brca",
       "permutationLabel": "Confirmed BRCA1 carrier, age 33, asymptomatic",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -216290,7 +216290,7 @@
       "category": "other",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Woman aged 34, last cytology 6 years ago",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -216606,7 +216606,7 @@
       "category": "colorectal",
       "permutationOf": null,
       "permutationLabel": "Average risk, age 46 (base case for the screening cluster)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -216991,7 +216991,7 @@
       "category": "colorectal",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Age 41, sister CRC at 48, mother endometrial cancer at 55",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -217370,7 +217370,7 @@
       "category": "general-medicine",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Man aged 52, current smoker, borderline BP",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -217740,7 +217740,7 @@
       "category": "general-medicine",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Woman aged 38, BMI 31, prior gestational diabetes, mother T2DM",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -218064,7 +218064,7 @@
       "category": "general-medicine",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Man aged 36, never tested",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -218380,7 +218380,7 @@
       "category": "upper-gi",
       "permutationOf": "dyspepsia-young-no-alarm-test-and-treat",
       "permutationLabel": "Asymptomatic man aged 44, father had gastric cancer",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -218713,7 +218713,7 @@
       "category": "general-medicine",
       "permutationOf": "screen-hypertension-clinic-bp-confirm",
       "permutationLabel": "BP 212/128 with headache, blurred vision and papilloedema",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -219279,7 +219279,7 @@
       "category": "general-medicine",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Man aged 49, clinic BP 152/94 at a wellness visit",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -219680,7 +219680,7 @@
       "category": "other",
       "permutationOf": "screen-crc-average-risk-46",
       "permutationLabel": "Age 81, fit, normal colonoscopy at 71; asks for PSA and bowel test",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -220029,7 +220029,7 @@
       "category": "colorectal",
       "permutationOf": "polyp-surveillance-high-risk-3y",
       "permutationLabel": "Two small tubular adenomas (low risk)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -220391,7 +220391,7 @@
       "category": "colorectal",
       "permutationOf": "polyp-surveillance-high-risk-3y",
       "permutationLabel": "30 mm lesion removed piecemeal by EMR",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -220804,7 +220804,7 @@
       "category": "other",
       "permutationOf": "screen-cervical-hpv-overdue-34",
       "permutationLabel": "Age 52, total hysterectomy (cervix removed) for fibroids",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -221164,7 +221164,7 @@
       "category": "trauma-burns",
       "permutationOf": "trauma-splenic-injury-unstable",
       "permutationLabel": "Post-operative clinic, day 14 after trauma splenectomy, no vaccines given",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -221557,7 +221557,7 @@
       "category": "urology",
       "permutationOf": "screen-older-man-81-overscreening",
       "permutationLabel": "Age 58, African-Caribbean, asks about PSA",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -221908,7 +221908,7 @@
       "category": "soft-tissue",
       "permutationOf": null,
       "permutationLabel": "Farm laceration, soil and manure contamination, immunisation unknown (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -222260,7 +222260,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "Young woman, recovered, drives",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -222675,7 +222675,7 @@
       "category": "other",
       "permutationOf": "seizure-first-unprovoked-adult",
       "permutationLabel": "Pregnant, 34 weeks: eclampsia",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -223182,7 +223182,7 @@
       "category": "colorectal",
       "permutationOf": null,
       "permutationLabel": "Sigmoid volvulus, viable (base case)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -223776,7 +223776,7 @@
       "category": "colorectal",
       "permutationOf": "sigmoid-volvulus-base",
       "permutationLabel": "Gangrene and peritonitis, septic shock",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -224722,7 +224722,7 @@
       "category": "other",
       "permutationOf": null,
       "permutationLabel": "FAST positive within the thrombolysis window",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -225316,7 +225316,7 @@
       "category": "other",
       "permutationOf": "stroke-acute-fast-positive",
       "permutationLabel": "Elderly, anticoagulated (apixaban 3 h ago)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -225848,7 +225848,7 @@
       "condition": "Superficial vein thrombosis (great saphenous vein, near the saphenofemoral junction)",
       "category": "vascular",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -226316,7 +226316,7 @@
       "category": "breast-endocrine",
       "permutationOf": "thyroid-nodule-euthyroid-tirads4",
       "permutationLabel": "Bethesda I (non-diagnostic)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -226893,7 +226893,7 @@
       "category": "breast-endocrine",
       "permutationOf": "thyroid-nodule-euthyroid-tirads4",
       "permutationLabel": "Bethesda II (benign)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -227464,7 +227464,7 @@
       "category": "breast-endocrine",
       "permutationOf": "thyroid-nodule-euthyroid-tirads4",
       "permutationLabel": "Bethesda III (AUS)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -228049,7 +228049,7 @@
       "category": "breast-endocrine",
       "permutationOf": "thyroid-nodule-euthyroid-tirads4",
       "permutationLabel": "Bethesda IV (follicular neoplasm)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -228633,7 +228633,7 @@
       "category": "breast-endocrine",
       "permutationOf": "thyroid-nodule-euthyroid-tirads4",
       "permutationLabel": "Bethesda V (suspicious for malignancy)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -229259,7 +229259,7 @@
       "category": "breast-endocrine",
       "permutationOf": "thyroid-nodule-euthyroid-tirads4",
       "permutationLabel": "Bethesda VI with lateral neck nodes (cN1b)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -229979,7 +229979,7 @@
       "condition": "Thyroid nodule (euthyroid, TI-RADS TR4)",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -230636,7 +230636,7 @@
       "category": "breast-endocrine",
       "permutationOf": "thyroid-nodule-euthyroid-tirads4",
       "permutationLabel": "Suppressed TSH (toxic adenoma)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -231234,7 +231234,7 @@
       "condition": "Symptomatic hypocalcaemia after total thyroidectomy",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -231770,7 +231770,7 @@
       "condition": "Neck haematoma after thyroidectomy with airway compromise",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -232573,7 +232573,7 @@
       "condition": "Rapidly enlarging thyroid mass with stridor (anaplastic carcinoma / lymphoma)",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -233368,7 +233368,7 @@
       "condition": "Retrosternal multinodular goitre with tracheal compression",
       "category": "breast-endocrine",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -234119,7 +234119,7 @@
       "category": "other",
       "permutationOf": "stroke-acute-fast-positive",
       "permutationLabel": "Resolved symptoms, found at a pre-operative visit",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -234647,7 +234647,7 @@
       "category": "urology",
       "permutationOf": "mimic-testicular-torsion",
       "permutationLabel": "Young sexually active adult: risk of labelling as epididymo-orchitis",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -235174,7 +235174,7 @@
       "condition": "Blunt polytrauma with haemorrhagic shock (ATLS class III)",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -236087,7 +236087,7 @@
       "condition": "Blunt chest trauma with occult haemorrhagic shock in an anticoagulated older adult",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -236895,7 +236895,7 @@
       "category": "trauma-burns",
       "permutationOf": "trauma-head-injury-gcs12",
       "permutationLabel": "Elderly, apixaban, minor fall, GCS 15",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -237573,7 +237573,7 @@
       "condition": "Traumatic brain injury (moderate)",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -238211,7 +238211,7 @@
       "condition": "Suspected non-accidental injury (infant bruising)",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -238665,7 +238665,7 @@
       "condition": "Blunt abdominal trauma in pregnancy (suspected placental abruption)",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -239254,7 +239254,7 @@
       "condition": "Splenic laceration (haemodynamically stable)",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -239761,7 +239761,7 @@
       "category": "trauma-burns",
       "permutationOf": "trauma-splenic-injury-stable",
       "permutationLabel": "Unstable after 1 L crystalloid, FAST positive, no CT",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -240436,7 +240436,7 @@
       "condition": "Penetrating abdominal trauma (stab wound with evisceration)",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -241053,7 +241053,7 @@
       "category": "trauma-burns",
       "permutationOf": "trauma-stab-abdomen-evisceration",
       "permutationLabel": "Stable, no peritonism, no evisceration",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -241572,7 +241572,7 @@
       "condition": "Tension pneumothorax (traumatic)",
       "category": "trauma-burns",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -242234,7 +242234,7 @@
       "condition": "Acute severe ulcerative colitis",
       "category": "colorectal",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -243073,7 +243073,7 @@
       "category": "colorectal",
       "permutationOf": "uc-acute-severe-truelove-witts",
       "permutationLabel": "Day 3, Oxford/Travis criteria met",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -243875,7 +243875,7 @@
       "category": "colorectal",
       "permutationOf": "uc-acute-severe-truelove-witts",
       "permutationLabel": "C. difficile positive, on azathioprine, recent antibiotics",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -244462,7 +244462,7 @@
       "category": "colorectal",
       "permutationOf": "uc-acute-severe-truelove-witts",
       "permutationLabel": "Immunosuppressed (azathioprine + infliximab), CMV on biopsy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -245180,7 +245180,7 @@
       "category": "gi-emergency",
       "permutationOf": "uc-acute-severe-truelove-witts",
       "permutationLabel": "Toxic megacolon (colonic dilatation with systemic toxicity)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -246024,7 +246024,7 @@
       "category": "upper-gi",
       "permutationOf": "ugib-nonvariceal-gbs-high",
       "permutationLabel": "Cardiovascular disease on dual antiplatelets (coronary stent 2 months ago)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -246800,7 +246800,7 @@
       "category": "upper-gi",
       "permutationOf": "ugib-nonvariceal-gbs-high",
       "permutationLabel": "Very elderly, rivaroxaban, heart failure — pre-endoscopy Rockall 5",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -247540,7 +247540,7 @@
       "category": "upper-gi",
       "permutationOf": "ugib-nonvariceal-gbs-high",
       "permutationLabel": "Melaena alone, no haematemesis, no NSAID (woman <55)",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -248211,7 +248211,7 @@
       "condition": "Acute upper GI bleeding (non-variceal)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -248995,7 +248995,7 @@
       "category": "upper-gi",
       "permutationOf": "ugib-nonvariceal-gbs-high",
       "permutationLabel": "Very low risk — Glasgow-Blatchford 0, outpatient management",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -249591,7 +249591,7 @@
       "category": "upper-gi",
       "permutationOf": "ugib-nonvariceal-gbs-high",
       "permutationLabel": "Haemodynamic instability — haemorrhagic shock",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -250501,7 +250501,7 @@
       "category": "upper-gi",
       "permutationOf": "ugib-nonvariceal-gbs-high",
       "permutationLabel": "Anticoagulated — warfarin, INR 4.8, elderly woman",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -251303,7 +251303,7 @@
       "category": "upper-gi",
       "permutationOf": "ugib-nonvariceal-gbs-high",
       "permutationLabel": "Post-endoscopy: duodenal ulcer Forrest IIa treated endoscopically — complete Rockall 6",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -252015,7 +252015,7 @@
       "condition": "Gastric carcinoma (weight loss with upper abdominal pain)",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -252651,7 +252651,7 @@
       "category": "urology",
       "permutationOf": null,
       "permutationLabel": "Typical: BPE, precipitated by cold remedy",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -253202,7 +253202,7 @@
       "category": "urology",
       "permutationOf": "pyelonephritis-adult-female",
       "permutationLabel": "Elderly, immunosuppressed (steroid + methotrexate), long-term catheter",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -253994,7 +253994,7 @@
       "condition": "Acute variceal bleeding in cirrhosis",
       "category": "upper-gi",
       "permutationOf": null,
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
@@ -254967,7 +254967,7 @@
       "category": "upper-gi",
       "permutationOf": "variceal-bleed-known-cirrhosis",
       "permutationLabel": "No known liver disease — cirrhosis only on examination and bloods",
-      "generatedAt": "2026-09-25T21:50:50.160Z",
+      "generatedAt": "2026-09-25T21:54:20.047Z",
       "outputs": {
         "differentials": {
           "web.pane": [
