@@ -32,16 +32,21 @@ final class DiagnosticDatabaseInfoTests: XCTestCase {
     }
 
     func testDescribeGivesKeyPathWithoutValues() {
-        struct Feature: Decodable { let logLR: Int }
+        // The real failure in the bundled file is a missing key (CI "DBLOAD|" report:
+        // "Missing key 'evidenceLabel' at pools.abdominalPain.candidates[6].features[10]").
+        // A number-type mismatch is reported without a coding path by newer Foundation, so it
+        // is not used here.
+        struct Feature: Decodable { let evidenceLabel: String; let logLR: Int }
         struct Root: Decodable { let pools: [String: [Feature]] }
-        let json = #"{ "pools": { "earComplaint": [{ "logLR": 4 }, { "logLR": 1.8 }] } }"#
+        let json = #"{ "pools": { "earComplaint": [{ "evidenceLabel": "Otalgia", "logLR": 4 }, { "logLR": 7 }] } }"#
         do {
             _ = try JSONDecoder().decode(Root.self, from: Data(json.utf8))
-            XCTFail("1.8 must not decode as Int")
+            XCTFail("a feature without evidenceLabel must not decode")
         } catch {
             let text = DiagnosticDatabaseInfo.describe(error)
             XCTAssertTrue(text.contains("pools.earComplaint[1]"), text)
-            XCTAssertFalse(text.contains("1.8"), text)
+            XCTAssertTrue(text.contains("evidenceLabel"), text)
+            XCTAssertFalse(text.contains("Otalgia"), text)
         }
     }
 
