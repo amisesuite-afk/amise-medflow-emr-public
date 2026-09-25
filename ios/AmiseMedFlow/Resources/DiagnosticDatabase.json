@@ -1,5 +1,11 @@
 {
-  "version": "1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-21",
+  "sources": [
+    "Per-feature literature citations in pools.*.candidates[].features[].citation (8,316 of 14,358 features carry one at 1.0.0; the rest, and every logPrior, have no recorded source)",
+    "Guideline registry entry ios-bayesian-diagnostic-database in clinical-content/registry.json (review status, reviewer, next review due)",
+    "Matrix axes (matrix.*): ICD-11 polyhierarchy, SNOMED CT concept model and AMA specialty taxonomy, as stated in matrix.authority"
+  ],
   "lastUpdated": "2026-09-20",
   "note": "Evidence-based logLR values derived from published systematic reviews and meta-analyses. logLR = round(ln(LR+) × 5) for positive features; round(ln(LR−) × 5) for negative features. LR values are from the cited source; where a range is given, the median is used. Update this file to recalibrate the engine without modifying Swift code.",
   "conversionFormula": "logLR = round(ln(LR±) × 5)  [e.g. LR+ 3.0 → ln(3)×5 = 5.5 → 6; LR− 0.4 → ln(0.4)×5 = −4.6 → −5]",

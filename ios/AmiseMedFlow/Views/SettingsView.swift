@@ -391,6 +391,9 @@ struct SettingsView: View {
                 Section {
                     // Store status, file size and moved-aside copies (StoreHealth.swift).
                     StoreDiagnosticsRows()
+                    // DiagnosticDatabase.json version and whether the differential uses it
+                    // (DiagnosticDatabaseInfo.swift, clinical-content/registry.json).
+                    ClinicalContentDiagnosticsRows()
                     LabeledContent("Crash & freeze reporting", value: CrashReporting.statusText)
                     LabeledContent("Audit events waiting to upload", value: "\(AuditLog.pendingCount)")
                     if CrashReporting.isEnabled {
