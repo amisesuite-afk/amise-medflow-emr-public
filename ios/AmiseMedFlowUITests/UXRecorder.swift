@@ -206,6 +206,9 @@ final class UXRecorder {
 
     /// Taps into a field and types `text` (one tap + one text entry).
     func type(_ text: String, into element: XCUIElement, _ what: String) throws {
+        // A field further down a form (a lazily built list, e.g. the iPad Record Vitals popover)
+        // does not exist until the form scrolls to it.
+        if !element.waitForExistence(timeout: 2) { bringOnScreen(element) }
         try tap(element, what)
         element.typeText(text)
         record(["action": "type", "target": what, "characters": "\(text.count)"]) {
@@ -295,15 +298,22 @@ final class UXRecorder {
                     app.swipeUp()   // below the screen, or on screen but covered (footer)
                 }
             } else if searchUpwards {
-                app.swipeDown()     // lazily built list rows appear only as the list scrolls
+                scrollContainer.swipeDown()   // lazily built rows appear only as the list scrolls
             } else {
-                app.swipeUp()
+                scrollContainer.swipeUp()
             }
             gestures += 1
         }
         if counted && gestures > 0 {
             record(["action": "scroll", "target": "\(gestures) gesture(s)"]) { scrolls += gestures }
         }
+    }
+
+    /// The form or list to scroll when the element is not built yet: the front-most collection
+    /// view or table (a sheet or popover form), else the whole app.
+    private var scrollContainer: XCUIElement {
+        let lists = app.collectionViews.allElementsBoundByIndex + app.tables.allElementsBoundByIndex
+        return lists.last(where: { $0.exists && $0.isHittable }) ?? app
     }
 
     /// Scrolls until `element` is visible (for fields low in long forms, or above with `upwards`).
