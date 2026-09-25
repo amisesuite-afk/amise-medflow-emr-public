@@ -21,6 +21,25 @@ extension ConsultationView {
                 )
             } else {
                 List {
+                    // What this visit continues from: the last visit's problem and plan.
+                    if let last = VisitContinuity.lastVisit(for: patient) {
+                        Section {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(last.problem ?? "Previous visit")
+                                    .font(.subheadline.weight(.semibold))
+                                Text("Last seen \(last.date.formatted(date: .abbreviated, time: .omitted))")
+                                    .font(.caption).foregroundStyle(.secondary)
+                                if let plan = last.plan, !plan.isEmpty {
+                                    Text("Plan: \(plan)").font(.caption).lineLimit(4)
+                                }
+                                Text(VisitContinuity.isSameProblem(current: patient.chiefComplaint, previous: last)
+                                     ? "Same problem — update the condition, PMH, surgery, medicines and allergies as you go."
+                                     : "Today's complaint looks new — full history for the new problem.")
+                                    .font(.caption2).foregroundStyle(AMColor.accent)
+                            }
+                            .accessibilityElement(children: .combine)
+                        } header: { Text("Continuing from") }
+                    }
                     ForEach(sorted, id: \.id) { enc in
                         Button { selectedEncounter = enc } label: {
                             EncounterHistoryRow(encounter: enc)

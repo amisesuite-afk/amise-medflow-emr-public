@@ -176,11 +176,24 @@ struct ConsultationView: View {
     private func handleAppear() {
         CrashReporting.breadcrumb("Opened consultation")
         let encounterStarting = patient.encounterStatus == .waiting || patient.encounterStatus == .notCheckedIn
-        pathway = ConsultPathway.from(patient.visitType) ?? ConsultPathway.recommend(for: patient).pathway
+        // A returning patient's booked type is still "New Consult" from the first visit, so for a
+        // clinic visit the record decides: follow-up of the last problem, or a new problem when the
+        // complaint is different. Specific bookings (procedure, ward, trauma, burns, check-up) stand.
+        let booked = ConsultPathway.from(patient.visitType)
+        let recommendation = ConsultPathway.recommend(for: patient)
+        let returning = encounterStarting && VisitContinuity.lastVisit(for: patient) != nil
+            && (booked == nil || booked == .firstVisit || booked == .followUp)
+        pathway = returning ? recommendation.pathway : (booked ?? recommendation.pathway)
         // Explicit starting tab (iPad sidebar) wins; otherwise open at the pathway's first step.
         activeTab = (embeddedInNav || startingTab != .hpi) ? startingTab : (pathway.steps.first ?? .hpi)
-        // First door: ask what kind of visit this is when the encounter starts.
-        if encounterStarting { showPathwayPicker = true }
+        if returning {
+            // Flagged automatically (no picker); the first step shows the choice and its reasons,
+            // and the clinician can change it there.
+            recordVisitType(for: pathway)
+        } else if encounterStarting {
+            // First door: ask what kind of visit this is when the encounter starts.
+            showPathwayPicker = true
+        }
         // Advance encounter status to withDoctor the moment the doctor opens the record
         if encounterStarting {
             patient.encounterStatus = .withDoctor
@@ -294,16 +307,20 @@ struct ConsultationView: View {
     func choosePathway(_ p: ConsultPathway) {
         CrashReporting.breadcrumb("Chose pathway: \(p.rawValue)")
         pathway = p
-        let vt = p.visitType(keeping: patient.visitType)
-        if patient.visitType != vt {
-            AuditLog.record("update", "patient", patient: patient,
-                            details: ["field": "visit_type", "to": vt.rawValue])
-            patient.visitType = vt
-            patient.updatedAt = .now
-            patient.pendingSync = true
-            try? context.save()
-        }
+        recordVisitType(for: p)
         withAnimation(.easeInOut(duration: 0.15)) { activeTab = p.steps.first ?? .hpi }
+    }
+
+    /// Records the visit type for a pathway (keeping a more specific booked type).
+    private func recordVisitType(for p: ConsultPathway) {
+        let vt = p.visitType(keeping: patient.visitType)
+        guard patient.visitType != vt else { return }
+        AuditLog.record("update", "patient", patient: patient,
+                        details: ["field": "visit_type", "to": vt.rawValue])
+        patient.visitType = vt
+        patient.updatedAt = .now
+        patient.pendingSync = true
+        try? context.save()
     }
 
     private func withSheetsAndAlerts(_ content: some View) -> some View {
@@ -388,6 +405,12 @@ struct ConsultationView: View {
                             isPresented: $showCompleteEncounterConfirm,
                             titleVisibility: .visible) {
             Button("Mark as Complete") {
+                // Completing also saves the visit to history (once a day), so the next visit
+                // knows this one happened and continues from it.
+                if !patient.encounters.contains(where: { $0.isLive && $0.isComplete
+                                                         && Calendar.current.isDateInToday($0.encounterDate) }) {
+                    saveEncounter()
+                }
                 AuditLog.record("state_transition", "encounter", patient: patient,
                                 details: ["to": "complete"])
                 patient.encounterStatus = .complete

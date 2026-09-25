@@ -69,7 +69,10 @@ enum ConsultPathway: String, CaseIterable, Identifiable {
             return [.risk, .cc, .hpi, .pmh, .pshx, .meds, .allergies, .social,
                     .exam, .investigations, .diagnosis, .plan]
         case .followUp:
-            return [.risk, .history, .hpi, .meds, .exam, .investigations, .diagnosis, .plan]
+            // SOAP plus the standing history, reviewed and updated at every visit: PMH, surgical
+            // history, medicines and allergies (owner's instruction, 2026-09-25).
+            return [.risk, .history, .hpi, .pmh, .pshx, .meds, .allergies,
+                    .exam, .investigations, .diagnosis, .plan]
         case .wardReview:
             return [.ward, .hpi, .exam, .investigations, .diagnosis, .plan]
         case .procedure:
@@ -178,11 +181,17 @@ enum ConsultPathway: String, CaseIterable, Identifiable {
                              "physical", "medical exam", "annual review"]) {
             return .init(pathway: .wellness, reasons: ["Chief complaint mentions \"\(w)\""])
         }
-        let previous = p.encounters.filter(\.isComplete).sorted { $0.encounterDate > $1.encounterDate }
-        if let last = previous.first {
-            let days = Calendar.current.dateComponents([.day], from: last.encounterDate, to: .now).day ?? 0
-            return .init(pathway: .followUp,
-                         reasons: ["Seen before — last visit \(days) day\(days == 1 ? "" : "s") ago"])
+        // Returning patient: a follow-up of the last problem, unless today's complaint is a new,
+        // different one (VisitContinuity).
+        if let last = VisitContinuity.lastVisit(for: p) {
+            let days = Calendar.current.dateComponents([.day], from: last.date, to: .now).day ?? 0
+            let seen = "Seen before — last visit \(days) day\(days == 1 ? "" : "s") ago"
+            if VisitContinuity.isSameProblem(current: p.chiefComplaint, previous: last) {
+                return .init(pathway: .followUp,
+                             reasons: [seen] + (last.problem.map { ["Continuing: \($0)"] } ?? []))
+            }
+            return .init(pathway: .firstVisit,
+                         reasons: [seen, "New complaint — last visit was for \(last.problem ?? "another problem")"])
         }
         if p.visitType == .followUp || p.visitType == .postOp {
             return .init(pathway: .followUp, reasons: ["Booked as \(p.visitType!.rawValue)"])

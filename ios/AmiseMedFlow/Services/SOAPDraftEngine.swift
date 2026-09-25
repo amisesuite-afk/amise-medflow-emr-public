@@ -55,6 +55,18 @@ struct SOAPDraftEngine {
         if let vt = p.visitType { context += ", \(vt.rawValue)" }
         parts.append(context)
 
+        // Follow-up: continue from the last visit (VisitContinuity) — its problem, date and plan.
+        if p.visitType == .followUp || p.visitType == .postOp, let last = VisitContinuity.lastVisit(for: p) {
+            var line = "Follow-up"
+            if let problem = last.problem { line += " of \(problem)" }
+            line += " — last seen \(last.date.formatted(date: .abbreviated, time: .omitted))."
+            parts.append(line)
+            if let plan = last.plan?.trimmingCharacters(in: .whitespacesAndNewlines), !plan.isEmpty {
+                let short = plan.count > 300 ? String(plan.prefix(300)) + "…" : plan
+                parts.append("Plan at last visit: \(short)")
+            }
+        }
+
         if let cc = p.chiefComplaint, !cc.isEmpty {
             parts.append("Presents with \(cc.lowercased()).")
         }
