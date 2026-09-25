@@ -1361,6 +1361,31 @@ export const DIFFERENTIALS: DifferentialEntry[] = [
       'pruritus': 25,
     },
   },
+  {
+    // Resuscitation Council UK 2021: sudden airway / breathing / circulation problem with skin or
+    // mucosal change after a trigger. Added so the secondary view can name it (clinval acutemed 3).
+    id: 'anaphylaxis',
+    name: 'Anaphylaxis',
+    category: 'Dermatology',
+    urgency: 'urgent',
+    basePrior: 3,
+    symptomWeights: {
+      'rash': 18,
+      'wheeze': 18,
+      'stridor': 25,
+      'hoarse voice': 15,
+      'shortness of breath': 12,
+      'pre-syncope': 15,
+      'syncope': 10,
+      'vomiting': 6,
+      'lip swelling': 30,
+      'facial swelling': 25,
+    },
+    detailWeights: {
+      'rash.Urticarial (wheals)': 25,
+      'rash.Recent medication': 20,
+    },
+  },
 
   // ── Musculoskeletal ───────────────────────────────────────────────
   {
@@ -4241,6 +4266,9 @@ export function detailKeysFor(symptom: string, option: string): string[] {
   return [key, ...(DETAIL_KEY_ALIASES[key] ?? [])];
 }
 
+/** Childhood-category diseases that also occur in adults (scored ×0.3 rather than ×0.05 from 16). */
+const ADULT_ALSO = new Set(['hsp', 'epiglottitis', 'meckel_diverticulum', 'scarlet_fever']);
+
 const EXCLUSION_SIGNS: Record<string, string[]> = {
   acute_appendicitis:   ["murphy's sign", "murphy sign"],
   acute_cholecystitis:  ["rovsing's sign", "psoas sign", "mcburney's sign"],
@@ -4381,6 +4409,12 @@ function computeRawScore(
   }
   if (dx.sexModifier && sex === dx.sexModifier.sex) {
     score += dx.sexModifier.add;
+  }
+  // Childhood diseases (paediatric flag or a Paediatric category) are rarely the answer in adults:
+  // ×0.05 from age 16, ×0.3 for the few that also occur in adults. Before this an adult with
+  // wheeze got "Bronchiolitis (RSV)" first (clinval acutemed anaphylaxis / asthma).
+  if (age != null && age >= 16 && (dx.paediatric || dx.category.startsWith('Paediatric'))) {
+    score *= ADULT_ALSO.has(dx.id) ? 0.3 : 0.05;
   }
 
   // When the clinician has selected symptoms but none appear in this differential's

@@ -42,3 +42,29 @@ describe('symptom-inference detail weights reach the picker options', () => {
     expect(r.slice(0, 3).map(x => x.id)).toContain('aortic_dissection');
   });
 });
+
+describe('symptom-inference age applicability and anaphylaxis', () => {
+  it('childhood diseases are scaled down from age 16 (adult wheeze is not bronchiolitis)', () => {
+    const input = { symptoms: ['wheeze', 'shortness of breath'], symptomDetails: {}, sex: 'female' as const };
+    const child = computeRankedDifferentials({ ...input, age: 1 }).find(r => r.id === 'bronchiolitis')!;
+    const adult = computeRankedDifferentials({ ...input, age: 40 }).find(r => r.id === 'bronchiolitis');
+    expect(adult === undefined || adult.rawScore <= child.rawScore * 0.05 + 1e-9).toBe(true);
+  });
+
+  it('adult-also childhood diseases (epiglottitis) keep more weight in adults than other childhood entries', () => {
+    const input = { symptoms: ['stridor', 'fever'], symptomDetails: {}, sex: 'male' as const };
+    const child = computeRankedDifferentials({ ...input, age: 5 }).find(r => r.id === 'epiglottitis')!;
+    const adult = computeRankedDifferentials({ ...input, age: 45 }).find(r => r.id === 'epiglottitis')!;
+    // ×0.3 (other age terms also apply, so only the order of magnitude is checked).
+    expect(adult.rawScore).toBeGreaterThan(child.rawScore * 0.15);
+    expect(adult.rawScore).toBeLessThan(child.rawScore);
+  });
+
+  it('an anaphylaxis entry exists and ranks top 3 for rash + wheeze + stridor + pre-syncope', () => {
+    expect(DIFFERENTIALS.some(d => d.id === 'anaphylaxis')).toBe(true);
+    const r = computeRankedDifferentials({
+      symptoms: ['rash', 'wheeze', 'stridor', 'pre-syncope'], symptomDetails: {}, age: 32, sex: 'female',
+    });
+    expect(r.slice(0, 3).map(x => x.id)).toContain('anaphylaxis');
+  });
+});
