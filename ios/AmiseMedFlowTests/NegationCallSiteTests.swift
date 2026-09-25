@@ -37,4 +37,41 @@ final class NegationCallSiteTests: XCTestCase {
         XCTAssertTrue(flags.hypertension)
         XCTAssertTrue(PMHFlags.parse(from: "Previous DVT 2019").dvtOrPE)
     }
+
+    // MARK: - BayesianDiagnosisEngine scoring (exam / PMH free text)
+
+    private let candidate = BayesianDiagnosisEngine.Candidate(
+        name: "Test candidate", icd: "X00", logPrior: 0,
+        features: [
+            .init(key: "exam", value: "crepitus", logLR: 20, evidenceLabel: "Crepitus"),
+            .init(key: "exam", value: "murphy", logLR: 20, evidenceLabel: "Murphy's sign"),
+            .init(key: "exam", value: "absent pulse", logLR: 20, evidenceLabel: "Absent pulse"),
+            .init(key: "pmh", value: "diabetes", logLR: 20, evidenceLabel: "Diabetes"),
+        ])
+
+    private func findings(exam: String, pmh: String = "") -> [String] {
+        BayesianDiagnosisEngine.score(candidates: [candidate], socrates: [:], pmh: pmh, pshx: "",
+                                      examAbdo: exam, examGeneral: "", investigations: [],
+                                      age: 50, sex: .male).first?.pathognomicFindings ?? []
+    }
+
+    func testNegatedExamFindingsDoNotScore() {
+        let f = findings(exam: "Soft. No crepitus. Murphy's sign negative.", pmh: "No diabetes")
+        XCTAssertFalse(f.contains("Crepitus"))
+        XCTAssertFalse(f.contains("Murphy's sign"))
+        XCTAssertFalse(f.contains("Diabetes"))
+    }
+
+    func testAffirmedExamFindingsStillScore() {
+        let f = findings(exam: "Crepitus over the thigh. Murphy's sign positive.", pmh: "Type 2 diabetes")
+        XCTAssertTrue(f.contains("Crepitus"))
+        XCTAssertTrue(f.contains("Murphy's sign"))
+        XCTAssertTrue(f.contains("Diabetes"))
+    }
+
+    func testAFeatureWrittenAsANegativeStillMatches() {
+        // "absent pulse": the absence is the finding; its words must not be negated by "absent".
+        XCTAssertTrue(findings(exam: "Cold left foot, absent pulses below the femoral").contains("Absent pulse"))
+        XCTAssertTrue(findings(exam: "Foot pulses absent").contains("Absent pulse"))
+    }
 }

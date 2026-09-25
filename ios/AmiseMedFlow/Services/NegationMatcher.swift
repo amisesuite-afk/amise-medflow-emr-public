@@ -191,6 +191,15 @@ enum NegationMatcher {
             .joined(separator: ".\n")
     }
 
+    /// True when `word` (or a hyphen-separated part of it: "non-tender", "-ve") is a negation cue.
+    /// iOS-only helper for callers that match the words of a phrase one by one: a phrase written
+    /// as a negative ("absent pulse") must not have its own words negated by its own cue.
+    static func isNegationCue(_ word: String) -> Bool {
+        let w = word.lowercased()
+        let parts = [w] + w.split(separator: "-").map(String.init)
+        return parts.contains { preCues[$0] != nil || negatingContractions.contains($0) || postCues.contains($0) || $0 == "ve" }
+    }
+
     // MARK: - Tokens
 
     fileprivate enum TokenKind { case word, comma, slash, hyphen, colon, hard }

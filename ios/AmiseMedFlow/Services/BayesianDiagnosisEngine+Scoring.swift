@@ -29,15 +29,53 @@ extension BayesianDiagnosisEngine {
         socialText: String = "",
         bmi: Double? = nil
     ) -> [ScoredCandidate] {
-        let pmhL = pmh.lowercased()
-        let pshxL = pshx.lowercased()
-        let examL = [examAbdo, examGeneral, examCVS, examResp, examNeuro, examMSK, examSkin, examOther]
-            .joined(separator: " ").lowercased()
+        // Free text (exam, PMH, PSHx, social history, resulted reports) is matched negation-aware
+        // through NegationMatcher: "Murphy's sign negative", "no guarding", "No crepitus",
+        // "no family history of …", "US: no gallstones" are not findings. Fields are joined with a
+        // sentence break so a negation cannot reach into the next field; the spaces around it keep
+        // space-delimited keywords (" htn", " dm ") matching at a field boundary as before.
+        func clauses(_ parts: [String]) -> NegationMatcher.Source {
+            NegationMatcher.Source(parts.joined(separator: " .\n "))
+        }
+        let pmhL = NegationMatcher.Source(pmh)
+        let pshxL = NegationMatcher.Source(pshx)
+        let examL = clauses([examAbdo, examGeneral, examCVS, examResp, examNeuro, examMSK, examSkin, examOther])
+        let examGeneralL = NegationMatcher.Source(examGeneral)
+        let examAbdoL = NegationMatcher.Source(examAbdo)
+        let examCVSL = NegationMatcher.Source(examCVS)
         let invNames = investigations.map { $0.name.lowercased() }
         let invResults = investigations.filter { $0.status == .resulted }
             .map { $0.name.lowercased() + " " + $0.result.lowercased() }
+        let invResultsL = invResults.map { NegationMatcher.Source($0) }
         let medsL = medications.map { $0.lowercased() }
-        let socialL = socialText.lowercased()
+        let socialL = NegationMatcher.Source(socialText)
+        let chipTexts = socrates.values.flatMap { Array($0) }
+        let associatedText = clauses([examAbdo, examGeneral, examCVS, examResp, examNeuro,
+                                      examMSK, examSkin, examOther, pmh] + chipTexts)
+        let historyText = clauses([pmh] + medsL + [socialText])
+        let haemText = clauses([examAbdo, examGeneral, examOther])
+        let skinText = clauses([examSkin, examGeneral])
+        let hearText = clauses([examNeuro, examOther, examGeneral])
+        let haemodynamicText = clauses([examGeneral, examCVS, examAbdo])
+        let feverText = clauses([examGeneral, examAbdo])
+        let weightLossText = clauses([examGeneral, pmh, socialText] + chipTexts)
+        let headacheText = clauses(chipTexts + [examGeneral, examNeuro, examOther])
+        let pmhSocialText = clauses([pmh, socialText])
+        let locationText = clauses(invResults + [examAbdo, examGeneral])
+        let bpText = clauses([examCVS, examGeneral])
+        let broadRecordText = clauses([pmh, pshx, examAbdo, examGeneral, examCVS,
+                                       examResp, examNeuro, examMSK, examSkin, examOther,
+                                       socialText] + invResults + invNames + chipTexts)
+        /// Test for the words of one feature value, matched one by one. A value written as a
+        /// negative ("absent pulse", "absent cremasteric reflex", "no transillumination") has the
+        /// negation as its finding: its words are matched plainly, as before. Otherwise each word
+        /// must occur un-negated.
+        func wordTest(_ words: [String], _ text: NegationMatcher.Source) -> (String) -> Bool {
+            if words.count > 1 && words.contains(where: { NegationMatcher.isNegationCue($0) }) {
+                return { text.lower.contains($0) }
+            }
+            return { text.contains($0) }
+        }
 
         return candidates.map { c in
             var logP = c.logPrior
@@ -67,19 +105,19 @@ extension BayesianDiagnosisEngine {
                         : words.allSatisfy { w in sel.contains(where: { $0.lowercased().contains(w) }) }
                 case "exam":
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
-                    fired = words.allSatisfy { examL.contains($0) }
+                    fired = words.allSatisfy(wordTest(words, examL))
                 case "exam_general":
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
-                    fired = words.allSatisfy { examGeneral.lowercased().contains($0) } ||
-                            words.allSatisfy { examL.contains($0) }
+                    fired = words.allSatisfy(wordTest(words, examGeneralL)) ||
+                            words.allSatisfy(wordTest(words, examL))
                 case "exam_abdo":
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
-                    fired = words.allSatisfy { examAbdo.lowercased().contains($0) } ||
-                            words.allSatisfy { examL.contains($0) }
+                    fired = words.allSatisfy(wordTest(words, examAbdoL)) ||
+                            words.allSatisfy(wordTest(words, examL))
                 case "exam_cvs":
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
-                    fired = words.allSatisfy { examCVS.lowercased().contains($0) } ||
-                            words.allSatisfy { examL.contains($0) }
+                    fired = words.allSatisfy(wordTest(words, examCVSL)) ||
+                            words.allSatisfy(wordTest(words, examL))
                 default:
                     fired = false
                 }
@@ -91,7 +129,7 @@ extension BayesianDiagnosisEngine {
             func invModalityMatch(keywords: [String], finding: String) -> Bool {
                 let fv = finding.lowercased().replacingOccurrences(of: "_", with: " ")
                 let toks = fv.split(separator: " ").map(String.init).filter { $0.count >= 4 }
-                let src = invResults.filter { r in keywords.contains(where: { r.contains($0) }) }
+                let src = invResultsL.filter { r in keywords.contains(where: { r.lower.contains($0) }) }
                 if toks.isEmpty { return src.contains(where: { $0.contains(fv) }) }
                 return src.contains(where: { r in toks.filter { r.contains($0) }.count >= max(1, toks.count / 2) })
             }
@@ -110,7 +148,7 @@ extension BayesianDiagnosisEngine {
                 case "exam":
                     // Space-separated value = all words must appear in exam text (AND logic).
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
-                    triggered = words.allSatisfy { examL.contains($0) }
+                    triggered = words.allSatisfy(wordTest(words, examL))
                     sourceKey = "exam"
                 case "pmh":
                     triggered = pmhL.contains(f.value.lowercased())
@@ -129,12 +167,14 @@ extension BayesianDiagnosisEngine {
                     let fTokens = fv.split(separator: " ").map(String.init)
                         .filter { $0.count >= 4 && !stop.contains($0) }
                     let threshold = max(1, Int((Double(fTokens.count) * 0.6).rounded(.up)))
-                    func tokenMatch(_ src: String) -> Bool {
-                        src.contains(fv) ||
-                        (fTokens.count >= 2 && fTokens.filter { src.contains($0) }.count >= threshold)
+                    // Names are matched plainly (a test name is not a finding); report text
+                    // negation-aware ("US: no gallstones").
+                    func tokenMatch(_ has: (String) -> Bool) -> Bool {
+                        has(fv) ||
+                        (fTokens.count >= 2 && fTokens.filter { has($0) }.count >= threshold)
                     }
-                    triggered = invNames.contains(where: { tokenMatch($0) }) ||
-                                invResults.contains(where: { tokenMatch($0) })
+                    triggered = invNames.contains(where: { name in tokenMatch { name.contains($0) } }) ||
+                                invResultsL.contains(where: { report in tokenMatch { report.contains($0) } })
                     sourceKey = "investigation"
                 case "age_over":
                     if let threshold = Int(f.value) { triggered = age >= threshold }
@@ -165,14 +205,11 @@ extension BayesianDiagnosisEngine {
                 // are semantically equivalent to standard keys but named differently.
                 case "associated":
                     // Free-text association phrases; match against all clinical text.
-                    let broadText = ([examAbdo, examGeneral, examCVS, examResp, examNeuro,
-                                      examMSK, examSkin, examOther, pmh] +
-                                     socrates.values.flatMap { Array($0) })
-                        .joined(separator: " ").lowercased()
+                    let broadText = associatedText
                     let words = f.value.lowercased().split(separator: " ").map(String.init)
                         .filter { $0.count >= 4 }
                     triggered = words.isEmpty ? broadText.contains(f.value.lowercased())
-                               : words.allSatisfy { broadText.contains($0) }
+                               : words.allSatisfy(wordTest(words, broadText))
                     sourceKey = "symptoms"
 
                 case "investigations":
@@ -181,34 +218,34 @@ extension BayesianDiagnosisEngine {
                     let stop2: Set<String> = ["with","and","the","for","that","this","from","into","positive","negative","confirmed","elevated","raised","normal","abnormal","level","result"]
                     let fTok = fv.split(separator: " ").map(String.init).filter { $0.count >= 4 && !stop2.contains($0) }
                     let thr = max(1, Int((Double(fTok.count) * 0.6).rounded(.up)))
-                    func invMatch(_ src: String) -> Bool {
-                        src.contains(fv) || (fTok.count >= 2 && fTok.filter { src.contains($0) }.count >= thr)
+                    func invMatch(_ has: (String) -> Bool) -> Bool {
+                        has(fv) || (fTok.count >= 2 && fTok.filter { has($0) }.count >= thr)
                     }
-                    triggered = invNames.contains(where: { invMatch($0) }) ||
-                                invResults.contains(where: { invMatch($0) })
+                    triggered = invNames.contains(where: { name in invMatch { name.contains($0) } }) ||
+                                invResultsL.contains(where: { report in invMatch { report.contains($0) } })
                     sourceKey = "investigation"
 
                 case "exam_general":
                     // Matches against examGeneral text specifically, then broad exam.
-                    let egL = examGeneral.lowercased()
+                    let egL = examGeneralL
                     let words2 = f.value.lowercased().split(separator: " ").map(String.init)
-                    triggered = words2.allSatisfy { egL.contains($0) } ||
-                                words2.allSatisfy { examL.contains($0) }
+                    triggered = words2.allSatisfy(wordTest(words2, egL)) ||
+                                words2.allSatisfy(wordTest(words2, examL))
                     sourceKey = "exam"
 
                 case "exam_abdo":
                     // Matches against examAbdo text specifically, then broad exam.
-                    let eaL = examAbdo.lowercased()
+                    let eaL = examAbdoL
                     let words3 = f.value.lowercased().split(separator: " ").map(String.init)
-                    triggered = words3.allSatisfy { eaL.contains($0) } ||
-                                words3.allSatisfy { examL.contains($0) }
+                    triggered = words3.allSatisfy(wordTest(words3, eaL)) ||
+                                words3.allSatisfy(wordTest(words3, examL))
                     sourceKey = "exam"
 
                 case "exam_cvs":
-                    let eCVS = examCVS.lowercased()
+                    let eCVS = examCVSL
                     let words4 = f.value.lowercased().split(separator: " ").map(String.init)
-                    triggered = words4.allSatisfy { eCVS.contains($0) } ||
-                                words4.allSatisfy { examL.contains($0) }
+                    triggered = words4.allSatisfy(wordTest(words4, eCVS)) ||
+                                words4.allSatisfy(wordTest(words4, examL))
                     sourceKey = "exam"
 
                 case "socrates_character":
@@ -220,7 +257,7 @@ extension BayesianDiagnosisEngine {
 
                 case "history", "risk_factors", "risk":
                     // Broad historical risk factor — match against PMH + medications + social.
-                    let histText = ([pmh] + medsL + [socialText]).joined(separator: " ").lowercased()
+                    let histText = historyText
                     triggered = histText.contains(f.value.lowercased())
                     sourceKey = "history"
 
@@ -328,16 +365,16 @@ extension BayesianDiagnosisEngine {
 
                 case "haematuria":
                     let fvHaem = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
-                    let haemSrc = [examAbdo, examGeneral, examOther].joined(separator: " ").lowercased()
+                    let haemSrc = haemText
                     triggered = haemSrc.contains("haematuria") || haemSrc.contains("hematuria") ||
                                 haemSrc.contains("blood in urine") ||
-                                invResults.contains(where: { $0.contains("haematuria") || $0.contains("hematuria") }) ||
+                                invResultsL.contains(where: { $0.contains("haematuria") || $0.contains("hematuria") }) ||
                                 (fvHaem == "microscopic" && (haemSrc.contains("microscopic") || haemSrc.contains("dipstick")))
                     sourceKey = "exam"
 
                 case "rash":
                     let fvRash = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
-                    let rashSrc = [examSkin, examGeneral].joined(separator: " ").lowercased()
+                    let rashSrc = skinText
                     let rashToks = fvRash.split(separator: " ").map(String.init).filter { $0.count >= 4 }
                     triggered = rashToks.isEmpty ? rashSrc.contains("rash") || rashSrc.contains(fvRash)
                                : rashToks.allSatisfy { rashSrc.contains($0) }
@@ -345,20 +382,20 @@ extension BayesianDiagnosisEngine {
 
                 case "distribution":
                     let fvDist = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
-                    let distSrc = [examSkin, examGeneral].joined(separator: " ").lowercased()
+                    let distSrc = skinText
                     let distToks = fvDist.split(separator: " ").map(String.init).filter { $0.count >= 4 }
                     triggered = distToks.isEmpty ? distSrc.contains(fvDist)
                                : distToks.filter { distSrc.contains($0) }.count >= max(1, distToks.count / 2)
                     sourceKey = "exam"
 
                 case "hearing":
-                    let hearSrc = [examNeuro, examOther, examGeneral].joined(separator: " ").lowercased()
+                    let hearSrc = hearText
                     let fvHear = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
                     triggered = hearSrc.contains("hearing") || hearSrc.contains("ear") || hearSrc.contains(fvHear)
                     sourceKey = "exam"
 
                 case "haemodynamic_instability":
-                    let hdSrc = [examGeneral, examCVS, examAbdo].joined(separator: " ").lowercased()
+                    let hdSrc = haemodynamicText
                     triggered = hdSrc.contains("haemodynamic") || hdSrc.contains("hemodynamic") ||
                                 hdSrc.contains("shocked") || hdSrc.contains("shock") ||
                                 (hdSrc.contains("tachycardia") && hdSrc.contains("hypotension")) ||
@@ -390,7 +427,7 @@ extension BayesianDiagnosisEngine {
                     sourceKey = "demographics"
 
                 case "fever":
-                    let feverSrc = [examGeneral, examAbdo].joined(separator: " ").lowercased()
+                    let feverSrc = feverText
                     triggered = feverSrc.contains("fever") || feverSrc.contains("febrile") ||
                                 feverSrc.contains("pyrexia") ||
                                 (socrates["associations"] ?? []).contains(where: { $0.lowercased().contains("fever") })
@@ -405,16 +442,14 @@ extension BayesianDiagnosisEngine {
                     sourceKey = "history"
 
                 case "weight_loss":
-                    let wlSrc = ([examGeneral, pmh, socialText] + socrates.values.flatMap { Array($0) })
-                                .joined(separator: " ").lowercased()
+                    let wlSrc = weightLossText
                     triggered = wlSrc.contains("weight loss") || wlSrc.contains("weight_loss") ||
                                 wlSrc.contains("losing weight") || wlSrc.contains("cachexia") ||
                                 wlSrc.contains("unintentional weight")
                     sourceKey = "symptoms"
 
                 case "headache":
-                    let hdSrc2 = (socrates.values.flatMap { Array($0) } + [examGeneral, examNeuro, examOther])
-                                .joined(separator: " ").lowercased()
+                    let hdSrc2 = headacheText
                     let fvHD = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
                     let hdToks = fvHD.split(separator: " ").map(String.init).filter { $0.count >= 4 }
                     triggered = hdToks.isEmpty ? hdSrc2.contains("headache") || hdSrc2.contains(fvHD)
@@ -422,12 +457,12 @@ extension BayesianDiagnosisEngine {
                     sourceKey = "symptoms"
 
                 case "hypertension":
-                    let htSrc = [pmh, socialText].joined(separator: " ").lowercased()
+                    let htSrc = pmhSocialText
                     triggered = htSrc.contains("hypertension") || htSrc.contains(" htn") || htSrc.contains("high blood pressure")
                     sourceKey = "history"
 
                 case "diabetes":
-                    let dbSrc = [pmh, socialText].joined(separator: " ").lowercased()
+                    let dbSrc = pmhSocialText
                     triggered = dbSrc.contains("diabetes") || dbSrc.contains("diabetic") ||
                                 dbSrc.contains(" dm2") || dbSrc.contains(" dm1") || dbSrc.contains(" dm ")
                     sourceKey = "history"
@@ -435,13 +470,13 @@ extension BayesianDiagnosisEngine {
                 case "location":
                     let fvLoc = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
                     let locToks = fvLoc.split(separator: " ").map(String.init).filter { $0.count >= 4 }
-                    let locSrc = (invResults + [examAbdo, examGeneral]).joined(separator: " ").lowercased()
+                    let locSrc = locationText
                     triggered = locToks.isEmpty ? locSrc.contains(fvLoc)
                                : locToks.filter { locSrc.contains($0) }.count >= max(1, locToks.count / 2)
                     sourceKey = "exam"
 
                 case "recurrence":
-                    let recSrc = [pmh, socialText].joined(separator: " ").lowercased()
+                    let recSrc = pmhSocialText
                     triggered = recSrc.contains("recurr") || recSrc.contains(f.value.lowercased().replacingOccurrences(of: "_", with: " "))
                     sourceKey = "history"
 
@@ -515,7 +550,7 @@ extension BayesianDiagnosisEngine {
                     sourceKey = "investigation"
 
                 case "bp":
-                    let bpSrc = [examCVS, examGeneral].joined(separator: " ").lowercased()
+                    let bpSrc = bpText
                     let fvBP = f.value.lowercased().replacingOccurrences(of: "_", with: " ")
                     triggered = bpSrc.contains("hypertension") || bpSrc.contains("severely elevated") ||
                                 bpSrc.contains("markedly elevated") || bpSrc.contains("bp elevated") ||
@@ -573,13 +608,8 @@ extension BayesianDiagnosisEngine {
                             .split(separator: " ").map(String.init)
                             .filter { $0.count >= 4 && !keyStop.contains($0) }
                         if !keyToks.isEmpty {
-                            let broadSrc = ([pmh, pshx, examAbdo, examGeneral, examCVS,
-                                             examResp, examNeuro, examMSK, examSkin, examOther,
-                                             socialText]
-                                            + invResults + invNames
-                                            + socrates.values.flatMap { Array($0) })
-                                .joined(separator: " ").lowercased()
-                            let matchCount = keyToks.filter { broadSrc.contains($0) }.count
+                            let broadSrc = broadRecordText
+                            let matchCount = keyToks.filter(wordTest(keyToks, broadSrc)).count
                             let threshold  = max(1, keyToks.count / 2)
                             let findingPresent = matchCount >= threshold
                             let fvL = f.value.lowercased()

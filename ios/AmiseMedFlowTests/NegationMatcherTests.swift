@@ -233,6 +233,15 @@ final class NegationMatcherTests: XCTestCase {
         XCTAssertTrue(NegationMatcher.testAffirmed(#"\b(bleed(ing)?|melaena)\b"#, "Melaena since Tuesday"))
     }
 
+    func testIsNegationCue() {
+        for w in ["no", "not", "absent", "without", "negative", "non-tender", "-ve", "doesn't", "none"] {
+            XCTAssertTrue(NegationMatcher.isNegationCue(w), w)
+        }
+        for w in ["pulse", "tender", "transillumination", "cannot", "free", "nodule"] {
+            XCTAssertFalse(NegationMatcher.isNegationCue(w), w)
+        }
+    }
+
     func testSourceAnswersManyTerms() {
         let source = NegationMatcher.Source("Soft, no guarding. Murphy's sign negative. Tender RUQ.")
         XCTAssertFalse(source.contains("guarding"))
