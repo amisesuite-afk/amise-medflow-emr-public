@@ -153,6 +153,22 @@ chips (and the form dismisses it on scroll), the Check-In row has a Questionnair
 recorder checks hittability only for elements on screen and writes the metrics from a teardown
 block if XCTest still ends a test early.
 
+**CI run 36195058935** (first run with the `ux-seamless` changes; follow-up branch `ux-seamless-2`):
+- iPad a_consultation: the script's "Clinical Scores" lookup matched the record's section-bar
+  button (same label) before the Tools menu item, so it opened the Scores section instead of the
+  sheet. The walkthrough now takes menu items by identifier and never a `patient.…` item, and
+  checks that the Tools sheet (Done) opened. On iPad the patient's identity is in the record
+  header directly above the embedded consultation (now `patient.header.identity`); the Tools and
+  Complete sheets show it again.
+- iPhone a_consultation was stopped by XCTest's 10-minute default: the flow asks for 25 minutes
+  (run.sh caps at 30). The Save snapshot / Complete explanation moved from the footer (hidden
+  while the Plan editor had the keyboard up) to just under the step bar on the last step.
+- iPhone d_prescription: the quick-action tap did not open Prescriptions. The recorder now waits
+  for a target to stop moving before tapping, closes an open menu or popover first, and taps
+  once more if the screen did not change.
+- iPhone b_add_patient: the "Added today" row was below the fold (rows are built lazily). The
+  group now sits right after "Waiting", has a summary tile, and the script scrolls to look.
+
 Other iOS flows, expected:
 
 - **(b) Add patient:** 4 taps and 1 text entry.

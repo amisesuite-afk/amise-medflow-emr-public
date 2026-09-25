@@ -17,6 +17,8 @@
 #         <out>/<device>/result.xcresult, <out>/<device>/test.log,
 #         <out>/ux-metrics.json (all devices and flows), <out>/ux-summary.md
 # Exit status: non-zero if the build or any device's UI tests failed (whatever ran is exported).
+# Test time: 10 minutes per flow by default; the long consultation flow (a) asks for 25 minutes
+# (executionTimeAllowance), capped here at 30.
 # Works with the macOS system bash (3.2).
 set -uo pipefail
 cd "$(dirname "$0")/.."        # ios/
@@ -91,6 +93,9 @@ for d in $DEVICES; do
   xcodebuild -project AmiseMedFlow.xcodeproj -scheme AmiseMedFlowUIWalkthrough \
     -destination "id=$udid" -derivedDataPath "$DERIVED" \
     -resultBundlePath "$dev_out/result.xcresult" \
+    -test-timeouts-enabled YES \
+    -default-test-execution-time-allowance 600 \
+    -maximum-test-execution-time-allowance 1800 \
     CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
     test-without-building > "$dev_out/test.log" 2>&1
   status=$?

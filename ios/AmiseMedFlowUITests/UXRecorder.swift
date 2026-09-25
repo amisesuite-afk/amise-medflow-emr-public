@@ -249,8 +249,51 @@ final class UXRecorder {
         }
         if !isHittableSafely(target) { bringOnScreen(target) }
         guard isHittableSafely(target) else { throw UXError.unexpected("\(what) is not tappable") }
+        // A sheet still sliding in, or a header that re-lays out once its content loads (the
+        // record's safety strip), moves the target after its frame was read: wait until it rests.
+        waitForStableFrame(target)
         target.tap()
         record(["action": "tap", "target": what]) { taps += 1 }
+    }
+
+    /// Waits (up to `timeout`) until the element's frame is the same on two reads 0.25 s apart.
+    func waitForStableFrame(_ element: XCUIElement, timeout: TimeInterval = 2) {
+        let deadline = Date().addingTimeInterval(timeout)
+        var last = element.exists ? element.frame : .zero
+        while Date() < deadline {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+            guard element.exists else { return }
+            let now = element.frame
+            if now == last { return }
+            last = now
+        }
+    }
+
+    /// Closes a menu or popover left open (its dismiss region), never a sheet: the dimming view
+    /// behind a sheet ("AdditionalDimmingOverlay") is left alone. Not counted.
+    func dismissTransientOverlays() {
+        for id in ["PopoverDismissRegion", "dismiss popup"] {
+            let region = app.descendants(matching: .any).matching(identifier: id).firstMatch
+            if region.exists && region.isHittable {
+                region.tap()
+                RunLoop.current.run(until: Date().addingTimeInterval(0.4))
+                note("Closed an open menu or popover before continuing")
+                return
+            }
+        }
+    }
+
+    /// A button in an open menu: by identifier, else by label — but never a record section-bar
+    /// or quick-action item with the same label (identifier "patient.…"). The iPad record's
+    /// section bar also has a "Clinical Scores" button, and taking it instead of the Tools menu
+    /// item opened the section rather than the sheet (run 36195058935).
+    func menuItem(identifier: String, label: String) -> XCUIElement {
+        let byId = app.buttons.matching(identifier: identifier).firstMatch
+        if byId.waitForExistence(timeout: 2) { return byId }
+        let predicate = NSPredicate(format: "label == %@ AND NOT (identifier BEGINSWITH 'patient.')", label)
+        let matches = app.buttons.matching(predicate).allElementsBoundByIndex
+        // Menu content is added last to the hierarchy: prefer the last tappable match.
+        return matches.last(where: { isHittableSafely($0) }) ?? byId
     }
 
     /// Taps into a field and types `text` (one tap + one text entry).

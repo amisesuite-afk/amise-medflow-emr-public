@@ -47,6 +47,10 @@ final class UXWalkthroughTests: XCTestCase {
 
     @MainActor
     func testA_ConsultationFlow() throws {
+        // Twelve steps with typing, a score, three tools, save and the review sheet take longer
+        // than XCTest's default 10-minute allowance on a CI simulator (run 36195058935, iPhone:
+        // "Interrupted by XCTest"). run.sh allows up to 30 minutes; this test asks for 25.
+        executionTimeAllowance = 25 * 60
         let app = launch()
         let ux = UXRecorder(app: app, flow: "a_consultation",
                             title: "Today → patient → consultation (First visit, all 12 steps) → Tools: score → save & review/complete",
@@ -77,8 +81,11 @@ final class UXWalkthroughTests: XCTestCase {
                        : ux.element("consult.allergyNotRecorded").exists ? "no — allergies not recorded" : "NO"))
             // Patient identity on the consultation (UX review M1): header on iPhone and the iPad
             // full-screen consultation; inside the iPad record the record header shows it.
-            ux.note("Patient identity header in the consultation: "
-                    + (ux.element("consult.patientHeader").exists ? "yes" : "no (record header)"))
+            let identity = ux.element("consult.patientHeader").exists
+                ? "yes (consultation header)"
+                : ux.element("patient.header.identity").exists
+                    ? "yes (record header directly above the consultation)" : "NO"
+            ux.note("Patient identity on the consultation screen: " + identity)
 
             try walkFirstVisitSteps(ux)
             try computeScore(ux)
@@ -153,7 +160,10 @@ final class UXWalkthroughTests: XCTestCase {
     @MainActor
     private func openTool(_ ux: UXRecorder, _ tool: String, label: String) throws {
         try ux.tap(ux.element("consult.tools"), "Tools menu")
-        try ux.tap(ux.element(identifier: "consult.tools.\(tool)", orLabel: label), "Tools: \(label)")
+        // The menu item, never the iPad section-bar button with the same label.
+        try ux.tap(ux.menuItem(identifier: "consult.tools.\(tool)", label: label), "Tools: \(label)")
+        // The tool is a sheet over the step, with Done (iPhone and iPad alike).
+        try ux.waitFor(ux.element("consult.tools.done"), "Tools sheet (Done)", timeout: 6)
     }
 
     @MainActor
@@ -205,7 +215,7 @@ final class UXWalkthroughTests: XCTestCase {
                                           ("prescriptions", "Prescriptions", "rx.add")] {
                 do {
                     try openTool(ux, tool, label: label)
-                    let shown = ux.element(marker).waitForExistence(timeout: 5)
+                    let shown = ux.element(marker).waitForExistence(timeout: 3)
                         || ux.element("vitals.add").exists
                     ux.note("Tools → \(label) from inside the consultation: " + (shown ? "opens over the step" : "NOT shown"))
                     ux.snapshot("Tools - \(label)")
@@ -283,8 +293,15 @@ final class UXWalkthroughTests: XCTestCase {
 
             try ux.uncounted {
                 let onToday = ux.element("today.patientRow", labelContains: "Taylor Newpatient")
+                // Rows are built lazily: on the shorter iPhone screen a row below the fold does
+                // not exist until the list scrolls to it (run 36195058935 said "NO" there).
+                var shown = onToday.waitForExistence(timeout: 3)
+                if !shown {
+                    try? ux.scrollTo(onToday, "New patient on Today")
+                    shown = onToday.exists
+                }
                 ux.note("New outpatient without a date shows on Today: "
-                        + (onToday.waitForExistence(timeout: 3) ? "yes (Added today)" : "NO (only under Patients)"))
+                        + (shown ? "yes (Added today)" : "NO (only under Patients)"))
                 ux.snapshot("Today after adding")
                 try ux.openTab("Patients")
                 let row = ux.element("patients.row", labelContains: "Taylor Newpatient")
@@ -339,6 +356,25 @@ final class UXWalkthroughTests: XCTestCase {
         }
     }
 
+    /// iPhone record quick action, by identifier. The record sheet is still settling when it first
+    /// appears (the safety strip lays out, a menu may be open): close any menu or popover, wait for
+    /// the header, tap, and tap once more if the screen did not change (run 36195058935: the tap
+    /// on Prescriptions left the record on screen).
+    @MainActor
+    private func openQuickAction(_ ux: UXRecorder, _ identifier: String, _ what: String,
+                                 expecting marker: String) throws {
+        ux.dismissTransientOverlays()
+        _ = ux.element("patient.header.safety").waitForExistence(timeout: 5)
+        let action = ux.app.buttons.matching(identifier: identifier).firstMatch
+        let target = action.waitForExistence(timeout: 5) ? action : ux.element(identifier)
+        try ux.tap(target, what)
+        if !ux.element(marker).waitForExistence(timeout: 6) {
+            ux.note("\(what): the first tap did not open it; closed any overlay and tapped again")
+            ux.dismissTransientOverlays()
+            try ux.tap(target, "\(what) (again)")
+        }
+    }
+
     // MARK: - d. Prescription with interaction alert
 
     @MainActor
@@ -356,7 +392,8 @@ final class UXWalkthroughTests: XCTestCase {
             if UXRecorder.isPad {
                 try ux.tap(ux.element("patient.section.prescriptions"), "Section bar: Rx")
             } else {
-                try ux.tap(ux.element("patient.quick.Prescriptions"), "Quick action: Prescriptions")
+                try openQuickAction(ux, "patient.quick.Prescriptions", "Quick action: Prescriptions",
+                                    expecting: "rx.add")
             }
             let add = ux.element("rx.add")
             try ux.waitFor(add, "Prescriptions")
