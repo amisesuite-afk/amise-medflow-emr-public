@@ -50,6 +50,7 @@ const REFERENCE_PHASES: Record<string, string[]> = {
   hernia_strangulated: ['immediate', 'surgical'],
 
   sbo_adhesional: ['immediate', 'conservative', 'followup'],
+  sbo_failed_nonoperative: ['immediate', 'surgical', 'followup'],
   sbo_strangulation: ['immediate', 'surgical'],
   lbo_malignant: ['immediate', 'surgical', 'followup'],
 
@@ -63,6 +64,11 @@ const REFERENCE_PHASES: Record<string, string[]> = {
 
   ugib_nonvariceal_stable: ['immediate', 'surgical', 'followup'],
   ugib_variceal: ['immediate', 'surgical', 'followup'],
+
+  breast_inflammatory: ['immediate', 'conservative', 'followup'],
+
+  thyroid_bethesda_nondiagnostic: ['immediate', 'conservative', 'followup'],
+  thyroid_bethesda_benign: ['conservative', 'followup'],
 };
 
 function sameSet(a: string[], b: string[]): boolean {

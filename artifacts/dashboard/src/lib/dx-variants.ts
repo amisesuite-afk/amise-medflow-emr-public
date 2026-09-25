@@ -15,6 +15,12 @@
 
 import { containsAffirmed, findAllAffirmed } from '@workspace/triage-engine';
 
+/**
+ * Content version of the variant table (clinical-content/registry.json → "dx-variants").
+ * Bump it with a changelog entry whenever keywords, phases, prefixes or notes change.
+ */
+export const DX_VARIANTS_VERSION = '1.0.0';
+
 export interface DxVariant {
   id: string;
   label: string;
@@ -85,7 +91,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         id: 'appendicitis_abscess',
         label: 'Appendicular abscess',
         description: 'CT-confirmed pericaecal / pelvic abscess — drainage first',
-        detectKeywords: ['appendicular abscess', 'appendix abscess', 'appendiceal abscess', 'pericaecal abscess', 'pericecal abscess'],
+        detectKeywords: ['appendicular abscess', 'appendix abscess', 'appendiceal abscess', 'pericaecal abscess', 'pericecal abscess', 'periappendiceal abscess', 'periappendicular abscess', 'abscess'],
         allowedPhases: ['immediate', 'conservative'],
         examQueries: ['Abscess confirmed on CT?', 'Abscess >4 cm?', 'Interventional radiology available?'],
         urgencyNote: 'CT-guided percutaneous drainage (IR referral) for accessible abscess ≥4 cm. IV antibiotics. Interval appendicectomy 6–8 weeks. Colonoscopy if age >40.',
@@ -177,16 +183,16 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         id: 'cholangitis_grade1',
         label: 'Mild — Tokyo Grade I',
         description: 'Responds to initial medical therapy; no organ dysfunction',
-        detectKeywords: ['mild cholangitis', 'grade i cholangitis', 'grade 1 cholangitis', 'ascending cholangitis grade i', 'ascending cholangitis', 'charcot triad', "charcot's triad"],
+        detectKeywords: ['mild cholangitis', 'mild acute cholangitis', 'grade i cholangitis', 'grade 1 cholangitis', 'ascending cholangitis grade i', 'ascending cholangitis', 'charcot triad', "charcot's triad", 'grade i', 'grade 1', 'tg18 grade i', 'tokyo grade i', 'tokyo grade 1'],
         allowedPhases: ['immediate', 'conservative', 'followup'],
         examQueries: ['Charcots triad (fever/jaundice/pain)?', 'Responding to antibiotics?', 'No organ dysfunction?'],
-        urgencyNote: 'Tokyo Grade I — IV antibiotics. ERCP within 24–48 h for biliary decompression (elective timing acceptable if responding).',
+        urgencyNote: 'Tokyo Grade I — IV antibiotics; biliary drainage (ERCP) if there is no response within 24 h, and treatment of the cause (e.g. CBD stone) (TG18).',
       },
       {
         id: 'cholangitis_grade2',
         label: 'Moderate — Tokyo Grade II',
         description: 'Not responding to initial therapy within 24 h — ERCP within 24 h',
-        detectKeywords: ['moderate cholangitis', 'grade ii cholangitis', 'grade 2 cholangitis', 'tokyo grade ii cholangitis'],
+        detectKeywords: ['moderate cholangitis', 'moderate acute cholangitis', 'grade ii cholangitis', 'grade 2 cholangitis', 'tokyo grade ii cholangitis', 'grade ii', 'grade 2', 'tg18 grade ii', 'tokyo grade ii', 'tokyo grade 2'],
         allowedPhases: ['immediate', 'surgical', 'followup'],
         examQueries: ['Not improving on antibiotics?', 'WBC >12 or <4?', 'Bilirubin >85 μmol/L?'],
         urgencyNote: 'Tokyo Grade II — ERCP within 24 h (endoscopic biliary drainage). IV pip-tazo. Biliary stent or stone extraction.',
@@ -195,7 +201,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         id: 'cholangitis_grade3',
         label: 'Severe — Tokyo Grade III — EMERGENCY',
         description: 'Organ dysfunction — cardiovascular / neurological / respiratory / renal / hepatic / haematological',
-        detectKeywords: ['severe cholangitis', 'grade iii cholangitis', 'grade 3 cholangitis', 'reynolds pentad', 'septic shock cholangitis'],
+        detectKeywords: ['severe cholangitis', 'severe acute cholangitis', 'grade iii cholangitis', 'grade 3 cholangitis', 'reynolds pentad', "reynolds' pentad", 'septic shock cholangitis', 'grade iii', 'grade 3', 'tg18 grade iii', 'tokyo grade iii', 'tokyo grade 3'],
         allowedPhases: ['immediate', 'surgical'],
         examQueries: ['Hypotension / shock?', 'Altered consciousness?', 'Renal failure?'],
         urgencyNote: '⚠ EMERGENCY — Tokyo Grade III. Immediate ICU resuscitation. Urgent ERCP (within hours) for biliary decompression. Anaesthetic review.',
@@ -235,10 +241,10 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         id: 'hernia_incarcerated',
         label: 'Irreducible / incarcerated hernia',
         description: 'Not reducible but no signs of strangulation — attempt gentle reduction',
-        detectKeywords: ['irreducible', 'incarcerated', 'cannot reduce', 'non-reducible', 'obstructed hernia'],
+        detectKeywords: ['irreducible', 'incarcerated', 'cannot reduce', 'non-reducible', 'obstructed hernia', 'obstructed', 'obstruction'],
         allowedPhases: ['immediate', 'conservative', 'surgical', 'followup'],
         examQueries: ['Tender but no peritonism?', 'Bowel sounds present?', 'Reducing with sedation / Trendelenburg?'],
-        urgencyNote: 'Attempt gentle manual reduction (adequate analgesia ± sedation, Trendelenburg position). If successful: semi-elective repair within 24–48 h. If fails: emergency surgery.',
+        urgencyNote: 'Do not attempt reduction if strangulation is suspected (skin change, peritonism, fever, raised lactate or WCC, bowel obstruction) — emergency repair (WSES 2017). Only when strangulation is not suspected: gentle manual reduction with analgesia may be tried; if it succeeds, observe and repair semi-electively within 24–48 h; if it fails, emergency surgery.',
       },
       {
         id: 'hernia_strangulated',
@@ -265,17 +271,31 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
     variants: [
       {
         id: 'sbo_adhesional',
-        label: 'SBO — adhesional, no strangulation (drip and suck)',
+        label: 'SBO — adhesional, no strangulation (non-operative trial)',
         description: 'Small bowel obstruction, prior surgery, no peritonism, no closed-loop on CT',
         detectKeywords: ['small bowel obstruction', 'sbo', 'adhesional obstruction', 'adhesion', 'drip and suck'],
         allowedPhases: ['immediate', 'conservative', 'followup'],
         examQueries: ['Prior abdominal surgery?', 'No peritonism?', 'No closed-loop on CT?', 'Proximal obstruction?'],
         urgencyNote: '72-hour trial of non-operative management (NGT + IV fluids + NBM). Re-assess at 24-48 h: failure to improve = operate.',
         planPrefix:
-          'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)\n\n' +
+          'Small Bowel Obstruction — Non-Operative Trial\n\n' +
           'NGT on free drainage. IV fluid resuscitation. NBM. Serial clinical assessment every 4–6 h.\n' +
           'CT abdomen/pelvis to exclude closed-loop, ischaemia, or hernia.\n' +
+          'Water-soluble contrast (Gastrografin) challenge: diagnostic and may be therapeutic; contrast not reaching the colon by 24 h predicts failure of non-operative management (WSES/Bologna 2017).\n' +
           'Failure criteria at 48–72 h: no resolution, worsening pain, peritonism, fever, rising lactate → operate.\n\n',
+      },
+      {
+        id: 'sbo_failed_nonoperative',
+        label: 'SBO — failed non-operative trial (surgery)',
+        description: 'No contrast in the colon by 24 h, or no improvement by 48–72 h of non-operative management',
+        detectKeywords: ['non-operative management has failed', 'failed non-operative management', 'failed non-operative', 'failed conservative management', 'failed conservative', 'contrast has not reached the colon', 'not reached the colon', 'no contrast in the colon'],
+        allowedPhases: ['immediate', 'surgical', 'followup'],
+        examQueries: ['Contrast in the colon by 24 h?', 'NG output still high at 48–72 h?', 'Signs of strangulation?'],
+        urgencyNote: 'Failed non-operative management of adhesive SBO (no contrast in the colon by 24 h, or no resolution by 48–72 h) — surgery: laparoscopic or open adhesiolysis (WSES/Bologna 2017).',
+        planPrefix:
+          'Adhesive SBO — Failed Non-Operative Management\n\n' +
+          'Surgery: laparoscopic (selected patients) or open adhesiolysis; assess bowel viability and resect non-viable bowel (WSES/Bologna 2017).\n' +
+          'Do not repeat the contrast challenge.\n\n',
       },
       {
         id: 'sbo_strangulation',
@@ -302,8 +322,13 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         ],
         allowedPhases: ['immediate', 'conservative', 'surgical'],
         examQueries: ['Abdominal distension', 'Tympanic percussion', 'Absent bowel sounds'],
-        urgencyNote: 'Sigmoid/caecal volvulus — endoscopic decompression (sigmoid) or urgent surgery (caecal); confirm with AXR/CT',
-        planPrefix: 'Sigmoid/Caecal Volvulus — Management:\n',
+        urgencyNote: 'Sigmoid volvulus — only if no ischaemia or perforation: endoscopic detorsion and decompression, then sigmoid colectomy in the same admission if fit. Caecal volvulus — surgical resection (right hemicolectomy); endoscopic detorsion is not recommended (avoid). Peritonitis, gangrene or perforation — emergency resection (ASCRS 2021).',
+        planPrefix:
+          'Colonic Volvulus (ASCRS 2021)\n\n' +
+          'CT to confirm the site and look for ischaemia or perforation.\n' +
+          'Sigmoid volvulus — only if no ischaemia, gangrene, perforation or peritonitis: endoscopic (flexible sigmoidoscopy) detorsion and decompression with a decompression tube; then sigmoid colectomy during the same admission if fit — recurrence is common.\n' +
+          'Caecal volvulus: surgical resection — right hemicolectomy (primary anastomosis or ileostomy according to physiology); endoscopic detorsion is not recommended for caecal volvulus (avoid).\n' +
+          'Peritonitis, gangrenous or perforated colon, or failed detorsion: emergency resection (sigmoid colectomy / Hartmann\'s procedure, or right hemicolectomy).\n\n',
       },
       {
         id: 'lbo_malignant',
@@ -312,11 +337,13 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         detectKeywords: ['large bowel obstruction', 'lbo', 'colonic obstruction', 'sigmoid obstruction', 'colonic cancer obstruction'],
         allowedPhases: ['immediate', 'surgical', 'followup'],
         examQueries: ['CT confirms colonic malignancy?', 'Caecal distension ≥12 cm?', 'Free perforation?'],
-        urgencyNote: 'SEMS (stent) as bridge to elective surgery if available. If unavailable or perforated: emergency Hartmann\'s procedure. Oncology/surgical MDT.',
+        urgencyNote: 'Malignant LBO — no stent with perforation, peritonitis or impending caecal perforation (caecal tenderness / ischaemia): emergency resection. Left-sided obstruction without these: SEMS as a bridge to surgery is an option where expertise exists — not if perforation or ischaemia (WSES 2018; ESGE 2020). Colorectal / oncology MDT.',
         planPrefix:
           'Large Bowel Obstruction — Malignant\n\n' +
           'CT staging. Colorectal/Oncology MDT referral.\n' +
-          'Options: (1) SEMS bridge to elective resection, (2) Emergency Hartmann\'s, (3) Defunctioning colostomy.\n' +
+          'Stent (SEMS) contraindicated with perforation, peritonitis or impending caecal perforation (tender, dilated caecum — ischaemia): emergency resection instead (WSES 2018; ESGE 2020).\n' +
+          'Right-sided / transverse obstruction: right (or extended right) hemicolectomy with primary anastomosis when physiology allows.\n' +
+          'Left-sided obstruction: resection (Hartmann\'s procedure, or primary anastomosis ± defunctioning stoma), SEMS as a bridge to elective resection where expertise exists (not if perforation, ischaemia or peritonitis), or a defunctioning colostomy; palliative SEMS for incurable disease.\n' +
           'Decision based on: perforation risk, patient fitness, tumour stage, institutional expertise.\n\n',
       },
     ],
@@ -333,21 +360,21 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         id: 'diverticulitis_uncomplicated',
         label: 'Uncomplicated diverticulitis',
         description: 'No abscess, no perforation, mild systemic response — oral antibiotics, outpatient possible',
-        detectKeywords: ['uncomplicated diverticulitis', 'mild diverticulitis', 'diverticulitis without abscess', 'hinchey ia', 'hinchey ib', 'lif pain', 'left iliac fossa pain', 'left lower quadrant pain', 'llq pain'],
+        detectKeywords: ['uncomplicated diverticulitis', 'uncomplicated acute diverticulitis', 'uncomplicated sigmoid diverticulitis', 'uncomplicated acute sigmoid diverticulitis', 'uncomplicated', 'mild diverticulitis', 'diverticulitis without abscess', 'hinchey 0', 'hinchey ia', 'lif pain', 'left iliac fossa pain', 'left lower quadrant pain', 'llq pain'],
         allowedPhases: ['conservative', 'followup'],
         examQueries: ['No peritonism?', 'Tolerating oral fluids?', 'CT confirms no abscess / perforation?'],
-        urgencyNote: 'Oral antibiotics × 7 days. Low-residue diet. Colonoscopy 6–8 weeks post-resolution to exclude malignancy.',
+        urgencyNote: 'Systemically well and immunocompetent: antibiotics not routinely needed — analgesia, oral fluids, safety-net and review (NICE NG147 2019). Antibiotics only if systemically unwell, immunosuppressed or with significant comorbidity.',
         planPrefix:
-          'Uncomplicated Acute Diverticulitis\n\n' +
-          'Oral antibiotics: co-amoxiclav 625 mg TDS × 7 days (or ciprofloxacin 500 mg BD + metronidazole 400 mg TDS if penicillin allergy).\n' +
-          'Low-residue diet. Adequate analgesia (avoid NSAIDs).\n' +
-          'Colonoscopy 6–8 weeks after resolution to exclude underlying colonic neoplasia.\n\n',
+          'Uncomplicated Acute Diverticulitis (NICE NG147 2019)\n\n' +
+          'Systemically well, immunocompetent: antibiotics not routinely needed — paracetamol (avoid NSAIDs and, where possible, opioids), clear fluids then diet as tolerated, safety-net advice, review within 48 h or sooner if worse.\n' +
+          'Antibiotics only if systemically unwell, immunosuppressed or with significant comorbidity: co-amoxiclav 500/125 mg TDS for 5 days (penicillin allergy: cefalexin + metronidazole, trimethoprim + metronidazole, or ciprofloxacin + metronidazole — NICE NG147).\n' +
+          'Colonic evaluation (colonoscopy or CT colonography) after resolution if not recently done, to exclude colorectal cancer.\n\n',
       },
       {
         id: 'diverticulitis_abscess',
         label: 'Complicated — Hinchey I/II (pericolic / pelvic abscess)',
         description: 'Pericolic (I) or distant (II) abscess confirmed on CT',
-        detectKeywords: ['hinchey i', 'hinchey ii', 'hinchey 1', 'hinchey 2', 'pericolic abscess', 'pelvic abscess', 'diverticular abscess', 'complicated diverticulitis'],
+        detectKeywords: ['hinchey i', 'hinchey ib', 'hinchey ii', 'hinchey 1', 'hinchey 1b', 'hinchey 2', 'pericolic abscess', 'pelvic abscess', 'diverticular abscess', 'complicated diverticulitis'],
         allowedPhases: ['immediate', 'conservative', 'followup'],
         examQueries: ['CT confirms abscess?', 'Abscess ≥4 cm (consider drainage)?', 'Not responding to antibiotics?'],
         urgencyNote: 'IV antibiotics + CT-guided drainage if abscess ≥4 cm. Interval sigmoid colectomy 6–8 weeks after resolution.',
@@ -385,23 +412,23 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         id: 'pancreatitis_mild',
         label: 'Mild acute pancreatitis (Atlanta 2012)',
         description: 'No organ failure, no local complications, BISAP ≤1, CRP <150',
-        detectKeywords: ['mild pancreatitis', 'mild acute pancreatitis', 'uncomplicated pancreatitis'],
+        detectKeywords: ['mild pancreatitis', 'mild acute pancreatitis', 'mild acute biliary pancreatitis', 'mild biliary pancreatitis', 'mild gallstone pancreatitis', 'uncomplicated pancreatitis'],
         allowedPhases: ['immediate', 'conservative', 'followup'],
         examQueries: ['No organ dysfunction?', 'Tolerating oral fluids within 24 h?', 'BISAP score ≤1?'],
         urgencyNote: 'Supportive management. Oral diet as tolerated. Identify and address aetiology (gallstones → cholecystectomy same admission if mild).',
         planPrefix:
           'Mild Acute Pancreatitis — Supportive Management\n\n' +
-          'IV fluid resuscitation (Hartmann\'s). Pain control. Oral diet when clinically tolerated (early oral feeding improves outcomes).\n' +
+          'Moderate, goal-directed IV fluids (lactated Ringer\'s / Hartmann\'s) — avoid aggressive fluids (WATERFALL 2022; ACG 2024). Pain control. Early oral feeding as tolerated. No prophylactic antibiotics.\n' +
           'Address aetiology: USS (gallstones → laparoscopic cholecystectomy same admission if mild pancreatitis).\n\n',
       },
       {
         id: 'pancreatitis_moderate',
         label: 'Moderately severe acute pancreatitis',
         description: 'Transient organ failure (<48 h) or local complications (peripancreatic fluid, necrosis) without persistent failure',
-        detectKeywords: ['moderately severe pancreatitis', 'moderate pancreatitis', 'pancreatic necrosis', 'peripancreatic', 'necrotic pancreatitis', 'walled-off necrosis'],
+        detectKeywords: ['moderately severe pancreatitis', 'moderately severe acute pancreatitis', 'moderately severe', 'moderate pancreatitis', 'pancreatic necrosis', 'peripancreatic', 'necrotic pancreatitis', 'walled-off necrosis', 'acute necrotic collection', 'necrotic collection'],
         allowedPhases: ['immediate', 'conservative', 'followup'],
         examQueries: ['Transient organ failure?', 'Peripancreatic fluid on CT?', 'CRP >150?', 'CT severity index?'],
-        urgencyNote: 'HDU admission. Aggressive IV fluid resuscitation. CT at 72–96 h if not improving. Avoid antibiotics unless infected necrosis suspected.',
+        urgencyNote: 'HDU if organ failure. Moderate, goal-directed IV fluids — avoid aggressive fluids (WATERFALL 2022; ACG 2024). CT at 72–96 h if not improving. No prophylactic antibiotics — only for suspected infected necrosis. Defer cholecystectomy until collections resolve or beyond 6 weeks (IAP/APA; ACG 2024).',
       },
       {
         id: 'pancreatitis_severe',
@@ -413,7 +440,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         urgencyNote: '⚠ CRITICAL — severe pancreatitis. ICU admission. HDU monitoring. Antibiotics ONLY if infected necrosis confirmed. Endoscopic/surgical necrosectomy if infected.',
         planPrefix:
           'Severe Acute Pancreatitis — ICU Level Care\n\n' +
-          'ICU admission. Aggressive resuscitation. Enteral feeding via NGT/NJT within 24–48 h (superior to TPN).\n' +
+          'ICU admission. Goal-directed resuscitation with moderate fluids — avoid aggressive fluids (WATERFALL 2022; ACG 2024). Enteral feeding via NGT/NJT within 24–48 h (superior to TPN).\n' +
           'Carbapenem antibiotics (meropenem) ONLY if infected necrosis suspected (fever + gas in necrotic area on CT).\n' +
           'Necrosectomy: step-up approach (endoscopic > percutaneous > surgical) — delayed ≥4 weeks until walled-off.\n\n',
       },
@@ -448,12 +475,13 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         detectKeywords: ['variceal bleed', 'oesophageal varices', 'esophageal varices', 'gastric varices', 'variceal haemorrhage', 'variceal bleeding', 'portal hypertension bleed'],
         allowedPhases: ['immediate', 'surgical', 'followup'],
         examQueries: ['Known cirrhosis / portal hypertension?', 'Splenomegaly?', 'Haemodynamically unstable?'],
-        urgencyNote: '⚠ EMERGENCY — variceal haemorrhage. Terlipressin immediately. Urgent OGD (within 12 h) + endoscopic variceal ligation. Antibiotic prophylaxis (ceftriaxone).',
+        urgencyNote: '⚠ EMERGENCY — variceal haemorrhage. Vasoactive drug (terlipressin) as soon as suspected, antibiotic prophylaxis (ceftriaxone), restrictive transfusion (Hb threshold 70 g/L, target 70–80 g/L), OGD within 12 h + band ligation (Baveno VII).',
         planPrefix:
-          'EMERGENCY — Variceal Upper GI Bleed\n\n' +
-          'Terlipressin 2 mg IV QDS (or octreotide). Ceftriaxone 1 g IV OD prophylaxis × 7 days.\n' +
-          'Urgent OGD within 12 h: endoscopic variceal ligation (EVL) or glue injection (gastric varices).\n' +
-          'If uncontrolled: Sengstaken-Blakemore tube as bridge, then TIPS (transjugular intrahepatic portosystemic shunt).\n\n',
+          'EMERGENCY — Variceal Upper GI Bleed (Baveno VII 2022)\n\n' +
+          'Terlipressin 2 mg IV 4-hourly (or octreotide) as soon as variceal bleeding is suspected, for 2–5 days. Ceftriaxone 1 g IV daily prophylaxis for up to 7 days.\n' +
+          'Restrictive red-cell transfusion: threshold Hb 70 g/L, target 70–80 g/L — avoid over-transfusion.\n' +
+          'OGD within 12 h of presentation: endoscopic variceal ligation (EVL), or cyanoacrylate glue for gastric varices.\n' +
+          'High risk of failure (Child-Pugh C 10–13, or B > 7 with active bleeding at endoscopy): pre-emptive TIPS within 72 h. Refractory bleeding: balloon tamponade or oesophageal stent as a bridge to rescue TIPS.\n\n',
       },
     ],
   },
@@ -472,6 +500,19 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         detectKeywords: ['breast lump', 'breast mass', 'breast lesion', 'triple assessment', 'suspicious breast'],
         allowedPhases: ['immediate', 'followup'],
         urgencyNote: 'Triple assessment: clinical exam + mammogram/USS + core biopsy. MDT discussion before any definitive treatment.',
+      },
+      {
+        id: 'breast_inflammatory',
+        label: 'Inflammatory breast cancer (T4d) — neoadjuvant first',
+        description: 'Erythema and oedema / peau d\'orange over ≥ 1/3 of the breast — systemic therapy before any surgery',
+        detectKeywords: ['inflammatory breast cancer', 'inflammatory breast carcinoma', 'inflammatory carcinoma', "peau d'orange", 'peau d orange', 't4d'],
+        allowedPhases: ['immediate', 'conservative', 'followup'],
+        urgencyNote: 'Inflammatory breast cancer — urgent core and skin punch biopsy, staging, breast MDT for neoadjuvant systemic therapy. Breast-conserving surgery and sentinel node biopsy are not recommended (NCCN 2024).',
+        planPrefix:
+          'Inflammatory Breast Cancer (T4d) — Neoadjuvant Therapy First (NCCN 2024)\n\n' +
+          'Urgent core biopsy + skin punch biopsy; staging (CT chest/abdomen/pelvis ± bone scan / PET-CT). Breast MDT.\n' +
+          'Neoadjuvant systemic therapy, then modified radical mastectomy with axillary node dissection and post-mastectomy radiotherapy.\n' +
+          'Wide local excision and sentinel node biopsy are not recommended in inflammatory breast cancer.\n\n',
       },
       {
         id: 'breast_wle',
@@ -504,10 +545,33 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   // ── Thyroid ─────────────────────────────────────────────────────────────────
   {
     baseDiagnosis: 'Thyroid',
-    icdPrefixes: ['C73', 'D34', 'D44', 'E04', 'E05'],
+    icdPrefixes: ['C73', 'D34', 'D44.0', 'E04', 'E05'],
     diseaseIds: ['thyroid_carcinoma', 'thyroid_nodule_benign', 'hyperthyroidism'],
     differentiatorQuery: 'Malignant vs benign? Bethesda category? Planned extent of resection?',
     variants: [
+      {
+        id: 'thyroid_bethesda_nondiagnostic',
+        label: 'Bethesda I — non-diagnostic FNA',
+        description: 'Non-diagnostic cytology — repeat FNA; no operative plan on this result',
+        detectKeywords: ['bethesda i', 'bethesda 1', 'non-diagnostic fna', 'nondiagnostic fna', 'non-diagnostic cytology', 'thy1'],
+        allowedPhases: ['immediate', 'conservative', 'followup'],
+        urgencyNote: 'Bethesda I — repeat ultrasound-guided FNA; if repeatedly non-diagnostic, ultrasound surveillance or diagnostic hemithyroidectomy by ultrasound risk (ATA 2015; BTA 2014). No thyroidectomy plan on a non-diagnostic result.',
+        planPrefix:
+          'Thyroid Nodule — Bethesda I (non-diagnostic)\n\n' +
+          'Repeat ultrasound-guided FNA (on-site adequacy assessment if available).\n' +
+          'If repeatedly non-diagnostic: ultrasound surveillance or diagnostic hemithyroidectomy according to the ultrasound pattern (ATA 2015; BTA 2014).\n\n',
+      },
+      {
+        id: 'thyroid_bethesda_benign',
+        label: 'Bethesda II — benign FNA (surveillance)',
+        description: 'Benign cytology — no surgery for the nodule; ultrasound follow-up',
+        detectKeywords: ['bethesda ii', 'bethesda 2', 'benign follicular nodule', 'benign fna', 'benign cytology', 'thy2'],
+        allowedPhases: ['conservative', 'followup'],
+        urgencyNote: 'Bethesda II — no surgery for the nodule; clinical and ultrasound follow-up by ultrasound pattern (ATA 2015). Surgery only for compressive symptoms, significant growth or patient preference.',
+        planPrefix:
+          'Thyroid Nodule — Bethesda II (benign)\n\n' +
+          'Surveillance: clinical review and repeat ultrasound (interval by ultrasound pattern, typically 12–24 months — ATA 2015); repeat FNA only for significant growth or new suspicious features.\n\n',
+      },
       {
         id: 'thyroid_hemithyroidectomy',
         label: 'Hemithyroidectomy (diagnostic / solitary nodule)',
@@ -548,6 +612,8 @@ const DEGREE_MODIFIER_BEFORE = /\b(?:moderately|mildly)[\s-]+$/;
 /** "strangulation risk", "risk of strangulation": the finding is not present, only a risk. */
 const RISK_BEFORE = /\b(?:risk|risks)\s+of\s+(?:\w+\s+)?$/;
 const RISK_AFTER = /^\s+risk\b/;
+/** "one Grade II criterion": a criterion of a grade is not the grade itself. */
+const CRITERION_AFTER = /^\s*\(?\s*criteri\w*/;
 
 /** Words of the group's base diagnosis, which say nothing about the variant. */
 function baseWords(group: DxVariantGroup): Set<string> {
@@ -571,6 +637,7 @@ function keywordPresent(text: string, kw: string): boolean {
     const after = lower.slice(m.index + m.text.length, m.index + m.text.length + 12);
     if (/^severe\b/.test(m.text) && DEGREE_MODIFIER_BEFORE.test(before)) return false;
     if (RISK_BEFORE.test(before) || RISK_AFTER.test(after)) return false;
+    if (CRITERION_AFTER.test(after)) return false;
     return true;
   });
 }
@@ -600,7 +667,9 @@ export function detectDxVariants(
   const group =
     (diseaseId ? DX_VARIANT_GROUPS.find(g => g.diseaseIds.some(id => diseaseId.startsWith(id))) : undefined)
     ?? (code ? DX_VARIANT_GROUPS.find(g => g.icdPrefixes.some(pfx => code.startsWith(pfx))) : undefined)
-    ?? DX_VARIANT_GROUPS.find(g => containsAffirmed(text, g.baseDiagnosis, { wordStart: true }));
+    // Text fallback: the base diagnosis as a whole word — "thyroidectomy" in "haematoma after total
+    // thyroidectomy" must not turn a post-operative haematoma into the Thyroid group.
+    ?? DX_VARIANT_GROUPS.find(g => containsAffirmed(text, g.baseDiagnosis, { wholeWord: true }));
 
   if (!group) return null;
 
