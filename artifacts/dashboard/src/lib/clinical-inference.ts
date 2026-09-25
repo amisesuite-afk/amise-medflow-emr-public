@@ -7,6 +7,8 @@
  * Rules reflect general & endoscopic surgery practice, Caribbean demographics.
  */
 
+import { containsAffirmed, containsAnyAffirmed } from '@workspace/triage-engine';
+
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
 export interface ClinicalAction {
@@ -68,31 +70,37 @@ export interface InferenceInput {
 }
 
 // ── Pattern helpers ────────────────────────────────────────────────────────────
+// Every free-text test is negation-aware (lib/triage-engine/src/negation.ts): "no guarding",
+// "Murphy's sign negative", "afebrile", "not jaundiced", "no free gas", "Non-smoker" do not match.
+// Terms keep substring semantics ("append" finds "appendicitis").
 
 function lo(s: string): string { return s.toLowerCase(); }
 
+/** Any item of `items` affirms any of `terms`. */
+function anyAffirmed(items: string[], terms: string[]): boolean {
+  return items.some(s => containsAnyAffirmed(s, terms));
+}
+
 function hasCc(entries: CCEntry[], ...terms: string[]): boolean {
-  return entries.some(e => terms.some(t => lo(e.complaint).includes(t)));
+  return anyAffirmed(entries.map(e => e.complaint), terms);
 }
 function hasSx(symptoms: string[], ...terms: string[]): boolean {
-  return symptoms.some(s => terms.some(t => lo(s).includes(t)));
+  return anyAffirmed(symptoms, terms);
 }
 function hasPmh(comorbidities: string[], ...terms: string[]): boolean {
-  return comorbidities.some(c => terms.some(t => lo(c).includes(t)));
+  return anyAffirmed(comorbidities, terms);
 }
 function hasFhx(familyHistory: string[], ...terms: string[]): boolean {
-  return familyHistory.some(f => terms.some(t => lo(f).includes(t)));
+  return anyAffirmed(familyHistory, terms);
 }
 function hasToxic(toxicHabits: string[], ...terms: string[]): boolean {
-  return toxicHabits.some(h => terms.some(t => lo(h).includes(t)));
+  return anyAffirmed(toxicHabits, terms);
 }
 function hasMed(medications: string[], medicationsText: string, ...terms: string[]): boolean {
-  const text = [...medications, medicationsText].join(' ').toLowerCase();
-  return terms.some(t => text.includes(t));
+  return anyAffirmed([...medications, medicationsText], terms);
 }
 function exam(s: string, ...terms: string[]): boolean {
-  const sl = lo(s);
-  return terms.some(t => sl.includes(t));
+  return containsAnyAffirmed(s, terms);
 }
 function hasRadResult(
   requests: InferenceInput['radiologyRequests'],
@@ -100,8 +108,23 @@ function hasRadResult(
 ): boolean {
   return requests.some(r =>
     r.resultReceived &&
-    terms.some(t => lo(r.resultNotes).includes(t) || lo(r.indication).includes(t))
+    (containsAnyAffirmed(r.resultNotes, terms) || containsAnyAffirmed(r.indication, terms))
   );
+}
+
+/**
+ * A raised temperature written in the general examination: "temp 38.6", "temperature 39",
+ * "raised temperature", "pyrexial". The bare word "temp"/"temperature" used to count as fever,
+ * so "Temperature 36.8" raised the Charcot's-triad alarm. Fever threshold as elsewhere in this
+ * file (≥ 38.0 °C, see hasFeverVital).
+ */
+function examRecordsRaisedTemperature(s: string): boolean {
+  const lower = lo(s);
+  const re = /\btemp(?:erature)?\b[^0-9.;,\n]{0,12}(\d{2}(?:\.\d+)?)/g;
+  for (let m = re.exec(lower); m; m = re.exec(lower)) {
+    if (parseFloat(m[1]) >= 38.0) return true;
+  }
+  return containsAffirmed(lower, /\b(?:raised|high|elevated|spiking)\s+temp(?:erature)?s?\b|\btemp(?:erature)?\s+(?:raised|high|elevated|spiking|spikes)\b/);
 }
 
 /** Parse first numeric value from a lab result string. Exported for the report-import tests. */
@@ -167,7 +190,8 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   const hasRuqPain = hasCc(ccEntries, 'right upper', 'ruq', 'biliary', 'cholecyst')
     || hasSx(symptoms, 'right upper quadrant', 'ruq pain');
   const hasFever = hasSx(symptoms, 'fever', 'pyrexia')
-    || exam(examGeneral, 'fever', 'pyrexia', 'febrile', 'temp');
+    || exam(examGeneral, 'fever', 'pyrexia', 'febrile')
+    || examRecordsRaisedTemperature(examGeneral);
 
   // ── EXAMINATION-TRIGGERED SAFETY PROMPTS ──────────────────────────────────
 
@@ -245,7 +269,7 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   // McBurney's / Rebound / Rovsing → Appendicitis
   // Gate generic guarding/rebound on appendicitis-specific diagnosis or CC to avoid
   // triggering Alvarado score for cholecystitis, pancreatitis, etc.
-  const assessmentHasAppend = lo(assessment ?? '').includes('append');
+  const assessmentHasAppend = containsAffirmed(assessment ?? '', 'append');
   const ccIsAppend = hasCc(ccEntries, 'append', 'right iliac', 'rlq');
   if (exam(examAbdomen, 'mcburney', 'rovsing', 'psoas sign', 'obturator sign')
     || (exam(examAbdomen, 'rebound', 'guarding') && hasAbdominalCc && (assessmentHasAppend || ccIsAppend))) {
