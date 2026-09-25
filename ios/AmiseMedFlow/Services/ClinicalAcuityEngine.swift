@@ -12,7 +12,9 @@ import Foundation
 //   5. ECG reports (ST elevation, complete heart block, ventricular arrhythmia, ischaemic change),
 //   6. the clinical text alarms (ClinicalTextParser) and the recognition rules in
 //      ClinicalAcuityEngine+Recognition (anaphylaxis, DKA, cauda equina, ectopic, torsion …),
-//   7. the severity of the diagnosis the clinician confirmed.
+//   7. the severity of the diagnosis the clinician confirmed,
+//   8. NICE NG12 suspected-cancer criteria met (SuspectedCancerScreening, the Diagnosis tab card):
+//      at least priority (red flags warrant expedited outpatient review, not an emergency).
 //
 // Every component can only RAISE the level (max rule): nothing here lowers a level another
 // component set, and the consultation still never de-escalates the patient's recorded acuity
@@ -77,6 +79,12 @@ struct AcuityAssessment {
         var flags = keywordTriage.redFlags
         for r in reasons where r.level < .routine && r.source != "keywords" {
             let line = "\(r.level.label): \(r.text)"
+            if !flags.contains(line) { flags.append(line) }
+        }
+        // Safeguarding concerns change no level but are red flags on the triage card (web twin:
+        // adaptive-triage.ts lists emergency.safeguarding among the triage reasons).
+        for a in alerts where a.category == .safeguarding && a.level == nil {
+            let line = "\(a.title): \(a.detail) — follow the practice's safeguarding procedure"
             if !flags.contains(line) { flags.append(line) }
         }
         return TriageResult(suggestedAcuity: level,
@@ -157,6 +165,9 @@ struct AcuityInputs {
     var workingDiagnosis: String?
     /// ClinicalTextParser alarms for the same record.
     var textAlarms: [ClinicalTextParser.ClinicalAlarm] = []
+    /// The NICE NG12 suspected-cancer card for the same record (SuspectedCancerScreening.prompt),
+    /// nil when no criterion is met.
+    var suspectedCancer: SuspectedCancerPrompt? = nil
 
     var isChild: Bool { (ageYears ?? 99) < 16 }
     var isInfant: Bool { (ageYears ?? 99) < 1 }
@@ -168,7 +179,7 @@ enum ClinicalAcuityEngine {
 
     /// Rule-set version (clinical-content/registry.json `ios-clinical-acuity-engine`). Bump it with
     /// the registry entry and a changelog line whenever a threshold or rule changes.
-    static let rulesVersion = "1.0.0"
+    static let rulesVersion = "1.1.0"
 
     /// Builds the inputs from the record the same way the consultation reads it.
     static func inputs(from p: Patient) -> AcuityInputs {
@@ -198,6 +209,8 @@ enum ClinicalAcuityEngine {
         i.textAlarms = ClinicalTextParser.parse(hpi: p.hpi, examGeneral: p.examGeneral, examAbdo: p.examAbdo,
                                                 examOther: examOtherText.isEmpty ? nil : examOtherText,
                                                 notes: invResultsText.isEmpty ? nil : invResultsText).clinicalAlarms
+        // Same card as the Diagnosis tab (SuspectedCancerSection).
+        i.suspectedCancer = SuspectedCancerScreening.prompt(for: p)
         return i
     }
 
@@ -233,6 +246,9 @@ enum ClinicalAcuityEngine {
 
         // 7. Confirmed diagnosis.
         diagnosisSeverity(b)
+
+        // 8. NICE NG12 suspected-cancer criteria.
+        suspectedCancer(b)
 
         // Infants: any urgent or emergency finding is recognised and redirected.
         if inputs.isInfant, b.level <= .urgent, !b.alerts.contains(where: { $0.redirect != nil }) {

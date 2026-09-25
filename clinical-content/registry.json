@@ -1297,7 +1297,7 @@
       "title": "iOS triage level (max of CC keywords, vitals/NEWS2, BP, critical labs, ECG, text alarms, recognition rules, confirmed diagnosis), recognise-and-redirect alerts, pregnancy context",
       "platforms": ["ios"],
       "kind": "triage-rules",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.1.0",
       "versionStamp": { "file": "ios/AmiseMedFlow/Services/ClinicalAcuityEngine.swift", "type": "regex", "pattern": "rulesVersion\\s*=\\s*\"([^\"]+)\"" },
       "files": ["ios/AmiseMedFlow/Services/ClinicalAcuityEngine*.swift", "ios/AmiseMedFlow/Services/PregnancyContext.swift"],
       "tests": ["ios/AmiseMedFlowTests/ClinicalAcuityEngineTests.swift", "ios/AmiseMedFlowTests/TriageInputFixesTests.swift"],
@@ -1321,7 +1321,8 @@
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
       "notes": "The confirmed-diagnosis severity table and the recognition thresholds are a practice triage mapping pending surgeon sign-off (docs/clinical-validation/changes/fix-ios-triage-cards.md, Needs sign-off).",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "New (SURGEON-DECISIONS C2, G1.3, G3): iOS triage level from all components instead of chief-complaint keywords only; recognise-and-redirect alerts for non-surgical emergencies; paediatric thresholds; pregnancy context." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "New (SURGEON-DECISIONS C2, G1.3, G3): iOS triage level from all components instead of chief-complaint keywords only; recognise-and-redirect alerts for non-surgical emergencies; paediatric thresholds; pregnancy context." },
+        { "version": "1.1.0", "date": "2026-09-25", "change": "NICE NG12 suspected-cancer card (SuspectedCancerScreening) raises the level to priority; a non-acute word in the confirmed diagnosis (history of, elective, screening ...) removes only its own clause, so an acute / emergency clause still sets the level; domestic abuse recognised with the web RX.partnerViolence pattern and wording (NICE PH50, CG110) and listed as a triage red flag (no level change). docs/clinical-validation/changes/ios-last-criticals.md." }
       ]
     },
     {

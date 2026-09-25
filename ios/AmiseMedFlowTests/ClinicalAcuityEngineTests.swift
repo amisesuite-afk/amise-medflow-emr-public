@@ -228,4 +228,54 @@ final class ClinicalAcuityEngineTests: XCTestCase {
         XCTAssertTrue(alert?.action.contains("regardless of visible TBSA") ?? false)
         XCTAssertEqual(a.level, .emergency)
     }
+
+    // MARK: - 1.1.0 (iOS CI run 36182660885: the last three triage / red-flag criticals)
+
+    func testNG12CriteriaRaiseARoutineVisitToPriority() {
+        // FIT 42 µg Hb/g with vague abdominal pain: the NG12 card is shown, and the level follows it.
+        var i = inputs(cc: "Lower abdominal discomfort", age: 56, sex: .female,
+                       vitals: AcuityVitals(heartRate: 76, systolic: 128, diastolic: 76, respiratoryRate: 14,
+                                            temperatureCelsius: 36.6, spo2: 98))
+        XCTAssertEqual(ClinicalAcuityEngine.assess(i).level, .routine)
+        i.suspectedCancer = SuspectedCancerScreening.prompt(
+            input: CancerScreenInput(age: 56, sex: .female, labs: CancerScreenLabs(fitUgHbG: 42)),
+            emergency: false, record: [])
+        let a = ClinicalAcuityEngine.assess(i)
+        XCTAssertEqual(a.level, .priority, "suspected cancer is expedited review, never an emergency")
+        XCTAssertTrue(a.triageResult.redFlags.contains { $0.contains("FIT") })
+    }
+
+    func testFerritinCheckCardDoesNotChangeTheLevel() {
+        var i = inputs(cc: "Tired", age: 40, sex: .female)
+        i.suspectedCancer = SuspectedCancerScreening.prompt(
+            input: CancerScreenInput(age: 40, sex: .female, labs: CancerScreenLabs(haemoglobinGdl: 10.5, mcvFl: 72)),
+            emergency: false, record: [])
+        XCTAssertEqual(i.suspectedCancer?.kind, .ferritinCheck)
+        XCTAssertEqual(ClinicalAcuityEngine.assess(i).level, .routine)
+    }
+
+    func testAHistoryClauseNoLongerHidesAnAcuteDiagnosis() {
+        XCTAssertEqual(ClinicalAcuityEngine.diagnosisLevel(
+            "Acute appendicitis — emergency laparoscopic appendicectomy; history of suxamethonium apnoea")?.level, .urgent)
+        // Unchanged: an elective plan, a pre-operative assessment or a screening visit sets no level.
+        XCTAssertNil(ClinicalAcuityEngine.diagnosisLevel("Recurrent complicated sigmoid diverticulitis — elective laparoscopic sigmoid colectomy"))
+        XCTAssertNil(ClinicalAcuityEngine.diagnosisLevel("Suspected spinal metastases without neurological deficit (previous breast cancer)"))
+        XCTAssertNil(ClinicalAcuityEngine.diagnosisLevel("Pre-operative assessment — symptomatic gallstones; latex anaphylaxis"))
+    }
+
+    func testPartnerViolenceIsASafeguardingRedFlag() {
+        let a = ClinicalAcuityEngine.assess(inputs(
+            cc: "Abdominal pain after a fall, 33 weeks pregnant",
+            hpi: "Initially said she slipped. On private questioning: pushed by her partner and fell against the kitchen counter.",
+            age: 26, sex: .female))
+        let alert = a.alerts.first { $0.category == .safeguarding }
+        XCTAssertEqual(alert?.title, "Domestic abuse disclosed in pregnancy")
+        XCTAssertNil(alert?.level, "a safeguarding concern changes no triage level")
+        XCTAssertTrue(alert?.action.contains("speak with the patient alone") ?? false)
+        XCTAssertTrue(a.triageResult.redFlags.contains { $0.hasPrefix("Domestic abuse disclosed") })
+        // Negated or unrelated wording does not fire.
+        let none = ClinicalAcuityEngine.assess(inputs(cc: "Fall at home", hpi: "Tripped on a step. Not hit by her partner.",
+                                                      age: 30, sex: .female))
+        XCTAssertFalse(none.alerts.contains { $0.category == .safeguarding })
+    }
 }

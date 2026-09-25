@@ -278,11 +278,16 @@ extension ClinicalAcuityEngine {
                         "Follow the practice safeguarding procedure and inform the safeguarding lead (local contacts to be supplied by the practice); skeletal survey under 2 years, CT head under 1 year, FBC and clotting (RCR/RCPCH).")
             }
         }
+        // Domestic abuse — NICE PH50 (2014); NICE CG110 (pregnancy and complex social factors). Twin
+        // of the web safeguardingFlags (lib/triage-engine/src/emergency-recognition.ts, RX.partnerViolence):
+        // same pattern, title and action wording. It changes no level; the triage card lists it
+        // as a red flag (AcuityAssessment.triageResult).
         if all.containsAny(["domestic violence", "domestic abuse", "partner assault", "hit by her partner", "hit by partner",
-                            "assaulted by partner"]) {
-            b.alert(nil, .safeguarding, "Safeguarding concern — domestic abuse",
-                    "Disclosure or signs of domestic abuse (NICE PH50).",
-                    "Ask in private; document; offer referral to support services; inform the safeguarding lead (local contacts to be supplied by the practice).")
+                            "assaulted by partner"])
+            || partnerViolencePattern.map({ all.matches($0) }) == true {
+            b.alert(nil, .safeguarding, "Domestic abuse disclosed\(preg.isPregnant ? " in pregnancy" : "")",
+                    "Injury attributed to a partner / domestic abuse (NICE PH50 (2014) domestic violence and abuse; NICE CG110 pregnancy and complex social factors).",
+                    "Domestic abuse (safeguarding): follow the practice's safeguarding procedure — speak with the patient alone, assess immediate safety, document, and offer referral to specialist domestic-abuse support (NICE PH50); inform the safeguarding lead (local contacts to be supplied by the practice).")
         }
 
         // Head injury on an anticoagulant — NICE NG232 (wording "CT within 8 hours" logged for sign-off).
@@ -304,6 +309,12 @@ extension ClinicalAcuityEngine {
             b.raise(all.contains("evisceration") ? Acuity.emergency : Acuity.urgent, "recognition", "Penetrating injury")
         }
     }
+
+    /// Injury attributed to a partner, or domestic / intimate-partner abuse named: the web
+    /// RX.partnerViolence pattern (emergency-recognition.ts), matched negation-aware.
+    static let partnerViolencePattern: NSRegularExpression? = try? NSRegularExpression(
+        pattern: #"\b((pushed|hit|punched|kicked|slapped|strangled|assaulted|beaten|attacked|choked) by (her |his |my )?(partner|husband|boyfriend|ex|wife|girlfriend)|(partner|husband|boyfriend)\b[^.;\n]{0,15}\b(pushed|hit|punched|kicked|slapped|strangled|assaulted|beat|attacked|choked)|domestic (violence|abuse)|intimate partner (violence|abuse))\b"#,
+        options: [.caseInsensitive])
 
     /// TBSA % written in the text or the confirmed diagnosis ("27% TBSA", "TBSA 14%").
     static func burnTBSA(_ b: AcuityBuilder) -> Double? {
@@ -363,10 +374,35 @@ extension ClinicalAcuityEngine {
                      "foot ulcer", "asthma"]),
     ]
 
-    static func diagnosisLevel(_ diagnosis: String?) -> (level: Acuity, term: String)? {
-        guard let dx = diagnosis?.trimmingCharacters(in: .whitespacesAndNewlines), !dx.isEmpty else { return nil }
+    /// Words that keep a clause of the diagnosis acute when another clause is a history, a
+    /// screening or an elective context.
+    static let acuteDiagnosisMarkers = ["acute", "emergency", "urgent"]
+
+    /// The part of the confirmed diagnosis that sets the level. The whole text when no non-acute
+    /// context is written. Otherwise only the clauses (split at "—", "–", ";", ",", brackets) that
+    /// say acute / emergency / urgent and carry no non-acute context, or nil when there are none:
+    /// "Acute appendicitis — emergency laparoscopic appendicectomy; history of suxamethonium
+    /// apnoea" is read as "Acute appendicitis — emergency laparoscopic appendicectomy" (urgent);
+    /// "Recurrent diverticulitis — elective laparoscopic sigmoid colectomy" stays non-acute (nil).
+    /// Before 1.1.0 any non-acute word anywhere (the "history of" a past anaesthetic problem)
+    /// made the whole diagnosis non-acute.
+    static func acuteDiagnosisText(_ dx: String) -> String? {
         let lower = dx.lowercased()
-        if nonAcuteDiagnosisContext.contains(where: { lower.contains($0) }) { return nil }
+        guard nonAcuteDiagnosisContext.contains(where: { lower.contains($0) }) else { return dx }
+        let clauses = dx.components(separatedBy: CharacterSet(charactersIn: "—–;,()"))
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        let acute = clauses.filter { clause in
+            let l = clause.lowercased()
+            return !nonAcuteDiagnosisContext.contains(where: { l.contains($0) })
+                && NegationMatcher.Source(clause).containsAny(acuteDiagnosisMarkers, wordStart: true)
+        }
+        return acute.isEmpty ? nil : acute.joined(separator: ". ")
+    }
+
+    static func diagnosisLevel(_ diagnosis: String?) -> (level: Acuity, term: String)? {
+        guard let trimmed = diagnosis?.trimmingCharacters(in: .whitespacesAndNewlines), !trimmed.isEmpty,
+              let dx = acuteDiagnosisText(trimmed) else { return nil }
         let source = NegationMatcher.Source(dx)
         // An obstructed / incarcerated / strangulated hernia is an emergency (WSES 2017).
         if source.contains("hernia"),
@@ -384,5 +420,17 @@ extension ClinicalAcuityEngine {
     static func diagnosisSeverity(_ b: AcuityBuilder) {
         guard let hit = diagnosisLevel(b.inputs.workingDiagnosis) else { return }
         b.raise(hit.level, "diagnosis", "Confirmed diagnosis: \(b.inputs.workingDiagnosis ?? "") (\(hit.term))")
+    }
+
+    // MARK: Suspected cancer (NICE NG12)
+
+    /// The NG12 / BSG criteria behind the Diagnosis tab card (SuspectedCancerScreening.prompt:
+    /// FIT ≥10 µg Hb/g, iron-deficiency anaemia, rectal bleeding ≥50, weight loss with abdominal
+    /// pain ≥40, nipple change ≥50, visible haematuria ≥45) raise the level to priority: an
+    /// expedited (2-week-wait or urgent) outpatient pathway, never an emergency (CLAUDE.md: red
+    /// flags are not emergencies). The ferritin-check card changes nothing.
+    static func suspectedCancer(_ b: AcuityBuilder) {
+        guard let card = b.inputs.suspectedCancer, card.kind == .suspectedCancer else { return }
+        b.raise(.priority, "suspected cancer", "\(card.title) — \(card.rationale)")
     }
 }
