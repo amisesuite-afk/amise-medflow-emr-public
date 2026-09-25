@@ -62,6 +62,12 @@ jobs:
       - name: Lint drug-interaction parity, web vs iOS (H-07)
         run: pnpm --filter @workspace/scripts run lint:interaction-parity
 
+      # Parses the iOS lab-report analyte catalogue (LabAnalyteCatalog.swift) and fails if a
+      # saved name, a synonym, a unit or a conversion factor differs from the TypeScript port
+      # the web dashboard imports reports with (lib/triage-engine/src/report-import).
+      - name: Lint lab report import parity, web vs iOS
+        run: pnpm --filter @workspace/scripts run lint:report-import-parity
+
       - name: Build all packages
         env:
           VITE_SUPABASE_URL: https://placeholder.supabase.co

@@ -5,5 +5,5 @@
     "rootDir": "..",
     "types": ["node"]
   },
-  "include": ["src", "../artifacts/dashboard/src/lib/dx-variants.ts", "../lib/pane-engine/src/vademecum/index.ts", "../artifacts/front-desk/lib/instructions.ts", "../artifacts/dashboard/src/lib/drug-interactions.ts", "../artifacts/dashboard/src/lib/drug-classes.ts"]
+  "include": ["src", "../artifacts/dashboard/src/lib/dx-variants.ts", "../lib/pane-engine/src/vademecum/index.ts", "../artifacts/front-desk/lib/instructions.ts", "../artifacts/dashboard/src/lib/drug-interactions.ts", "../artifacts/dashboard/src/lib/drug-classes.ts", "../lib/triage-engine/src/report-import/catalog.ts"]
 }
