@@ -267,12 +267,7 @@
           "guidelineRefs": [
             "wses-lbo-2018"
           ],
-          "note": "WSES 2018: stenting is contraindicated with perforation or signs of caecal ischaemia/impending perforation (pneumatosis, peritonism); a closed-loop caecum at 13.5 cm needs emergency surgery.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated').",
-          "proposedFix": "State the stent contraindications in the prompt and the lbo_malignant prefix (perforation, peritonitis, caecal ischaemia/pneumatosis, closed loop ≥12 cm with tenderness) and suppress the stent option when they are present."
+          "note": "WSES 2018: stenting is contraindicated with perforation or signs of caecal ischaemia/impending perforation (pneumatosis, peritonism); a closed-loop caecum at 13.5 cm needs emergency surgery."
         }
       ]
     },

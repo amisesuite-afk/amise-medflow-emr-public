@@ -104,3 +104,64 @@ describe('TG18 auto-fill from the record (mirrors iOS 1f50221)', () => {
     expect(durationOver72h('Two and a half days of pain')).toBe(false);
   });
 });
+
+describe('forbidden wording in prompts (NCCN; RCOG GTG 37a)', () => {
+  it('inflammatory breast cancer: BCS and SLNB are "not recommended", never offered', () => {
+    const t = planText({
+      sex: 'female', age: '52', examBreast: 'Hard fixed mass with peau d\'orange over two-thirds of the breast',
+      assessment: 'Inflammatory breast cancer (T4d)',
+    });
+    expect(t).toMatch(/not recommended in inflammatory breast cancer/);
+    expect(t).not.toMatch(/no wide local excision/i);
+  });
+  it('pregnancy: warfarin and DOACs are stated as contraindicated', () => {
+    const t = planText({ sex: 'female', age: '30', pregnancyPossible: true, historyText: '22 weeks pregnant. Swollen left calf.' });
+    expect(t).toMatch(/DOACs and warfarin are contraindicated in pregnancy/);
+  });
+});
+
+describe('malignant large-bowel obstruction: colonic stent by side and contraindications (WSES 2018; ESGE 2020)', () => {
+  const base: Partial<InferenceInput> = {
+    age: '79', sex: 'female', encounterType: 'major_emergency',
+    symptoms: ['abdominal distension', 'vomiting', 'abdominal pain'],
+    ccEntries: [{ complaint: 'Acute abdominal pain', answers: {} }],
+  };
+  it('impending caecal perforation: stent contraindicated, emergency surgery', () => {
+    const t = planText({
+      ...base,
+      examAbdomen: 'Massively distended; tender with guarding and rebound in the right iliac fossa. Bowel sounds absent.',
+      radiologyRequests: [{ modality: 'CT', anatomicalRegion: 'Abdomen', resultReceived: true, indication: 'LBO', resultNotes: 'Large bowel obstruction from a stenosing sigmoid tumour (closed loop). Caecum 13.5 cm with pneumatosis of the caecal wall — impending perforation.' }],
+      assessment: 'Large bowel obstruction from sigmoid carcinoma with closed-loop caecal distension and caecal pneumatosis. Emergency laparotomy.',
+    });
+    expect(t).toMatch(/Colonic stenting is contraindicated/);
+    expect(t).not.toMatch(/colonic stent as (a )?bridge/i);
+  });
+  it('right-sided tumour: right hemicolectomy, no stent / Hartmann\'s', () => {
+    const t = planText({
+      ...base,
+      examAbdomen: 'Distended, mildly tender on the right, no peritonism.',
+      radiologyRequests: [{ modality: 'CT', anatomicalRegion: 'Abdomen', resultReceived: true, indication: 'LBO', resultNotes: 'Obstructing tumour at the hepatic flexure with dilated small bowel and ascending colon; no perforation.' }],
+      assessment: 'Large bowel obstruction from an obstructing hepatic flexure carcinoma, no perforation.',
+    });
+    expect(t).toMatch(/right \(extended\) hemicolectomy/);
+    expect(t).not.toMatch(/Hartmann'?s? (procedure|operation)|colonic stent as/);
+  });
+  it('left-sided without contraindication: stent as a bridge or emergency resection', () => {
+    const t = planText({
+      ...base,
+      examAbdomen: 'Distended, soft, mildly tender. No peritonism.',
+      radiologyRequests: [{ modality: 'CT', anatomicalRegion: 'Abdomen', resultReceived: true, indication: 'LBO', resultNotes: 'Large bowel obstruction from a sigmoid tumour; caecum 8 cm; no perforation.' }],
+      assessment: 'Large bowel obstruction from sigmoid carcinoma.',
+    });
+    expect(t).toMatch(/colonic stent as a bridge to elective resection/);
+  });
+  it('adhesional small-bowel obstruction gets no colonic stent line', () => {
+    const t = planText({
+      ...base,
+      examAbdomen: 'Distended, tympanic, soft.',
+      radiologyRequests: [{ modality: 'CT', anatomicalRegion: 'Abdomen', resultReceived: true, indication: 'SBO', resultNotes: 'Small bowel obstruction with a transition point in the right iliac fossa; adhesions.' }],
+      assessment: 'Adhesional small bowel obstruction.',
+    });
+    expect(t).not.toMatch(/stent/i);
+  });
+});

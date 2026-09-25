@@ -1950,6 +1950,41 @@ POST-OPERATIVE ORDERS:
       hasCc(ccEntries, 'obstruct', 'bowel obstruct', 'distension'))) ||
     hasRadResult(radiologyRequests, 'small bowel obstruction', 'sbo', 'large bowel obstruction', 'lbo', 'dilated bowel', 'transition point');
 
+  // Malignant large-bowel obstruction: the colonic stent (SEMS) option depends on the side of the
+  // tumour and on its contraindications (WSES 2018 obstructing colon cancer; ESGE 2020 colonic
+  // stenting). A stent is not offered with perforation, peritonitis, caecal ischaemia /
+  // pneumatosis, a closed loop or a caecum ≥ 12 cm (impending perforation), and not for a right-sided
+  // tumour, where right (extended) hemicolectomy with primary anastomosis is the standard.
+  const obstructionText = [dxHead, assessment ?? '', ...radiologyRequests.filter(r => r.resultReceived).map(r => r.resultNotes)].join('.\n');
+  const TUMOUR = '(?:tumou?r|cancer|carcinoma|malignan\\w*|mass|lesion|stricture)';
+  const RIGHT_SITE = '(?:caecum|caecal|cecum|cecal|ascending colon|hepatic flexure|right colon|right[- ]sided colon|right hemicolon)';
+  const rightSidedTumour = containsAnyAffirmed(obstructionText, [
+    new RegExp(`\\b${TUMOUR}\\s+(?:at|of|in|involving|arising (?:at|in|from))\\s+(?:the\\s+)?${RIGHT_SITE}\\b`),
+    new RegExp(`\\b${RIGHT_SITE}\\b[^.;\\n]{0,20}\\b${TUMOUR}\\b`),
+  ]);
+  const caecumCm = (() => {
+    const m = /\b(?:caecum|caecal|cecum|cecal)\b[^.;\n]{0,25}?(\d{1,2}(?:\.\d)?)\s*cm\b/i.exec(obstructionText);
+    return m ? parseFloat(m[1]) : null;
+  })();
+  const stentContraindications: string[] = [];
+  if (containsAnyAffirmed(obstructionText + '\n' + examAbdomen, ['perforat', 'free gas', 'pneumoperitoneum', 'free air'])) stentContraindications.push('perforation or impending perforation');
+  if (containsAnyAffirmed(examAbdomen, ['peritonitis', 'peritonism', 'rebound', 'guarding']) || containsAnyAffirmed(obstructionText, ['peritonitis'])) stentContraindications.push('peritonitis / peritonism');
+  if (containsAnyAffirmed(obstructionText, ['pneumatosis', 'ischaem', 'ischem', 'gangren', 'non-viable'])) stentContraindications.push('caecal / colonic ischaemia or pneumatosis');
+  if (containsAnyAffirmed(obstructionText, ['closed loop', 'closed-loop'])) stentContraindications.push('closed-loop obstruction');
+  if (caecumCm !== null && caecumCm >= 12) stentContraindications.push(`caecum ${caecumCm} cm`);
+  const malignantLbo = containsAnyAffirmed(obstructionText, [/\b(colonic|colorectal|colon|sigmoid|rectal|rectosigmoid|caecal|splenic flexure|descending colon|hepatic flexure)\b[^.;\n]{0,15}\b(cancer|carcinoma|tumou?r|malignan\w*)\b/, /\b(cancer|carcinoma|tumou?r)\b[^.;\n]{0,30}\b(colon|sigmoid|rectum|rectosigmoid|flexure|caecum)\b/, 'malignant large bowel obstruction', 'malignant lbo']);
+  const lboRecorded = containsAnyAffirmed(obstructionText, ['large bowel obstruction', /\blbo\b/, 'colonic obstruction', 'obstructing colon', 'obstructing sigmoid', 'obstructing rectal']);
+  let lboCancerStep: ClinicalAction | null = null;
+  if (malignantLbo && stentContraindications.length > 0) {
+    lboCancerStep = { step: 5, text: `Colonic stent contraindicated (${stentContraindications.join(', ')}) — emergency surgery (WSES 2018; ESGE 2020)`, addToPlan: `• Colonic stenting is contraindicated (${stentContraindications.join(', ')}): emergency surgery — resection (subtotal colectomy when the caecum is ischaemic or perforating) after resuscitation and antibiotics (WSES 2018; ESGE 2020).` };
+  } else if (malignantLbo && rightSidedTumour) {
+    lboCancerStep = { step: 5, text: 'Right-sided obstructing colon cancer: right (extended) hemicolectomy with primary anastomosis if stable (WSES 2018)', addToPlan: '• Right-sided obstructing colon cancer: right (extended) hemicolectomy with primary ileocolic anastomosis if the patient is stable; ileostomy if unstable or contaminated. Stenting is not routinely recommended for right-sided lesions (WSES 2018).' };
+  } else if (malignantLbo) {
+    lboCancerStep = { step: 5, text: 'Left-sided obstructing colon cancer: stent as a bridge to surgery or emergency resection (MDT; WSES 2018; ESGE 2020)', addToPlan: '• Left-sided obstructing colon cancer without perforation, peritonitis, ischaemia or a closed loop: colonic stent as a bridge to elective resection (selected patients, MDT), or emergency resection / Hartmann\'s procedure (WSES 2018; ESGE 2020).' };
+  } else if (lboRecorded) {
+    lboCancerStep = { step: 5, text: 'If the cause is a colonic cancer: stent vs resection by side and contraindications (WSES 2018)', addToPlan: '• If the large-bowel obstruction is due to a left-sided colonic cancer with no perforation, peritonitis, ischaemia or closed loop: colonic stent as a bridge to elective resection, or emergency resection (WSES 2018; ESGE 2020). Right-sided cancer: right hemicolectomy.' };
+  }
+
   if (hasBowelObstruction && (obstructionDx || herniaDx) && !paed) {
     add({
       id: 'bowel_obstruction_pathway',
@@ -1965,7 +2000,7 @@ POST-OPERATIVE ORDERS:
         { step: 2, text: 'IV Hartmann\'s 1L over 4h + strict fluid balance + IDC', addToPlan: '• IV Hartmann\'s 1–2L + IDC — fluid balance, electrolyte replacement (check K⁺ daily).' },
         { step: 3, text: 'AXR + CT abdomen/pelvis (contrast) — level, transition point, viability', addToPlan: '• CT abdomen/pelvis with IV contrast — level (SBO/LBO), transition point, closed loop, ischaemia (pneumatosis).' },
         { step: 4, text: 'FBC, CRP, U&E, lactate — ischaemia markers', addToInvestigations: 'Lactate' },
-        { step: 5, text: 'Colonoscopy + stenting for obstructing left-sided colonic cancer (bridge to elective surgery)', addToPlan: '• If LBO due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency Hartmann\'s).' },
+        ...(lboCancerStep ? [lboCancerStep] : []),
         {
           step: 6,
           text: 'Operative plan if surgical indication (ischaemia / failure to resolve)',
@@ -2099,10 +2134,10 @@ POST-OPERATIVE ORDERS:
       icon: '🎗️',
       finding: 'Suspected inflammatory breast cancer',
       diagnosis: 'Inflammatory breast cancer — neoadjuvant therapy first',
-      text: 'Inflammatory breast cancer → urgent breast MDT; no wide local excision / SLNB',
+      text: 'Inflammatory breast cancer → urgent breast MDT; breast-conserving surgery and SLNB are not recommended',
       rationale: 'Inflammatory breast cancer is treated with neoadjuvant systemic therapy first, then modified radical mastectomy; breast-conserving surgery and sentinel node biopsy are not recommended (NCCN breast cancer guideline).',
       actions: [
-        { step: 1, text: 'Urgent breast MDT / oncology — core biopsy with skin punch biopsy, staging', addToPlan: '• Urgent breast oncology MDT: core biopsy + skin punch biopsy, staging CT; neoadjuvant systemic therapy first (NCCN). No wide local excision or SLNB for inflammatory breast cancer.' },
+        { step: 1, text: 'Urgent breast MDT / oncology — core biopsy with skin punch biopsy, staging', addToPlan: '• Urgent breast oncology MDT: core biopsy + skin punch biopsy, staging CT; neoadjuvant systemic therapy first, then modified radical mastectomy with axillary node dissection (NCCN). Breast-conserving surgery (wide local excision) and sentinel node biopsy are not recommended in inflammatory breast cancer (NCCN).' },
       ],
     });
   }
@@ -2179,11 +2214,11 @@ POST-OPERATIVE ORDERS:
       icon: '🤰',
       finding: `Pregnant${weeks !== null ? ` (${weeks} weeks)` : ''}`,
       text: 'Pregnancy — obstetric team involvement; pregnancy-safe plan',
-      rationale: 'An acute presentation in pregnancy needs obstetric input: fetal assessment when viable, pregnancy-safe drugs and imaging (no NSAIDs from 20 weeks; LMWH rather than DOACs or warfarin; ultrasound / MRI before ionising imaging where they answer the question).',
+      rationale: 'An acute presentation in pregnancy needs obstetric input: fetal assessment when viable, pregnancy-safe drugs and imaging (no NSAIDs from 20 weeks; LMWH — DOACs and warfarin are contraindicated in pregnancy; ultrasound / MRI before ionising imaging where they answer the question).',
       actions: [
         { step: 1, text: 'Inform the obstetric / maternity team', addToPlan: '• Pregnancy: inform the obstetric / maternity team — joint care.' },
         ...(viable ? [{ step: 2, text: 'Fetal monitoring (CTG / fetal heart) — viable gestation', addToPlan: '• Fetal monitoring (CTG / fetal heart rate) with the obstetric team.' }] : []),
-        { step: 3, text: 'Pregnancy-safe prescribing and imaging: no NSAIDs from 20 weeks; LMWH not DOAC / warfarin; ultrasound or MRI in preference to CT where it answers the question', addToPlan: '• Pregnancy-safe plan: no NSAIDs from 20 weeks (MHRA 2020); anticoagulation with LMWH, not DOACs or warfarin (RCOG GTG 37a/b); ultrasound or MRI before ionising imaging where it answers the question.' },
+        { step: 3, text: 'Pregnancy-safe prescribing and imaging: no NSAIDs from 20 weeks; anticoagulation with LMWH (DOACs and warfarin are contraindicated in pregnancy); ultrasound or MRI in preference to CT where it answers the question', addToPlan: '• Pregnancy-safe plan: no NSAIDs from 20 weeks (MHRA 2020); anticoagulation with LMWH — DOACs and warfarin are contraindicated in pregnancy (warfarin is teratogenic) (RCOG GTG 37a/b); ultrasound or MRI before ionising imaging where it answers the question.' },
       ],
     });
   }

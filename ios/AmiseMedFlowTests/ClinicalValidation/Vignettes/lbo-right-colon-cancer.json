@@ -245,11 +245,7 @@
           ],
           "guidelineRefs": [
             "wses-lbo-2018"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: lbo_malignant plan prefix ('SEMS bridge … emergency Hartmann's … defunctioning colostomy') is applied to a hepatic-flexure tumour."
+          ]
         }
       ]
     },
