@@ -18,6 +18,9 @@ struct TodayBoard {
     var theatre: [Patient] = []
     var endoscopy: [Patient] = []
     var clinic: [Patient] = []
+    /// Outpatients created today with no appointment date (a walk-in added from Today's "+").
+    /// Before, they were listed nowhere on Today and had to be found again under Patients.
+    var addedToday: [Patient] = []
     var calendarEvents: [EKEvent] = []
     /// Every patient above, once each (search and the summary total).
     var allToday: [Patient] = []
@@ -30,7 +33,7 @@ struct TodayBoard {
     var isAnythingOn: Bool {
         !readyForDoctor.isEmpty || !ward.isEmpty ||
         !theatre.isEmpty || !endoscopy.isEmpty || !clinic.isEmpty ||
-        !calendarEvents.isEmpty
+        !addedToday.isEmpty || !calendarEvents.isEmpty
     }
 
     var totalCount: Int { allToday.count }
@@ -94,8 +97,12 @@ struct TodayBoard {
             .filter { isToday($0.startDate) && !$0.isAllDay }
             .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
 
+        let waitingIds = Set(readyForDoctor.map(\.id))
+        addedToday = TodayBoard.addedToday(patients, isToday: isToday)
+            .filter { !waitingIds.contains($0.id) }
+
         allToday = ListPerf.uniqued(readyForDoctor + highAcuityWard + ward +
-                                    theatre + endoscopy + clinic, id: { $0.id })
+                                    theatre + endoscopy + clinic + addedToday, id: { $0.id })
 
         // Calendar events today that don't yet have a matching patient record
         let existingNames = Set(allToday.map { $0.fullName.lowercased().trimmingCharacters(in: .whitespaces) })
@@ -104,5 +111,13 @@ struct TodayBoard {
             let parsed = CalendarEventParser.parse(title: title, calLabel: event.calEntryLabel)
             return !parsed.name.isEmpty && !existingNames.contains(parsed.name.lowercased().trimmingCharacters(in: .whitespaces))
         }.count
+    }
+
+    /// Outpatients created today with no appointment date, newest first (Today's "Added today").
+    static func addedToday(_ patients: [Patient], isToday: (Date?) -> Bool) -> [Patient] {
+        patients
+            .filter { $0.setting == .outpatient && $0.operationDate == nil && isToday($0.createdAt) }
+            .sorted { $0.createdAt > $1.createdAt }
+            .deduped()
     }
 }

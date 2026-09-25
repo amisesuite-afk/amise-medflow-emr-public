@@ -28,6 +28,8 @@ import UIKit
 enum QuestionnaireEntryPoint: String {
     case frontDeskTab = "front_desk_questionnaire_tab"
     case scheduler    = "appointment_scheduler"
+    /// iPhone Check-In row "Questionnaire" action (UX review m3).
+    case checkInRow   = "front_desk_checkin_row"
     case demographics = "front_desk_demographics"
 }
 

@@ -14,6 +14,10 @@ struct CompactFrontDeskView: View {
     private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @State private var searchQuery = ""
     @State private var selectedTab = 0
+    /// Patient whose pre-consultation questionnaire is open in hand-over mode (UX review m3: it
+    /// used to open only after saving a new appointment, which writes a calendar event).
+    @State private var questionnairePatient: Patient?
+    @State private var showQuestionnaire = false
 
     private var theatreCount: Int {
         allPatients.filter { $0.setting == .theatre }.deduped().count
@@ -143,11 +147,42 @@ struct CompactFrontDeskView: View {
                 }
             }
         }
+        // Patient hand-over mode (non-dismissable sheet on iPhone, staff-only exit). Nothing from
+        // the search stays behind it.
+        .patientHandoverPresentation(isPresented: $showQuestionnaire,
+                                     patient: questionnairePatient,
+                                     entryPoint: .checkInRow)
+        .onChange(of: showQuestionnaire) { _, open in
+            if !open { questionnairePatient = nil }
+        }
     }
 
-    /// A Check-In row: name and today's time only. The MRN is added for typed search results;
-    /// MRN, acuity and demographics are on the patient's own screen.
+    /// A Check-In row: the patient's screen, plus a direct "Questionnaire" action (UX review m3,
+    /// as on the iPad), which hands the phone to the patient.
     private func checkInLink(for patient: Patient, showsMRN: Bool) -> some View {
+        HStack(spacing: 8) {
+            checkInNavigationLink(for: patient, showsMRN: showsMRN)
+            Button {
+                questionnairePatient = patient
+                searchQuery = ""
+                showQuestionnaire = true
+            } label: {
+                Label("Questionnaire", systemImage: "list.clipboard")
+                    .font(.caption.weight(.semibold))
+                    .labelStyle(.titleAndIcon)
+                    .minimumTouchTarget()
+            }
+            // Borderless: its own tap target inside the row, separate from the navigation link.
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Questionnaire for \(patient.fullName)")
+            .accessibilityHint("Hands the phone to the patient")
+            .accessibilityIdentifier("fd.checkin.questionnaire")
+        }
+    }
+
+    /// Name and today's time only. The MRN is added for typed search results; MRN, acuity and
+    /// demographics are on the patient's own screen.
+    private func checkInNavigationLink(for patient: Patient, showsMRN: Bool) -> some View {
         NavigationLink {
             PatientDemographicsForm(patient: patient)
                 .navigationTitle(patient.fullName)

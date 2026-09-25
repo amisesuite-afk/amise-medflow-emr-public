@@ -97,6 +97,11 @@ struct TodayDashboardView: View {
                             if !board.theatre.isEmpty   { theatreSection(board.theatre) }
                             if !board.endoscopy.isEmpty { endoscopySection(board.endoscopy) }
                             if !board.clinic.isEmpty    { clinicSection(board.clinic) }
+                            // Walk-ins added today with no appointment date (UX review M9).
+                            if !board.addedToday.isEmpty {
+                                clinicSection(board.addedToday, title: "Added today",
+                                              systemImage: "person.crop.circle.badge.plus")
+                            }
                             if !board.calendarEvents.isEmpty { calendarSection(board.calendarEvents) }
                         }
                     }

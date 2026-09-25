@@ -78,6 +78,9 @@ struct AddPatientView: View {
                 nokSection
                 historySection
             }
+            // Scrolling the form puts the keyboard away, so the chips below the name field can be
+            // reached without hunting for a dismiss key (the keyboard used to cover them).
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("New Patient")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -243,7 +246,8 @@ struct AddPatientView: View {
                     ForEach(quickComplaints, id: \.self) { cc in
                         let selected = chiefComplaint == cc
                         Button(cc) { chiefComplaint = selected ? "" : cc }
-                            .font(.system(size: 11, weight: selected ? .semibold : .regular))
+                            // Dynamic Type text style (was fixed 11 pt; UX review m2).
+                            .font(.caption2.weight(selected ? .semibold : .regular))
                             .padding(.horizontal, 8).padding(.vertical, 4)
                             .background(selected ? Color.teal : Color.teal.opacity(0.1), in: Capsule())
                             .foregroundStyle(selected ? Color.white : Color.teal)

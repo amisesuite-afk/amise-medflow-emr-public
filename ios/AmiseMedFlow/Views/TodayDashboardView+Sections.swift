@@ -257,7 +257,8 @@ extension TodayDashboardView {
     // MARK: - Clinic Section
 
     @ViewBuilder
-    func clinicSection(_ clinicToday: [Patient]) -> some View {
+    func clinicSection(_ clinicToday: [Patient], title: String = "Clinic",
+                       systemImage: String = "stethoscope") -> some View {
         Section {
             ForEach(clinicToday) { patient in
                 Button { selectedPatient = patient } label: {
@@ -269,7 +270,7 @@ extension TodayDashboardView {
             }
         } header: {
             HStack {
-                Label("Clinic", systemImage: "stethoscope")
+                Label(title, systemImage: systemImage)
                     .textCase(nil)
                     .scaledFont(size: 11, weight: .semibold)
                 Spacer()
