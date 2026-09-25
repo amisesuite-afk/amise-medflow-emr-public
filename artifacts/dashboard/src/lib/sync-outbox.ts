@@ -97,8 +97,28 @@ async function idbDelete(id: number): Promise<void> {
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
+// In-flight enqueue() calls. trackedSave() fires enqueue() without awaiting it,
+// so sign-out waits on these before counting what is still unsynced.
+const inflight = new Set<Promise<void>>();
+
+/** Resolves once every enqueue() started so far has finished (success or failure). */
+export async function whenEnqueuesSettled(): Promise<void> {
+  await Promise.allSettled([...inflight]);
+}
+
 /** Enqueue a failed save for retry. Idempotent: same entity_type+entity_id replaces prior entry. */
-export async function enqueue(
+export function enqueue(
+  entityType: string,
+  entityId: string,
+  payload: Record<string, unknown>,
+): Promise<void> {
+  const p = enqueueInner(entityType, entityId, payload);
+  inflight.add(p);
+  void p.finally(() => inflight.delete(p)).catch(() => {});
+  return p;
+}
+
+async function enqueueInner(
   entityType: string,
   entityId: string,
   payload: Record<string, unknown>,
@@ -127,9 +147,11 @@ export async function enqueue(
 /** Drain the outbox — call on window 'online' and periodically. */
 export async function flush(
   onStatusChange?: (status: SyncStatus, pendingCount: number) => void,
+  /** ignoreBackoff: retry every entry now (used before sign-out), not just those due. */
+  opts: { ignoreBackoff?: boolean } = {},
 ): Promise<void> {
   const all = await idbAll();
-  const due = all.filter(e => e.next_retry_at <= Date.now());
+  const due = opts.ignoreBackoff ? all : all.filter(e => e.next_retry_at <= Date.now());
   if (!due.length) return;
 
   onStatusChange?.('retrying', due.length);
@@ -168,4 +190,30 @@ export async function pendingCount(): Promise<number> {
   } catch {
     return 0;
   }
+}
+
+/** Entity types of the pending entries (for the unsynced-changes warning). No payloads. */
+export async function pendingEntityTypes(): Promise<string[]> {
+  try {
+    return (await idbAll()).map(e => e.entity_type);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Delete every queued entry (they hold clinical payloads — PHI). Only called
+ * on sign-out, and only when the outbox is already empty or the user has
+ * explicitly confirmed discarding the pending changes (secure-sign-out.ts).
+ * Clears the store rather than deleting the database so it works while other
+ * tabs hold the database open.
+ */
+export async function clearOutbox(): Promise<void> {
+  const db = await openDb();
+  await new Promise<void>((resolve, reject) => {
+    const tx  = db.transaction(STORE, 'readwrite');
+    const req = tx.objectStore(STORE).clear();
+    req.onsuccess = () => resolve();
+    req.onerror   = () => reject(req.error);
+  });
 }

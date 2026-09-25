@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { enqueue, flush, type SyncStatus } from '@/lib/sync-outbox';
 import '@/lib/sync-executors'; // registers outbox executors — side-effect import, must run before any save can fail
+import { registerBeforeSignOut } from '@/lib/secure-sign-out';
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
@@ -1616,6 +1617,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [hasPendingTimers]);
+
+  // Before sign-out (manual or idle timeout): push any debounced autosave out
+  // now and wait for in-flight saves, so a just-typed edit is either saved or
+  // queued in the outbox — and therefore counted by the unsynced-changes
+  // check — rather than lost when the app unmounts (secure-sign-out.ts).
+  useEffect(() => registerBeforeSignOut(async () => {
+    flushRef.current();
+    const deadline = Date.now() + 7_000;
+    while (pendingSaves.current > 0 && Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, 100));
+    }
+  }), []);
 
   // ── Bayesian diagnosis-to-procedure autofill ──────────────────────────────
   // Refs let the effect read latest values without adding them as dependencies
