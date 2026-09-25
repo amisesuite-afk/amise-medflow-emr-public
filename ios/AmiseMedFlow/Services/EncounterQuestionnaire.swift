@@ -252,6 +252,9 @@ struct EncounterAnswers {
     var alcoholUse: AlcoholUse = .none
     var lastMealTime: Date? = nil
     var occupation: String = ""
+    /// Religious / ritual fasting and complementary treatments, asked last (LifestyleQuestions.swift,
+    /// twin of the web lifestyle-questions.ts). Information only.
+    var lifestyle = LifestyleQuestionnaireAnswers()
 
     // MARK: - Derived canonical strings (written to Patient model)
 
@@ -354,6 +357,9 @@ struct EncounterAnswers {
         if !occupation.isEmpty      { lines.append("OCCUPATION: \(occupation)") }
         lines.append("SMOKING: \(smokingStatus.rawValue)")
         lines.append("ALCOHOL: \(alcoholUse.rawValue)")
+        // "Fasting (patient-reported): …" lines, the same as the web intake; read back by
+        // Patient.patientReportedLifestyle for the clinician to confirm.
+        lines += lifestyle.lines
         return lines.joined(separator: "\n")
     }
 

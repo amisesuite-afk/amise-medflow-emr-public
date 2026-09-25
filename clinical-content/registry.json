@@ -572,7 +572,7 @@
     },
     {
       "id": "front-desk-patient-instructions",
-      "title": "Booking-email patient instructions, service pages and staff prep reference text",
+      "title": "Booking-email patient instructions, service pages, staff prep reference text and the dashboard's printed patient prep sheet / procedure leaflet",
       "platforms": ["front-desk", "web"],
       "kind": "patient-text",
       "contentVersion": "unversioned",
@@ -584,9 +584,12 @@
         "artifacts/front-desk/app/services/breast-clinic/page.tsx",
         "artifacts/front-desk/app/pathway/page.tsx",
         "artifacts/front-desk/app/book/BookingForm.tsx",
-        "artifacts/dashboard/src/pages/tabs/BookingInboxTab.tsx"
+        "artifacts/dashboard/src/pages/tabs/BookingInboxTab.tsx",
+        "artifacts/dashboard/src/lib/patient-prep-sheet.ts",
+        "artifacts/dashboard/src/components/PatientPrepCard.tsx",
+        "artifacts/dashboard/src/pages/tabs/SurgicalConsentTab.tsx"
       ],
-      "tests": ["scripts/src/lint-patient-instructions.ts"],
+      "tests": ["scripts/src/lint-patient-instructions.ts", "artifacts/dashboard/src/lib/__tests__/patient-prep-sheet.test.ts"],
       "ciChecks": ["lint:patient-instructions"],
       "guidelines": [],
       "citationStatus": "none",
@@ -596,7 +599,7 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer; wording only on the surgeon's instruction (CLAUDE.md).",
-      "notes": "Emailed automatically on booking."
+      "notes": "Emailed automatically on booking. The dashboard's printed prep sheet and procedure leaflet reuse the approved sentences word for word (lint rule 8, 2026-09-25: the old sheet's stop / hold / reduce medicine lines and midnight fasting were replaced; wording listed for sign-off in docs/clinical-validation/changes/followups-prep-h10.md)."
     },
     {
       "id": "front-desk-health-information",
@@ -1042,12 +1045,15 @@
         "lib/triage-engine/src/lifestyle-questions.ts",
         "ios/AmiseMedFlow/Services/LifestylePractices.swift",
         "ios/AmiseMedFlow/Services/LifestylePractices+Patient.swift",
+        "ios/AmiseMedFlow/Services/LifestyleQuestions.swift",
         "artifacts/dashboard/src/lib/lifestyle-context-web.ts"
       ],
       "tests": [
         "artifacts/dashboard/src/lib/__tests__/lifestyle-practices.test.ts",
         "artifacts/dashboard/src/lib/__tests__/lifestyle-context-web.test.ts",
-        "ios/AmiseMedFlowTests/LifestylePracticesTests.swift"
+        "ios/AmiseMedFlowTests/LifestylePracticesTests.swift",
+        "ios/AmiseMedFlowTests/LifestyleQuestionsTests.swift",
+        "artifacts/dashboard/src/lib/__tests__/lifestyle-questions-ios-parity.test.ts"
       ],
       "ciChecks": [
         "dashboard vitest (shared vectors, H-10 wording check, APCQ placement)",
@@ -1110,6 +1116,11 @@
           "version": "0.1.0",
           "date": "2026-09-25",
           "change": "Created: structured lifestyle history, three safety prompts, six evidence-graded suggestions and three counselling items; APCQ questions on religious fasting and complementary treatments."
+        },
+        {
+          "version": "0.1.0",
+          "date": "2026-09-25",
+          "change": "iOS front-desk iPad questionnaire asks the same lifestyle questions (LifestyleQuestions.swift, wording pinned to lifestyle-questions.ts by lifestyle-questions-ios-parity.test.ts), last; answers become the same '(patient-reported)' lines, recorded into PathwayData.lifestyle only on the clinician's tap. No rule or wording change."
         }
       ]
     },

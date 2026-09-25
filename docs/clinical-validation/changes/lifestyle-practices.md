@@ -63,7 +63,9 @@ always last and only while the session is under the 18-question cap, so they nev
 clinical question. The api-server keeps them out of the drafted symptom list; the dashboard shows
 the answers as "Fasting (patient-reported): …" social-history lines. The clinician records the
 structured fields; answers are not copied into them automatically. The iOS front-desk iPad
-questionnaire (`AdaptiveQuestionnaireSheet`) was not changed.
+questionnaire (`AdaptiveQuestionnaireSheet`) asks the same questions since 2026-09-25
+(`LifestyleQuestions.swift`, see `followups-prep-h10.md`): last, the same "(patient-reported)"
+lines, and the clinician records them into `PathwayData.lifestyle` with one tap.
 
 ### 3. Clinician-facing safety prompts (dismissible, cited)
 

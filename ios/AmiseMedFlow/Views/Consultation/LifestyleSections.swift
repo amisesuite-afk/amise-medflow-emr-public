@@ -4,8 +4,10 @@
 // evidence-graded non-drug suggestions. Rules and wording: Services/LifestylePractices.swift
 // (web twin: dashboard LifestyleHistoryCard / LifestylePracticesPanel).
 //
-// Nothing here changes the record by itself: prompts are dismissible, and a plan line is added
-// only when the clinician taps "Add to plan" (CLAUDE.md "Central diagnosis radiation").
+// Nothing here changes the record by itself: prompts are dismissible, a plan line is added only
+// when the clinician taps "Add to plan" (CLAUDE.md "Central diagnosis radiation"), and the
+// front-desk questionnaire's answers are recorded only when the clinician taps "Record the
+// patient's answers" (fills unrecorded fields only).
 // Stored in PathwayData.lifestyle → patients.pathway_data_json (synced by SyncService+PathwayData).
 
 import SwiftUI
@@ -115,6 +117,29 @@ struct LifestyleHistorySection: View {
     }
 
     var body: some View {
+        // The front-desk questionnaire's answers (LifestyleQuestions.swift): shown for the
+        // clinician to confirm; recorded only on this tap, and only where nothing is recorded yet.
+        if let reported = patient.patientReportedLifestyle, !reported.lines.isEmpty {
+            Section {
+                ForEach(reported.lines, id: \.self) { line in
+                    Text(line)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                let filled = reported.filling(history)
+                Button("Record the patient's answers") {
+                    update { $0 = filled }
+                }
+                .font(.caption.weight(.semibold))
+                .disabled(filled == history)
+                Text("Fills only what is not recorded yet. Confirm with the patient.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Label("Patient questionnaire", systemImage: "list.clipboard")
+            }
+        }
+
         Section {
             ChipFlow(hSpacing: 8, vSpacing: 8) {
                 ForEach(LifestyleHistory.Fasting.allCases, id: \.self) { f in

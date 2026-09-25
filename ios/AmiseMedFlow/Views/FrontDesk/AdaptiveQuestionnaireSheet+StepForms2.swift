@@ -136,6 +136,10 @@ extension AdaptiveQuestionnaireSheet {
             Text("Required if the patient may need surgery or anaesthesia today.")
                 .font(.caption).foregroundStyle(.secondary)
         }
+
+        // Fasting and complementary treatments — always last, after every clinical question
+        // (AdaptiveQuestionnaireSheet+Lifestyle.swift; same questions as the web intake).
+        lifestyleQuestionSections
     }
 
     // ── Submit ────────────────────────────────────────────────────────────────
