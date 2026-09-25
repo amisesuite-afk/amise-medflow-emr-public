@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useAppContext } from '@/context/AppContext';
-import { listPatientEncounters, loadEncounterData, createEncounter, type EncounterSummary, type PatientListRow } from '@/lib/db';
+import { useAppContext, type RosFinding } from '@/context/AppContext';
+import { listPatientEncounters, loadEncounterData, loadEncounterMedicationList, createEncounter, type EncounterSummary, type PatientListRow } from '@/lib/db';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { DEMO_MODE } from '@/context/AuthContext';
@@ -33,17 +33,19 @@ function relativeTime(iso: string): string {
 
 export default function EncounterTimelineTab() {
   const {
-    patientId, encounterId,
+    patientId, encounterId, beginEncounter,
     setAssessment, setDifferentials, setIcdCodes, setPlan,
     setAssessmentUpdatedAt, setPlanUpdatedAt,
-    setMedications, setMedicationsText, setAllergies,
-    setSurgicalHistory, setSurgicalNotes,
-    setToxicHabits, setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
-    setExamFindings, setExamNotes,
+    setMedications, setMedicationsText,
+    setHpiNotes, setOrderedInvestigations,
+    setExamFindings, setExamNotes, setRosFindings, setProcedureData, setTraumaData,
+    setClinicalScores, setExtractedLabs,
+    setWard, setDateAdmission, setDateDischarge, setAdmittingSurgeon, setReferringPhysician,
+    setNokName, setNokRelation, setNokTel, setBloodGroup, setMrNumber,
     setActiveSection,
     referredBy, procedureData,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId, clearPatient,
-    setEncounterId, currentSite: siteCode,
+    currentSite: siteCode,
   } = useAppContext();
 
   // ── Patient search (shown when no patient loaded) ────────────────────────
@@ -109,16 +111,27 @@ export default function EncounterTimelineTab() {
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
 
+  // A new or stored encounter is opened with beginEncounter(), never setEncounterId() alone: the
+  // previous encounter's pending autosaves go to the previous encounter, and the other encounter
+  // starts from clean per-encounter state (lib/encounter-switch.ts).
   async function startEncounter() {
-    if (!patientId) return;
+    if (!patientId || starting) return;
+    const forPatient = patientId;
     setStarting(true);
-    const result = await createEncounter({ patient_id: patientId, site: siteCode ?? undefined });
+    setError(null);
+    const result = await createEncounter({ patient_id: forPatient, site: siteCode ?? undefined });
     setStarting(false);
     if (result.error || !result.encounter) {
       setError(result.error ?? 'Failed to create encounter');
       return;
     }
-    setEncounterId(result.encounter.id);
+    const switched = beginEncounter({
+      patientId: forPatient, encounterId: result.encounter.id, status: 'open', closedAt: null,
+    });
+    if (!switched.switched) {
+      setError('The patient changed while the new encounter was being created, so it was not opened here.');
+      return;
+    }
     void load();
   }
 
@@ -138,12 +151,22 @@ export default function EncounterTimelineTab() {
 
   useEffect(() => { void load(); }, [load]);
 
+  // "Load this encounter" used to copy the stored encounter's assessment, plan and medicines into
+  // the CURRENT encounter id (only the content changed), so autosave wrote them into the encounter
+  // being documented. It now switches the consultation to the loaded encounter, and only the
+  // loaded encounter's own content is shown — nothing of the previous one is kept.
   async function loadEncounter(enc: EncounterSummary) {
-    if (!patientId) return;
+    if (!patientId || loadingId) return;
+    const forPatient = patientId;
     setLoadingId(enc.id);
+    setError(null);
     let result: Awaited<ReturnType<typeof loadEncounterData>>;
+    let medList: Awaited<ReturnType<typeof loadEncounterMedicationList>>;
     try {
-      result = await loadEncounterData(enc.id, patientId);
+      [result, medList] = await Promise.all([
+        loadEncounterData(enc.id, forPatient),
+        loadEncounterMedicationList(forPatient, enc.id),
+      ]);
     } catch (err) {
       setLoadingId(null);
       setError(err instanceof Error ? err.message : 'Failed to load encounter');
@@ -155,25 +178,49 @@ export default function EncounterTimelineTab() {
       return;
     }
     const d = result.data;
-    setAssessment(d.assessment ?? '');
-    setDifferentials(d.differentials ?? '');
-    setIcdCodes(d.icdCodes ?? []);
-    setPlan(d.plan ?? '');
-    setAssessmentUpdatedAt(d.assessmentUpdatedAt ?? null);
-    setPlanUpdatedAt(d.planUpdatedAt ?? null);
-    setMedications(d.medications ?? []);
-    setMedicationsText('');
-    setAllergies(d.allergens?.join(', ') ?? '');
-    setSurgicalHistory(d.surgicalHistory ?? []);
-    setSurgicalNotes(d.surgicalNotes ?? '');
-    setToxicHabits(d.toxicHabits ?? []);
-    if (d.hpiNotes) setHpiNotes(d.hpiNotes);
-    if (Object.keys(d.examFindings).length) setExamFindings(d.examFindings);
-    if (Object.keys(d.examNotes).length) setExamNotes(d.examNotes);
-    if (d.pmhNotes) setPmhNotes(d.pmhNotes);
-    if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
-    if (d.orderedInvestigations?.length) setOrderedInvestigations(d.orderedInvestigations);
+    const switched = beginEncounter(
+      { patientId: forPatient, encounterId: enc.id, status: enc.status ?? null, closedAt: null },
+      () => {
+        // Per-encounter content of the loaded encounter. Standing history (PMH, surgical
+        // history, allergies, habits) is the patient's and is already loaded — left as it is.
+        setAssessment(d.assessment);
+        setDifferentials(d.differentials);
+        setIcdCodes(d.icdCodes);
+        setPlan(d.plan);
+        setAssessmentUpdatedAt(d.assessmentUpdatedAt);
+        setPlanUpdatedAt(d.planUpdatedAt);
+        setMedications(medList.error ? d.medications : medList.chips);
+        setMedicationsText(medList.error ? '' : medList.freeText);
+        setHpiNotes(d.hpiNotes);
+        setExamFindings(d.examFindings);
+        setExamNotes(d.examNotes);
+        setOrderedInvestigations(d.orderedInvestigations);
+        setRosFindings(d.rosFindings as Record<string, RosFinding>);
+        setProcedureData(d.procedureData);
+        if (d.traumaData) setTraumaData(d.traumaData);
+        setClinicalScores(d.clinicalScores);
+        setExtractedLabs(d.extractedLabs);
+        const ip = d.inpatientDetails;
+        if (ip) {
+          if (typeof ip.ward === 'string') setWard(ip.ward);
+          if (typeof ip.dateAdmission === 'string') setDateAdmission(ip.dateAdmission);
+          if (typeof ip.dateDischarge === 'string') setDateDischarge(ip.dateDischarge);
+          if (typeof ip.admittingSurgeon === 'string') setAdmittingSurgeon(ip.admittingSurgeon);
+          if (typeof ip.referringPhysician === 'string') setReferringPhysician(ip.referringPhysician);
+          if (typeof ip.nokName === 'string') setNokName(ip.nokName);
+          if (typeof ip.nokRelation === 'string') setNokRelation(ip.nokRelation);
+          if (typeof ip.nokTel === 'string') setNokTel(ip.nokTel);
+          if (typeof ip.bloodGroup === 'string') setBloodGroup(ip.bloodGroup);
+          if (typeof ip.mrNumber === 'string') setMrNumber(ip.mrNumber);
+        }
+      },
+    );
+    if (!switched.switched) {
+      setError('The patient changed while the encounter was loading, so it was not opened here.');
+      return;
+    }
     setActiveSection('assessment');
+    void load();
   }
 
   if (!patientId) {

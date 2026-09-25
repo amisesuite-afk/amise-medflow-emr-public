@@ -7,6 +7,7 @@ import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSi
 import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, type EncounterSummary } from '@/lib/db';
+import { switchEncounter, type EncounterSwitchResult, type EncounterSwitchTarget } from '@/lib/encounter-switch';
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 import { scoreDiagnosis } from '@/lib/diagnosis-proc-mapper';
@@ -306,6 +307,16 @@ interface CtxValue {
 
   clearPatient(): void;
 
+  /**
+   * Point the consultation at another encounter of the loaded patient — a new one ("+ New
+   * encounter") or a stored one ("Load this encounter"). Flushes the current encounter's pending
+   * autosaves to the current encounter first, then starts from clean per-encounter state (standing
+   * history kept) so nothing of the previous visit is saved into the other one; `apply` then fills
+   * in the target's stored data in the same render. Refused when the patient has changed meanwhile.
+   * Never call setEncounterId() alone to switch encounters. See lib/encounter-switch.ts.
+   */
+  beginEncounter(target: EncounterSwitchTarget, apply?: () => void): EncounterSwitchResult;
+
   examGeneral: string; setExamGeneral(v: string): void;
   examCardio: string; setExamCardio(v: string): void;
   examResp: string; setExamResp(v: string): void;
@@ -550,6 +561,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   const [patientId, setPatientId] = useState<string | null>(null);
+  // Latest patient id for async handlers (an encounter created or loaded for one patient must not
+  // be attached after the user has moved on to another — beginEncounter()).
+  const patientIdRef = useRef<string | null>(null);
+  patientIdRef.current = patientId;
   const [encounterId, setEncounterId] = useState<string | null>(null);
   const [encounterStatus, setEncounterStatus] = useState<string | null>(null);
   const [encounterClosedAt, setEncounterClosedAt] = useState<string | null>(null);
@@ -758,6 +773,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [problems, setProblems] = useState<PatientProblem[]>([]);
   const [recentEncounters, setRecentEncounters] = useState<EncounterSummary[]>([]);
   const [recentEncountersPatientId, setRecentEncountersPatientId] = useState<string | null>(null);
+  // Bumped by beginEncounter() so the patient's encounter list is reloaded with the new encounter.
+  const [encounterListVersion, setEncounterListVersion] = useState(0);
   const [wounds, setWounds] = useState<WoundAssessment[]>([]);
   const [extractedLabs, setExtractedLabs] = useState<Record<string, number | null>>({});
   const [clinicalScores, setClinicalScores] = useState<Record<string, unknown>>({});
@@ -796,13 +813,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (result && typeof result === 'object' && 'error' in result && (result as { error: unknown }).error) {
         throw new Error(String((result as { error: unknown }).error));
       }
-      if (saveEpoch.current !== epoch) return undefined;
       pendingSaves.current--;
       if (pendingSaves.current === 0) {
         _setSaveStatus('saved');
         if (savedTimer.current) clearTimeout(savedTimer.current);
         savedTimer.current = setTimeout(() => _setSaveStatus('idle'), 2000);
       }
+      // Started before the patient or encounter changed (clearPatient / beginEncounter): the
+      // write went to the encounter it was scheduled for, but its result (e.g. an optimistic-lock
+      // version) belongs to that encounter and must not be applied to the current one. The
+      // counter above is still decremented, or sign-out would wait on a save that has finished.
+      if (saveEpoch.current !== epoch) return undefined;
       return result;
     } catch (err) {
       pendingSaves.current--;
@@ -1099,6 +1120,56 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const inpatientTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clinicalScoresTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /**
+   * Every per-encounter field (ENCOUNTER_SCOPED_FIELDS in lib/encounter-switch.ts) back to its
+   * empty value. Patient-scoped state is untouched. Used by clearPatient() and beginEncounter();
+   * encounter-switch.test.ts fails if a field in that list has no reset here.
+   */
+  function resetEncounterState() {
+    setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
+    setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
+    setHpiNotes(''); setActiveCcKey(null); setProcedureData({});
+    setMedications([]); setMedicationsText(''); setPendingPrescriptions([]);
+    setVitals(EMPTY_VITALS);
+    setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm('');
+    setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
+    setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
+    setExamFindings({}); setExamNotes({}); setExamPhotos([]); setAnatomicalFindings([]);
+    setRosFindings({});
+    setOrderedInvestigations([]); setRadiologyRequests([]); setInvestigationResults({});
+    setExtractedLabs({}); setClinicalScores({}); setVitalRecords([]); setLabRecords([]);
+    setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
+    setAssessmentUpdatedAt(null); setPlanUpdatedAt(null); setSaveConflict(null);
+    setIcdCodes([]); setCptCodes([]); setConfirmedDiagnoses([]); setWorkingDiagnosis(null);
+    setPaneState(null); setPaneTop([]); setPaneConverged(false);
+    setSurgicalClassifications({}); setTraumaData(EMPTY_TRAUMA_DATA);
+    setProcedures(''); setBilling(''); setDocuments(''); setPreAuthStatus('');
+    setFinalDocument(''); setProgressNotes([]); setAttachments([]); setWounds([]);
+    setPeriopProcId(''); setWhoProc({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
+    setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1); setPreVisitStatus('new');
+    setEncounterMode('outpatient'); setEncounterType('surgical_consult');
+    setWard(''); setDateAdmission(''); setDateDischarge('');
+    setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
+    setPriorEncounterSummary(null);
+  }
+
+  function beginEncounter(target: EncounterSwitchTarget, apply?: () => void): EncounterSwitchResult {
+    return switchEncounter({
+      currentPatientId: () => patientIdRef.current,
+      // flushRef holds the flush of the latest render: its closure still has the current
+      // encounter id and content, so pending saves land on the encounter they were typed for.
+      flushPendingSaves: () => flushRef.current(),
+      invalidateInFlightSaves: () => { saveEpoch.current++; },
+      resetEncounterState,
+      setEncounter: t => {
+        setEncounterId(t.encounterId);
+        setEncounterStatus(t.status);
+        setEncounterClosedAt(t.closedAt);
+        setEncounterListVersion(v => v + 1);
+      },
+    }, target, apply);
+  }
+
   function clearPatient() {
     // Invalidate in-flight saves and cancel all debounce timers
     saveEpoch.current++;
@@ -1117,44 +1188,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (inpatientTimerRef.current) { clearTimeout(inpatientTimerRef.current); inpatientTimerRef.current = null; }
     if (clinicalScoresTimerRef.current) { clearTimeout(clinicalScoresTimerRef.current); clinicalScoresTimerRef.current = null; }
     setPatientId(null); setEncounterId(null); setEncounterStatus(null); setEncounterClosedAt(null);
-    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
-    setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
-    setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
-    setVitals(EMPTY_VITALS);
+    resetEncounterState();
+    // Patient-scoped state (PATIENT_SCOPED_FIELDS) — kept by beginEncounter(), cleared here.
+    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto('');
+    setAddress(''); setQuarter(''); setReferredBy(''); setOccupation('');
     setComorbidities([]); setPmhNotes(''); setFamilyHistory([]); setFamilyHistoryNotes('');
-    setSurgicalHistory([]); setSurgicalNotes(''); setRecentSurgeryDate(''); setMedications([]); setMedicationsText('');
-    setAllergies(''); setToxicHabits([]); setOccupation(''); setHpiNotes('');
-    setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
-    setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
-    setExamFindings({}); setExamNotes({});
-    setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]); setCptCodes([]);
-    setAddress(''); setQuarter(''); setReferredBy('');
-    setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm(''); setAnatomicalFindings([]);
-    setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
-    setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
-    setPeriopProcId(''); setWhoProc({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
-    setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
-    setAssessmentUpdatedAt(null); setPlanUpdatedAt(null); setSaveConflict(null);
-    setConfirmedDiagnoses([]);
-    setWorkingDiagnosis(null);
-    setProcedures(''); setBilling(''); setDocuments(''); setSurgicalClassifications({});
-    setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
-    setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
-    setProgressNotes([]);
-    setVitalRecords([]); setLabRecords([]);
-    setEncounterMode('outpatient');
-    setEncounterType('surgical_consult');
-    setMrNumber(''); setWard(''); setDateAdmission(''); setDateDischarge('');
-    setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
-    setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
-    setPaneState(null); setPaneTop([]); setPaneConverged(false);
-    setTraumaData(EMPTY_TRAUMA_DATA);
-    setActiveCcKey(null);
+    setSurgicalHistory([]); setSurgicalNotes(''); setRecentSurgeryDate('');
+    setAllergies(''); setToxicHabits([]);
+    setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber('');
+    setMrNumber(''); setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
     setProblems([]);
-    setWounds([]);
-    setExtractedLabs({});
-    setClinicalScores({});
-    setPriorEncounterSummary(null);
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -1220,12 +1263,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setRecentEncountersPatientId(patientId);
     });
     return () => { cancelled = true; };
-  }, [patientId]);
+  }, [patientId, encounterListVersion]);
 
   // ── Load wound assessments whenever encounter changes ─────────────────────
   useEffect(() => {
     if (!patientId || !encounterId) { setWounds([]); return; }
-    void loadWoundAssessments(patientId, encounterId).then(setWounds);
+    let cancelled = false;
+    // A late answer for the previous encounter must not land in the current one.
+    void loadWoundAssessments(patientId, encounterId).then(list => { if (!cancelled) setWounds(list); });
+    return () => { cancelled = true; };
   }, [patientId, encounterId]);
 
   // Shared by the debounced autosave effect and the page-hide flush path
@@ -1559,8 +1605,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (hpiTimerRef.current && patientId && encounterId) {
       clearTimeout(hpiTimerRef.current);
       hpiTimerRef.current = null;
-      void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes),
-        { entityType: 'hpi_note', entityId: encounterId, payload: { encounterId, patientId, hpiNotes } });
+      if (hpiNotes.trim()) {
+        void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes),
+          { entityType: 'hpi_note', entityId: encounterId, payload: { encounterId, patientId, hpiNotes } });
+      } else {
+        // The pending save was the clearing of a saved HPI (see the HPI autosave effect).
+        hpiSavedRef.current = false;
+        void trackedSave(() => clearHpiNote(encounterId),
+          { entityType: 'hpi_note_clear', entityId: encounterId, payload: { encounterId } });
+      }
     }
     if (pmhTimerRef.current && patientId) {
       clearTimeout(pmhTimerRef.current);
@@ -1726,6 +1779,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     occupation, setOccupation,
     hpiNotes, setHpiNotes,
     clearPatient,
+    beginEncounter,
     examGeneral, setExamGeneral,
     examCardio, setExamCardio,
     examResp, setExamResp,
