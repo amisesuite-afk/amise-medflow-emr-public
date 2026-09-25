@@ -58,12 +58,18 @@ const PUBLIC_PAGES: Record<string, string> = {
   'app/services/diabetic-foot/page.tsx': '/services/diabetic-foot',
   'app/services/endoscopy/page.tsx': '/services/endoscopy',
   'app/services/ercp/page.tsx': '/services/ercp',
+  'app/health-information/page.tsx': '/health-information',
 };
 
 describe('canonical tags', () => {
   it.each(Object.entries(PUBLIC_PAGES))('%s declares canonical %s', (file, path) => {
     const src = readFileSync(join(ROOT, file), 'utf8');
     expect(src).toContain(`canonical: '${path}'`);
+  });
+
+  it('the article page builds its canonical from the slug', () => {
+    const src = readFileSync(join(ROOT, 'app/health-information/[slug]/page.tsx'), 'utf8');
+    expect(src).toMatch(/canonical: `\/health-information\/\$\{[^}]+\}`/);
   });
 
   it('the root layout sets no canonical (it would be inherited by every page)', () => {
