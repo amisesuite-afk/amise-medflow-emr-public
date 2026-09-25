@@ -555,7 +555,7 @@
       "title": "Public health-information library (patient-education articles on the website)",
       "platforms": ["front-desk"],
       "kind": "patient-text",
-      "contentVersion": "0.1.0",
+      "contentVersion": "0.2.0",
       "versionStamp": { "file": "artifacts/front-desk/content/health-info.ts", "type": "regex", "pattern": "HEALTH_INFO_LIBRARY_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "artifacts/front-desk/content/health-info.ts",
@@ -577,18 +577,22 @@
         { "name": "USPSTF breast cancer screening; ACR higher-than-average risk screening", "version": "2024 / 2023", "section": "breast-lumps-screening", "citation": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-screening; JACR 2023" },
         { "name": "ATA thyroid nodule and DTC guidelines; BTA thyroid cancer guidelines", "version": "2015 / 2014", "section": "thyroid-nodules", "citation": "Thyroid 2016; Clinical Endocrinology 2014" },
         { "name": "BSG common bile duct stones; ESGE ERCP-related adverse events", "version": "2017 / 2020", "section": "ercp", "citation": "Gut 2017; Endoscopy 2020" },
-        { "name": "NICE NG45 preoperative tests; NICE NG180 perioperative care", "version": "2016 / 2020", "section": "preparing-for-surgery", "citation": "https://www.nice.org.uk/guidance/ng45; https://www.nice.org.uk/guidance/ng180" }
+        { "name": "NICE NG45 preoperative tests; NICE NG180 perioperative care", "version": "2016 / 2020", "section": "preparing-for-surgery", "citation": "https://www.nice.org.uk/guidance/ng45; https://www.nice.org.uk/guidance/ng180" },
+        { "name": "IDF and DAR International Alliance: Diabetes and Ramadan Practical Guidelines", "version": "2021", "section": "religious-fasting-diabetes", "citation": "Named in the practice evidence briefing (Sept 2026) §4 without a year or reference; year written from memory, to confirm" },
+        { "name": "Huang ZG 2023 (tai chi, falls); Saper RB 2017 (yoga, low back pain); Kuyken W 2016 (MBCT)", "version": "2023 / 2017 / 2016", "section": "mind-body-practices", "citation": "Front Public Health 2023; Ann Intern Med 2017;167:85-94; JAMA Psychiatry 2016;73:565-74 (briefing §10 refs 2, 5, 6)" },
+        { "name": "Practice evidence briefing: cupping, detox teas, colon cleanses, IV vitamin drips", "version": "2026", "section": "detox-cleanses-drips", "citation": "Dr D. D. Kabiye, Sept 2026, §6 and §8 (no primary reference listed in §10)" }
       ],
       "citationStatus": "per-rule",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
-      "reviewEvidence": "None. Ten articles drafted 2026-09-25; every article ships as status 'draft' (not public) until the surgeon approves it. Per-article review dates live in the content file, not here.",
+      "reviewEvidence": "None. Thirteen articles drafted 2026-09-25; every article ships as status 'draft' (not public) until the surgeon approves it. Per-article review dates live in the content file, not here.",
       "reviewPriority": "P2",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer drafts; an article is published only when the surgeon approves it (status, lastReviewed, reviewedBy, reviewDue set in the content file). Workflow: docs/CLINICAL-CONTENT-UPGRADES.md §9.",
       "notes": "Only approved articles are rendered at /health-information (drafts 404 and are excluded from the sitemap); staff preview every article at /staff/health-information. Each article carries its own version, sources and review dates; lint:guideline-registry fails an approved article without them and warns when one is past reviewDue.",
       "changelog": [
-        { "version": "0.1.0", "date": "2026-09-25", "change": "Library created with ten draft articles (gallstones, hernias, colonoscopy and bowel screening, haemorrhoids and fissure, reflux and H. pylori, diabetic foot care, breast lumps and screening, thyroid nodules, ERCP, preparing for surgery). None approved." }
+        { "version": "0.1.0", "date": "2026-09-25", "change": "Library created with ten draft articles (gallstones, hernias, colonoscopy and bowel screening, haemorrhoids and fissure, reflux and H. pylori, diabetic foot care, breast lumps and screening, thyroid nodules, ERCP, preparing for surgery). None approved." },
+        { "version": "0.2.0", "date": "2026-09-25", "change": "Three draft articles from the practice evidence briefing (Sept 2026): fasting for religious reasons with diabetes, exercise and mind-body practices with good evidence, detox teas / cleanses / vitamin drips. Drafts only, not approved (docs/clinical-validation/changes/lifestyle-practices.md)." }
       ]
     },
     {
@@ -846,7 +850,10 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on web/API/front-desk deploy.",
-      "notes": "62 red-flag options; 'emergency' answers drive the patient-facing ER/911 redirect."
+      "notes": "62 red-flag options; 'emergency' answers drive the patient-facing ER/911 redirect. The information-only lifestyle questions (religious fasting + timing, complementary treatments) live in lib/triage-engine/src/lifestyle-questions.ts (registry entry lifestyle-practices) and are always asked last, only under the question cap.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "QUESTION_BANK includes the lifestyle questions from lifestyle-questions.ts; createSession/processAnswer place them last (placeLifestyleQuestions), so they never displace a clinical question." }
+      ]
     },
     {
       "id": "adaptive-triage",
@@ -962,6 +969,98 @@
       "notes": "Replaces the fixed preventative rules in clinical-inference.ts (CRC from 50 with no upper limit, annual mammography, smear-only cervical screening, PSA from 50 with no upper limit). Local choices awaiting sign-off: PSA discussion from 45 with a family history (ACS 2023); universal adult HBV screening (CDC 2023); direct 2WW referral for rectal bleeding ≥ 50.",
       "changelog": [
         { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS G2.19): port of the iOS ScreeningEngine to lib/triage-engine, aligned to USPSTF (primary), ACG/US MSTF, ACR/NCCN, ADA 2024, NICE NG136; adds post-polypectomy intervals, Lynch and BRCA pathways, hysterectomy exclusion, AAA, HBV/HCV/HIV, H. pylori FDR, out-of-office BP confirmation and 10-year CV risk." }
+      ]
+    },
+    {
+      "id": "lifestyle-practices",
+      "title": "Lifestyle history (ritual fasting, complementary therapies, sleep / shift work): fasting and sleep safety prompts, evidence-graded non-drug plan suggestions, and the information-only questionnaire questions",
+      "platforms": [
+        "web",
+        "ios",
+        "api",
+        "front-desk"
+      ],
+      "kind": "decision-support",
+      "contentVersion": "0.1.0",
+      "versionStamp": {
+        "file": "lib/triage-engine/src/lifestyle-practices.ts",
+        "type": "regex",
+        "pattern": "LIFESTYLE_PRACTICES_VERSION\\s*=\\s*'([^']+)'"
+      },
+      "files": [
+        "lib/triage-engine/src/lifestyle-practices.ts",
+        "lib/triage-engine/src/lifestyle-questions.ts",
+        "ios/AmiseMedFlow/Services/LifestylePractices.swift",
+        "ios/AmiseMedFlow/Services/LifestylePractices+Patient.swift",
+        "artifacts/dashboard/src/lib/lifestyle-context-web.ts"
+      ],
+      "tests": [
+        "artifacts/dashboard/src/lib/__tests__/lifestyle-practices.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/lifestyle-context-web.test.ts",
+        "ios/AmiseMedFlowTests/LifestylePracticesTests.swift"
+      ],
+      "ciChecks": [
+        "dashboard vitest (shared vectors, H-10 wording check, APCQ placement)",
+        "ios-build-check.yml unit tests"
+      ],
+      "guidelines": [
+        {
+          "name": "Practice evidence briefing: Ancient Remedy, Modern Market (Dr D. D. Kabiye)",
+          "version": "Sept 2026",
+          "section": "§4 habits and rituals, §6 hands-on therapies, §8 verdict table (grade labels)",
+          "citation": "Practice owner's own briefing; only §4, §6, §8 and §10 used"
+        },
+        {
+          "name": "IDF and DAR International Alliance: Diabetes and Ramadan Practical Guidelines",
+          "version": "2021",
+          "section": "fasting + diabetes prompts; time-restricted eating note",
+          "citation": "Named in briefing §4 without a year or reference; year from memory, to confirm"
+        },
+        {
+          "name": "Huang ZG et al., tai chi and falls (24 RCTs, RR 0.76)",
+          "version": "2023",
+          "section": "tai chi suggestion",
+          "citation": "Front Public Health 2023 (briefing §10 ref 2)"
+        },
+        {
+          "name": "Saper RB et al., yoga vs physical therapy for chronic low back pain",
+          "version": "2017",
+          "section": "yoga suggestion",
+          "citation": "Ann Intern Med 2017;167:85-94 (ref 5)"
+        },
+        {
+          "name": "Kuyken W et al., MBCT relapse prevention IPD meta-analysis (HR 0.69)",
+          "version": "2016",
+          "section": "MBCT referral option",
+          "citation": "JAMA Psychiatry 2016;73:565-74 (ref 6)"
+        },
+        {
+          "name": "Vickers AJ et al., acupuncture for chronic pain IPD meta-analysis",
+          "version": "2012",
+          "section": "acupuncture referral option",
+          "citation": "Arch Intern Med 2012; update J Pain 2018 (ref 19)"
+        },
+        {
+          "name": "Liu D et al., calorie restriction with or without time-restricted eating",
+          "version": "2022",
+          "section": "time-restricted eating suggestion",
+          "citation": "N Engl J Med 2022;386:1495-1504 (ref 7)"
+        }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Written 2026-09-25 from the practice owner's briefing; the 'Needs sign-off' list is in docs/clinical-validation/changes/lifestyle-practices.md.",
+      "reviewPriority": "P2",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer drafts; thresholds, grade labels and prompt wording on the surgeon's decision, changed on web and iOS in the same PR.",
+      "notes": "Deterministic and dismissible; a plan line is added only on the clinician's tap. No text tells anyone to take, hold, stop or adjust a medicine. The record is stored as the lifestyle key of patients.pathway_data_json (no new column). usesDetoxOrCleanse / usesIvVitaminDrips are exported for the supplement rule set (another module).",
+      "changelog": [
+        {
+          "version": "0.1.0",
+          "date": "2026-09-25",
+          "change": "Created: structured lifestyle history, three safety prompts, six evidence-graded suggestions and three counselling items; APCQ questions on religious fasting and complementary treatments."
+        }
       ]
     },
     {

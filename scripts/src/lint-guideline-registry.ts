@@ -92,6 +92,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'ios/AmiseMedFlow/Services/SurgicalRiskEngine*.swift',
   'ios/AmiseMedFlow/Services/ProcedureTemplate*.swift',
   'ios/AmiseMedFlow/Services/LabAnalyteCatalog.swift',
+  'ios/AmiseMedFlow/Services/LifestylePractices*.swift',
   // Shared triage engine
   'lib/triage-engine/src/news2.ts',
   'lib/triage-engine/src/rules.ts',
@@ -108,6 +109,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/triage-engine/src/surgical-catalog.ts',
   'lib/triage-engine/src/formulary.ts',
   'lib/triage-engine/src/report-import/catalog.ts',
+  'lib/triage-engine/src/lifestyle-practices.ts',
+  'lib/triage-engine/src/lifestyle-questions.ts',
   // Pane engine
   'lib/pane-engine/src/vademecum/*.ts',
   'lib/pane-engine/src/vademecum/specialties/*.ts',
