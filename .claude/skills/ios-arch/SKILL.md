@@ -76,10 +76,19 @@ Pull protection: `sync()` pulls patients BEFORE pushing them, so a pull must nev
 record with `pendingSync == true` (it would revert an offline edit before it is pushed). Patients
 go through `PatientPullMerge.applyServerPatientRow` (only `remoteId`, an MRN the local copy lacks,
 and the Scale 2 flag apply to a pending patient); notes and operative plans skip pending rows;
-prescriptions/vitals/billing/documents pulls only insert new rows. A push clears `pendingSync`
-only when the server returns the written row (`.select("id")`; an RLS-refused update returns no
-rows, no error) and `updatedAt` did not change during the request (`SyncPushConfirmation`). Tests:
-`AmiseMedFlowTests/PullProtectionTests.swift`.
+prescriptions/vitals/billing pulls update an existing non-pending row (by remoteId) when the
+server's values differ, and for prescriptions only when `updated_at` is newer than the local
+`updatedAt` (`ChildPullMerge`, `SyncService+ChildPullMerge.swift`; `patient_vitals` and
+`patient_billing_items` have no `updated_at`); the documents pull only inserts. A push clears
+`pendingSync` only when the server returns the written row (`.select("id")`) and `updatedAt` did
+not change during the request (`SyncPushConfirmation`). An UPDATE that RLS filters out returns no
+rows and no error: every update push calls `markRefusedIfUpdateNotApplied`, which selects the row
+by id and marks the record refused when it is still there (`SyncZeroRowUpdate`; a row that is gone
+stays pending, not refused). Tests: `AmiseMedFlowTests/PullProtectionTests.swift`,
+`SyncCompletenessTests.swift`.
+Prescription `route`: the applied schema (Migration 32) has a lowercase CHECK ('oral', 'iv', …,
+'other'); pushes send `PrescriptionRoute.serverValue` (unmappable or mixed routes → "other"),
+pulls show `display(fromServer:)`, and local labels ("Oral", "PO/IV") are kept (`sameRoute`).
 Remote ids (`Services/SyncRemoteIds.swift`): a patient created from a confirmed booking carries
 the placeholder `"appt:<appointment id>"`, which is not a row id. Every push sends a remoteId only
 through `SyncRemoteId.serverId(_:)` (UUID guard, row ids and `patient_id`); never compare with
@@ -106,8 +115,15 @@ patient UPDATE (`PatientUpdateRow`), mirroring Migration 89's column guard. Test
 `AmiseMedFlowTests/FrontDeskSyncTests.swift`.
 
 **PeerSyncService**: MCSession, service type `"amise-medflow"`, matches peers by
-SHA-256 of email. Manifest-based (syncCode → syncedAt), longer text wins for
-clinical narrative, newer timestamp wins for admin fields.
+SHA-256 of email. Manifest-based: syncCode → stamp, `max(updatedAt, syncedAt)`
+(`PeerVersion`, `PeerSyncService+Versions.swift`), so records created or edited offline are sent;
+the old syncCode → syncedAt maps stay for older builds, and payloads carry an optional
+`updatedAt`. Longer text wins for clinical narrative, the newer copy wins for admin fields and
+child records (an unsent local edit loses only to a later edit), notes follow `mergeDoc` and a
+signed note is never reopened. After an apply the receiver's `syncedAt` adopts the peer's stamp
+(not sent again), or ends above it when its merged copy differs and must go back
+(`PeerVersion.sendsBack`, `PeerFingerprint`). Patients deleted here are listed with a far-future
+stamp. Tests: `SyncCompletenessTests.swift`, `SyncMergeTests.swift`.
 
 **NASBackupService**: WebDAV to Synology DSM (`amise-storage`, Tailscale IP
 `100.119.29.97`). DSM port 5005 HTTP / 5006 HTTPS. Credentials in Keychain via
