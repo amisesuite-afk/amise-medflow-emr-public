@@ -165,6 +165,8 @@ approved. Reply with the file and item numbers you approve (for example "fix-web
 | [ios-screening-parity](changes/ios-screening-parity.md#needs-sign-off) | iOS screening, NG12 suspected-cancer card, TIA scores | Web rule sets applied to iOS, PSA from 45 for African-Caribbean ancestry, BRCA surveillance ages, NG12 thresholds, removing ABCD² for TIA (13 items) |
 | [supplements-interactions](changes/supplements-interactions.md#needs-sign-off) | Herbs, bush teas and supplements (web + iOS) | Grades of 41 herb–drug rules, lab thresholds for the "ask about" prompts, candidate Caribbean bush teas, emergency-surgery wording, vitamin E / fish oil, local brand names |
 | [lifestyle-practices](changes/lifestyle-practices.md#needs-sign-off) | Fasting, complementary therapies, sleep (web + iOS) | Evidence grade labels (IV vitamin drips: Mixed or No benefit?), trigger conditions, age ≥ 65 / sleep < 6 h / BMI ≥ 30, fasting-prompt scope, three draft health-library articles, IDF-DAR citation |
+| [web-plan-filter-everywhere](changes/web-plan-filter-everywhere.md#needs-sign-off) | Web: filter on every screen, seeded investigations | Holding back stat tests from unconfirmed diagnoses, 20% leading-differential threshold, two new protocols (aorto-enteric fistula, IgA vasculitis), 50 mL fluid cut-off, pregnancy-test rules, SAH left unmapped (11 items) |
+| [ios-plan-safety](changes/ios-plan-safety.md#needs-sign-off) | iOS: plan safety filter, 38 new plan cards | Cephalosporins withheld after penicillin anaphylaxis (web only cautions), thrombolysis withheld on anticoagulants, inferred "not pregnant", DOAC/valve wording, TG18 thresholds, recognise-and-redirect cards (23 items) |
 
 Decided so far:
 
