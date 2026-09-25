@@ -27,10 +27,10 @@ Principles kept throughout:
 |---|---|---|---|---|---|
 | Original base `72e083a` (before any fix branch) | 1882 | 1113 | 546 | 567 | 0 |
 | This branch on the original base (before the rebase) | 2441 | 554 | 288 | 266 | 0 |
-| Current base `origin/claude/pr-37-gbg22z` `0a8d1ca` (triage, differential, screening merged) | 2625 | 370 | 66 | 304 | 0 |
-| **This branch rebased on `0a8d1ca`** | **2865** | **130** | **5** | **125** | **0** |
+| Current base `origin/claude/pr-37-gbg22z` `0cce702` (triage, differential, screening merged; same web numbers as `0a8d1ca`) | 2625 | 370 | 66 | 304 | 0 |
+| **This branch rebased on `0cce702`** | **2865** | **130** | **5** | **125** | **0** |
 
-Against `0a8d1ca`: **240 expectations went from fail to pass (61 critical, 179 quality)** —
+Against `0cce702`: **240 expectations went from fail to pass (61 critical, 179 quality)** —
 management include 117, management exclude 58, investigation include 41, investigation exclude 11,
 dx variant 8, red flag 5. **No expectation that passed on the base fails now.** 232
 `knownGap: ["web"]` flags that now pass were removed (where `ios` was also listed, only `web` was
