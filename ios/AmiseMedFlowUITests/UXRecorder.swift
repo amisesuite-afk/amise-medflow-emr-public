@@ -322,8 +322,14 @@ final class UXRecorder {
     /// The form or list to scroll when the element is not built yet: the front-most collection
     /// view or table (a sheet or popover form), else the whole app.
     private var scrollContainer: XCUIElement {
-        let lists = app.collectionViews.allElementsBoundByIndex + app.tables.allElementsBoundByIndex
-        return lists.last(where: { $0.exists && $0.isHittable }) ?? app
+        let keyboard = app.keyboards.firstMatch
+        let keyboardFrame = keyboard.exists ? keyboard.frame : .null
+        let lists = (app.collectionViews.allElementsBoundByIndex + app.tables.allElementsBoundByIndex)
+            .filter { $0.exists && $0.isHittable }
+            // The keyboard has its own collection views (suggestions, emoji): never scroll those.
+            .filter { keyboardFrame.isNull || !keyboardFrame.contains($0.frame) }
+        // The largest list on screen is the form or page, not a chip strip inside it.
+        return lists.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }) ?? app
     }
 
     /// Scrolls until `element` is visible (for fields low in long forms, or above with `upwards`).
