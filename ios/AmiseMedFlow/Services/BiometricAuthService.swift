@@ -19,6 +19,13 @@ final class BiometricAuthService: ObservableObject {
     private var backgroundedAt: Date?
     private var isFirstLaunch = true
 
+    init() {
+        #if DEBUG
+        // UI-test demo mode (UITestDemoMode.swift, DEBUG only): no app lock.
+        if UITestDemoMode.isActive { isLocked = false }
+        #endif
+    }
+
     // MARK: - Device type helpers
 
     var isPhone: Bool { UIDevice.current.userInterfaceIdiom == .phone }
@@ -32,6 +39,9 @@ final class BiometricAuthService: ObservableObject {
     // MARK: - Lifecycle hooks
 
     func lockIfTimedOut() {
+        #if DEBUG
+        if UITestDemoMode.isActive { return }   // demo mode: never locks
+        #endif
         if isFirstLaunch {
             isFirstLaunch = false
             isLocked = true

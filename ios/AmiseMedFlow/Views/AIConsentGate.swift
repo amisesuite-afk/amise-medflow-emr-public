@@ -26,9 +26,18 @@ private struct AIConsentGateModifier: ViewModifier {
     @AppStorage(consentKey) private var accepted: Bool = false
     @State private var showSheet = false
 
+    /// UI-test demo mode (UITestDemoMode.swift, DEBUG only) skips the disclosure.
+    private var skipsForDemoMode: Bool {
+        #if DEBUG
+        return UITestDemoMode.isActive
+        #else
+        return false
+        #endif
+    }
+
     func body(content: Content) -> some View {
         content
-            .onAppear { if !accepted { showSheet = true } }
+            .onAppear { if !accepted && !skipsForDemoMode { showSheet = true } }
             .sheet(isPresented: $showSheet) {
                 AIConsentSheet(accepted: $accepted, showSheet: $showSheet)
                     .interactiveDismissDisabled(true)

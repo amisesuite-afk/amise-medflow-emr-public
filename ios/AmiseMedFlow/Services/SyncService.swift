@@ -30,6 +30,17 @@ final class SyncService: ObservableObject {
     private var realtimeTask: Task<Void, Never>?
 
     init() {
+        #if DEBUG
+        // UI-test demo mode (UITestDemoMode.swift, DEBUG only): a synthetic signed-in user and no
+        // syncing at all — no network monitor, session restore, periodic or realtime sync.
+        if UITestDemoMode.isActive {
+            currentUserEmail = UITestDemoMode.userEmail
+            currentUserId = UITestDemoMode.userId
+            currentUserRole = UITestDemoMode.role
+            isRoleConfirmed = true
+            return
+        }
+        #endif
         monitor.pathUpdateHandler = { [weak self] path in
             Task { @MainActor in
                 let connected = path.status == .satisfied
@@ -68,6 +79,9 @@ final class SyncService: ObservableObject {
     // MARK: - Realtime subscription (doctor device gets instant update on check-in)
 
     func startRealtime() {
+        #if DEBUG
+        if UITestDemoMode.isActive { return }   // demo mode never syncs
+        #endif
         realtimeTask?.cancel()
         realtimeTask = Task { [weak self] in
             guard let self else { return }
@@ -120,6 +134,9 @@ final class SyncService: ObservableObject {
     }
 
     func signOut() async throws {
+        #if DEBUG
+        if UITestDemoMode.isActive { return }   // demo mode: no Supabase session to end
+        #endif
         AuditLog.record("logout", "user", details: ["client": "ios"])
         await AuditLog.flush()   // upload while still signed in
         try await SupabaseConfig.client.auth.signOut()
@@ -159,12 +176,18 @@ final class SyncService: ObservableObject {
     // MARK: - Sync orchestration
 
     func syncIfAuthenticated() async {
+        #if DEBUG
+        if UITestDemoMode.isActive { return }   // demo mode never syncs
+        #endif
         guard isSignedIn, let ctx = modelContext else { return }
         await flushOutbox()
         await sync(context: ctx)
     }
 
     func sync(context: ModelContext) async {
+        #if DEBUG
+        if UITestDemoMode.isActive { return }   // demo mode never syncs
+        #endif
         guard !isSyncing else { return }
         isSyncing = true
         syncError = nil

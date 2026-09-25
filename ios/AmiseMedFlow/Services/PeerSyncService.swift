@@ -110,6 +110,9 @@ final class PeerSyncService: NSObject, ObservableObject {
     // MARK: - Lifecycle
 
     func start(context: ModelContext, email: String) {
+        #if DEBUG
+        if UITestDemoMode.isActive { return }   // demo mode: no nearby-device sync
+        #endif
         guard !isRunning else { return }
         teardownTransport()
         modelContext = context

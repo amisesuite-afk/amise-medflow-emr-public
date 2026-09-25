@@ -31,6 +31,10 @@ final class CalendarService: ObservableObject {
     }
 
     private func authoriseAndLoad() async {
+        #if DEBUG
+        // Demo mode: no calendar permission prompt and no real calendar events.
+        if UITestDemoMode.isActive { events = []; return }
+        #endif
         do {
             let granted: Bool
             if #available(iOS 17.0, *) {

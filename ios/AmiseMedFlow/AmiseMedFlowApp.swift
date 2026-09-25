@@ -14,10 +14,23 @@ struct AmiseMedFlowApp: App {
     let sharedModelContainer: ModelContainer
 
     init() {
+        #if DEBUG
+        // UI-test demo mode (UITestDemoMode.swift, DEBUG only): synthetic in-memory store, no
+        // Sentry, and the on-disk store is never opened.
+        if UITestDemoMode.isActive {
+            sharedModelContainer = UITestDemoMode.makeSeededContainer(schema: Self.makeSchema())
+            return
+        }
+        #endif
         // First, so a crash anywhere during launch is still reported (and so a store failure
         // below can be reported: the container used to be built before this ran).
         CrashReporting.start()
         sharedModelContainer = Self.makeModelContainer()
+    }
+
+    /// Every @Model type the app stores.
+    private static func makeSchema() -> Schema {
+        Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self, Encounter.self, ScoreHistoryEntry.self])
     }
 
     /// Opens the on-device store without ever deleting or resetting it (see StoreHealth.swift):
@@ -25,7 +38,7 @@ struct AmiseMedFlowApp: App {
     /// a fresh store once → in-memory fallback, which shows a red banner and blocks new patients
     /// and note signing. Every failed step is reported with its error domain and code only.
     private static func makeModelContainer() -> ModelContainer {
-        let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self, Encounter.self, ScoreHistoryEntry.self])
+        let schema = makeSchema()
 
         // CloudKit sync requires iCloud entitlement — not configured, so use local store only.
         let config = ModelConfiguration(

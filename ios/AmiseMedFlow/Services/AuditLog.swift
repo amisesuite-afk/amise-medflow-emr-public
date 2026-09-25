@@ -38,6 +38,9 @@ enum AuditLog {
     static func record(_ action: String, _ resourceType: String,
                        patient: Patient? = nil, resourceId: String? = nil,
                        details: [String: String] = [:]) {
+        #if DEBUG
+        if UITestDemoMode.isActive { return }   // demo mode: synthetic data is never audited or uploaded
+        #endif
         let user = SupabaseConfig.client.auth.currentUser
         let event = AuditEvent(
             at: .now,
@@ -62,6 +65,9 @@ enum AuditLog {
 
     /// Uploads queued events to Supabase `audit_log`. Safe to call repeatedly; never throws.
     static func flush() async {
+        #if DEBUG
+        if UITestDemoMode.isActive { return }
+        #endif
         guard !isFlushing, !queue.isEmpty else { return }
         isFlushing = true
         defer { isFlushing = false }
