@@ -1,5 +1,8 @@
 // VisitContinuityTests.swift
 // Returning patient: follow-up of the same problem, or a new problem (VisitContinuity).
+// DRIFT NOTE: these vectors are ported 1:1 to the web in
+// artifacts/dashboard/src/lib/__tests__/visit-continuity.test.ts (twin of
+// lib/triage-engine/src/visit-continuity.ts). Change both platforms in the same PR.
 
 import XCTest
 @testable import AmiseMedFlow

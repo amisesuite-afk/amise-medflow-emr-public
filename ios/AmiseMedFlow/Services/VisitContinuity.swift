@@ -6,6 +6,9 @@
 // follow-up of the last problem unless the chief complaint is a new, different one, in which case
 // it is a new-problem (first-visit) consultation. Pure except for reading the patient's records;
 // tested in VisitContinuityTests.
+//
+// Web twin: lib/triage-engine/src/visit-continuity.ts — keep the stop words, region map and
+// suffix trimming identical (vectors shared with the dashboard's visit-continuity.test.ts).
 
 import Foundation
 
