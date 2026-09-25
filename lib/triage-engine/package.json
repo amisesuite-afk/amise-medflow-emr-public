@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./apcq.js": "./src/apcq.ts",
-    "./apcq": "./src/apcq.ts"
+    "./apcq": "./src/apcq.ts",
+    "./report-import": "./src/report-import/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
