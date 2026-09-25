@@ -34,6 +34,15 @@
  *      prescribed medicine with stop (self-tests below). It is required in the
  *      procedure sets and absent from the assessment, consultation and minor
  *      procedure sets.
+ *   8. Dashboard printouts given to patients — the prep sheet (PatientPrepCard,
+ *      lib/patient-prep-sheet.ts, checked from its RENDERED output) and the
+ *      procedure leaflet (SurgicalConsentTab prep text): stricter than rule 1,
+ *      no sentence pairs any medicine word (tablets, blood pressure medicine,
+ *      iron, NSAIDs, …) with take / hold / stop / reduce / continue / avoid,
+ *      no "midnight" at all, no individual prescribed medicine named, and the
+ *      medicine and fasting sentences are the approved ones, identical to the
+ *      front-desk instructions and the api-server templates. The verbatim
+ *      herbal paragraph is the only exception.
  *   5. Dr Kabiye's preparation decisions, in the booking email and the
  *      dashboard staff text: ERCP work-up is the ERCP procedure at Tapion under
  *      general anaesthesia (6 h / 2 h fast, escort for 24 h, call-the-clinic
@@ -58,6 +67,7 @@ import { APPOINTMENT_TYPES } from '../../artifacts/front-desk/lib/scheduling';
 import { HEALTH_ARTICLES, articleText } from '../../artifacts/front-desk/content/health-info';
 import { HERBAL_PREOP_PATIENT_TEXT, SUPPLEMENT_PATIENT_QUESTION } from '../../artifacts/dashboard/src/lib/supplement-catalogue';
 import { SUPPLEMENT_PATIENT_QUESTION as FRONT_DESK_SUPPLEMENT_QUESTION } from '../../artifacts/front-desk/lib/supplements-question';
+import * as PrepSheet from '../../artifacts/dashboard/src/lib/patient-prep-sheet';
 
 // scripts/src/lint-patient-instructions.ts -> scripts/src -> scripts -> repo root
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
@@ -72,6 +82,10 @@ const SOURCE_FILES = [
   'artifacts/dashboard/src/pages/tabs/BookingInboxTab.tsx',
   'artifacts/front-desk/app/previsit/[token]/page.tsx',
   'artifacts/front-desk/app/patient/intake/page.tsx',
+  // Dashboard printouts handed to patients (also held to the stricter rule 8 below).
+  'artifacts/dashboard/src/components/PatientPrepCard.tsx',
+  'artifacts/dashboard/src/lib/patient-prep-sheet.ts',
+  'artifacts/dashboard/src/pages/tabs/SurgicalConsentTab.tsx',
 ];
 
 const MEDICINE =
@@ -328,6 +342,147 @@ if (!readFileSync(join(REPO_ROOT, 'artifacts/front-desk/lib/claude.ts'), 'utf8')
 }
 for (const s of medicationInstructionViolations(SUPPLEMENT_PATIENT_QUESTION)) failures.push(`supplement question instructs: "${s}"`);
 
+// ── 8. Dashboard printouts given to patients ──────────────────────────────────
+// The printed prep sheet (PatientPrepCard → lib/patient-prep-sheet.ts) and the procedure leaflet
+// (SurgicalConsentTab → printPatientLeaflet). Stricter than rule 1: ANY medicine word with an
+// instruction verb, because the old sheet told patients to stop, hold, reduce or take prescribed
+// medicines (blood pressure tablets at 7 am, metformin, insulin, NSAIDs, iron) and to take
+// nothing by mouth from midnight.
+const PRINTOUT_MEDICINE =
+  /\b(medicines?|medications?|meds|tablets?|pills?|insulin|metformin|glucophage|gliclazide|diabet\w*|hypoglycaemic\w*|warfarin|coumadin|apixaban|eliquis|rivaroxaban|xarelto|dabigatran|pradaxa|edoxaban|clopidogrel|plavix|ticagrelor|brilinta|prasugrel|aspirin|anticoagula\w*|antiplatelet\w*|blood[- ]?thinn\w*|ibuprofen|naproxen|diclofenac|celecoxib|nsaids?|iron|ferrous|levothyroxine|thyroxine|carbimazole|propylthiouracil|anti-?thyroid|beta[- ]?blockers?|blood pressure|bp|amlodipine|nifedipine|lisinopril|ramipril|enalapril|losartan|valsartan|metoprolol|atenolol|bisoprolol|furosemide|hydrochlorothiazide|omeprazole|pantoprazole|esomeprazole)\b/i;
+const PRINTOUT_INSTRUCTION =
+  /\b(take|takes|taking|taken|hold|holding|held|stop|stops|stopping|stopped|reduc\w*|continue\w*|discontinue\w*|restart\w*|resume\w*|skip\w*|omit\w*|withh[eo]ld\w*|pause\w*|adjust\w*|avoid\w*|halve\w*)\b/i;
+// Sentences reviewed and allowed on a printout, with the reason.
+const PRINTOUT_ALLOWED_SENTENCES = new Set([
+  // Thyroidectomy leaflet: post-operative information about a new prescription, not a pre-procedure
+  // hold / stop (the front-desk thyroid_surgery after-care says the same).
+  'If your whole thyroid is removed, you will need to take a daily thyroid hormone tablet (thyroxine) for the rest of your life.',
+]);
+const HERBAL_SENTENCES = new Set(sentences(HERBAL_PREOP_PATIENT_TEXT));
+
+export function printoutViolations(text: string): string[] {
+  const out: string[] = [];
+  for (const s of sentences(text)) {
+    if (HERBAL_SENTENCES.has(s) || PRINTOUT_ALLOWED_SENTENCES.has(s)) continue;
+    let scrubbed = s;
+    for (const re of ALLOWED_PHRASES) scrubbed = scrubbed.replace(re, ' ');
+    if (PRINTOUT_MEDICINE.test(scrubbed) && PRINTOUT_INSTRUCTION.test(scrubbed)) out.push(`medicine instruction: "${s}"`);
+    if (/\bmidnight\b/i.test(s)) out.push(`mentions midnight (fasting wording): "${s}"`);
+  }
+  return out;
+}
+
+// Self-test: the old prep-sheet and leaflet wording must fail.
+for (const bad of [
+  'If you are on blood pressure medication: take your tablets at 7:00 am with a small sip of water ONLY — do not eat or drink anything else',
+  'Continue clear fluids until midnight — then NOTHING by mouth',
+  'NBM from midnight — no food or drink from midnight the night before.',
+  'Blood thinners: stop aspirin, warfarin, plavix 5 days before.',
+  'Vitamins and iron tablets / supplements: stop 3 days before your procedure.',
+  'Metformin: HOLD on the day of preparation and day of procedure — restart once eating normally.',
+  'Insulin: REDUCE dose while fasting — do not take usual insulin dose when not eating.',
+  'Ibuprofen: HOLD on the day of procedure — increases bleeding risk.',
+  'Amlodipine: CONTINUE — take at 7:00 am on the morning of your procedure with a small sip of water only.',
+  'Continue all regular medications with a sip of water on the morning of surgery unless specifically advised otherwise.',
+  'Hold anticoagulants as directed.',
+  'Do not take metformin on the day of the procedure.',
+  'Hold iron supplements for 5 days (they darken the stomach lining).',
+  'If polyps were removed, avoid blood-thinning medications for 5–7 days unless directed otherwise.',
+  'No solid food or milk from midnight.',
+]) {
+  if (printoutViolations(bad).length === 0) failures.push(`self-test: printout rule missed unsafe text: "${bad}"`);
+}
+for (const ok of [PrepSheet.PREP_MEDICATIONS_CALL, PrepSheet.PREP_BLOOD_THINNERS_CALL, PrepSheet.PREP_FASTING_STANDARD,
+  PrepSheet.PREP_COLONOSCOPY_DAY_OF, PrepSheet.PREP_MINOR_NO_FASTING, PrepSheet.PREP_MINOR_GA_SEPARATE, HERBAL_PREOP_PATIENT_TEXT]) {
+  for (const v of printoutViolations(ok)) failures.push(`self-test: printout rule flagged approved text: ${v}`);
+}
+
+// 8a. The dashboard's approved sentences are the front-desk / api-server ones, word for word.
+{
+  const fd = (key: string) => {
+    const inst = INSTRUCTIONS_BY_KEY[key];
+    return inst ? [...inst.beforeVisit, ...inst.onTheDay] : [];
+  };
+  const pins: [string, string, string][] = [
+    ['PREP_MEDICATIONS_CALL', PrepSheet.PREP_MEDICATIONS_CALL, 'gastroscopy'],
+    ['PREP_BLOOD_THINNERS_CALL', PrepSheet.PREP_BLOOD_THINNERS_CALL, 'ercp'],
+    ['PREP_FASTING_STANDARD', PrepSheet.PREP_FASTING_STANDARD, 'gastroscopy'],
+    ['PREP_COLONOSCOPY_DAY_OF', PrepSheet.PREP_COLONOSCOPY_DAY_OF, 'colonoscopy'],
+    ['PREP_MINOR_NO_FASTING', PrepSheet.PREP_MINOR_NO_FASTING, 'minor_procedure'],
+    ['PREP_MINOR_GA_SEPARATE', PrepSheet.PREP_MINOR_GA_SEPARATE, 'minor_procedure'],
+  ];
+  for (const [name, text, key] of pins) {
+    if (!fd(key).includes(text)) failures.push(`dashboard patient-prep-sheet.ts ${name}: differs from the approved front-desk instructions.ts "${key}" wording`);
+  }
+  if (!PrepSheet.PREP_COLONOSCOPY_DAY_OF.endsWith(PrepSheet.PREP_COLONOSCOPY_CLEAR_FLUIDS)) {
+    failures.push('dashboard patient-prep-sheet.ts PREP_COLONOSCOPY_CLEAR_FLUIDS: must be the last sentence of the approved colonoscopy line');
+  }
+  const sms = readFileSync(join(REPO_ROOT, 'artifacts/api-server/src/lib/sms.ts'), 'utf8');
+  if (!sms.includes(PrepSheet.PREP_MEDICATIONS_CALL)) failures.push('dashboard patient-prep-sheet.ts PREP_MEDICATIONS_CALL: differs from api-server sms.ts PREP_MEDICATIONS');
+  if (!sms.includes(PrepSheet.PREP_BLOOD_THINNERS_CALL)) failures.push('dashboard patient-prep-sheet.ts PREP_BLOOD_THINNERS_CALL: differs from the api-server ercp_workup line');
+  if (PrepSheet.HERBAL_PREOP_PATIENT_TEXT !== HERBAL_PREOP_PATIENT_TEXT) failures.push('dashboard patient-prep-sheet.ts: herbal paragraph is not HERBAL_PREOP_PATIENT_TEXT');
+}
+
+// 8b. The rendered prep sheet, every mode and regimen, for a patient whose record lists
+//     prescribed medicines of every class the old sheet gave instructions for.
+{
+  const PRESCRIBED = ['Warfarin 5 mg', 'Aspirin 75 mg', 'Clopidogrel', 'Apixaban', 'Insulin glargine', 'Metformin 500 mg',
+    'Amlodipine 10 mg', 'Ibuprofen', 'Ferrous sulphate', 'Levothyroxine', 'Omeprazole', 'Multivitamin'];
+  const HERBAL = ['Garlic tablets', 'Turmeric', 'Valerian'];
+  const herbalProducts = PrepSheet.recordedHerbalProducts([...PRESCRIBED, ...HERBAL]);
+  if (herbalProducts.join('|') !== 'Garlic tablets|Turmeric') {
+    failures.push(`patient-prep-sheet.ts recordedHerbalProducts: expected only the herbal products (not valerian, not prescribed medicines), got "${herbalProducts.join(', ')}"`);
+  }
+  const base = { patientName: 'Lint Patient', dob: '', nhiNumber: '', procedure: 'Procedure', appointmentDate: '', appointmentTime: '', allergies: '', issued: 'today' };
+  const variants: { label: string; opts: PrepSheet.PrepSheetOptions }[] = [
+    ...PrepSheet.BOWEL_PREPS.map(prep => ({ label: `colonoscopy ${prep.id}`, opts: { ...base, type: 'colonoscopy' as const, prep, herbalProducts } })),
+    { label: 'preop', opts: { ...base, type: 'preop', herbalProducts } },
+    { label: 'preop, no herbal products', opts: { ...base, type: 'preop', herbalProducts: [] } },
+  ];
+  for (const { label, opts } of variants) {
+    const text = PrepSheet.prepSheetText(PrepSheet.buildPrepHtml(opts));
+    const where = `dashboard prep sheet (${label})`;
+    for (const v of printoutViolations(text)) failures.push(`${where}: ${v}`);
+    for (const s of medicationInstructionViolations(text)) failures.push(`${where}: medication instruction: "${s}"`);
+    const scrubbed = text.split(HERBAL_PREOP_PATIENT_TEXT).join(' ').split(PrepSheet.PREP_MEDICATIONS_CALL).join(' ');
+    for (const med of ['warfarin', 'aspirin', 'clopidogrel', 'apixaban', 'insulin', 'metformin', 'amlodipine', 'ibuprofen', 'ferrous', 'levothyroxine', 'omeprazole', 'multivitamin', 'valerian']) {
+      if (new RegExp(`\\b${med}\\b`, 'i').test(scrubbed)) failures.push(`${where}: names the medicine "${med}" — the sheet gives no per-medicine instruction (hazard H-10)`);
+    }
+    if (!text.includes(PrepSheet.PREP_MEDICATIONS_CALL)) failures.push(`${where}: missing the approved MEDICATIONS call-the-clinic line`);
+    if (!text.includes(HERBAL_PREOP_PATIENT_TEXT)) failures.push(`${where}: missing the approved herbal-products paragraph`);
+    if (opts.type === 'preop' && !text.includes(PrepSheet.PREP_FASTING_STANDARD)) failures.push(`${where}: missing the approved 6 h / 2 h fasting line`);
+    if (opts.type === 'colonoscopy' && !text.includes(PrepSheet.PREP_COLONOSCOPY_CLEAR_FLUIDS)) failures.push(`${where}: missing the approved colonoscopy clear-fluid line`);
+  }
+}
+
+// 8c. Source text of the printouts that the rendered check does not reach: the on-screen preview
+//     in PatientPrepCard (staff read it to patients) and the SurgicalConsentTab leaflet templates.
+{
+  const consts: Record<string, string> = {
+    PREP_MEDICATIONS_CALL: PrepSheet.PREP_MEDICATIONS_CALL, PREP_FASTING_STANDARD: PrepSheet.PREP_FASTING_STANDARD,
+    PREP_COLONOSCOPY_DAY_OF: PrepSheet.PREP_COLONOSCOPY_DAY_OF, PREP_MINOR_NO_FASTING: PrepSheet.PREP_MINOR_NO_FASTING,
+    PREP_MINOR_GA_SEPARATE: PrepSheet.PREP_MINOR_GA_SEPARATE,
+  };
+  const card = stripSource(readFileSync(join(REPO_ROOT, 'artifacts/dashboard/src/components/PatientPrepCard.tsx'), 'utf8'));
+  for (const v of printoutViolations(card)) failures.push(`PatientPrepCard.tsx: ${v}`);
+  const consent = readFileSync(join(REPO_ROOT, 'artifacts/dashboard/src/pages/tabs/SurgicalConsentTab.tsx'), 'utf8');
+  const blocks = [...consent.matchAll(/\n\s*prep: \{\n([\s\S]*?)\n\s*\},\n/g)].map(m => m[1]);
+  if (blocks.length < 10) failures.push(`SurgicalConsentTab.tsx: expected the 10 procedure leaflet prep blocks, found ${blocks.length}`);
+  for (const block of blocks) {
+    // One string per line: `field: '…'`, `field: [ '…', '…' ]`, `${PREP_X}` expanded to its text.
+    const text = block
+      .replace(/\$\{(PREP_[A-Z_]+)\}/g, (_, n: string) => consts[n] ?? n)
+      .replace(/\b(PREP_[A-Z_]+)\b/g, (_, n: string) => consts[n] ?? n)
+      .split('\n')
+      .map(line => line.replace(/^\s*\w+:\s*/, '').replace(/^[[`']+|[\]`',]+$/g, '').split(/',\s*'/).join('\n'))
+      .join('\n');
+    for (const v of printoutViolations(text)) failures.push(`SurgicalConsentTab.tsx leaflet: ${v}`);
+  }
+  for (const name of ['PREP_MEDICATIONS_CALL', 'PREP_FASTING_STANDARD']) {
+    if (!blocks.some(b => b.includes(name))) failures.push(`SurgicalConsentTab.tsx leaflet: no template uses the approved ${name}`);
+  }
+}
+
 // Unknown types get the neutral set — never another type's preparation.
 if (getInstructionsForAppointment('__lint_unknown_type__') !== PROCEDURE_INSTRUCTIONS.general_appointment) {
   failures.push('getInstructionsForAppointment: unknown booking types must fall back to general_appointment');
@@ -398,4 +553,4 @@ if (failures.length) {
   console.error('Use the approved wording: "MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions."');
   process.exit(1);
 }
-console.log(`✓ lint:patient-instructions — ${Object.keys(PROCEDURE_INSTRUCTIONS).length} instruction sets, ${Object.keys(APPOINTMENT_TYPES).length} booking-type mappings, ${HEALTH_ARTICLES.length} health-information articles and ${SOURCE_FILES.length} source files clean.`);
+console.log(`✓ lint:patient-instructions — ${Object.keys(PROCEDURE_INSTRUCTIONS).length} instruction sets, ${Object.keys(APPOINTMENT_TYPES).length} booking-type mappings, ${HEALTH_ARTICLES.length} health-information articles, the dashboard printouts and ${SOURCE_FILES.length} source files clean.`);
