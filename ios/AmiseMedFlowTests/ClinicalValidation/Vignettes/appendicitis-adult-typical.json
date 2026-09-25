@@ -136,18 +136,14 @@
           "match": ["appendic"],
           "k": 3,
           "guidelineRefs": ["wses-2020"],
-          "note": "Classic migratory RIF pain with anorexia, vomiting, fever, peritonism and leucocytosis: appendicitis must be in the displayed top 3.",
-          "knownGap": ["ios"],
-          "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the CC routes to the rightIliacFossaPain pool, which has no built-in list (`?? []`), so the differential is empty."
+          "note": "Classic migratory RIF pain with anorexia, vomiting, fever, peritonism and leucocytosis: appendicitis must be in the displayed top 3."
         },
         {
           "id": "dx-appendicitis-top1",
           "severity": "quality",
           "match": ["appendic"],
           "k": 1,
-          "note": "A textbook presentation should rank appendicitis first.",
-          "knownGap": ["ios"],
-          "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the CC routes to the rightIliacFossaPain pool, which has no built-in list (`?? []`), so the differential is empty."
+          "note": "A textbook presentation should rank appendicitis first."
         }
       ],
       "mustNotMiss": []

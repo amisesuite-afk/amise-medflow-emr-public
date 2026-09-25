@@ -36,10 +36,14 @@ Encyclopedia; SOAP uses a lookup), `DiagnosisDosingGuide` (Prescriptions), `Baye
 ### iOS engine mode: database vs fallback
 
 `BayesianDiagnosisEngine.externalPool(_:)` reads `Resources/DiagnosticDatabase.json` through
-`externalDatabase` (`try?` decode). The clinical-content review found the file does **not** decode
-with the Codable structs (thousands of features without a string `evidenceLabel`, fractional
-`logPrior`/`logLR`, numeric `value`s: `lint:guideline-registry` reports it, `DBLOAD|` test lines
-confirm on CI). The engine then runs on its built-in lists:
+`externalDatabase` (`try?` decode). Up to 1.0.0 the file did **not** decode with the Codable
+structs (thousands of features without a string `evidenceLabel`, fractional `logPrior`/`logLR`,
+numeric `value`s). 2.0.0 (branch fix-ios-differential, `docs/clinical-validation/changes/fix-ios-differential.md`)
+decodes: `lint:guideline-registry` now fails if it stops decoding, and
+`DiagnosticDatabaseLoadReportTests` asserts it on CI. With 2.0.0 the complaint is routed on its
+own (not with investigation text appended), the curated `coreConditions` candidates of every
+matching `presentations` entry come first, and every route returns a differential. What
+happened with 1.0.0 (the built-in lists):
 
 - A CC route written `externalPool("x") ?? builtIn` uses the built-in list (e.g. `abdominalPain`, 10
   candidates; `jaundice`, 5 candidates — no mesenteric ischaemia, no obstetric or septic causes).
@@ -54,9 +58,9 @@ Each iOS vignette result records the mode (`outputs.engineInfo.bayesDatabase` = 
 `database`, plus the version and decode error from `DiagnosticDatabaseInfo.current`). Differential
 expectations are graded in whatever mode ran; results from the two modes are not comparable.
 
-Displayed probability: the review also found the displayed percentage treats stored ×5 ln(LR)
-units as full ln units, so confidence is overstated. No seed vignette asserts a displayed
-percentage; any future expectation about it must be `quality` and `knownGap`.
+Displayed probability: up to 1.0.0 the displayed percentage treated stored ×5 ln(LR) units as
+full ln units, so confidence was overstated. `topResults` now divides by
+`BayesianDiagnosisEngine.logUnitsPerNat` (5). No seed vignette asserts a displayed percentage.
 
 ## Web (dashboard)
 

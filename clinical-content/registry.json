@@ -17,13 +17,19 @@
       "title": "Bayesian differential database (pools, candidates, features, priors, likelihood ratios)",
       "platforms": ["ios"],
       "kind": "bayesian-model-data",
-      "contentVersion": "1.0.0",
+      "contentVersion": "2.0.0",
       "versionStamp": { "file": "ios/AmiseMedFlow/Resources/DiagnosticDatabase.json", "type": "json-key", "key": "version" },
       "files": ["ios/AmiseMedFlow/Resources/DiagnosticDatabase.json"],
-      "tests": ["ios/AmiseMedFlowTests/DiagnosticDatabaseInfoTests.swift"],
-      "ciChecks": ["lint:guideline-registry (Swift Codable compatibility warning)"],
+      "tests": [
+        "ios/AmiseMedFlowTests/DiagnosticDatabaseInfoTests.swift",
+        "ios/AmiseMedFlowTests/DiagnosticDatabaseLoadReportTests.swift",
+        "ios/AmiseMedFlowTests/BayesianDifferentialDatabaseTests.swift",
+        "scripts/src/diagnostic-database-schema.test.ts"
+      ],
+      "ciChecks": ["lint:guideline-registry (fails when the file would not decode with the Swift Codable structs, or breaks a 2.0.0 content rule: scripts/src/diagnostic-database-schema.ts)", "pnpm --filter @workspace/scripts test"],
       "guidelines": [
-        { "name": "Per-feature literature citations (systematic reviews and meta-analyses, per the file's note)", "version": "per citation", "section": "pools.*.candidates[].features[].citation", "citation": "8,316 of 14,358 features cite a source; 112 citations state an LR, of which 77 do not match the documented logLR = round(ln(LR) × 5) conversion" },
+        { "name": "coreConditions curated pool (2.0.0): per-feature likelihood ratio and citation", "version": "per citation", "section": "pools.coreConditions.candidates[].features[].citation / likelihoodRatio; candidates[].source", "citation": "121 candidates, 797 features, 135 distinct sources (JAMA Rational Clinical Examination reviews, NICE, ESC, ESVS, WSES, Tokyo 2018, RCOG, APLS, JBDS, EAU, IDSA, CDC, ACG, BSG and others). 130 complaint-weight features cite an expert estimate pending the surgeon's review." },
+        { "name": "Per-feature literature citations of the 1.0.0 pools (systematic reviews and meta-analyses, per the file's note)", "version": "per citation", "section": "pools.*.candidates[].features[].citation", "citation": "8,316 of 14,358 features cite a source; 112 citations state an LR, of which 77 do not match the documented logLR = round(ln(LR) × 5) conversion. In 2.0.0 these weights are capped (originalLogLR keeps the 1.0.0 value)." },
         { "name": "Matrix axes", "version": "not recorded", "section": "matrix", "citation": "ICD-11 polyhierarchy + SNOMED CT concept model + AMA specialty taxonomy (matrix.authority)" }
       ],
       "citationStatus": "per-rule-partial",
@@ -33,9 +39,10 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer (no CODEOWNERS). Ships only with an iOS app release (bundled resource).",
-      "notes": "161 pools, 1,232 candidates, 14,358 features, 6,136 distinct feature keys. logPrior has no recorded source and two scales (-46..+46 in most pools; -5.5..-0.5 in 17 pools). By static analysis the engine's Codable cannot decode the file (missing evidenceLabel, fractional logLR/logPrior, numeric feature values), so iOS silently uses ios-bayesian-fallback-candidates; confirm in Settings → Diagnostics.",
+      "notes": "2.0.0: 162 pools, 1,353 candidates, 15,146 features. Decodes with the engine's Codable structs (Settings → Diagnostics: \"Using the database\"), so this content now drives the iOS differential instead of ios-bayesian-fallback-candidates. Every logPrior is a prevalence tier (common 0, uncommon -5, rare -10). The 1.0.0 pools are unreviewed legacy content with capped weights; the curated coreConditions pool and the top-level presentations list (29 complaint safety nets) are routed first. All of it needs clinical sign-off: docs/clinical-validation/changes/fix-ios-differential.md (Needs sign-off).",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "Version stamp added (version 1.0 → 1.0.0, updated, sources). No clinical value changed." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Version stamp added (version 1.0 → 1.0.0, updated, sources). No clinical value changed." },
+        { "version": "2.0.0", "date": "2026-09-25", "change": "Made decodable (evidenceLabel added to 3,552 features, 512 natural-log logLR ×5, fractional logPrior and non-string values fixed). Priors replaced by prevalence tiers; 1.0.0 feature weights capped (history/exam ±8, test result ±12, age/sex ±5, non-specific lab chip +5, bare test name +3); sex/pregnancy applicability on 85 candidates. New curated pool coreConditions (121 medical, surgical, obstetric, paediatric and neurological candidates, e.g. ACS, PE, sepsis, DKA/HHS, stroke, SAH, meningitis, cauda equina, torsion, ectopic, pre-eclampsia/HELLP, intussusception, pyloric stenosis, malrotation, mesenteric ischaemia, AAA, limb ischaemia, NSTI, Fournier's) with cited likelihood ratios, and presentations. Guidelines and every content decision: docs/clinical-validation/changes/fix-ios-differential.md. Not clinically reviewed." }
       ]
     },
     {
@@ -68,12 +75,13 @@
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Database.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Scoring.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+TopResults.swift",
+        "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Routing.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+FeatureDAG.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Catalogue.swift",
         "ios/AmiseMedFlow/Services/BayesianDecisionEngine*.swift",
         "ios/AmiseMedFlow/Services/BayesianFeatureNetwork.swift"
       ],
-      "tests": [],
+      "tests": ["ios/AmiseMedFlowTests/BayesianDifferentialDatabaseTests.swift"],
       "ciChecks": [],
       "guidelines": [],
       "citationStatus": "none",
@@ -83,7 +91,10 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
-      "notes": "Hand-set constants: urgency boost (urgency × 8), confirmed-diagnosis boost (+20), about 30 score-driven adjustments, confidence bands on logGap (25 / 15 / 7), pathognomonic threshold logLR ≥ 18, CPT discounting in BayesianFeatureNetwork. The softmax in topResults uses exp(logPosterior) although logLR is stored as 5 × ln(LR), so displayed percentages are far more extreme than the stated LRs imply. BayesianDecisionEngine+Database/Scoring/... duplicate the BayesianDiagnosisEngine extensions."
+      "notes": "Hand-set constants: confirmed-diagnosis boost (+20), about 30 score-driven adjustments, confidence bands on logGap (25 / 15 / 7), pathognomonic threshold logLR ≥ 18, CPT discounting in BayesianFeatureNetwork, \"do not miss\" places (ranks 4-5 for urgency ≥ 2), candidate cap 60, age-banded vital-sign limits (APLS 7th edition) and numeric laboratory chip thresholds (BayesianDiagnosisEngine+Routing.swift). Routing reads the chief complaint only. BayesianDecisionEngine+Database/Scoring/... duplicate the BayesianDiagnosisEngine extensions.",
+      "changelog": [
+        { "version": "unversioned", "date": "2026-09-25", "change": "Routing from the complaint only (negation-aware, word-start); topResults softmax divides by 5 (logs are round(ln × 5)); urgency × 8 boost removed in favour of two \"do not miss\" places; curated presentations first, applicability filter, age-banded vital chips, numeric lab chips, HPI and PSHx read by curated features, \"a&b\" terms within one sentence, inv keys need every significant token. See docs/clinical-validation/changes/fix-ios-differential.md." }
+      ]
     },
     {
       "id": "ios-sequential-dbn-voi",

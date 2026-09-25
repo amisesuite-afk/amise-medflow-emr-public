@@ -249,11 +249,7 @@
           "k": 3,
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the gallstone ultrasound text is appended to the CC for routing and selects the biliaryColic pool, which has no built-in list (`?? []`), so the differential is empty."
+          ]
         }
       ],
       "mustNotMiss": []

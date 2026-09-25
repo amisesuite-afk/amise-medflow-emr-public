@@ -139,14 +139,16 @@ what the app would pre-fill from the record.
 
 Never flag a new critical expectation just to keep CI green without a note explaining the gap.
 
-**Displayed probabilities.** The iOS Diagnosis tab's displayed percentage overstates confidence
-(stored ×5 ln(LR) units are read as full ln units). An expectation about a displayed percentage
-must be `quality` with `knownGap: ["ios"]`, never `critical`. Rank-based expectations are fine.
+**Displayed probabilities.** Until the fix-ios-differential branch the iOS Diagnosis tab's
+displayed percentage overstated confidence (stored ×5 ln(LR) units were read as full ln units);
+`topResults` now divides by 5. Keep expectations about a displayed percentage `quality`, never
+`critical`; rank-based expectations are preferred.
 
-**iOS engine mode.** `DiagnosticDatabase.json` does not currently decode, so the iOS differential
-runs on built-in fallback lists. Every iOS result records `engineInfo.bayesDatabase`
-(`fallback` | `database`), and differential expectations are graded in that mode. If the database
-is fixed, re-triage every iOS differential flag.
+**iOS engine mode.** `DiagnosticDatabase.json` 2.0.0 decodes (1.0.0 did not, so earlier iOS runs
+used the built-in fallback lists). Every iOS result records `engineInfo.bayesDatabase`
+(`fallback` | `database`), and differential expectations are graded in that mode: results from
+the two modes are not comparable, so re-triage every iOS differential flag on the first
+`database` run.
 
 ## Adding a vignette
 
