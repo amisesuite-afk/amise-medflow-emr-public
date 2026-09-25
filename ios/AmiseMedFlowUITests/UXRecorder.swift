@@ -53,11 +53,23 @@ final class UXRecorder {
     /// False inside `uncounted { }`.
     private var counting = true
 
+    /// True once the metrics are written.
+    private var finished = false
+
     init(app: XCUIApplication, flow: String, title: String, testCase: XCTestCase) {
         self.app = app
         self.flow = flow
         self.title = title
         self.testCase = testCase
+        // If XCTest ends the test outside `run` (an internal failure that stops the test), the
+        // metrics are still written, marked "interrupted", so every flow appears in ux-metrics.
+        testCase.addTeardownBlock { [weak self] in
+            MainActor.assumeIsolated {
+                guard let self, !self.finished else { return }
+                self.note("Interrupted by XCTest before the flow finished")
+                self.finish(outcome: "interrupted")
+            }
+        }
     }
 
     // MARK: - Device
@@ -194,20 +206,49 @@ final class UXRecorder {
         return false
     }
 
+    /// `isHittable` without the XCTest failure. Asking an element that is outside the screen
+    /// (a section-bar item scrolled off to the right) for `isHittable` can record "Failed to
+    /// determine hittability … Activation point invalid" as a test failure that ends the test
+    /// before the metrics are written (run 36181523764, iPad a_consultation: why that flow was
+    /// missing from the metrics). Off-screen or zero-size means "not hittable" here.
+    func isHittableSafely(_ element: XCUIElement) -> Bool {
+        guard element.exists else { return false }
+        let f = element.frame
+        guard !f.isEmpty, f.width > 0, f.height > 0 else { return false }
+        let screen = app.frame
+        guard screen.contains(CGPoint(x: f.midX, y: f.midY)) else { return false }
+        return element.isHittable
+    }
+
     // MARK: - Actions (counted)
+
+    /// Puts the software keyboard away with its Return key (one tap), as a user would before
+    /// reaching a control the keyboard covers. No-op when no keyboard is shown.
+    func dismissKeyboard(_ what: String = "Keyboard: Return") {
+        let keyboard = app.keyboards.firstMatch
+        guard keyboard.exists else { return }
+        for label in ["Return", "return", "Done", "done"] {
+            let key = keyboard.buttons[label]
+            if isHittableSafely(key) {
+                key.tap()
+                record(["action": "tap", "target": what]) { taps += 1 }
+                return
+            }
+        }
+    }
 
     func tap(_ element: XCUIElement, _ what: String, timeout: TimeInterval = 10) throws {
         try waitFor(element, what, timeout: timeout)
         var target = element
         // The same identifier can exist twice, e.g. the visit-pathway cards in a sheet and in the
         // consultation underneath it: prefer a copy the user can actually tap.
-        if !target.isHittable, !element.identifier.isEmpty,
+        if !isHittableSafely(target), !element.identifier.isEmpty,
            let visible = app.descendants(matching: .any).matching(identifier: element.identifier)
-               .allElementsBoundByIndex.first(where: { $0.exists && $0.isHittable }) {
+               .allElementsBoundByIndex.first(where: { isHittableSafely($0) }) {
             target = visible
         }
-        if !target.isHittable { bringOnScreen(target) }
-        guard target.isHittable else { throw UXError.unexpected("\(what) is not tappable") }
+        if !isHittableSafely(target) { bringOnScreen(target) }
+        guard isHittableSafely(target) else { throw UXError.unexpected("\(what) is not tappable") }
         target.tap()
         record(["action": "tap", "target": what]) { taps += 1 }
     }
@@ -228,8 +269,8 @@ final class UXRecorder {
     /// Not counted: used only to check a behaviour for the report.
     func probeTap(_ element: XCUIElement) -> Bool {
         guard element.waitForExistence(timeout: 5) else { return false }
-        if !element.isHittable { bringOnScreen(element, counted: false) }
-        guard element.isHittable else { return false }
+        if !isHittableSafely(element) { bringOnScreen(element, counted: false) }
+        guard isHittableSafely(element) else { return false }
         element.tap()
         return true
     }
@@ -249,12 +290,12 @@ final class UXRecorder {
         let deadline = Date().addingTimeInterval(8)
         while Date() < deadline {
             for candidate in [app.sheets.buttons[label], app.alerts.buttons[label],
-                              app.popovers.buttons[label]] where candidate.exists && candidate.isHittable {
+                              app.popovers.buttons[label]] where isHittableSafely(candidate) {
                 try tap(candidate, "Dialog: \(label)")
                 return
             }
             let matches = app.buttons.matching(NSPredicate(format: "label == %@", label)).allElementsBoundByIndex
-            if let last = matches.last(where: { $0.isHittable }) {
+            if let last = matches.last(where: { isHittableSafely($0) }) {
                 try tap(last, "Dialog: \(label)")
                 return
             }
@@ -268,7 +309,7 @@ final class UXRecorder {
     func goBack(previousTitle: String) throws {
         for candidate in [app.navigationBars.buttons[previousTitle], app.navigationBars.buttons["BackButton"],
                           app.navigationBars.buttons["Back"]] where candidate.waitForExistence(timeout: 1) {
-            if candidate.isHittable {
+            if isHittableSafely(candidate) {
                 try tap(candidate, "Back to \(previousTitle)")
                 return
             }
@@ -288,7 +329,7 @@ final class UXRecorder {
         let screen = app.frame
         var gestures = 0
         while gestures < maxGestures {
-            if element.exists && element.isHittable { break }
+            if isHittableSafely(element) { break }
             if element.exists {
                 let f = element.frame
                 let verticallyVisible = f.midY > screen.minY + 40 && f.midY < screen.maxY - 40
@@ -325,7 +366,7 @@ final class UXRecorder {
         let keyboard = app.keyboards.firstMatch
         let keyboardFrame = keyboard.exists ? keyboard.frame : .null
         let lists = (app.collectionViews.allElementsBoundByIndex + app.tables.allElementsBoundByIndex)
-            .filter { $0.exists && $0.isHittable }
+            .filter { isHittableSafely($0) }
             // The keyboard has its own collection views (suggestions, emoji): never scroll those.
             .filter { keyboardFrame.isNull || !keyboardFrame.contains($0.frame) }
         // The largest list on screen is the form or page, not a chip strip inside it.
@@ -334,7 +375,7 @@ final class UXRecorder {
 
     /// Scrolls until `element` is visible (for fields low in long forms, or above with `upwards`).
     func scrollTo(_ element: XCUIElement, _ what: String, upwards: Bool = false) throws {
-        if element.exists && element.isHittable { return }
+        if isHittableSafely(element) { return }
         bringOnScreen(element, searchUpwards: upwards)
         guard element.exists else { throw UXError.missing(what) }
     }
@@ -370,6 +411,8 @@ final class UXRecorder {
     // MARK: - Metrics
 
     private func finish(outcome: String) {
+        guard !finished else { return }
+        finished = true
         let metrics: [String: Any] = [
             "device": Self.deviceName,
             "idiom": Self.isPad ? "pad" : "phone",
