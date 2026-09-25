@@ -25,6 +25,7 @@ export default function PreviousVisitStrip() {
   return (
     <div style={{
       marginBottom: 8,
+      flexShrink: 0, // not squeezed to a hairline by a tall step below (fixed-height flex column)
       border: '1px solid #fcd34d',
       borderRadius: 10,
       overflow: 'hidden',

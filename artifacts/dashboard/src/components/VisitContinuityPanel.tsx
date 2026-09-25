@@ -195,7 +195,9 @@ export default function VisitContinuityPanel() {
       aria-label="Visit continuity"
       data-testid="visit-continuity"
       style={{
-        marginBottom: 8, borderRadius: 10, overflow: 'hidden',
+        // flexShrink 0: the consultation column is a fixed-height flex column; without it a tall
+        // step below squeezes this panel to a hairline.
+        marginBottom: 8, borderRadius: 10, overflow: 'hidden', flexShrink: 0,
         border: `1.5px solid ${accent}55`, background: '#fff',
       }}
     >
