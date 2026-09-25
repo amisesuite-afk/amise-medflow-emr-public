@@ -8,7 +8,7 @@
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
     "test": "pnpm -r --if-present run test",
-    "test:e2e": "node e2e/emr-walkthrough.mjs",
+    "test:e2e": "node e2e/emr-walkthrough.mjs && node e2e/encounter-switch.mjs",
     "ux:web": "node e2e/ux-walkthrough.mjs"
   },
   "private": true,

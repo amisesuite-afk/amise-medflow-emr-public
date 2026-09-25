@@ -149,8 +149,10 @@ jobs:
             kill "$DEV_PID" 2>/dev/null || true
             exit 1
           fi
-          node e2e/emr-walkthrough.mjs
-          E2E_EXIT=$?
+          E2E_EXIT=0
+          node e2e/emr-walkthrough.mjs || E2E_EXIT=1
+          # Encounter history: a new / loaded encounter never receives another encounter's notes.
+          node e2e/encounter-switch.mjs || E2E_EXIT=1
           kill "$DEV_PID" 2>/dev/null || true
           exit $E2E_EXIT
 
