@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 import { API_BASE as API } from '@/lib/constants';
+import { SUPPLEMENT_PATIENT_QUESTION, supplementAnswerLine, type SupplementAnswer } from '@/lib/supplements-question';
 
 const TEAL = '#0d9488';
 
@@ -425,6 +426,8 @@ export default function IntakePage() {
   const [s3, setS3]                 = useState<Step3Answers>({});
 
   const [currentMeds, setCurrentMeds]       = useState('');
+  const [supplementsAnswer, setSupplementsAnswer] = useState<SupplementAnswer>('');
+  const [supplements, setSupplements]       = useState('');
   const [allergies, setAllergies]           = useState('');
   const [isReferral, setIsReferral]         = useState<boolean | null>(null);
   const [referralDoc, setReferralDoc]       = useState('');
@@ -546,7 +549,8 @@ export default function IntakePage() {
           duration_days:    durationDays,
           severity:         s3.severity ?? null,
           prior_treatment:  null,
-          current_meds:     currentMeds.trim() || null,
+          // The herbs / bush teas / supplements answer travels in the same text field (no new column).
+          current_meds:     [currentMeds.trim(), supplementAnswerLine(supplementsAnswer, supplements)].filter(Boolean).join('\n') || null,
           allergies_note:   allergies.trim() || null,
           referral_reason:  referralReason,
           additional_notes: [
@@ -905,6 +909,29 @@ export default function IntakePage() {
           <label style={lbl} htmlFor="meds">Current medications</label>
           <span style={sml}>Tablets, injections, or supplements you are currently taking.</span>
           <textarea id="meds" style={textareaSty} rows={2} value={currentMeds} onChange={e => setCurrentMeds(e.target.value)} placeholder="e.g. metformin 500mg, lisinopril…" />
+        </div>
+
+        <div style={blk}>
+          <span style={lbl} id="supplements-q">{SUPPLEMENT_PATIENT_QUESTION}</span>
+          <div role="radiogroup" aria-labelledby="supplements-q" style={{ display: 'flex', gap: 10, marginTop: 6 }}>
+            {([['yes', 'Yes'], ['no', 'No'], ['unsure', 'Not sure']] as const).map(([v, l]) => (
+              <button key={v} type="button" role="radio" aria-checked={supplementsAnswer === v} onClick={() => setSupplementsAnswer(v)}
+                style={{
+                  flex: 1, padding: '11px', borderRadius: 9,
+                  border: supplementsAnswer === v ? `2px solid ${TEAL}` : '1.5px solid #e2e8f0',
+                  background: supplementsAnswer === v ? `${TEAL}12` : '#fff',
+                  color: supplementsAnswer === v ? TEAL : '#374151',
+                  fontSize: 14, fontWeight: supplementsAnswer === v ? 700 : 400, cursor: 'pointer',
+                  WebkitTapHighlightColor: 'transparent',
+                }}>
+                {l}
+              </button>
+            ))}
+          </div>
+          {(supplementsAnswer === 'yes' || supplementsAnswer === 'unsure') && (
+            <textarea aria-label="Which herbs, teas or supplements" style={{ ...textareaSty, marginTop: 10 }} rows={2} value={supplements}
+              onChange={e => setSupplements(e.target.value)} placeholder="e.g. garlic tablets, cerasee tea, turmeric capsules…" />
+          )}
         </div>
 
         <div style={blk}>

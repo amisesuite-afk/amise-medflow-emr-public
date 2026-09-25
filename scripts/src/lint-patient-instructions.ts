@@ -56,7 +56,8 @@ import {
 } from '../../artifacts/front-desk/lib/instructions';
 import { APPOINTMENT_TYPES } from '../../artifacts/front-desk/lib/scheduling';
 import { HEALTH_ARTICLES, articleText } from '../../artifacts/front-desk/content/health-info';
-import { HERBAL_PREOP_PATIENT_TEXT } from '../../artifacts/dashboard/src/lib/supplement-catalogue';
+import { HERBAL_PREOP_PATIENT_TEXT, SUPPLEMENT_PATIENT_QUESTION } from '../../artifacts/dashboard/src/lib/supplement-catalogue';
+import { SUPPLEMENT_PATIENT_QUESTION as FRONT_DESK_SUPPLEMENT_QUESTION } from '../../artifacts/front-desk/lib/supplements-question';
 
 // scripts/src/lint-patient-instructions.ts -> scripts/src -> scripts -> repo root
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
@@ -69,6 +70,8 @@ const SOURCE_FILES = [
   'artifacts/front-desk/app/pathway/page.tsx',
   'artifacts/front-desk/app/book/BookingForm.tsx',
   'artifacts/dashboard/src/pages/tabs/BookingInboxTab.tsx',
+  'artifacts/front-desk/app/previsit/[token]/page.tsx',
+  'artifacts/front-desk/app/patient/intake/page.tsx',
 ];
 
 const MEDICINE =
@@ -314,6 +317,16 @@ for (const type of ['lab_collection', 'lab_urine', 'lab_histology']) {
   const sms = readFileSync(join(REPO_ROOT, 'artifacts/api-server/src/lib/sms.ts'), 'utf8');
   if (!sms.includes(JSON.stringify(HERBAL_PREOP_PATIENT_TEXT))) failures.push('api-server lib/sms.ts: PREP_HERBAL differs from the approved herbal-products paragraph');
 }
+
+// 7. The herbs / bush teas / supplements question asks and never instructs; same words on the
+//    front desk (forms, AI intake prompt), the dashboard and iOS (interaction-parity lint).
+if (FRONT_DESK_SUPPLEMENT_QUESTION !== SUPPLEMENT_PATIENT_QUESTION) {
+  failures.push('front-desk lib/supplements-question.ts: SUPPLEMENT_PATIENT_QUESTION differs from the dashboard wording');
+}
+if (!readFileSync(join(REPO_ROOT, 'artifacts/front-desk/lib/claude.ts'), 'utf8').includes(SUPPLEMENT_PATIENT_QUESTION)) {
+  failures.push('front-desk lib/claude.ts: the intake prompt must ask the herbs / bush teas / supplements question in the approved words');
+}
+for (const s of medicationInstructionViolations(SUPPLEMENT_PATIENT_QUESTION)) failures.push(`supplement question instructs: "${s}"`);
 
 // Unknown types get the neutral set — never another type's preparation.
 if (getInstructionsForAppointment('__lint_unknown_type__') !== PROCEDURE_INSTRUCTIONS.general_appointment) {

@@ -208,6 +208,21 @@ router.get('/api/previsit/prefill/:token', async (req, res) => {
   }
 });
 
+export const PREVISIT_SUPPLEMENT_INDICATION = 'Herbs, bush teas, vitamins or supplements (patient-reported answer)';
+
+/** The patient's answer to the herbs / bush teas / supplements question as a medications row. */
+export function previsitSupplementRow(
+  s: { answer?: string; details?: string } | undefined,
+): { name: string; dose: string; frequency: string; indication: string } | null {
+  if (!s || typeof s !== 'object') return null;
+  const details = typeof s.details === 'string' ? s.details.trim().slice(0, 500) : '';
+  const name = s.answer === 'yes' ? (details || 'Yes (not named)')
+    : s.answer === 'no' ? 'None'
+    : s.answer === 'unsure' ? `Not sure${details ? ` — ${details}` : ''}`
+    : null;
+  return name ? { name, dose: '', frequency: '', indication: PREVISIT_SUPPLEMENT_INDICATION } : null;
+}
+
 router.post('/api/previsit/submit', async (req, res) => {
   const {
     patient_token,
@@ -219,6 +234,7 @@ router.post('/api/previsit/submit', async (req, res) => {
     allergies,
     ros,
     photos,
+    supplements,
   } = req.body as {
     patient_token: string;
     cc?: string;
@@ -229,6 +245,8 @@ router.post('/api/previsit/submit', async (req, res) => {
     allergies?: string;
     ros?: Record<string, string>;
     photos?: Array<{ url: string; context: string; uploaded_at: string }>;
+    /** Mandatory herbs / bush teas / supplements question (front-desk lib/supplements-question.ts). */
+    supplements?: { answer?: string; details?: string };
   };
 
   if (!patient_token) {
@@ -271,7 +289,12 @@ router.post('/api/previsit/submit', async (req, res) => {
     if (cc !== undefined) updates.cc = cc;
     if (hpi_raw !== undefined) updates.hpi_raw = hpi_raw;
     if (pmh !== undefined) updates.pmh = pmh;
-    if (medications !== undefined) updates.medications = medications;
+    // The supplements answer is kept as one extra row of the medications jsonb[] (no new column),
+    // marked by its indication; meds_complete above still counts only the patient's medicines.
+    const supplementRow = previsitSupplementRow(supplements);
+    if (medications !== undefined || supplementRow) {
+      updates.medications = [...(medications ?? []), ...(supplementRow ? [supplementRow] : [])];
+    }
     if (surgical_history !== undefined) updates.surgical_history = surgical_history;
     if (allergies !== undefined) updates.allergies = allergies;
     if (ros !== undefined) updates.ros = ros;

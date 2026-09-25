@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import React, { useEffect, useState } from 'react';
 import { API_BASE } from '@/lib/constants';
+import { SUPPLEMENT_PATIENT_QUESTION, supplementAnswerLine, type SupplementAnswer } from '@/lib/supplements-question';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Pre-visit questionnaire — public, token-authenticated (no login). Staff
@@ -51,6 +52,9 @@ interface FormData {
   pmhList: string[];
   pmhInput: string;
   medications: MedicationRow[];
+  /** Mandatory herbs / bush teas / supplements question (lib/supplements-question.ts). */
+  supplementsAnswer: SupplementAnswer;
+  supplements: string;
   surgicalHistoryItems: string[];
   surgicalHistoryInput: string;
   allergies: string;
@@ -102,6 +106,7 @@ function defaultData(): FormData {
     location: '', radiation: false, radiationWhere: '', associatedSymptoms: [],
     alleviating: '', aggravating: '', pmhConditions: [], pmhList: [], pmhInput: '',
     medications: [{ name: '', dose: '', frequency: '' }],
+    supplementsAnswer: '', supplements: '',
     surgicalHistoryItems: [], surgicalHistoryInput: '', allergies: '', ros, photos: [],
   };
 }
@@ -304,6 +309,7 @@ export default function PreVisitPage({ params }: { params: { token: string } }) 
           },
           pmh: [...data.pmhConditions, ...data.pmhList],
           medications: data.medications.filter(m => m.name.trim()),
+          supplements: data.supplementsAnswer ? { answer: data.supplementsAnswer, details: data.supplements.trim() } : undefined,
           surgical_history: data.surgicalHistoryItems,
           allergies: data.allergies,
           ros: data.ros,
@@ -492,6 +498,26 @@ export default function PreVisitPage({ params }: { params: { token: string } }) 
 
             <button type="button" onClick={addMed} style={{ width: '100%', padding: 10, border: '1px dashed #1e3a5f', borderRadius: 8, color: TEAL, fontSize: 14, background: 'none', cursor: 'pointer' }}>+ Add medication</button>
             <button type="button" onClick={() => setData(prev => ({ ...prev, medications: [] }))} style={{ width: '100%', marginTop: 8, padding: 10, border: 'none', borderRadius: 8, color: '#94a3b8', fontSize: 13, background: 'none', cursor: 'pointer' }}>I take no medications</button>
+
+            <div style={{ marginTop: 22, paddingTop: 16, borderTop: '1px solid #1e3a5f' }}>
+              <p style={{ ...questionTitle, fontSize: 16 }}>{SUPPLEMENT_PATIENT_QUESTION}</p>
+              <div role="radiogroup" aria-label="Herbs, bush teas, vitamins or supplements" style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                {([['yes', 'Yes'], ['no', 'No'], ['unsure', 'Not sure']] as const).map(([v, l]) => (
+                  <button key={v} type="button" role="radio" aria-checked={data.supplementsAnswer === v}
+                    onClick={() => update('supplementsAnswer', v)}
+                    style={{ flex: 1, padding: 10, borderRadius: 8, fontSize: 14, cursor: 'pointer',
+                      border: data.supplementsAnswer === v ? `2px solid ${TEAL}` : '1px solid #1e3a5f',
+                      background: data.supplementsAnswer === v ? '#0d948822' : 'none', color: '#f1f5f9' }}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+              {(data.supplementsAnswer === 'yes' || data.supplementsAnswer === 'unsure') && (
+                <textarea style={{ ...inputStyle, minHeight: 70, resize: 'vertical' }}
+                  placeholder="Which ones? e.g. garlic tablets, cerasee tea, turmeric capsules, soursop leaf tea"
+                  value={data.supplements} onChange={e => update('supplements', e.target.value)} />
+              )}
+            </div>
           </div>
         );
 
@@ -623,6 +649,11 @@ export default function PreVisitPage({ params }: { params: { token: string } }) 
                   <p key={idx} style={{ color: '#cbd5e1', fontSize: 13 }}>{m.name} {m.dose} {m.frequency}</p>
                 ))
               )}
+            </div>
+
+            <div style={card}>
+              <p style={{ color: TEAL, fontWeight: 600, marginBottom: 6 }}>Herbs, bush teas and supplements</p>
+              <p style={{ color: '#cbd5e1', fontSize: 13 }}>{supplementAnswerLine(data.supplementsAnswer, data.supplements) ?? 'Not answered'}</p>
             </div>
 
             <div style={card}>
