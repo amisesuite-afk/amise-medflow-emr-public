@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import StaffIdleTimeout from './StaffIdleTimeout';
 
 export const metadata = { title: 'Staff Scheduling — Amise MedFlow' };
 
@@ -38,6 +39,7 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
       <main style={{ padding: '28px 24px', maxWidth: 900, margin: '0 auto' }}>
         {children}
       </main>
+      <StaffIdleTimeout />
     </div>
   );
 }

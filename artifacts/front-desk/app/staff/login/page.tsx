@@ -77,6 +77,7 @@ function LoginContent() {
   const rawNext = params.get('next') ?? '';
   const next    = rawNext.startsWith('/staff') && !rawNext.startsWith('//') ? rawNext : '/staff/schedule';
   const signingOut = params.get('signout') === '1';
+  const idleSignedOut = params.get('reason') === 'idle';
   const [email, setEmail]   = useState('');
   const [pass,  setPass]    = useState('');
   const [err,   setErr]     = useState('');
@@ -115,6 +116,11 @@ function LoginContent() {
           <div style={{ color: '#94a3b8', fontSize: 14 }}>Staff scheduling portal</div>
         </div>
 
+        {idleSignedOut && !err && (
+          <div role="status" style={{ ...s.err, background: 'rgba(45,212,191,.08)', border: '1px solid rgba(45,212,191,.3)', color: '#5eead4' }}>
+            You were signed out after a period of inactivity.
+          </div>
+        )}
         {err && <div style={s.err}>{err}</div>}
 
         <form onSubmit={void submit}>
