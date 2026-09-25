@@ -96,7 +96,10 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
     guideline: 'BSG polyp surveillance',
   });
 
-  if (criteria.some(c => c.met && c.rule.includes('colorectal') || c.rule.includes('bowel') || c.rule.includes('rectal') || c.rule.includes('tarry'))) {
+  // Parenthesised: `c.met && a || b || c` was true whenever any colorectal rule merely existed,
+  // so every 2-week-wait screen (breast, upper GI, pancreas) was labelled colorectal. The IDA
+  // rule belongs to this block (NG12 colorectal) and was labelled colorectal before, so it stays.
+  if (criteria.some(c => c.met && (c.rule.includes('colorectal') || c.rule.includes('bowel') || c.rule.includes('rectal') || c.rule.includes('tarry') || c.rule.includes('iron deficiency')))) {
     cancerType = 'colorectal';
     investigations.push('Colonoscopy', 'FBC with iron studies', 'CEA');
     if (hasDarkStool) investigations.push('OGD (to exclude upper GI source)');
@@ -161,7 +164,7 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
     guideline: 'NICE NG12 1.8.3',
   });
 
-  if (criteria.some(c => c.met && c.rule.includes('breast'))) {
+  if (criteria.some(c => c.met && c.rule.toLowerCase().includes('breast'))) { // "Breast lump …" rules start with a capital
     cancerType = cancerType ?? 'breast';
     investigations.push('Breast ultrasound', 'Mammogram');
     if (hasNippleDischarge) investigations.push('Ductogram or MRI breast');
