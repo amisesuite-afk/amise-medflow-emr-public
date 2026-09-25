@@ -1,9 +1,9 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-25T14:12:13.951Z.
+Generated 2026-09-25T14:19:17.179Z.
 
 - iOS: no results file. Download the `clinval-ios` artifact from the "iOS — Compile Check" workflow run and save it as docs/clinical-validation/results/ios-latest.jsonl (or pass --ios <file>).
-- Web: 43 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T14:12:12.797Z, clinval-web/1).
+- Web: 88 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T14:19:15.282Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -14,7 +14,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
 | ios | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| web | 43 | 433 | 289 | 128 | 16 | 54 | 0 | 128 | 0 | 0 |
+| web | 88 | 718 | 453 | 247 | 18 | 110 | 0 | 247 | 0 | 0 |
 
 ## Blocking failures
 
@@ -23,6 +23,7 @@ None.
 ## All critical failures (including known gaps and unverified)
 
 - `achalasia-pseudoachalasia-elderly` / **mnm-malignancy** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifier; no dysphagia feature). Symptom inference ranks occult malignancy and oesophageal/gastric carcinoma #1–2.]
+- `adrenal-suspected-phaeochromocytoma` / **mnm-phaeochromocytoma** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and applied no feature; the symptom engine ranks phaeochromocytoma #1 from the chips.]
 - `aortic-dissection-epigastric-back-pain` / **mnm-dissection** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis (epigastric pain + radiation to back = pancreatitis pattern); no dissection node. Symptom inference ranks ruptured AAA #1 and does not list dissection in the top 5.]
 - `aortic-dissection-epigastric-back-pain` / **inv-ct-angiography** (web, FAIL (known gap)): no investigation matched among 28 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol (I71.0) and no prompt suggests CT angiography.]
 - `aortoenteric-fistula-herald-bleed` / **mnm-aortoenteric-fistula** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.passive#1 [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis; no aorto-enteric fistula node anywhere. The passive ranking lists "ruptured abdominal aortic aneurysm" #1 from exam text.]
@@ -36,6 +37,21 @@ None.
 - `boerhaave-presenting-as-chest-pain` / **mnm-perforation** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis [known gap: PANE top 3: inguinal hernia, cholecystitis, pancreatitis; no oesophageal features reach PANE. Symptom inference ranks STEMI/ACS first and has no perforation entry.]
 - `boerhaave-presenting-as-chest-pain` / **inv-ecg** (web, FAIL (known gap)): no investigation matched among 31 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No investigation output mentions an ECG: the triage chest_pain pathway checklist ("ECG within 10 minutes") is not surfaced, and the oesophageal_perforation protocol omits it.]
 - `boerhaave-presenting-as-pancreatitis` / **mnm-perforation** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: pancreatitis, cholecystitis, GORD; symptom inference: alcoholic/gallstone pancreatitis, peptic ulcer, perforated ulcer. Oesophageal perforation is absent from every list.]
+- `breast-inflammatory-cancer` / **mgmt-no-bcs-or-slnb** (web, FAIL (known gap)): forbidden management item present in web.plan: "[surgical] wide local excision (breast-conserving) + slnb or axillary clearance." (+2 more) [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch.]
+- `breast-lump-age-30-35` / **flag-2ww** (web, FAIL (known gap)): no red flag matched among 6 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suspected-cancer referral is triggered (age ≥30 + breast lump) but labelled "Cancer screening triggered (colorectal)". cancer-screening.ts labels every triggered screen "colorectal": the colorectal block tests `c.met && c.rule.includes('colorectal') \|\| c.rule.includes('bowel') \|\| …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? "breast").]
+- `breast-lump-age-30-35` / **inv-uss** (web, FAIL (known gap)): no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+- `breast-lump-age-30-35` / **inv-core-biopsy** (web, FAIL (known gap)): no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+- `breast-lump-over-35-suspicious` / **flag-2ww** (web, FAIL (known gap)): no red flag matched among 9 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen "colorectal": the colorectal block tests `c.met && c.rule.includes('colorectal') \|\| c.rule.includes('bowel') \|\| …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? "breast").]
+- `breast-lump-pregnant` / **flag-2ww** (web, FAIL (known gap)): no red flag matched among 11 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen "colorectal": the colorectal block tests `c.met && c.rule.includes('colorectal') \|\| c.rule.includes('bowel') \|\| …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? "breast").]
+- `breast-lump-pregnant` / **inv-uss** (web, FAIL (known gap)): no investigation matched among 12 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+- `breast-lump-pregnant` / **inv-core-biopsy** (web, FAIL (known gap)): no investigation matched among 12 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+- `breast-lump-under-30` / **inv-uss** (web, FAIL (known gap)): no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: No breast ultrasound in any output. The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+- `breast-male-cancer` / **mnm-carcinoma** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Gynaecomastia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#2, web.triageSurgical#3 [known gap: PANE top 3 = inguinal hernia (male x5 prior), gynaecomastia, cholecystitis: every breast disease except gynaecomastia is multiplied by 0.05 in men, so male breast cancer cannot rank.]
+- `breast-male-cancer` / **flag-2ww** (web, FAIL (known gap)): no red flag matched among 10 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen "colorectal": the colorectal block tests `c.met && c.rule.includes('colorectal') \|\| c.rule.includes('bowel') \|\| …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? "breast").]
+- `breast-nipple-discharge-bloody-single-duct` / **mnm-malignancy** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE applied no feature: the "Nipple discharge" template has no CC hint and ASSOC_RULES has no nipple-discharge pattern, so the priors alone give cholecystitis, GORD, PUD.]
+- `breast-nipple-discharge-bloody-single-duct` / **flag-2ww** (web, FAIL (known gap)): no red flag matched among 7 (web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: screenForCancer only counts nipple discharge together with a lump; NICE NG12 (≥50, unilateral nipple discharge) is not implemented. Triage score 0, routine.]
+- `breast-nipple-discharge-bloody-single-duct` / **inv-mammogram** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: N64.52 maps to no protocol and PANE did not reach duct_ectasia, so no imaging is proposed.]
+- `breast-nipple-discharge-bloody-single-duct` / **inv-uss** (web, FAIL (known gap)): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: As above: no retroareolar ultrasound proposed.]
 - `cholangitis-tg18-charcot-sepsis` / **score-tg18-calculator** (web, FAIL (known gap)): expected = 2; got web.scaleCalculator.tg18-cholangitis=2 (Grade II — MODERATE); web.scoreCalculator.tg18-cholangitis=1 (Mild cholangitis — antibiotics ± elective drainage) [known gap: Web clinical-scores.ts (ClinicalScoresPanel) omits the WBC criterion from the Grade II count and returns Grade I; clinical-scales.ts is correct here.]
 - `cholangitis-tg18-grade3-reynolds` / **score-tg18-autofill** (web, FAIL (known gap)): expected = 3; got web.scoreCalculator.tg18-cholangitis=0 (Criteria not met for cholangitis diagnosis) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 - `cholecystitis-tg18-grade2` / **score-tg18-calculator** (web, FAIL (known gap)): expected = 2; got web.scoreCalculator.tg18-cholecystitis=1 (Mild cholecystitis — elective laparoscopic cholecystectomy) [known gap: Neither calculator has a "palpable tender RUQ mass" Grade II criterion (iOS folds it into Grade I local signs; web grades II only on WBC >18).]
@@ -47,7 +63,31 @@ None.
 - `food-bolus-complete-obstruction` / **mgmt-endoscopic-removal** (web, FAIL (known gap)): no management item matched among 1 (web.clinicalPrompts) [known gap: No protocol for T18.1 (food bolus); the matchPathways registry has a "Foreign Body Ingestion / Food Bolus" pathway but it is not surfaced in management.]
 - `gastric-outlet-obstruction-elderly` / **dx-goo-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#5, web.passive#2 [known gap: PANE top 3: inguinal hernia, cholecystitis, GORD. The vomiting_effortless feature (GOO 0.90) is never set: no SOCRATES rule maps projectile vomiting or vomiting of undigested food.]
 - `gord-alarm-weight-loss-over55` / **mnm-malignancy** (web, FAIL (known gap)): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Hiatus Hernia \| 3. Peptic Ulcer Disease; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: GORD, hiatus hernia, peptic ulcer (the "GORD / heartburn" template hint pushes GORD; weight loss does not lift a carcinoma into the top 3). Symptom inference lists gastric carcinoma #3.]
+- `groin-mimic-femoral-artery-aneurysm` / **mnm-aneurysm** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, GORD, cholecystitis. PANE has only "Aortic Aneurysm" and no pulsatile-mass feature; the symptom engine ranks AAA #1 from the "pulsatile mass" chip. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `groin-mimic-femoral-artery-aneurysm` / **flag-pulsatile** (web, FAIL (known gap)): no red flag matched among 12 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No red flag or alarm for a pulsatile groin mass: triage has no pulsatile/aneurysm rule and the prompts have none.]
+- `groin-mimic-femoral-artery-aneurysm` / **inv-duplex-or-cta** (web, FAIL (known gap)): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No duplex/CT angiography proposed; I72.4 has no protocol.]
+- `groin-mimic-femoral-artery-aneurysm` / **mgmt-no-hernia-repair** (web, FAIL (known gap)): forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is "Inguinal / groin hernia" and site "groin" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The panel shows the Lichtenstein/TEP/TAPP repair and the TAPP operative-plan prompt fires from the CC template name.]
+- `groin-mimic-lymphadenopathy` / **mnm-lymphoma-or-nodes** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, cholecystitis, GORD. PANE has no lymphadenopathy feature from the groin site and its only node disease is "Cervical Lymphadenopathy"; the symptom engine ranks lymphoma #1. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `groin-mimic-lymphadenopathy` / **inv-uss-or-biopsy** (web, FAIL (known gap)): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No groin ultrasound or node biopsy is proposed; the confirmed ICD R59.1 has no protocol (R59.9 → cervical lymphadenopathy only).]
+- `groin-mimic-lymphadenopathy` / **mgmt-no-hernia-repair** (web, FAIL (known gap)): forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is "Inguinal / groin hernia" and site "groin" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The panel shows "Elective: Lichtenstein mesh herniorrhaphy … TEP/TAPP" and the TAPP prompt fires from the CC template name.]
+- `groin-mimic-testicular-torsion` / **dx-torsion-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: As above: torsion not in the PANE top 3; epididymo-orchitis ranks above it.]
+- `groin-mimic-testicular-torsion` / **mnm-torsion** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, appendicitis, epididymo-orchitis: testicular_torsion (prior 0.01) is outranked although testicular_pain/scrotal_swelling are applied; vomiting and "sudden" onset are not mapped to features. The safety prompt and the ICD plan (N44.00 → testicular_torsion) are correct.]
+- `groin-mimic-testicular-torsion` / **mgmt-no-hernia-repair** (web, FAIL (known gap)): forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is "Inguinal / groin hernia" and site "groin" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The PANE top (inguinal hernia 0.22) drives the ManagementPanel, so an elective mesh repair is shown next to the emergency exploration plan.]
 - `h-pylori-penicillin-anaphylaxis` / **mgmt-no-amoxicillin** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+1 more) [known gap: Gastritis protocol plan line and medications list amoxicillin despite a recorded penicillin anaphylaxis (the allergy shows only in the header).]
+- `hernia-femoral-elderly-woman` / **dx-femoral-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: PANE top 3 = cholecystitis, GORD, diverticulitis; femoral_hernia is not listed despite groin_swelling. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `hernia-femoral-richter-obstruction` / **mnm-hernia-cause** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction; also in web.triageSurgical#1 [known gap: PANE top 3 = cholecystitis, appendicitis, bowel obstruction (from the abdominal-pain template). No hernia: groin findings are only in exam text/chips, which PANE does not read. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `hernia-groin-incarcerated` / **variant-incarcerated** (web, FAIL (known gap)): detected hernia_reducible in group Hernia; expected hernia_incarcerated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: "Irreducible inguinal hernia" contains the hernia_reducible keyword "reducible inguinal", so the plan gets the ELECTIVE prefix ("Day-case laparoscopic repair preferred") and loses the immediate/conservative phases.]
+- `hernia-groin-strangulated` / **variant-strangulated** (web, FAIL (known gap)): detected hernia_incarcerated in group Hernia; expected hernia_strangulated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment says "strangulated" and "irreducible"; hernia_incarcerated is checked before hernia_strangulated, so the plan says "Attempt gentle manual reduction" (contraindicated in strangulation).]
+- `hernia-incisional-midline-elective` / **dx-incisional-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.triageSurgical#1 [known gap: PANE applied no feature: the "Incisional / ventral hernia" template has no CC hint and the site chip "Incisional" matches no SITE_RULES pattern; the priors alone rank cholecystitis first.]
+- `hernia-inguinal-female-occult-femoral` / **mnm-femoral-hernia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: PANE top 3 = cholecystitis, GORD, PUD. The female modifier cuts inguinal_hernia to x0.3 and cholecystitis is x2 in women; femoral_hernia (prior 0.02) never reaches the list. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `hernia-obturator-sbo-elderly-woman` / **mnm-obturator-hernia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction [known gap: PANE top 3 = cholecystitis, appendicitis, bowel obstruction (periumbilical site maps to rlq_pain). obturator_hernia (prior 0.005) has no discriminating feature (no medial-thigh / Howship-Romberg feature, no "virgin abdomen" feature), and no web engine names it.]
+- `hernia-paediatric-incarcerated-infant` / **dx-hernia-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3 = cholecystitis, appendicitis, PUD for a 7-month-old girl (female inguinal x0.3; no age modifier removes adult biliary disease in infants). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `hernia-paediatric-inguinal-infant` / **mgmt-no-watchful-waiting** (web, FAIL (known gap)): forbidden management item present in web.plan: "[conservative] truss may be offered for unfit patients declining surgery - monitor for strangulation..." (+1 more) [known gap: The inguinal_hernia protocol has no paediatric branch: the plan offers "Truss may be offered for unfit patients declining surgery".]
+- `hernia-paediatric-inguinal-infant` / **mgmt-no-adult-mesh-repair** (web, FAIL (known gap)): forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+5 more) [known gap: Adult plan for a 4-month-old: "Lichtenstein mesh herniorrhaphy … TEP/TAPP" (protocol) and computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan.]
+- `hernia-paraumbilical-incarcerated-obese` / **dx-umbilical-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = cholecystitis, GORD, PUD (female: inguinal x0.3, cholecystitis x2). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `hernia-umbilical-adult-elective` / **dx-umbilical-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 = inguinal hernia (male x5), cholecystitis, GORD; umbilical_hernia (0.03, umbilical_swelling 0.90) is outranked. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `hernia-umbilical-cirrhosis-ascites` / **flag-rupture-risk** (web, FAIL (known gap)): no red flag matched among 18 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No web output mentions rupture/skin ulceration/leak for an umbilical hernia with ascites; the umbilical protocol red flag is only "Irreducible or tender".]
+- `hernia-umbilical-cirrhosis-ascites` / **mgmt-ascites-control** (web, FAIL (known gap)): no management item matched among 33 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No ascites-control / hepatology step in the umbilical_hernia protocol, the dx variant or the prompts.]
 - `iron-deficiency-anaemia-over60` / **flag-ida** (web, FAIL (known gap)): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Nothing reads the anaemia indices: severe_anaemia prompt needs Hb <8; the NG12 IDA criterion in cancer-screening needs the words "anaemia/pale/unusually tired" in the symptom chips. Hb 9.1 / MCV 72 / ferritin 6 raise nothing.]
 - `iron-deficiency-anaemia-over60` / **inv-colonoscopy** (web, FAIL (known gap)): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for D50.9 and no IDA prompt; colonoscopy never suggested.]
 - `mi-presenting-as-epigastric-pain` / **mnm-acs** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no cardiac disease; top 3 cholecystitis, peptic ulcer, GORD.]
@@ -55,6 +95,22 @@ None.
 - `mi-presenting-as-epigastric-pain` / **alarm-cardiac** (web, FAIL (known gap)): no alarm matched among 3 (web.clinicalPrompts.safety) [known gap: Safety prompts fired are "Appendicitis — emergency surgical indication" (from "Acute abdominal pain" CC) and "Acute abdominal presentation"; nothing cardiac.]
 - `mi-presenting-as-epigastric-pain` / **inv-ecg** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No ECG in any output.]
 - `mi-presenting-as-epigastric-pain` / **inv-troponin** (web, FAIL (known gap)): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No troponin in any output.]
+- `parathyroid-hypercalcaemic-crisis` / **mnm-hypercalcaemia** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#3 [known gap: PANE applied no feature ("Nausea / vomiting" template, SOCRATES empty); calcium is a lab value. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `parathyroid-hypercalcaemic-crisis` / **mgmt-no-thyroidectomy-template** (web, FAIL (known gap)): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.]
+- `parathyroid-primary-hpt-surgical-indications` / **mgmt-no-thyroidectomy-template** (web, FAIL (known gap)): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: detectDxVariants falls back to lower.includes("thyroid") for the Thyroid group: "parathyroidectomy"/"hyperparathyroidism" contain "thyroid", and "parathyroidectomy" contains the thyroid_total keyword "thyroidectomy", so the documented plan opens with "Total Thyroidectomy … levothyroxine replacement (lifelong)".]
+- `thyroid-bethesda-1-nondiagnostic` / **mgmt-no-thyroidectomy-plan** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here after a non-diagnostic FNA.]
+- `thyroid-bethesda-2-benign` / **mgmt-no-thyroidectomy-plan** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here for benign cytology (rationale text: "Bethesda class III–VI or clinical thyroid malignancy").]
+- `thyroid-bethesda-6-papillary-cn1b` / **mgmt-no-hemithyroidectomy-prefix** (web, FAIL (known gap)): forbidden management item present in web.plan: "hemithyroidectomy (ipsilateral lobe + isthmus). intraoperative recurrent laryngeal nerve neuromonitoring." [known gap: Consequence of the variant bug: the plan opens with "Hemithyroidectomy (ipsilateral lobe + isthmus)" above the protocol's total-thyroidectomy steps.]
+- `thyroid-bethesda-6-papillary-cn1b` / **variant-thyroid-total** (web, FAIL (known gap)): detected thyroid_hemithyroidectomy in group Thyroid; expected thyroid_total [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: "bethesda vi" contains the hemithyroidectomy keyword "bethesda v", so cN1b papillary carcinoma gets the hemithyroidectomy plan prefix.]
+- `thyroid-nodule-euthyroid-tirads4` / **dx-thyroid-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#2, web.triageSurgical#2 [known gap: PANE top 3 = cholecystitis, GORD, PUD after neck_lump (thyroid_nodule_benign prior 0.03, thyroid_carcinoma 0.01). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- `thyroid-post-op-hypocalcaemia` / **level-at-least-urgent** (web, FAIL (known gap)): web.triage: priority (acuity=review, action=priority_24_48h, score=25); expected ≥ urgent [known gap: Triage priority_24_48h (score 25, post-op only): no rule for tingling/tetany/hypocalcaemia and lab values are not read by adaptiveTriage.]
+- `thyroid-post-op-hypocalcaemia` / **flag-hypocalcaemia** (web, FAIL (known gap)): no red flag matched among 6 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: No web engine reads the adjusted calcium 1.78 mmol/L or the symptoms; E89.2 maps to no protocol.]
+- `thyroid-post-op-hypocalcaemia` / **mgmt-iv-calcium** (web, FAIL (known gap)): no management item matched among 5 (web.clinicalPrompts) [known gap: No IV calcium gluconate anywhere (only inside the elective thyroidectomy operative template, which does not fire here).]
+- `thyroid-post-op-neck-haematoma` / **dx-haematoma-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Surgical Site Infection (SSI) \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 = cholecystitis, surgical site infection, GORD: the "Post-op wound concern" template hints wound_erythema/wound_discharge (infection features), and no neck-swelling feature exists. The T81.0 plan itself is correct (bedside wound opening).]
+- `thyroid-rapid-enlargement-stridor` / **mnm-anaplastic-or-lymphoma** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no anaplastic thyroid carcinoma or thyroid lymphoma disease; top 3 = cholecystitis, colorectal cancer, GORD. The thyroid_carcinoma protocol is papillary-oriented.]
+- `thyroid-rapid-enlargement-stridor` / **inv-core-biopsy** (web, FAIL (known gap)): no investigation matched among 35 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma.]
+- `thyroid-rapid-enlargement-stridor` / **mgmt-airway** (web, FAIL (known gap)): no management item matched among 48 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No airway step in any web output: triage has no stridor rule (the emergency comes from RR/SpO2), prompts have no airway rule, and the C73 protocol lists stridor only as a red flag.]
+- `thyroid-retrosternal-goitre-compression` / **flag-compression** (web, FAIL (known gap)): no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No red flag names tracheal compression, stridor or retrosternal extension; triage escalates only because "breathless" matches the post-operative-concern rule. E04.2 maps to no protocol.]
 - `ugib-cvd-dual-antiplatelet` / **dx-ugib-top3** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#5, web.triageSurgical#1 [known gap: PANE top 3: inguinal hernia, cholecystitis, GORD. PANE never receives haematemesis/melaena: socrates-to-features has no answer rule for melaena, haematemesis, "vomiting blood" or coffee-ground vomit, and the "Upper GI bleed" CC hint sets only nausea_vomiting. With only epigastric_pain + nausea_vomiting, the male ×5 (×1.8 at ≥50) inguinal-hernia prior modifier or the cholecystitis/GORD priors win. Symptom inference and triageSurgical rank the bleed #1.]
 - `ugib-cvd-dual-antiplatelet` / **mgmt-no-tranexamic-acid** (web, FAIL (known gap)): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 - `ugib-elderly-doac-pre-endoscopy-rockall` / **mgmt-no-lmwh-bridging** (web, FAIL (known gap)): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: computeClinicalPrompts anticoag_check (any anticoagulant) adds the elective peri-operative plan line "hold DOAC 48–72h pre-op; warfarin — bridge with LMWH per haematology protocol" to an actively bleeding patient.]
@@ -129,6 +185,52 @@ Guidelines:
 
 - **achalasia-2020** — European guidelines on achalasia — UEG and ESNM recommendations (2020), Endoscopy to exclude malignancy/pseudoachalasia; high-resolution manometry for diagnosis (Chicago classification); timed barium oesophagogram; treatment by pneumatic dilation, laparoscopic Heller myotomy or POEM. Oude Nijhuis RAB, Zaninotto G, Roman S, et al. United European Gastroenterol J. 2020;8:13–33. *(statement wording/numbering not yet verified against the source)*
 - **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer) (2015), Dysphagia at any age: urgent direct-access OGD. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+### Adrenal incidentaloma (indeterminate, hypertensive)
+
+#### `adrenal-incidentaloma-indeterminate` — 
+
+52-year-old man with a 3.2 cm left adrenal mass found on CT for renal colic; unenhanced attenuation 28 HU (indeterminate); hypertension on two drugs and K 3.3. ESE 2023: 1 mg dexamethasone suppression test, metanephrines (HU >10), aldosterone/renin (hypertension + hypokalaemia); further imaging; no biopsy.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| inv-metanephrines | investigationInclude | critical | not run | PASS | ESE/ENSAT guidelines 2023; Endocrine Society guideline 2014 |  |
+| inv-no-adrenal-biopsy | investigationExclude | critical | not run | PASS | ESE/ENSAT guidelines 2023 |  |
+| level-not-emergency | emergencyLevel | quality | not run | PASS |  |  |
+| inv-dst | investigationInclude | quality | not run | PASS | ESE/ENSAT guidelines 2023 |  |
+| inv-arr | investigationInclude | quality | not run | PASS | ESE/ENSAT guidelines 2023 |  |
+| inv-further-imaging | investigationInclude | quality | not run | PASS | ESE/ENSAT guidelines 2023 |  |
+
+Guidelines:
+
+- **ese-adrenal-2023** — ESE/ENSAT guidelines — adrenal incidentalomas (2023 update) (2023), Imaging (unenhanced CT HU ≤10 benign; indeterminate masses); hormonal work-up (1 mg dexamethasone suppression test in all; plasma/urine metanephrines unless HU ≤10; aldosterone/renin in hypertension or hypokalaemia); no adrenal biopsy before phaeochromocytoma is excluded; surgery for indeterminate or functioning masses. Fassnacht M, Tsagarakis S, Terzolo M, et al. European Society of Endocrinology clinical practice guidelines on the management of adrenal incidentalomas, in collaboration with the European Network for the Study of Adrenal Tumors. Eur J Endocrinol. 2023;189:G1–G42. *(statement wording/numbering not yet verified against the source)*
+- **es-phaeo-2014** — Endocrine Society guideline — phaeochromocytoma and paraganglioma (2014), Biochemical testing (plasma free or urinary fractionated metanephrines); pre-operative alpha-adrenoceptor blockade for 7–14 days; beta-blockade only after alpha-blockade. Lenders JWM, Duh QY, Eisenhofer G, et al. Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab. 2014;99:1915–1942. *(statement wording/numbering not yet verified against the source)*
+
+### Adrenal mass with suspected phaeochromocytoma before surgery
+
+#### `adrenal-suspected-phaeochromocytoma` — Suspected phaeochromocytoma, on a beta-blocker
+
+44-year-old woman with a 4.6 cm heterogeneous right adrenal mass (38 HU) and paroxysms of headache, palpitations and sweating, BP 182/104; referred "for laparoscopic adrenalectomy". Phaeochromocytoma must be biochemically confirmed or excluded first; if confirmed, alpha-blockade for 7–14 days before surgery (beta-blocker only after alpha); never biopsy.
+
+Permutation of `adrenal-incidentaloma-indeterminate`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-phaeochromocytoma | mustNotMiss | critical | not run | FAIL (known gap) | Endocrine Society guideline 2014; ESE/ENSAT guidelines 2023 | Add phaeochromocytoma to PANE with paroxysmal headache/palpitations/sweating features (the existing hypertension_symptom feature). |
+| flag-phaeo | redFlags | critical | not run | PASS | Endocrine Society guideline 2014 |  |
+| inv-metanephrines | investigationInclude | critical | not run | PASS | Endocrine Society guideline 2014; ESE/ENSAT guidelines 2023 |  |
+| inv-no-adrenal-biopsy | investigationExclude | critical | not run | PASS | ESE/ENSAT guidelines 2023; Endocrine Society guideline 2014 |  |
+| mgmt-alpha-blockade | managementInclude | critical | not run | PASS | Endocrine Society guideline 2014 |  |
+| mgmt-no-beta-blocker-first | managementExclude | critical | not run | PASS | Endocrine Society guideline 2014 |  |
+
+Failure details:
+
+- **mnm-phaeochromocytoma** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and applied no feature; the symptom engine ranks phaeochromocytoma #1 from the chips.]
+
+Guidelines:
+
+- **es-phaeo-2014** — Endocrine Society guideline — phaeochromocytoma and paraganglioma (2014), Biochemical testing (plasma free or urinary fractionated metanephrines); pre-operative alpha-adrenoceptor blockade for 7–14 days; beta-blockade only after alpha-blockade. Lenders JWM, Duh QY, Eisenhofer G, et al. Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab. 2014;99:1915–1942. *(statement wording/numbering not yet verified against the source)*
+- **ese-adrenal-2023** — ESE/ENSAT guidelines — adrenal incidentalomas (2023 update) (2023), Imaging (unenhanced CT HU ≤10 benign; indeterminate masses); hormonal work-up (1 mg dexamethasone suppression test in all; plasma/urine metanephrines unless HU ≤10; aldosterone/renin in hypertension or hypokalaemia); no adrenal biopsy before phaeochromocytoma is excluded; surgery for indeterminate or functioning masses. Fassnacht M, Tsagarakis S, Terzolo M, et al. European Society of Endocrinology clinical practice guidelines on the management of adrenal incidentalomas, in collaboration with the European Network for the Study of Adrenal Tumors. Eur J Endocrinol. 2023;189:G1–G42. *(statement wording/numbering not yet verified against the source)*
 
 ### Acute aortic dissection
 
@@ -377,6 +479,326 @@ Failure details:
 Guidelines:
 
 - **wses-2019** — WSES guidelines — esophageal emergencies (perforation, caustic ingestion, foreign bodies) (2019), Oesophageal perforation mimics pancreatitis, MI and perforated ulcer; CT with oral contrast; early treatment. Chirica M, Kelly MD, Siboni S, et al. World J Emerg Surg. 2019;14:26. *(statement wording/numbering not yet verified against the source)*
+
+### Lactational breast abscess
+
+#### `breast-abscess-lactational` — 
+
+28-year-old breastfeeding mother, 4 weeks post-partum, with a 4 cm tender fluctuant mass after 5 days of mastitis on flucloxacillin, fever 38.4. Ultrasound confirms a collection: ultrasound-guided needle aspiration (repeated as needed), antibiotics, continue breastfeeding/expressing.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-abscess-top3 | mustRankTopK | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-uss | investigationInclude | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| mgmt-aspiration | managementInclude | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| level-at-least-urgent | emergencyLevel | quality | not run | PASS |  |  |
+| inv-pus-culture | investigationInclude | quality | not run | PASS |  |  |
+| mgmt-continue-breastfeeding | managementInclude | quality | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| mgmt-no-stop-breastfeeding | managementExclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+
+### Non-lactational (periductal) breast abscess
+
+#### `breast-abscess-non-lactational-smoker` — Non-lactational, smoker, recurrent
+
+41-year-old smoker, not lactating, with a third episode of a painful periareolar abscess. Periductal mastitis: ultrasound + aspiration, antibiotics covering anaerobes, smoking cessation, and imaging to exclude an underlying carcinoma once settled; recurrent disease may need duct excision.
+
+Permutation of `breast-abscess-lactational`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| inv-uss | investigationInclude | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| mgmt-aspiration | managementInclude | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| dx-abscess-top3 | mustRankTopK | quality | not run | FAIL (known gap) |  |  |
+| mgmt-anaerobic-cover | managementInclude | quality | not run | PASS |  |  |
+| mgmt-smoking-cessation | managementInclude | quality | not run | FAIL (known gap) |  |  |
+| mgmt-exclude-malignancy | managementInclude | quality | not run | PASS |  |  |
+| mgmt-no-breastfeeding-advice | managementExclude | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **dx-abscess-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Fibroadenoma \| 3. Fibrocystic Breast Disease; also in web.triageSurgical#3 [known gap: PANE top 3 = cholecystitis, fibroadenoma, fibrocystic change: only breast_lump was extracted (no redness/pain/discharge feature from chips). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **mgmt-smoking-cessation** (web): no management item matched among 27 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The breast_abscess protocol has no non-lactational (periductal mastitis) branch: no smoking cessation or duct excision.]
+
+Guidelines:
+
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+
+### Family history of breast cancer (possible BRCA)
+
+#### `breast-family-history-brca` — 
+
+35-year-old asymptomatic woman whose mother had breast cancer at 38 and maternal aunt ovarian cancer at 52. NICE CG164: meets referral criteria for specialist/genetics assessment; risk-based surveillance (MRI in high risk); no biopsy or urgent pathway without a symptom.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) | NICE CG164 2013 |  |
+| mgmt-genetics-referral | managementInclude | quality | not run | FAIL (known gap) | NICE CG164 2013 | Add a familyHistory field to the vignette schema and web-runner.ts; map Z80.3 to a familial-risk protocol (NICE CG164 referral criteria). |
+| mgmt-no-biopsy | managementExclude | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Triage same_day_call: the word "cancer" in the complaint ("Worried about breast cancer") matches the "Possible malignancy" red flag.]
+- **mgmt-genetics-referral** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: The family-history prompt exists (computeClinicalPrompts: "Family history of breast / ovarian cancer" → genetics) but reads InferenceInput.familyHistory, which the harness passes as [] (no vignette field); Z80.3 maps to no protocol.]
+
+Guidelines:
+
+- **nice-cg164** — NICE CG164 — Familial breast cancer (2013), Family history assessment in primary/secondary care; referral criteria (e.g. one first-degree relative diagnosed <40); genetic testing; surveillance by risk category. National Institute for Health and Care Excellence. Familial breast cancer: classification, care and managing breast cancer and related risks in people with a family history of breast cancer. Clinical guideline CG164. London: NICE; 2013 (updated). *(statement wording/numbering not yet verified against the source)*
+
+### Inflammatory breast cancer
+
+#### `breast-inflammatory-cancer` — 
+
+47-year-old woman, not lactating, with 4 weeks of a red, warm, swollen right breast involving more than a third of the skin, peau d'orange, no fever, not improved after two courses of antibiotics. Inflammatory breast cancer until proven otherwise: urgent core biopsy of breast and skin, staging, neoadjuvant systemic therapy; no primary breast-conserving surgery.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-carcinoma | mustNotMiss | critical | not run | PASS | NCCN Guidelines 2025; NICE NG12 2015 |  |
+| level-at-least-priority | emergencyLevel | critical | not run | PASS | NICE NG12 2015 |  |
+| flag-inflammatory | redFlags | critical | not run | PASS | NCCN Guidelines 2025 |  |
+| inv-core-biopsy | investigationInclude | critical | not run | PASS | NCCN Guidelines 2025 |  |
+| mgmt-no-bcs-or-slnb | managementExclude | critical | not run | FAIL (known gap) | NCCN Guidelines 2025 | Add an inflammatory-breast-cancer variant (C50 + "inflammatory"/"peau d'orange"): neoadjuvant systemic therapy then modified radical mastectomy; exclude BCS and SLNB. |
+| inv-staging | investigationInclude | quality | not run | PASS | NCCN Guidelines 2025 |  |
+| mgmt-neoadjuvant | managementInclude | quality | not run | PASS | NCCN Guidelines 2025 |  |
+| mgmt-no-further-antibiotics-only | managementExclude | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **mgmt-no-bcs-or-slnb** (web): forbidden management item present in web.plan: "[surgical] wide local excision (breast-conserving) + slnb or axillary clearance." (+2 more) [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wide local excision (breast-conserving) + SLNB" first; the protocol lists inflammatory breast cancer as a red flag but has no IBC branch.]
+
+Guidelines:
+
+- **nccn-breast-2025** — NCCN Guidelines — Breast Cancer (inflammatory breast cancer; breast cancer during pregnancy) (2025), Inflammatory breast cancer: core biopsy of breast and skin, staging, neoadjuvant systemic therapy before modified radical mastectomy (breast conservation and sentinel node biopsy not recommended); breast cancer during pregnancy (no tamoxifen, no radiotherapy during pregnancy). National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer (current version at authoring). *(statement wording/numbering not yet verified against the source)*
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+
+### Breast lump, age 30–35
+
+#### `breast-lump-age-30-35` — Age 32 (NG12 threshold)
+
+32-year-old woman with a discrete lump persisting through a cycle. NICE NG12: age ≥30 with an unexplained breast lump → suspected cancer pathway referral. Triple assessment with ultrasound and core biopsy; mammography is added by age and imaging findings.
+
+Permutation of `breast-lump-under-30`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-2ww | redFlags | critical | not run | FAIL (known gap) | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
+| inv-uss | investigationInclude | critical | not run | FAIL (known gap) | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 | Map N63 (unspecified breast lump) to a "breast lump — triple assessment" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts. |
+| inv-core-biopsy | investigationInclude | critical | not run | FAIL (known gap) | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 | Map N63 (unspecified breast lump) to a "breast lump — triple assessment" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts. |
+| level-at-least-priority | emergencyLevel | quality | not run | PASS | NICE NG12 2015 |  |
+| variant-triple-assessment | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **flag-2ww** (web): no red flag matched among 6 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suspected-cancer referral is triggered (age ≥30 + breast lump) but labelled "Cancer screening triggered (colorectal)". cancer-screening.ts labels every triggered screen "colorectal": the colorectal block tests `c.met && c.rule.includes('colorectal') \|\| c.rule.includes('bowel') \|\| …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? "breast").]
+- **inv-uss** (web): no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+- **inv-core-biopsy** (web): no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+- **nccn-breast-dx-2025** — NCCN Guidelines — Breast Cancer Screening and Diagnosis (2025), Palpable mass: age <30 ultrasound first; age ≥30 diagnostic mammography + ultrasound; tissue sampling of suspicious findings; nipple discharge (spontaneous, unilateral, single duct, bloody); skin changes. National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer Screening and Diagnosis (current version at authoring). *(statement wording/numbering not yet verified against the source)*
+
+### Suspicious breast lump, age over 35
+
+#### `breast-lump-over-35-suspicious` — Age 58, suspicious features
+
+58-year-old postmenopausal woman: hard irregular lump with skin tethering, nipple retraction and an axillary node. Urgent triple assessment: bilateral mammography, ultrasound (breast and axilla), core biopsy; suspected cancer pathway.
+
+Permutation of `breast-lump-under-30`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-carcinoma-top3 | mustRankTopK | critical | not run | PASS | NICE NG12 2015 |  |
+| level-at-least-priority | emergencyLevel | critical | not run | PASS | NICE NG12 2015 |  |
+| flag-2ww | redFlags | critical | not run | FAIL (known gap) | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
+| inv-mammogram | investigationInclude | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 |  |
+| inv-uss | investigationInclude | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-core-biopsy | investigationInclude | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| flag-suspicious | redFlags | quality | not run | PASS |  |  |
+| inv-axilla | investigationInclude | quality | not run | PASS | NCCN Guidelines 2025 |  |
+| mgmt-mdt | managementInclude | quality | not run | FAIL (known gap) |  |  |
+| mgmt-no-surgery-before-histology | managementExclude | quality | not run | PASS |  |  |
+| variant-triple-assessment | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **flag-2ww** (web): no red flag matched among 9 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen "colorectal": the colorectal block tests `c.met && c.rule.includes('colorectal') \|\| c.rule.includes('bowel') \|\| …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? "breast").]
+- **mgmt-mdt** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+- **nccn-breast-dx-2025** — NCCN Guidelines — Breast Cancer Screening and Diagnosis (2025), Palpable mass: age <30 ultrasound first; age ≥30 diagnostic mammography + ultrasound; tissue sampling of suspicious findings; nipple discharge (spontaneous, unilateral, single duct, bloody); skin changes. National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer Screening and Diagnosis (current version at authoring). *(statement wording/numbering not yet verified against the source)*
+
+### Breast lump in pregnancy
+
+#### `breast-lump-pregnant` — Pregnant, 22 weeks
+
+33-year-old at 22 weeks of pregnancy with a persistent firm lump and an axillary node, told it is "pregnancy changes". Pregnancy-associated breast cancer is diagnosed late: ultrasound and core biopsy are safe in pregnancy and must not be deferred; tamoxifen is contraindicated in pregnancy.
+
+Permutation of `breast-lump-under-30`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-2ww | redFlags | critical | not run | FAIL (known gap) | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
+| inv-uss | investigationInclude | critical | not run | FAIL (known gap) | RCOG Green-top Guideline No. 12 2011; NCCN Guidelines 2025 | Map N63 (unspecified breast lump) to a "breast lump — triple assessment" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts. |
+| inv-core-biopsy | investigationInclude | critical | not run | FAIL (known gap) | RCOG Green-top Guideline No. 12 2011 | Map N63 (unspecified breast lump) to a "breast lump — triple assessment" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts. |
+| mgmt-no-tamoxifen | managementExclude | critical | not run | PASS | RCOG Green-top Guideline No. 12 2011; NCCN Guidelines 2025 |  |
+| mgmt-no-deferral | managementExclude | critical | not run | PASS | RCOG Green-top Guideline No. 12 2011 |  |
+| flag-pregnancy | redFlags | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **flag-2ww** (web): no red flag matched among 11 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen "colorectal": the colorectal block tests `c.met && c.rule.includes('colorectal') \|\| c.rule.includes('bowel') \|\| …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? "breast").]
+- **inv-uss** (web): no investigation matched among 12 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+- **inv-core-biopsy** (web): no investigation matched among 12 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+
+Guidelines:
+
+- **rcog-gtg12-2011** — RCOG Green-top Guideline No. 12 — Pregnancy and breast cancer (2011), Diagnosis of a breast lump in pregnancy (ultrasound, core biopsy; delay in diagnosis); treatment during pregnancy (tamoxifen contraindicated). Royal College of Obstetricians and Gynaecologists. Pregnancy and Breast Cancer. Green-top Guideline No. 12. London: RCOG; 2011. *(statement wording/numbering not yet verified against the source)*
+- **nccn-breast-2025** — NCCN Guidelines — Breast Cancer (inflammatory breast cancer; breast cancer during pregnancy) (2025), Inflammatory breast cancer: core biopsy of breast and skin, staging, neoadjuvant systemic therapy before modified radical mastectomy (breast conservation and sentinel node biopsy not recommended); breast cancer during pregnancy (no tamoxifen, no radiotherapy during pregnancy). National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer (current version at authoring). *(statement wording/numbering not yet verified against the source)*
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+
+### Breast lump, age under 30 (probable fibroadenoma)
+
+#### `breast-lump-under-30` — 
+
+24-year-old woman with a 2 cm smooth, mobile, non-tender breast lump. Triple assessment with ultrasound as the imaging modality (mammography is not first-line under 30), core biopsy per imaging; NICE NG12 does not require a suspected-cancer referral under 30.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| inv-uss | investigationInclude | critical | not run | FAIL (known gap) | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NCCN Guidelines 2025 | Map N63 (unspecified breast lump) to a "breast lump — triple assessment" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts. |
+| dx-fibroadenoma-top3 | mustRankTopK | quality | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| level-not-urgent | emergencyLevel | quality | not run | FAIL (known gap) | NICE NG12 2015 |  |
+| inv-no-first-line-mammogram | investigationExclude | quality | not run | PASS | NCCN Guidelines 2025; Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-no-unrelated-seeded-orders | investigationExclude | quality | not run | FAIL (known gap) |  | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+| mgmt-triple-assessment | managementInclude | quality | not run | FAIL (known gap) | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 | Map N63 (unspecified breast lump) to a "breast lump — triple assessment" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts. |
+| variant-triple-assessment | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "breast lump" RED_FLAG is priority ("Possible malignancy") regardless of age, and the adaptive action maps priority to a same-day call.]
+- **inv-uss** (web): no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: No breast ultrasound in any output. The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+- **inv-no-unrelated-seeded-orders** (web): forbidden investigation present in web.pane.seeded: "amylase / lipase (exclude pancreatitis) (cholecystitis)" (+3 more) [known gap: PANE top 3 starts with cholecystitis, so amylase/lipase, blood cultures and MRCP are seeded into orders for a breast lump.]
+- **mgmt-triple-assessment** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vignette schema has no breast exam field), so the dashboard prompt "Breast Mass → Triple Assessment" (USS, mammogram ≥35, core biopsy) is not exercised.]
+
+Guidelines:
+
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+- **nccn-breast-dx-2025** — NCCN Guidelines — Breast Cancer Screening and Diagnosis (2025), Palpable mass: age <30 ultrasound first; age ≥30 diagnostic mammography + ultrasound; tissue sampling of suspicious findings; nipple discharge (spontaneous, unilateral, single duct, bloody); skin changes. National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer Screening and Diagnosis (current version at authoring). *(statement wording/numbering not yet verified against the source)*
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+
+### Male breast cancer
+
+#### `breast-male-cancer` — Unilateral hard eccentric mass
+
+68-year-old man with a hard, painless, eccentric left subareolar lump with nipple retraction for 2 months; sister had breast cancer. NICE NG12: men ≥50 with a unilateral firm subareolar mass → suspected cancer pathway; mammography/ultrasound and core biopsy.
+
+Permutation of `breast-male-gynaecomastia`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-carcinoma | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG12 2015 | Keep a male-appropriate prior for invasive carcinoma (rare but not x0.05 below a hernia) and add "unilateral, hard, eccentric, nipple retraction" features that favour carcinoma over gynaecomastia. |
+| flag-2ww | redFlags | critical | not run | FAIL (known gap) | NICE NG12 2015 | Parenthesise the colorectal condition (c.met && (… \|\| … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen. |
+| inv-imaging | investigationInclude | critical | not run | PASS | NICE NG12 2015; Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| inv-core-biopsy | investigationInclude | critical | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| mgmt-no-gynaecomastia-treatment | managementExclude | critical | not run | PASS |  |  |
+| mgmt-genetics | managementInclude | quality | not run | FAIL (known gap) |  |  |
+
+Failure details:
+
+- **mnm-carcinoma** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Gynaecomastia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#2, web.triageSurgical#3 [known gap: PANE top 3 = inguinal hernia (male x5 prior), gynaecomastia, cholecystitis: every breast disease except gynaecomastia is multiplied by 0.05 in men, so male breast cancer cannot rank.]
+- **flag-2ww** (web): no red flag matched among 10 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen "colorectal": the colorectal block tests `c.met && c.rule.includes('colorectal') \|\| c.rule.includes('bowel') \|\| …` (operator precedence), which is true whenever any colorectal rule exists, and the breast block keeps the first label (cancerType ?? "breast").]
+- **mgmt-genetics** (web): no management item matched among 4 (web.clinicalPrompts) [known gap: No BRCA / genetics step for male breast cancer with a family history.]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+
+### Gynaecomastia (drug-induced)
+
+#### `breast-male-gynaecomastia` — 
+
+63-year-old man with heart failure on spironolactone and 3 months of bilateral tender, rubbery, concentric subareolar discs. Gynaecomastia: medication review, examine the testes, endocrine bloods if no cause; no core biopsy for typical bilateral disease.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-gynaecomastia-top3 | mustRankTopK | quality | not run | PASS |  |  |
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) |  |  |
+| inv-testes | investigationInclude | quality | not run | PASS |  |  |
+| mgmt-medication-review | managementInclude | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=74); expected ≤ priority [known gap: Triage same_day_call: "breast lump" → Possible malignancy (priority) and the cancer screen triggers (age ≥30 + breast lump, applied to men).]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+
+### Bloody single-duct nipple discharge
+
+#### `breast-nipple-discharge-bloody-single-duct` — 
+
+52-year-old woman with spontaneous blood-stained discharge from a single duct of the left nipple for 5 weeks, no palpable lump. NICE NG12: ≥50 with unilateral nipple discharge → suspected cancer pathway; mammography + ultrasound; duct excision (microdochectomy) for diagnosis.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-malignancy | mustNotMiss | critical | not run | FAIL (known gap) | NCCN Guidelines 2025 | Add a CC hint for "Nipple discharge" (nipple_discharge) and an ASSOC_RULES/SITE_RULES pattern for nipple discharge / bloody discharge. |
+| flag-2ww | redFlags | critical | not run | FAIL (known gap) | NICE NG12 2015 | Add the NG12 criterion "aged ≥50 with nipple discharge, retraction or other changes of concern in one breast only" to screenForCancer. |
+| inv-mammogram | investigationInclude | critical | not run | FAIL (known gap) | NCCN Guidelines 2025; Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 | Map N64.5x (nipple discharge) to the duct_ectasia / nipple-discharge protocol. |
+| inv-uss | investigationInclude | critical | not run | FAIL (known gap) | NCCN Guidelines 2025 |  |
+| mgmt-no-reassurance-only | managementExclude | critical | not run | PASS |  |  |
+| level-at-least-priority | emergencyLevel | quality | not run | FAIL (known gap) |  |  |
+| mgmt-duct-excision | managementInclude | quality | not run | FAIL (known gap) | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+
+Failure details:
+
+- **mnm-malignancy** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE applied no feature: the "Nipple discharge" template has no CC hint and ASSOC_RULES has no nipple-discharge pattern, so the priors alone give cholecystitis, GORD, PUD.]
+- **level-at-least-priority** (web): web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≥ priority [known gap: Triage routine (score 0): no rule for blood-stained nipple discharge.]
+- **flag-2ww** (web): no red flag matched among 7 (web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: screenForCancer only counts nipple discharge together with a lump; NICE NG12 (≥50, unilateral nipple discharge) is not implemented. Triage score 0, routine.]
+- **inv-mammogram** (web): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: N64.52 maps to no protocol and PANE did not reach duct_ectasia, so no imaging is proposed.]
+- **inv-uss** (web): no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: As above: no retroareolar ultrasound proposed.]
+- **mgmt-duct-excision** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: No plan (no protocol for N64.52).]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **nccn-breast-dx-2025** — NCCN Guidelines — Breast Cancer Screening and Diagnosis (2025), Palpable mass: age <30 ultrasound first; age ≥30 diagnostic mammography + ultrasound; tissue sampling of suspicious findings; nipple discharge (spontaneous, unilateral, single duct, bloody); skin changes. National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer Screening and Diagnosis (current version at authoring). *(statement wording/numbering not yet verified against the source)*
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+
+### Cyclical breast pain (mastalgia) without a lump
+
+#### `breast-pain-cyclical-alone` — 
+
+38-year-old woman with bilateral premenstrual breast pain for 6 months and a normal examination. Reassurance, well-fitting bra, simple analgesia/topical NSAID; no imaging unless focal signs or a lump.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-benign-top3 | mustRankTopK | quality | not run | FAIL (known gap) |  |  |
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010; NICE NG12 2015 |  |
+| no-cancer-alarm | mustNotAlarm | quality | not run | PASS |  |  |
+| inv-no-imaging-or-biopsy | investigationExclude | quality | not run | PASS | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+| mgmt-reassurance | managementInclude | quality | not run | FAIL (known gap) | Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) 2010 |  |
+
+Failure details:
+
+- **dx-benign-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE applied no feature (template "Other / general surgical"); priors give cholecystitis, GORD, PUD. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "friend had breast cancer" matches the "Possible malignancy" red flag.]
+- **mgmt-reassurance** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: N64.4 (mastodynia) maps to no protocol; no mastalgia guidance.]
+
+Guidelines:
+
+- **abs-best-practice-2010** — Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health) (2010), Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain. Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
 
 ### Caustic (alkali) ingestion
 
@@ -870,6 +1292,85 @@ Guidelines:
 - **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer) (2015), Urgent direct-access OGD within 2 weeks for people aged ≥55 with weight loss and any of upper abdominal pain, reflux or dyspepsia. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
 - **nice-cg184** — NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management (2014), Alarm features: refer under NG12 rather than empirical PPI. National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019). *(statement wording/numbering not yet verified against the source)*
 
+### Common femoral artery aneurysm mimicking a groin hernia
+
+#### `groin-mimic-femoral-artery-aneurysm` — 
+
+74-year-old male ex-smoker with a known 4.6 cm AAA under surveillance and a pulsatile, expansile right groin swelling below the inguinal ligament. Needs duplex/CT angiography before anyone puts a needle or a knife in it; no hernia repair.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-aneurysm | mustNotMiss | critical | not run | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Add a femoral/peripheral aneurysm disease and a "pulsatile / expansile mass" feature to PANE, mapped from the SOCRATES "Pulsatile" character chip. |
+| flag-pulsatile | redFlags | critical | not run | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Add a triage/prompt safety rule: pulsatile or expansile groin mass → do not needle or explore; duplex/CTA and vascular referral. |
+| inv-duplex-or-cta | investigationInclude | critical | not run | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024; HerniaSurge 2018 |  |
+| mgmt-no-hernia-repair | managementExclude | critical | not run | FAIL (known gap) | HerniaSurge 2018 | Let the confirmed working diagnosis (ICD / paneDiseaseId) override the PANE top for the ManagementPanel, and add a neutral "Groin lump" CC template. |
+| mgmt-vascular-referral | managementInclude | quality | not run | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 |  |
+
+Failure details:
+
+- **mnm-aneurysm** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, GORD, cholecystitis. PANE has only "Aortic Aneurysm" and no pulsatile-mass feature; the symptom engine ranks AAA #1 from the "pulsatile mass" chip. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **flag-pulsatile** (web): no red flag matched among 12 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No red flag or alarm for a pulsatile groin mass: triage has no pulsatile/aneurysm rule and the prompts have none.]
+- **inv-duplex-or-cta** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No duplex/CT angiography proposed; I72.4 has no protocol.]
+- **mgmt-vascular-referral** (web): no management item matched among 17 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No vascular referral in any output (the inguinal_hernia panel is shown instead).]
+- **mgmt-no-hernia-repair** (web): forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is "Inguinal / groin hernia" and site "groin" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The panel shows the Lichtenstein/TEP/TAPP repair and the TAPP operative-plan prompt fires from the CC template name.]
+
+Guidelines:
+
+- **esvs-aaa-2024** — ESVS 2024 clinical practice guidelines — abdominal aorto-iliac artery aneurysms (2024), Associated peripheral (femoral / popliteal) aneurysms in patients with AAA; duplex ultrasound assessment. Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 Clinical Practice Guidelines on the Management of Abdominal Aorto-Iliac Artery Aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331. *(statement wording/numbering not yet verified against the source)*
+- **herniasurge-2018** — HerniaSurge — International guidelines for groin hernia management (2018), Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair. HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+
+### Inguinal lymphadenopathy (suspected lymphoma) mimicking a hernia
+
+#### `groin-mimic-lymphadenopathy` — 
+
+46-year-old man referred as a "right inguinal hernia": firm, rubbery, non-reducible lumps with no cough impulse, night sweats and 6 kg weight loss. A lymph-node mass, not a hernia: ultrasound and biopsy, NICE NG12 suspected-lymphoma pathway; no hernia repair.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-lymphoma-or-nodes | mustNotMiss | critical | not run | FAIL (known gap) | NICE NG12 2015 | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+| flag-malignancy | redFlags | critical | not run | PASS | NICE NG12 2015 |  |
+| inv-uss-or-biopsy | investigationInclude | critical | not run | FAIL (known gap) | NICE NG12 2015; HerniaSurge 2018 | Map R59.x to a generic lymphadenopathy protocol (USS, FBC/LDH, core/excision biopsy, NG12 referral) regardless of site. |
+| mgmt-no-hernia-repair | managementExclude | critical | not run | FAIL (known gap) | HerniaSurge 2018 | Let the confirmed working diagnosis (ICD / paneDiseaseId) override the PANE top for the ManagementPanel, and add a neutral "Groin lump" CC template. |
+| level-at-least-priority | emergencyLevel | quality | not run | PASS | NICE NG12 2015 |  |
+| inv-ldh | investigationInclude | quality | not run | FAIL (known gap) | NICE NG12 2015 |  |
+
+Failure details:
+
+- **mnm-lymphoma-or-nodes** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, cholecystitis, GORD. PANE has no lymphadenopathy feature from the groin site and its only node disease is "Cervical Lymphadenopathy"; the symptom engine ranks lymphoma #1. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **inv-uss-or-biopsy** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No groin ultrasound or node biopsy is proposed; the confirmed ICD R59.1 has no protocol (R59.9 → cervical lymphadenopathy only).]
+- **inv-ldh** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No LDH (same cause as above).]
+- **mgmt-no-hernia-repair** (web): forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is "Inguinal / groin hernia" and site "groin" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The panel shows "Elective: Lichtenstein mesh herniorrhaphy … TEP/TAPP" and the TAPP prompt fires from the CC template name.]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump). National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated). *(statement wording/numbering not yet verified against the source)*
+- **herniasurge-2018** — HerniaSurge — International guidelines for groin hernia management (2018), Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair. HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+
+### Testicular torsion presenting as groin pain
+
+#### `groin-mimic-testicular-torsion` — 
+
+14-year-old boy with 3 hours of sudden severe right groin and scrotal pain and vomiting, high-riding tender testis, absent cremasteric reflex. Torsion until proven otherwise: emergency scrotal exploration; ultrasound must not delay theatre.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-torsion-top3 | mustRankTopK | critical | not run | FAIL (known gap) | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
+| mnm-torsion | mustNotMiss | critical | not run | FAIL (known gap) | EAU/ESPU Guidelines on Paediatric Urology 2024 | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+| level-emergency | emergencyLevel | critical | not run | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
+| alarm-torsion | mustAlarm | critical | not run | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
+| mgmt-exploration | managementInclude | critical | not run | PASS | EAU/ESPU Guidelines on Paediatric Urology 2024 |  |
+| mgmt-no-hernia-repair | managementExclude | critical | not run | FAIL (known gap) |  | Let the confirmed working diagnosis (ICD / paneDiseaseId) override the PANE top for the ManagementPanel, and add a neutral "Groin lump" CC template. |
+
+Failure details:
+
+- **dx-torsion-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: As above: torsion not in the PANE top 3; epididymo-orchitis ranks above it.]
+- **mnm-torsion** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, appendicitis, epididymo-orchitis: testicular_torsion (prior 0.01) is outranked although testicular_pain/scrotal_swelling are applied; vomiting and "sudden" onset are not mapped to features. The safety prompt and the ICD plan (N44.00 → testicular_torsion) are correct.]
+- **mgmt-no-hernia-repair** (web): forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20), which is the inguinal hernia because the only groin CC template is "Inguinal / groin hernia" and site "groin" maps to groin_swelling; the surgeon's confirmed diagnosis (ICD) is not used for the panel while PANE is ≥0.20. The PANE top (inguinal hernia 0.22) drives the ManagementPanel, so an elective mesh repair is shown next to the emergency exploration plan.]
+
+Guidelines:
+
+- **eau-paed-2024** — EAU/ESPU Guidelines on Paediatric Urology — acute scrotum (2024), Testicular torsion: clinical diagnosis, Doppler ultrasound must not delay surgery, urgent scrotal exploration. Radmayr C, Bogaert G, Burgu B, et al. EAU Guidelines on Paediatric Urology. EAU Guidelines Office, Arnhem; 2024 edition. Section: Acute scrotum in children. *(statement wording/numbering not yet verified against the source)*
+
 ### Helicobacter pylori infection (dyspepsia)
 
 #### `h-pylori-penicillin-anaphylaxis` — Penicillin anaphylaxis recorded
@@ -915,6 +1416,385 @@ Guidelines:
 
 - **maastricht-6** — Maastricht VI/Florence consensus report — management of Helicobacter pylori infection (2022), First-line: bismuth quadruple therapy for 14 days where clarithromycin resistance is high (>15%) or unknown; PPI-clarithromycin triple therapy only with known susceptibility, 14 days; avoid clarithromycin after prior macrolide exposure; confirm eradication (UBT or stool antigen) at least 4 weeks after therapy. Malfertheiner P, Megraud F, Rokkas T, et al. Gut. 2022;71:1724–1762. *(statement wording/numbering not yet verified against the source)*
 - **nice-cg184** — NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management (2014), Offer eradication therapy to H. pylori-positive dyspepsia; retest only if indicated. National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+### Femoral hernia
+
+#### `hernia-femoral-elderly-woman` — 
+
+79-year-old thin woman with a small, firm, non-tender right groin lump below and lateral to the pubic tubercle for 6 weeks, not reducible, no obstructive symptoms. Femoral hernias carry the highest strangulation risk: early (urgent elective) repair, not watchful waiting or a truss.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-femoral-top3 | mustRankTopK | critical | not run | FAIL (known gap) | HerniaSurge 2018 | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+| mgmt-early-repair | managementInclude | critical | not run | PASS | HerniaSurge 2018 |  |
+| mgmt-no-watchful-waiting | managementExclude | critical | not run | PASS | HerniaSurge 2018 |  |
+| level-at-least-priority | emergencyLevel | quality | not run | PASS | HerniaSurge 2018 |  |
+| flag-strangulation-risk | redFlags | quality | not run | PASS | HerniaSurge 2018 |  |
+| variant-incarcerated | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **dx-femoral-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: PANE top 3 = cholecystitis, GORD, diverticulitis; femoral_hernia is not listed despite groin_swelling. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge — International guidelines for groin hernia management (2018), Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair. HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+- **wses-hernia-2017** — WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update) (2017), Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields. Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37. *(statement wording/numbering not yet verified against the source)*
+
+### Strangulated femoral (Richter) hernia with small bowel obstruction
+
+#### `hernia-femoral-richter-obstruction` — Presents as SBO (Richter), anticoagulated
+
+82-year-old woman with 2 days of colicky pain, vomiting and distension, no previous abdominal surgery; a small tender lump below the right inguinal ligament is found only on careful examination. Must-not-miss cause of SBO in a "virgin" abdomen; emergency surgery.
+
+Permutation of `hernia-femoral-elderly-woman`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-hernia-cause | mustNotMiss | critical | not run | FAIL (known gap) | Bologna guidelines 2018; WSES guidelines 2017 | Feed exam chips ("Hernia present") and exam text into PANE features; in SBO with no previous surgery, surface external hernias (femoral/obturator) as must-not-miss. |
+| level-emergency | emergencyLevel | critical | not run | PASS | WSES guidelines 2017 |  |
+| alarm-obstruction | mustAlarm | critical | not run | PASS | Bologna guidelines 2018 |  |
+| mgmt-emergency-surgery | managementInclude | critical | not run | PASS | WSES guidelines 2017 |  |
+| mgmt-no-conservative-sbo-trial | managementExclude | critical | not run | PASS | Bologna guidelines 2018 |  |
+| variant-strangulated | dxVariant | critical | not run | PASS |  |  |
+| mnm-bowel-obstruction | mustNotMiss | quality | not run | PASS |  |  |
+| flag-anticoagulant | redFlags | quality | not run | PASS |  |  |
+| inv-ct | investigationInclude | quality | not run | PASS | Bologna guidelines 2018 |  |
+| inv-lactate | investigationInclude | quality | not run | PASS | WSES guidelines 2017 |  |
+| mgmt-ng-decompression | managementInclude | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **mnm-hernia-cause** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction; also in web.triageSurgical#1 [known gap: PANE top 3 = cholecystitis, appendicitis, bowel obstruction (from the abdominal-pain template). No hernia: groin findings are only in exam text/chips, which PANE does not read. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+
+Guidelines:
+
+- **wses-hernia-2017** — WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update) (2017), Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields. Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37. *(statement wording/numbering not yet verified against the source)*
+- **wses-asbo-2017** — Bologna guidelines — adhesive small bowel obstruction (WSES 2017 update) (2018), CT in suspected SBO; SBO in a patient without previous abdominal surgery (non-adhesive cause, e.g. hernia) needs a cause-specific diagnosis; signs of strangulation → surgery. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the World Society of Emergency Surgery ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+- **herniasurge-2018** — HerniaSurge — International guidelines for groin hernia management (2018), Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair. HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+
+### Incarcerated inguinal hernia (no strangulation)
+
+#### `hernia-groin-incarcerated` — 
+
+67-year-old man whose known right inguinal hernia became irreducible 5 hours ago; mildly tender, no skin change, no obstruction, normal vitals, lactate 1.3. WSES: no signs of strangulation, so gentle reduction may be tried, then repair; mesh in a clean field.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-hernia-top3 | mustRankTopK | critical | not run | PASS | WSES guidelines 2017 |  |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | WSES guidelines 2017 |  |
+| flag-irreducible | redFlags | critical | not run | PASS | WSES guidelines 2017 |  |
+| mgmt-reduction-or-repair | managementInclude | critical | not run | PASS | WSES guidelines 2017 |  |
+| mgmt-no-watchful-waiting | managementExclude | critical | not run | PASS | HerniaSurge 2018; WSES guidelines 2017 |  |
+| variant-incarcerated | dxVariant | critical | not run | FAIL (known gap) |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
+| score-qsofa-calculator | scoreValue | quality | not run | n/a |  |  |
+| inv-lactate | investigationInclude | quality | not run | FAIL (known gap) | WSES guidelines 2017 | Add lactate (± CPK, D-dimer) and CT when strangulation is uncertain to the hernia protocols for irreducible hernias. |
+| mgmt-mesh-clean-field | managementInclude | quality | not run | PASS | WSES guidelines 2017 |  |
+
+Failure details:
+
+- **inv-lactate** (web): no investigation matched among 25 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The inguinal_hernia protocol lists FBC, U&E only; no lactate/CPK (WSES strangulation markers) anywhere in the web outputs.]
+- **variant-incarcerated** (web): detected hernia_reducible in group Hernia; expected hernia_incarcerated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: "Irreducible inguinal hernia" contains the hernia_reducible keyword "reducible inguinal", so the plan gets the ELECTIVE prefix ("Day-case laparoscopic repair preferred") and loses the immediate/conservative phases.]
+
+Guidelines:
+
+- **wses-hernia-2017** — WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update) (2017), Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields. Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37. *(statement wording/numbering not yet verified against the source)*
+- **herniasurge-2018** — HerniaSurge — International guidelines for groin hernia management (2018), Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair. HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+
+### Strangulated inguinal hernia
+
+#### `hernia-groin-strangulated` — Strangulated (SIRS, lactate 4.2, CT ischaemia)
+
+74-year-old man, irreducible right inguinal hernia for 20 hours: tense, very tender, red overlying skin, bilious vomiting, HR 118, T 38.3, lactate 4.2, WCC 17.8; CT shows a closed small-bowel loop with reduced wall enhancement. WSES: signs of strangulation, no manual reduction, emergency surgery.
+
+Permutation of `hernia-groin-incarcerated`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-hernia-top3 | mustRankTopK | critical | not run | PASS | WSES guidelines 2017 |  |
+| level-emergency | emergencyLevel | critical | not run | PASS | WSES guidelines 2017 |  |
+| alarm-strangulation-or-sepsis | mustAlarm | critical | not run | PASS | WSES guidelines 2017 |  |
+| score-qsofa-calculator | scoreValue | critical | not run | n/a |  |  |
+| mgmt-emergency-surgery | managementInclude | critical | not run | PASS | WSES guidelines 2017 |  |
+| mgmt-no-manual-reduction | managementExclude | critical | not run | PASS | WSES guidelines 2017 |  |
+| variant-strangulated | dxVariant | critical | not run | FAIL (known gap) |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
+| mnm-strangulation-or-obstruction | mustNotMiss | quality | not run | PASS |  |  |
+| score-rec-qsofa | scoreRecommended | quality | not run | PASS |  |  |
+| inv-lactate | investigationInclude | quality | not run | PASS | WSES guidelines 2017 |  |
+| mgmt-bowel-viability | managementInclude | quality | not run | PASS | WSES guidelines 2017 |  |
+| mgmt-resuscitation | managementInclude | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **variant-strangulated** (web): detected hernia_incarcerated in group Hernia; expected hernia_strangulated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment says "strangulated" and "irreducible"; hernia_incarcerated is checked before hernia_strangulated, so the plan says "Attempt gentle manual reduction" (contraindicated in strangulation).]
+
+Guidelines:
+
+- **wses-hernia-2017** — WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update) (2017), Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields. Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37. *(statement wording/numbering not yet verified against the source)*
+
+### Midline incisional hernia
+
+#### `hernia-incisional-midline-elective` — 
+
+63-year-old woman, 2 years after a midline laparotomy for perforated diverticulitis, with a 7 cm-wide reducible midline incisional hernia, BMI 34, smoker, HbA1c 64. EHS 2023: CT for planning, pre-habilitation (smoking, weight, glycaemic control), mesh repair (retromuscular).
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-incisional-top3 | mustRankTopK | critical | not run | FAIL (known gap) | EHS midline incisional hernia guidelines 2023 | Add CC hints for the ventral/incisional templates (umbilical_swelling / previous_surgery) and a SITE_RULES entry for "incisional"/"scar" → hernia features. |
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| inv-ct | investigationInclude | quality | not run | PASS | EHS midline incisional hernia guidelines 2023 |  |
+| mgmt-prehab | managementInclude | quality | not run | PASS | EHS midline incisional hernia guidelines 2023 |  |
+| mgmt-mesh | managementInclude | quality | not run | PASS | EHS midline incisional hernia guidelines 2023 |  |
+
+Failure details:
+
+- **dx-incisional-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.triageSurgical#1 [known gap: PANE applied no feature: the "Incisional / ventral hernia" template has no CC hint and the site chip "Incisional" matches no SITE_RULES pattern; the priors alone rank cholecystitis first.]
+- **level-routine** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=49); expected ≤ priority [known gap: Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15); "Hartmann's … reversed" counted as post-operative concern.]
+
+Guidelines:
+
+- **ehs-incisional-2023** — EHS midline incisional hernia guidelines (2023), Pre-operative imaging (CT); pre-habilitation (smoking cessation, weight loss, glycaemic control); mesh reinforcement; retromuscular mesh position. Sanders DL, Pawlak MM, Simons MP, et al. Midline incisional hernia guidelines: the European Hernia Society. Br J Surg. 2023;110:1732–1768. *(statement wording/numbering not yet verified against the source)*
+
+### Inguinal hernia (elective, minimally symptomatic)
+
+#### `hernia-inguinal-elective-minimal-symptoms` — 
+
+58-year-old man with a 6-month reducible right groin bulge, a dragging ache after work, no episodes of irreducibility. Classic elective inguinal hernia: watchful waiting is a legitimate option for minimally symptomatic men; mesh repair (open Lichtenstein or laparoscopic TEP/TAPP) if repair is chosen.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-inguinal-hernia-top3 | mustRankTopK | critical | not run | PASS | HerniaSurge 2018 |  |
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) | HerniaSurge 2018 | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| no-emergency-alarm | mustNotAlarm | quality | not run | FAIL (known gap) |  |  |
+| no-strangulation-prompt | mustNotAlarm | quality | not run | FAIL (known gap) |  | Use word-boundary + negation-aware matching for "tender" in the hernia prompt (exclude "non-tender", "not tender"). |
+| mgmt-mesh-repair | managementInclude | quality | not run | PASS | HerniaSurge 2018 |  |
+| mgmt-watchful-waiting-option | managementInclude | quality | not run | FAIL (known gap) | HerniaSurge 2018 | Add the HerniaSurge watchful-waiting option for minimally symptomatic men to the inguinal_hernia protocol (conservative phase). |
+| mgmt-no-emergency-repair | managementExclude | quality | not run | FAIL (known gap) |  |  |
+| variant-reducible | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **level-routine** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≤ priority [known gap: Triage emergency_now (score 80): adaptiveTriage RED_FLAGS regexes have no negation handling — "no episodes of severe pain" → "Acute abdominal pain" (urgent), "No weight loss" → "Possible malignancy", "No vomiting" → +15.]
+- **no-emergency-alarm** (web): forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. advise urgent emergency assessment / tapion contact and ale..." (+1 more) [known gap: Same negation false positives raise the triage "Emergency now" alarm; the prompt engine also raises "Strangulated Hernia → Emergency Repair".]
+- **no-strangulation-prompt** (web): forbidden alarm present in web.clinicalPrompts.safety: "incarcerated / strangulated hernia - strangulated hernia → emergency repair" [known gap: computeClinicalPrompts isIncarcerated tests exam text for "tender" — "non-tender" matches, so a reducible hernia gets the "Incarcerated / strangulated hernia" safety prompt.]
+- **mgmt-watchful-waiting-option** (web): no management item matched among 27 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Neither the inguinal_hernia protocol nor the prompts mention watchful waiting (only "truss for unfit patients declining surgery").]
+- **mgmt-no-emergency-repair** (web): forbidden management item present in web.clinicalPrompts: "• emergency theatre: irreducible / strangulated hernia - bowel resection risk, consent accordingly." [known gap: The negation bug above ("non-tender") adds "Emergency Theatre: irreducible / strangulated hernia" to the plan actions.]
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge — International guidelines for groin hernia management (2018), Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair. HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+
+### Groin hernia in a woman
+
+#### `hernia-inguinal-female-occult-femoral` — Woman (femoral hernia risk)
+
+46-year-old woman with an intermittent left groin bulge. In women HerniaSurge recommends considering a femoral hernia and suggests a laparoscopic repair (identifies occult femoral defects); watchful waiting is not advised because of the femoral-hernia risk.
+
+Permutation of `hernia-inguinal-elective-minimal-symptoms`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-femoral-hernia | mustNotMiss | critical | not run | FAIL (known gap) | HerniaSurge 2018 | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+| mgmt-no-watchful-waiting | managementExclude | critical | not run | PASS | HerniaSurge 2018 |  |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| inv-no-unrelated-seeded-orders | investigationExclude | quality | not run | FAIL (known gap) |  |  |
+| mgmt-laparoscopic | managementInclude | quality | not run | PASS | HerniaSurge 2018 |  |
+
+Failure details:
+
+- **mnm-femoral-hernia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: PANE top 3 = cholecystitis, GORD, PUD. The female modifier cuts inguinal_hernia to x0.3 and cholecystitis is x2 in women; femoral_hernia (prior 0.02) never reaches the list. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=52); expected ≤ priority [known gap: Triage emergency_now (score 52): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15; "change in bowel habit" in "No vomiting, no change in bowel habit" → lower-GI red flag).]
+- **inv-no-unrelated-seeded-orders** (web): forbidden investigation present in web.pane.seeded: "blood cultures × 2 (before antibiotics) (cholecystitis)" (+5 more) [known gap: HpiTab.seedInvestigationsFromPane seeds the stat/urgent tests of the (wrong) PANE top 3: blood cultures, MRCP, erect CXR, OGD for a groin lump.]
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge — International guidelines for groin hernia management (2018), Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair. HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+
+### Obturator hernia with small bowel obstruction
+
+#### `hernia-obturator-sbo-elderly-woman` — 
+
+86-year-old very thin woman (BMI 16) with 3 days of vomiting, distension and colicky pain, no previous abdominal surgery, no groin lump, and pain down the inner left thigh on hip rotation (Howship-Romberg). Must-not-miss: CT shows an obturator hernia; emergency surgery.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-obturator-hernia | mustNotMiss | critical | not run | FAIL (known gap) | Bologna guidelines 2018 | Add Howship-Romberg / medial thigh pain and "no previous abdominal surgery" features; list obturator/femoral hernia as must-not-miss for SBO in thin elderly women. |
+| level-emergency | emergencyLevel | critical | not run | PASS | Bologna guidelines 2018 |  |
+| alarm-obstruction | mustAlarm | critical | not run | PASS | Bologna guidelines 2018 |  |
+| inv-ct | investigationInclude | critical | not run | PASS | Bologna guidelines 2018 |  |
+| mgmt-emergency-surgery | managementInclude | critical | not run | PASS | Bologna guidelines 2018 |  |
+| mgmt-no-gastrografin-trial | managementExclude | critical | not run | PASS | Bologna guidelines 2018 |  |
+| dx-obstruction-top3 | mustRankTopK | quality | not run | PASS |  |  |
+| mnm-hernia-any | mustNotMiss | quality | not run | FAIL (known gap) |  |  |
+| variant-strangulated-or-obstructed | dxVariant | quality | not run | FAIL (known gap) |  |  |
+
+Failure details:
+
+- **mnm-obturator-hernia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction [known gap: PANE top 3 = cholecystitis, appendicitis, bowel obstruction (periumbilical site maps to rlq_pain). obturator_hernia (prior 0.005) has no discriminating feature (no medial-thigh / Howship-Romberg feature, no "virgin abdomen" feature), and no web engine names it.]
+- **mnm-hernia-any** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction [known gap: As above: no hernia of any type in the PANE top 3.]
+- **variant-strangulated-or-obstructed** (web): detected (none) in group Hernia; expected hernia_incarcerated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment ("Small bowel obstruction due to left obturator hernia") has no hernia keyword ("obstructed hernia", "irreducible", "incarcerated"), so no variant is chosen.]
+
+Guidelines:
+
+- **wses-asbo-2017** — Bologna guidelines — adhesive small bowel obstruction (WSES 2017 update) (2018), CT in suspected SBO; SBO in a patient without previous abdominal surgery (non-adhesive cause, e.g. hernia) needs a cause-specific diagnosis; signs of strangulation → surgery. ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the World Society of Emergency Surgery ASBO working group. World J Emerg Surg. 2018;13:24. *(statement wording/numbering not yet verified against the source)*
+- **wses-hernia-2017** — WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update) (2017), Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields. Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37. *(statement wording/numbering not yet verified against the source)*
+
+### Incarcerated paediatric inguinal hernia
+
+#### `hernia-paediatric-incarcerated-infant` — Incarcerated, 7-month-old girl
+
+7-month-old girl with a hard, tender left groin swelling for 5 hours, inconsolable, vomited twice. Incarcerated inguinal hernia (may contain ovary): same-day paediatric surgical care; reduction under analgesia/sedation if no peritonitis, then early repair.
+
+Permutation of `hernia-paediatric-inguinal-infant`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-hernia-top3 | mustRankTopK | critical | not run | FAIL (known gap) | EUPSA guideline 2022 | Add age modifiers (infants/children) to PANE priors, e.g. suppress cholecystitis/GORD/PUD under 12 and boost paediatric inguinal hernia. |
+| level-at-least-urgent | emergencyLevel | critical | not run | PASS | EUPSA guideline 2022 |  |
+| flag-incarcerated | redFlags | critical | not run | PASS |  |  |
+| mgmt-reduction-then-repair | managementInclude | critical | not run | PASS | EUPSA guideline 2022 |  |
+| mgmt-no-adult-plan | managementExclude | quality | not run | FAIL (known gap) |  |  |
+
+Failure details:
+
+- **dx-hernia-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3 = cholecystitis, appendicitis, PUD for a 7-month-old girl (female inguinal x0.3; no age modifier removes adult biliary disease in infants). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **mgmt-no-adult-plan** (web): forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Adult inguinal protocol and TAPP template for an infant (see the base paediatric vignette).]
+
+Guidelines:
+
+- **eupsa-paed-hernia-2022** — EUPSA guideline — surgical management of paediatric inguinal hernia (2022), Timing of repair (infants: early repair; incarceration risk while waiting); open vs laparoscopic herniotomy; management of incarcerated hernia (reduction then repair). Morini F, Dreuning KMA, Janssen Lok MJH, et al. Surgical management of pediatric inguinal hernia: a systematic review and guideline from the European Pediatric Surgeons' Association Evidence and Guideline Committee. Eur J Pediatr Surg. 2022;32:219–232. *(statement wording/numbering not yet verified against the source)*
+- **wses-hernia-2017** — WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update) (2017), Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields. Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37. *(statement wording/numbering not yet verified against the source)*
+
+### Paediatric inguinal hernia (infant)
+
+#### `hernia-paediatric-inguinal-infant` — 
+
+4-month-old boy (born at 34 weeks) with an intermittent right groin/scrotal swelling on crying that reduces spontaneously. Infant inguinal hernias need prompt repair (herniotomy, no mesh) because the incarceration risk is highest in the first year; watchful waiting is not appropriate.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-inguinal-top3 | mustRankTopK | critical | not run | PASS | EUPSA guideline 2022 |  |
+| mgmt-no-watchful-waiting | managementExclude | critical | not run | FAIL (known gap) | EUPSA guideline 2022 | Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16. |
+| mgmt-no-adult-mesh-repair | managementExclude | critical | not run | FAIL (known gap) | EUPSA guideline 2022 | Age-gate the hernia protocol and prompt (paediatric herniotomy template; suppress adult pre-op items such as PSA/ECG). |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Use age-banded paediatric vital-sign ranges (e.g. APLS / PEWS) in computeVitalRedFlags. |
+| mgmt-prompt-repair | managementInclude | quality | not run | FAIL (known gap) | EUPSA guideline 2022 |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=75); expected ≤ urgent [known gap: Triage emergency_now: computeVitalRedFlags uses adult thresholds — HR 140 and RR 36 (normal at 4 months) are flagged Tachycardia/Tachypnoea (urgent).]
+- **mgmt-prompt-repair** (web): no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output mentions herniotomy or paediatric surgical referral.]
+- **mgmt-no-watchful-waiting** (web): forbidden management item present in web.plan: "[conservative] truss may be offered for unfit patients declining surgery - monitor for strangulation..." (+1 more) [known gap: The inguinal_hernia protocol has no paediatric branch: the plan offers "Truss may be offered for unfit patients declining surgery".]
+- **mgmt-no-adult-mesh-repair** (web): forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+5 more) [known gap: Adult plan for a 4-month-old: "Lichtenstein mesh herniorrhaphy … TEP/TAPP" (protocol) and computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan.]
+
+Guidelines:
+
+- **eupsa-paed-hernia-2022** — EUPSA guideline — surgical management of paediatric inguinal hernia (2022), Timing of repair (infants: early repair; incarceration risk while waiting); open vs laparoscopic herniotomy; management of incarcerated hernia (reduction then repair). Morini F, Dreuning KMA, Janssen Lok MJH, et al. Surgical management of pediatric inguinal hernia: a systematic review and guideline from the European Pediatric Surgeons' Association Evidence and Guideline Committee. Eur J Pediatr Surg. 2022;32:219–232. *(statement wording/numbering not yet verified against the source)*
+
+### Parastomal hernia
+
+#### `hernia-parastomal-symptomatic` — 
+
+69-year-old man with an end colostomy (abdominoperineal resection 3 years ago) and a growing parastomal bulge causing appliance leaks and intermittent colicky pain. EHS 2018: CT when uncertain, mesh repair rather than suture repair, stoma nurse input; check for recurrence of rectal cancer.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-parastomal-top3 | mustRankTopK | quality | not run | FAIL (known gap) | EHS guidelines 2018 |  |
+| level-routine | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| inv-ct | investigationInclude | quality | not run | PASS | EHS guidelines 2018 |  |
+| mgmt-mesh-repair | managementInclude | quality | not run | PASS | EHS guidelines 2018 |  |
+| mgmt-stoma-nurse | managementInclude | quality | not run | PASS | EHS guidelines 2018 |  |
+
+Failure details:
+
+- **dx-parastomal-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE applied no feature ("Incisional / ventral hernia" template, no CC hint); inguinal hernia leads on the male prior. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **level-routine** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=59); expected ≤ priority [known gap: Triage emergency_now (score 59): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting"); "rectal cancer" history → "Possible malignancy".]
+
+Guidelines:
+
+- **ehs-parastomal-2018** — EHS guidelines — prevention and treatment of parastomal hernias (2018), Diagnosis (clinical ± CT); indication for repair; mesh repair rather than suture repair; stoma relocation. Antoniou SA, Agresta F, Garcia Alamino JM, et al. European Hernia Society guidelines on prevention and treatment of parastomal hernias. Hernia. 2018;22:183–198. *(statement wording/numbering not yet verified against the source)*
+
+### Incarcerated paraumbilical hernia
+
+#### `hernia-paraumbilical-incarcerated-obese` — Incarcerated, obese, penicillin-allergic
+
+53-year-old woman, BMI 39, paraumbilical hernia irreducible and tender for 14 hours with vomiting; HR 106, lactate 2.9. Strangulation cannot be excluded: emergency surgery (CT helpful in obesity if it does not delay theatre).
+
+Permutation of `hernia-umbilical-adult-elective`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-umbilical-top3 | mustRankTopK | critical | not run | FAIL (known gap) |  | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+| level-emergency | emergencyLevel | critical | not run | PASS | WSES guidelines 2017 |  |
+| alarm-complicated-hernia | mustAlarm | critical | not run | PASS | WSES guidelines 2017 |  |
+| mgmt-emergency-surgery | managementInclude | critical | not run | PASS | WSES guidelines 2017 |  |
+| flag-penicillin-allergy | redFlags | quality | not run | PASS |  |  |
+| inv-lactate | investigationInclude | quality | not run | FAIL (known gap) | WSES guidelines 2017 |  |
+| mgmt-no-penicillin | managementExclude | quality | not run | FAIL (known gap) |  | Filter protocol medications and prompt templates against recorded allergies (drug-class aware) and show the alternative. |
+| variant-incarcerated-or-worse | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **dx-umbilical-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = cholecystitis, GORD, PUD (female: inguinal x0.3, cholecystitis x2). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **inv-lactate** (web): no investigation matched among 26 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No lactate in the umbilical_hernia protocol or the hernia prompts.]
+- **mgmt-no-penicillin** (web): forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." (+1 more) [known gap: The recorded penicillin allergy is not cross-checked: prompts propose piperacillin-tazobactam and co-amoxiclav (as found for the seed vignettes).]
+
+Guidelines:
+
+- **wses-hernia-2017** — WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update) (2017), Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields. Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37. *(statement wording/numbering not yet verified against the source)*
+- **ehs-ahs-umbilical-2020** — EHS/AHS guidelines — treatment of umbilical and epigastric hernias (2020), Indication for repair; mesh vs suture by defect size; open preperitoneal flat mesh; patients with liver cirrhosis and ascites. Henriksen NA, Montgomery A, Kaufmann R, et al. Guidelines for treatment of umbilical and epigastric hernias from the European Hernia Society and Americas Hernia Society. Br J Surg. 2020;107:171–190. *(statement wording/numbering not yet verified against the source)*
+
+### Umbilical hernia (adult, elective)
+
+#### `hernia-umbilical-adult-elective` — 
+
+44-year-old man with a symptomatic reducible umbilical hernia, 2 cm defect on examination. EHS/AHS 2020: mesh repair (open preperitoneal flat mesh suggested) for defects ≥1 cm.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-umbilical-top3 | mustRankTopK | critical | not run | FAIL (known gap) | EHS/AHS guidelines 2020 | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+| level-routine | emergencyLevel | quality | not run | PASS |  |  |
+| mgmt-mesh | managementInclude | quality | not run | PASS | EHS/AHS guidelines 2020 |  |
+| mgmt-smoking | managementInclude | quality | not run | FAIL (known gap) | EHS/AHS guidelines 2020 |  |
+| mgmt-no-inguinal-template | managementExclude | quality | not run | FAIL (known gap) |  | Choose the operative template by hernia site (umbilical/ventral vs inguinal) and make the tender check negation-aware. |
+
+Failure details:
+
+- **dx-umbilical-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 = inguinal hernia (male x5), cholecystitis, GORD; umbilical_hernia (0.03, umbilical_swelling 0.90) is outranked. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **mgmt-smoking** (web): no management item matched among 24 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The umbilical_hernia protocol has no pre-operative optimisation (smoking) step.]
+- **mgmt-no-inguinal-template** (web): forbidden management item present in web.clinicalPrompts: "emergency laparoscopic inguinal hernia repair (tapp) - operative plan ───────────────────────────────────────────────────────────── ..." [known gap: computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan. Here also "EMERGENCY" because "non-tender" matches "tender".]
+
+Guidelines:
+
+- **ehs-ahs-umbilical-2020** — EHS/AHS guidelines — treatment of umbilical and epigastric hernias (2020), Indication for repair; mesh vs suture by defect size; open preperitoneal flat mesh; patients with liver cirrhosis and ascites. Henriksen NA, Montgomery A, Kaufmann R, et al. Guidelines for treatment of umbilical and epigastric hernias from the European Hernia Society and Americas Hernia Society. Br J Surg. 2020;107:171–190. *(statement wording/numbering not yet verified against the source)*
+
+### Umbilical hernia in cirrhosis with ascites
+
+#### `hernia-umbilical-cirrhosis-ascites` — Cirrhosis with tense ascites
+
+57-year-old man with alcohol-related cirrhosis (Child-Pugh B), tense ascites and a large umbilical hernia with thin, shiny skin. Risk of rupture (Flood syndrome) and high peri-operative risk: ascites control and hepatology input before (or with) repair; Child-Pugh/MELD.
+
+Permutation of `hernia-umbilical-adult-elective`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-rupture-risk | redFlags | critical | not run | FAIL (known gap) | EASL Clinical Practice Guidelines 2018; EHS/AHS guidelines 2020 | Add a cirrhosis/ascites branch to umbilical_hernia: red flags (thin/ulcerated skin, leak → urgent repair), hepatology co-management, ascites control, Child-Pugh/MELD. |
+| flag-liver-disease | redFlags | critical | not run | PASS |  |  |
+| mgmt-ascites-control | managementInclude | critical | not run | FAIL (known gap) | EASL Clinical Practice Guidelines 2018; EHS/AHS guidelines 2020 |  |
+| level-at-least-priority | emergencyLevel | quality | not run | PASS |  |  |
+| score-rec-child-pugh | scoreRecommended | quality | not run | PASS |  |  |
+| score-rec-meld | scoreRecommended | quality | not run | PASS |  |  |
+| mgmt-no-standard-day-case-plan | managementExclude | quality | not run | FAIL (known gap) |  |  |
+
+Failure details:
+
+- **flag-rupture-risk** (web): no red flag matched among 18 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No web output mentions rupture/skin ulceration/leak for an umbilical hernia with ascites; the umbilical protocol red flag is only "Irreducible or tender".]
+- **mgmt-ascites-control** (web): no management item matched among 33 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No ascites-control / hepatology step in the umbilical_hernia protocol, the dx variant or the prompts.]
+- **mgmt-no-standard-day-case-plan** (web): forbidden management item present in web.clinicalPrompts: "... male (reduces haematoma). • ice pack to groin prn × 24h. • day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding. ..." [known gap: computeClinicalPrompts fires the hernia pathway for any CC/exam containing "hernia", "inguinal" or "umbilical", and always attaches the adult "LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)" operative plan. Its post-operative orders include day-case discharge.]
+
+Guidelines:
+
+- **ehs-ahs-umbilical-2020** — EHS/AHS guidelines — treatment of umbilical and epigastric hernias (2020), Indication for repair; mesh vs suture by defect size; open preperitoneal flat mesh; patients with liver cirrhosis and ascites. Henriksen NA, Montgomery A, Kaufmann R, et al. Guidelines for treatment of umbilical and epigastric hernias from the European Hernia Society and Americas Hernia Society. Br J Surg. 2020;107:171–190. *(statement wording/numbering not yet verified against the source)*
+- **easl-cirrhosis-2018** — EASL Clinical Practice Guidelines — decompensated cirrhosis (2018), Ascites management (diuretics, large-volume paracentesis); umbilical hernia in patients with ascites (ascites control before repair; risk of rupture). European Association for the Study of the Liver. EASL Clinical Practice Guidelines for the management of patients with decompensated cirrhosis. J Hepatol. 2018;69:406–460. *(statement wording/numbering not yet verified against the source)*
 
 ### Iron-deficiency anaemia (occult GI blood loss)
 
@@ -1028,6 +1908,61 @@ Guidelines:
 - **nice-cg184** — NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management (2014), NSAID-associated peptic ulcer: stop the NSAID where possible; full-dose PPI or H2RA for 8 weeks; test for H. pylori; repeat endoscopy 6–8 weeks after treatment for gastric ulcer; low-dose aspirin continued with gastroprotection when indicated. National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019). *(statement wording/numbering not yet verified against the source)*
 - **maastricht-6** — Maastricht VI/Florence consensus report — management of Helicobacter pylori infection (2022), Test for H. pylori in peptic ulcer disease; rapid urease test sensitivity reduced by PPI. Malfertheiner P, Megraud F, Rokkas T, et al. Gut. 2022;71:1724–1762. *(statement wording/numbering not yet verified against the source)*
 
+### Hypercalcaemic crisis (primary hyperparathyroidism)
+
+#### `parathyroid-hypercalcaemic-crisis` — Hypercalcaemic crisis (Ca 3.84, AKI, drowsy)
+
+71-year-old woman brought in drowsy and confused with 5 days of vomiting and abdominal pain: adjusted calcium 3.84 mmol/L, PTH 38 pmol/L, creatinine 196. Hypercalcaemic crisis: emergency IV 0.9% saline, IV bisphosphonate after rehydration, stop contributing drugs, cardiac monitoring; parathyroidectomy once stable.
+
+Permutation of `parathyroid-primary-hpt-surgical-indications`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-hypercalcaemia | mustNotMiss | critical | not run | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
+| level-emergency | emergencyLevel | critical | not run | PASS | Society for Endocrinology emergency guidance 2016 |  |
+| flag-severe-hypercalcaemia | redFlags | critical | not run | PASS | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-iv-saline | managementInclude | critical | not run | PASS | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-stop-calcium-thiazide | managementInclude | critical | not run | PASS | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-no-thyroidectomy-template | managementExclude | critical | not run | FAIL (known gap) |  | Add a Parathyroid dx-variant group ahead of Thyroid; word-boundary matching. |
+| mgmt-bisphosphonate | managementInclude | quality | not run | PASS | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-no-early-loop-diuretic | managementExclude | quality | not run | PASS | Society for Endocrinology emergency guidance 2016 |  |
+
+Failure details:
+
+- **mnm-hypercalcaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#3 [known gap: PANE applied no feature ("Nausea / vomiting" template, SOCRATES empty); calcium is a lab value. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **mgmt-no-thyroidectomy-template** (web): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.]
+
+Guidelines:
+
+- **sfe-hypercalcaemia-2016** — Society for Endocrinology emergency guidance — acute hypercalcaemia in adults (2016), Severe or symptomatic hypercalcaemia: IV 0.9% saline rehydration, IV bisphosphonate after rehydration, stop contributing drugs, monitor renal function. Walsh J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology Endocrine Emergency Guidance: Emergency management of acute hypercalcaemia in adult patients. Endocr Connect. 2016;5:G9–G11. *(statement wording/numbering not yet verified against the source)*
+- **phpt-workshop-2022** — Fifth International Workshop — evaluation and management of primary hyperparathyroidism (2022), Diagnosis (PTH, exclude FHH, vitamin D); surgical indications (serum calcium >0.25 mmol/L above ULN, osteoporosis T-score ≤−2.5 or vertebral fracture, eGFR <60 mL/min, nephrolithiasis/nephrocalcinosis, hypercalciuria, age <50); localisation only once surgery is decided. Bilezikian JP, Khan AA, Silverberg SJ, et al. Evaluation and management of primary hyperparathyroidism: summary statement and guidelines from the Fifth International Workshop. J Bone Miner Res. 2022;37:2293–2314. *(statement wording/numbering not yet verified against the source)*
+
+### Primary hyperparathyroidism meeting surgical criteria
+
+#### `parathyroid-primary-hpt-surgical-indications` — 
+
+58-year-old woman: adjusted calcium 2.86 mmol/L with inappropriately high PTH, kidney stone, radius T-score −2.7, eGFR 55, on bendroflumethiazide. Fifth International Workshop 2022: several surgical indications → parathyroidectomy (localisation once surgery is decided); exclude FHH; review the thiazide.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-stop-thiazide | managementInclude | critical | not run | PASS | Fifth International Workshop 2022; Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-no-thyroidectomy-template | managementExclude | critical | not run | FAIL (known gap) |  | Add a Parathyroid dx-variant group (E21, primary_hyperparathyroidism, parathyroid_adenoma) ahead of Thyroid, and match baseDiagnosis/keywords on word boundaries. |
+| dx-hyperparathyroid-top3 | mustRankTopK | quality | not run | FAIL (known gap) |  |  |
+| level-not-emergency | emergencyLevel | quality | not run | PASS |  |  |
+| inv-fhh-exclusion | investigationInclude | quality | not run | PASS | Fifth International Workshop 2022 |  |
+| inv-localisation | investigationInclude | quality | not run | PASS | Fifth International Workshop 2022 |  |
+| mgmt-parathyroidectomy | managementInclude | quality | not run | PASS | Fifth International Workshop 2022 |  |
+
+Failure details:
+
+- **dx-hyperparathyroid-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3, web.passive#3 [known gap: PANE applied no feature (template "Other / general surgical"); hypercalcaemia is a lab finding PANE does not read. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **mgmt-no-thyroidectomy-template** (web): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: detectDxVariants falls back to lower.includes("thyroid") for the Thyroid group: "parathyroidectomy"/"hyperparathyroidism" contain "thyroid", and "parathyroidectomy" contains the thyroid_total keyword "thyroidectomy", so the documented plan opens with "Total Thyroidectomy … levothyroxine replacement (lifelong)".]
+
+Guidelines:
+
+- **phpt-workshop-2022** — Fifth International Workshop — evaluation and management of primary hyperparathyroidism (2022), Diagnosis (PTH, exclude FHH, vitamin D); surgical indications (serum calcium >0.25 mmol/L above ULN, osteoporosis T-score ≤−2.5 or vertebral fracture, eGFR <60 mL/min, nephrolithiasis/nephrocalcinosis, hypercalciuria, age <50); localisation only once surgery is decided. Bilezikian JP, Khan AA, Silverberg SJ, et al. Evaluation and management of primary hyperparathyroidism: summary statement and guidelines from the Fifth International Workshop. J Bone Miner Res. 2022;37:2293–2314. *(statement wording/numbering not yet verified against the source)*
+- **sfe-hypercalcaemia-2016** — Society for Endocrinology emergency guidance — acute hypercalcaemia in adults (2016), Severe or symptomatic hypercalcaemia: IV 0.9% saline rehydration, IV bisphosphonate after rehydration, stop contributing drugs, monitor renal function. Walsh J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology Endocrine Emergency Guidance: Emergency management of acute hypercalcaemia in adult patients. Endocr Connect. 2016;5:G9–G11. *(statement wording/numbering not yet verified against the source)*
+
 ### Pharyngeal pouch (Zenker's diverticulum)
 
 #### `pharyngeal-pouch-elderly` — 
@@ -1053,6 +1988,326 @@ Guidelines:
 
 - **esge-zenker-2020** — ESGE Guideline — endoscopic management of gastrointestinal motility disorders, part 2 (Zenker's diverticulum) (2020), Zenker's diverticulum: diagnosis by contrast swallow/endoscopy; treatment of symptomatic pouches by flexible endoscopic or rigid (stapled) septotomy / cricopharyngeal myotomy. Weusten BLAM, Barret M, Bredenoord AJ, et al. Endoscopy. 2020;52:600–614. *(statement wording/numbering not yet verified against the source)*
 - **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer) (2015), Dysphagia at any age: urgent assessment. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+### Thyroid nodule — Bethesda I (non-diagnostic)
+
+#### `thyroid-bethesda-1-nondiagnostic` — Bethesda I (non-diagnostic)
+
+FNA non-diagnostic. Bethesda 2023: repeat FNA with ultrasound guidance; no surgery on a non-diagnostic result alone.
+
+Permutation of `thyroid-nodule-euthyroid-tirads4`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-thyroidectomy-plan | managementExclude | critical | not run | FAIL (known gap) | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 | Parse the Bethesda category and branch: I repeat FNA; II surveillance; III–IV repeat FNA / molecular / diagnostic lobectomy; V–VI surgery by risk (total thyroidectomy for cN1, >4 cm, ETE). |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| mgmt-repeat-fna | managementInclude | quality | not run | FAIL (known gap) | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malignancy").]
+- **mgmt-repeat-fna** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No output proposes a repeat FNA; E04.1 has no protocol.]
+- **mgmt-no-thyroidectomy-plan** (web): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here after a non-diagnostic FNA.]
+
+Guidelines:
+
+- **bethesda-2023** — The 2023 Bethesda System for Reporting Thyroid Cytopathology (2023), Diagnostic categories I–VI and usual management (I repeat FNA with US guidance; II clinical and US follow-up; III repeat FNA, molecular testing, diagnostic lobectomy or surveillance; IV molecular testing, diagnostic lobectomy; V molecular testing, lobectomy or near-total thyroidectomy; VI lobectomy or near-total thyroidectomy). Ali SZ, Baloch ZW, Cochand-Priollet B, Schmitt FC, Vielh P, VanderLaan PA. The 2023 Bethesda System for Reporting Thyroid Cytopathology. Thyroid. 2023;33:1039–1044. *(statement wording/numbering not yet verified against the source)*
+- **ata-2015** — 2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer (2016), Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease). Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133. *(statement wording/numbering not yet verified against the source)*
+- **acr-tirads-2017** — ACR TI-RADS — white paper of the ACR TI-RADS committee (2017), Point-based categories TR1–TR5 and size thresholds for FNA / follow-up (TR3 FNA ≥2.5 cm; TR4 FNA ≥1.5 cm; TR5 FNA ≥1.0 cm). Tessler FN, Middleton WD, Grant EG, et al. ACR Thyroid Imaging, Reporting and Data System (TI-RADS): white paper of the ACR TI-RADS committee. J Am Coll Radiol. 2017;14:587–595. *(statement wording/numbering not yet verified against the source)*
+
+### Thyroid nodule — Bethesda II (benign)
+
+#### `thyroid-bethesda-2-benign` — Bethesda II (benign)
+
+Benign cytology, no compressive symptoms. Bethesda 2023/ATA 2015: clinical and ultrasound follow-up; surgery only for growth, compressive symptoms or patient preference.
+
+Permutation of `thyroid-nodule-euthyroid-tirads4`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-no-thyroidectomy-plan | managementExclude | critical | not run | FAIL (known gap) | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023; 2015 American Thyroid Association guidelines 2016 | Parse the Bethesda category and branch: I repeat FNA; II surveillance; III–IV repeat FNA / molecular / diagnostic lobectomy; V–VI surgery by risk (total thyroidectomy for cN1, >4 cm, ETE). |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| mgmt-surveillance | managementInclude | quality | not run | FAIL (known gap) | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023; 2015 American Thyroid Association guidelines 2016 |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malignancy").]
+- **mgmt-surveillance** (web): no management item matched among 11 (web.clinicalPrompts) [known gap: No surveillance plan; E04.1 has no protocol.]
+- **mgmt-no-thyroidectomy-plan** (web): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan. Here for benign cytology (rationale text: "Bethesda class III–VI or clinical thyroid malignancy").]
+
+Guidelines:
+
+- **bethesda-2023** — The 2023 Bethesda System for Reporting Thyroid Cytopathology (2023), Diagnostic categories I–VI and usual management (I repeat FNA with US guidance; II clinical and US follow-up; III repeat FNA, molecular testing, diagnostic lobectomy or surveillance; IV molecular testing, diagnostic lobectomy; V molecular testing, lobectomy or near-total thyroidectomy; VI lobectomy or near-total thyroidectomy). Ali SZ, Baloch ZW, Cochand-Priollet B, Schmitt FC, Vielh P, VanderLaan PA. The 2023 Bethesda System for Reporting Thyroid Cytopathology. Thyroid. 2023;33:1039–1044. *(statement wording/numbering not yet verified against the source)*
+- **ata-2015** — 2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer (2016), Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease). Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133. *(statement wording/numbering not yet verified against the source)*
+- **acr-tirads-2017** — ACR TI-RADS — white paper of the ACR TI-RADS committee (2017), Point-based categories TR1–TR5 and size thresholds for FNA / follow-up (TR3 FNA ≥2.5 cm; TR4 FNA ≥1.5 cm; TR5 FNA ≥1.0 cm). Tessler FN, Middleton WD, Grant EG, et al. ACR Thyroid Imaging, Reporting and Data System (TI-RADS): white paper of the ACR TI-RADS committee. J Am Coll Radiol. 2017;14:587–595. *(statement wording/numbering not yet verified against the source)*
+
+### Thyroid nodule — Bethesda III (AUS)
+
+#### `thyroid-bethesda-3-aus` — Bethesda III (AUS)
+
+Atypia of undetermined significance. Bethesda 2023: repeat FNA, molecular testing, diagnostic lobectomy or surveillance; total thyroidectomy is not the default.
+
+Permutation of `thyroid-nodule-euthyroid-tirads4`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| mgmt-options | managementInclude | quality | not run | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
+| mgmt-no-thyroidectomy-plan | managementExclude | quality | not run | FAIL (known gap) | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 | Parse the Bethesda category and branch: I repeat FNA; II surveillance; III–IV repeat FNA / molecular / diagnostic lobectomy; V–VI surgery by risk (total thyroidectomy for cN1, >4 cm, ETE). |
+| variant-thyroid-hemithyroidectomy | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malignancy").]
+- **mgmt-no-thyroidectomy-plan** (web): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan.]
+
+Guidelines:
+
+- **bethesda-2023** — The 2023 Bethesda System for Reporting Thyroid Cytopathology (2023), Diagnostic categories I–VI and usual management (I repeat FNA with US guidance; II clinical and US follow-up; III repeat FNA, molecular testing, diagnostic lobectomy or surveillance; IV molecular testing, diagnostic lobectomy; V molecular testing, lobectomy or near-total thyroidectomy; VI lobectomy or near-total thyroidectomy). Ali SZ, Baloch ZW, Cochand-Priollet B, Schmitt FC, Vielh P, VanderLaan PA. The 2023 Bethesda System for Reporting Thyroid Cytopathology. Thyroid. 2023;33:1039–1044. *(statement wording/numbering not yet verified against the source)*
+- **ata-2015** — 2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer (2016), Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease). Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133. *(statement wording/numbering not yet verified against the source)*
+
+### Thyroid nodule — Bethesda IV (follicular neoplasm)
+
+#### `thyroid-bethesda-4-follicular-neoplasm` — Bethesda IV (follicular neoplasm)
+
+Follicular neoplasm. Bethesda 2023: molecular testing and/or diagnostic lobectomy; completion thyroidectomy only if histology shows cancer that warrants it.
+
+Permutation of `thyroid-nodule-euthyroid-tirads4`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| mgmt-lobectomy | managementInclude | quality | not run | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 |  |
+| mgmt-no-thyroidectomy-plan | managementExclude | quality | not run | FAIL (known gap) | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023 | Parse the Bethesda category and branch: I repeat FNA; II surveillance; III–IV repeat FNA / molecular / diagnostic lobectomy; V–VI surgery by risk (total thyroidectomy for cN1, >4 cm, ETE). |
+| variant-thyroid-hemithyroidectomy | dxVariant | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malignancy").]
+- **mgmt-no-thyroidectomy-plan** (web): forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" fires on any radiology result containing "bethesda" (any category) and attaches the TOTAL THYROIDECTOMY operative plan.]
+
+Guidelines:
+
+- **bethesda-2023** — The 2023 Bethesda System for Reporting Thyroid Cytopathology (2023), Diagnostic categories I–VI and usual management (I repeat FNA with US guidance; II clinical and US follow-up; III repeat FNA, molecular testing, diagnostic lobectomy or surveillance; IV molecular testing, diagnostic lobectomy; V molecular testing, lobectomy or near-total thyroidectomy; VI lobectomy or near-total thyroidectomy). Ali SZ, Baloch ZW, Cochand-Priollet B, Schmitt FC, Vielh P, VanderLaan PA. The 2023 Bethesda System for Reporting Thyroid Cytopathology. Thyroid. 2023;33:1039–1044. *(statement wording/numbering not yet verified against the source)*
+- **ata-2015** — 2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer (2016), Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease). Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133. *(statement wording/numbering not yet verified against the source)*
+
+### Thyroid nodule — Bethesda V (suspicious for malignancy)
+
+#### `thyroid-bethesda-5-suspicious` — Bethesda V (suspicious for malignancy)
+
+Suspicious for malignancy. Bethesda 2023: molecular testing, lobectomy or near-total thyroidectomy; surgery is indicated.
+
+Permutation of `thyroid-nodule-euthyroid-tirads4`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-surgery | managementInclude | critical | not run | PASS | The 2023 Bethesda System for Reporting Thyroid Cytopathology 2023; 2015 American Thyroid Association guidelines 2016 |  |
+| mgmt-no-surveillance-only | managementExclude | critical | not run | PASS |  |  |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malignancy").]
+
+Guidelines:
+
+- **bethesda-2023** — The 2023 Bethesda System for Reporting Thyroid Cytopathology (2023), Diagnostic categories I–VI and usual management (I repeat FNA with US guidance; II clinical and US follow-up; III repeat FNA, molecular testing, diagnostic lobectomy or surveillance; IV molecular testing, diagnostic lobectomy; V molecular testing, lobectomy or near-total thyroidectomy; VI lobectomy or near-total thyroidectomy). Ali SZ, Baloch ZW, Cochand-Priollet B, Schmitt FC, Vielh P, VanderLaan PA. The 2023 Bethesda System for Reporting Thyroid Cytopathology. Thyroid. 2023;33:1039–1044. *(statement wording/numbering not yet verified against the source)*
+- **ata-2015** — 2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer (2016), Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease). Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133. *(statement wording/numbering not yet verified against the source)*
+
+### Thyroid nodule — Bethesda VI with lateral neck nodes (cN1b)
+
+#### `thyroid-bethesda-6-papillary-cn1b` — Bethesda VI with lateral neck nodes (cN1b)
+
+Papillary carcinoma with biopsy-proven lateral neck nodes. ATA 2015: cN1 disease needs total thyroidectomy with therapeutic neck dissection; lobectomy is inadequate.
+
+Permutation of `thyroid-nodule-euthyroid-tirads4`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mgmt-total-thyroidectomy | managementInclude | critical | not run | PASS | 2015 American Thyroid Association guidelines 2016 |  |
+| mgmt-lateral-neck-dissection | managementInclude | critical | not run | PASS | 2015 American Thyroid Association guidelines 2016 |  |
+| mgmt-no-hemithyroidectomy-prefix | managementExclude | critical | not run | FAIL (known gap) |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
+| variant-thyroid-total | dxVariant | critical | not run | FAIL (known gap) |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
+| level-not-emergency | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+
+Failure details:
+
+- **level-not-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malignancy").]
+- **mgmt-no-hemithyroidectomy-prefix** (web): forbidden management item present in web.plan: "hemithyroidectomy (ipsilateral lobe + isthmus). intraoperative recurrent laryngeal nerve neuromonitoring." [known gap: Consequence of the variant bug: the plan opens with "Hemithyroidectomy (ipsilateral lobe + isthmus)" above the protocol's total-thyroidectomy steps.]
+- **variant-thyroid-total** (web): detected thyroid_hemithyroidectomy in group Thyroid; expected thyroid_total [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: "bethesda vi" contains the hemithyroidectomy keyword "bethesda v", so cN1b papillary carcinoma gets the hemithyroidectomy plan prefix.]
+
+Guidelines:
+
+- **bethesda-2023** — The 2023 Bethesda System for Reporting Thyroid Cytopathology (2023), Diagnostic categories I–VI and usual management (I repeat FNA with US guidance; II clinical and US follow-up; III repeat FNA, molecular testing, diagnostic lobectomy or surveillance; IV molecular testing, diagnostic lobectomy; V molecular testing, lobectomy or near-total thyroidectomy; VI lobectomy or near-total thyroidectomy). Ali SZ, Baloch ZW, Cochand-Priollet B, Schmitt FC, Vielh P, VanderLaan PA. The 2023 Bethesda System for Reporting Thyroid Cytopathology. Thyroid. 2023;33:1039–1044. *(statement wording/numbering not yet verified against the source)*
+- **ata-2015** — 2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer (2016), Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease). Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133. *(statement wording/numbering not yet verified against the source)*
+
+### Thyroid nodule (euthyroid, TI-RADS TR4)
+
+#### `thyroid-nodule-euthyroid-tirads4` — 
+
+46-year-old woman with a 2.2 cm solid hypoechoic right thyroid nodule (ACR TI-RADS TR4), TSH normal. TSH first; ultrasound risk stratification; TR4 ≥1.5 cm → ultrasound-guided FNA. No radionuclide scan when TSH is normal.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-thyroid-top3 | mustRankTopK | critical | not run | FAIL (known gap) | British Thyroid Association guidelines 2014 | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+| inv-tsh | investigationInclude | critical | not run | PASS | 2015 American Thyroid Association guidelines 2016; British Thyroid Association guidelines 2014 |  |
+| mgmt-us-fna-recommended | managementInclude | critical | not run | PASS | ACR TI-RADS 2017; British Thyroid Association guidelines 2014 |  |
+| level-not-urgent | emergencyLevel | quality | not run | FAIL (known gap) |  | Add a negation window ("no", "denies", "never", "non-") before RED_FLAGS / symptom regex matches in adaptive-triage. |
+| inv-us | investigationInclude | quality | not run | FAIL (known gap) | ACR TI-RADS 2017; British Thyroid Association guidelines 2014 | Add E04.1/E04.2 to the thyroid_nodule_benign protocol prefixes and make the prompt add US/FNA as investigations. |
+| inv-fna | investigationInclude | quality | not run | FAIL (known gap) | ACR TI-RADS 2017 |  |
+| inv-no-isotope-scan | investigationExclude | quality | not run | PASS | 2015 American Thyroid Association guidelines 2016 |  |
+| inv-no-unrelated-seeded-orders | investigationExclude | quality | not run | FAIL (known gap) |  | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
+
+Failure details:
+
+- **dx-thyroid-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#2, web.triageSurgical#2 [known gap: PANE top 3 = cholecystitis, GORD, PUD after neck_lump (thyroid_nodule_benign prior 0.03, thyroid_carcinoma 0.01). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+- **level-not-urgent** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malignancy").]
+- **inv-us** (web): no investigation matched among 21 (web.pane.seeded, web.clinicalPrompts) [known gap: US and FNA appear only as plan text of the "Thyroid Nodule → USS + FNAC" prompt (addToPlan), not as investigation orders; E04.1 (the correct code for a single non-toxic nodule) maps to no protocol (the benign-nodule protocol is keyed on D34).]
+- **inv-fna** (web): no investigation matched among 21 (web.pane.seeded, web.clinicalPrompts) [known gap: As above (plan text only).]
+- **inv-no-unrelated-seeded-orders** (web): forbidden investigation present in web.pane.seeded: "blood cultures × 2 (before antibiotics) (cholecystitis)" (+6 more) [known gap: The wrong PANE top 3 seeds blood cultures, MRCP, erect CXR, OGD and group & save for a thyroid nodule.]
+
+Guidelines:
+
+- **ata-2015** — 2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer (2016), Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease). Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133. *(statement wording/numbering not yet verified against the source)*
+- **acr-tirads-2017** — ACR TI-RADS — white paper of the ACR TI-RADS committee (2017), Point-based categories TR1–TR5 and size thresholds for FNA / follow-up (TR3 FNA ≥2.5 cm; TR4 FNA ≥1.5 cm; TR5 FNA ≥1.0 cm). Tessler FN, Middleton WD, Grant EG, et al. ACR Thyroid Imaging, Reporting and Data System (TI-RADS): white paper of the ACR TI-RADS committee. J Am Coll Radiol. 2017;14:587–595. *(statement wording/numbering not yet verified against the source)*
+- **bta-2014** — British Thyroid Association guidelines — management of thyroid cancer (2014), Investigation of thyroid nodules (TFTs, ultrasound, FNAC); urgent referral features (stridor, rapidly enlarging mass, voice change); anaplastic carcinoma and lymphoma. Perros P, Boelaert K, Colley S, et al. Guidelines for the management of thyroid cancer. Clin Endocrinol (Oxf). 2014;81(Suppl 1):1–122. *(statement wording/numbering not yet verified against the source)*
+
+### Hyperfunctioning thyroid nodule (toxic adenoma)
+
+#### `thyroid-nodule-hyperthyroid-hot` — Suppressed TSH (toxic adenoma)
+
+39-year-old woman with a 2.8 cm nodule and suppressed TSH. ATA 2015/2016: subnormal TSH → radionuclide scan; a hyperfunctioning ("hot") nodule does not need FNA; symptomatic beta-blockade; definitive radioiodine or surgery.
+
+Permutation of `thyroid-nodule-euthyroid-tirads4`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-hyperthyroid-top3 | mustRankTopK | quality | not run | FAIL (known gap) |  |  |
+| inv-radionuclide-scan | investigationInclude | quality | not run | PASS | 2015 American Thyroid Association guidelines 2016; 2016 ATA guidelines 2016 |  |
+| inv-no-fna-first | investigationExclude | quality | not run | PASS | 2015 American Thyroid Association guidelines 2016 |  |
+| mgmt-beta-blocker | managementInclude | quality | not run | PASS | 2016 ATA guidelines 2016 |  |
+| mgmt-definitive | managementInclude | quality | not run | PASS | 2016 ATA guidelines 2016 |  |
+
+Failure details:
+
+- **dx-hyperthyroid-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = cholecystitis, GORD, PUD: SOCRATES answers carry no thyrotoxic features (heat intolerance/palpitations are chips, not SOCRATES text). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
+
+Guidelines:
+
+- **ata-2015** — 2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer (2016), Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease). Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133. *(statement wording/numbering not yet verified against the source)*
+- **ata-hyper-2016** — 2016 ATA guidelines — hyperthyroidism and other causes of thyrotoxicosis (2016), Toxic adenoma: radionuclide uptake scan, beta-blockade, definitive treatment (radioactive iodine or surgery). Ross DS, Burch HB, Cooper DS, et al. 2016 American Thyroid Association guidelines for diagnosis and management of hyperthyroidism and other causes of thyrotoxicosis. Thyroid. 2016;26:1343–1421. *(statement wording/numbering not yet verified against the source)*
+
+### Symptomatic hypocalcaemia after total thyroidectomy
+
+#### `thyroid-post-op-hypocalcaemia` — 
+
+44-year-old woman on day 1 after total thyroidectomy with perioral tingling, carpopedal spasm, positive Chvostek sign, adjusted calcium 1.78 mmol/L, PTH undetectable, QTc 490 ms. Symptomatic hypocalcaemia: IV calcium gluconate with cardiac monitoring, check/correct magnesium, oral calcium + alfacalcidol.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| level-at-least-urgent | emergencyLevel | critical | not run | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 | Add post-thyroidectomy hypocalcaemia rules: symptoms (perioral tingling, carpopedal spasm) and adjusted calcium below range → urgent; IV calcium gluconate + ECG prompt. |
+| flag-hypocalcaemia | redFlags | critical | not run | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-iv-calcium | managementInclude | critical | not run | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
+| inv-ecg | investigationInclude | quality | not run | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
+| inv-magnesium | investigationInclude | quality | not run | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-oral-calcium-vitd | managementInclude | quality | not run | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
+
+Failure details:
+
+- **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=25); expected ≥ urgent [known gap: Triage priority_24_48h (score 25, post-op only): no rule for tingling/tetany/hypocalcaemia and lab values are not read by adaptiveTriage.]
+- **flag-hypocalcaemia** (web): no red flag matched among 6 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: No web engine reads the adjusted calcium 1.78 mmol/L or the symptoms; E89.2 maps to no protocol.]
+- **inv-ecg** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No ECG/cardiac monitoring proposed.]
+- **inv-magnesium** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No magnesium proposed.]
+- **mgmt-iv-calcium** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No IV calcium gluconate anywhere (only inside the elective thyroidectomy operative template, which does not fire here).]
+- **mgmt-oral-calcium-vitd** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: No oral calcium / alfacalcidol plan.]
+
+Guidelines:
+
+- **sfe-hypocalcaemia-2016** — Society for Endocrinology emergency guidance — acute hypocalcaemia in adults (2016), Symptomatic or severe hypocalcaemia: IV calcium gluconate with cardiac monitoring; check and correct magnesium; oral calcium and active vitamin D for post-surgical hypoparathyroidism. Turner J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology Endocrine Emergency Guidance: Emergency management of acute hypocalcaemia in adult patients. Endocr Connect. 2016;5:G7–G8. *(statement wording/numbering not yet verified against the source)*
+
+### Neck haematoma after thyroidectomy with airway compromise
+
+#### `thyroid-post-op-neck-haematoma` — 
+
+51-year-old woman 5 hours after total thyroidectomy: rapidly enlarging tense neck swelling, stridor, SpO2 90%. DAS/BAETS 2022: call for help and decompress at the bedside immediately (SCOOP: skin exposure, cut sutures, open skin, open muscles, pack), then theatre; do not wait for imaging.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-haematoma-top3 | mustRankTopK | critical | not run | FAIL (known gap) | DAS / BAETS / ENT UK consensus 2022 | Map "wound swelling"/"neck swelling" after surgery to wound_seroma (haematoma) rather than infection features. |
+| level-emergency | emergencyLevel | critical | not run | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
+| alarm-emergency | mustAlarm | critical | not run | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
+| mgmt-bedside-decompression | managementInclude | critical | not run | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
+| mgmt-no-conservative-first | managementExclude | critical | not run | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
+| alarm-airway-specific | mustAlarm | quality | not run | FAIL (known gap) | DAS / BAETS / ENT UK consensus 2022 |  |
+| inv-no-imaging-before-decompression | investigationExclude | quality | not run | FAIL (known gap) | DAS / BAETS / ENT UK consensus 2022 |  |
+| mgmt-return-to-theatre | managementInclude | quality | not run | PASS | DAS / BAETS / ENT UK consensus 2022 |  |
+| mgmt-no-thyroidectomy-prefix | managementExclude | quality | not run | FAIL (known gap) |  | Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' ("irreducible" contains "reducible"); "bethesda vi" contains "bethesda v". |
+
+Failure details:
+
+- **dx-haematoma-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Surgical Site Infection (SSI) \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 = cholecystitis, surgical site infection, GORD: the "Post-op wound concern" template hints wound_erythema/wound_discharge (infection features), and no neck-swelling feature exists. The T81.0 plan itself is correct (bedside wound opening).]
+- **alarm-airway-specific** (web): no alarm matched among 8 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: The alarm is the generic triage "Emergency now" (RR, SpO2, HR); no alarm names the neck haematoma or airway.]
+- **inv-no-imaging-before-decompression** (web): forbidden investigation present in web.plan.investigations: "uss wound (confirm haematoma, guide aspiration of liquefied collections)" (+3 more) [known gap: The generic postop_haematoma investigations include "USS wound (confirm haematoma …)" with no exception for a neck haematoma with airway compromise.]
+- **mgmt-no-thyroidectomy-prefix** (web): forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: The assessment mentions "thyroidectomy", so detectDxVariants selects thyroid_total and prepends the elective Total Thyroidectomy template to the haematoma plan.]
+
+Guidelines:
+
+- **das-baets-haematoma-2022** — DAS / BAETS / ENT UK consensus — management of haematoma after thyroid surgery (2022), Recognition (neck swelling, stridor, respiratory distress); SCOOP (Skin exposure, Cut sutures, Open skin, Open muscles, Pack) bedside decompression; call for help; airway management and return to theatre. Iliff HA, El-Boghdadly K, Ahmad I, et al. Management of haematoma after thyroid surgery: systematic review and multidisciplinary consensus guidelines from the Difficult Airway Society, the British Association of Endocrine and Thyroid Surgeons and the British Association of Otorhinolaryngology, Head and Neck Surgery. Anaesthesia. 2022;77:82–95. *(statement wording/numbering not yet verified against the source)*
+
+### Rapidly enlarging thyroid mass with stridor (anaplastic carcinoma / lymphoma)
+
+#### `thyroid-rapid-enlargement-stridor` — 
+
+76-year-old woman with Hashimoto's thyroiditis and a hard neck mass that has doubled in 3 weeks, now with stridor, hoarseness and dysphagia. Anaplastic carcinoma or thyroid lymphoma: airway first (senior anaesthesia/ENT), urgent core biopsy (FNA may miss lymphoma), rapid staging; not an elective thyroidectomy pathway.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| mnm-anaplastic-or-lymphoma | mustNotMiss | critical | not run | FAIL (known gap) | 2021 ATA guidelines 2021; British Thyroid Association guidelines 2014 | Add anaplastic carcinoma and primary thyroid lymphoma to PANE and a rapid-growth feature; add an ATC/lymphoma branch to the thyroid carcinoma protocol. |
+| level-emergency | emergencyLevel | critical | not run | PASS | 2021 ATA guidelines 2021; British Thyroid Association guidelines 2014 |  |
+| alarm-emergency | mustAlarm | critical | not run | PASS | 2021 ATA guidelines 2021 |  |
+| inv-core-biopsy | investigationInclude | critical | not run | FAIL (known gap) | 2021 ATA guidelines 2021 |  |
+| mgmt-airway | managementInclude | critical | not run | FAIL (known gap) | 2021 ATA guidelines 2021 | Add a stridor/airway safety rule (triage + prompts): senior anaesthetic/ENT airway review, oxygen, steroids, no elective pathway. |
+| mnm-thyroid-malignancy | mustNotMiss | quality | not run | FAIL (known gap) |  |  |
+| alarm-airway-specific | mustAlarm | quality | not run | FAIL (known gap) | 2021 ATA guidelines 2021 |  |
+| inv-ct-neck-chest | investigationInclude | quality | not run | PASS | 2021 ATA guidelines 2021 |  |
+| mgmt-no-elective-thyroidectomy-plan | managementExclude | quality | not run | PASS | 2021 ATA guidelines 2021 |  |
+
+Failure details:
+
+- **mnm-anaplastic-or-lymphoma** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no anaplastic thyroid carcinoma or thyroid lymphoma disease; top 3 = cholecystitis, colorectal cancer, GORD. The thyroid_carcinoma protocol is papillary-oriented.]
+- **mnm-thyroid-malignancy** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#3, web.passive#2 [known gap: Thyroid carcinoma not in the PANE top 3 (see above).]
+- **alarm-airway-specific** (web): no alarm matched among 7 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: The only alarm is the generic triage "Emergency now" (vital signs); nothing names stridor or the airway.]
+- **inv-core-biopsy** (web): no investigation matched among 35 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma.]
+- **mgmt-airway** (web): no management item matched among 48 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No airway step in any web output: triage has no stridor rule (the emergency comes from RR/SpO2), prompts have no airway rule, and the C73 protocol lists stridor only as a red flag.]
+
+Guidelines:
+
+- **ata-atc-2021** — 2021 ATA guidelines — anaplastic thyroid cancer (2021), Rapid diagnosis (core or open biopsy when FNA is non-diagnostic; exclude lymphoma), airway assessment and management, rapid staging, BRAF testing, multidisciplinary decision on resection. Bible KC, Kebebew E, Brierley J, et al. 2021 American Thyroid Association guidelines for management of patients with anaplastic thyroid cancer. Thyroid. 2021;31:337–386. *(statement wording/numbering not yet verified against the source)*
+- **bta-2014** — British Thyroid Association guidelines — management of thyroid cancer (2014), Investigation of thyroid nodules (TFTs, ultrasound, FNAC); urgent referral features (stridor, rapidly enlarging mass, voice change); anaplastic carcinoma and lymphoma. Perros P, Boelaert K, Colley S, et al. Guidelines for the management of thyroid cancer. Clin Endocrinol (Oxf). 2014;81(Suppl 1):1–122. *(statement wording/numbering not yet verified against the source)*
+
+### Retrosternal multinodular goitre with tracheal compression
+
+#### `thyroid-retrosternal-goitre-compression` — 
+
+68-year-old woman with a long-standing multinodular goitre, now breathless lying flat, positive Pemberton sign; CT: retrosternal extension 5 cm below the thoracic inlet, trachea narrowed to 8 mm. Compressive goitre: TFTs, CT (done), airway planning, total thyroidectomy (possible sternotomy) — urgent, not routine.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| flag-compression | redFlags | critical | not run | FAIL (known gap) | NICE NG145 2019 | Add compressive-goitre red flags (orthopnoea, Pemberton, tracheal narrowing on CT) and map E04.2 to a goitre protocol. |
+| mgmt-thyroidectomy | managementInclude | critical | not run | PASS | NICE NG145 2019 |  |
+| level-at-least-priority | emergencyLevel | quality | not run | PASS | NICE NG145 2019 |  |
+| inv-tfts | investigationInclude | quality | not run | PASS |  |  |
+| inv-ct | investigationInclude | quality | not run | FAIL (known gap) | NICE NG145 2019 |  |
+| mgmt-airway-planning | managementInclude | quality | not run | PASS |  |  |
+
+Failure details:
+
+- **flag-compression** (web): no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No red flag names tracheal compression, stridor or retrosternal extension; triage escalates only because "breathless" matches the post-operative-concern rule. E04.2 maps to no protocol.]
+- **inv-ct** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: CT neck/thorax appears only inside the thyroidectomy prompt plan text, not as an investigation.]
+
+Guidelines:
+
+- **nice-ng145-2019** — NICE NG145 — Thyroid disease: assessment and management (2019), Non-malignant thyroid enlargement: investigation and referral (compressive symptoms, stridor); surgery for compressive goitre. National Institute for Health and Care Excellence. Thyroid disease: assessment and management. NICE guideline NG145. London: NICE; 2019. *(statement wording/numbering not yet verified against the source)*
 
 ### Acute upper GI bleeding (non-variceal)
 
@@ -1426,6 +2681,7 @@ Guidelines:
 |---|---|---|---|---|---|
 | `achalasia-pseudoachalasia-elderly` | mnm-malignancy | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifi |
 | `achalasia-young` | dx-achalasia-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Hiatus Hernia [known gap: PANE top 3: cholecystitis, appendicitis, hiatus hernia — only weight_loss and regurgitation reach PANE (no dysphagia feature, see dysp |
+| `adrenal-suspected-phaeochromocytoma` | mnm-phaeochromocytoma | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and a |
 | `aortic-dissection-epigastric-back-pain` | mnm-dissection | web | critical | known gap | not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis (epigastric pain + radiation to back = pancreatitis pattern); no  |
 | `aortic-dissection-epigastric-back-pain` | mnm-dissection-symptom-inference | web | quality | known gap | not in top 5 of web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm \| 2. Peptic ulcer disease \| 3. Acute alcoholic pancreatitis \| 4. Perforated peptic ulcer \| 5. Gallstone pancreatitis [known gap: Symptom inference |
 | `aortic-dissection-epigastric-back-pain` | inv-ct-angiography | web | critical | known gap | no investigation matched among 28 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol (I71.0) and no prompt suggests CT angiography.] |
@@ -1451,6 +2707,36 @@ Guidelines:
 | `boerhaave-presenting-as-chest-pain` | mnm-perforation | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis [known gap: PANE top 3: inguinal hernia, cholecystitis, pancreatitis; no oesophageal features reach PANE. Symptom inference ranks STEM |
 | `boerhaave-presenting-as-chest-pain` | inv-ecg | web | critical | known gap | no investigation matched among 31 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No investigation output mentions an ECG: the triage chest_pain pathway checklist ("ECG within 10 minutes") is not surfaced, and th |
 | `boerhaave-presenting-as-pancreatitis` | mnm-perforation | web | critical | known gap | not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: pancreatitis, cholecystitis, GORD; symptom inference: alcoholic/gallstone pancreatitis, peptic ulcer, perfora |
+| `breast-abscess-non-lactational-smoker` | dx-abscess-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Fibroadenoma \| 3. Fibrocystic Breast Disease; also in web.triageSurgical#3 [known gap: PANE top 3 = cholecystitis, fibroadenoma, fibrocystic change: only breast_lump was extracted (no  |
+| `breast-abscess-non-lactational-smoker` | mgmt-smoking-cessation | web | quality | known gap | no management item matched among 27 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The breast_abscess protocol has no non-lactational (periductal mastitis) branch: n |
+| `breast-family-history-brca` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Triage same_day_call: the word "cancer" in the complaint ("Worried about breast cancer") matches the "Possible malignancy" red flag.] |
+| `breast-family-history-brca` | mgmt-genetics-referral | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: The family-history prompt exists (computeClinicalPrompts: "Family history of breast / ovarian cancer" → genetics) but reads InferenceInput.familyHistory, which the harness |
+| `breast-inflammatory-cancer` | mgmt-no-bcs-or-slnb | web | critical | known gap | forbidden management item present in web.plan: "[surgical] wide local excision (breast-conserving) + slnb or axillary clearance." (+2 more) [known gap: The C50 plan comes from the generic invasive_ductal_carcinoma protocol, which offers "Wi |
+| `breast-lump-age-30-35` | flag-2ww | web | critical | known gap | no red flag matched among 6 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: The suspected-cancer referral is triggered (age ≥30 + breast lump) but labelled "Cancer screenin |
+| `breast-lump-age-30-35` | inv-uss | web | critical | known gap | no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreas |
+| `breast-lump-age-30-35` | inv-core-biopsy | web | critical | known gap | no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreas |
+| `breast-lump-over-35-suspicious` | flag-2ww | web | critical | known gap | no red flag matched among 9 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen "colorectal |
+| `breast-lump-over-35-suspicious` | mgmt-mdt | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vigne |
+| `breast-lump-pregnant` | flag-2ww | web | critical | known gap | no red flag matched among 11 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every trigg |
+| `breast-lump-pregnant` | inv-uss | web | critical | known gap | no investigation matched among 12 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreas |
+| `breast-lump-pregnant` | inv-core-biopsy | web | critical | known gap | no investigation matched among 12 (web.pane.seeded, web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreas |
+| `breast-lump-under-30` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "breast lump" RED_FLAG is priority ("Possible malignancy") regardless of age, and the adaptive action maps priority  |
+| `breast-lump-under-30` | inv-uss | web | critical | known gap | no investigation matched among 11 (web.pane.seeded, web.clinicalPrompts) [known gap: No breast ultrasound in any output. The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as  |
+| `breast-lump-under-30` | inv-no-unrelated-seeded-orders | web | quality | known gap | forbidden investigation present in web.pane.seeded: "amylase / lipase (exclude pancreatitis) (cholecystitis)" (+3 more) [known gap: PANE top 3 starts with cholecystitis, so amylase/lipase, blood cultures and MRCP are seeded into orders for  |
+| `breast-lump-under-30` | mgmt-triple-assessment | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: The pre-histology code N63.0 (breast lump) maps to no management protocol, so the plan is empty. Harness limitation as well: web-runner.ts passes examBreast: "" (the vigne |
+| `breast-male-cancer` | mnm-carcinoma | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Gynaecomastia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#2, web.triageSurgical#3 [known gap: PANE top 3 = inguinal hernia (male x5 prior), gynaecomasti |
+| `breast-male-cancer` | flag-2ww | web | critical | known gap | no red flag matched among 10 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: Triggered but labelled colorectal. cancer-screening.ts labels every triggered screen "colorecta |
+| `breast-male-cancer` | mgmt-genetics | web | quality | known gap | no management item matched among 4 (web.clinicalPrompts) [known gap: No BRCA / genetics step for male breast cancer with a family history.] |
+| `breast-male-gynaecomastia` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=74); expected ≤ priority [known gap: Triage same_day_call: "breast lump" → Possible malignancy (priority) and the cancer screen triggers (age ≥30 + breast lump, applied to men |
+| `breast-nipple-discharge-bloody-single-duct` | mnm-malignancy | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE applied no feature: the "Nipple discharge" template has no CC hint  |
+| `breast-nipple-discharge-bloody-single-duct` | level-at-least-priority | web | quality | known gap | web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≥ priority [known gap: Triage routine (score 0): no rule for blood-stained nipple discharge.] |
+| `breast-nipple-discharge-bloody-single-duct` | flag-2ww | web | critical | known gap | no red flag matched among 7 (web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: screenForCancer only counts nipple discharge together with a lump; NICE NG12 (≥50, unilateral nipple discharge) is n |
+| `breast-nipple-discharge-bloody-single-duct` | inv-mammogram | web | critical | known gap | no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: N64.52 maps to no protocol and PANE did not reach duct_ectasia, so no imaging is proposed.] |
+| `breast-nipple-discharge-bloody-single-duct` | inv-uss | web | critical | known gap | no investigation matched among 19 (web.pane.seeded, web.clinicalPrompts) [known gap: As above: no retroareolar ultrasound proposed.] |
+| `breast-nipple-discharge-bloody-single-duct` | mgmt-duct-excision | web | quality | known gap | no management item matched among 7 (web.clinicalPrompts) [known gap: No plan (no protocol for N64.52).] |
+| `breast-pain-cyclical-alone` | dx-benign-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE applied no feature (template "Other / general surgical"); priors gi |
+| `breast-pain-cyclical-alone` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "friend had breast cancer" matches the "Possible malignancy" red flag.] |
+| `breast-pain-cyclical-alone` | mgmt-reassurance | web | quality | known gap | no management item matched among 2 (web.clinicalPrompts) [known gap: N64.4 (mastodynia) maps to no protocol; no mastalgia guidance.] |
 | `caustic-ingestion-alkali` | inv-airway-assessment | web | quality | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No caustic-ingestion protocol or prompt; nothing mentions airway assessment.] |
 | `caustic-ingestion-alkali` | mgmt-psychiatric-assessment | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: Only the triage reason "Mental health crisis"; no plan line.] |
 | `caustic-ingestion-alkali` | mgmt-nil-by-mouth | web | quality | known gap | no management item matched among 10 (web.clinicalPrompts) [known gap: No plan output at all for T54.3.] |
@@ -1496,10 +2782,57 @@ Guidelines:
 | `gord-alarm-weight-loss-over55` | mnm-malignancy | web | critical | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Hiatus Hernia \| 3. Peptic Ulcer Disease; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: GORD, hiatus hernia, peptic ulcer (the "GORD / heartburn" template |
 | `gord-alarm-weight-loss-over55` | mgmt-urgent-two-week-ogd | web | quality | known gap | no management item matched among 33 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: GORD protocol OGD line is conditional ("Alarm features, age >55, or 4-week PPI tri |
 | `gord-no-alarm-empirical-ppi` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ priority [known gap: Emergency now (score 65): adaptiveTriage reads CC+HPI free text without negation — "no weight loss" → Possible malignancy, "no vomiting"  |
+| `groin-mimic-femoral-artery-aneurysm` | mnm-aneurysm | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, GORD, cholecystitis. PANE has only "A |
+| `groin-mimic-femoral-artery-aneurysm` | flag-pulsatile | web | critical | known gap | no red flag matched among 12 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No red flag or alarm for a pulsatile groin mass: triage has no pulsatile/aneurysm |
+| `groin-mimic-femoral-artery-aneurysm` | inv-duplex-or-cta | web | critical | known gap | no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No duplex/CT angiography proposed; I72.4 has no protocol.] |
+| `groin-mimic-femoral-artery-aneurysm` | mgmt-vascular-referral | web | quality | known gap | no management item matched among 17 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No vascular referral in any output (the inguinal_hernia panel is shown instead).] |
+| `groin-mimic-femoral-artery-aneurysm` | mgmt-no-hernia-repair | web | critical | known gap | forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20),  |
+| `groin-mimic-lymphadenopathy` | mnm-lymphoma-or-nodes | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, cholecystitis, GORD. PANE has no lymp |
+| `groin-mimic-lymphadenopathy` | inv-uss-or-biopsy | web | critical | known gap | no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No groin ultrasound or node biopsy is proposed; the confirmed ICD R59.1 has no protocol (R59.9 → cervical lymphadenopathy only).] |
+| `groin-mimic-lymphadenopathy` | inv-ldh | web | quality | known gap | no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No LDH (same cause as above).] |
+| `groin-mimic-lymphadenopathy` | mgmt-no-hernia-repair | web | critical | known gap | forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20),  |
+| `groin-mimic-testicular-torsion` | dx-torsion-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: As above: torsion not in the PANE top 3; epididymo-orchitis ranks above it.] |
+| `groin-mimic-testicular-torsion` | mnm-torsion | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. Epididymo-orchitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, appendicitis, epididymo-orchitis: testicular_t |
+| `groin-mimic-testicular-torsion` | mgmt-no-hernia-repair | web | critical | known gap | forbidden management item present in web.managementPanel: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Assessment ManagementPanel follows the PANE top disease (≥0.20),  |
 | `h-pylori-penicillin-anaphylaxis` | mgmt-bismuth-quadruple | web | quality | known gap | no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No penicillin-free regimen in any H. pylori protocol.] |
 | `h-pylori-penicillin-anaphylaxis` | mgmt-no-amoxicillin | web | critical | known gap | forbidden management item present in web.plan: "[conservative] h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." (+1 more) [known gap: Gastritis protocol p |
 | `h-pylori-positive-eradication` | mgmt-14-day-or-bismuth | web | quality | known gap | no management item matched among 26 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Gastritis protocol: "triple therapy (PPI + amoxicillin + clarithromycin × 7 days)" |
 | `h-pylori-positive-eradication` | mgmt-no-7-day-clarithromycin-triple | web | quality | known gap | forbidden management item present in web.plan: "... h. pylori eradication: triple therapy (ppi + amoxicillin + clarithromycin × 7 days); confirm eradication with breath test at 4 weeks." [known gap: Gastritis protocol plan line and medicati |
+| `hernia-femoral-elderly-woman` | dx-femoral-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: PANE top 3 = cholecystitis, GORD, diverticulitis; femoral_hernia is not listed despite groin_swelling. PANE: unlisted f |
+| `hernia-femoral-richter-obstruction` | mnm-hernia-cause | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction; also in web.triageSurgical#1 [known gap: PANE top 3 = cholecystitis, appendicitis, bowel obstruction (from the abdominal-pain template). No h |
+| `hernia-groin-incarcerated` | inv-lactate | web | quality | known gap | no investigation matched among 25 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: The inguinal_hernia protocol lists FBC, U&E only; no lactate/CPK (WSES strangulation markers) anywhere in the web outputs.] |
+| `hernia-groin-incarcerated` | variant-incarcerated | web | critical | known gap | detected hernia_reducible in group Hernia; expected hernia_incarcerated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: "Irreducible inguinal hernia" contains the hernia_reducible keyw |
+| `hernia-groin-strangulated` | variant-strangulated | web | critical | known gap | detected hernia_incarcerated in group Hernia; expected hernia_strangulated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment says "strangulated" and "irreducible"; hernia_ |
+| `hernia-incisional-midline-elective` | dx-incisional-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.triageSurgical#1 [known gap: PANE applied no feature: the "Incisional / ventral hernia" template has no CC hint and th |
+| `hernia-incisional-midline-elective` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=49); expected ≤ priority [known gap: Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15); "Hartmann's … reversed |
+| `hernia-inguinal-elective-minimal-symptoms` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=80); expected ≤ priority [known gap: Triage emergency_now (score 80): adaptiveTriage RED_FLAGS regexes have no negation handling — "no episodes of severe pain" → "Acute abdom |
+| `hernia-inguinal-elective-minimal-symptoms` | no-emergency-alarm | web | quality | known gap | forbidden alarm present in web.triage.emergency: "emergency now - do not auto-book. advise urgent emergency assessment / tapion contact and ale..." (+1 more) [known gap: Same negation false positives raise the triage "Emergency now" alarm;  |
+| `hernia-inguinal-elective-minimal-symptoms` | no-strangulation-prompt | web | quality | known gap | forbidden alarm present in web.clinicalPrompts.safety: "incarcerated / strangulated hernia - strangulated hernia → emergency repair" [known gap: computeClinicalPrompts isIncarcerated tests exam text for "tender" — "non-tender" matches, so a |
+| `hernia-inguinal-elective-minimal-symptoms` | mgmt-watchful-waiting-option | web | quality | known gap | no management item matched among 27 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Neither the inguinal_hernia protocol nor the prompts mention watchful waiting (only "truss for unfit patient |
+| `hernia-inguinal-elective-minimal-symptoms` | mgmt-no-emergency-repair | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• emergency theatre: irreducible / strangulated hernia - bowel resection risk, consent accordingly." [known gap: The negation bug above ("non-tender") adds "Emergency Theatre: irred |
+| `hernia-inguinal-female-occult-femoral` | mnm-femoral-hernia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: PANE top 3 = cholecystitis, GORD, PUD. The female modifier cuts inguinal_hernia to x0.3 and cholecystitis is x2 in wome |
+| `hernia-inguinal-female-occult-femoral` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=52); expected ≤ priority [known gap: Triage emergency_now (score 52): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15; "change in bowel habit" |
+| `hernia-inguinal-female-occult-femoral` | inv-no-unrelated-seeded-orders | web | quality | known gap | forbidden investigation present in web.pane.seeded: "blood cultures × 2 (before antibiotics) (cholecystitis)" (+5 more) [known gap: HpiTab.seedInvestigationsFromPane seeds the stat/urgent tests of the (wrong) PANE top 3: blood cultures, MRC |
+| `hernia-obturator-sbo-elderly-woman` | mnm-obturator-hernia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction [known gap: PANE top 3 = cholecystitis, appendicitis, bowel obstruction (periumbilical site maps to rlq_pain). obturator_hernia (prior 0.005)  |
+| `hernia-obturator-sbo-elderly-woman` | mnm-hernia-any | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction [known gap: As above: no hernia of any type in the PANE top 3.] |
+| `hernia-obturator-sbo-elderly-woman` | variant-strangulated-or-obstructed | web | quality | known gap | detected (none) in group Hernia; expected hernia_incarcerated [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: the assessment ("Small bowel obstruction due to left obturator hernia") ha |
+| `hernia-paediatric-incarcerated-infant` | dx-hernia-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3 = cholecystitis, appendicitis, PUD for a 7-mont |
+| `hernia-paediatric-incarcerated-infant` | mgmt-no-adult-plan | web | quality | known gap | forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+3 more) [known gap: Adult inguinal protocol and TAPP template for an infant (see the base paedia |
+| `hernia-paediatric-inguinal-infant` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=75); expected ≤ urgent [known gap: Triage emergency_now: computeVitalRedFlags uses adult thresholds — HR 140 and RR 36 (normal at 4 months) are flagged Tachycardia/Tachypnoea |
+| `hernia-paediatric-inguinal-infant` | mgmt-prompt-repair | web | quality | known gap | no management item matched among 26 (web.plan, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output mentions herniotomy or paediatric surgical referral.] |
+| `hernia-paediatric-inguinal-infant` | mgmt-no-watchful-waiting | web | critical | known gap | forbidden management item present in web.plan: "[conservative] truss may be offered for unfit patients declining surgery - monitor for strangulation..." (+1 more) [known gap: The inguinal_hernia protocol has no paediatric branch: the plan o |
+| `hernia-paediatric-inguinal-infant` | mgmt-no-adult-mesh-repair | web | critical | known gap | forbidden management item present in web.plan: "[surgical] elective: lichtenstein mesh herniorrhaphy (local or ga) or laparoscopic tep/tapp." (+5 more) [known gap: Adult plan for a 4-month-old: "Lichtenstein mesh herniorrhaphy … TEP/TAPP" ( |
+| `hernia-parastomal-symptomatic` | dx-parastomal-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE applied no feature ("Incisional / ventral hernia" template, no CC hint); inguinal hernia leads on the male pr |
+| `hernia-parastomal-symptomatic` | level-routine | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=59); expected ≤ priority [known gap: Triage emergency_now (score 59): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting"); "rectal cancer" history → "P |
+| `hernia-paraumbilical-incarcerated-obese` | dx-umbilical-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = cholecystitis, GORD, PUD (female: inguinal x0.3, cholecysti |
+| `hernia-paraumbilical-incarcerated-obese` | inv-lactate | web | quality | known gap | no investigation matched among 26 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No lactate in the umbilical_hernia protocol or the hernia prompts.] |
+| `hernia-paraumbilical-incarcerated-obese` | mgmt-no-penicillin | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "• iv piperacillin-tazobactam 4.5g tds + metronidazole 500mg tds." (+1 more) [known gap: The recorded penicillin allergy is not cross-checked: prompts propose piperacillin-tazobactam |
+| `hernia-umbilical-adult-elective` | dx-umbilical-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 = inguinal hernia (male x5), cholecystitis, GORD; umbilical_hernia (0.03, umbilical_swelling 0.90) is o |
+| `hernia-umbilical-adult-elective` | mgmt-smoking | web | quality | known gap | no management item matched among 24 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The umbilical_hernia protocol has no pre-operative optimisation (smoking) step.] |
+| `hernia-umbilical-adult-elective` | mgmt-no-inguinal-template | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "emergency laparoscopic inguinal hernia repair (tapp) - operative plan ───────────────────────────────────────────────────────────── ..." [known gap: computeClinicalPrompts fires the |
+| `hernia-umbilical-cirrhosis-ascites` | flag-rupture-risk | web | critical | known gap | no red flag matched among 18 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: No web output mentions rupture/skin ulceration/leak for an |
+| `hernia-umbilical-cirrhosis-ascites` | mgmt-ascites-control | web | critical | known gap | no management item matched among 33 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No ascites-control / hepatology step in the umbilical_hernia protocol, the dx vari |
+| `hernia-umbilical-cirrhosis-ascites` | mgmt-no-standard-day-case-plan | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "... male (reduces haematoma). • ice pack to groin prn × 24h. • day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding. ..." [known gap: computeClinic |
 | `iron-deficiency-anaemia-over60` | flag-ida | web | critical | known gap | no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Nothing reads the anaemia indices: severe_anaemia prompt nee |
 | `iron-deficiency-anaemia-over60` | inv-colonoscopy | web | critical | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for D50.9 and no IDA prompt; colonoscopy never suggested.] |
 | `iron-deficiency-anaemia-over60` | inv-coeliac-serology | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: Same as inv-colonoscopy.] |
@@ -1515,9 +2848,50 @@ Guidelines:
 | `mi-presenting-as-epigastric-pain` | inv-troponin | web | critical | known gap | no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No troponin in any output.] |
 | `nsaid-associated-gastric-ulcer` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=52); expected ≤ priority [known gap: Emergency now (score 52): adaptiveTriage reads CC+HPI free text without negation — "No bleeding" matches the "GI or other bleeding" urgen |
 | `nsaid-associated-gastric-ulcer` | mgmt-ppi-8-weeks | web | quality | known gap | no management item matched among 42 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: peptic_ulcer protocol gives omeprazole 20 mg OD "4–8 weeks" in medications (matche |
+| `parathyroid-hypercalcaemic-crisis` | mnm-hypercalcaemia | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#3 [known gap: PANE applied no feature ("Nausea / vomiting" template, SOCRATES empty);  |
+| `parathyroid-hypercalcaemic-crisis` | mgmt-no-thyroidectomy-template | web | critical | known gap | forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: Same dx-variant substring bug: the crisis plan opens with the elective Total Thyroidectomy template.] |
+| `parathyroid-primary-hpt-surgical-indications` | dx-hyperparathyroid-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3, web.passive#3 [known gap: PANE applied no feature (template "Other / general surgical"); hypercalc |
+| `parathyroid-primary-hpt-surgical-indications` | mgmt-no-thyroidectomy-template | web | critical | known gap | forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: detectDxVariants falls back to lower.includes("thyroid") for the Thyroid group: "parathyroidectomy"/"hyperparathyroidism" contain "thyroid", and "par |
 | `pharyngeal-pouch-elderly` | mnm-pouch | web | quality | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump.] |
 | `pharyngeal-pouch-elderly` | inv-barium-first | web | quality | known gap | no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K22.5; no output mentions a contrast swallow.] |
 | `pharyngeal-pouch-elderly` | mgmt-pouch-treatment-options | web | quality | known gap | no management item matched among 6 (web.clinicalPrompts) [known gap: No protocol for K22.5.] |
+| `thyroid-bethesda-1-nondiagnostic` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
+| `thyroid-bethesda-1-nondiagnostic` | mgmt-repeat-fna | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No output proposes a repeat FNA; E04.1 has no protocol.] |
+| `thyroid-bethesda-1-nondiagnostic` | mgmt-no-thyroidectomy-plan | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" f |
+| `thyroid-bethesda-2-benign` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
+| `thyroid-bethesda-2-benign` | mgmt-surveillance | web | quality | known gap | no management item matched among 11 (web.clinicalPrompts) [known gap: No surveillance plan; E04.1 has no protocol.] |
+| `thyroid-bethesda-2-benign` | mgmt-no-thyroidectomy-plan | web | critical | known gap | forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" f |
+| `thyroid-bethesda-3-aus` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
+| `thyroid-bethesda-3-aus` | mgmt-no-thyroidectomy-plan | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" f |
+| `thyroid-bethesda-4-follicular-neoplasm` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
+| `thyroid-bethesda-4-follicular-neoplasm` | mgmt-no-thyroidectomy-plan | web | quality | known gap | forbidden management item present in web.clinicalPrompts: "total thyroidectomy - operative plan ────────────────────────────────────── pre-operative: • tfts normal (euthyroid)..." [known gap: computeClinicalPrompts "thyroidectomy_pathway" f |
+| `thyroid-bethesda-5-suspicious` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
+| `thyroid-bethesda-6-papillary-cn1b` | level-not-emergency | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
+| `thyroid-bethesda-6-papillary-cn1b` | mgmt-no-hemithyroidectomy-prefix | web | critical | known gap | forbidden management item present in web.plan: "hemithyroidectomy (ipsilateral lobe + isthmus). intraoperative recurrent laryngeal nerve neuromonitoring." [known gap: Consequence of the variant bug: the plan opens with "Hemithyroidectomy (i |
+| `thyroid-bethesda-6-papillary-cn1b` | variant-thyroid-total | web | critical | known gap | detected thyroid_hemithyroidectomy in group Thyroid; expected thyroid_total [known gap: detectDxVariants uses plain substring matching and the first variant with any keyword wins: "bethesda vi" contains the hemithyroidectomy keyword "bethes |
+| `thyroid-nodule-euthyroid-tirads4` | dx-thyroid-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#2, web.triageSurgical#2 [known gap: PANE top 3 = cholecystitis, GORD, PUD after neck_l |
+| `thyroid-nodule-euthyroid-tirads4` | level-not-urgent | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: adaptiveTriage RED_FLAGS regexes have no negation handling ("No family history of thyroid cancer" → "Possible malign |
+| `thyroid-nodule-euthyroid-tirads4` | inv-us | web | quality | known gap | no investigation matched among 21 (web.pane.seeded, web.clinicalPrompts) [known gap: US and FNA appear only as plan text of the "Thyroid Nodule → USS + FNAC" prompt (addToPlan), not as investigation orders; E04.1 (the correct code for a sin |
+| `thyroid-nodule-euthyroid-tirads4` | inv-fna | web | quality | known gap | no investigation matched among 21 (web.pane.seeded, web.clinicalPrompts) [known gap: As above (plan text only).] |
+| `thyroid-nodule-euthyroid-tirads4` | inv-no-unrelated-seeded-orders | web | quality | known gap | forbidden investigation present in web.pane.seeded: "blood cultures × 2 (before antibiotics) (cholecystitis)" (+6 more) [known gap: The wrong PANE top 3 seeds blood cultures, MRCP, erect CXR, OGD and group & save for a thyroid nodule.] |
+| `thyroid-nodule-hyperthyroid-hot` | dx-hyperthyroid-top3 | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = cholecystitis, GORD, PUD: SOCRATES answers carry no thyroto |
+| `thyroid-post-op-hypocalcaemia` | level-at-least-urgent | web | critical | known gap | web.triage: priority (acuity=review, action=priority_24_48h, score=25); expected ≥ urgent [known gap: Triage priority_24_48h (score 25, post-op only): no rule for tingling/tetany/hypocalcaemia and lab values are not read by adaptiveTriage.] |
+| `thyroid-post-op-hypocalcaemia` | flag-hypocalcaemia | web | critical | known gap | no red flag matched among 6 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: No web engine reads the adjusted calcium 1.78 mmol/L or the symptoms; E89.2 maps to no protocol.] |
+| `thyroid-post-op-hypocalcaemia` | inv-ecg | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No ECG/cardiac monitoring proposed.] |
+| `thyroid-post-op-hypocalcaemia` | inv-magnesium | web | quality | known gap | no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No magnesium proposed.] |
+| `thyroid-post-op-hypocalcaemia` | mgmt-iv-calcium | web | critical | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No IV calcium gluconate anywhere (only inside the elective thyroidectomy operative template, which does not fire here).] |
+| `thyroid-post-op-hypocalcaemia` | mgmt-oral-calcium-vitd | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: No oral calcium / alfacalcidol plan.] |
+| `thyroid-post-op-neck-haematoma` | dx-haematoma-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Surgical Site Infection (SSI) \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 = cholecystitis, surgical site infection, GORD: the "Post-op wound concern" template hints wound_er |
+| `thyroid-post-op-neck-haematoma` | alarm-airway-specific | web | quality | known gap | no alarm matched among 8 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: The alarm is the generic triage "Emergency now" (RR, SpO2, HR); no alarm names the neck haematoma or airway.] |
+| `thyroid-post-op-neck-haematoma` | inv-no-imaging-before-decompression | web | quality | known gap | forbidden investigation present in web.plan.investigations: "uss wound (confirm haematoma, guide aspiration of liquefied collections)" (+3 more) [known gap: The generic postop_haematoma investigations include "USS wound (confirm haematoma … |
+| `thyroid-post-op-neck-haematoma` | mgmt-no-thyroidectomy-prefix | web | quality | known gap | forbidden management item present in web.plan: "total thyroidectomy" (+1 more) [known gap: The assessment mentions "thyroidectomy", so detectDxVariants selects thyroid_total and prepends the elective Total Thyroidectomy template to the haem |
+| `thyroid-rapid-enlargement-stridor` | mnm-anaplastic-or-lymphoma | web | critical | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no anaplastic thyroid carcinoma or thyroid lymphoma disease; top 3 = cholecystitis, colorectal cancer, GORD. The  |
+| `thyroid-rapid-enlargement-stridor` | mnm-thyroid-malignancy | web | quality | known gap | not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#3, web.passive#2 [known gap: Thyroid carcinoma not in the PANE top 3 (see above).] |
+| `thyroid-rapid-enlargement-stridor` | alarm-airway-specific | web | quality | known gap | no alarm matched among 7 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: The only alarm is the generic triage "Emergency now" (vital signs); nothing names stridor or the airway.] |
+| `thyroid-rapid-enlargement-stridor` | inv-core-biopsy | web | critical | known gap | no investigation matched among 35 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Only FNAC is proposed (protocol and prompt); no core/open biopsy to distinguish anaplastic carcinoma from lymphoma.] |
+| `thyroid-rapid-enlargement-stridor` | mgmt-airway | web | critical | known gap | no management item matched among 48 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No airway step in any web output: triage has no stridor rule (the emergency comes  |
+| `thyroid-retrosternal-goitre-compression` | flag-compression | web | critical | known gap | no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No red flag names tracheal compression, stridor or retroste |
+| `thyroid-retrosternal-goitre-compression` | inv-ct | web | quality | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: CT neck/thorax appears only inside the thyroidectomy prompt plan text, not as an investigation.] |
 | `ugib-cvd-dual-antiplatelet` | dx-ugib-top3 | web | critical | known gap | not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#5, web.triageSurgical#1 [known gap: PANE top 3: inguinal hernia, cholecystitis, G |
 | `ugib-cvd-dual-antiplatelet` | mgmt-cardiology-antiplatelet-decision | web | quality | known gap | no management item matched among 42 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Antiplatelets are only a triage reason ("Anticoagulant or antiplatelet medication  |
 | `ugib-cvd-dual-antiplatelet` | mgmt-no-tranexamic-acid | web | critical | known gap | forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat |

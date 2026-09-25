@@ -14,6 +14,9 @@ on:
     branches: ['claude/**']
     paths:
       - 'ios/**'
+      # Clinical-validation vignettes and unit tests don't change any screen; skipping them
+      # stops a vignette merge from cancelling a walkthrough already in progress.
+      - '!ios/AmiseMedFlowTests/**'
       - '.github/workflows/ios-ui-walkthrough.yml'
 
 concurrency:
