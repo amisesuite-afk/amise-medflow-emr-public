@@ -101,7 +101,7 @@ extension DiagnosisRadiationEngine {
                 .init(name: "FBC / CRP / ESR / Ferritin", category: .blood, rationale: "Inflammation + iron deficiency anaemia"),
                 .init(name: "Faecal calprotectin", category: .other, rationale: "Distinguishes IBD from IBS; disease activity monitoring"),
                 .init(name: "Stool MC&S + CDiff toxin", category: .other, rationale: "Exclude infective colitis and superinfection"),
-                .init(name: "Colonoscopy + biopsy", category: .endoscopy, rationale: "Gold standard diagnosis — extent and pattern"),
+                .init(name: "Colonoscopy + biopsy (avoid in acute severe colitis / toxic megacolon — unprepared flexible sigmoidoscopy instead)", category: .endoscopy, rationale: "Gold standard diagnosis — extent and pattern"),
                 .init(name: "MRI small bowel", category: .imaging, rationale: "Crohn's — assess small bowel extent and fistulae"),
                 .init(name: "Vitamin B12 / Folate / Iron / Zinc", category: .blood, rationale: "Nutritional deficiencies — especially Crohn's"),
                 .init(name: "U&E / LFTs / Albumin", category: .blood, rationale: "Nutritional status and PSC screen"),

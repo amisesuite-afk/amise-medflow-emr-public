@@ -84,7 +84,7 @@ extension ClinicalScoringEngine {
             interpretation = "Tokyo Grade III — Severe acute cholecystitis with organ dysfunction"
             redFlags = ["Organ dysfunction present — ICU-level care required",
                         "Urgent biliary drainage and source control"]
-            recs = ["ICU / HDU admission", "IV antibiotics (piperacillin-tazobactam or meropenem)",
+            recs = ["ICU / HDU admission", "IV antibiotics per local policy (e.g. piperacillin-tazobactam or meropenem; non-penicillin regimen if penicillin-allergic)",
                     "Early urgent cholecystostomy or emergency cholecystectomy",
                     "Treat organ dysfunction concurrently", "Anaesthetic / critical care review"]
         } else if hasGradeII {

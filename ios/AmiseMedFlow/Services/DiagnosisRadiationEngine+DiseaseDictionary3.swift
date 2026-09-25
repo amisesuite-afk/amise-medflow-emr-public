@@ -131,14 +131,15 @@ extension DiagnosisRadiationEngine {
             ],
             planTemplate: """
 - UNCOMPLICATED LOWER UTI (female, non-pregnant):
-  • Nitrofurantoin 100 mg MR BD × 5 days (first-line — St Lucia)
-  • Or trimethoprim 200 mg BD × 7 days (if low resistance)
+  • Lower UTI / cystitis only (not for pyelonephritis): nitrofurantoin 100 mg MR BD × 5 days (first-line — St Lucia)
+  • Or trimethoprim 200 mg BD × 7 days (lower UTI, if low resistance; avoid in the first trimester)
   • Or amoxicillin-clavulanate 625 mg TDS × 5–7 days (if culture-guided)
 - UPPER UTI / PYELONEPHRITIS (outpatient, mild):
   • Ciprofloxacin 500 mg BD × 7–14 days PO (if susceptible)
   • Or co-amoxiclav 625 mg TDS × 10–14 days
 - PYELONEPHRITIS (severe / sepsis): ADMIT
   • IV ceftriaxone 1–2 g OD; switch to oral after 24h afebrile
+- PYELONEPHRITIS IN PREGNANCY: admit; cefalexin (or IV cefuroxime if severe) per NICE NG111 with obstetric input — avoid quinolones and nitrofurantoin
 - COMPLICATED UTI (catheter, immunosuppressed, male, pregnancy): culture-guided treatment
 - Increase oral fluids >2 L/day; treat constipation
 - If recurrent (≥3/year female): consider prophylaxis — trimethoprim 100 mg nocte

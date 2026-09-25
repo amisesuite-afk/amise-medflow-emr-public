@@ -89,11 +89,12 @@ extension DiagnosisRadiationEngine {
                 .init(name: "Group and Save", category: .blood, rationale: "Pre-procedure"),
             ],
             planTemplate: """
-- ERCP ± sphincterotomy + stone extraction (primary intervention)
-- Post-ERCP: plan laparoscopic cholecystectomy within same admission or 6 weeks
-- Antibiotics if cholangitis: piperacillin-tazobactam 4.5 g IV 8-hourly
-- NBM for ERCP
-- Consent for ERCP + cholecystectomy as staged procedures
+- ASGE 2019 likelihood: high (CBD stone on imaging, cholangitis, or bilirubin > 4 mg/dL with a dilated CBD) → ERCP ± sphincterotomy and stone extraction
+- Intermediate likelihood (abnormal LFTs, age > 55, dilated CBD on ultrasound) → MRCP or EUS first; ERCP only if a stone is confirmed
+- Low likelihood → laparoscopic cholecystectomy ± intra-operative cholangiography
+- After duct clearance: laparoscopic cholecystectomy in the same admission (or within 2 weeks)
+- Antibiotics if cholangitis: piperacillin-tazobactam 4.5 g IV 8-hourly; urgent biliary drainage (TG18)
+- NBM before any endoscopic procedure; consent for ERCP (if indicated) and cholecystectomy as staged procedures
 """,
             billingCodes: [
                 .init(icd10: "K80.50", icdDescription: "Calculus of bile duct without cholangitis or cholecystitis", cpt: "43264", cptDescription: "ERCP with removal of calculi from biliary and/or pancreatic ducts"),
@@ -182,7 +183,9 @@ extension DiagnosisRadiationEngine {
                 .init(name: "Urine dipstick / MC&S", category: .other, rationale: "Exclude UTI / ureteric colic"),
                 .init(name: "BHCG (females <55y)", category: .blood, rationale: "Exclude ectopic pregnancy"),
                 .init(name: "Abdominal Ultrasound", category: .imaging, rationale: "First-line — appendix diameter >6 mm + non-compressible"),
-                .init(name: "CT Abdomen / Pelvis (with contrast)", category: .imaging, rationale: "If USS equivocal — sensitivity 94%"),
+                .init(name: "CT Abdomen / Pelvis (with contrast) — not in pregnancy (MRI instead)", category: .imaging, rationale: "If USS equivocal — sensitivity 94%"),
+                .init(name: "MRI abdomen / pelvis (pregnancy, after inconclusive ultrasound)", category: .imaging, rationale: "ACR 2018; WSES 2020 — no ionising radiation"),
+                .init(name: "Blood cultures and lactate (septic or generalised peritonitis)", category: .blood, rationale: "Sepsis (NICE NG51)"),
                 .init(name: "U&E / Creatinine", category: .blood, rationale: "Pre-operative baseline"),
                 .init(name: "Group and Save", category: .blood, rationale: "Pre-operative"),
                 .init(name: "Alvarado / APPENDIX Score", category: .other, rationale: "Structured scoring for operative decision"),
@@ -196,6 +199,7 @@ extension DiagnosisRadiationEngine {
 - Laparoscopic appendicectomy (preferred) — consent + book OT
 - Alvarado score: >7 → operate without CT; 5–6 → further imaging; <5 → observe
 - Post-op: early mobilisation, discharge at 24–48h if uncomplicated
+- Complicated (perforated / gangrenous) appendicitis: post-operative IV antibiotics for 3–5 days only (WSES 2020; STOP-IT); no routine antibiotics after simple appendicitis
 """,
             billingCodes: [
                 .init(icd10: "K37", icdDescription: "Unspecified appendicitis", cpt: "44950", cptDescription: "Appendectomy"),
@@ -247,6 +251,8 @@ extension DiagnosisRadiationEngine {
                 .init(name: "Group and Save / Cross-match", category: .blood, rationale: "Pre-operative"),
             ],
             planTemplate: """
+- Suspected colorectal cancer: urgent 2-week suspected cancer pathway — urgent colonoscopy (FIT ≥ 10 µg Hb/g, rectal bleeding with weight loss, change in bowel habit ≥ 60) (NICE NG12; NICE DG56)
+- Anaemic: correct iron deficiency with oral or IV iron before surgery
 - MDT referral — colorectal oncology
 - Staging workup as above
 - Bowel prep protocol pre-colonoscopy / pre-operatively
@@ -307,7 +313,7 @@ extension DiagnosisRadiationEngine {
 - Alternative: diltiazem 2% cream BD × 8 weeks
 - Sitz baths after defaecation
 - Stool softener: lactulose or Movicol
-- If chronic / failed medical: lateral internal sphincterotomy
+- Chronic typical (posterior / anterior midline) fissure after failed medical therapy: botulinum toxin or lateral internal sphincterotomy — not for atypical (lateral, multiple, painless or indurated) fissures: EUA and biopsy first to exclude Crohn's, HIV, syphilis, TB or malignancy (ASCRS 2023; ACPGBI 2008)
 - Botulinum toxin injection: alternative to surgery
 """,
             billingCodes: [

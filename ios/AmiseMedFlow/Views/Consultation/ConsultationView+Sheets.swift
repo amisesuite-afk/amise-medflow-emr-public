@@ -88,7 +88,7 @@ extension ConsultationView {
         } else if dx.contains("appendic") {
             aiMedSuggestions = ["Cefuroxime", "Metronidazole", "Morphine (analgesia)", "IV Fluids (1L N/S stat)"]
         } else if dx.contains("pancreatit") {
-            aiMedSuggestions = ["IV Fluids (aggressive)", "Morphine (analgesia)", "Omeprazole", "Thiamine (if alcohol-related)"]
+            aiMedSuggestions = ["IV Fluids (goal-directed)", "Morphine (analgesia)", "Omeprazole", "Thiamine (if alcohol-related)"]
         } else if dx.contains("hernia") {
             aiMedSuggestions = ["Morphine / Paracetamol (post-op analgesia)", "NSAIDs", "Stool softener (lactulose)"]
         } else if dx.contains("haemorrhoid") || dx.contains("hemorrhoid") || dx.contains("rectal") {

@@ -38,7 +38,7 @@ extension DiagnosisRadiationEngine {
 - Surgical referral (parathyroidectomy) when any criterion is met (NICE NG132): symptoms, end-organ disease (renal stones, eGFR <60, osteoporosis or fragility fracture), or adjusted calcium ≥2.85 mmol/L
 - Hydration; avoid thiazides and calcium-raising drugs
 - Localisation imaging only after the decision to operate
-- Severe hypercalcaemia (≥3.5 mmol/L or symptomatic): IV 0.9% sodium chloride and urgent medical review (Society for Endocrinology 2016)
+- Severe hypercalcaemia (≥3.5 mmol/L or symptomatic) / hypercalcaemic crisis: IV fluids — 0.9% saline rehydration — then IV bisphosphonate (zoledronic acid or pamidronate) once rehydrated; urgent medical review (Society for Endocrinology 2016)
 """, consent: "Parathyroidectomy", urgency: nil,
              redFlags: ["Adjusted calcium ≥3.5 mmol/L or confusion/vomiting → hypercalcaemic crisis — same-day admission"],
              followUp: "Endocrine surgery clinic; calcium and PTH after surgery; bone density follow-up.",
@@ -51,10 +51,12 @@ extension DiagnosisRadiationEngine {
                    SI(name: "CEA and CT chest (if malignant)", category: .imaging, rationale: "Staging when time allows")],
              plan: """
 - NBM, IV fluids, NG tube if vomiting, correct electrolytes; analgesia
-- Emergency surgery if perforation, peritonitis, ischaemia/closed loop, caecal diameter ≥12 cm with tenderness (impending perforation) — do NOT stent (WSES 2018)
-- Left-sided malignant obstruction without those features: resection (Hartmann's or primary anastomosis ± defunctioning stoma) or SEMS as a bridge to surgery by MDT decision (WSES 2018)
+- Emergency surgery if perforation, peritonitis, ischaemia/closed loop, caecal diameter ≥12 cm with tenderness (impending perforation) — stent contraindicated (WSES 2018)
+- Impending caecal perforation: emergency laparotomy — resection (extended right hemicolectomy or subtotal colectomy) (WSES 2018)
+- Left-sided malignant obstruction without those features: resection (Hartmann's or primary anastomosis ± defunctioning stoma) or SEMS as a bridge to surgery by MDT decision — not if perforation, peritonitis or ischaemia (WSES 2018)
 - Right-sided / hepatic flexure tumour: right (extended) hemicolectomy with primary anastomosis (WSES 2018)
-- Sigmoid volvulus without ischaemia: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission; gangrene or peritonitis → resection (Hartmann's) (ASCRS 2021; WSES 2023)
+- Sigmoid volvulus only if no ischaemia or peritonitis: endoscopic decompression (flexible sigmoidoscopy), then sigmoidectomy in the same admission
+- Gangrenous volvulus or peritonitis: emergency laparotomy with sigmoid resection (Hartmann's procedure) — no endoscopic decompression; critical care (ASCRS 2021; WSES 2023)
 - Caecal volvulus: operative management — right hemicolectomy (ASCRS 2021); no endoscopic detorsion
 - Colorectal MDT and stoma nurse
 """, consent: "Emergency laparotomy / colectomy", urgency: "Large bowel obstruction: urgent surgical review; emergency if peritonism, caecum ≥12 cm or ischaemia.",
@@ -135,6 +137,7 @@ extension DiagnosisRadiationEngine {
 - Neutral spinal alignment / log-roll if pain or instability suspected; analgesia
 - Contact the MSCC coordinator / acute oncology and spinal surgical team the same day; definitive radiotherapy or surgery decided by them
 - Catheter if retention; VTE prophylaxis; pressure-area care
+- No deficit yet: safety-net — seek urgent help immediately if leg weakness, numbness or bladder / bowel disturbance develops (NICE NG234)
 """, urgency: "Suspected MSCC: MRI within 24 h (immediately with neurological deficit). \(EmergencyRedirect.text)",
              redFlags: ["Progressive leg weakness, sensory level, sphincter disturbance → emergency MRI and treatment"],
              followUp: "Oncology / spinal team; rehabilitation.",
@@ -198,7 +201,8 @@ extension DiagnosisRadiationEngine {
              plan: """
 - EMERGENCY surgical exploration and debridement — clinical suspicion is enough; do not wait for imaging or scores (WSES 2018)
 - Sepsis Six: blood cultures, IV fluids, lactate, oxygen, urine output
-- IV broad-spectrum antibiotics: piperacillin–tazobactam (or a carbapenem) + clindamycin (toxin suppression) ± MRSA cover (vancomycin/linezolid) per local guideline (WSES 2018)
+- IV broad-spectrum antibiotics per local guideline: piperacillin–tazobactam (or a carbapenem) ± MRSA cover (vancomycin/linezolid) (WSES 2018)
+- Add clindamycin (toxin suppression) to every empirical regimen (WSES 2018; IDSA 2014)
 - Relook in theatre within 24–48 h; ICU
 - Fournier's: urology/colorectal input; faecal / urinary diversion as needed; SGLT2 inhibitor — stop it (MHRA 2019 warning)
 - LRINEC <6 does NOT exclude necrotising infection (WSES 2018)

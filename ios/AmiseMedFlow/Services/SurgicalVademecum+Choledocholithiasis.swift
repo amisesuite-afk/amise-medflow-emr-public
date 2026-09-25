@@ -25,7 +25,7 @@ extension SurgicalVademecum {
             SurgicalInvestigation(name: "Amylase / Lipase", rationale: "Exclude gallstone pancreatitis", urgency: "Stat", keyFindings: ["Lipase >3× ULN = pancreatitis"]),
             SurgicalInvestigation(name: "USS Abdomen", rationale: "CBD dilatation >6 mm (>8 mm post-cholecystectomy) suggests obstruction. Stone visible in 50% only", urgency: "Urgent", keyFindings: ["CBD >6 mm", "Stone in duct (posterior acoustic shadow)", "Gallbladder distension"]),
             SurgicalInvestigation(name: "MRCP", rationale: "Non-invasive gold standard. Sensitivity 95% for CBD stones. Defines anatomy before ERCP", urgency: "Urgent", keyFindings: ["Filling defect in CBD", "Level of obstruction", "Hilar anatomy"]),
-            SurgicalInvestigation(name: "ERCP", rationale: "Therapeutic first-line: sphincterotomy + stone extraction. Diagnostic if MRCP unavailable", urgency: "Urgent", keyFindings: ["Stone extraction", "Stricture", "Cholangiogram anatomy"])
+            SurgicalInvestigation(name: "ERCP (only if cholangitis, persistent biliary obstruction or a confirmed CBD stone — ASGE 2019)", rationale: "Therapeutic first-line: sphincterotomy + stone extraction. Diagnostic if MRCP unavailable", urgency: "Urgent", keyFindings: ["Stone extraction", "Stricture", "Cholangiogram anatomy"])
         ],
         algorithm: SurgicalAlgorithm(
             clinicalQuestion: "CBD clearance — endoscopic or surgical? Cholecystectomy timing?",
@@ -137,7 +137,7 @@ extension SurgicalVademecum {
                 "Pale stools, dark urine"
             ]
         ),
-        searchAliases: ["CBD stone", "choledocholithiasis", "common bile duct stone", "ERCP", "cholangitis", "Charcot", "bile duct stone", "obstructive jaundice"],
+        searchAliases: ["CBD stone", "choledocholithiasis", "common bile duct stone", "ERCP", "cholangitis", "Charcot's triad", "bile duct stone", "obstructive jaundice"],
         pearls: [
             "ASGE high-probability criteria for CBD stone: CBD >6 mm + clinical cholangitis or bilirubin >4 mg/dL → proceed to ERCP without MRCP",
             "Pre-ERCP rectal indomethacin 100 mg reduces post-ERCP pancreatitis by ~50%",

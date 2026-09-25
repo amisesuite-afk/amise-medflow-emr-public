@@ -220,7 +220,7 @@ enum DynamicBayesianNetwork {
             return ["Upgrade to 1-hourly obs", "Urgent CT abdomen/pelvis with contrast", "IV antibiotics — co-amoxiclav", "Surgical review immediately"]
 
         case "Acute Pancreatitis":
-            return ["Transfer to HDU/ICU", "Aggressive IV fluid resuscitation 250 mL/h", "CT abdomen pancreatic protocol", "HPB + intensivist review", "Early enteral nutrition if >48h tolerated"]
+            return ["Transfer to HDU/ICU", "Goal-directed IV fluids (avoid aggressive fluids — WATERFALL 2022)", "CT abdomen pancreatic protocol", "HPB + intensivist review", "Early enteral nutrition if >48h tolerated"]
 
         case "Sepsis":
             return ["Activate 1-hour Sepsis Bundle immediately", "IV broad-spectrum antibiotics", "Target MAP ≥65 — vasopressors if required", "Lactate + blood cultures × 2", "ICU referral"]

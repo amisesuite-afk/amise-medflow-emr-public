@@ -46,7 +46,7 @@ extension ManagementEngine {
         followUp: "Regular reassessment: lactate clearance, organ function, antibiotic de-escalation based on cultures",
         keyPitfalls: [
             "Antibiotic without source control = inadequate treatment — identify the source",
-            "Lactate ≥4 = septic shock regardless of BP — aggressive resuscitation required",
+            "Lactate ≥4 = high-risk sepsis regardless of BP — prompt resuscitation (30 mL/kg crystalloid) and critical care review (SSC 2021)",
             "Do not give broad-spectrum antibiotics without cultures first",
             "Antibiotic de-escalation: narrow based on culture/sensitivity results at 24–48 h",
         ],
@@ -65,7 +65,7 @@ extension ManagementEngine {
         urgency: .immediate,
         immediateActions: [
             "LIFE-THREATENING EMERGENCY — mortality 60–80% without prompt recognition",
-            "Two large-bore IV access + aggressive resuscitation",
+            "Two large-bore IV access + prompt goal-directed resuscitation",
             "IV morphine analgesia",
             "IV unfractionated heparin (UFH) 5,000 units stat if embolic cause suspected (unless GI bleed)",
             "IV broad-spectrum antibiotics: meropenem 1 g TDS (translocation risk)",
@@ -163,7 +163,7 @@ extension ManagementEngine {
         urgency: .immediate,
         immediateActions: [
             "NECROTISING FASCIITIS IS A SURGICAL EMERGENCY — every hour of delay increases mortality by ~10%",
-            "IV access × 2 + aggressive fluid resuscitation",
+            "IV access × 2 + prompt goal-directed fluid resuscitation",
             "IV broad-spectrum antibiotics IMMEDIATELY: meropenem 1 g TDS + clindamycin 600 mg TDS (anti-toxin effect) + fluconazole 400 mg OD",
             "IDC for urine output",
             "ICU referral simultaneously",
@@ -336,7 +336,7 @@ extension ManagementEngine {
         keyPitfalls: [
             "6 Ps: Pain, Pallor, Pulselessness, Paraesthesia, Paralysis, Perishingly cold (Poikilothermia)",
             "Paralysis/paraesthesia = neural ischaemia = LATE sign — urgent revascularisation without delay",
-            "Reperfusion injury: potassium release + myoglobinuria after revascularisation — aggressive IV fluids + monitor K⁺",
+            "Reperfusion injury: potassium release + myoglobinuria after revascularisation — generous IV fluids + monitor K⁺",
             "Fasciotomy: mandatory if ischaemia >4–6 h, compartment pressure >30 mmHg or clinical compartment syndrome",
         ],
         redFlags: [

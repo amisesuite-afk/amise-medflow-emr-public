@@ -87,7 +87,7 @@ enum ManagementEngine {
             extra.append("⚠ Lactate \(String(format:"%.1f",lac.value)) mmol/L (≥4): Septic shock physiology — target MAP >65, start vasopressors if fluid-unresponsive; ICU/HDU NOW")
             escalateToImmediate = true
         } else if let lac = lab.lactate, lac.value >= 2.0 {
-            extra.append("Lactate \(String(format:"%.1f",lac.value)) mmol/L: Tissue hypoperfusion — aggressive IV resuscitation, reassess in 2 h")
+            extra.append("Lactate \(String(format:"%.1f",lac.value)) mmol/L: Tissue hypoperfusion — goal-directed IV fluid resuscitation, reassess in 2 h")
             escalateToUrgent = true
         }
 

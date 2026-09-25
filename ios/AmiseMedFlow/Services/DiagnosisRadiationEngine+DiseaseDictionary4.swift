@@ -30,12 +30,12 @@ extension DiagnosisRadiationEngine {
   • Electrolyte replacement (K⁺ particularly)
 - CONSERVATIVE TRIAL (adhesion SBO, no signs of strangulation):
   • 48–72h NG decompression + IV fluids; serial clinical examination
-  • Water-soluble contrast study (Gastrografin) at 24h — therapeutic + diagnostic
+  • Water-soluble contrast study (Gastrografin) at 24 h — therapeutic + diagnostic; adhesive SBO without strangulation only — not for a hernia, closed-loop or strangulated obstruction (WSES/Bologna 2017)
   • 80% adhesion SBO resolves conservatively
 - OPERATIVE INDICATIONS:
   • Strangulation (peritonism, fever, leucocytosis, lactate rise, blood supply)
   • Complete obstruction failing conservative × 48–72h
-  • Hernia (external) → reduce/repair urgently
+  • Hernia (external) causing obstruction → emergency surgery (hernia repair ± bowel resection); do not attempt reduction if strangulation is suspected (WSES 2017)
   • Tumour / volvulus / intussusception → surgery
 - Surgical options: adhesiolysis, hernia repair, resection ± anastomosis
 - Broad-spectrum antibiotics if operative: co-amoxiclav 1.2g IV or cefuroxime + metronidazole
@@ -157,13 +157,13 @@ extension DiagnosisRadiationEngine {
   • Paracetamol 1g IV/PO as adjunct
 - ANTIEMETIC: ondansetron 8 mg IV/PO or metoclopramide 10 mg
 - ALPHA BLOCKER (MET — medical expulsive therapy):
-  • Tamsulosin 400 mcg OD × 4 weeks (stones ≤10 mm distal ureter — improves passage rate)
+  • Tamsulosin 400 mcg OD × 4 weeks (stones 5–10 mm distal ureter; not with infection, anuria or an obstructed solitary kidney — EAU 2024)
 - HYDRATION: IV fluids if vomiting; oral fluids otherwise (high-volume hydration does not speed passage)
 - STONE MANAGEMENT:
   • <5 mm: observe — 90% pass spontaneously (MET)
-  • 5–10 mm: MET + urology follow-up; ESWL if no spontaneous passage at 4 weeks
+  • 5–10 mm: MET + urology follow-up; ESWL if no spontaneous passage at 4 weeks (not while infected or obstructed — decompress first)
   • >10 mm or obstructed infected system:
-    - Urgent urology referral → ureteroscopy (URS) + laser lithotripsy
+    - > 10 mm without infection: urology referral → ureteroscopy (URS) + laser lithotripsy; infected / obstructed: definitive stone treatment only after decompression and treatment of the infection (EAU 2024)
     - JJ stent / nephrostomy if obstructed + infected (emergency drainage)
 - ADMIT IF: fever + obstruction (infected obstructed kidney = emergency), AKI, intractable pain, solitary kidney
 - METABOLIC WORKUP: 24h urine + calcium/uric acid after acute episode
@@ -196,7 +196,8 @@ extension DiagnosisRadiationEngine {
 - IDENTIFY & TREAT CAUSE:
   • PRERENAL (commonest — dehydration, sepsis, cardiac output): IV fluid challenge; treat sepsis
   • INTRINSIC (ATN, nephritis, drugs): stop nephrotoxins (NSAIDs, aminoglycosides, contrast, ACE inhibitors in volume depletion)
-  • POSTRENAL (obstruction): urgent renal USS → nephrostomy/stent if hydronephrosis; obstructed infected or solitary kidney → emergency decompression (EAU 2024); no NSAIDs in AKI
+  • POSTRENAL (obstruction): urgent renal USS → nephrostomy/stent if hydronephrosis; obstructed infected or solitary kidney → emergency decompression (EAU 2024); bladder outflow obstruction → urethral catheter, monitor for post-obstructive diuresis (hourly urine output, replace losses); avoid NSAIDs in AKI
+  • Stop / withhold NSAIDs, ACE inhibitors, ARBs, diuretics and metformin during AKI; restart when renal function recovers (NICE NG148); urinalysis (dipstick) for every patient with AKI
 - FLUID MANAGEMENT:
   • Hypovolaemia: 500 mL 0.9% NaCl bolus → reassess response (JVP, UO, BP)
   • Oliguric AKI (UO <0.5 mL/kg/h): assess volume status; diuretics only for fluid overload, not to treat AKI (NICE NG148)

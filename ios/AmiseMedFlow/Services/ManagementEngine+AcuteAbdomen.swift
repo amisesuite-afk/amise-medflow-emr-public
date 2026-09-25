@@ -52,7 +52,7 @@ extension ManagementEngine {
         ],
         redFlags: [
             "Peritonism, guarding or rigidity → perforated appendicitis, emergency theatre",
-            "Haemodynamically unstable → aggressive resuscitation and immediate theatre",
+            "Haemodynamically unstable → prompt resuscitation and immediate theatre",
             "Pregnancy → MRI preferred; appendicitis in pregnancy has high fetal mortality if delayed",
         ],
         guidelines: "WSES Jerusalem Guidelines 2020; NICE CG92"
@@ -66,7 +66,7 @@ extension ManagementEngine {
         urgency: .immediate,
         immediateActions: [
             "Two large-bore IV access (14–16G)",
-            "Aggressive IV crystalloid resuscitation (30 mL/kg over 30 min if haemodynamically unstable)",
+            "Prompt IV crystalloid resuscitation (up to 30 mL/kg in the first 3 h if hypotensive or lactate ≥ 4 — SSC 2021)",
             "IV morphine + anti-emetic",
             "IV broad-spectrum antibiotics IMMEDIATELY: piperacillin-tazobactam 4.5 g TDS or meropenem 1 g TDS",
             "Nil by mouth",
@@ -209,7 +209,7 @@ extension ManagementEngine {
         icdCode: "K85.9",
         urgency: .urgent,
         immediateActions: [
-            "IV access + aggressive IV fluid resuscitation: Hartmann's or 0.9% NaCl 250–500 mL/h × 4–6 h",
+            "IV access + moderate goal-directed IV fluids: Hartmann's 10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h, reassessed at 12–24 h — avoid aggressive fluids (WATERFALL 2022; ACG 2024)",
             "Analgesia: morphine IV (superior to pethidine — ignore old advice)",
             "Anti-emetic: ondansetron 4 mg IV",
             "Nil by mouth initially (clear fluids once pain improves — within 24–48 h in mild cases)",
@@ -226,7 +226,7 @@ extension ManagementEngine {
             "IgG4 level if autoimmune pancreatitis suspected (middle-aged, obstructive jaundice, mass)",
         ],
         medicalManagement: [
-            "IV fluids: target 3–4 L/day crystalloid (Hartmann's preferred); re-assess every 4–6 h",
+            "IV fluids: moderate goal-directed crystalloid (Hartmann's preferred); reassess at 12–24 h and stop when targets are met — avoid fluid overload (WATERFALL 2022)",
             "Analgesia: morphine IV or epidural for severe pain",
             "Nutrition: early enteral feeding (nasojejunal or nasogastric) within 48 h if unable to eat",
             "TPN only if enteral route not possible",
@@ -243,7 +243,7 @@ extension ManagementEngine {
         disposition: "Ward if mild (Ranson <3, Glasgow <3); HDU if moderate-severe; ICU if Glasgow ≥5 or organ failure",
         followUp: "MRCP or USS at 6–8 weeks to clear biliary stones; CT if peripancreatic fluid collection (pseudocyst surveillance)",
         keyPitfalls: [
-            "Aggressive early fluid resuscitation is the single most important intervention",
+            "Avoid aggressive fluid resuscitation — it increases fluid overload without benefit; use moderate goal-directed fluids (WATERFALL 2022; ACG 2024)",
             "Do NOT delay cholecystectomy in gallstone pancreatitis — if delayed, 25–30% re-admission risk",
             "Prophylactic antibiotics do NOT reduce mortality in sterile necrosis — Cochrane evidence clear",
             "CT at admission is not indicated — necrosis maximal at 48–72 h",
@@ -266,7 +266,7 @@ extension ManagementEngine {
         immediateActions: [
             "ICU admission",
             "Invasive monitoring: arterial line, central venous line",
-            "Aggressive fluid resuscitation with goal-directed therapy (CVP 8–12, MAP ≥65)",
+            "Goal-directed fluid resuscitation (MAP ≥ 65, urine output) — avoid aggressive fluids (WATERFALL 2022); vasopressors rather than fluid overload",
             "Vasopressors (noradrenaline) if MAP <65 despite resuscitation",
             "Mechanical ventilation if ARDS (PaO₂/FiO₂ <300)",
             "Nasojejunal feeding within 24–48 h",

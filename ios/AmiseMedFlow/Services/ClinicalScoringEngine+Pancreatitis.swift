@@ -32,14 +32,14 @@ extension ClinicalScoringEngine {
         case ..<3:
             risk = .low
             interpretation = "Ranson \(Int(score))/11 — Mild pancreatitis; mortality <5%"
-            recs = ["IV fluids (aggressive crystalloid resuscitation — 250–500 mL/h initially)",
+            recs = ["IV fluids: moderate goal-directed crystalloid (1.5 mL/kg/h after a 10 mL/kg bolus only if hypovolaemic; avoid aggressive fluids — WATERFALL 2022; ACG 2024)",
                     "Analgesia (morphine IV)", "Nil by mouth initially",
                     "Monitor FBC, U&E, LFT, calcium, glucose every 12–24 h",
                     "Reintroduce clear fluids when pain resolving and bowel sounds present"]
         case 3..<6:
             risk = .high
             interpretation = "Ranson \(Int(score))/11 — Moderate-to-severe pancreatitis; mortality ~15%"
-            recs = ["HDU admission", "Aggressive IV fluids (target urine output >0.5 mL/kg/h)",
+            recs = ["HDU admission", "Goal-directed IV fluids (target urine output >0.5 mL/kg/h; avoid aggressive fluids — WATERFALL 2022; ACG 2024)",
                     "Analgesia (morphine IV or epidural)", "Nil by mouth",
                     "MRCP / USS to assess biliary aetiology",
                     "Early ERCP if gallstone pancreatitis + cholangitis within 24–72 h",
@@ -52,7 +52,7 @@ extension ClinicalScoringEngine {
             interpretation = "Ranson \(Int(score))/11 — Severe pancreatitis; mortality >50%"
             redFlags = ["Mortality risk >50% — ITU admission essential",
                         "High risk of pancreatic necrosis and multi-organ failure"]
-            recs = ["ITU admission", "Aggressive fluid resuscitation with goal-directed therapy",
+            recs = ["ITU admission", "Goal-directed fluid resuscitation (avoid aggressive fluids — WATERFALL 2022; ACG 2024)",
                     "Vasopressors if haemodynamically compromised", "Invasive monitoring",
                     "Early ERCP within 24 h if biliary aetiology + cholangitis",
                     "CT abdomen with contrast (CTSI) at 48–72 h — assess extent of necrosis",
@@ -97,7 +97,7 @@ extension ClinicalScoringEngine {
                 ? "Glasgow \(Int(score))/8 — Severe acute pancreatitis"
                 : "Glasgow \(Int(score))/8 — Predicted mild pancreatitis",
             recommendations: severe
-                ? ["HDU/ITU admission", "Aggressive IV fluid resuscitation",
+                ? ["HDU/ITU admission", "Goal-directed IV fluid resuscitation (avoid aggressive fluids — WATERFALL 2022; ACG 2024)",
                    "CT abdomen at 48–72 h", "Nutritional support within 48 h",
                    "ERCP within 72 h if biliary aetiology + cholangitis"]
                 : ["IV fluids + analgesia", "Nil by mouth initially",
@@ -131,7 +131,7 @@ extension ClinicalScoringEngine {
         let (risk, interp, recs, redFlags): (ScoreRisk, String, [String], [String]) = switch Int(score) {
         case 0:
             (.low,      "BISAP 0 — Predicted mortality 0.1% — mild pancreatitis very likely",
-             ["Aggressive IV fluid resuscitation (Hartmann's / Ringer's lactate preferred)",
+             ["Goal-directed IV fluids (Hartmann's / Ringer's lactate preferred; avoid aggressive fluids — WATERFALL 2022; ACG 2024)",
               "Monitor urine output, U&E, lipase at 24–48 h",
               "Consider early enteral feeding if tolerated",
               "Abdominal imaging not routine unless diagnosis uncertain"],
@@ -250,7 +250,7 @@ extension ClinicalScoringEngine {
         } else {
             recs = [
                 "HAPS does not confirm harmless course — standard acute pancreatitis pathway applies.",
-                "IV fluid resuscitation (crystalloid 250–500 mL/h in first 12–24 h).",
+                "IV fluid resuscitation: moderate goal-directed crystalloid, reassessed at 12–24 h (avoid aggressive fluids — WATERFALL 2022; ACG 2024).",
                 "Nil by mouth; nasogastric tube if vomiting.",
                 "Repeat bloods at 24–48 h; consider CT abdomen if no improvement at 48–72 h.",
                 "BISAP and APACHE II scores recommended for formal severity stratification."
@@ -321,14 +321,14 @@ extension ClinicalScoringEngine {
         if pts < 3 {
             interp = "Glasgow-Imrie \(pts)/8 — Predicted mild acute pancreatitis. Standard IV fluid resuscitation, analgesia and supportive care. Reassess at 48 h: the score uses the worst values in the first 48 h and may not be complete at admission."
         } else {
-            interp = "Glasgow-Imrie \(pts)/8 — Severe acute pancreatitis predicted (≥ 3 criteria). HDU/ICU assessment, aggressive resuscitation, CT imaging if not improving, and HPB/gastroenterology specialist review."
+            interp = "Glasgow-Imrie \(pts)/8 — Severe acute pancreatitis predicted (≥ 3 criteria). HDU/ICU assessment, goal-directed resuscitation (avoid aggressive fluids), CT imaging if not improving, and HPB/gastroenterology specialist review."
         }
 
         let flags: [String] = pts >= 3 ? ["Glasgow-Imrie ≥ 3: severe acute pancreatitis predicted — HDU/ICU and specialist review required"] : []
         let recs: [String]
         if pts < 3 {
             recs = [
-                "Mild acute pancreatitis predicted — aggressive fluid resuscitation for first 24 h.",
+                "Mild acute pancreatitis predicted — moderate goal-directed fluids for the first 24 h (avoid aggressive fluids — WATERFALL 2022; ACG 2024).",
                 "Early oral intake when tolerated (24–48 h).",
                 "US abdomen to assess for gallstones and common bile duct dilation.",
                 "Monitor with serial bloods at 24 and 48 h.",
@@ -337,7 +337,7 @@ extension ClinicalScoringEngine {
         } else {
             recs = [
                 "Severe acute pancreatitis predicted — HDU/ICU admission.",
-                "Aggressive IV crystalloid resuscitation (250–500 mL/h) guided by urine output.",
+                "Goal-directed IV crystalloid guided by urine output (avoid aggressive fluids — WATERFALL 2022; ACG 2024).",
                 "CT abdomen with contrast at 48–72 h to assess for necrosis and complications.",
                 "Nasojejunal feeding preferred if enteral route feasible; PN if not.",
                 "Antibiotics only if infected necrosis confirmed or high clinical suspicion.",

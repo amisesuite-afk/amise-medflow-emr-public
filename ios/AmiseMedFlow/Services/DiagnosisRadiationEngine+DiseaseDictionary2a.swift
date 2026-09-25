@@ -20,6 +20,7 @@ extension DiagnosisRadiationEngine {
             ],
             planTemplate: """
 - Elective laparoscopic (TEP/TAPP) or open hernia repair
+- Strangulated / obstructed (tender, irreducible, small bowel obstruction): emergency surgery — emergency hernia repair with assessment of bowel viability ± resection; do not attempt reduction if strangulation is suspected (WSES 2017; HerniaSurge 2018)
 - Truss if patient unfit for surgery
 - Advise: avoid heavy lifting >5 kg until review
 - Pre-op: weight optimisation (BMI >35 → increased risk), smoking cessation
@@ -47,7 +48,8 @@ extension DiagnosisRadiationEngine {
             planTemplate: """
 - Elective umbilical hernia repair (open Mayo repair or laparoscopic mesh)
 - >2 cm defect: mesh reinforcement recommended
-- Optimise: weight loss (BMI >35 increases recurrence), treat ascites if cirrhotic
+- Optimise: weight loss (BMI >35 increases recurrence)
+- Cirrhosis with ascites: control ascites first (diuretics, therapeutic paracentesis ± TIPS) with hepatology before repair; thinning or ulcerated skin → urgent repair because of the rupture risk (EASL 2018; EHS)
 - Advise against heavy lifting and straining
 - Consent: recurrence, mesh complications, wound infection
 """,
@@ -75,7 +77,7 @@ extension DiagnosisRadiationEngine {
                 .init(name: "LFTs / U&E", category: .blood, rationale: "Baseline — guide NSAID use"),
             ],
             planTemplate: """
-- Stop NSAIDs + aspirin if possible; use paracetamol instead
+- Stop NSAIDs; use paracetamol instead. Low-dose aspirin for secondary prevention: continue (or restart once haemostasis is secure) with PPI cover — decide with cardiology / neurology (BSG/ESGE 2021; NICE CG184)
 - PPI: omeprazole 40 mg OD × 8 weeks (healing dose)
 - If H. pylori positive: triple therapy — clarithromycin 500 mg + amoxicillin 1 g + omeprazole 20 mg BD × 7–14 days
 - Penicillin allergy: penicillin-free regimen — bismuth quadruple therapy (PPI + bismuth + tetracycline + metronidazole) (Maastricht VI / Florence 2022)
@@ -170,7 +172,8 @@ extension DiagnosisRadiationEngine {
             planTemplate: """
 - URGENT MDT referral — breast oncology
 - Receptor status (ER/PR/HER2) drives systemic therapy decision
-- Early stage: wide local excision + sentinel node biopsy ± mastectomy
+- Early stage (not for inflammatory breast cancer): wide local excision + sentinel node biopsy ± mastectomy
+- Inflammatory breast cancer: neoadjuvant systemic therapy first, then modified radical mastectomy with axillary clearance and post-mastectomy radiotherapy; breast-conserving surgery and SLNB are contraindicated (NCCN 2024)
 - Adjuvant: endocrine therapy if ER+ (tamoxifen / aromatase inhibitor), Herceptin if HER2+
 - BRCA testing if strong FH or <45y
 - Breast reconstruction discussion pre-operatively

@@ -61,7 +61,7 @@ extension ManagementEngine {
         icdCode: "K46.0",
         urgency: .immediate,
         immediateActions: [
-            "IV access + aggressive fluid resuscitation (30 mL/kg if haemodynamically unstable)",
+            "IV access + prompt fluid resuscitation (up to 30 mL/kg if haemodynamically unstable — SSC 2021)",
             "IV analgesia + anti-emetic",
             "NG tube if obstructed (bilious vomiting, distension)",
             "Nil by mouth",
@@ -251,7 +251,7 @@ extension ManagementEngine {
         icdCode: "K63.1",
         urgency: .immediate,
         immediateActions: [
-            "Two large-bore IV access + aggressive fluid resuscitation",
+            "Two large-bore IV access + prompt goal-directed fluid resuscitation",
             "IV broad-spectrum antibiotics IMMEDIATELY: meropenem 1 g TDS or piperacillin-tazobactam 4.5 g TDS",
             "IV analgesia + anti-emetic",
             "NG tube (gastric decompression)",

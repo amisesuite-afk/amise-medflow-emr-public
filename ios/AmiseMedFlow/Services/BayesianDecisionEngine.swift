@@ -208,7 +208,7 @@ enum BayesianDecisionEngine {
                 priority: .emergency,
                 actions: [
                     "IV heparin 5000 units bolus if no contraindication",
-                    "Aggressive IV resuscitation; correct metabolic acidosis",
+                    "Prompt goal-directed IV resuscitation; correct metabolic acidosis",
                     "Immediate CT mesenteric angiography",
                     "Vascular + general surgery dual alert",
                     "Endovascular or open revascularisation depending on CT findings"
@@ -265,7 +265,7 @@ enum BayesianDecisionEngine {
                 priority: .emergency,
                 actions: [
                     "Blood cultures × 2 before antibiotics",
-                    "IV antibiotics within 1 hour (broad-spectrum; narrow when cultures return)",
+                    "IV antibiotics within 1 hour if suspected infection (broad-spectrum; narrow when cultures return)",
                     "IV crystalloid 30 mL/kg over 3 h if lactate ≥4 or hypotension",
                     "Vasopressors (noradrenaline) if MAP <65 despite resuscitation",
                     "Measure serum lactate; repeat if initial ≥2 mmol/L",
@@ -299,14 +299,14 @@ enum BayesianDecisionEngine {
 
         case "Incarcerated / Strangulated Hernia":
             return ClinicalDecision(
-                title: "Emergency Hernia Repair — Suspected Strangulation",
+                title: "Suspected Strangulated Hernia — Emergency Surgical Review",
                 rationale: "Strangulated hernia with bowel compromise requires urgent repair to prevent perforation.",
                 priority: .emergency,
                 actions: [
                     "NBM; IV access; fluid resuscitation",
                     "IV antibiotics if peritonism or systemic sepsis",
                     "Do not attempt manual reduction if strangulation suspected",
-                    "Emergency surgical review; consent for laparoscopic or open repair ± bowel resection",
+                    "Emergency surgical review; if strangulation is confirmed, emergency repair ± bowel resection (consent for laparoscopic or open)",
                     "Theatre within 4–6 hours"
                 ],
                 investigations: ["CT abdomen/pelvis", "FBC, U&E, lactate, G&S"],
@@ -393,8 +393,8 @@ enum BayesianDecisionEngine {
                 actions: [
                     "Full SOFA assessment",
                     "Blood cultures × 2 before antibiotics",
-                    "IV antibiotics within 1 hour",
-                    "Serum lactate; aggressive fluid resuscitation if raised"
+                    "IV antibiotics within 1 hour if suspected infection",
+                    "Serum lactate; goal-directed fluid resuscitation if raised (SSC 2021)"
                 ],
                 investigations: ["Blood cultures", "Serum lactate", "FBC, CRP, U&E, LFT, coag"],
                 disposition: .hduMonitoring,

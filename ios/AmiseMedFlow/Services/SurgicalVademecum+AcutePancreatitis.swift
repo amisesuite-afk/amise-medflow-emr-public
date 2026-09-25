@@ -71,7 +71,7 @@ extension SurgicalVademecum {
                 )
             ],
             nonOperativeManagement: [
-                "Aggressive IV crystalloid resuscitation: Hartmann's/Ringer's lactate 250–500 mL/h first 12–24 h",
+                "Moderate goal-directed IV fluids (Hartmann's / Ringer's lactate): 1.5 mL/kg/h after a 10 mL/kg bolus only if hypovolaemic, reassessed at 12–24 h — avoid aggressive fluids (WATERFALL 2022; ACG 2024)",
                 "Early oral/enteral nutrition via NGT (not parenteral): within 24 h if tolerated",
                 "Analgesia: morphine or fentanyl PCA; NSAIDs if renal function permits",
                 "Antibiotics: NOT prophylactic. Only if documented or suspected infection",

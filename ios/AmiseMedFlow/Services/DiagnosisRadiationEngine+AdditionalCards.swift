@@ -100,7 +100,7 @@ extension DiagnosisRadiationEngine {
              plan: """
 - Severe symptoms (seizure, reduced consciousness, vomiting, cardiorespiratory distress): hypertonic 3% saline 150 mL IV over 20 minutes, recheck sodium, repeat up to twice until +5 mmol/L (European guideline 2014) — critical care
 - Limit correction to 10 mmol/L in the first 24 h and 8 mmol/L each day after (overcorrection risks osmotic demyelination)
-- Assess volume status first: hypovolaemic (e.g. high-output ileostomy) → 0.9% sodium chloride; SIADH → fluid restriction; never restrict fluids when hypovolaemic
+- Assess volume status first: hypovolaemic (e.g. high-output ileostomy) → volume replacement with 0.9% saline (isotonic); SIADH → fluid restriction; never restrict fluids when hypovolaemic
 - Stop causative drugs: thiazides, SSRIs, and hypotonic IV fluids (5% glucose) (European guideline 2014)
 """, urgency: "Hyponatraemia with severe symptoms: emergency hypertonic saline.",
              redFlags: ["Seizure or reduced GCS → 3% saline 150 mL bolus", "Rise >10 mmol/L in 24 h → risk of osmotic demyelination"],
@@ -110,9 +110,10 @@ extension DiagnosisRadiationEngine {
         extraCard(["hypercalcaemia", "hypercalcemia"], "Hypercalcaemia", icd: "E83.52",
              inv: [SI(name: "Adjusted calcium, PTH, phosphate, U&E, ALP", category: .blood, rationale: "PTH-dependent vs malignancy"),
                    SI(name: "12-lead ECG", category: .other, rationale: "Short QT, arrhythmia"),
-                   SI(name: "Myeloma screen, PTHrP, CT staging as indicated", category: .blood, rationale: "Malignancy")],
+                   SI(name: "Myeloma screen: serum protein electrophoresis, serum free light chains, urine Bence Jones protein", category: .blood, rationale: "Myeloma (lytic lesions, AKI, anaemia)"),
+                   SI(name: "PTHrP and CT staging as indicated", category: .blood, rationale: "Malignancy")],
              plan: """
-- Severe (≥3.5 mmol/L) or symptomatic: IV 0.9% sodium chloride rehydration; bisphosphonate after rehydration (Society for Endocrinology 2016)
+- Severe (≥3.5 mmol/L) or symptomatic: IV fluids — 0.9% saline rehydration; bisphosphonate after rehydration (Society for Endocrinology 2016)
 - Stop thiazides, calcium and vitamin D supplements
 - Hypercalcaemia of malignancy: oncology; treat the cause
 - PTH-dependent: parathyroid surgery referral (NICE NG132)
@@ -218,7 +219,7 @@ extension DiagnosisRadiationEngine {
              plan: """
 - Seizure lasting ≥5 minutes: benzodiazepine (buccal midazolam or IV lorazepam) per NICE NG217 / APLS; call 911
 - Pregnancy ≥20 weeks or postpartum: treat as eclampsia (magnesium sulfate) until proven otherwise (NICE NG133)
-- First unprovoked seizure: urgent referral to a specialist (first-seizure clinic) within 2 weeks (NICE NG217); driving advice
+- First unprovoked seizure: 12-lead ECG; urgent referral to a specialist (first seizure clinic / neurologist) within 2 weeks (NICE NG217); driving advice
 """, urgency: "Status epilepticus: \(EmergencyRedirect.text)",
              redFlags: ["Seizure ≥5 minutes, not regaining consciousness → status epilepticus"],
              followUp: "First-seizure clinic within 2 weeks; DVLA advice.",
@@ -255,13 +256,16 @@ extension DiagnosisRadiationEngine {
 
         extraCard(["upper gi bleed", "upper gastrointestinal bleed", "upper gi haemorrhage", "haematemesis", "melaena", "mallory-weiss",
                    "mallory weiss", "aorto-enteric"], "Upper GI Bleeding", icd: "K92.2",
-             inv: [SI(name: "FBC, U&E (urea), LFTs, clotting, crossmatch", category: .blood, rationale: "Glasgow-Blatchford score"),
+             inv: [SI(name: "FBC, U&E (urea), LFTs, coagulation screen (INR), crossmatch", category: .blood, rationale: "Glasgow-Blatchford score; anticoagulant reversal"),
                    SI(name: "OGD within 24 h (immediately after resuscitation if unstable)", category: .endoscopy, rationale: "NICE CG141; ESGE 2021"),
                    SI(name: "CT angiography if unstable despite resuscitation or aorto-enteric fistula suspected", category: .imaging, rationale: "Localisation / interventional radiology")],
              plan: """
 - Glasgow-Blatchford score: 0–1 → outpatient management may be possible (NICE CG141; ESGE 2021)
 - Resuscitate: two large-bore cannulae; restrictive transfusion (Hb threshold 70 g/L, 80 g/L with cardiovascular disease) (ESGE 2021)
-- No routine tranexamic acid (HALT-IT 2020; ESGE 2021)
+- No antifibrinolytic drug (HALT-IT 2020; ESGE 2021)
+- Unstable despite resuscitation: critical care (ICU/HDU); failed endoscopic haemostasis → interventional radiology embolisation or surgery (under-running) (ESGE 2021)
+- Stop NSAIDs; dual antiplatelet therapy or a coronary stent: cardiology input before stopping the P2Y12 inhibitor (ESGE 2021)
+- Suspected aorto-enteric fistula (previous aortic graft / EVAR, herald bleed): CT angiography and the vascular surgery on-call team now; blood cultures (graft infection)
 - PPI after endoscopic haemostasis (high-dose); no PPI before endoscopy needed to delay it
 - Anticoagulants/antiplatelets: bleeding-specific plan — hold the anticoagulant; reversal if life-threatening (DOAC-specific reversal or prothrombin complex concentrate + vitamin K for warfarin); no LMWH bridging during active bleeding; continue aspirin for secondary prevention (ESGE 2021; BSG/ESGE antithrombotics)
 - Suspected variceal bleeding → terlipressin + antibiotics (see variceal pathway)
@@ -288,12 +292,12 @@ extension DiagnosisRadiationEngine {
 
         extraCard(["diverticulitis", "diverticular abscess", "pericolic abscess"], "Acute Diverticulitis", icd: "K57.32",
              inv: [SI(name: "CT abdomen/pelvis with IV contrast", category: .imaging, rationale: "Confirm; complicated (abscess, perforation) — modified Hinchey"),
-                   SI(name: "FBC, CRP, U&E, lactate", category: .blood, rationale: "Severity"),
+                   SI(name: "FBC, CRP, U&E, lactate; blood cultures if septic", category: .blood, rationale: "Severity"),
                    SI(name: "Colonoscopy 6–8 weeks after complicated disease", category: .endoscopy, rationale: "Exclude cancer")],
              plan: """
 - Uncomplicated (immunocompetent, no sepsis): outpatient, analgesia; antibiotics only selectively (WSES 2020; AGA 2021); review if worse
 - Immunosuppressed or systemic signs: admit, IV antibiotics
-- Pericolic abscess ≥4–5 cm: IV antibiotics + percutaneous (CT-guided) drainage; smaller: antibiotics (WSES 2020)
+- Pericolic abscess ≥4–5 cm: IV antibiotics + CT-guided percutaneous drainage (percutaneous drain); smaller: antibiotics (WSES 2020)
 - Purulent (Hinchey III) or faecal (Hinchey IV) peritonitis: emergency surgery — Hartmann's or resection with anastomosis ± stoma (WSES 2020)
 """, urgency: "Complicated diverticulitis: surgical review.",
              redFlags: ["Generalised peritonitis, free air → emergency surgery"],
@@ -302,7 +306,8 @@ extension DiagnosisRadiationEngine {
 
         extraCard(["boerhaave", "oesophageal perforation", "esophageal perforation"], "Oesophageal Perforation (Boerhaave)", icd: "K22.3",
              inv: [SI(name: "CT chest/abdomen with oral water-soluble contrast", category: .imaging, rationale: "Leak, mediastinitis"),
-                   SI(name: "Bloods, lactate, cultures", category: .blood, rationale: "Sepsis")],
+                   SI(name: "Bloods, lactate, cultures", category: .blood, rationale: "Sepsis"),
+                   SI(name: "12-lead ECG and troponin", category: .other, rationale: "Exclude acute coronary syndrome — chest pain")],
              plan: """
 - Nil by mouth; IV fluids; broad-spectrum IV antibiotics and antifungal; PPI
 - Emergency upper GI / thoracic surgical referral: surgical repair, stent or drainage by the specialist team
@@ -319,7 +324,7 @@ extension DiagnosisRadiationEngine {
              plan: """
 - Pyogenic: IV antibiotics (biliary/enteric cover) + percutaneous drainage of large abscesses; find the source (biliary, colonic)
 - Amoebic: metronidazole then a luminal agent (paromomycin/diloxanide); drainage rarely needed
-- Septic shock (cholangitic abscesses): resuscitation, biliary decompression (ERCP) and drainage
+- Septic shock (cholangitic abscesses): resuscitation and critical care (ICU/HDU), biliary decompression (ERCP) and drainage
 """, urgency: nil,
              redFlags: ["Septic shock → source control urgently"],
              followUp: "Repeat imaging; colonoscopy if Klebsiella / no biliary source.",
@@ -349,7 +354,8 @@ extension DiagnosisRadiationEngine {
                    SI(name: "Capillary glucose", category: .blood, rationale: "Undiagnosed diabetes")],
              plan: """
 - Incision and drainage is the treatment; antibiotics only with surrounding cellulitis, systemic features or immunosuppression (NICE NG141 / IDSA 2014)
-- Groin abscess in a person who injects drugs: exclude a femoral pseudoaneurysm (duplex) before incision
+- Groin abscess in a person who injects drugs: exclude a femoral pseudoaneurysm (duplex ultrasound) before incision; offer blood-borne virus testing (HIV, hepatitis B and C)
+- MRSA risk (previous MRSA, injecting drug use) with cellulitis or systemic features: MRSA-active antibiotic — doxycycline or co-trimoxazole orally, vancomycin or teicoplanin IV if systemically unwell (IDSA 2014; NICE NG141)
 - Breast abscess: ultrasound-guided aspiration first (breast team)
 """, consent: "Incision and drainage", urgency: nil,
              redFlags: ["Pain out of proportion / crepitus → necrotising infection"],
@@ -386,7 +392,7 @@ extension DiagnosisRadiationEngine {
                    SI(name: "Weight, FBC, U&E, group and save", category: .blood, rationale: "Fluid calculation")],
              plan: """
 - Cool the burn (20 minutes of cool running water within 3 h); cover with cling film; keep the patient warm
-- Airway: inhalation injury / facial burns → early senior anaesthetic review, 100% oxygen, COHb
+- Airway: inhalation injury / facial burns → early senior anaesthetic review and early intubation to secure the airway before swelling progresses (ATLS 10); 100% oxygen, COHb
 - Formal IV fluid resuscitation from 15% TBSA in adults and 10% in children: Parkland 4 mL/kg/%TBSA over 24 h from the TIME OF BURN, half in the first 8 h — subtract fluid already given and time elapsed (practice default; ATLS 10 starting rates 2 mL/kg/%TBSA adults, 3 mL/kg/%TBSA children as a note; surgeon sign-off pending)
 - Urine output target: 0.5 mL/kg/h adults, 1 mL/kg/h children; titrate fluids to it
 - Circumferential full-thickness burns: escharotomy
