@@ -384,11 +384,11 @@ const SURGERY_WORDS = /\b(\w+ectomy|\w+otomy|\w+plasty|repair|laparoscop\w*|lapa
  * right hemicolectomy", "post-thyroidectomy".
  */
 const NOT_A_PLANNED_OPERATION = new RegExp([
-  String.raw`(?:surgical|surgery|surgeon)\s+(?:review|assessment|opinion|referral|team|input|consult\w*|on-call|clinic|follow-up)`,
-  String.raw`(?:no|not for|without|avoid|declin\w*)\s+(?:\w+\s){0,2}?(?:surgery|operation|resection|repair)`,
-  String.raw`(?:day\s+\d+\s+)?(?:after|following|since|post[- ]?op\w*\s+(?:from|after)?)\s+(?:an?\s+|the\s+|his\s+|her\s+)?(?:\w+[\s-]){0,3}?\w*(?:ectomy|otomy|plasty|repair|surgery|operation|resection|anastomosis)`,
-  String.raw`post[- ]?\w*(?:ectomy|otomy|operative)`,
-  String.raw`surgical (?:history|site infection)`,
+  String.raw`\b(?:surgical|surgery|surgeon)\s+(?:review|assessment|opinion|referral|team|input|consult\w*|on-call|clinic|follow-up)\b`,
+  String.raw`\b(?:no|not for|without|avoid|declin\w*)\s+(?:\w+\s){0,2}?(?:surgery|operation|resection|repair)\b`,
+  String.raw`\b(?:day\s+\d+\s+)?(?:after|following|since|post[- ]?op\w*\s+(?:from|after)?)\s+(?:an?\s+|the\s+|his\s+|her\s+)?(?:\w+[\s-]){0,3}?\w*(?:ectomy|otomy|plasty|repair|surgery|operation|resection|anastomosis)\b`,
+  String.raw`\bpost[- ]?\w*(?:ectomy|otomy|operative)\b`,
+  String.raw`\bsurgical (?:history|site infection)\b`,
 ].join('|'), 'g');
 
 function operationWordsIn(text: string): boolean {
@@ -1017,7 +1017,7 @@ export function adaptProtocolForPatient(
     .map(i => adaptInvestigation(i, s));
   const extraInvestigations = (procedureKind: ProcedureKind): InvestigationItem[] => {
     const extra: InvestigationItem[] = [];
-    const labels = investigations.map(i => lower(i.label)).join(' ; ');
+    const labels = protocol.investigations.map(i => lower(i.label)).join(' ; ');
     const type1 = /\btype\s*(?:1|i)\s+diabet|\bt1dm\b|\biddm\b/.test(s.text);
     if (procedureKind !== 'none' && (type1 || drugsPresent(s.meds, INSULINS).length) && !/ketone/.test(labels)) {
       extra.push({ label: 'Capillary blood glucose and blood ketones (insulin-treated diabetes — CPOC 2021)', urgency: 'urgent' });
