@@ -27,94 +27,17 @@ struct TodayDashboardView: View {
     let cal = Calendar.current
 
     // MARK: - Patient groups (deduped via PatientDeduplication.swift)
+    // Built once per render in `body` (TodayDashboardBoard.swift) and passed to every section.
 
-    var wardPatients: [Patient] {
-        allPatients
-            .filter { $0.setting == .inpatient || $0.setting == .emergency }
-            .sorted { $0.acuity < $1.acuity }
-            .deduped()
-    }
-
-    var theatreToday: [Patient] {
-        allPatients
-            .filter { $0.setting == .theatre && isToday($0.operationDate) }
-            .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
-            .deduped()
-    }
-
-    var endoscopyToday: [Patient] {
-        allPatients
-            .filter { $0.setting == .endoscopy && isToday($0.operationDate) }
-            .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
-            .deduped()
-    }
-
-    var clinicToday: [Patient] {
-        allPatients
-            .filter { $0.setting == .outpatient && isToday($0.operationDate) }
-            .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
-            .deduped()
-    }
-
-    var highAcuityWard: [Patient] {
-        wardPatients.filter { p in
-            guard let v = p.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
-            else { return p.setting == .emergency }
-            return v.news2Risk == "High" || v.news2HasRedFlag
-        }
-    }
-
-    var patientsWithNewResults: [Patient] {
-        allPatients.deduped().filter { p in
-            p.investigations.contains { $0.status == .resulted && !$0.result.isEmpty }
-        }
-    }
-
-    var readyForDoctorPatients: [Patient] {
-        allPatients
-            .filter { $0.encounterStatus == .waiting && isToday($0.checkInTime) }
-            .sorted { ($0.checkInTime ?? .distantPast) < ($1.checkInTime ?? .distantPast) }
-            .deduped()
-    }
-
-    // Calendar events from iOS EventKit (syncs with Google Calendar when
-    // the user adds their Google account in iOS Settings → Calendar → Accounts)
-    var todayCalEvents: [EKEvent] {
-        calSvc.events
-            .filter { isToday($0.startDate) && !$0.isAllDay }
-            .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
-    }
-
-    var isAnythingOn: Bool {
-        !readyForDoctorPatients.isEmpty || !wardPatients.isEmpty ||
-        !theatreToday.isEmpty || !endoscopyToday.isEmpty || !clinicToday.isEmpty ||
-        !todayCalEvents.isEmpty
-    }
-
-    // Calendar events today that don't yet have a matching patient record
-    var unimportedCalEventCount: Int {
-        let existingNames = Set(allTodayPatients.map { $0.fullName.lowercased().trimmingCharacters(in: .whitespaces) })
-        return todayCalEvents.filter { event in
-            guard let title = event.title, !title.isEmpty else { return false }
-            let parsed = CalendarEventParser.parse(title: title, calLabel: event.calEntryLabel)
-            return !parsed.name.isEmpty && !existingNames.contains(parsed.name.lowercased().trimmingCharacters(in: .whitespaces))
-        }.count
-    }
-
-    // All today's patients in one flat list for search
-    var allTodayPatients: [Patient] {
-        (readyForDoctorPatients + highAcuityWard + wardPatients +
-         theatreToday + endoscopyToday + clinicToday)
-            .reduce(into: [Patient]()) { acc, p in
-                if !acc.contains(where: { $0.id == p.id }) { acc.append(p) }
-            }
+    func makeBoard() -> TodayBoard {
+        TodayBoard(patients: allPatients, events: calSvc.events, calendar: cal)
     }
 
     var searchActive: Bool { !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty }
 
-    var searchResults: [Patient] {
+    func searchResults(_ board: TodayBoard) -> [Patient] {
         let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        return allTodayPatients.filter {
+        return board.allToday.filter {
             $0.fullName.lowercased().contains(q) ||
             ($0.mrn?.lowercased().contains(q) ?? false) ||
             ($0.workingDiagnosis?.lowercased().contains(q) ?? false) ||
@@ -122,20 +45,18 @@ struct TodayDashboardView: View {
         }
     }
 
-    // Total count for the day summary strip
-    var totalCount: Int { allTodayPatients.count }
-
     // MARK: - Body
 
     var body: some View {
+        let board = makeBoard()
         NavigationStack {
             Group {
-                if isAnythingOn || searchActive {
+                if board.isAnythingOn || searchActive {
                     List {
                         // ── Day summary strip ───────────────────────────
                         if !searchActive {
                             Section {
-                                daySummaryStrip
+                                daySummaryStrip(board)
                             }
                             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                             .listRowBackground(Color.clear)
@@ -143,14 +64,15 @@ struct TodayDashboardView: View {
 
                         // ── Search results (when active) ────────────────
                         if searchActive {
-                            if searchResults.isEmpty {
+                            let results = searchResults(board)
+                            if results.isEmpty {
                                 Section {
                                     ContentUnavailableView.search(text: searchQuery)
                                 }
                                 .listRowBackground(Color.clear)
                             } else {
                                 Section("Results for \"\(searchQuery.trimmingCharacters(in: .whitespaces))\"") {
-                                    ForEach(searchResults) { patient in
+                                    ForEach(results) { patient in
                                         Button { selectedPatient = patient } label: {
                                             TodayPatientRow(patient: patient, style: rowStyle(for: patient))
                                         }
@@ -160,18 +82,18 @@ struct TodayDashboardView: View {
                             }
                         } else {
                             // ── Calendar import nudge ───────────────────
-                            if unimportedCalEventCount > 0 {
-                                calendarImportBanner
+                            if board.unimportedCalEventCount > 0 {
+                                calendarImportBanner(count: board.unimportedCalEventCount)
                             }
                             // ── Normal sections ─────────────────────────
-                            if !readyForDoctorPatients.isEmpty { waitingSection }
-                            if !highAcuityWard.isEmpty         { alertSection }
-                            if !patientsWithNewResults.isEmpty { resultsSection }
-                            if !wardPatients.isEmpty           { wardSection }
-                            if !theatreToday.isEmpty   { theatreSection }
-                            if !endoscopyToday.isEmpty { endoscopySection }
-                            if !clinicToday.isEmpty    { clinicSection }
-                            if !todayCalEvents.isEmpty { calendarSection }
+                            if !board.readyForDoctor.isEmpty { waitingSection(board.readyForDoctor) }
+                            if !board.highAcuityWard.isEmpty { alertSection(board) }
+                            if !board.withNewResults.isEmpty { resultsSection(board) }
+                            if !board.ward.isEmpty           { wardSection(board.ward) }
+                            if !board.theatre.isEmpty   { theatreSection(board.theatre) }
+                            if !board.endoscopy.isEmpty { endoscopySection(board.endoscopy) }
+                            if !board.clinic.isEmpty    { clinicSection(board.clinic) }
+                            if !board.calendarEvents.isEmpty { calendarSection(board.calendarEvents) }
                         }
                     }
                     .listStyle(.insetGrouped)
@@ -183,10 +105,11 @@ struct TodayDashboardView: View {
                         isRefreshing = false
                     }
                 } else {
-                    emptyState
+                    emptyState(unimportedCalEventCount: board.unimportedCalEventCount)
                 }
             }
             .navigationTitle("Today")
+            .onAppear { CrashReporting.breadcrumb("Opened Today dashboard") }
             .task { await calSvc.fetch() }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -262,7 +185,7 @@ struct TodayDashboardView: View {
 
     // MARK: - Calendar import banner
 
-    var calendarImportBanner: some View {
+    func calendarImportBanner(count unimportedCalEventCount: Int) -> some View {
         Section {
             Button {
                 showCalendarImport = true
@@ -294,32 +217,32 @@ struct TodayDashboardView: View {
 
     // MARK: - Day summary strip
 
-    var daySummaryStrip: some View {
+    func daySummaryStrip(_ board: TodayBoard) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                if totalCount > 0 {
-                    summaryTile(count: totalCount, label: "Total", icon: "person.2.fill", color: AMColor.accent)
+                if board.totalCount > 0 {
+                    summaryTile(count: board.totalCount, label: "Total", icon: "person.2.fill", color: AMColor.accent)
                 }
-                if !readyForDoctorPatients.isEmpty {
-                    summaryTile(count: readyForDoctorPatients.count, label: "Waiting", icon: "person.fill.checkmark", color: .orange)
+                if !board.readyForDoctor.isEmpty {
+                    summaryTile(count: board.readyForDoctor.count, label: "Waiting", icon: "person.fill.checkmark", color: .orange)
                 }
-                if !highAcuityWard.isEmpty {
-                    summaryTile(count: highAcuityWard.count, label: "Alerts", icon: "exclamationmark.triangle.fill", color: .red)
+                if !board.highAcuityWard.isEmpty {
+                    summaryTile(count: board.highAcuityWard.count, label: "Alerts", icon: "exclamationmark.triangle.fill", color: .red)
                 }
-                if !patientsWithNewResults.isEmpty {
-                    summaryTile(count: patientsWithNewResults.count, label: "Results", icon: "flask.fill", color: .teal)
+                if !board.withNewResults.isEmpty {
+                    summaryTile(count: board.withNewResults.count, label: "Results", icon: "flask.fill", color: .teal)
                 }
-                if !wardPatients.isEmpty {
-                    summaryTile(count: wardPatients.count, label: "Ward", icon: "bed.double.fill", color: .teal)
+                if !board.ward.isEmpty {
+                    summaryTile(count: board.ward.count, label: "Ward", icon: "bed.double.fill", color: .teal)
                 }
-                if !theatreToday.isEmpty {
-                    summaryTile(count: theatreToday.count, label: "Theatre", icon: "scalpel", color: .purple)
+                if !board.theatre.isEmpty {
+                    summaryTile(count: board.theatre.count, label: "Theatre", icon: "scalpel", color: .purple)
                 }
-                if !endoscopyToday.isEmpty {
-                    summaryTile(count: endoscopyToday.count, label: "Scope", icon: "eye.circle.fill", color: .cyan)
+                if !board.endoscopy.isEmpty {
+                    summaryTile(count: board.endoscopy.count, label: "Scope", icon: "eye.circle.fill", color: .cyan)
                 }
-                if !clinicToday.isEmpty {
-                    summaryTile(count: clinicToday.count, label: "Clinic", icon: "stethoscope", color: .indigo)
+                if !board.clinic.isEmpty {
+                    summaryTile(count: board.clinic.count, label: "Clinic", icon: "stethoscope", color: .indigo)
                 }
             }
             .padding(.horizontal, 16)

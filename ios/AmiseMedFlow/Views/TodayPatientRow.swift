@@ -12,8 +12,10 @@ struct TodayPatientRow: View {
     let patient: Patient
     let style: TodayRowStyle
 
-    private var latestVitals: VitalsEntry? {
-        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+    /// NEWS2 of the most recent vitals entry: one pass over the vitals and one chart evaluation
+    /// (was a full sort, then three separate NEWS2 evaluations, on every row render).
+    private var latestNEWS2: News2Snapshot? {
+        ListPerf.newest(patient.vitalsEntries.filter(\.isLive), by: { $0.recordedAt }).map { News2Snapshot($0) }
     }
 
     private var accentColor: Color {
@@ -97,8 +99,8 @@ struct TodayPatientRow: View {
             Spacer()
 
             // NEWS2 badge (ward only) or post-op day
-            if style == .ward, let v = latestVitals {
-                NEWS2Badge(score: v.news2Score, risk: v.news2Risk, incomplete: !v.news2IsComplete)
+            if style == .ward, let v = latestNEWS2 {
+                NEWS2Badge(score: v.score, risk: v.risk, incomplete: !v.isComplete)
             } else if style == .ward, let days = patient.postOpDays {
                 Text("POD \(days)")
                     .font(.caption2.monospacedDigit())

@@ -11,7 +11,7 @@ extension TodayDashboardView {
     // MARK: - Waiting (checked in by front desk) Section
 
     @ViewBuilder
-    var waitingSection: some View {
+    func waitingSection(_ readyForDoctorPatients: [Patient]) -> some View {
         Section {
             ForEach(readyForDoctorPatients) { patient in
                 Button { selectedPatient = patient } label: {
@@ -74,9 +74,9 @@ extension TodayDashboardView {
     // MARK: - Alert Section
 
     @ViewBuilder
-    var alertSection: some View {
+    func alertSection(_ board: TodayBoard) -> some View {
         Section {
-            ForEach(highAcuityWard) { patient in
+            ForEach(board.highAcuityWard) { patient in
                 Button { selectedPatient = patient } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill")
@@ -86,8 +86,8 @@ extension TodayDashboardView {
                             Text(patient.fullName)
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(.primary)
-                            if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
-                                Text("NEWS2 \(v.news2Score) · \(v.news2Risk) risk\(v.news2IsComplete ? "" : " · incomplete")")
+                            if let v = board.latestNEWS2[patient.id] {
+                                Text("NEWS2 \(v.score) · \(v.risk) risk\(v.isComplete ? "" : " · incomplete")")
                                     .font(.caption)
                                     .foregroundStyle(.red)
                             } else if patient.setting == .emergency {
@@ -122,9 +122,9 @@ extension TodayDashboardView {
     // MARK: - Results Available Section
 
     @ViewBuilder
-    var resultsSection: some View {
+    func resultsSection(_ board: TodayBoard) -> some View {
         Section {
-            ForEach(patientsWithNewResults) { patient in
+            ForEach(board.withNewResults) { patient in
                 Button { selectedPatient = patient } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "flask.fill")
@@ -134,10 +134,7 @@ extension TodayDashboardView {
                             Text(patient.fullName)
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(.primary)
-                            let resultedInvs = patient.investigations
-                                .filter { $0.status == .resulted && !$0.result.isEmpty }
-                            Text(resultedInvs.prefix(2).map { $0.name }.joined(separator: ", ")
-                                 + (resultedInvs.count > 2 ? " +\(resultedInvs.count - 2) more" : ""))
+                            Text(board.resultsSummary[patient.id] ?? "")
                                 .font(.caption)
                                 .foregroundStyle(.teal)
                         }
@@ -162,7 +159,7 @@ extension TodayDashboardView {
     // MARK: - Ward Section
 
     @ViewBuilder
-    var wardSection: some View {
+    func wardSection(_ wardPatients: [Patient]) -> some View {
         Section {
             ForEach(wardPatients) { patient in
                 Button { selectedPatient = patient } label: {
@@ -188,7 +185,7 @@ extension TodayDashboardView {
     // MARK: - Theatre Section
 
     @ViewBuilder
-    var theatreSection: some View {
+    func theatreSection(_ theatreToday: [Patient]) -> some View {
         Section {
             ForEach(theatreToday) { patient in
                 Button { selectedPatient = patient } label: {
@@ -212,7 +209,7 @@ extension TodayDashboardView {
     // MARK: - Endoscopy Section
 
     @ViewBuilder
-    var endoscopySection: some View {
+    func endoscopySection(_ endoscopyToday: [Patient]) -> some View {
         Section {
             ForEach(endoscopyToday) { patient in
                 Button { selectedPatient = patient } label: {
@@ -236,7 +233,7 @@ extension TodayDashboardView {
     // MARK: - Clinic Section
 
     @ViewBuilder
-    var clinicSection: some View {
+    func clinicSection(_ clinicToday: [Patient]) -> some View {
         Section {
             ForEach(clinicToday) { patient in
                 Button { selectedPatient = patient } label: {
@@ -262,7 +259,7 @@ extension TodayDashboardView {
     // MARK: - Calendar Section (iOS EventKit / Google Calendar sync)
 
     @ViewBuilder
-    var calendarSection: some View {
+    func calendarSection(_ todayCalEvents: [EKEvent]) -> some View {
         Section {
             if let err = calSvc.error {
                 HStack(spacing: 8) {
@@ -339,7 +336,7 @@ extension TodayDashboardView {
 
     // MARK: - Empty state
 
-    var emptyState: some View {
+    func emptyState(unimportedCalEventCount: Int) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "calendar.badge.checkmark")
                 .font(.system(size: 56))
