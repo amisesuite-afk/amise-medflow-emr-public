@@ -51,6 +51,7 @@ extension TodayDashboardView {
                             .foregroundStyle(.tertiary)
                     }
                     .padding(.vertical, 2)
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text(waitingAccessibilityLabel(patient)))
@@ -111,6 +112,7 @@ extension TodayDashboardView {
                             .foregroundStyle(.tertiary)
                     }
                     .padding(.vertical, 2)
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text(alertAccessibilityLabel(patient, board: board)))
@@ -150,6 +152,7 @@ extension TodayDashboardView {
                             .foregroundStyle(.tertiary)
                     }
                     .padding(.vertical, 2)
+                    .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text(A11yLabel.joined([
@@ -173,6 +176,7 @@ extension TodayDashboardView {
             ForEach(wardPatients) { patient in
                 Button { selectedPatient = patient } label: {
                     TodayPatientRow(patient: patient, style: .ward)
+                        .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("today.patientRow")
@@ -202,6 +206,7 @@ extension TodayDashboardView {
             ForEach(theatreToday) { patient in
                 Button { selectedPatient = patient } label: {
                     TodayPatientRow(patient: patient, style: .theatre)
+                        .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("today.patientRow")
@@ -229,6 +234,7 @@ extension TodayDashboardView {
             ForEach(endoscopyToday) { patient in
                 Button { selectedPatient = patient } label: {
                     TodayPatientRow(patient: patient, style: .endoscopy)
+                        .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("today.patientRow")
@@ -256,6 +262,7 @@ extension TodayDashboardView {
             ForEach(clinicToday) { patient in
                 Button { selectedPatient = patient } label: {
                     TodayPatientRow(patient: patient, style: .clinic)
+                        .contentShape(Rectangle())   // whole row tappable, not only its text
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("today.patientRow")

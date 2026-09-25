@@ -77,6 +77,7 @@ struct TodayDashboardView: View {
                                     ForEach(results) { patient in
                                         Button { selectedPatient = patient } label: {
                                             TodayPatientRow(patient: patient, style: rowStyle(for: patient))
+                                                .contentShape(Rectangle())   // whole row tappable, not only its text
                                         }
                                         .buttonStyle(.plain)
                                         .accessibilityIdentifier("today.patientRow")
