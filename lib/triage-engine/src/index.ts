@@ -3,6 +3,7 @@ export * from './adaptive-triage';
 export * from './surgical-dictionary';
 export * from './surgical-catalog';
 export * from './cancer-screening';
+export * from './screening';
 export * from './apcq';
 export * from './formulary';
 export * from './condition-codes';
