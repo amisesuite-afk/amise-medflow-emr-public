@@ -198,12 +198,7 @@
           ],
           "guidelineRefs": [
             "rcog-gtg37b"
-          ],
-          "proposedFix": "Add a pregnancy branch to the DVT protocol investigations: compression duplex; D-dimer not used for diagnosis in pregnancy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.pipeline.decisions: \"d-dimer: high sensitivity (~96%), low specificity - use to rule out only\" (+1 more)"
+          ]
         }
       ]
     },

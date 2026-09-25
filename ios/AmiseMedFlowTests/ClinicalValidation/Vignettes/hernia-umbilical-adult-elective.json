@@ -167,11 +167,7 @@
           ],
           "guidelineRefs": [
             "ehs-ahs-umbilical-2020"
-          ],
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+          ]
         }
       ],
       "mustExclude": [

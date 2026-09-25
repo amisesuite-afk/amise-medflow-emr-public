@@ -176,7 +176,7 @@
           "equals": 1,
           "guidelineRefs": ["tg18-dx-cholangitis"],
           "knownGap": ["ios"],
-          "knownGapNote": "iOS auto-fill: age >75 alone → Grade II."
+          "knownGapNote": "iOS auto-fill never ticks the TG18 diagnostic criteria (cholangitisConfirmed), so the auto-filled form reads 'Charcot's triad not met' until the clinician ticks them; age ≥ 75 is one Grade II criterion (ios-parity-web-last-gaps, the web value), so the grade will be I once the criteria are ticked."
         }
       ]
     },

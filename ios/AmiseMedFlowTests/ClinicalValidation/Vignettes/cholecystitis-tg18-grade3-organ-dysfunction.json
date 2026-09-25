@@ -461,11 +461,7 @@
             "coagulation",
             "clotting"
           ],
-          "note": "Before percutaneous drainage.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 18 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)"
+          "note": "Before percutaneous drainage."
         }
       ],
       "mustExclude": []

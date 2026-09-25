@@ -298,12 +298,7 @@
           "guidelineRefs": [
             "ukka-hyperk-2020"
           ],
-          "note": "K⁺ 5.8 is mild hyperkalaemia (UKKA 2020: insulin-glucose from 6.0 mmol/L); treat the cause and recheck.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "The hyperkalaemia prompt fires from K⁺ >5.5 and adds 'IV Actrapid 10 units + 50ml 50% dextrose' and salbutamol for K⁺ 5.8 (UKKA 2020 mild band; insulin-glucose from 6.0). | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"insulin-glucose: 10 units soluble insulin with 25 g glucose iv; monitor capillary glucose for 1...\"",
-          "proposedFix": "Grade the hyperkalaemia prompt by UKKA 2020 bands: mild 5.5–5.9 → treat the cause and recheck; moderate/severe → insulin-glucose (±calcium with ECG changes)."
+          "note": "K⁺ 5.8 is mild hyperkalaemia (UKKA 2020: insulin-glucose from 6.0 mmol/L); treat the cause and recheck."
         },
         {
           "id": "mgmt-no-appendicectomy",
