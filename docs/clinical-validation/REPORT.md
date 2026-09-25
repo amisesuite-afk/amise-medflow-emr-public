@@ -1,6 +1,6 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-25T18:48:25.673Z.
+Generated 2026-09-25T18:49:11.367Z.
 
 - iOS: 397 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T18:27:58Z).
 - iOS differential engine mode: database (BayesianDiagnosisEngine used DiagnosticDatabase.json).

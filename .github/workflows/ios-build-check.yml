@@ -95,6 +95,7 @@ jobs:
 
       # Pick an available iPhone simulator on the newest installed iOS runtime.
       - name: Test
+        id: test
         working-directory: ios
         run: |
           set -o pipefail
@@ -148,12 +149,15 @@ jobs:
       # A GITHUB_TOKEN push never starts another workflow run, so this cannot loop. Only on a push to
       # a claude/** branch, only when the file changed, and it never fails the job.
       - name: Save clinical validation results to the branch
-        if: always() && github.event_name == 'push'
+        # Only after the test step ran to the end: a cancelled run leaves a partial results file.
+        if: always() && github.event_name == 'push' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
         continue-on-error: true
         env:
           BRANCH: ${{ github.ref_name }}
         run: |
           [ -s ios/clinval-ios.jsonl ] || { echo "No results to save."; exit 0; }
+          results=$(grep -c . ios/clinval-ios.jsonl); vignettes=$(ls ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/*.json | wc -l)
+          if [ "$results" -lt "$vignettes" ]; then echo "Partial results ($results of $vignettes vignettes); not saved."; exit 0; fi
           cp ios/clinval-ios.jsonl "$RUNNER_TEMP/ios-latest.jsonl"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
