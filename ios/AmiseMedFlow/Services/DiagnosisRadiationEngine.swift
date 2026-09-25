@@ -143,7 +143,7 @@ enum DiagnosisRadiationEngine {
         guard let dx = workingDiagnosis, !dx.isEmpty else { return nil }
         let dxL = dx.lowercased()
         guard var base = allEntries.first(where: { entry in
-            entry.keywords.contains { dxL.contains($0) }
+            entry.keywords.contains { DiagnosisRadiationEngine.keywordMatches($0, in: dxL) }
         })?.radiation else { return nil }
         // Inject referral suggestions from the lookup table (kept separate to avoid
         // repeating them in every Entry init).
@@ -165,6 +165,36 @@ enum DiagnosisRadiationEngine {
             )
         }
         return base
+    }
+
+    // MARK: Keyword matching
+
+    /// True when `keyword` occurs in `text` starting at a word boundary. Keywords shorter than five
+    /// characters ("mi", "pe", "tb", "af", "aki", "acs") must also end at a word boundary; longer
+    /// ones may run on ("haemorrhoid" finds "haemorrhoids"). Pass both strings lowercased.
+    ///
+    /// A plain substring test attached the ACS plan to "abdominal" and "ischaemia" ("mi"), the PE
+    /// plan to "suspected" and "penetrating" ("pe"), TB to "TBSA", AKI to "taking" and AF to
+    /// "after" (clinical validation, soft-tissue/trauma/burns findings).
+    static func keywordMatches(_ keyword: String, in text: String) -> Bool {
+        guard !keyword.isEmpty else { return false }
+        let needsEndBoundary = keyword.count < 5
+        var searchStart = text.startIndex
+        while searchStart < text.endIndex,
+              let found = text.range(of: keyword, range: searchStart..<text.endIndex) {
+            let startsWord = found.lowerBound == text.startIndex
+                || !isWordCharacter(text[text.index(before: found.lowerBound)])
+            let endsWord = !needsEndBoundary
+                || found.upperBound == text.endIndex
+                || !isWordCharacter(text[found.upperBound])
+            if startsWord && endsWord { return true }
+            searchStart = text.index(after: found.lowerBound)
+        }
+        return false
+    }
+
+    private static func isWordCharacter(_ c: Character) -> Bool {
+        c.isLetter || c.isNumber
     }
 
     // MARK: - Referral lookup table
