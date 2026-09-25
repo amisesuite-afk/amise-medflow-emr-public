@@ -18,6 +18,7 @@
 //   4. Pipeline          ClinicalPipelineOrchestrator.runNow (Diagnosis tab: Clinical Actions prefix 6,
 //                        EVPI prefix 5; decisions feed the actions)
 //   5. Diagnosis tab     clinician confirms the diagnosis (vignette confirmedDiagnosis)
+//                        SuspectedCancerSection: SuspectedCancerScreening.prompt(for:) (NG12 card, step 5c)
 //   6. Plan tab          DiagnosisRadiationEngine.radiate (investigations, plan template, referrals)
 //   7. Scores            DiagnosisScoreMapper.recommendations; ClinicalScoresView.autoPopulate
 //                        (PatientScoreAutoPopulator.* inside ScoreAutoPopulateContext) = "autofill";
@@ -354,6 +355,13 @@ enum ClinValIOSRunner {
             ClinValDxItem(rank: $0.offset + 1, name: $0.element.name, id: nil, icd10: nil, score: Double($0.element.probability))
         }
         if triage.suggestedAcuity < p.acuity { p.acuity = triage.suggestedAcuity }
+
+        // 5c. Diagnosis tab: NICE NG12 suspected-cancer card (SuspectedCancerSection, top of the list).
+        if let cancer = SuspectedCancerScreening.prompt(for: p) {
+            out.redFlags.append(.init(source: "ios.ng12", text: "\(cancer.title) — \(cancer.finding). \(cancer.rationale)"))
+            for inv in cancer.investigations { out.investigations.append(.init(source: "ios.ng12", text: inv)) }
+            for line in cancer.planLines { out.management.append(.init(source: "ios.ng12.plan", text: line)) }
+        }
 
         // 6. Plan tab: diagnosis radiation.
         // ConsultationView+PlanTab.radiationResult: the card with the patient safety filter.
