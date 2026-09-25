@@ -70,7 +70,7 @@ export function validateVignette(v: Vignette, file: string, allIds: Set<string>)
       }
     }
     if (['mustRankTopK', 'mustNotMiss', 'mustAlarm', 'mustNotAlarm', 'redFlags', 'investigationInclude',
-      'investigationExclude', 'managementInclude', 'managementExclude'].includes(kind) && !Array.isArray(e.match)) {
+      'investigationExclude', 'managementInclude', 'managementExclude', 'reasoningInclude', 'reasoningExclude'].includes(kind) && !Array.isArray(e.match)) {
       err(`${where}: match is required`);
     }
     if (kind === 'mustRankTopK' && typeof e.k !== 'number') err(`${where}: k is required`);

@@ -75,6 +75,12 @@ export interface Expected {
   management?: { mustInclude?: TextExpectation[]; mustExclude?: TextExpectation[] };
   pathway?: EqualsExpectation;
   dxVariant?: EqualsExpectation;
+  /**
+   * Diagnostic reasoning layer (web.reasoning / ios.reasoning): alerts, zebras, discriminators,
+   * time-out, for / against / missing / doesn't fit, longitudinal lines. Filter with `sources`
+   * (e.g. ["web.reasoning.alert", "ios.reasoning.alert"]).
+   */
+  reasoning?: { mustInclude?: TextExpectation[]; mustExclude?: TextExpectation[] };
 }
 
 export interface VitalsInput {
@@ -209,6 +215,12 @@ export interface EngineOutputs {
   pathway: { value: string; reasons: string[] } | null;
   dxVariant: { value: string | null; group: string | null } | null;
   /**
+   * Diagnostic reasoning lines, source '<platform>.reasoning.<part>' (part: alert, zebra,
+   * discriminator, timeout, for, against, missing, doesntfit, longitudinal). Absent in results
+   * produced before the reasoning layer existed (graded n/a).
+   */
+  reasoning?: SourcedText[];
+  /**
    * Engine mode and content versions the run used, e.g. iOS
    * { bayesDatabase: 'fallback', databaseVersion: '…', databaseError: '…' }. Differential results
    * are only comparable between runs with the same mode.
@@ -221,7 +233,8 @@ export interface EngineOutputs {
 export type ExpectationKind =
   | 'mustRankTopK' | 'mustNotMiss' | 'emergencyLevel' | 'mustAlarm' | 'mustNotAlarm' | 'redFlags'
   | 'scoreRecommended' | 'scoreValue' | 'investigationInclude' | 'investigationExclude'
-  | 'managementInclude' | 'managementExclude' | 'pathway' | 'dxVariant';
+  | 'managementInclude' | 'managementExclude' | 'pathway' | 'dxVariant'
+  | 'reasoningInclude' | 'reasoningExclude';
 
 export type ExpectationStatus = 'pass' | 'fail' | 'na';
 

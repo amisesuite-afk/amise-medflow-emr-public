@@ -19,6 +19,9 @@
  *                       (SuggestedInvestigationsPanel → plan-builder.ts seedInvestigations: the
  *                       confirmed diagnosis, else the PANE leader only, adapted to the patient)
  *   Calculators         ScalesTab (clinical-scales.ts) and ClinicalScoresPanel (clinical-scores.ts)
+ *   Reasoning           AssessmentTab DiagnosticReasoningPanel: buildDiagnosticReasoning over the same
+ *                       PANE state, the confirmed diagnosis, the NEWS2 series of the vignette's
+ *                       vitals (oldest first) and the record text (lib/diagnostic-reasoning.ts)
  *
  * The dashboard code itself is not modified or wrapped; if a call site changes, update the
  * mirror here (the vitest suite checks the signatures still line up).
@@ -52,6 +55,9 @@ import type { Tg18Record } from '../../../artifacts/dashboard/src/lib/tg18-autof
 import {
   alvaradoScore, interpretAlvarado, interpretTg18Cholangitis, tg18CholangitisGrade,
 } from '../../../artifacts/dashboard/src/lib/clinical-scales';
+import {
+  buildDiagnosticReasoning, news2Series, numericLabs, reasoningHarnessLines, reasoningRecordText,
+} from '../../../artifacts/dashboard/src/lib/diagnostic-reasoning';
 import type { DxItem, EngineOutputs, Level, ScoreForm, SourcedText, Vignette } from './types';
 
 /** CDS scaleKey → canonical score key. Unlisted keys are reported as 'web:<key>'. */
@@ -517,13 +523,37 @@ export function runWeb(v: Vignette): EngineOutputs {
     if (!['alvarado', 'tg18-cholangitis', 'tg18-cholecystitis'].includes(key)) notes.push(`no web calculator for score form '${key}'`);
   }
 
+  // ── Diagnostic reasoning (AssessmentTab DiagnosticReasoningPanel) ───────────
+  const chrono = [...(inp.vitals ?? [])].sort((a, b) => (b.minutesAgo ?? 0) - (a.minutesAgo ?? 0));
+  const results = investigationResults(v);
+  const reasoning = buildDiagnosticReasoning({
+    state: pane,
+    diseases,
+    working: dx ? { diseaseId: dx.paneDiseaseId ?? null, icdCode: dx.icd10 ?? null, label: dx.name } : null,
+    news2Series: news2Series(chrono.map(x => ({
+      respiratoryRate: x.respiratoryRate ?? null, spo2: x.spo2 ?? null, onOxygen: x.onSupplementalO2 ?? null,
+      systolicBP: x.systolicBp ?? null, heartRate: x.heartRate ?? null, temperatureCelsius: x.temperatureC ?? null,
+      avpu: x.avpu ?? null,
+    }))),
+    recordText: reasoningRecordText({
+      chiefComplaint: inp.chiefComplaint,
+      narrative: [...(paneContextFromConsultation(consultationSnapshot(v)).narrative ?? []), inp.socialHistory ?? ''].filter(Boolean),
+      symptoms, comorbidities: inp.comorbidities ?? [], medications: (inp.medications ?? []).map(m => m.drug),
+      surgicalHistory: inp.surgicalHistory ?? [], investigationResults: results, supplements: [],
+    }),
+    labs: numericLabs(results),
+    longitudinal: null,
+    currentComplaint: inp.chiefComplaint,
+  });
+  const reasoningLines: SourcedText[] = reasoningHarnessLines(reasoning, 'web.reasoning');
+
   // ── Pathway registry (usePathway / matchPathways) — recorded for information ─
   const pathways = matchPathways({ symptoms, freeText: [inp.chiefComplaint, inp.hpi].join('. ') });
   if (pathways.length) notes.push(`matchPathways: ${pathways.slice(0, 3).map(p => `${p.pathway.name} (${p.score})`).join(', ')}`);
 
   return {
     differentials, alarms, redFlags, emergencyLevel, recommendedScores, scoreValues,
-    investigations, management, pathway: null, dxVariant,
+    investigations, management, pathway: null, dxVariant, reasoning: reasoningLines,
     engineInfo: {
       paneEngine: `pane-engine (${DISEASES.length} diseases, ${FEATURES.length} features)`,
       triageRulesVersion: RULES_VERSION,

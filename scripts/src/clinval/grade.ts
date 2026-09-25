@@ -117,7 +117,10 @@ function gradeDx(exp: DxExpectation, kind: ExpectationKind, out: EngineOutputs, 
   };
 }
 
-function textItems(kind: 'alarms' | 'redFlags' | 'investigations' | 'management', out: EngineOutputs): SourcedText[] {
+type TextKind = 'alarms' | 'redFlags' | 'investigations' | 'management' | 'reasoning';
+
+function textItems(kind: TextKind, out: EngineOutputs): SourcedText[] {
+  if (kind === 'reasoning') return out.reasoning ?? [];
   if (kind === 'alarms') return out.alarms.map(a => ({ source: a.source, text: `${a.title} — ${a.detail}` }));
   if (kind === 'redFlags') {
     return [...out.redFlags, ...out.alarms.map(a => ({ source: a.source, text: `${a.title} — ${a.detail}` }))];
@@ -127,15 +130,19 @@ function textItems(kind: 'alarms' | 'redFlags' | 'investigations' | 'management'
 
 function gradeText(
   exp: TextExpectation, mode: 'include' | 'exclude',
-  kind: 'alarms' | 'redFlags' | 'investigations' | 'management',
+  kind: TextKind,
   out: EngineOutputs, platform: Platform,
 ): Verdict {
   if (exp.sources && exp.sources.length && !exp.sources.some(s => s.startsWith(`${platform}.`))) {
     return { status: 'na', detail: `sources ${exp.sources.join(', ')} are not ${platform} sources` };
   }
+  if (kind === 'reasoning' && out.reasoning === undefined) {
+    return { status: 'na', detail: `no diagnostic-reasoning output on ${platform}` };
+  }
   const items = textItems(kind, out).filter(i => sourceAllowed(i.source, exp.sources));
   const hits = items.filter(i => counts(i.text, exp.match, exp.unless));
-  const label = kind === 'alarms' ? 'alarm' : kind === 'redFlags' ? 'red flag' : kind === 'investigations' ? 'investigation' : 'management item';
+  const label = kind === 'alarms' ? 'alarm' : kind === 'redFlags' ? 'red flag' : kind === 'investigations' ? 'investigation'
+    : kind === 'reasoning' ? 'reasoning line' : 'management item';
   if (mode === 'include') {
     if (hits.length) return { status: 'pass', detail: `${label} found in ${hits[0].source}: "${snippet(hits[0].text, exp.match)}"` };
     return {
@@ -223,6 +230,8 @@ export function listExpectations(v: Vignette): [ExpectationKind, ExpectationBase
   for (const x of e.management?.mustExclude ?? []) out.push(['managementExclude', x]);
   if (e.pathway) out.push(['pathway', e.pathway]);
   if (e.dxVariant) out.push(['dxVariant', e.dxVariant]);
+  for (const x of e.reasoning?.mustInclude ?? []) out.push(['reasoningInclude', x]);
+  for (const x of e.reasoning?.mustExclude ?? []) out.push(['reasoningExclude', x]);
   return out;
 }
 
@@ -278,6 +287,8 @@ export function gradeVignette(v: Vignette, out: EngineOutputs, platform: Platfor
           : { status: out.pathway.value === want ? 'pass' : 'fail', detail: `recommended ${out.pathway.value} (${out.pathway.reasons.join('; ')}); expected ${want}` };
         break;
       }
+      case 'reasoningInclude': verdict = gradeText(exp as TextExpectation, 'include', 'reasoning', out, platform); break;
+      case 'reasoningExclude': verdict = gradeText(exp as TextExpectation, 'exclude', 'reasoning', out, platform); break;
       case 'dxVariant': {
         const want = (exp as EqualsExpectation).equals;
         verdict = !out.dxVariant
