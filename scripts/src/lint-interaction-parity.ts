@@ -20,9 +20,15 @@
  *  3. Grade: the same pair has a different severity on each platform, unless it is on
  *     GRADE_ALLOWLIST (reported, not failed). An allow-list entry that no longer matches a real
  *     difference also fails, so the list cannot go stale.
+ *  4. Herbal products and supplements (supplement-catalogue.ts / SupplementCatalogue.swift):
+ *     every catalogue item and field, the shared wording (patient question, disclosure
+ *     rationale, surgeon-approved herbal pre-op text, prompt texts, trigger words) and the
+ *     catalogue version must be identical; every catalogue `term` must exist on both platforms;
+ *     and every rule naming a supplement term must exist on both platforms with the SAME effect
+ *     and action (iOS clinicalEffect / management).
  *
- * Wording is not compared: the original iOS rules have their own (longer) wording. The tests
- * on each platform pin the wording of the rules ported for parity.
+ * Wording of the drug-only rules is not compared: the original iOS rules have their own (longer)
+ * wording. The tests on each platform pin the wording of the rules ported for parity.
  *
  * As a parser self-check, the TS side is also imported and compared with what was parsed.
  */
@@ -40,6 +46,8 @@ const FILES = {
   webTerms: 'artifacts/dashboard/src/lib/drug-classes.ts',
   iosRules: 'ios/AmiseMedFlow/Services/DrugInteractionService.swift',
   iosTerms: 'ios/AmiseMedFlow/Services/DrugClasses.swift',
+  webSupplements: 'artifacts/dashboard/src/lib/supplement-catalogue.ts',
+  iosSupplements: 'ios/AmiseMedFlow/Services/SupplementCatalogue.swift',
 };
 
 /** Known grade differences awaiting a clinical decision. Reported, never failed. */
@@ -246,7 +254,7 @@ class Source {
 // ── Normalised model ─────────────────────────────────────────────────────────────
 
 interface Term { kind: 'class' | 'drug'; members: string[] }
-interface Rule { a: string; b: string; severity: string; effect: string }
+interface Rule { a: string; b: string; severity: string; effect: string; action: string }
 interface Platform { name: 'web' | 'iOS'; terms: Map<string, Term>; rules: Rule[] }
 
 const str = (v: Val | undefined, what: string): string => {
@@ -286,7 +294,10 @@ function parseWeb(): Platform {
     rules: arr(rules.value('INTERACTIONS'), 'INTERACTIONS').map((r, i) => {
       const o = obj(r, `INTERACTIONS[${i}]`);
       const [a, b] = arr(o.get('drugs'), `INTERACTIONS[${i}].drugs`).map(d => str(d, 'drug').toLowerCase());
-      return { a, b, severity: str(o.get('severity'), 'severity').toLowerCase(), effect: str(o.get('effect'), 'effect') };
+      return {
+        a, b, severity: str(o.get('severity'), 'severity').toLowerCase(), effect: str(o.get('effect'), 'effect'),
+        action: str(o.get('action'), 'action'),
+      };
     }),
   };
 }
@@ -310,6 +321,7 @@ function parseIOS(): Platform {
         b: str(o.get('drug2Pattern'), 'drug2Pattern').toLowerCase(),
         severity: sev.v.toLowerCase(),
         effect: str(o.get('clinicalEffect'), 'clinicalEffect'),
+        action: str(o.get('management'), 'management'),
       };
     }),
   };
@@ -335,6 +347,63 @@ function coveringRule(from: Platform, a: string, b: string, other: Platform): Ru
     if (r.a === r.b && sameDrug) return false;   // QT + QT needs two different drugs
     return (subset(ga, gc) && subset(gb, gd)) || (subset(ga, gd) && subset(gb, gc));
   });
+}
+
+/** Plain JSON-like value of a parsed literal (strings, arrays, objects / call arguments). */
+function plain(v: Val | undefined): unknown {
+  if (!v) return undefined;
+  if (v.k === 'str') return v.v;
+  if (v.k === 'arr') return v.v.map(plain);
+  if (v.k === 'obj') return Object.fromEntries([...v.v].map(([k, x]) => [k, plain(x)]));
+  if (v.k === 'enum') return `.${v.v}`;
+  return undefined;
+}
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+
+/** Compare the supplement catalogues; returns the lowercased interaction terms they name. */
+function checkSupplements(web: Platform, ios: Platform, errors: string[]): Set<string> {
+  const w = new Source(FILES.webSupplements);
+  const i = new Source(FILES.iosSupplements);
+  const scalars: [string, string][] = [
+    ['SUPPLEMENT_CATALOGUE_VERSION', 'catalogueVersion'],
+    ['SUPPLEMENT_SECTION_TITLE', 'sectionTitle'],
+    ['SUPPLEMENT_PATIENT_QUESTION', 'patientQuestion'],
+    ['SUPPLEMENT_DISCLOSURE_RATIONALE', 'disclosureRationale'],
+    ['HERBAL_PREOP_PATIENT_TEXT', 'herbalPreOpPatientText'],
+  ];
+  for (const [wn, iname] of scalars) {
+    const a = str(w.value(wn), wn);
+    const b = str(i.value(iname), iname);
+    if (a !== b) errors.push(`supplements: ${wn} (web) and ${iname} (iOS) differ\n      web: ${a}\n      iOS: ${b}`);
+  }
+  const itemsOf = (v: unknown) => new Map((v as Record<string, string>[]).map(x => [x.id, x]));
+  const wi = itemsOf(plain(w.value('SUPPLEMENT_ITEMS')));
+  const ii = itemsOf(plain(i.value('items')));
+  const FIELDS = ['label', 'term', 'names', 'concern', 'stopTime', 'harms', 'evidence', 'source'];
+  const terms = new Set<string>();
+  for (const [id, x] of wi) {
+    const y = ii.get(id);
+    if (!y) { errors.push(`supplements: item "${id}" is on web only`); continue; }
+    for (const f of FIELDS) {
+      if (x[f] !== y[f]) errors.push(`supplements: item "${id}" field ${f} differs\n      web: ${x[f]}\n      iOS: ${y[f]}`);
+    }
+    if (x.term) {
+      terms.add(x.term.toLowerCase());
+      if (!web.terms.has(x.term.toLowerCase()) || !ios.terms.has(x.term.toLowerCase())) {
+        errors.push(`supplements: item "${id}" names interaction term "${x.term}", which is not defined on both platforms`);
+      }
+    }
+  }
+  for (const id of ii.keys()) if (!wi.has(id)) errors.push(`supplements: item "${id}" is on iOS only`);
+  if (wi.size === 0) errors.push('supplements: parser found no catalogue items');
+  const wp = plain(w.value('SUPPLEMENT_PROMPTS'));
+  const ip = plain(i.value('prompts'));
+  if (!same(wp, ip)) errors.push('supplements: prompt texts differ (SUPPLEMENT_PROMPTS vs SupplementCatalogue.prompts)');
+  const sortKeys = (o: unknown) => Object.fromEntries(Object.entries(o as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)));
+  if (!same(sortKeys(plain(w.value('SUPPLEMENT_TRIGGER_TERMS'))), sortKeys(plain(i.value('triggerTerms'))))) {
+    errors.push('supplements: trigger words differ (SUPPLEMENT_TRIGGER_TERMS vs SupplementCatalogue.triggerTerms)');
+  }
+  return terms;
 }
 
 function main(): number {
@@ -429,6 +498,22 @@ function main(): number {
       errors.push(`GRADE_ALLOWLIST entry ${pairKey(...g.pair)} (web ${g.web}, iOS ${g.ios}) no longer matches — remove it`);
     }
   });
+
+  // 4. Herbal products and supplements.
+  const supplementTerms = checkSupplements(web, ios, errors);
+  const pairs = (p: Platform) => new Map(p.rules.map(r => [pairKey(r.a, r.b), r]));
+  const webByPair = pairs(web);
+  const iosByPair = pairs(ios);
+  for (const [key, w] of webByPair) {
+    if (!supplementTerms.has(w.a) && !supplementTerms.has(w.b)) continue;
+    const i = iosByPair.get(key);
+    if (!i) { errors.push(`supplement rule ${key} is on web only`); continue; }
+    if (w.effect !== i.effect) errors.push(`supplement rule ${key}: effect differs\n      web: ${w.effect}\n      iOS: ${i.effect}`);
+    if (w.action !== i.action) errors.push(`supplement rule ${key}: action differs\n      web: ${w.action}\n      iOS: ${i.action}`);
+  }
+  for (const [key, i] of iosByPair) {
+    if ((supplementTerms.has(i.a) || supplementTerms.has(i.b)) && !webByPair.has(key)) errors.push(`supplement rule ${key} is on iOS only`);
+  }
 
   // Report.
   console.log(`Interaction parity: web ${web.rules.length} rules / ${web.terms.size} terms, ` +
