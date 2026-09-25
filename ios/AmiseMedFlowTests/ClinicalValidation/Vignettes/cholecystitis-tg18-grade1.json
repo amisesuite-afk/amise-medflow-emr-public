@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "id": "cholecystitis-tg18-grade1",
+  "condition": "Acute calculous cholecystitis",
+  "category": "hpb",
+  "permutationOf": null,
+  "permutationLabel": "TG18 Grade I (mild) — base case",
+  "summary": "48-year-old woman, 30 h of constant RUQ pain after a fatty meal, fever 38.2 °C, Murphy's sign, WBC 13.1, CRP 86, ultrasound shows gallstones with wall thickening and pericholecystic fluid. No Grade II/III criteria.",
+  "tags": ["biliary", "surgical"],
+  "inputs": {
+    "patient": {
+      "ageYears": 48,
+      "sex": "female",
+      "pregnancy": { "status": "not-pregnant" },
+      "heightCm": 162,
+      "weightKg": 84
+    },
+    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "urgent" },
+    "chiefComplaint": "Right upper quadrant pain",
+    "hpi": "30 hours of constant right upper quadrant pain that began after a fatty meal, radiating to the right shoulder tip. Nausea and vomiting twice. Previous brief similar episodes over 6 months; gallstones on a scan last year. Feels feverish. No jaundice, no dark urine, no pale stools. No rigors.",
+    "socrates": {
+      "onset": ["Yesterday"],
+      "site": ["RUQ"],
+      "character": ["Aching", "Sharp"],
+      "radiation": ["Right shoulder"],
+      "associations": ["Nausea", "Vomiting", "Fever"],
+      "timing": ["Constant"],
+      "exacerbating": ["Fatty food", "Deep breathing", "Movement"],
+      "relieving": ["Nothing"],
+      "severity": ["Severe (7–9/10)"]
+    },
+    "symptoms": ["right upper quadrant pain", "nausea", "vomiting", "fever"],
+    "negatives": ["jaundice", "dark urine", "pale stools", "rigors"],
+    "exam": {
+      "general": "Alert. Temperature 38.2°C, pulse 98/min, BP 134/84. Not jaundiced.",
+      "abdomen": "Tender in the right upper quadrant with a positive Murphy's sign and localised guarding; no palpable mass. No generalised peritonism. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 134,
+        "diastolicBp": 84,
+        "respiratoryRate": 18,
+        "temperatureC": 38.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      { "analyte": "wbc", "name": "WBC", "value": 13.1, "unit": "×10⁹/L", "minutesAgo": 40 },
+      { "analyte": "crp", "name": "CRP", "value": 86, "unit": "mg/L", "minutesAgo": 40 },
+      { "analyte": "bilirubin", "name": "Bilirubin", "value": 16, "unit": "µmol/L", "minutesAgo": 40 },
+      { "analyte": "alp", "name": "ALP", "value": 110, "unit": "U/L", "minutesAgo": 40 },
+      { "analyte": "alt", "name": "ALT", "value": 38, "unit": "U/L", "minutesAgo": 40 },
+      { "analyte": "lipase", "name": "Lipase", "value": 38, "unit": "U/L", "minutesAgo": 40 },
+      { "analyte": "creatinine", "name": "Creatinine", "value": 64, "unit": "µmol/L", "minutesAgo": 40 }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Distended gallbladder with multiple gallstones and a stone impacted in the neck. Wall thickened to 5 mm with a thin rim of pericholecystic fluid. Sonographic Murphy's sign positive. CBD 5 mm, not dilated.",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": ["Obesity"],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Office manager. Non-smoker. Occasional alcohol.",
+    "scoreForms": {
+      "tg18-cholecystitis": {
+        "localSigns": true,
+        "systemicSigns": true,
+        "imagingCharacteristic": true,
+        "wbcAbove18": false,
+        "palpableTenderRUQMass": false,
+        "durationOver72h": false,
+        "markedLocalInflammation": false,
+        "organDysfunction": []
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute calculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute calculous cholecystitis, Tokyo (TG18) Grade I (mild). No organ dysfunction, WCC below 18, symptoms under 72 h, no palpable mass."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": ["abdominal pain", "right upper quadrant pain", "nausea", "vomiting", "fever"],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "1–3 days",
+            "Constant",
+            "Sharp",
+            "Severe (7–9)",
+            "Shoulder tip",
+            "Nausea",
+            "Vomiting",
+            "Fever",
+            "Continuous",
+            "Fatty meal",
+            "Deep breathing"
+          ]
+        },
+        "examFindings": { "abdomen": ["Tender RUQ", "Murphy's sign +", "Guarding"] },
+        "durationDays": 1,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholecystitis-top3",
+          "severity": "critical",
+          "match": ["acute cholecystitis", "calculous cholecystitis", "re:^cholecystitis"],
+          "unless": ["acalculous"],
+          "k": 3,
+          "guidelineRefs": ["tg18-dx-cholecystitis"],
+          "note": "TG18 definite diagnosis (local + systemic + imaging signs).",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the gallstone ultrasound text is appended to the CC for routing and selects the biliaryColic pool, which has no built-in list (`?? []`), so the differential is empty."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-cbd-stone-or-cholangitis",
+          "severity": "quality",
+          "match": ["choledocholithiasis", "cbd stone", "common bile duct", "cholangitis"],
+          "note": "Concomitant CBD stones must be considered (normal LFTs and CBD make it unlikely here — quality only).",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the gallstone ultrasound text is appended to the CC for routing and selects the biliaryColic pool, which has no built-in list (`?? []`), so the differential is empty."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": ["tg18-mgmt-cholecystitis"],
+        "note": "Acute cholecystitis needs admission and surgical assessment the same day.",
+        "knownGap": ["ios"],
+        "knownGapNote": "iOS ClinicalPathwayEngine: 'Right upper quadrant pain' selects the Biliary pathway but leaves acuity routine."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-sepsis-alarm-grade1",
+          "severity": "quality",
+          "match": ["sepsis"],
+          "unverified": ["ios"],
+          "note": "No hypotension, tachypnoea or organ dysfunction: a sepsis alarm here is noise (alert fatigue)."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-tg18-cholecystitis",
+          "severity": "quality",
+          "score": "tg18-cholecystitis",
+          "guidelineRefs": ["tg18-dx-cholecystitis"],
+          "note": "TG18 severity grading drives the management flowchart.",
+          "knownGap": ["web"],
+          "knownGapNote": "Web CDS has a TG18 cholangitis rule but none for cholecystitis."
+        }
+      ],
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "critical",
+          "score": "tg18-cholecystitis",
+          "mode": "calculator",
+          "equals": 1,
+          "guidelineRefs": ["tg18-dx-cholecystitis"],
+          "note": "Definite acute cholecystitis without any Grade II criterion (WBC >18, palpable tender RUQ mass, >72 h, marked local inflammation) or organ dysfunction = Grade I."
+        },
+        {
+          "id": "score-tg18-autofill",
+          "severity": "quality",
+          "score": "tg18-cholecystitis",
+          "mode": "autofill",
+          "equals": 1,
+          "note": "The record holds Murphy's sign, fever, WBC/CRP and characteristic ultrasound; auto-fill should reach Grade I rather than 'criteria not met'.",
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "iOS auto-fill sets only WBC >18 (Grade II criterion) and never the local-signs field, so it reads \"criteria not met\"; web clinical-scores needs manual Murphy/imaging ticks."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ultrasound",
+          "severity": "quality",
+          "match": ["ultrasound", "uss"],
+          "guidelineRefs": ["tg18-dx-cholecystitis"]
+        },
+        {
+          "id": "inv-lfts",
+          "severity": "quality",
+          "match": ["lft", "liver function", "bilirubin"],
+          "guidelineRefs": ["tg18-mgmt-cholecystitis"],
+          "note": "Screen for choledocholithiasis before cholecystectomy."
+        },
+        { "id": "inv-fbc-crp", "severity": "quality", "match": ["fbc", "crp"] }
+      ],
+      "mustExclude": []
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-cholecystectomy",
+          "severity": "critical",
+          "match": ["laparoscopic cholecystectomy", "lap chole", "re:lap(\\.|aroscopic)? cholecystectomy"],
+          "guidelineRefs": ["tg18-mgmt-cholecystitis"],
+          "note": "TG18 Grade I: early laparoscopic cholecystectomy when fit (CCI ≤5, ASA ≤2)."
+        },
+        {
+          "id": "mgmt-early-timing",
+          "severity": "quality",
+          "match": [
+            "re:(early|within 72|same admission|index admission)[^.;\\n]{0,60}cholecystectomy",
+            "re:cholecystectomy[^.;\\n]{0,60}(early|within 72|same admission|index admission)"
+          ],
+          "guidelineRefs": ["tg18-mgmt-cholecystitis"]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": ["antibiotic", "co-amoxiclav", "amoxicillin-clavulanate", "cefuroxime"],
+          "guidelineRefs": ["tg18-antimicrobial"]
+        },
+        { "id": "mgmt-analgesia", "severity": "quality", "match": ["analgesi", "morphine", "paracetamol"] }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-drainage-first-line-grade1",
+          "severity": "quality",
+          "match": ["cholecystostomy", "gallbladder drainage", "ptgbd"],
+          "unless": ["if high", "high surgical risk", "unfit", "grade iii", "not fit", "if not responding", "fails"],
+          "unverified": ["ios"],
+          "note": "Gallbladder drainage is not first-line for Grade I in a fit patient."
+        }
+      ]
+    },
+    "pathway": { "id": "pathway-first-visit", "severity": "quality", "equals": "firstVisit" },
+    "dxVariant": {
+      "id": "variant-grade1",
+      "severity": "quality",
+      "equals": "cholecystitis_grade1",
+      "guidelineRefs": ["tg18-mgmt-cholecystitis"]
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis",
+      "year": 2018,
+      "section": "TG18 diagnostic criteria (A local, B systemic, C imaging) and severity grading (Grade III organ dysfunction; Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation; Grade I otherwise)",
+      "citation": "Yokoe M, Hata J, Takada T, et al. Tokyo Guidelines 2018: diagnostic criteria and severity grading of acute cholecystitis. J Hepatobiliary Pancreat Sci. 2018;25:41–54.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis",
+      "year": 2018,
+      "section": "Grade I: early laparoscopic cholecystectomy if CCI ≤5 and ASA ≤2",
+      "citation": "Okamoto K, Suzuki K, Takada T, et al. Tokyo Guidelines 2018: flowchart for the management of acute cholecystitis. J Hepatobiliary Pancreat Sci. 2018;25:55–72.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis",
+      "year": 2018,
+      "section": "Antimicrobial selection by severity; blood cultures for Grade II/III",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. Tokyo Guidelines 2018: antimicrobial therapy for acute cholangitis and cholecystitis. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for acute calculous cholecystitis. Checks recognition, TG18 Grade I grading (calculator and auto-fill), early laparoscopic cholecystectomy and that drainage is not offered first-line. Pertinent negatives ('no jaundice', 'no rigors') are written as clinicians write them.",
+  "authoring": {
+    "author": "Claude (phase 0 seed)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

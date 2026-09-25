@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "id": "cholangitis-tg18-grade1-single-criterion",
+  "condition": "Acute cholangitis",
+  "category": "hpb",
+  "permutationOf": "cholangitis-tg18-charcot-sepsis",
+  "permutationLabel": "TG18 Grade I (mild) — only one Grade II criterion (age ≥75)",
+  "summary": "78-year-old man with 3 days of intermittent RUQ pain, fever 38.4 °C and jaundice; WBC 11.2, bilirubin 58 µmol/L, albumin 36, CBD 9 mm. One Grade II criterion (age) only, no organ dysfunction: TG18 Grade I.",
+  "tags": ["biliary", "elderly"],
+  "inputs": {
+    "patient": {
+      "ageYears": 78,
+      "sex": "male",
+      "pregnancy": { "status": "not-applicable" },
+      "heightCm": 170,
+      "weightKg": 72
+    },
+    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "urgent" },
+    "chiefComplaint": "Jaundice and fever",
+    "hpi": "Three days of intermittent right upper quadrant pain, fever and yellow eyes. Dark urine. Eating and drinking. No confusion.",
+    "socrates": {
+      "onset": ["2–3 days ago"],
+      "site": ["RUQ"],
+      "character": ["Colicky"],
+      "radiation": ["No radiation"],
+      "associations": ["Fever", "Jaundice"],
+      "timing": ["Intermittent"],
+      "exacerbating": ["Eating"],
+      "relieving": ["Analgesics"],
+      "severity": ["Moderate (4–6/10)"]
+    },
+    "symptoms": ["right upper quadrant pain", "fever", "jaundice", "dark urine"],
+    "negatives": ["confusion"],
+    "exam": {
+      "general": "Mildly jaundiced, alert and orientated. Temperature 38.4°C, pulse 92/min, BP 138/80.",
+      "abdomen": "Mild right upper quadrant tenderness, no guarding, no palpable mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 92,
+        "systolicBp": 138,
+        "diastolicBp": 80,
+        "respiratoryRate": 18,
+        "temperatureC": 38.4,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      { "analyte": "wbc", "name": "WBC", "value": 11.2, "unit": "×10⁹/L", "minutesAgo": 30 },
+      { "analyte": "crp", "name": "CRP", "value": 64, "unit": "mg/L", "minutesAgo": 30 },
+      { "analyte": "bilirubin", "name": "Bilirubin", "value": 58, "unit": "µmol/L", "minutesAgo": 30 },
+      { "analyte": "alp", "name": "ALP", "value": 320, "unit": "U/L", "minutesAgo": 30 },
+      { "analyte": "alt", "name": "ALT", "value": 140, "unit": "U/L", "minutesAgo": 30 },
+      { "analyte": "albumin", "name": "Albumin", "value": 36, "unit": "g/L", "minutesAgo": 30 },
+      { "analyte": "creatinine", "name": "Creatinine", "value": 98, "unit": "µmol/L", "minutesAgo": 30 },
+      { "analyte": "platelets", "name": "Platelets", "value": 210, "unit": "×10⁹/L", "minutesAgo": 30 },
+      { "analyte": "inr", "name": "INR", "value": 1.1, "unit": "", "minutesAgo": 30 }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Gallstones. CBD dilated to 9 mm; distal duct obscured by bowel gas. No liver lesion.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": ["Hypertension", "Benign prostatic hyperplasia"],
+    "surgicalHistory": [],
+    "medications": [
+      { "drug": "Amlodipine", "dose": "5 mg", "frequency": "OD", "indication": "Hypertension" },
+      { "drug": "Tamsulosin", "dose": "400 micrograms", "frequency": "OD", "indication": "BPH" }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired farmer. Lives with wife. Non-smoker.",
+    "scoreForms": {
+      "tg18-cholangitis": {
+        "systemicInflammation": true,
+        "cholestasis": true,
+        "imaging": true,
+        "wbcAbnormal": false,
+        "feverAtLeast39": false,
+        "ageAtLeast75": true,
+        "bilirubinAtLeast5mgdl": false,
+        "albuminBelow07LLN": false,
+        "organDysfunction": []
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute cholangitis",
+      "icd10": "K83.09",
+      "paneDiseaseId": "cholangitis",
+      "assessmentText": "Mild acute cholangitis secondary to presumed choledocholithiasis — TG18 Grade I (one Grade II criterion only: age ≥75). No organ dysfunction."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": ["jaundice", "right upper quadrant pain", "fever", "dark urine"],
+        "symptomDetails": { "jaundice": ["Fever", "Dark urine", "Abdominal pain", "Known gallstones"] },
+        "examFindings": { "abdomen": ["Tender RUQ"], "general": ["Jaundiced"] },
+        "durationDays": 3,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholangitis-top3",
+          "severity": "critical",
+          "match": ["cholangitis"],
+          "unless": ["sclerosing"],
+          "k": 3,
+          "guidelineRefs": ["tg18-dx-cholangitis"],
+          "unverified": ["ios"]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-malignant-obstruction",
+          "severity": "quality",
+          "match": ["pancrea", "cholangiocarcinoma", "periampullary", "malignan"],
+          "note": "Painless-predominant jaundice in a 78-year-old: malignant biliary obstruction should stay on the differential until the distal duct is imaged.",
+          "knownGap": ["web"],
+          "knownGapNote": "PANE top 3 includes Inguinal / Femoral Hernia (male/age prior modifiers) instead."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": ["tg18-mgmt-cholangitis"],
+        "note": "Even mild cholangitis needs admission, antibiotics and a drainage plan if no response within 24 h."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-sepsis-alarm-mild",
+          "severity": "quality",
+          "match": ["sepsis"],
+          "unverified": ["ios"],
+          "note": "Normal heart rate, BP and mentation ('No confusion' is a pertinent negative). A sepsis banner here is caused by negation handling, not physiology.",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS ClinicalTextParser has no negation handling: 'No confusion' counts as organ dysfunction and, with fever, fires 'Possible Sepsis'."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-tg18-cholangitis",
+          "severity": "quality",
+          "score": "tg18-cholangitis",
+          "guidelineRefs": ["tg18-dx-cholangitis"]
+        }
+      ],
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "quality",
+          "score": "tg18-cholangitis",
+          "mode": "calculator",
+          "equals": 1,
+          "guidelineRefs": ["tg18-dx-cholangitis"],
+          "note": "TG18 Grade II needs any TWO criteria; age ≥75 alone is Grade I. Over-grading is the safer error, hence quality rather than critical, but it changes the drainage timing advice.",
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "iOS TokyoCholangitis and web clinical-scales count ONE Grade II criterion as Grade II (TG18 requires two)."
+        },
+        {
+          "id": "score-tg18-autofill",
+          "severity": "quality",
+          "score": "tg18-cholangitis",
+          "mode": "autofill",
+          "equals": 1,
+          "guidelineRefs": ["tg18-dx-cholangitis"],
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "iOS auto-fill: age >75 alone → Grade II; web clinical-scores: criteria not met without manual imaging ticks."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        { "id": "inv-lfts", "severity": "quality", "match": ["lft", "liver function", "bilirubin"] },
+        {
+          "id": "inv-mrcp-or-eus",
+          "severity": "quality",
+          "match": ["mrcp", "eus", "endoscopic ultrasound"],
+          "note": "Distal CBD obscured on US: MRCP/EUS to define the cause."
+        },
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": ["blood culture"],
+          "guidelineRefs": ["tg18-antimicrobial"]
+        }
+      ],
+      "mustExclude": []
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": ["antibiotic", "piperacillin", "tazocin", "meropenem", "ceftriaxone", "co-amoxiclav"],
+          "guidelineRefs": ["tg18-mgmt-cholangitis", "tg18-antimicrobial"]
+        },
+        {
+          "id": "mgmt-drainage-plan",
+          "severity": "quality",
+          "match": ["ercp", "biliary drainage", "biliary decompression"],
+          "guidelineRefs": ["tg18-mgmt-cholangitis"],
+          "note": "Grade I: drainage if no response to initial treatment within 24 h, and ERCP for the underlying CBD stone."
+        }
+      ],
+      "mustExclude": []
+    },
+    "pathway": { "id": "pathway-first-visit", "severity": "quality", "equals": "firstVisit" },
+    "dxVariant": {
+      "id": "variant-grade1",
+      "severity": "quality",
+      "equals": "cholangitis_grade1",
+      "guidelineRefs": ["tg18-mgmt-cholangitis"],
+      "knownGap": ["web"],
+      "knownGapNote": "dx-variants keywords need 'mild cholangitis' word order; 'Mild acute cholangitis' selects no variant."
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholangitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholangitis",
+      "year": 2018,
+      "section": "Grade II: any two of WBC >12,000 or <4,000/mm³, fever ≥39 °C, age ≥75, T-Bil ≥5 mg/dL, hypoalbuminaemia (<0.7 × LLN)",
+      "citation": "Kiriyama S, Kozaka K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:17–30.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholangitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for acute cholangitis",
+      "year": 2018,
+      "section": "Grade I: antibiotics; biliary drainage if no response within 24 h; treat the aetiology (ERCP for CBD stones)",
+      "citation": "Miura F, Okamoto K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:31–40.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy",
+      "year": 2018,
+      "section": "Antimicrobial choice by severity",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation designed to isolate the TG18 'any two criteria' rule: exactly one Grade II criterion (age 78). Correct grade is I; a calculator counting one criterion as Grade II over-grades. 'No confusion' in the HPI tests negation handling of the sepsis alarm.",
+  "authoring": {
+    "author": "Claude (phase 0 seed)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

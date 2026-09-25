@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-adult-typical",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "permutationLabel": "Typical adult (base case)",
+  "summary": "24-year-old man, 24 h migratory RIF pain, anorexia, vomiting, low-grade fever, localised peritonism, WBC 14.8, CRP 48. Clinically uncomplicated appendicitis.",
+  "tags": ["acute-abdomen", "surgical"],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "male",
+      "pregnancy": { "status": "not-applicable" },
+      "heightCm": 178,
+      "weightKg": 74
+    },
+    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "urgent" },
+    "chiefComplaint": "Right iliac fossa pain",
+    "hpi": "24-hour history of central abdominal pain that migrated to the right iliac fossa overnight. Constant, sharp, 7/10, worse on movement and coughing. Anorexia since yesterday, nausea and two episodes of vomiting. Feels feverish. No diarrhoea, no urinary symptoms, no previous similar episodes.",
+    "socrates": {
+      "onset": ["Yesterday"],
+      "site": ["Periumbilical", "RLQ"],
+      "character": ["Sharp"],
+      "radiation": ["No radiation"],
+      "associations": ["Nausea", "Vomiting", "Anorexia", "Fever"],
+      "timing": ["Constant", "Progressive"],
+      "exacerbating": ["Movement", "Coughing"],
+      "relieving": ["Rest"],
+      "severity": ["Severe (7–9/10)"]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "migration of pain to the right iliac fossa",
+      "anorexia",
+      "nausea",
+      "vomiting",
+      "fever"
+    ],
+    "negatives": ["diarrhoea", "dysuria", "haematuria"],
+    "exam": {
+      "general": "Alert, flushed, lying still. Temperature 38.1°C, pulse 102/min, BP 128/78.",
+      "abdomen": "Tender with voluntary guarding in the right iliac fossa, maximal at McBurney's point. Rebound tenderness in the RIF. Rovsing's sign positive. No palpable mass. Bowel sounds present. Hernial orifices normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 102,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 38.1,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      { "analyte": "wbc", "name": "WBC", "value": 14.8, "unit": "×10⁹/L", "minutesAgo": 30 },
+      { "analyte": "neutrophilPct", "name": "Neutrophils (%)", "value": 72, "unit": "%", "minutesAgo": 30 },
+      { "analyte": "crp", "name": "CRP", "value": 48, "unit": "mg/L", "minutesAgo": 30 },
+      { "analyte": "creatinine", "name": "Creatinine", "value": 78, "unit": "µmol/L", "minutesAgo": 30 },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Negative for blood, leucocytes and nitrites",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student. Non-smoker. Social drinker.",
+    "scoreForms": {
+      "alvarado": {
+        "migration": true,
+        "anorexia": true,
+        "nauseaVomiting": true,
+        "rifTenderness": true,
+        "rebound": true,
+        "temperatureRaised": true,
+        "wbcAbove10": true,
+        "neutrophilia": false
+      },
+      "air": {
+        "vomiting": true,
+        "rifPain": true,
+        "rebound": 2,
+        "tempAtLeast38_5": false,
+        "pmnBand": 1,
+        "wbcBand": 1,
+        "crpBand": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Acute appendicitis — clinically uncomplicated (Alvarado 9, AIR 7). No clinical features of perforation."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": ["abdominal pain", "nausea", "vomiting", "anorexia", "fever"],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "RLQ",
+            "6–24 hours",
+            "Sharp",
+            "Severe (7–9)",
+            "Nausea",
+            "Vomiting",
+            "Fever",
+            "Anorexia",
+            "Continuous",
+            "Movement",
+            "Coughing"
+          ]
+        },
+        "examFindings": { "abdomen": ["Tender RLQ", "Guarding", "Rebound tenderness", "Rovsing's sign +"] },
+        "durationDays": 1,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": ["appendic"],
+          "k": 3,
+          "guidelineRefs": ["wses-2020"],
+          "note": "Classic migratory RIF pain with anorexia, vomiting, fever, peritonism and leucocytosis: appendicitis must be in the displayed top 3.",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the CC routes to the rightIliacFossaPain pool, which has no built-in list (`?? []`), so the differential is empty."
+        },
+        {
+          "id": "dx-appendicitis-top1",
+          "severity": "quality",
+          "match": ["appendic"],
+          "k": 1,
+          "note": "A textbook presentation should rank appendicitis first.",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS: fallback mode (DiagnosticDatabase.json does not decode): the CC routes to the rightIliacFossaPain pool, which has no built-in list (`?? []`), so the differential is empty."
+        }
+      ],
+      "mustNotMiss": []
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": ["wses-2020"],
+        "note": "Suspected acute appendicitis needs same-day surgical assessment; in an outpatient practice this is an ER / same-day referral, never a routine booking."
+      },
+      "mustAlarm": [],
+      "redFlags": []
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-alvarado",
+          "severity": "quality",
+          "score": "alvarado",
+          "guidelineRefs": ["alvarado-1986"]
+        },
+        {
+          "id": "score-rec-air",
+          "severity": "quality",
+          "score": "air",
+          "guidelineRefs": ["wses-2020", "air-2008"],
+          "note": "WSES 2020 favours the AIR (or Adult Appendicitis Score) over Alvarado for risk stratification in adults.",
+          "knownGap": ["web"],
+          "knownGapNote": "Web CDS has no AIR rule (and no AIR calculator); Alvarado only."
+        }
+      ],
+      "values": [
+        {
+          "id": "score-alvarado-calculator",
+          "severity": "critical",
+          "score": "alvarado",
+          "mode": "calculator",
+          "equals": 9,
+          "guidelineRefs": ["alvarado-1986"],
+          "note": "Migration 1 + anorexia 1 + nausea/vomiting 1 + RIF tenderness 2 + rebound 1 + temperature ≥37.3 1 + WBC >10 2 = 9 (neutrophils 72%, no left-shift point)."
+        },
+        {
+          "id": "score-air-calculator",
+          "severity": "critical",
+          "score": "air",
+          "mode": "calculator",
+          "equals": 7,
+          "platforms": ["ios"],
+          "guidelineRefs": ["air-2008"],
+          "note": "Vomiting 1 + RIF pain 1 + rebound (medium) 2 + temp <38.5 0 + PMN 70–84% 1 + WBC 10–14.9 1 + CRP 10–49 1 = 7 (intermediate, 5–8). Web has no AIR calculator."
+        },
+        {
+          "id": "score-alvarado-autofill",
+          "severity": "quality",
+          "score": "alvarado",
+          "mode": "autofill",
+          "min": 7,
+          "platforms": ["ios"],
+          "note": "The record documents migration, anorexia, vomiting, RIF tenderness and rebound; an auto-filled Alvarado below 7 would show 'unlikely/possible' for a probable appendicitis until the clinician ticks the boxes.",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS auto-fill reads only temperature and WBC (3/10); history and examination items stay unticked."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-fbc",
+          "severity": "quality",
+          "match": ["fbc", "full blood count", "white cell"],
+          "guidelineRefs": ["wses-2020"]
+        },
+        {
+          "id": "inv-crp",
+          "severity": "quality",
+          "match": ["crp", "c-reactive"],
+          "guidelineRefs": ["wses-2020"]
+        },
+        {
+          "id": "inv-imaging-us-or-ct",
+          "severity": "quality",
+          "match": ["ultrasound", "uss", "re:\\bct\\b"],
+          "guidelineRefs": ["wses-2020"],
+          "note": "WSES 2020: imaging (US first; CT when US is non-diagnostic or risk is intermediate) before or alongside the surgical decision."
+        },
+        { "id": "inv-urinalysis", "severity": "quality", "match": ["urine", "urinalysis", "dipstick"] }
+      ],
+      "mustExclude": []
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-appendicectomy",
+          "severity": "critical",
+          "match": ["re:laparoscopic append(ic)?ectomy", "re:lap(\\.|aroscopic)? append"],
+          "guidelineRefs": ["wses-2020"],
+          "note": "WSES 2020: laparoscopic appendicectomy is the preferred treatment for uncomplicated acute appendicitis (antibiotic-first is an option in selected patients after shared decision)."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": ["antibiotic", "co-amoxiclav", "cefazolin", "cefuroxime", "metronidazole"],
+          "guidelineRefs": ["wses-2020"],
+          "note": "WSES 2020: a single pre-operative dose of broad-spectrum antibiotic."
+        },
+        {
+          "id": "mgmt-analgesia",
+          "severity": "quality",
+          "match": ["analgesi", "morphine", "paracetamol"],
+          "guidelineRefs": ["wses-2020"]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-postop-antibiotics",
+          "severity": "quality",
+          "match": [
+            "re:simple appendicitis[^\\n]{0,120}5 days",
+            "re:uncomplicated appendicitis[^\\n]{0,120}(antibiotic|co-amoxiclav)[^\\n]{0,60}days"
+          ],
+          "guidelineRefs": ["wses-2020"],
+          "note": "WSES 2020: no routine postoperative antibiotics after appendicectomy for uncomplicated appendicitis.",
+          "knownGap": ["web"],
+          "unverified": ["ios"],
+          "knownGapNote": "Web appendicectomy operative-plan prompt prescribes 5 days of co-amoxiclav after simple appendicitis."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "note": "New acute problem, no previous encounters: full history, examination and work-up."
+    },
+    "dxVariant": {
+      "id": "variant-uncomplicated",
+      "severity": "quality",
+      "equals": "appendicitis_uncomplicated",
+      "guidelineRefs": ["wses-2020"]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Diagnosis (clinical scores; imaging), operative treatment (laparoscopic appendicectomy), antibiotic prophylaxis",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "alvarado-1986",
+      "name": "Alvarado score (MANTRELS)",
+      "year": 1986,
+      "section": "Score items and weights; ≤4 unlikely, 5–6 possible, 7–8 probable, 9–10 very probable",
+      "citation": "Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15:557–64.",
+      "verified": false
+    },
+    {
+      "id": "air-2008",
+      "name": "Appendicitis Inflammatory Response (AIR) score",
+      "year": 2008,
+      "section": "Score items and weights; 0–4 low, 5–8 intermediate, 9–12 high",
+      "citation": "Andersson M, Andersson RE. The appendicitis inflammatory response score: a tool for the diagnosis of acute appendicitis that outperforms the Alvarado score. World J Surg. 2008;32:1843–9.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for appendicitis. Every engine should recognise the classic picture, raise at least urgent acuity, recommend the appendicitis scores, calculate them correctly and propose laparoscopic appendicectomy with pre-operative antibiotics. Statement numbers are not quoted because they have not been checked against the PDF (verified: false).",
+  "authoring": {
+    "author": "Claude (phase 0 seed)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

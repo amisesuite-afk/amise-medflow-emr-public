@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-pregnant-t2",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Pregnant, second trimester (22 weeks)",
+  "summary": "29-year-old G2P1 at 22 weeks with 18 h periumbilical pain now right-sided and higher than the RIF, nausea, one vomit, low-grade fever, right flank tenderness. Ultrasound non-diagnostic.",
+  "tags": ["acute-abdomen", "pregnancy"],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": { "status": "pregnant", "gestationWeeks": 22 },
+      "heightCm": 165,
+      "weightKg": 70
+    },
+    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "urgent" },
+    "chiefComplaint": "Right-sided abdominal pain in pregnancy (22 weeks)",
+    "hpi": "22 weeks pregnant (G2P1), pregnancy uncomplicated so far. 18 hours of periumbilical pain now localised to the right side of the abdomen, higher than she expected. Nausea and one vomit, anorexia. No vaginal bleeding, no fluid loss, no contractions, fetal movements normal. No dysuria.",
+    "socrates": {
+      "onset": ["Yesterday"],
+      "site": ["Periumbilical", "Right side"],
+      "character": ["Aching"],
+      "radiation": ["No radiation"],
+      "associations": ["Nausea", "Vomiting", "Anorexia"],
+      "timing": ["Constant", "Progressive"],
+      "exacerbating": ["Movement"],
+      "relieving": ["Nothing"],
+      "severity": ["Moderate (4–6/10)"]
+    },
+    "symptoms": ["abdominal pain", "migration of pain to the right side", "anorexia", "nausea", "vomiting"],
+    "negatives": ["vaginal bleeding", "leakage of fluid", "contractions", "dysuria"],
+    "exam": {
+      "general": "Alert, uncomfortable. Temperature 37.9°C, pulse 108/min, BP 112/68.",
+      "abdomen": "Gravid uterus, fundus at the umbilicus, non-tender, no contractions palpable. Tenderness and guarding in the right flank / right mid-abdomen above the iliac crest. Mild rebound tenderness. Fetal heart rate 148/min on Doppler.",
+      "other": "No vaginal loss on pad."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 108,
+        "systolicBp": 112,
+        "diastolicBp": 68,
+        "respiratoryRate": 18,
+        "temperatureC": 37.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      { "analyte": "wbc", "name": "WBC", "value": 16.2, "unit": "×10⁹/L", "minutesAgo": 30 },
+      { "analyte": "neutrophilPct", "name": "Neutrophils (%)", "value": 84, "unit": "%", "minutesAgo": 30 },
+      { "analyte": "crp", "name": "CRP", "value": 62, "unit": "mg/L", "minutesAgo": 30 },
+      { "analyte": "haemoglobin", "name": "Haemoglobin", "value": 11, "unit": "g/dL", "minutesAgo": 30 },
+      { "analyte": "creatinine", "name": "Creatinine", "value": 52, "unit": "µmol/L", "minutesAgo": 30 },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Negative for blood, leucocytes and nitrites",
+        "minutesAgo": 35
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen (graded compression)",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Appendix not visualised. No free fluid. Single live intrauterine fetus, appropriate for dates.",
+        "minutesAgo": 10
+      }
+    ],
+    "comorbidities": ["Pregnancy — 22 weeks (G2P1)"],
+    "surgicalHistory": ["Caesarean section"],
+    "medications": [
+      { "drug": "Ferrous sulphate", "dose": "200 mg", "frequency": "OD", "indication": "Pregnancy" },
+      { "drug": "Folic acid", "dose": "400 micrograms", "frequency": "OD", "indication": "Pregnancy" }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Bank clerk. Non-smoker. No alcohol in pregnancy.",
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis in pregnancy (suspected)",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Suspected acute appendicitis at 22 weeks' gestation — right-sided peritonism with raised CRP; ultrasound non-diagnostic (appendix not seen)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": ["abdominal pain", "nausea", "vomiting", "anorexia"],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "6–24 hours",
+            "Dull",
+            "Moderate (4–6)",
+            "Nausea",
+            "Vomiting",
+            "Anorexia",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": { "abdomen": ["Guarding", "Rebound tenderness"] },
+        "durationDays": 1,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": ["appendic"],
+          "k": 3,
+          "guidelineRefs": ["wses-2020"],
+          "unverified": ["ios"],
+          "note": "Appendicitis is the commonest non-obstetric surgical emergency in pregnancy; the displaced (higher) site must not lower its rank."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-obstetric-cause",
+          "severity": "quality",
+          "match": ["abruption", "preterm labour", "preterm labor", "placent", "obstetric"],
+          "note": "Obstetric causes (abruption, preterm labour) must be considered alongside surgical causes. Quality: no single guideline statement; standard obstetric-surgical practice.",
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis."
+        },
+        {
+          "id": "mnm-pyelonephritis",
+          "severity": "quality",
+          "match": ["pyelonephritis", "urinary tract infection", "uti", "urosepsis"],
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": ["wses-2020"],
+        "note": "Delay to surgery raises fetal loss when appendicitis perforates: same-day surgical and obstetric assessment.",
+        "knownGap": ["ios"],
+        "knownGapNote": "iOS ClinicalPathwayEngine: CC matches no pathway, so acuity stays routine."
+      },
+      "redFlags": [
+        {
+          "id": "flag-pregnancy",
+          "severity": "critical",
+          "match": ["pregnan"],
+          "guidelineRefs": ["acog-co723-2017"],
+          "note": "Pregnancy must be surfaced as a safety flag before imaging, drugs or theatre.",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS Patient has no pregnancy field; VisitRiskAssessment raises \"Could be pregnant?\" only on trauma/burns/procedure pathways."
+        }
+      ]
+    },
+    "scores": { "recommended": [], "values": [] },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ultrasound-first",
+          "severity": "quality",
+          "match": ["ultrasound", "uss"],
+          "guidelineRefs": ["wses-2020", "acog-co723-2017"]
+        },
+        {
+          "id": "inv-mri-after-inconclusive-us",
+          "severity": "critical",
+          "match": [
+            "re:\\bmri\\b[^.;\\n]{0,30}(abdo|pelvi|append)",
+            "re:(abdo|pelvi|append)[^.;\\n]{0,30}\\bmri\\b",
+            "magnetic resonance"
+          ],
+          "guidelineRefs": ["wses-2020", "acog-co723-2017"],
+          "note": "US was non-diagnostic: non-contrast MRI of the abdomen/pelvis is the recommended next test in pregnancy (WSES 2020; ACOG Committee Opinion 723). MRCP/liver MRI does not count.",
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-unqualified-ct",
+          "severity": "quality",
+          "match": ["re:\\bct\\b"],
+          "unless": ["pregnan", "mri unavailable", "mri not available", "if mri"],
+          "note": "CT is not contraindicated in pregnancy (ACOG CO 723) but MRI is preferred after an inconclusive US; an unqualified CT suggestion in a pregnant patient is a quality gap, not a hard error.",
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "CT with IV contrast is suggested without a pregnancy qualifier."
+        },
+        {
+          "id": "inv-no-gadolinium",
+          "severity": "quality",
+          "match": ["gadolinium"],
+          "unless": ["avoid", "without", "non-contrast"],
+          "guidelineRefs": ["acog-co723-2017"],
+          "unverified": ["ios"]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-appendicectomy",
+          "severity": "quality",
+          "match": ["re:laparoscopic append(ic)?ectomy", "re:lap(\\.|aroscopic)? append"],
+          "guidelineRefs": ["wses-2020", "sages-2017"],
+          "note": "Laparoscopic appendicectomy is safe in any trimester (SAGES 2017; WSES 2020)."
+        },
+        {
+          "id": "mgmt-obstetric-involvement",
+          "severity": "quality",
+          "match": ["obstetric", "obstetrician", "o&g", "maternity", "fetal monitoring", "fetal heart"],
+          "guidelineRefs": ["sages-2017"],
+          "unverified": ["ios"],
+          "note": "Obstetric consultation and peri-operative fetal heart monitoring (SAGES 2017).",
+          "knownGap": ["web"],
+          "knownGapNote": "No obstetric review or fetal monitoring in the web plan or prompts."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-after-20-weeks",
+          "severity": "critical",
+          "match": ["nsaid", "ibuprofen", "diclofenac", "naproxen", "ketorolac", "parecoxib"],
+          "unless": ["avoid", "not in pregnan", "contraindicated", "do not", "no nsaid"],
+          "guidelineRefs": ["fda-2020-nsaid"],
+          "unverified": ["ios"],
+          "note": "NSAIDs should be avoided from 20 weeks' gestation (fetal renal dysfunction, oligohydramnios, ductal constriction).",
+          "knownGap": ["web"],
+          "knownGapNote": "Web appendicectomy operative-plan prompt orders 'Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular)' for a 22-week pregnant patient."
+        },
+        {
+          "id": "mgmt-no-bhcg-negative-assumption",
+          "severity": "quality",
+          "match": ["re:(β|b|beta)[- ]?hcg (confirmed )?negative"],
+          "note": "The patient is 22 weeks pregnant; templates must not assert a negative pregnancy test.",
+          "knownGap": ["web"],
+          "unverified": ["ios"],
+          "knownGapNote": "Web operative-plan prompt states 'β-HCG confirmed negative' for a patient recorded as pregnant."
+        }
+      ]
+    },
+    "pathway": { "id": "pathway-first-visit", "severity": "quality", "equals": "firstVisit" },
+    "dxVariant": { "id": "variant-uncomplicated", "severity": "quality", "equals": "appendicitis_uncomplicated" }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Diagnosis in pregnancy (US first, MRI if US inconclusive); laparoscopic appendicectomy in pregnancy",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "acog-co723-2017",
+      "name": "ACOG Committee Opinion No. 723 — Guidelines for diagnostic imaging during pregnancy and lactation",
+      "year": 2017,
+      "section": "US and MRI preferred; CT not contraindicated when needed; gadolinium only if it clearly improves diagnosis",
+      "citation": "ACOG Committee Opinion No. 723. Obstet Gynecol. 2017;130:e210–e216.",
+      "verified": false
+    },
+    {
+      "id": "sages-2017",
+      "name": "SAGES guidelines for the use of laparoscopy during pregnancy",
+      "year": 2017,
+      "section": "Laparoscopic appendicectomy in any trimester; obstetric consultation; fetal heart monitoring",
+      "citation": "Pearl JP, Price RR, Tonkin AE, Richardson WS, Stefanidis D. Surg Endosc. 2017;31:3767–82.",
+      "verified": false
+    },
+    {
+      "id": "fda-2020-nsaid",
+      "name": "US FDA Drug Safety Communication — NSAIDs in pregnancy at 20 weeks or later",
+      "year": 2020,
+      "section": "Avoid NSAIDs from about 20 weeks' gestation (fetal renal dysfunction, oligohydramnios)",
+      "citation": "US Food and Drug Administration. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: pregnancy changes the site of pain, the normal range of WCC, the imaging pathway (US then MRI) and the analgesic choice. Alvarado/AIR are not validated in pregnancy, so no score values are asserted. The iOS Patient model has no pregnancy field, so pregnancy is only visible to the engines through free text.",
+  "authoring": {
+    "author": "Claude (phase 0 seed)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

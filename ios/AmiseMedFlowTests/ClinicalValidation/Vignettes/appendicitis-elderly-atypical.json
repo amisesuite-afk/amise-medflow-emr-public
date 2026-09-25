@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-elderly-atypical",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Elderly, atypical (AF on apixaban)",
+  "summary": "78-year-old woman with 3 days of vague lower abdominal pain settling in the RIF, anorexia, no fever, WBC 9.8 but CRP 145. Scores are equivocal/low although appendicitis is present; AF raises mesenteric ischaemia as a must-not-miss.",
+  "tags": ["acute-abdomen", "elderly", "anticoagulated"],
+  "inputs": {
+    "patient": {
+      "ageYears": 78,
+      "sex": "female",
+      "pregnancy": { "status": "not-applicable" },
+      "heightCm": 158,
+      "weightKg": 61
+    },
+    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "urgent" },
+    "chiefComplaint": "Lower abdominal pain",
+    "hpi": "3-day history of vague lower abdominal discomfort, now worse on the right side. Off food, mild nausea, no vomiting. Felt hot and cold last night. Bowels opened normally yesterday. Known atrial fibrillation on apixaban. No weight loss, no rectal bleeding, no urinary symptoms.",
+    "socrates": {
+      "onset": ["2–3 days ago"],
+      "site": ["Suprapubic", "RLQ"],
+      "character": ["Dull", "Aching"],
+      "radiation": ["No radiation"],
+      "associations": ["Nausea", "Anorexia"],
+      "timing": ["Constant", "Progressive"],
+      "exacerbating": ["Movement"],
+      "relieving": ["Nothing"],
+      "severity": ["Moderate (4–6/10)"]
+    },
+    "symptoms": ["abdominal pain", "anorexia", "nausea"],
+    "negatives": ["vomiting", "weight loss", "rectal bleeding", "dysuria"],
+    "exam": {
+      "general": "Frail, alert and orientated. Temperature 37.2°C, pulse irregularly irregular 96/min, BP 138/82.",
+      "abdomen": "Soft, mildly distended. Localised tenderness in the right iliac fossa with voluntary guarding; no rebound. No pulsatile or expansile mass. No hernia. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 25,
+        "heartRate": 96,
+        "systolicBp": 138,
+        "diastolicBp": 82,
+        "respiratoryRate": 18,
+        "temperatureC": 37.2,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      { "analyte": "wbc", "name": "WBC", "value": 9.8, "unit": "×10⁹/L", "minutesAgo": 40 },
+      { "analyte": "neutrophilPct", "name": "Neutrophils (%)", "value": 79, "unit": "%", "minutesAgo": 40 },
+      { "analyte": "crp", "name": "CRP", "value": 145, "unit": "mg/L", "minutesAgo": 40 },
+      { "analyte": "haemoglobin", "name": "Haemoglobin", "value": 12.1, "unit": "g/dL", "minutesAgo": 40 },
+      { "analyte": "creatinine", "name": "Creatinine", "value": 96, "unit": "µmol/L", "minutesAgo": 40 },
+      { "analyte": "urea", "name": "Urea", "value": 7.4, "unit": "mmol/L", "minutesAgo": 40 },
+      { "analyte": "lactate", "name": "Lactate", "value": 1.4, "unit": "mmol/L", "minutesAgo": 40 }
+    ],
+    "imaging": [],
+    "comorbidities": ["Atrial fibrillation", "Hypertension"],
+    "surgicalHistory": [],
+    "medications": [
+      { "drug": "Apixaban", "dose": "5 mg", "frequency": "BD", "indication": "Atrial fibrillation" },
+      { "drug": "Bisoprolol", "dose": "2.5 mg", "frequency": "OD", "indication": "Atrial fibrillation" },
+      { "drug": "Amlodipine", "dose": "5 mg", "frequency": "OD", "indication": "Hypertension" }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter. Walks with a frame. Ex-smoker.",
+    "scoreForms": {
+      "alvarado": {
+        "migration": false,
+        "anorexia": true,
+        "nauseaVomiting": true,
+        "rifTenderness": true,
+        "rebound": false,
+        "temperatureRaised": false,
+        "wbcAbove10": false,
+        "neutrophilia": true
+      },
+      "air": {
+        "vomiting": false,
+        "rifPain": true,
+        "rebound": 0,
+        "tempAtLeast38_5": false,
+        "pmnBand": 1,
+        "wbcBand": 0,
+        "crpBand": 2
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis (suspected)",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Suspected acute appendicitis in an elderly patient — localised RIF peritonism with CRP 145 despite normal WCC. Needs CT to confirm and to exclude complicated disease or caecal neoplasm."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": ["abdominal pain", "nausea", "anorexia"],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Suprapubic",
+            "Gradual",
+            "1–3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Nausea",
+            "Anorexia",
+            "Continuous",
+            "Worsening over time",
+            "Movement"
+          ]
+        },
+        "examFindings": { "abdomen": ["Tender RLQ", "Guarding", "Distended"] },
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top5",
+          "severity": "critical",
+          "match": ["appendic"],
+          "k": 5,
+          "guidelineRefs": ["wses-elderly-2019"],
+          "unverified": ["ios"],
+          "note": "Appendicitis in the elderly presents atypically and perforates more often; it must stay on the visible differential."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-mesenteric-ischaemia",
+          "severity": "critical",
+          "match": ["mesenteric isch", "mesenteric ischem", "acute mesenteric"],
+          "guidelineRefs": ["esvs-2017"],
+          "note": "Abdominal pain in a 78-year-old with atrial fibrillation: acute mesenteric ischaemia must be considered (ESVS 2017). Anticoagulation lowers but does not remove the risk.",
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "PANE top 3 (cholecystitis, appendicitis, appendix mass) omits it; symptom inference ranks it #3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis."
+        },
+        {
+          "id": "mnm-caecal-neoplasm",
+          "severity": "quality",
+          "match": ["caecal carcinoma", "colorectal", "colon cancer", "colonic carcinoma", "caecal cancer", "neoplasm"],
+          "guidelineRefs": ["wses-elderly-2019"],
+          "note": "Appendiceal/caecal neoplasm is more frequent in older patients presenting with RIF inflammation.",
+          "knownGap": ["ios", "web"],
+          "knownGapNote": "Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis."
+        },
+        {
+          "id": "mnm-diverticulitis",
+          "severity": "quality",
+          "match": ["diverticul"],
+          "unverified": ["ios"],
+          "knownGap": ["web"],
+          "knownGapNote": "Not in PANE top 3."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": ["wses-elderly-2019"],
+        "note": "Localised peritonism with CRP 145 in a 78-year-old: same-day surgical assessment.",
+        "knownGap": ["ios"],
+        "knownGapNote": "iOS ClinicalPathwayEngine reads only the CC text; 'Lower abdominal pain' matches no pathway and stays routine."
+      },
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "quality",
+          "match": ["anticoag", "apixaban"],
+          "note": "DOAC must be flagged before any operative or imaging-guided procedure."
+        },
+        {
+          "id": "flag-elderly-atypical",
+          "severity": "quality",
+          "match": ["elderly", "age 7", "age 8", "frailty", "atypical"],
+          "note": "Age-related atypical presentation / frailty should be surfaced."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [{ "id": "score-rec-alvarado", "severity": "quality", "score": "alvarado" }],
+      "values": [
+        {
+          "id": "score-alvarado-calculator",
+          "severity": "critical",
+          "score": "alvarado",
+          "mode": "calculator",
+          "equals": 5,
+          "guidelineRefs": ["alvarado-1986"],
+          "note": "Anorexia 1 + nausea 1 + RIF tenderness 2 + neutrophilia 1 = 5 ('possible'). Scores under-perform in the elderly — imaging is still required."
+        },
+        {
+          "id": "score-air-calculator",
+          "severity": "critical",
+          "score": "air",
+          "mode": "calculator",
+          "equals": 4,
+          "platforms": ["ios"],
+          "guidelineRefs": ["air-2008"],
+          "note": "RIF pain 1 + PMN 70–84% 1 + CRP ≥50 2 = 4 (nominally 'low')."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-abdomen-pelvis",
+          "severity": "critical",
+          "match": ["re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)", "computed tomography"],
+          "guidelineRefs": ["wses-elderly-2019"],
+          "note": "SIFIPAC/WSES elderly guideline: contrast-enhanced CT is recommended in elderly patients with suspected appendicitis (atypical signs, higher perforation and neoplasm rates)."
+        },
+        {
+          "id": "inv-renal-function",
+          "severity": "quality",
+          "match": ["u&e", "creatinine", "renal function", "urea"],
+          "note": "Before IV contrast."
+        },
+        {
+          "id": "inv-lactate-or-cta",
+          "severity": "quality",
+          "match": ["lactate", "ct angiogra", "cta"],
+          "guidelineRefs": ["esvs-2017"],
+          "unverified": ["ios"],
+          "note": "ESVS 2017: CT angiography when mesenteric ischaemia is suspected; lactate is supportive but not sensitive."
+        }
+      ],
+      "mustExclude": []
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-anticoagulant-plan",
+          "severity": "quality",
+          "match": ["apixaban", "anticoag", "doac"],
+          "unverified": ["ios"],
+          "note": "Peri-operative DOAC plan (timing of last dose, renal function, hold/bridge) must be part of the operative plan."
+        },
+        {
+          "id": "mgmt-lap-appendicectomy",
+          "severity": "quality",
+          "match": ["re:laparoscopic append(ic)?ectomy", "re:lap(\\.|aroscopic)? append"],
+          "guidelineRefs": ["wses-elderly-2019"],
+          "note": "Laparoscopic appendicectomy is recommended over non-operative management in the elderly when appendicitis is confirmed."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-discharge-on-low-score",
+          "severity": "quality",
+          "match": ["discharge"],
+          "unless": ["discharge at 24", "discharge summary", "wound discharge"],
+          "sources": ["ios.scoreCalculator.air", "ios.scoreCalculator.alvarado", "web.scaleCalculator.alvarado"],
+          "note": "A 'low/unlikely' score must not steer an elderly patient with localised peritonism and CRP 145 towards discharge.",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS AIR calculator (4 = low) recommends 'active observation or discharge' with no age caveat."
+        }
+      ]
+    },
+    "pathway": { "id": "pathway-first-visit", "severity": "quality", "equals": "firstVisit" },
+    "dxVariant": { "id": "variant-uncomplicated", "severity": "quality", "equals": "appendicitis_uncomplicated" }
+  },
+  "guideline": [
+    {
+      "id": "wses-elderly-2019",
+      "name": "SIFIPAC/WSES/SICG/SIMEU guidelines — acute appendicitis in the elderly (2019 edition)",
+      "year": 2020,
+      "section": "Diagnosis (scores and CT imaging in the elderly); treatment (appendicectomy vs non-operative; laparoscopy)",
+      "citation": "Fugazzola P, Ceresoli M, Agnoletti V, et al. The SIFIPAC/WSES/SICG/SIMEU guidelines for diagnosis and treatment of acute appendicitis in the elderly (2019 edition). World J Emerg Surg. 2020;15:19.",
+      "verified": false
+    },
+    {
+      "id": "esvs-2017",
+      "name": "ESVS clinical practice guidelines — diseases of the mesenteric arteries and veins",
+      "year": 2017,
+      "section": "Acute mesenteric arterial ischaemia — clinical suspicion (AF, embolic source) and CT angiography",
+      "citation": "Björck M, Koelemay M, Acosta S, et al. Management of the diseases of mesenteric arteries and veins: clinical practice guidelines of the European Society of Vascular Surgery (ESVS). Eur J Vasc Endovasc Surg. 2017;53:460–510.",
+      "verified": false
+    },
+    {
+      "id": "alvarado-1986",
+      "name": "Alvarado score (MANTRELS)",
+      "year": 1986,
+      "section": "Score items and weights",
+      "citation": "Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15:557–64.",
+      "verified": false
+    },
+    {
+      "id": "air-2008",
+      "name": "Appendicitis Inflammatory Response (AIR) score",
+      "year": 2008,
+      "section": "Score items and weights",
+      "citation": "Andersson M, Andersson RE. World J Surg. 2008;32:1843–9.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: age, atypical course, normal WCC, anticoagulation. Tests that equivocal scores do not falsely reassure, that CT is recommended, that the DOAC is flagged and that mesenteric ischaemia is on the differential for an AF patient with abdominal pain. The CC is presentation-based ('Lower abdominal pain'), so the engines have to infer appendicitis from findings. Pertinent negatives in the HPI ('no vomiting', 'no weight loss', 'no rectal bleeding') are deliberately phrased as clinicians write them, which also exercises negation handling in the text parsers.",
+  "authoring": {
+    "author": "Claude (phase 0 seed)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy)."
+  }
+}
