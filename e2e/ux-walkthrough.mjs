@@ -5,8 +5,8 @@
  *
  * Flow: empty home → New patient → visit type → chief complaint (+ triage question) → HPI →
  * PMH → Surgical Hx → Meds → Allergies (records penicillin) → Exam (two findings) → Labs →
- * Imaging → Assessment (ICD-10 search + impression) → Plan → Scores (if reachable) → Summary →
- * close the encounter.
+ * Imaging → Assessment (ICD-10 search + impression) → Plan → Tools → Scores (over the Plan
+ * step, then back to it) → Summary → close the encounter (review and sign).
  *
  * Run (same setup as e2e/emr-walkthrough.mjs):
  *   VITE_SUPABASE_URL=https://placeholder.supabase.co \
@@ -163,8 +163,9 @@ function recorder(page, viewport) {
 }
 
 const btn = (page, re) => page.locator('button').filter({ hasText: re });
-// Pathway pill ("2PMH", "✓Labs", "⚠️Allergies"): any non-letter prefix, then the label.
-const pill = (page, label) => page.locator('button:not([disabled])').filter({
+// Pathway pill ("2PMH", "✓Labs", "⚠️Allergies"): a step tab (pathway bar or tab strip) — any
+// non-letter prefix, then the label. Tabs only, so "← PMH" (Back) is never taken for the pill.
+const pill = (page, label) => page.locator('button[role="tab"]:not([disabled])').filter({
   hasText: new RegExp(`^[^A-Za-z]*${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`),
 });
 
@@ -225,6 +226,17 @@ async function walkthrough(browser, viewport) {
   await ux.type(page.locator('input[placeholder="Search complaints…"]'), 'biliary', 'Complaint search');
   await ux.click(btn(page, /Biliary colic/), 'Pick "Biliary colic"');
   await ux.shot('CC chosen - triage questions and pathway bar');
+  {
+    // Navigation layers on screen (UX review M6): phase breadcrumb, action row, pathway bar.
+    const phaseNav = await page.locator('.phase-nav').filter({ visible: true }).count();
+    const bar = await page.locator('[data-testid="clinical-workflow-bar"]').count();
+    const pills = await page.locator('.wf-pill').count();
+    const groups = await page.locator('.wf-phase').allTextContents();
+    ux.note(`Navigation after the CC: phase breadcrumb ${phaseNav ? 'shown' : 'not shown'}; `
+            + `pathway bar ${bar ? `with ${pills} step pills grouped as ${groups.map(g => g.trim()).join(' · ')}` : 'absent'}`);
+    const questionCards = await page.locator('text=/^onset$/i').filter({ visible: true }).count();
+    ux.note(`ONSET question shown ${questionCards} time(s) on the HPI step`);
+  }
   await ux.click(btn(page, /^After fatty meal$/), 'Triage answer: After fatty meal');
   await ux.click(btn(page, /^Next →$/), 'Triage: Next');
   await ux.shot('Triage question 2', { newScreen: false });
@@ -325,14 +337,35 @@ async function walkthrough(browser, viewport) {
     'Management plan');
   await ux.shot('Plan typed', { newScreen: false });
 
-  // Scores
+  // Scores — a step in the pathway bar, and in the Tools menu over the current step (UX review
+  // top-10 #10: it used to disappear once a chief complaint was chosen).
   {
-    const scores = page.locator('button').filter({ hasText: /^(📊)?\s*(Scales|Scores|Risk Scores)$/ });
-    if (await scores.filter({ visible: true }).count()) {
-      await ux.click(scores, 'Scores tab');
-      await ux.shot('Scores');
+    const scoresPill = pill(page, 'Scores');
+    ux.note(`Scores step in the pathway bar after a chief complaint: ${await scoresPill.filter({ visible: true }).count() ? 'yes' : 'NO'}`);
+    const tools = page.locator('[data-testid="consult-tools"]');
+    if (await tools.filter({ visible: true }).count()) {
+      await ux.click(tools, 'Tools menu');
+      await ux.shot('Tools menu', { newScreen: false });
+      await ux.click(page.locator('[data-testid="consult-tool-scales"]'), 'Tools: Scores');
+      await page.locator('[data-testid="consult-tool-drawer"]').waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+      await ux.shot('Scores (over the Plan step)');
+      const who = ((await page.locator('[data-testid="consult-tool-patient"]').textContent().catch(() => '')) ?? '').trim();
+      ux.note(`Tools panel shows the patient: "${who}"`);
+      await ux.click(page.locator('[data-testid="consult-tool-close"]'), 'Close Scores (back to the step)');
+      const active = ((await page.locator('button[role="tab"][aria-selected="true"]').first().textContent().catch(() => '')) ?? '').trim();
+      ux.note(`Step after closing Scores: "${active}" (the Plan step is kept)`);
+      // Vitals and Prescriptions from the same menu (checked, not counted as part of the task).
+      for (const [id, label] of [['monitoring', 'Vitals'], ['prescriptions', 'Prescriptions']]) {
+        await tools.first().click().catch(() => {});
+        await page.locator(`[data-testid="consult-tool-${id}"]`).click({ timeout: 3000 }).catch(() => {});
+        const open = await page.locator('[data-testid="consult-tool-drawer"]').filter({ visible: true }).count();
+        ux.note(`Tools → ${label} from inside the consultation: ${open ? 'opens over the step' : 'NOT shown'}`);
+        if (open) await ux.shot(`Tools - ${label}`, { newScreen: false });
+        await page.locator('[data-testid="consult-tool-close"]').click({ timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(300);
+      }
     } else {
-      ux.note('Scores/Scales tab is not offered once a chief complaint is chosen (pathway bar replaces the tab bar).');
+      ux.note('Tools menu not found in the consultation.');
     }
   }
 

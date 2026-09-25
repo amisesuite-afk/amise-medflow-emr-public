@@ -3,13 +3,34 @@
 Prepared for Dr Dawit Kabiye as part of consultation testing. Review date 25 September 2026.
 Branch `ux-review`, based on `claude/pr-37-gbg22z` at `60e2b15`.
 
-> **Status (branch `ux-safety-fixes`).** C1–C4 and M8 are fixed on the web, and M1–M3 on iOS
-> (M3: NEWS2 in the iPad header and readable on iPhone; the rest of the proposed safety strip is
-> not done). The web screenshots in `docs/clinical-validation/ux/web/` were re-taken after the
-> fixes, and the walkthrough now ticks suggested tests and confirms the suggested diagnosis, so
-> the numbering changed after step 16. The `D/nn` and `P/nn` references below point to the
-> original set, which is in git history at commit `ad11177`. Encounters saved before the fixes
-> keep any content that was filled automatically; it is not rewritten.
+> **Status (branch `ux-seamless`, on top of `ux-safety-fixes`).** C1–C4 and M8 were fixed on the
+> web and M1–M3 on iOS in `ux-safety-fixes`. `ux-seamless` fixes the rest of the top 10 and most
+> of the remaining findings, so the parts of the consultation reach each other without leaving
+> it (table below). The web screenshots in `docs/clinical-validation/ux/web/` were re-taken
+> after these changes (the Tools menu and Scores panel are steps 26–29, so the numbering changed
+> again after step 25). The `D/nn` and `P/nn` references below point to the original set, which
+> is in git history at commit `ad11177`. Encounters saved before the fixes keep any content that
+> was filled automatically; it is not rewritten. Swift cannot be compiled here: the iOS changes
+> are checked by the CI build, the unit tests (`ConsultationSeamlessTests`) and the UI walkthrough.
+>
+> | # | Finding | Web | iOS |
+> |---|---|---|---|
+> | C1–C4 | Auto-content, NKDA | ✓ fixed (`ux-safety-fixes`) | n/a |
+> | M1, M2 | Identity, NKDA banner | n/a | ✓ fixed (`ux-safety-fixes`) |
+> | M3 | Header safety strip | n/a | ✓ fixed: NEWS2 with band colour and age, every allergy (not only severe), antithrombotic by name, footnote size or larger, on the iPad header and under the iPhone record's title (`RecordSafetyStrip`) |
+> | M4 | iPad: two navigation systems, two Save Visit | n/a | ✓ fixed: one "Consultation" section-bar entry (the 11 step items are gone; Overview links still open a step), the pathway step bar is the only step navigation; header "Save Visit" removed; "Save snapshot" and "Complete" labelled and explained on screen |
+> | M5 / top-10 #10 | Scores, Vitals, Rx outside the consultation | ✓ fixed: Tools menu in every navigation mode opens Scores, Vitals, Prescriptions (and Notes, Tasks) in a side panel over the step; Scores is also a step in the pathway bar | ✓ fixed: Tools in the consultation toolbar (and in More) opens Clinical Scores, Vitals, Prescriptions as a sheet over the step, patient identity and safety strip on it |
+> | M6 | Three navigation layers, 17 pills, Scores disappears | ✓ fixed: one bar — phase as group labels inside it (✓ only when every step in it is documented), actions in its header; 15 pills (Notes, Monitor, Tasks moved to Tools, Scores added); 44 px targets on touch; "+N ›" overflow cue | n/a |
+> | M7 | Web start-up friction | open | n/a |
+> | M8 | Completion without sign-off | ✓ fixed (`ux-safety-fixes`) | ✓ fixed: "Review and complete" sheet — steps not documented, allergy status, unedited template / questionnaire content, diagnosis and orders, attestation; "Complete visit" only after the tick |
+> | M9 | Walk-in disappears from Today | n/a | ✓ fixed: "Added today" group |
+> | M10 | "AI Draft" buttons | n/a | ✓ relabelled "Draft from template" while AI is off; the exam template no longer says "Afebrile"; unedited template text is flagged at completion. The first-launch AI disclosure is unchanged (open) |
+> | M11 | Next hidden while typing; fields below chip walls | n/a | ◐ keyboard toolbar "Next: <step>"; ICD-10 search first on the Diagnosis step. HPI editor still below the SOCRATES chips |
+> | M12 | Duplicated question card, overlapping plan | ✓ fixed: each HPI question asked once (Adaptive HPI card); the printed plan leaves out lines that repeat an investigation requested above | n/a |
+> | m1 | iPhone Delete in the Close position | n/a | ✓ in a More menu |
+> | m2 | Fixed 9–10 pt type | n/a | ✓ section-bar, quick-action and chip labels use text styles |
+> | m3 | iPhone front-desk questionnaire | n/a | ✓ "Questionnaire" action on each Check-In row |
+> | m4–m10 | Web minors | m5 fixed (solid sticky bar); others open | n/a |
 
 ## 1. Scope and method
 
@@ -87,6 +108,23 @@ Plan → Summary → close.
 on controls. The score step could not be done (finding M6). The diagnosis search was not needed
 because the diagnosis had already been set by the system (finding C4).
 
+**Re-measured after the fixes** (same script, `e2e/ux-walkthrough.mjs`; the flow now also ticks
+suggested tests and confirms the suggested diagnosis, C3–C4, and signs off in-app, M8):
+
+| Branch | Viewport | Clicks | Drop-downs | Interactions | Scrolls | Screens | Scores reached |
+|---|---|---:|---:|---:|---:|---:|---|
+| `ux-safety-fixes` | Desktop | 36 | 2 | 38 | 6 | 19 | no (tab gone after the CC) |
+| `ux-safety-fixes` | iPad | 36 | 2 | 38 | 4 | 19 | no |
+| `ux-seamless` | Desktop | **38** | 2 | **40** | **4** | 20 | yes: Tools → Scores → close, 3 clicks, back on the Plan step |
+| `ux-seamless` | iPad | **38** | 2 | **40** | **2** | 20 | yes, same |
+
+Like for like (without the new Scores step), the flow is 35 clicks instead of 36: the "Skip to HPI"
+click went with the duplicated question card (M12). Scrolls fell by 2 on both viewports (the
+sticky pathway bar no longer sits under a separate phase bar). Text entries (6) and keystrokes
+(364) are unchanged. The walkthrough also records: no phase breadcrumb next to the bar, 15 pills
+in 5 phase groups, the ONSET question shown once (was twice), and Tools → Vitals and
+Tools → Prescriptions opening over the step.
+
 ### 3.2 iOS: expected from the code (the CI walkthrough replaces these with measured values)
 
 Flow (a) as scripted: Today → patient → consultation → "First visit" pathway (12 steps) →
@@ -97,6 +135,23 @@ Visit → Complete.
 |---|---:|---:|---:|---:|---|
 | iPhone | ≈ 31 | 6 | ≈ 37 | ≈ 19 | +4 taps to leave and re-enter the consultation for a score (M5). Scrolls to reach the HPI editor and the ICD search (M11) |
 | iPad | ≈ 29 | 6 | ≈ 35 | ≈ 19 | Horizontal drags on the 25-item section bar to reach Scores (M4) |
+
+After `ux-seamless` (expected until the CI walkthrough re-runs): the score is reached on both
+devices with Tools → Clinical Scores and closed with Done (3 taps, the consultation keeps its
+step), instead of 4 taps to leave and re-enter on iPhone and a horizontal drag on the iPad
+section bar. Completing adds the review sheet (attestation tick + Complete visit: 1 tap more than
+the old dialog). The walkthrough now scripts both, and the iPhone hand-over flow (e) through the
+Check-In row.
+
+**CI run 36181523764** (before these changes) failed on iPhone at a_consultation ("ICD-10 search
+field" not found: it was below four other panels on the Diagnosis step) and b_add_patient (the
+chief-complaint chip was under the keyboard); e was not reachable on iPhone. The iPad
+a_consultation was missing from the metrics because asking an off-screen section-bar item for
+`isHittable` raised an XCTest failure that ended the test before the recorder wrote its JSON.
+All four are addressed: the ICD search is the first section, the keyboard is put away before the
+chips (and the form dismisses it on scroll), the Check-In row has a Questionnaire action, and the
+recorder checks hittability only for elements on screen and writes the metrics from a teardown
+block if XCTest still ends a test early.
 
 Other iOS flows, expected:
 
@@ -313,12 +368,12 @@ Screenshot paths are relative to `docs/clinical-validation/ux/web/`: `D` is `des
 | Area | iOS | Web |
 |---|---|---|
 | Patient identification on every screen | ✗ Not in the consultation (M1) | ◐ Header yes; Summary no (m10) |
-| Allergy status: visible, three states | ◐ Correct model, false red banner for NKDA (M2), iPad header only for severe (M3) | ✗ NKDA when unrecorded (C1) |
-| NEWS2 / deterioration visible where decisions are made | ◐ Today alerts and iPhone header (9 pt), not on the iPad header (M3) | ◐ Not in the consultation header |
+| Allergy status: visible, three states | ✓ Three states; red only for real allergies; every allergy in the record header (M2, M3 fixed) | ✓ "Not recorded" / NKDA / list (C1 fixed) |
+| NEWS2 / deterioration visible where decisions are made | ✓ Record header strip on iPad and iPhone, band colour and age (M3 fixed) | ◐ Not in the consultation header |
 | Red flags | ✓ Clinical alarm banner in the consultation; red-flag chips on the plan card | ✓ Red-flag chips in Assessment and Plan |
-| Information density | ◐ iPad double navigation (M4) | ✗ Three nav layers, 17 pills, duplicated cards (M6, M12) |
+| Information density | ✓ One consultation entry, one step bar (M4 fixed) | ◐ One pathway bar with phase groups; each question asked once (M6, M12 fixed); the left icon rail still has no labels (m9) |
 | Error prevention: auto-generated content | ◐ Template exam on an explicit tap (M10) | ✗ Auto exam, auto orders, auto diagnosis (C2–C4) |
-| Completion / sign-off | ◐ Lists gaps, no signing (M8) | ✗ Bare confirm (M8) |
+| Completion / sign-off | ✓ Review sheet: gaps, unedited content, attestation (M8 fixed) | ✓ In-app sign-off: gaps, attestation (M8 fixed) |
 | Wrong-patient prevention on switching | ✗ Nothing on screen in the consultation (M1) | ✓ Name in the header |
 
 ## 7. Nielsen heuristics: where they fail most
@@ -336,7 +391,7 @@ Screenshot paths are relative to `docs/clinical-validation/ux/web/`: `D` is `des
 
 ## 8. What the iOS walkthrough cannot reach
 
-- **iPhone front-desk hand-over questionnaire (flow e).** Reachable only by saving a new appointment, which creates an EventKit calendar event. Demo mode keeps the calendar off, so the flow is recorded as `not-reachable` with the reason (m3). The iPad flow is scripted.
+- **iPhone front-desk hand-over questionnaire (flow e).** Before `ux-seamless` it was reachable only by saving a new appointment, which creates an EventKit calendar event, so the flow was recorded as `not-reachable` (m3). It is now scripted through the Check-In row's "Questionnaire" action on both devices' flows.
 - **Face ID lock, sign-in, the AI disclosure sheet and the staff-exit authentication.** Deliberately skipped in demo mode (no biometrics on a CI simulator). They need a manual check on a device.
 - **Sync, peer sync, NAS backup, the audit-log upload and Sentry.** Switched off in demo mode by design, so sync-status UI and conflict states are not exercised.
 - **Calendar-driven Today content** (calendar sections, import banner, "Start Encounter" from an appointment). The calendar is off in demo mode.
@@ -354,5 +409,7 @@ Screenshot paths are relative to `docs/clinical-validation/ux/web/`: `D` is `des
 | `ios/AmiseMedFlowUITests/UXWalkthroughTests.swift`, `UXRecorder.swift` | XCUITest flows a–e, screenshots, tap/screen counting |
 | `ios/UIWalkthrough/run.sh` (+ `pick_simulator.py`, `collect_results.py`) | Local / CI runner, attachment export, `ux-metrics.json` merge |
 | `.github/workflows/ios-ui-walkthrough.yml` | CI: iPhone 16 Pro Max and iPad Pro 13″, artifacts even on failure |
-| `e2e/ux-walkthrough.mjs` | Web walkthrough (desktop and iPad viewports) |
+| `e2e/ux-walkthrough.mjs` | Web walkthrough (desktop and iPad viewports), including Tools → Scores / Vitals / Prescriptions |
+| `artifacts/dashboard/src/lib/consult-steps.ts`, `components/ClinicalWorkflowBar.tsx`, `ConsultToolsMenu.tsx`, `ConsultToolDrawer.tsx` | Web: one pathway bar, phase groups, Tools panel over the step |
+| `ios/AmiseMedFlow/Views/Consultation/ConsultationToolSheet.swift`, `CompleteEncounterSheet.swift`, `Views/RecordSafetyStrip.swift`, `Services/EncounterCompletionReview.swift`, `RecordSafetySummary.swift`, `ConsultTool.swift` | iOS: Tools sheet, review-and-complete, header safety strip |
 | `docs/clinical-validation/ux/web/` | Web screenshots and `ux-metrics-web.json` |
