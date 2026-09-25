@@ -1,8 +1,8 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-25T15:24:19.257Z.
+Generated 2026-09-25T15:33:30.648Z.
 
-- iOS: 243 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T15:01:43Z).
+- iOS: 243 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T15:32:05Z).
 - iOS differential engine mode: fallback (BayesianDiagnosisEngine could not decode DiagnosticDatabase.json and used its built-in lists).
 - Web: 243 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T15:23:35.465Z, clinval-web/1).
 
@@ -14,7 +14,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| ios | 243 | 1954 | 806 | 1059 | 89 | 623 | 0 | 61 | 998 | 697 |
+| ios | 243 | 1954 | 843 | 1022 | 89 | 595 | 0 | 61 | 961 | 734 |
 | web | 243 | 1954 | 1265 | 620 | 69 | 281 | 0 | 617 | 3 | 114 |
 
 ## Blocking failures
@@ -25,44 +25,40 @@ None.
 
 - `aaa-renal-colic-mimic` / **mnm-aaa** (ios, FAIL (unverified)): not in top 4 of ios.bayes: 1. Urinary Tract Infection \| 2. Renal / Ureteric Colic \| 3. Carcinoma of Prostate \| 4. Benign Prostatic Hypertrophy
 - `aaa-renal-colic-mimic` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `aaa-renal-colic-mimic` / **inv-aorta-imaging** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
-- `aaa-renal-colic-mimic` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
 - `abscess-recurrent-mrsa-pwid` / **dx-abscess-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `abscess-recurrent-mrsa-pwid` / **mgmt-mrsa-active-antibiotic** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `abscess-thigh-adult` / **dx-abscess-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `abscess-thigh-adult` / **mgmt-incision-drainage** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
-- `achalasia-pseudoachalasia-elderly` / **inv-ogd** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `achalasia-young` / **inv-ogd** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
+- `achalasia-pseudoachalasia-elderly` / **inv-ogd** (ios, FAIL (unverified)): no investigation output on ios
+- `achalasia-young` / **inv-ogd** (ios, FAIL (unverified)): no investigation output on ios
 - `adrenal-incidentaloma-indeterminate` / **inv-metanephrines** (ios, FAIL (unverified)): no investigation matched among 8 (ios.radiation)
 - `adrenal-suspected-phaeochromocytoma` / **mnm-phaeochromocytoma** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Biliary Colic \| 4. Acute Pancreatitis \| 5. Peptic Ulcer Disease; also in ios.ccEarly#4
-- `adrenal-suspected-phaeochromocytoma` / **flag-phaeo** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `adrenal-suspected-phaeochromocytoma` / **inv-metanephrines** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `adrenal-suspected-phaeochromocytoma` / **mgmt-alpha-blockade** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `adrenal-suspected-phaeochromocytoma` / **flag-phaeo** (ios, FAIL (unverified)): no red flag matched among 2 (ios.visitRisk, ios.allergyBanner)
+- `adrenal-suspected-phaeochromocytoma` / **inv-metanephrines** (ios, FAIL (unverified)): no investigation output on ios
+- `adrenal-suspected-phaeochromocytoma` / **mgmt-alpha-blockade** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `ali-embolic-af` / **dx-ali-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `ali-embolic-af` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `ali-embolic-af` / **mgmt-heparin** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `ali-embolic-af` / **mgmt-heparin** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `ali-embolic-af` / **mgmt-emergency-revascularisation** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `ali-thrombotic-diabetic-claudicant` / **mnm-ali** (ios, FAIL (unverified)): not in top 0 of ios.bayes: (empty list)
 - `ali-thrombotic-diabetic-claudicant` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `ali-thrombotic-diabetic-claudicant` / **mgmt-heparin** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `ali-thrombotic-diabetic-claudicant` / **mgmt-heparin** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `ali-thrombotic-diabetic-claudicant` / **mgmt-urgent-vascular** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `ami-embolic-af` / **mnm-mesenteric-ischaemia** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Irritable Bowel Syndrome
 - `ami-embolic-af` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe central abdominal pain' gives 'routine'.]
 - `ami-embolic-af` / **alarm-mesenteric** (ios, FAIL (unverified)): no alarm output on ios
-- `ami-embolic-af` / **inv-cta** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
-- `ami-embolic-af` / **mgmt-revascularisation** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `ami-infarction-septic-shock` / **mnm-mesenteric** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Inguinal Hernia
 - `ami-infarction-septic-shock` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and collapse' gives 'routine'.]
 - `ami-infarction-septic-shock` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 2 (ios.pipeline.alert)
 - `ami-infarction-septic-shock` / **alarm-shock** (ios, FAIL (unverified)): no alarm matched among 2 (ios.pipeline.alert)
-- `ami-infarction-septic-shock` / **mgmt-emergency-laparotomy** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `ami-infarction-septic-shock` / **mgmt-revascularisation** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `ami-venous-thrombosis-ocp` / **mnm-mesenteric** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Acute Diverticulitis \| 5. Irritable Bowel Syndrome
 - `ami-venous-thrombosis-ocp` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 20); the only reasons are 'Pregnancy mentioned' (from 'pregnancy test negative') and pain score. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain for five days' gives 'routine'.]
 - `ami-venous-thrombosis-ocp` / **inv-pregnancy-test** (ios, FAIL (unverified)): no investigation matched among 6 (ios.pipeline.decisions)
 - `ami-venous-thrombosis-ocp` / **mgmt-anticoagulation** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - `anal-cancer-red-flags` / **mnm-anal-cancer** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Basal Cell Carcinoma \| 2. Melanoma \| 3. Squamous Cell Carcinoma \| 4. Lipoma \| 5. Sebaceous Cyst (Epidermoid)
 - `anal-cancer-red-flags` / **level-at-least-priority** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- `anal-cancer-red-flags` / **flag-malignancy** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `anal-cancer-red-flags` / **inv-biopsy** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
+- `anal-cancer-red-flags` / **flag-malignancy** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `anal-cancer-red-flags` / **inv-biopsy** (ios, FAIL (unverified)): no investigation output on ios
 - `anal-fissure-atypical-lateral-hiv` / **mnm-anal-cancer** (ios, FAIL (unverified)): not in top 0 of ios.bayes: (empty list)
 - `anal-fissure-atypical-lateral-hiv` / **mgmt-no-sphincterotomy** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "if chronic / failed medical: lateral internal sphincterotomy"
 - `aortic-dissection-epigastric-back-pain` / **mnm-dissection** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. Inguinal Hernia
@@ -70,9 +66,9 @@ None.
 - `aortic-dissection-epigastric-back-pain` / **alarm-dissection** (ios, FAIL (unverified)): no alarm matched among 1 (ios.pipeline.alert)
 - `aortoenteric-fistula-herald-bleed` / **mnm-aortoenteric-fistula** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Appendicitis (with nausea) \| 3. Small Bowel Obstruction \| 4. Drug-Induced Nausea / Vomiting \| 5. Gastroparesis
 - `aortoenteric-fistula-herald-bleed` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `aortoenteric-fistula-herald-bleed` / **flag-aortic-graft** (ios, FAIL (unverified)): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert)
-- `aortoenteric-fistula-herald-bleed` / **inv-ct-angiography** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `aortoenteric-fistula-herald-bleed` / **mgmt-vascular-surgery** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `aortoenteric-fistula-herald-bleed` / **flag-aortic-graft** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)
+- `aortoenteric-fistula-herald-bleed` / **inv-ct-angiography** (ios, FAIL (unverified)): no investigation output on ios
+- `aortoenteric-fistula-herald-bleed` / **mgmt-vascular-surgery** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
 - `appendicitis-adult-typical` / **dx-appendicitis-top3** (ios, FAIL (known gap)): not in top 3 of ios.bayes: (empty list); also in ios.triage#1 [known gap: iOS: fallback mode (DiagnosticDatabase.json does not decode): the CC routes to the rightIliacFossaPain pool, which has no built-in list (`?? []`), so the differential is empty.]
 - `appendicitis-antibiotics-first-coda` / **dx-appendicitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list); also in ios.triage#1
 - `appendicitis-appendicolith` / **dx-appendicitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list); also in ios.triage#1
@@ -83,33 +79,34 @@ None.
 - `appendicitis-generalised-peritonitis-sepsis` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 2 (ios.pipeline.alert)
 - `appendicitis-generalised-peritonitis-sepsis` / **inv-blood-cultures** (ios, FAIL (unverified)): no investigation matched among 8 (ios.radiation)
 - `appendicitis-immunosuppressed-transplant` / **dx-appendicitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list); also in ios.ccEarly#1, ios.triage#2
-- `appendicitis-immunosuppressed-transplant` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Mild right-sided abdominal pain for 2 days' gives 'routine'.]
+- `appendicitis-immunosuppressed-transplant` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Mild right-sided abdominal pain for 2 days' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom, Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=12: no triage rule covers this presentation.]
 - `appendicitis-paediatric-9y` / **dx-appendicitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list); also in ios.triage#2
 - `appendicitis-paediatric-9y` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Tummy pain and vomiting' gives 'routine'.]
 - `appendicitis-perforated-abscess` / **dx-appendicitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list); also in ios.triage#1
 - `appendicitis-pregnant-t2` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS ClinicalPathwayEngine: CC matches no pathway, so acuity stays routine.]
-- `appendicitis-pregnant-t2` / **flag-pregnancy** (ios, FAIL (known gap)): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) [known gap: iOS Patient has no pregnancy field; VisitRiskAssessment raises "Could be pregnant?" only on trauma/burns/procedure pathways.]
+- `appendicitis-pregnant-t2` / **flag-pregnancy** (ios, FAIL (known gap)): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) [known gap: iOS Patient has no pregnancy field; VisitRiskAssessment raises "Could be pregnant?" only on trauma/burns/procedure pathways.]
 - `appendicitis-pregnant-t2` / **inv-mri-after-inconclusive-us** (ios, FAIL (known gap)): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
 - `appendicitis-score-intermediate-band` / **dx-appendicitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list); also in ios.triage#1
-- `appendicitis-score-low-band` / **inv-pregnancy-test** (ios, FAIL (unverified)): no investigation matched among 13 (ios.pipeline.decisions, ios.radiation)
+- `appendicitis-score-low-band` / **inv-pregnancy-test** (ios, FAIL (unverified)): no investigation matched among 6 (ios.pipeline.decisions)
 - `biliary-colic-mimic-inferior-mi` / **mnm-acs** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Pancreatitis \| 3. Acute Appendicitis \| 4. Acute Diverticulitis \| 5. Biliary Colic
 - `biliary-colic-mimic-inferior-mi` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `boerhaave-classic-mackler` / **dx-perforation-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Pulmonary Embolism \| 3. Musculoskeletal Chest Pain \| 4. Stable Angina \| 5. GERD / Oesophagitis
 - `boerhaave-classic-mackler` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `boerhaave-classic-mackler` / **inv-ct-oral-contrast** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `boerhaave-classic-mackler` / **mgmt-nil-by-mouth** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `boerhaave-classic-mackler` / **mgmt-broad-spectrum-antibiotics** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `boerhaave-classic-mackler` / **mgmt-surgical-referral** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `boerhaave-classic-mackler` / **inv-ct-oral-contrast** (ios, FAIL (unverified)): no investigation output on ios
+- `boerhaave-classic-mackler` / **mgmt-nil-by-mouth** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
+- `boerhaave-classic-mackler` / **mgmt-broad-spectrum-antibiotics** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
+- `boerhaave-classic-mackler` / **mgmt-surgical-referral** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
 - `boerhaave-presenting-as-chest-pain` / **mnm-perforation** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Pulmonary Embolism \| 3. Musculoskeletal Chest Pain \| 4. Stable Angina \| 5. GERD / Oesophagitis
 - `boerhaave-presenting-as-chest-pain` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `boerhaave-presenting-as-chest-pain` / **inv-ct-oral-contrast** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
+- `boerhaave-presenting-as-chest-pain` / **inv-ecg** (ios, FAIL (unverified)): no investigation output on ios
+- `boerhaave-presenting-as-chest-pain` / **inv-ct-oral-contrast** (ios, FAIL (unverified)): no investigation output on ios
 - `boerhaave-presenting-as-pancreatitis` / **mnm-perforation** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. GERD / Oesophagitis
 - `boerhaave-presenting-as-pancreatitis` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `boerhaave-presenting-as-pancreatitis` / **inv-ct-oral-contrast** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
+- `boerhaave-presenting-as-pancreatitis` / **inv-ct-oral-contrast** (ios, FAIL (unverified)): no investigation output on ios
 - `breast-abscess-lactational` / **inv-uss** (ios, FAIL (unverified)): no investigation output on ios
 - `breast-abscess-lactational` / **mgmt-aspiration** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
-- `breast-abscess-non-lactational-smoker` / **inv-uss** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `breast-abscess-non-lactational-smoker` / **mgmt-aspiration** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `breast-abscess-non-lactational-smoker` / **inv-uss** (ios, FAIL (unverified)): no investigation output on ios
+- `breast-abscess-non-lactational-smoker` / **mgmt-aspiration** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `breast-inflammatory-cancer` / **mnm-carcinoma** (ios, FAIL (unverified)): not in top 0 of ios.bayes: (empty list); also in ios.triage#3
 - `breast-inflammatory-cancer` / **level-at-least-priority** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Breast Surgery Pathway); expected ≥ priority
 - `breast-inflammatory-cancer` / **mgmt-no-bcs-or-slnb** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy"
@@ -133,34 +130,33 @@ None.
 - `breast-nipple-discharge-bloody-single-duct` / **inv-mammogram** (ios, FAIL (unverified)): no investigation output on ios
 - `breast-nipple-discharge-bloody-single-duct` / **inv-uss** (ios, FAIL (unverified)): no investigation output on ios
 - `burns-adult-flame-27pct` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `burns-adult-flame-27pct` / **mgmt-formal-fluids** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `burns-adult-flame-27pct` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `burns-adult-flame-27pct` / **mgmt-formal-fluids** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `burns-adult-flame-27pct` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `burns-chemical-alkali` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `burns-chemical-alkali` / **mgmt-copious-irrigation** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `burns-chemical-alkali` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `burns-chemical-alkali` / **mgmt-copious-irrigation** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `burns-chemical-alkali` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `burns-child-immersion-nai` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `burns-child-immersion-nai` / **flag-safeguarding** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `burns-child-immersion-nai` / **mgmt-safeguarding-referral** (ios, FAIL (unverified)): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `burns-child-immersion-nai` / **mgmt-paediatric-burns-referral** (ios, FAIL (unverified)): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `burns-child-immersion-nai` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- `burns-child-immersion-nai` / **flag-safeguarding** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `burns-child-immersion-nai` / **mgmt-safeguarding-referral** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `burns-child-immersion-nai` / **mgmt-paediatric-burns-referral** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `burns-child-scald-12pct` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `burns-child-scald-12pct` / **mgmt-formal-fluids** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `burns-child-scald-12pct` / **mgmt-paediatric-burns-referral** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `burns-child-scald-12pct` / **mgmt-formal-fluids** (ios, FAIL (unverified)): no management item matched among 2 (ios.pipeline.actions, ios.soap.plan)
+- `burns-child-scald-12pct` / **mgmt-paediatric-burns-referral** (ios, FAIL (unverified)): no management item matched among 2 (ios.pipeline.actions, ios.soap.plan)
 - `burns-circumferential-forearm-hand` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `burns-circumferential-forearm-hand` / **flag-circumferential** (ios, FAIL (unverified)): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `burns-circumferential-forearm-hand` / **mgmt-escharotomy** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `burns-circumferential-forearm-hand` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `burns-circumferential-forearm-hand` / **flag-circumferential** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `burns-circumferential-forearm-hand` / **mgmt-escharotomy** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `burns-circumferential-forearm-hand` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `burns-electrical-high-voltage` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `burns-electrical-high-voltage` / **flag-myoglobinuria** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
 - `burns-electrical-high-voltage` / **inv-ecg-monitoring** (ios, FAIL (unverified)): no investigation output on ios
 - `burns-electrical-high-voltage` / **mgmt-rhabdo-fluids** (ios, FAIL (unverified)): no management item matched among 2 (ios.pipeline.actions, ios.soap.plan)
 - `burns-electrical-high-voltage` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 2 (ios.pipeline.actions, ios.soap.plan)
 - `burns-inhalation-enclosed-space` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `burns-inhalation-enclosed-space` / **flag-inhalation** (ios, FAIL (unverified)): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `burns-inhalation-enclosed-space` / **inv-cohb** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
-- `burns-inhalation-enclosed-space` / **mgmt-early-intubation** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `burns-inhalation-enclosed-space` / **mgmt-100-oxygen** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `burns-inhalation-enclosed-space` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `burns-inhalation-enclosed-space` / **flag-inhalation** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner)
+- `burns-inhalation-enclosed-space` / **inv-cohb** (ios, FAIL (unverified)): no investigation output on ios
+- `burns-inhalation-enclosed-space` / **mgmt-early-intubation** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `burns-inhalation-enclosed-space` / **mgmt-100-oxygen** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `burns-inhalation-enclosed-space` / **mgmt-burns-referral** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `caecal-volvulus` / **inv-pregnancy-test** (ios, FAIL (unverified)): no investigation matched among 11 (ios.pipeline.decisions, ios.radiation)
 - `caecal-volvulus` / **mgmt-resection** (ios, FAIL (unverified)): no management item matched among 26 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
 - `caustic-ingestion-alkali` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
@@ -169,14 +165,14 @@ None.
 - `cdiff-fulminant-colitis` / **mnm-cdiff** (ios, FAIL (unverified)): not in top 4 of ios.bayes: 1. Colorectal Carcinoma \| 2. Irritable Bowel Syndrome \| 3. Diverticular Disease \| 4. Inflammatory Bowel Disease
 - `cdiff-fulminant-colitis` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `cdiff-fulminant-colitis` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 2 (ios.pipeline.alert)
-- `cdiff-fulminant-colitis` / **mgmt-vancomycin-metronidazole** (ios, FAIL (unverified)): no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)
+- `cdiff-fulminant-colitis` / **mgmt-vancomycin-metronidazole** (ios, FAIL (unverified)): no management item matched among 11 (ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan)
 - `cellulitis-leg-adult` / **dx-cellulitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `cellulitis-sepsis-elderly-diabetic` / **dx-cellulitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - `cellulitis-sepsis-elderly-diabetic` / **mnm-nsti** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - `cellulitis-sepsis-elderly-diabetic` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `cellulitis-sepsis-elderly-diabetic` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 1 (ios.pipeline.alert)
 - `charcot-foot-cellulitis-mimic` / **mnm-charcot** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Gout \| 2. Osteoarthritis \| 3. Septic Arthritis \| 4. Sickle Cell Crisis \| 5. Rheumatoid Arthritis
-- `charcot-foot-cellulitis-mimic` / **mgmt-immobilise-offload** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `charcot-foot-cellulitis-mimic` / **mgmt-immobilise-offload** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `cholangitis-tg18-grade3-reynolds` / **level-emergency** (ios, FAIL (known gap)): ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS ClinicalPathwayEngine: 'jaundice' gives urgent; no emergency keyword in CC/PMH.]
 - `cholangitis-tg18-grade3-reynolds` / **score-tg18-autofill** (ios, FAIL (known gap)): expected = 3; got ios.autofill.tg18-cholangitis=2 (Tokyo Grade II — Moderate acute cholangitis; urgent ERCP wit) [known gap: iOS auto-fill never sets organ-dysfunction fields (returns Grade II from age/temperature/WBC/bilirubin); web returns "criteria not met".]
 - `cholecystitis-acalculous-icu` / **dx-cholecystitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
@@ -214,9 +210,7 @@ None.
 - `crc-fit-positive-abdominal-pain` / **flag-fit-positive** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
 - `crc-fit-positive-abdominal-pain` / **mgmt-suspected-cancer-pathway** (ios, FAIL (unverified)): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `crc-ida-no-gi-symptoms` / **mnm-crc** (ios, FAIL (unverified)): not in top 0 of ios.bayes: (empty list)
-- `crc-ida-no-gi-symptoms` / **flag-ida** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `crc-ida-no-gi-symptoms` / **inv-colonoscopy** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
-- `crc-ida-no-gi-symptoms` / **inv-ogd** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
+- `crc-ida-no-gi-symptoms` / **flag-ida** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
 - `crc-lynch-surveillance-overdue` / **flag-lynch** (ios, FAIL (unverified)): no red flag matched among 2 (ios.visitRisk, ios.allergyBanner)
 - `crc-lynch-surveillance-overdue` / **inv-colonoscopy** (ios, FAIL (unverified)): no investigation output on ios
 - `crc-rectal-bleeding-weight-loss-52` / **dx-crc-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Gastrointestinal Malignancy \| 2. Inflammatory Bowel Disease \| 3. Diabetes Mellitus Type 2 \| 4. Hyperthyroidism; also in ios.triage#3
@@ -231,9 +225,9 @@ None.
 - `crohns-ileocaecal-abscess` / **mgmt-drainage** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `crohns-ileocaecal-abscess` / **mgmt-antibiotics** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `crohns-perianal-complex-fistula` / **level-same-day** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `crohns-perianal-complex-fistula` / **inv-mri-pelvis** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `crohns-perianal-complex-fistula` / **mgmt-eua-seton** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `crohns-perianal-complex-fistula` / **mgmt-drainage** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `crohns-perianal-complex-fistula` / **inv-mri-pelvis** (ios, FAIL (unverified)): no investigation output on ios
+- `crohns-perianal-complex-fistula` / **mgmt-eua-seton** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- `crohns-perianal-complex-fistula` / **mgmt-drainage** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `dfi-moderate-osteomyelitis` / **mnm-osteomyelitis** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - `dfi-moderate-osteomyelitis` / **inv-foot-xray** (ios, FAIL (unverified)): no investigation output on ios
 - `dfi-severe-wet-gangrene-abscess` / **mnm-dfi** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Gout \| 2. Osteoarthritis \| 3. Septic Arthritis \| 4. Rheumatoid Arthritis \| 5. Sickle Cell Crisis
@@ -244,24 +238,19 @@ None.
 - `dfi-severe-wet-gangrene-abscess` / **mgmt-iv-broad-spectrum** (ios, FAIL (unverified)): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
 - `dfu-ischaemic-calcified-abpi` / **mnm-limb-ischaemia** (ios, FAIL (unverified)): not in top 0 of ios.bayes: (empty list)
 - `dfu-ischaemic-calcified-abpi` / **level-at-least-priority** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- `dfu-ischaemic-calcified-abpi` / **inv-toe-pressure-or-imaging** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
-- `dfu-ischaemic-calcified-abpi` / **mgmt-vascular-referral** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `dfu-ischaemic-calcified-abpi` / **inv-toe-pressure-or-imaging** (ios, FAIL (unverified)): no investigation output on ios
+- `dfu-ischaemic-calcified-abpi` / **mgmt-vascular-referral** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `diverticulitis-abscess-drainage` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal pain and fever' gives 'routine'.]
-- `diverticulitis-abscess-drainage` / **mgmt-iv-antibiotics** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `diverticulitis-abscess-drainage` / **mgmt-drainage** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `diverticulitis-abscess-drainage` / **mgmt-iv-antibiotics** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- `diverticulitis-abscess-drainage` / **mgmt-drainage** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `diverticulitis-faecal-peritonitis-shock` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and collapse' gives 'routine'.]
 - `diverticulitis-faecal-peritonitis-shock` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 2 (ios.textParser, ios.pipeline.alert)
 - `diverticulitis-faecal-peritonitis-shock` / **alarm-shock** (ios, FAIL (unverified)): no alarm matched among 2 (ios.textParser, ios.pipeline.alert)
-- `diverticulitis-faecal-peritonitis-shock` / **inv-blood-cultures** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `diverticulitis-faecal-peritonitis-shock` / **mgmt-hartmanns-or-damage-control** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `diverticulitis-faecal-peritonitis-shock` / **mgmt-antibiotics** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `diverticulitis-immunosuppressed` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal discomfort' gives 'routine'.]
+- `diverticulitis-immunosuppressed` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal discomfort' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=19: no triage rule covers this presentation.]
 - `diverticulitis-immunosuppressed` / **mgmt-antibiotics** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - `diverticulitis-purulent-peritonitis` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Severe generalised abdominal pain and fever' gives 'routine'.]
 - `diverticulitis-purulent-peritonitis` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 1 (ios.pipeline.alert)
 - `diverticulitis-purulent-peritonitis` / **alarm-perforation** (ios, FAIL (unverified)): no alarm matched among 1 (ios.pipeline.alert)
-- `diverticulitis-purulent-peritonitis` / **mgmt-emergency-surgery** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `diverticulitis-purulent-peritonitis` / **mgmt-antibiotics** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `dvt-pregnancy-22wk` / **dx-dvt-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `dvt-pregnancy-22wk` / **level-same-day** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `dvt-pregnancy-22wk` / **flag-pregnancy** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
@@ -271,8 +260,8 @@ None.
 - `dvt-wells-likely` / **level-same-day** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `dysphagia-progressive-over55` / **level-at-least-priority** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Upper GI / Dysphagia Pathway); expected ≥ priority
 - `dysphagia-progressive-under55` / **level-at-least-priority** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Upper GI / Dysphagia Pathway); expected ≥ priority
-- `dysphagia-progressive-under55` / **flag-dysphagia** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `dysphagia-progressive-under55` / **inv-ogd** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
+- `dysphagia-progressive-under55` / **flag-dysphagia** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `dysphagia-progressive-under55` / **inv-ogd** (ios, FAIL (unverified)): no investigation output on ios
 - `eoe-young-atopic-recurrent-bolus` / **inv-oesophageal-biopsies** (ios, FAIL (unverified)): no investigation matched among 4 (ios.radiation)
 - `fistula-in-ano-complex-anterior-female` / **inv-mri-pelvis** (ios, FAIL (unverified)): no investigation output on ios
 - `fistula-in-ano-complex-anterior-female` / **mgmt-seton-or-sparing** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
@@ -286,7 +275,7 @@ None.
 - `fournier-gangrene` / **mgmt-broad-abx** (ios, FAIL (unverified)): no management item matched among 11 (ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan)
 - `fournier-sglt2-early-mimic` / **mnm-nsti** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - `fournier-sglt2-early-mimic` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `fournier-sglt2-early-mimic` / **mgmt-exploration** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `fournier-sglt2-early-mimic` / **mgmt-exploration** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `gastric-outlet-obstruction-elderly` / **dx-goo-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Appendicitis (with nausea) \| 3. Gastroparesis \| 4. Gastric Outlet Obstruction \| 5. Small Bowel Obstruction; also in ios.pipeline#4
 - `gastric-outlet-obstruction-elderly` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `gastric-outlet-obstruction-elderly` / **inv-ogd** (ios, FAIL (unverified)): no investigation output on ios
@@ -296,8 +285,8 @@ None.
 - `gord-alarm-weight-loss-over55` / **flag-weight-loss-cancer** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags)
 - `groin-mimic-femoral-artery-aneurysm` / **mnm-aneurysm** (ios, FAIL (unverified)): not in top 4 of ios.bayes: 1. Inguinal Hernia \| 2. Femoral Hernia \| 3. Umbilical Hernia \| 4. Incisional Hernia
 - `groin-mimic-lymphadenopathy` / **mnm-lymphoma-or-nodes** (ios, FAIL (unverified)): not in top 4 of ios.bayes: 1. Inguinal Hernia \| 2. Femoral Hernia \| 3. Umbilical Hernia \| 4. Incisional Hernia
-- `groin-mimic-lymphadenopathy` / **flag-malignancy** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `groin-mimic-lymphadenopathy` / **inv-uss-or-biopsy** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
+- `groin-mimic-lymphadenopathy` / **flag-malignancy** (ios, FAIL (unverified)): no red flag matched among 2 (ios.visitRisk, ios.allergyBanner)
+- `groin-mimic-lymphadenopathy` / **inv-uss-or-biopsy** (ios, FAIL (unverified)): no investigation output on ios
 - `groin-mimic-testicular-torsion` / **dx-torsion-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Urinary Tract Infection \| 2. Benign Prostatic Hypertrophy \| 3. Renal / Ureteric Colic \| 4. Carcinoma of Prostate; also in ios.ccEarly#1
 - `groin-mimic-testicular-torsion` / **mnm-torsion** (ios, FAIL (unverified)): not in top 4 of ios.bayes: 1. Urinary Tract Infection \| 2. Benign Prostatic Hypertrophy \| 3. Renal / Ureteric Colic \| 4. Carcinoma of Prostate; also in ios.ccEarly#1
 - `groin-mimic-testicular-torsion` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
@@ -308,7 +297,7 @@ None.
 - `hernia-femoral-richter-obstruction` / **mnm-hernia-cause** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Biliary Colic \| 5. Acute Pancreatitis
 - `hernia-femoral-richter-obstruction` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `hernia-femoral-richter-obstruction` / **alarm-obstruction** (ios, FAIL (unverified)): no alarm matched among 3 (ios.pipeline.alert)
-- `hernia-femoral-richter-obstruction` / **mgmt-emergency-surgery** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `hernia-femoral-richter-obstruction` / **mgmt-no-conservative-sbo-trial** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" (+1 more)
 - `hernia-groin-incarcerated` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `hernia-groin-strangulated` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `hernia-groin-strangulated` / **alarm-strangulation-or-sepsis** (ios, FAIL (unverified)): no alarm matched among 1 (ios.pipeline.alert)
@@ -325,37 +314,35 @@ None.
 - `hernia-paediatric-inguinal-infant` / **mgmt-no-adult-mesh-repair** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "elective laparoscopic (tep/tapp) or open hernia repair" (+1 more)
 - `hernia-paraumbilical-incarcerated-obese` / **dx-umbilical-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Inguinal Hernia; also in ios.pipeline#5
 - `hernia-paraumbilical-incarcerated-obese` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `hernia-paraumbilical-incarcerated-obese` / **alarm-complicated-hernia** (ios, FAIL (unverified)): no alarm matched among 2 (ios.pipeline.alert)
+- `hernia-paraumbilical-incarcerated-obese` / **alarm-complicated-hernia** (ios, FAIL (unverified)): no alarm matched among 3 (ios.pipeline.alert)
+- `hernia-paraumbilical-incarcerated-obese` / **mgmt-emergency-surgery** (ios, FAIL (unverified)): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `hernia-umbilical-adult-elective` / **dx-umbilical-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Acute Pancreatitis \| 5. Biliary Colic
 - `hernia-umbilical-cirrhosis-ascites` / **flag-rupture-risk** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags)
 - `hernia-umbilical-cirrhosis-ascites` / **flag-liver-disease** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags)
 - `hernia-umbilical-cirrhosis-ascites` / **mgmt-ascites-control** (ios, FAIL (unverified)): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `infective-colitis-bloody-diarrhoea` / **inv-stool-culture** (ios, FAIL (unverified)): no investigation output on ios
 - `iron-deficiency-anaemia-over60` / **level-at-least-priority** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- `iron-deficiency-anaemia-over60` / **flag-ida** (ios, FAIL (unverified)): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `iron-deficiency-anaemia-over60` / **inv-ogd** (ios, FAIL (unverified)): no investigation matched among 8 (ios.pipeline.voi, ios.radiation)
-- `iron-deficiency-anaemia-over60` / **inv-colonoscopy** (ios, FAIL (unverified)): no investigation matched among 8 (ios.pipeline.voi, ios.radiation)
+- `iron-deficiency-anaemia-over60` / **flag-ida** (ios, FAIL (unverified)): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
 - `ischaemic-colitis-left` / **dx-ischaemic-colitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Colorectal Carcinoma \| 2. Haemorrhoids \| 3. Inflammatory Bowel Disease \| 4. Anal Fissure
 - `ischaemic-colitis-left` / **level-admit** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `ischaemic-colitis-right-af-ami` / **mnm-ami** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Biliary Colic
 - `ischaemic-colitis-right-af-ami` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `ischaemic-colitis-right-af-ami` / **inv-cta** (ios, FAIL (unverified)): no investigation matched among 13 (ios.pipeline.decisions, ios.radiation)
 - `jaundice-mimic-acute-hepatitis-a` / **inv-inr** (ios, FAIL (unverified)): no investigation output on ios
 - `lbo-cancer-impending-caecal-perforation` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Swollen abdomen and right-sided abdominal pain' gives 'routine'.]
 - `lbo-cancer-impending-caecal-perforation` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 2 (ios.textParser, ios.pipeline.alert)
-- `lbo-cancer-impending-caecal-perforation` / **mgmt-emergency-surgery** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `lbo-cancer-impending-caecal-perforation` / **mgmt-emergency-surgery** (ios, FAIL (unverified)): no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
 - `lbo-obstructing-sigmoid-cancer` / **dx-colorectal-or-obstruction-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Diverticulitis \| 2. Acute Cholecystitis \| 3. Acute Appendicitis \| 4. Irritable Bowel Syndrome \| 5. Biliary Colic; also in ios.triage#1
 - `lgib-angiodysplasia-aspirin` / **mnm-crc** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Biliary Colic
-- `lgib-angiodysplasia-aspirin` / **inv-colonoscopy** (ios, FAIL (unverified)): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation)
 - `lgib-diverticular-apixaban` / **level-admit** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `lgib-diverticular-apixaban` / **mgmt-hold-doac** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `lgib-post-polypectomy` / **level-admit** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `lgib-post-polypectomy` / **mgmt-repeat-colonoscopy** (ios, FAIL (unverified)): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `lgib-post-polypectomy` / **mgmt-repeat-colonoscopy** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `lgib-unstable-cta-first` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `lgib-unstable-cta-first` / **alarm-instability** (ios, FAIL (unverified)): no alarm matched among 1 (ios.pipeline.alert)
-- `lgib-unstable-cta-first` / **inv-cta-first** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
+- `lgib-unstable-cta-first` / **inv-cta-first** (ios, FAIL (unverified)): no investigation output on ios
 - `lgib-unstable-warfarin` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `lgib-unstable-warfarin` / **mgmt-reverse-warfarin** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `lgib-unstable-warfarin` / **inv-cta-first** (ios, FAIL (unverified)): no investigation output on ios
+- `lgib-unstable-warfarin` / **mgmt-reverse-warfarin** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `liver-abscess-amoebic` / **dx-liver-abscess-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `liver-abscess-amoebic` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Biliary Pathway); expected ≥ urgent
 - `liver-abscess-amoebic` / **mgmt-metronidazole** (ios, FAIL (unverified)): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
@@ -377,8 +364,6 @@ None.
 - `mi-presenting-as-epigastric-pain` / **alarm-cardiac** (ios, FAIL (unverified)): no alarm output on ios
 - `mimic-aaa-symptomatic-renal-colic-label` / **mnm-aaa** (ios, FAIL (unverified)): not in top 4 of ios.bayes: 1. Urinary Tract Infection \| 2. Renal / Ureteric Colic \| 3. Carcinoma of Prostate \| 4. Benign Prostatic Hypertrophy
 - `mimic-aaa-symptomatic-renal-colic-label` / **level-at-least-urgent** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right loin pain radiating to the groin' gives 'routine'.]
-- `mimic-aaa-symptomatic-renal-colic-label` / **inv-cta** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
-- `mimic-aaa-symptomatic-renal-colic-label` / **mgmt-vascular-referral** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `mimic-dka-abdominal-pain` / **mnm-dka** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Pancreatitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. Acute Diverticulitis
 - `mimic-dka-abdominal-pain` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and vomiting' gives 'routine'.]
 - `mimic-dka-abdominal-pain` / **alarm-dka** (ios, FAIL (unverified)): no alarm output on ios
@@ -386,14 +371,14 @@ None.
 - `mimic-dka-abdominal-pain` / **mgmt-insulin** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `mimic-ectopic-pregnancy` / **dx-ectopic-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. GERD / Oesophagitis \| 5. Acute Diverticulitis
 - `mimic-ectopic-pregnancy` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain' gives 'routine'.]
-- `mimic-ectopic-pregnancy` / **inv-pregnancy-test** (ios, FAIL (unverified)): no investigation matched among 15 (ios.pipeline.decisions, ios.radiation)
-- `mimic-ectopic-pregnancy` / **inv-transvaginal-us** (ios, FAIL (unverified)): no investigation matched among 15 (ios.pipeline.decisions, ios.radiation)
-- `mimic-ectopic-pregnancy` / **mgmt-gynaecology** (ios, FAIL (unverified)): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `mimic-ectopic-pregnancy` / **inv-pregnancy-test** (ios, FAIL (unverified)): no investigation matched among 6 (ios.pipeline.decisions)
+- `mimic-ectopic-pregnancy` / **inv-transvaginal-us** (ios, FAIL (unverified)): no investigation matched among 6 (ios.pipeline.decisions)
+- `mimic-ectopic-pregnancy` / **mgmt-gynaecology** (ios, FAIL (unverified)): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - `mimic-ectopic-ruptured-shock` / **dx-ectopic-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Acute Diverticulitis \| 5. Acute Pancreatitis
 - `mimic-ectopic-ruptured-shock` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden lower abdominal pain and collapse' gives 'routine'.]
-- `mimic-ectopic-ruptured-shock` / **alarm-shock** (ios, FAIL (unverified)): no alarm matched among 3 (ios.pipeline.alert)
-- `mimic-ectopic-ruptured-shock` / **alarm-ectopic** (ios, FAIL (unverified)): no alarm matched among 3 (ios.pipeline.alert)
-- `mimic-ectopic-ruptured-shock` / **mgmt-emergency-surgery** (ios, FAIL (unverified)): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- `mimic-ectopic-ruptured-shock` / **alarm-shock** (ios, FAIL (unverified)): no alarm matched among 2 (ios.pipeline.alert)
+- `mimic-ectopic-ruptured-shock` / **alarm-ectopic** (ios, FAIL (unverified)): no alarm matched among 2 (ios.pipeline.alert)
+- `mimic-ectopic-ruptured-shock` / **mgmt-emergency-surgery** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - `mimic-inferior-mi-ecg-confirmed` / **mnm-acs** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Peptic Ulcer Disease
 - `mimic-inferior-mi-ecg-confirmed` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 30); the resulted ECG (ST elevation) and troponin 412 are not triage inputs, and HR 48/SBP 92 are inside the vital thresholds. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Upper abdominal discomfort and nausea' gives 'routine'.]
 - `mimic-inferior-mi-ecg-confirmed` / **alarm-stemi** (ios, FAIL (unverified)): no alarm matched among 3 (ios.pipeline.alert)
@@ -401,7 +386,6 @@ None.
 - `mimic-inferior-mi` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Epigastric pain and sweating' gives 'routine'.]
 - `mimic-ruptured-aaa` / **dx-aaa-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Renal / Ureteric Colic \| 2. Acute Cholecystitis \| 3. Acute Appendicitis \| 4. Acute Pancreatitis \| 5. Acute Diverticulitis
 - `mimic-ruptured-aaa` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left loin pain and collapse' gives 'routine'.]
-- `mimic-ruptured-aaa` / **mgmt-vascular-repair** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `mimic-ruptured-aaa` / **mgmt-no-nsaid-renal-colic** (ios, FAIL (unverified)): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."
 - `mimic-testicular-torsion` / **dx-torsion-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Renal / Ureteric Colic \| 4. Inguinal Hernia \| 5. Acute Pancreatitis
 - `mimic-testicular-torsion` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.]
@@ -411,10 +395,9 @@ None.
 - `nsaid-associated-gastric-ulcer` / **mgmt-no-blanket-stop-aspirin** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "stop nsaids + aspirin if possible; use paracetamol instead"
 - `nsti-early-low-lrinec` / **mnm-nsti** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - `nsti-early-low-lrinec` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `nsti-early-low-lrinec` / **flag-pain-out-of-proportion** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `nsti-early-low-lrinec` / **mgmt-surgical-exploration** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `nsti-early-low-lrinec` / **mgmt-clindamycin** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `nsti-early-low-lrinec` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- `nsti-early-low-lrinec` / **flag-pain-out-of-proportion** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `nsti-early-low-lrinec` / **mgmt-surgical-exploration** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- `nsti-early-low-lrinec` / **mgmt-clindamycin** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `nsti-fournier-diabetic` / **mnm-fournier** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - `nsti-fournier-diabetic` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `nsti-fournier-diabetic` / **inv-blood-cultures** (ios, FAIL (unverified)): no investigation output on ios
@@ -430,16 +413,17 @@ None.
 - `nsti-postop-abdominal-wall` / **dx-nsti-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `nsti-postop-abdominal-wall` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `nsti-postop-abdominal-wall` / **alarm-sepsis-shock** (ios, FAIL (unverified)): no alarm matched among 2 (ios.pipeline.alert)
-- `nsti-postop-abdominal-wall` / **inv-blood-cultures** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
-- `nsti-postop-abdominal-wall` / **mgmt-return-to-theatre** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `nsti-postop-abdominal-wall` / **mgmt-clindamycin** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `nsti-postop-abdominal-wall` / **inv-blood-cultures** (ios, FAIL (unverified)): no investigation output on ios
+- `nsti-postop-abdominal-wall` / **mgmt-return-to-theatre** (ios, FAIL (unverified)): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
+- `nsti-postop-abdominal-wall` / **mgmt-clindamycin** (ios, FAIL (unverified)): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
 - `painless-jaundice-elderly-metastatic` / **dx-pancreatic-cancer-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Carcinoma of Head of Pancreas \| 2. Choledocholithiasis \| 3. Viral Hepatitis \| 4. Ascending Cholangitis \| 5. Haemolytic Jaundice
 - `painless-jaundice-pancreatic-head` / **dx-pancreatic-cancer-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Carcinoma of Head of Pancreas \| 2. Choledocholithiasis \| 3. Ascending Cholangitis \| 4. Viral Hepatitis \| 5. Haemolytic Jaundice
-- `painless-jaundice-pancreatic-head` / **flag-malignancy** (ios, FAIL (unverified)): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `painless-jaundice-pancreatic-head` / **inv-ct-pancreas-protocol** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `painless-jaundice-pancreatic-head` / **mgmt-hpb-mdt** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `painless-jaundice-pancreatic-head` / **flag-malignancy** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner)
+- `painless-jaundice-pancreatic-head` / **inv-ct-pancreas-protocol** (ios, FAIL (unverified)): no investigation output on ios
+- `painless-jaundice-pancreatic-head` / **mgmt-hpb-mdt** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `pancreatic-cancer-new-diabetes-weight-loss` / **mnm-pancreatic-cancer** (ios, FAIL (unverified)): not in top 4 of ios.bayes: 1. Gastrointestinal Malignancy \| 2. Diabetes Mellitus Type 2 \| 3. Inflammatory Bowel Disease \| 4. Hyperthyroidism
-- `pancreatic-cancer-new-diabetes-weight-loss` / **flag-malignancy** (ios, FAIL (unverified)): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote)
+- `pancreatic-cancer-new-diabetes-weight-loss` / **flag-malignancy** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)
+- `pancreatic-cancer-new-diabetes-weight-loss` / **inv-ct** (ios, FAIL (unverified)): no investigation output on ios
 - `pancreatitis-alcohol` / **dx-pancreatitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list); also in ios.ccEarly#3
 - `pancreatitis-alcohol` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `pancreatitis-alcohol` / **mgmt-thiamine** (ios, FAIL (unverified)): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
@@ -464,8 +448,6 @@ None.
 - `pancreatitis-hypertriglyceridaemia` / **mgmt-no-aggressive-fluids** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "iv fluids: hartmann's 250-500 ml/h initially (aggressive resuscitation in first 24h)"
 - `pancreatitis-mimic-ruptured-aaa` / **mnm-aaa** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. Biliary Colic
 - `pancreatitis-mimic-ruptured-aaa` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `pancreatitis-mimic-ruptured-aaa` / **inv-aortic-imaging** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
-- `pancreatitis-mimic-ruptured-aaa` / **mgmt-vascular-emergency** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `pancreatitis-moderately-severe` / **dx-pancreatitis-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `pancreatitis-moderately-severe` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `pancreatitis-moderately-severe` / **mgmt-no-early-cholecystectomy-with-collection** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.referral: "...ral / hpb surgery (urgent (2 wk)): gallstone pancreatitis - cholecystectomy same admission or within 2 weeks - avoid re-admission risk"
@@ -480,24 +462,23 @@ None.
 - `pancreatitis-severe-organ-failure` / **mgmt-no-routine-ercp** (ios, FAIL (unverified)): forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, uss abdomen, mrcp, ercp."
 - `parathyroid-hypercalcaemic-crisis` / **mnm-hypercalcaemia** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - `parathyroid-hypercalcaemic-crisis` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `parathyroid-hypercalcaemic-crisis` / **mgmt-iv-saline** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `parathyroid-hypercalcaemic-crisis` / **mgmt-stop-calcium-thiazide** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `parathyroid-primary-hpt-surgical-indications` / **mgmt-stop-thiazide** (ios, FAIL (unverified)): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `parathyroid-hypercalcaemic-crisis` / **mgmt-stop-calcium-thiazide** (ios, FAIL (unverified)): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- `parathyroid-primary-hpt-surgical-indications` / **mgmt-stop-thiazide** (ios, FAIL (unverified)): no management item matched among 20 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
 - `pe-postop-day5` / **dx-pe-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Heart Failure \| 3. Asthma (Acute Exacerbation) \| 4. COPD Exacerbation \| 5. Pulmonary Tuberculosis
 - `pe-postop-day5` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `pe-postop-day5` / **alarm-hypoxia** (ios, FAIL (unverified)): no alarm output on ios
 - `perianal-abscess-diabetic-cellulitis` / **dx-abscess-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Cellulitis / SSTI \| 2. Dengue Fever \| 3. Community-Acquired Pneumonia \| 4. Leptospirosis \| 5. Urinary Tract Infection
 - `perianal-abscess-diabetic-cellulitis` / **level-same-day** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `perianal-abscess-diabetic-cellulitis` / **mgmt-drainage** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `perianal-abscess-diabetic-cellulitis` / **mgmt-antibiotics** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `perianal-abscess-diabetic-cellulitis` / **mgmt-drainage** (ios, FAIL (unverified)): no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `perianal-abscess-diabetic-cellulitis` / **mgmt-antibiotics** (ios, FAIL (unverified)): no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `perianal-abscess-hiv` / **dx-abscess-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - `perianal-abscess-hiv` / **level-same-day** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `perianal-abscess-hiv` / **flag-hiv** (ios, FAIL (unverified)): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
 - `perianal-abscess-simple` / **dx-abscess-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Type 1 Diabetes Mellitus \| 3. Diabetic Complications
 - `perianal-abscess-simple` / **level-same-day** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `pharyngeal-pouch-elderly` / **level-at-least-priority** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- `pharyngeal-pouch-elderly` / **flag-dysphagia** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `pharyngeal-pouch-elderly` / **inv-imaging-or-endoscopy** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
+- `pharyngeal-pouch-elderly` / **flag-dysphagia** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `pharyngeal-pouch-elderly` / **inv-imaging-or-endoscopy** (ios, FAIL (unverified)): no investigation output on ios
 - `ppu-elderly-steroids-masked` / **dx-perforation-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis \| 4. Acute Diverticulitis \| 5. Peptic Ulcer Disease
 - `ppu-elderly-steroids-masked` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal discomfort and new confusion' gives 'routine'.]
 - `ppu-elderly-steroids-masked` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 2 (ios.textParser, ios.pipeline.alert)
@@ -514,12 +495,10 @@ None.
 - `ppu-septic-shock-delayed` / **mgmt-source-control** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `raaa-shock` / **dx-aaa-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Renal / Ureteric Colic \| 5. Peptic Ulcer Disease
 - `raaa-shock` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `raaa-shock` / **mgmt-emergency-repair** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `raaa-shock` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
 - `rectal-prolapse-incarcerated` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `rectal-prolapse-incarcerated` / **flag-strangulation** (ios, FAIL (unverified)): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert)
+- `rectal-prolapse-incarcerated` / **flag-strangulation** (ios, FAIL (unverified)): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)
+- `rectal-prolapse-incarcerated` / **mgmt-emergency-perineal** (ios, FAIL (unverified)): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
 - `sbo-adhesive-base` / **dx-obstruction-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Umbilical Hernia \| 3. Incisional Hernia \| 4. Femoral Hernia; also in ios.triage#1
-- `sbo-gastrografin-failed` / **mgmt-surgery** (ios, FAIL (unverified)): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
 - `sbo-malignant-carcinomatosis` / **dx-obstruction-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Diverticulitis \| 4. Biliary Colic \| 5. Acute Pancreatitis; also in ios.triage#1
 - `sbo-strangulated-femoral-hernia` / **level-emergency** (ios, FAIL (known gap)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Painful lump in the right groin and vomiting' gives 'routine'.]
 - `sbo-strangulated-femoral-hernia` / **mgmt-emergency-repair** (ios, FAIL (unverified)): no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
@@ -534,60 +513,52 @@ None.
 - `sigmoid-volvulus-gangrenous` / **level-emergency** (ios, FAIL (known gap)): ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Bowel Obstruction Pathway); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal distension, pain and fever' gives 'urgent'.]
 - `sigmoid-volvulus-gangrenous` / **alarm-sepsis** (ios, FAIL (unverified)): no alarm matched among 3 (ios.textParser, ios.pipeline.alert)
 - `sigmoid-volvulus-gangrenous` / **alarm-shock** (ios, FAIL (unverified)): no alarm matched among 3 (ios.textParser, ios.pipeline.alert)
-- `sigmoid-volvulus-gangrenous` / **mgmt-emergency-resection** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `sigmoid-volvulus-gangrenous` / **mgmt-antibiotics** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `sigmoid-volvulus-gangrenous` / **mgmt-emergency-resection** (ios, FAIL (unverified)): no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- `svt-gsv-near-sfj` / **mgmt-anticoagulation** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `thyroid-bethesda-5-suspicious` / **mgmt-surgery** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `thyroid-bethesda-6-papillary-cn1b` / **mgmt-total-thyroidectomy** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `thyroid-bethesda-6-papillary-cn1b` / **mgmt-lateral-neck-dissection** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `thyroid-nodule-euthyroid-tirads4` / **inv-tsh** (ios, FAIL (unverified)): no investigation output on ios
 - `thyroid-nodule-euthyroid-tirads4` / **mgmt-us-fna-recommended** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `thyroid-post-op-hypocalcaemia` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ urgent
-- `thyroid-post-op-hypocalcaemia` / **flag-hypocalcaemia** (ios, FAIL (unverified)): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `thyroid-post-op-hypocalcaemia` / **mgmt-iv-calcium** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `thyroid-post-op-hypocalcaemia` / **flag-hypocalcaemia** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `thyroid-post-op-hypocalcaemia` / **mgmt-iv-calcium** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `thyroid-post-op-neck-haematoma` / **dx-haematoma-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Branchial Cyst \| 2. Reactive Lymphadenopathy \| 3. Carotid Body Tumour \| 4. Thyroglossal Duct Cyst \| 5. Thyroid Carcinoma
 - `thyroid-post-op-neck-haematoma` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ emergency
 - `thyroid-post-op-neck-haematoma` / **alarm-emergency** (ios, FAIL (unverified)): no alarm output on ios
-- `thyroid-post-op-neck-haematoma` / **mgmt-bedside-decompression** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `thyroid-post-op-neck-haematoma` / **mgmt-bedside-decompression** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `thyroid-rapid-enlargement-stridor` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ emergency
 - `thyroid-rapid-enlargement-stridor` / **alarm-emergency** (ios, FAIL (unverified)): no alarm output on ios
-- `thyroid-rapid-enlargement-stridor` / **inv-core-biopsy** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `thyroid-rapid-enlargement-stridor` / **mgmt-airway** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `thyroid-retrosternal-goitre-compression` / **flag-compression** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `thyroid-retrosternal-goitre-compression` / **mgmt-thyroidectomy** (ios, FAIL (unverified)): no management item matched among 31 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- `thyroid-rapid-enlargement-stridor` / **inv-core-biopsy** (ios, FAIL (unverified)): no investigation output on ios
+- `thyroid-rapid-enlargement-stridor` / **mgmt-airway** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- `thyroid-retrosternal-goitre-compression` / **flag-compression** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `thyroid-retrosternal-goitre-compression` / **mgmt-thyroidectomy** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `trauma-blunt-polytrauma-class3-shock` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `trauma-blunt-polytrauma-class3-shock` / **mgmt-primary-survey** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-blunt-polytrauma-class3-shock` / **mgmt-blood-products** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-blunt-polytrauma-class3-shock` / **mgmt-laparotomy** (ios, FAIL (unverified)): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-blunt-polytrauma-class3-shock` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- `trauma-blunt-polytrauma-class3-shock` / **mgmt-primary-survey** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `trauma-blunt-polytrauma-class3-shock` / **mgmt-blood-products** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
+- `trauma-blunt-polytrauma-class3-shock` / **mgmt-laparotomy** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `trauma-elderly-occult-shock-warfarin` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `trauma-elderly-occult-shock-warfarin` / **mgmt-warfarin-reversal** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-elderly-occult-shock-warfarin` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- `trauma-elderly-occult-shock-warfarin` / **mgmt-warfarin-reversal** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `trauma-head-injury-elderly-apixaban` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `trauma-head-injury-elderly-apixaban` / **inv-ct-head** (ios, FAIL (unverified)): no investigation matched among 7 (ios.radiation)
+- `trauma-head-injury-elderly-apixaban` / **inv-ct-head** (ios, FAIL (unverified)): no investigation output on ios
 - `trauma-head-injury-gcs12` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `trauma-head-injury-gcs12` / **flag-gcs** (ios, FAIL (unverified)): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner)
 - `trauma-head-injury-gcs12` / **inv-ct-head** (ios, FAIL (unverified)): no investigation output on ios
-- `trauma-paediatric-nai-bruising` / **flag-safeguarding** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `trauma-paediatric-nai-bruising` / **mgmt-safeguarding-referral** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-paediatric-nai-bruising` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- `trauma-paediatric-nai-bruising` / **flag-safeguarding** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- `trauma-paediatric-nai-bruising` / **mgmt-safeguarding-referral** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `trauma-pregnancy-30wk-rtc` / **mnm-abruption** (ios, FAIL (unverified)): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Pancreatitis \| 3. Irritable Bowel Syndrome \| 4. Acute Cholecystitis \| 5. Biliary Colic
 - `trauma-pregnancy-30wk-rtc` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `trauma-pregnancy-30wk-rtc` / **inv-fetal-monitoring** (ios, FAIL (unverified)): no investigation matched among 13 (ios.pipeline.decisions, ios.radiation)
-- `trauma-pregnancy-30wk-rtc` / **mgmt-uterine-displacement** (ios, FAIL (unverified)): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-pregnancy-30wk-rtc` / **mgmt-obstetric-team** (ios, FAIL (unverified)): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-pregnancy-30wk-rtc` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- `trauma-pregnancy-30wk-rtc` / **inv-fetal-monitoring** (ios, FAIL (unverified)): no investigation matched among 6 (ios.pipeline.decisions)
+- `trauma-pregnancy-30wk-rtc` / **mgmt-uterine-displacement** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- `trauma-pregnancy-30wk-rtc` / **mgmt-obstetric-team** (ios, FAIL (unverified)): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - `trauma-splenic-injury-stable` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `trauma-splenic-injury-stable` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
 - `trauma-splenic-injury-unstable` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `trauma-splenic-injury-unstable` / **mgmt-operative** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-splenic-injury-unstable` / **mgmt-blood-products** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-splenic-injury-unstable` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- `trauma-splenic-injury-unstable` / **mgmt-operative** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- `trauma-splenic-injury-unstable` / **mgmt-blood-products** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - `trauma-stab-abdomen-evisceration` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `trauma-stab-abdomen-evisceration` / **mgmt-laparotomy** (ios, FAIL (unverified)): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-stab-abdomen-evisceration` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- `trauma-stab-abdomen-evisceration` / **mgmt-laparotomy** (ios, FAIL (unverified)): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - `trauma-stab-abdomen-stable-snom` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `trauma-stab-abdomen-stable-snom` / **mgmt-serial-exam** (ios, FAIL (unverified)): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `trauma-stab-abdomen-stable-snom` / **mgmt-no-antithrombotic-plan** (ios, FAIL (unverified)): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- `trauma-stab-abdomen-stable-snom` / **mgmt-serial-exam** (ios, FAIL (unverified)): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - `trauma-tension-pneumothorax` / **mnm-pneumothorax** (ios, FAIL (unverified)): not in top 0 of ios.bayes: (empty list)
 - `trauma-tension-pneumothorax` / **level-emergency** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `trauma-tension-pneumothorax` / **alarm-hypoxia-shock** (ios, FAIL (unverified)): no alarm output on ios
@@ -604,36 +575,37 @@ None.
 - `uc-toxic-megacolon` / **inv-no-colonoscopy** (ios, FAIL (unverified)): forbidden investigation present in ios.radiation: "colonoscopy + biopsy - gold standard diagnosis - extent and pattern"
 - `ugib-cvd-dual-antiplatelet` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Heart Failure \| 2. Community-Acquired Pneumonia \| 3. Asthma (Acute Exacerbation) \| 4. COPD Exacerbation \| 5. Pulmonary Tuberculosis
 - `ugib-cvd-dual-antiplatelet` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `ugib-cvd-dual-antiplatelet` / **inv-group-save** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `ugib-cvd-dual-antiplatelet` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `ugib-cvd-dual-antiplatelet` / **inv-group-save** (ios, FAIL (unverified)): no investigation output on ios
+- `ugib-cvd-dual-antiplatelet` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `ugib-elderly-doac-pre-endoscopy-rockall` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `ugib-elderly-doac-pre-endoscopy-rockall` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `ugib-elderly-doac-pre-endoscopy-rockall` / **inv-group-save** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `ugib-elderly-doac-pre-endoscopy-rockall` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `ugib-elderly-doac-pre-endoscopy-rockall` / **inv-group-save** (ios, FAIL (unverified)): no investigation output on ios
+- `ugib-elderly-doac-pre-endoscopy-rockall` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 1 (ios.soap.plan)
 - `ugib-melaena-only-woman` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `ugib-melaena-only-woman` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `ugib-melaena-only-woman` / **alarm-gi-bleed** (ios, FAIL (unverified)): no alarm output on ios
-- `ugib-melaena-only-woman` / **inv-ogd** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `ugib-melaena-only-woman` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `ugib-melaena-only-woman` / **inv-ogd** (ios, FAIL (unverified)): no investigation output on ios
+- `ugib-melaena-only-woman` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `ugib-nonvariceal-gbs-high` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - `ugib-nonvariceal-gbs-high` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - `ugib-nonvariceal-gbs-high` / **alarm-gi-bleed** (ios, FAIL (unverified)): no alarm matched among 1 (ios.pipeline.alert)
-- `ugib-nonvariceal-gbs-high` / **inv-group-save** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `ugib-nonvariceal-gbs-high` / **inv-ogd** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `ugib-nonvariceal-gbs-high` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `ugib-nonvariceal-gbs-high` / **inv-group-save** (ios, FAIL (unverified)): no investigation output on ios
+- `ugib-nonvariceal-gbs-high` / **inv-ogd** (ios, FAIL (unverified)): no investigation output on ios
+- `ugib-nonvariceal-gbs-high` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `ugib-nonvariceal-gbs-low-outpatient` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - `ugib-nonvariceal-unstable-shock` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - `ugib-nonvariceal-unstable-shock` / **level-emergency** (ios, FAIL (unverified)): ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `ugib-nonvariceal-unstable-shock` / **inv-group-crossmatch** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `ugib-nonvariceal-unstable-shock` / **mgmt-transfusion** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `ugib-nonvariceal-unstable-shock` / **mgmt-endoscopy-after-resus** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `ugib-nonvariceal-unstable-shock` / **inv-group-crossmatch** (ios, FAIL (unverified)): no investigation output on ios
+- `ugib-nonvariceal-unstable-shock` / **mgmt-transfusion** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- `ugib-nonvariceal-unstable-shock` / **mgmt-endoscopy-after-resus** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `ugib-on-warfarin-high-inr` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: (empty list)
 - `ugib-on-warfarin-high-inr` / **level-at-least-urgent** (ios, FAIL (unverified)): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- `ugib-on-warfarin-high-inr` / **inv-group-save** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
-- `ugib-on-warfarin-high-inr` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `ugib-on-warfarin-high-inr` / **inv-inr** (ios, FAIL (unverified)): no investigation output on ios
+- `ugib-on-warfarin-high-inr` / **inv-group-save** (ios, FAIL (unverified)): no investigation output on ios
+- `ugib-on-warfarin-high-inr` / **mgmt-ogd-within-24h** (ios, FAIL (unverified)): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - `upper-abdominal-pain-weight-loss-over55` / **dx-gastric-cancer-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Gastrointestinal Malignancy \| 2. Inflammatory Bowel Disease \| 3. Diabetes Mellitus Type 2 \| 4. Hyperthyroidism
-- `upper-abdominal-pain-weight-loss-over55` / **flag-cancer-weight-loss** (ios, FAIL (unverified)): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- `upper-abdominal-pain-weight-loss-over55` / **inv-ogd** (ios, FAIL (unverified)): no investigation matched among 9 (ios.radiation)
+- `upper-abdominal-pain-weight-loss-over55` / **flag-cancer-weight-loss** (ios, FAIL (unverified)): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)
+- `upper-abdominal-pain-weight-loss-over55` / **inv-ogd** (ios, FAIL (unverified)): no investigation output on ios
 - `variceal-bleed-known-cirrhosis` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - `variceal-bleed-known-cirrhosis` / **level-emergency** (ios, FAIL (unverified)): ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - `variceal-bleed-known-cirrhosis` / **alarm-haemodynamic** (ios, FAIL (unverified)): no alarm output on ios
@@ -644,8 +616,8 @@ None.
 - `variceal-bleed-known-cirrhosis` / **mgmt-band-ligation** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `variceal-bleed-unrecognised-cirrhosis` / **dx-ugib-top3** (ios, FAIL (unverified)): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - `variceal-bleed-unrecognised-cirrhosis` / **level-emergency** (ios, FAIL (unverified)): ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- `variceal-bleed-unrecognised-cirrhosis` / **mgmt-vasoactive** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- `variceal-bleed-unrecognised-cirrhosis` / **mgmt-antibiotic-prophylaxis** (ios, FAIL (unverified)): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- `variceal-bleed-unrecognised-cirrhosis` / **mgmt-vasoactive** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- `variceal-bleed-unrecognised-cirrhosis` / **mgmt-antibiotic-prophylaxis** (ios, FAIL (unverified)): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - `aaa-renal-colic-mimic` / **mnm-aaa** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#5 [known gap: PANE top 3: Renal colic (0.78), Inguinal/femoral hernia, Acute cholecystitis. Symptom inference ranks symptomatic AAA #3.]
 - `aaa-renal-colic-mimic` / **inv-aorta-imaging** (web, FAIL (known gap)): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: No engine suggests aortic ultrasound or CTA; the management panel shows the renal colic protocol (PANE top) and I71.3 maps to no protocol.]
 - `achalasia-pseudoachalasia-elderly` / **mnm-malignancy** (web, FAIL (known gap)): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifier; no dysphagia feature). Symptom inference ranks occult malignancy and oesophageal/gastric carcinoma #1–2.]
@@ -942,19 +914,19 @@ Permutation of `raaa-shock`.
 |---|---|---|---|---|---|---|
 | mnm-aaa | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Add an age ≥60 / no previous stones modifier that keeps aortic aneurysm in the PANE differential for loin pain, and a clinical prompt "first renal colic over 60 — exclude AAA (bedside USS)". |
 | level-at-least-urgent | emergencyLevel | critical | FAIL (unverified) | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
-| inv-aorta-imaging | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Add an "exclude AAA" investigation to the renal colic protocol for age ≥60 without known stones, and map I71.3. |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
-| mgmt-vascular | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 |  |
+| inv-aorta-imaging | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Add an "exclude AAA" investigation to the renal colic protocol for age ≥60 without known stones, and map I71.3. |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
+| mgmt-vascular | managementInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 |  |
 | mgmt-no-colic-discharge | managementExclude | quality | PASS (verify: was unverified) | PASS |  |  |
 
 Failure details:
 
 - **mnm-aaa** (ios): not in top 4 of ios.bayes: 1. Urinary Tract Infection \| 2. Renal / Ureteric Colic \| 3. Carcinoma of Prostate \| 4. Benign Prostatic Hypertrophy
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **inv-aorta-imaging** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-vascular** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-colic-discharge** (ios): none of 14 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- **inv-aorta-imaging** (ios): investigation found in ios.radiation: "ct aorta with contrast (cta) - defines size, morphology, extent - essential pre-operati..."
+- **mgmt-vascular** (ios): management item found in ios.radiation.referral: "vascular surgery (urgent (2 wk)): evar / open repair - size ≥5.5 cm or symptomatic - ruptured..."
+- **mgmt-no-colic-discharge** (ios): none of 18 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 16 management items matched
 - **mnm-aaa** (web): not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#5 [known gap: PANE top 3: Renal colic (0.78), Inguinal/femoral hernia, Acute cholecystitis. Symptom inference ranks symptomatic AAA #3.]
 - **inv-aorta-imaging** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: No engine suggests aortic ultrasound or CTA; the management panel shows the renal colic protocol (PANE top) and I71.3 maps to no protocol.]
 - **mgmt-vascular** (web): no management item matched among 16 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Management panel shows the renal colic protocol; no vascular step.]
@@ -1049,7 +1021,7 @@ Permutation of `achalasia-young`.
 | level-at-least-priority | emergencyLevel | critical | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
 | flag-dysphagia-cancer | redFlags | critical | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
 | inv-ogd | investigationInclude | critical | FAIL (unverified) | PASS | European guidelines on achalasia 2020; NICE NG12 2015 |  |
-| inv-ct | investigationInclude | quality | PASS (verify: was unverified) | PASS | European guidelines on achalasia 2020 |  |
+| inv-ct | investigationInclude | quality | FAIL (unverified) | PASS | European guidelines on achalasia 2020 |  |
 | mgmt-no-myotomy-before-malignancy-excluded | managementExclude | quality | PASS (verify: was unverified) | PASS | European guidelines on achalasia 2020 |  |
 
 Failure details:
@@ -1057,9 +1029,9 @@ Failure details:
 - **mnm-malignancy** (ios): 'Oesophageal Carcinoma' at rank 1 of ios.bayes (k=4); also in ios.ccEarly#1, ios.pipeline#1, ios.triage#1
 - **level-at-least-priority** (ios): ios.triage: priority (ClinicalPathwayEngine suggestedAcuity=Priority, pathway=Upper GI / Dysphagia Pathway); expected ≥ priority
 - **flag-dysphagia-cancer** (ios): red flag found in ios.triage: "⚠️ progressive dysphagia + weight loss - urgent ogd"
-- **inv-ogd** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-ct** (ios): investigation found in ios.radiation: "ctpa (ct pulmonary angiogram) - gold standard - confirms pe, extent, rv strain"
-- **mgmt-no-myotomy-before-malignancy-excluded** (ios): none of 13 management items matched
+- **inv-ogd** (ios): no investigation output on ios
+- **inv-ct** (ios): no investigation output on ios
+- **mgmt-no-myotomy-before-malignancy-excluded** (ios): none of 3 management items matched
 - **mnm-malignancy** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: inguinal hernia, GORD, peptic ulcer (male prior modifier; no dysphagia feature). Symptom inference ranks occult malignancy and oesophageal/gastric carcinoma #1–2.]
 
 Guidelines:
@@ -1088,10 +1060,10 @@ Failure details:
 - **dx-achalasia-top3** (ios): 'Achalasia' at rank 3 of ios.bayes (k=3); also in ios.ccEarly#3, ios.pipeline#3, ios.triage#4
 - **level-at-least-priority** (ios): ios.triage: priority (ClinicalPathwayEngine suggestedAcuity=Priority, pathway=Upper GI / Dysphagia Pathway); expected ≥ priority
 - **flag-dysphagia** (ios): red flag found in ios.triage: "⚠️ progressive dysphagia + weight loss - urgent ogd"
-- **inv-ogd** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-manometry** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-barium-swallow** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-definitive-options** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-ogd** (ios): no investigation output on ios
+- **inv-manometry** (ios): no investigation output on ios
+- **inv-barium-swallow** (ios): no investigation output on ios
+- **mgmt-definitive-options** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - **dx-achalasia-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Hiatus Hernia [known gap: PANE top 3: cholecystitis, appendicitis, hiatus hernia — only weight_loss and regurgitation reach PANE (no dysphagia feature, see dysphagia gap).]
 
 Guidelines:
@@ -1148,11 +1120,11 @@ Permutation of `adrenal-incidentaloma-indeterminate`.
 Failure details:
 
 - **mnm-phaeochromocytoma** (ios): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Biliary Colic \| 4. Acute Pancreatitis \| 5. Peptic Ulcer Disease; also in ios.ccEarly#4
-- **flag-phaeo** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-metanephrines** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-no-adrenal-biopsy** (ios): none of 9 investigations matched
-- **mgmt-alpha-blockade** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-beta-blocker-first** (ios): none of 13 management items matched
+- **flag-phaeo** (ios): no red flag matched among 2 (ios.visitRisk, ios.allergyBanner)
+- **inv-metanephrines** (ios): no investigation output on ios
+- **inv-no-adrenal-biopsy** (ios): none of 0 investigations matched
+- **mgmt-alpha-blockade** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-beta-blocker-first** (ios): none of 3 management items matched
 - **mnm-phaeochromocytoma** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no phaeochromocytoma disease (only adrenal_incidentaloma) and applied no feature; the symptom engine ranks phaeochromocytoma #1 from the chips.]
 
 Guidelines:
@@ -1172,7 +1144,7 @@ Guidelines:
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | ESVS 2020 clinical practice guidelines 2020 |  |
 | alarm-ali | mustAlarm | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
 | mgmt-heparin | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
-| mgmt-emergency-revascularisation | managementInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| mgmt-emergency-revascularisation | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
 | flag-af-embolic-source | redFlags | quality | FAIL (unverified) | FAIL (known gap) |  | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
 | inv-cta-or-duplex | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
 | mgmt-no-claudication-plan | managementExclude | quality | PASS (verify: was unverified) | PASS |  |  |
@@ -1183,11 +1155,11 @@ Failure details:
 - **dx-ali-top3** (ios): not in top 3 of ios.bayes: (empty list)
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **alarm-ali** (ios): alarm found in ios.textParser: "acute limb ischaemia - 5 of 6 ps present - limb-threatening emergency action: emergency vascula..."
-- **flag-af-embolic-source** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser)
-- **inv-cta-or-duplex** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-heparin** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-emergency-revascularisation** (ios): management item found in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min"
-- **mgmt-no-claudication-plan** (ios): none of 11 management items matched
+- **flag-af-embolic-source** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.textParser)
+- **inv-cta-or-duplex** (ios): no investigation output on ios
+- **mgmt-heparin** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-emergency-revascularisation** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-claudication-plan** (ios): none of 1 management items matched
 - **pathway-first-visit** (ios): recommended firstVisit (No previous visits on record); expected firstVisit
 - **dx-ali-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute cholecystitis, GORD, Acute diverticulitis — PANE has no ALI disease. Symptom inference ranks ALI #1.]
 - **alarm-ali** (web): no alarm matched among 2 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains "severe pain" (read as the acute-abdomen rule) plus age/comorbidity points.]
@@ -1214,7 +1186,7 @@ Permutation of `ali-embolic-af`.
 | mnm-ali | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
 | level-at-least-urgent | emergencyLevel | critical | FAIL (unverified) | PASS | ESVS 2020 clinical practice guidelines 2020 |  |
 | mgmt-heparin | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
-| mgmt-urgent-vascular | managementInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
+| mgmt-urgent-vascular | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2020 clinical practice guidelines 2020 | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
 | flag-acute-ischaemia | redFlags | quality | FAIL (unverified) | FAIL (known gap) |  | Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb). |
 | inv-cta | investigationInclude | quality | FAIL (unverified) | PASS | ESVS 2020 clinical practice guidelines 2020 |  |
 | mgmt-no-routine-claudication-referral | managementExclude | quality | PASS (verify: was unverified) | PASS |  |  |
@@ -1223,11 +1195,11 @@ Failure details:
 
 - **mnm-ali** (ios): not in top 0 of ios.bayes: (empty list)
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **flag-acute-ischaemia** (ios): no red flag matched among 11 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-cta** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-heparin** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-urgent-vascular** (ios): management item found in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min"
-- **mgmt-no-routine-claudication-referral** (ios): none of 11 management items matched
+- **flag-acute-ischaemia** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner)
+- **inv-cta** (ios): no investigation output on ios
+- **mgmt-heparin** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-urgent-vascular** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-routine-claudication-referral** (ios): none of 1 management items matched
 - **mnm-ali** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Peripheral Arterial Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Inguinal/femoral hernia, Peripheral arterial disease, GORD — PANE has no ALI disease. Symptom inference ranks PAD #1 and ALI #2.]
 - **flag-acute-ischaemia** (web): no red flag matched among 10 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative) [known gap: PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches same_day_call from age, comorbidity and antiplatelet points.]
 - **mgmt-heparin** (web): no management item matched among 7 (web.clinicalPrompts) [known gap: No protocol matches I74.3 and PANE top is below 0.20 (the PAD protocol would also lack heparin/ALI steps).]
@@ -1249,12 +1221,12 @@ Guidelines:
 | mnm-mesenteric-ischaemia | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | Add an acute mesenteric ischaemia disease node to PANE (features: sudden onset, pain out of proportion, AF/embolic source, vomiting/diarrhoea, age) and a CC_HINTS entry. |
 | level-emergency | emergencyLevel | critical | FAIL (known gap) | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
 | alarm-mesenteric | mustAlarm | critical | FAIL (unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | Add a prompt: abdominal pain + AF (or other embolic source) + soft abdomen/severe pain → 'Exclude acute mesenteric ischaemia — CT angiography now; normal lactate does not exclude'. |
-| inv-cta | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | Map K55.0 to a dedicated acute mesenteric ischaemia protocol (CTA, heparin, vascular surgery, revascularisation) instead of ischaemic colitis. |
+| inv-cta | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | Map K55.0 to a dedicated acute mesenteric ischaemia protocol (CTA, heparin, vascular surgery, revascularisation) instead of ischaemic colitis. |
 | mgmt-heparin | managementInclude | critical | PASS (verify: was unverified) | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
-| mgmt-revascularisation | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | As above: AMI protocol with revascularisation and damage-control steps. |
+| mgmt-revascularisation | managementInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | As above: AMI protocol with revascularisation and damage-control steps. |
 | mnm-mesenteric-ischaemia-symptom-engine | mustNotMiss | quality | n/a | PASS |  |  |
-| inv-lactate | investigationInclude | quality | FAIL (unverified) | PASS | WSES updated guidelines 2022 |  |
-| mgmt-antibiotics | managementInclude | quality | FAIL (unverified) | PASS | WSES updated guidelines 2022 |  |
+| inv-lactate | investigationInclude | quality | PASS (verify: was unverified) | PASS | WSES updated guidelines 2022 |  |
+| mgmt-antibiotics | managementInclude | quality | PASS (verify: was unverified) | PASS | WSES updated guidelines 2022 |  |
 | pathway-first-visit | pathway | quality | PASS (verify: was unverified) | n/a |  |  |
 
 Failure details:
@@ -1262,11 +1234,11 @@ Failure details:
 - **mnm-mesenteric-ischaemia** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Irritable Bowel Syndrome
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe central abdominal pain' gives 'routine'.]
 - **alarm-mesenteric** (ios): no alarm output on ios
-- **inv-cta** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-lactate** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-heparin** (ios): management item found in ios.radiation.plan: "anticoagulation: fondaparinux 2.5 mg sc od (preferred) or enoxaparin"
-- **mgmt-revascularisation** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antibiotics** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-cta** (ios): investigation found in ios.radiation: "ct mesenteric angiography (ct-ma) - definitive - identifies embolus/thrombosis, extent, bowel viabilit..."
+- **inv-lactate** (ios): investigation found in ios.radiation: "lactate (serum) - raised lactate >2 → bowel ischaemia; >4 → poor prognosis"
+- **mgmt-heparin** (ios): management item found in ios.radiation.plan: "iv heparin anticoagulation (if embolic - after surgical review)"
+- **mgmt-revascularisation** (ios): management item found in ios.radiation.plan: "embolectomy / thrombectomy: viable bowel + short ischaemia time"
+- **mgmt-antibiotics** (ios): management item found in ios.radiation.plan: "broad-spectrum antibiotics (bowel flora): tazobactam/piperacillin or meropenem"
 - **pathway-first-visit** (ios): recommended firstVisit (No previous visits on record); expected firstVisit
 - **mnm-mesenteric-ischaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#2, web.passive#2 [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never appear in the PANE top 3 (cholecystitis, appendicitis, GORD). Symptom inference ranks it #2.]
 - **alarm-mesenteric** (web): no alarm matched among 5 (web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: No prompt or triage rule for 'pain out of proportion', AF + abdominal pain, or mesenteric ischaemia.]
@@ -1290,11 +1262,11 @@ Permutation of `ami-embolic-af`.
 | level-emergency | emergencyLevel | critical | FAIL (known gap) | PASS | WSES updated guidelines 2022; Surviving Sepsis Campaign 2021 |  |
 | alarm-sepsis | mustAlarm | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | alarm-shock | mustAlarm | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-emergency-laparotomy | managementInclude | critical | FAIL (unverified) | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
-| mgmt-revascularisation | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | As above: AMI protocol with revascularisation before/with resection. |
+| mgmt-emergency-laparotomy | managementInclude | critical | PASS (verify: was unverified) | PASS | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 |  |
+| mgmt-revascularisation | managementInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017; WSES updated guidelines 2022 | As above: AMI protocol with revascularisation before/with resection. |
 | mgmt-heparin | managementInclude | quality | PASS (verify: was unverified) | PASS | ESVS clinical practice guidelines 2017 |  |
-| mgmt-second-look | managementInclude | quality | FAIL (unverified) | PASS | WSES updated guidelines 2022 |  |
-| mgmt-icu | managementInclude | quality | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-second-look | managementInclude | quality | PASS (verify: was unverified) | PASS | WSES updated guidelines 2022 |  |
+| mgmt-icu | managementInclude | quality | PASS (verify: was unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 
 Failure details:
 
@@ -1302,11 +1274,11 @@ Failure details:
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and collapse' gives 'routine'.]
 - **alarm-sepsis** (ios): no alarm matched among 2 (ios.pipeline.alert)
 - **alarm-shock** (ios): no alarm matched among 2 (ios.pipeline.alert)
-- **mgmt-emergency-laparotomy** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-revascularisation** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-heparin** (ios): management item found in ios.radiation.plan: "anticoagulation: fondaparinux 2.5 mg sc od (preferred) or enoxaparin"
-- **mgmt-second-look** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-icu** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-emergency-laparotomy** (ios): management item found in ios.radiation.plan: "resection of non-viable bowel + second-look laparotomy at 24-48h"
+- **mgmt-revascularisation** (ios): management item found in ios.radiation.plan: "embolectomy / thrombectomy: viable bowel + short ischaemia time"
+- **mgmt-heparin** (ios): management item found in ios.radiation.plan: "iv heparin anticoagulation (if embolic - after surgical review)"
+- **mgmt-second-look** (ios): management item found in ios.radiation.plan: "resection of non-viable bowel + second-look laparotomy at 24-48h"
+- **mgmt-icu** (ios): management item found in ios.radiation.plan: "icu/hdu monitoring post-operatively"
 - **mnm-mesenteric** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: Web: PANE has no acute mesenteric ischaemia disease node, so it can never appear in the PANE top 3 (inguinal/femoral hernia, cholecystitis, cholangitis).]
 - **mgmt-revascularisation** (web): no management item matched among 62 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web: No revascularisation step; only laparotomy/resection templates.]
 
@@ -1373,12 +1345,12 @@ Failure details:
 
 - **mnm-anal-cancer** (ios): not in top 5 of ios.bayes: 1. Basal Cell Carcinoma \| 2. Melanoma \| 3. Squamous Cell Carcinoma \| 4. Lipoma \| 5. Sebaceous Cyst (Epidermoid)
 - **level-at-least-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- **flag-malignancy** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-biopsy** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-mri-pelvis** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-hiv-test** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-chemoradiotherapy** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-haemorrhoid-treatment** (ios): none of 11 management items matched
+- **flag-malignancy** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-biopsy** (ios): no investigation output on ios
+- **inv-mri-pelvis** (ios): no investigation output on ios
+- **inv-hiv-test** (ios): no investigation output on ios
+- **mgmt-chemoradiotherapy** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-haemorrhoid-treatment** (ios): none of 1 management items matched
 - **mnm-anal-cancer** (web): not in top 3 of web.pane: 1. Haemorrhoids \| 2. Anal Fissure \| 3. Colorectal Cancer; also in web.symptomInference#2, web.passive#1 [known gap: Anal cancer is not a PANE disease (top 3: haemorrhoids, fissure, colorectal cancer); symptom inference ranks anal SCC #2 but PANE is the primary differential.]
 - **inv-biopsy** (web): no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: No output asks for EUA/biopsy of the anal lesion: C21.0 has no protocol; the plan shown is the haemorrhoids protocol (PANE top) and colonoscopy + biopsy from colorectal_cancer seeding.]
 - **inv-hiv-test** (web): no investigation matched among 20 (web.pane.seeded, web.clinicalPrompts) [known gap: No HIV test is suggested for anal cancer.]
@@ -1525,11 +1497,11 @@ Failure details:
 
 - **mnm-aortoenteric-fistula** (ios): not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Appendicitis (with nausea) \| 3. Small Bowel Obstruction \| 4. Drug-Induced Nausea / Vomiting \| 5. Gastroparesis
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **flag-aortic-graft** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert)
-- **inv-ct-angiography** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-blood-cultures** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-vascular-surgery** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-tranexamic-acid** (ios): none of 16 management items matched
+- **flag-aortic-graft** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)
+- **inv-ct-angiography** (ios): no investigation output on ios
+- **inv-blood-cultures** (ios): no investigation output on ios
+- **mgmt-vascular-surgery** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-tranexamic-acid** (ios): none of 6 management items matched
 - **mnm-aortoenteric-fistula** (web): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis; no aorto-enteric fistula node anywhere. The passive ranking lists "ruptured abdominal aortic aneurysm" #1 from exam text.]
 - **flag-aortic-graft** (web): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Surgical history (aortic graft) is not read by any red-flag rule; triage only scores the bleed.]
 - **inv-ct-angiography** (web): no investigation matched among 26 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol (no ICD/PANE match) and the GI-bleed prompt only offers OGD/colonoscopy.]
@@ -1756,7 +1728,7 @@ Permutation of `appendicitis-adult-typical`.
 Failure details:
 
 - **dx-appendicitis-top3** (ios): not in top 3 of ios.bayes: (empty list); also in ios.ccEarly#1, ios.triage#2
-- **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Mild right-sided abdominal pain for 2 days' gives 'routine'.]
+- **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Mild right-sided abdominal pain for 2 days' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom, Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=12: no triage rule covers this presentation.]
 - **flag-immunosuppression** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
 - **inv-ct** (ios): investigation found in ios.radiation: "ct abdomen / pelvis (with contrast) - if uss equivocal - sensitivity 94%"
 - **mgmt-antibiotics** (ios): management item found in ios.radiation.plan: "iv antibiotics pre-op: cefazolin 2 g + metronidazole 500 mg iv"
@@ -1881,13 +1853,13 @@ Failure details:
 - **mnm-obstetric-cause** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis \| 4. Renal / Ureteric Colic \| 5. Acute Diverticulitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **mnm-pyelonephritis** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis \| 4. Renal / Ureteric Colic \| 5. Acute Diverticulitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS ClinicalPathwayEngine: CC matches no pathway, so acuity stays routine.]
-- **flag-pregnancy** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) [known gap: iOS Patient has no pregnancy field; VisitRiskAssessment raises "Could be pregnant?" only on trauma/burns/procedure pathways.]
+- **flag-pregnancy** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) [known gap: iOS Patient has no pregnancy field; VisitRiskAssessment raises "Could be pregnant?" only on trauma/burns/procedure pathways.]
 - **inv-mri-after-inconclusive-us** (ios): no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
 - **inv-no-unqualified-ct** (ios): forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%..." (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.]
 - **inv-no-gadolinium** (ios): none of 14 investigations matched
-- **mgmt-obstetric-involvement** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-nsaid-after-20-weeks** (ios): none of 16 management items matched
-- **mgmt-no-bhcg-negative-assumption** (ios): none of 16 management items matched
+- **mgmt-obstetric-involvement** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-no-nsaid-after-20-weeks** (ios): none of 15 management items matched
+- **mgmt-no-bhcg-negative-assumption** (ios): none of 15 management items matched
 - **mnm-obstetric-cause** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Appendix Mass / Late Appendicitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **mnm-pyelonephritis** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Appendix Mass / Late Appendicitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis.]
 - **inv-mri-after-inconclusive-us** (web): no investigation matched among 39 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.]
@@ -1963,9 +1935,9 @@ Failure details:
 - **score-rec-air** (ios): air not recommended; recommended: news2, mews
 - **score-alvarado-calculator** (ios): = 3: ios.scoreCalculator.alvarado=3 (Score 3/10 — appendicitis unlikely)
 - **score-air-calculator** (ios): = 1: ios.scoreCalculator.air=1 (AIR 1/12 — Low risk. Appendicitis unlikely. Consider observa)
-- **inv-pregnancy-test** (ios): no investigation matched among 13 (ios.pipeline.decisions, ios.radiation)
+- **inv-pregnancy-test** (ios): no investigation matched among 6 (ios.pipeline.decisions)
 - **mgmt-observe-or-safety-net** (ios): management item found in ios.scoreCalculator.air: "air 1/12 - low risk. appendicitis unlikely. consider observation, analgesia, and discharge with safety-net advice. d/w senior if clinical pictur..."
-- **mgmt-no-appendicectomy-at-low-risk** (ios): none of 28 management items matched
+- **mgmt-no-appendicectomy-at-low-risk** (ios): none of 17 management items matched
 - **mnm-gynaecological** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Peptic Ulcer Disease [known gap: Web: PANE top 3: appendicitis, cholecystitis, peptic ulcer; no gynaecological node reaches the top 3 in a 22-year-old woman with mid-cycle RIF pain.]
 - **level-not-emergency** (web): web.triage: routine (acuity=routine, action=routine_booking, score=12); expected ≤ urgent
 - **score-rec-air** (web): air not recommended; recommended: alvarado, ranson, news2 [known gap: Web: Web CDS has no AIR rule.]
@@ -2156,12 +2128,12 @@ Failure details:
 - **dx-perforation-top3** (ios): not in top 3 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Pulmonary Embolism \| 3. Musculoskeletal Chest Pain \| 4. Stable Angina \| 5. GERD / Oesophagitis
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **alarm-perforation-or-sepsis** (ios): alarm found in ios.textParser: "possible sepsis - systemic inflammatory response with potential infection source action: sepsis..."
-- **inv-ct-oral-contrast** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-blood-cultures** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-nil-by-mouth** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-broad-spectrum-antibiotics** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-surgical-referral** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antifungal** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-ct-oral-contrast** (ios): no investigation output on ios
+- **inv-blood-cultures** (ios): no investigation output on ios
+- **mgmt-nil-by-mouth** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-broad-spectrum-antibiotics** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-surgical-referral** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-antifungal** (ios): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)
 - **dx-perforation-top3** (web): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: pancreatitis, inguinal hernia, cholecystitis. Subcutaneous emphysema, chest_pain_oesophageal and vomiting_effortless never reach PANE (no SOCRATES rules; radiation "Back" gives radiation_to_back → pancreatitis). Symptom inference ranks STEMI/ACS first.]
 - **mgmt-antifungal** (web): no management item matched among 46 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: oesophageal_perforation protocol has no antifungal.]
 
@@ -2180,17 +2152,17 @@ Permutation of `boerhaave-classic-mackler`.
 |---|---|---|---|---|---|---|
 | mnm-perforation | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | WSES guidelines 2019 | As boerhaave-classic-mackler dx gap; add an oesophageal-perforation entry to symptom inference (vomiting then chest pain, odynophagia, crepitus). |
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | WSES guidelines 2019; 2023 ESC Guidelines for the management of acute coronary syndromes 2023 |  |
-| inv-ecg | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | 2023 ESC Guidelines for the management of acute coronary syndromes 2023 | computeClinicalPrompts: chest pain (chip or CC/HPI text) → safety prompt "12-lead ECG within 10 min + hs-troponin" (ESC 2023). |
+| inv-ecg | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | 2023 ESC Guidelines for the management of acute coronary syndromes 2023 | computeClinicalPrompts: chest pain (chip or CC/HPI text) → safety prompt "12-lead ECG within 10 min + hs-troponin" (ESC 2023). |
 | inv-ct-oral-contrast | investigationInclude | critical | FAIL (unverified) | PASS | WSES guidelines 2019 |  |
-| mgmt-no-anticoagulation-before-ct | managementExclude | quality | FAIL (unverified) | PASS | 2023 ESC Guidelines for the management of acute coronary syndromes 2023; WSES guidelines 2019 |  |
+| mgmt-no-anticoagulation-before-ct | managementExclude | quality | PASS (verify: was unverified) | PASS | 2023 ESC Guidelines for the management of acute coronary syndromes 2023; WSES guidelines 2019 |  |
 
 Failure details:
 
 - **mnm-perforation** (ios): not in top 5 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Pulmonary Embolism \| 3. Musculoskeletal Chest Pain \| 4. Stable Angina \| 5. GERD / Oesophagitis
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **inv-ecg** (ios): investigation found in ios.radiation: "ecg - s1q3t3, sinus tachycardia, new rbbb - not diagnostic"
-- **inv-ct-oral-contrast** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-no-anticoagulation-before-ct** (ios): forbidden management item present in ios.radiation.plan: "admit icu - thrombolysis: alteplase 100 mg iv over 2h (contraindications: recent surgery/stroke)" (+1 more)
+- **inv-ecg** (ios): no investigation output on ios
+- **inv-ct-oral-contrast** (ios): no investigation output on ios
+- **mgmt-no-anticoagulation-before-ct** (ios): none of 6 management items matched
 - **mnm-perforation** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis [known gap: PANE top 3: inguinal hernia, cholecystitis, pancreatitis; no oesophageal features reach PANE. Symptom inference ranks STEMI/ACS first and has no perforation entry.]
 - **inv-ecg** (web): no investigation matched among 31 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No investigation output mentions an ECG: the triage chest_pain pathway checklist ("ECG within 10 minutes") is not surfaced, and the oesophageal_perforation protocol omits it.]
 
@@ -2216,8 +2188,8 @@ Failure details:
 
 - **mnm-perforation** (ios): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. GERD / Oesophagitis
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **inv-ct-oral-contrast** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-nil-by-mouth** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-ct-oral-contrast** (ios): no investigation output on ios
+- **mgmt-nil-by-mouth** (ios): no management item matched among 1 (ios.soap.plan)
 - **mnm-perforation** (web): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: pancreatitis, cholecystitis, GORD; symptom inference: alcoholic/gallstone pancreatitis, peptic ulcer, perforated ulcer. Oesophageal perforation is absent from every list.]
 
 Guidelines:
@@ -2275,12 +2247,12 @@ Permutation of `breast-abscess-lactational`.
 Failure details:
 
 - **dx-abscess-top3** (ios): 'Breast Abscess' at rank 3 of ios.bayes (k=3); also in ios.pipeline#5
-- **inv-uss** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-aspiration** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-anaerobic-cover** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-smoking-cessation** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-exclude-malignancy** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-breastfeeding-advice** (ios): none of 13 management items matched
+- **inv-uss** (ios): no investigation output on ios
+- **mgmt-aspiration** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-anaerobic-cover** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-smoking-cessation** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-exclude-malignancy** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-breastfeeding-advice** (ios): none of 3 management items matched
 - **dx-abscess-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Fibroadenoma \| 3. Fibrocystic Breast Disease; also in web.triageSurgical#3 [known gap: PANE top 3 = cholecystitis, fibroadenoma, fibrocystic change: only breast_lump was extracted (no redness/pain/discharge feature from chips). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - **mgmt-smoking-cessation** (web): no management item matched among 27 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The breast_abscess protocol has no non-lactational (periductal mastitis) branch: no smoking cessation or duct excision.]
 
@@ -2303,8 +2275,8 @@ Guidelines:
 Failure details:
 
 - **level-routine** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Breast Surgery Pathway); expected ≤ priority
-- **mgmt-genetics-referral** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-biopsy** (ios): none of 12 management items matched
+- **mgmt-genetics-referral** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-biopsy** (ios): none of 1 management items matched
 - **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=37); expected ≤ priority [known gap: Triage same_day_call: the word "cancer" in the complaint ("Worried about breast cancer") matches the "Possible malignancy" red flag.]
 - **mgmt-genetics-referral** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: The family-history prompt exists (computeClinicalPrompts: "Family history of breast / ovarian cancer" → genetics) but reads InferenceInput.familyHistory, which the harness passes as [] (no vignette field); Z80.3 maps to no protocol.]
 
@@ -2544,8 +2516,8 @@ Failure details:
 
 - **dx-gynaecomastia-top3** (ios): not in top 3 of ios.bayes: (empty list)
 - **level-routine** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≤ priority
-- **inv-testes** (ios): no investigation matched among 8 (ios.radiation)
-- **mgmt-medication-review** (ios): no management item matched among 26 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **inv-testes** (ios): no investigation output on ios
+- **mgmt-medication-review** (ios): no management item matched among 1 (ios.soap.plan)
 - **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=74); expected ≤ priority [known gap: Triage same_day_call: "breast lump" → Possible malignancy (priority) and the cancer screen triggers (age ≥30 + breast lump, applied to men).]
 
 Guidelines:
@@ -2611,8 +2583,8 @@ Failure details:
 - **dx-benign-top3** (ios): 'Benign Breast Cyst' at rank 1 of ios.bayes (k=3); also in ios.ccEarly#1, ios.pipeline#1
 - **level-routine** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Breast Surgery Pathway); expected ≤ priority
 - **no-cancer-alarm** (ios): none of 0 alarms matched
-- **inv-no-imaging-or-biopsy** (ios): none of 7 investigations matched
-- **mgmt-reassurance** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-no-imaging-or-biopsy** (ios): none of 0 investigations matched
+- **mgmt-reassurance** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - **dx-benign-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE applied no feature (template "Other / general surgical"); priors give cholecystitis, GORD, PUD. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=25); expected ≤ priority [known gap: Triage same_day_call: "friend had breast cancer" matches the "Possible malignancy" red flag.]
 - **mgmt-reassurance** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: N64.4 (mastodynia) maps to no protocol; no mastalgia guidance.]
@@ -2640,22 +2612,22 @@ Guidelines:
 | mgmt-urine-output-titration | managementInclude | quality | FAIL (unverified) | PASS (gap resolved) | ABA practice guideline 2008; ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
 | mgmt-tetanus | managementInclude | quality | FAIL (unverified) | PASS (gap resolved) | ATLS 10th edition 2018 | Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn. |
 | mgmt-no-oral-fluids-only | managementExclude | quality | PASS (verify: was unverified) | PASS | Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief) 2026 |  |
-| mgmt-no-unrelated-plan | managementExclude | quality | FAIL (unverified) | PASS |  |  |
+| mgmt-no-unrelated-plan | managementExclude | quality | PASS (verify: was unverified) | PASS |  |  |
 | pathway-burns | pathway | quality | PASS (verify: was unverified) | n/a |  |  |
 
 Failure details:
 
 - **dx-major-burn-top3** (ios): not in top 3 of ios.bayes: (empty list)
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **flag-major-burn** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-tbsa-assessment** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-formal-fluids** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-from-time-of-burn** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-urine-output-titration** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-burns-referral** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-tetanus** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-oral-fluids-only** (ios): none of 12 management items matched
-- **mgmt-no-unrelated-plan** (ios): forbidden management item present in ios.radiation.plan: "intensive phase (2 months): hrze - isoniazid + rifampicin + pyrazinamide + ethambutol daily" (+3 more)
+- **flag-major-burn** (ios): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner)
+- **inv-tbsa-assessment** (ios): no investigation output on ios
+- **mgmt-formal-fluids** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-from-time-of-burn** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-urine-output-titration** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-burns-referral** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-tetanus** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-oral-fluids-only** (ios): none of 1 management items matched
+- **mgmt-no-unrelated-plan** (ios): none of 1 management items matched
 - **pathway-burns** (ios): recommended burns (Chief complaint mentions "burn"); expected burns
 - **dx-major-burn-top3** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis [known gap: PANE top 3: GORD, Inguinal/femoral hernia, Acute cholecystitis — socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the burn features are answered but the thermal_burn_major prior is low and there is no burn CC template or chip.]
 - **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: adaptiveTriage has no burn keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns same_day_call for a 27% TBSA burn (HR 118).]
@@ -2694,9 +2666,9 @@ Permutation of `burns-adult-flame-27pct`.
 Failure details:
 
 - **level-not-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≤ urgent
-- **mgmt-burns-discussion** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-dressings** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-formal-iv-resuscitation** (ios): none of 11 management items matched
+- **mgmt-burns-discussion** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-dressings** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-formal-iv-resuscitation** (ios): none of 1 management items matched
 - **pathway-burns** (ios): recommended burns (Chief complaint mentions "scald"); expected burns
 - **mgmt-burns-discussion** (web): no management item matched among 10 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
 - **mgmt-dressings** (web): management item found in web.managementPanel: "[conservative] non-adherent dressings (mepitel, adaptic, or silver-containing if infection risk); change every 3-5 d..."
@@ -2731,13 +2703,13 @@ Permutation of `burns-adult-flame-27pct`.
 Failure details:
 
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **flag-chemical** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-eye-ph** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-copious-irrigation** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-remove-clothing** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-ophthalmology** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-burns-referral** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-neutralisation** (ios): none of 12 management items matched
+- **flag-chemical** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-eye-ph** (ios): no investigation output on ios
+- **mgmt-copious-irrigation** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-remove-clothing** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-ophthalmology** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-burns-referral** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-neutralisation** (ios): none of 1 management items matched
 - **pathway-burns** (ios): recommended firstVisit (No previous visits on record); expected burns
 - **flag-chemical** (web): no red flag matched among 5 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
 - **inv-eye-ph** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T54.3X1A matches no pane-engine protocol (no chemical-burn protocol exists) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE has no chemical burn.]
@@ -2767,7 +2739,7 @@ Permutation of `burns-child-scald-12pct`.
 | flag-safeguarding | redFlags | critical | FAIL (unverified) | FAIL (known gap) | NICE CG89 2009 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
 | mgmt-safeguarding-referral | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | NICE CG89 2009 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
 | mgmt-paediatric-burns-referral | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | American Burn Association 2006; National Network for Burn Care (British Burn Association) 2012 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | NICE CG89 2009 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | NICE CG89 2009 |  |
 | flag-special-areas | redFlags | quality | FAIL (unverified) | FAIL (known gap) | American Burn Association 2006 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
 | inv-skeletal-survey | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | RCR/RCPCH 2017 | Add a NICE CG89 safeguarding prompt for immersion-pattern scalds and route paediatric burns to the burns protocols independent of PANE. |
 | pathway-burns | pathway | quality | PASS (verify: was unverified) | n/a |  |  |
@@ -2775,12 +2747,12 @@ Permutation of `burns-child-scald-12pct`.
 Failure details:
 
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **flag-safeguarding** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **flag-special-areas** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-skeletal-survey** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-safeguarding-referral** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-paediatric-burns-referral** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- **flag-safeguarding** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **flag-special-areas** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-skeletal-survey** (ios): no investigation output on ios
+- **mgmt-safeguarding-referral** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-paediatric-burns-referral** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **pathway-burns** (ios): recommended burns (Chief complaint mentions "scald"); expected burns
 - **flag-safeguarding** (web): no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
 - **flag-special-areas** (web): no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists and T76.12XA maps to no protocol; the burns minor protocol (which names "child with scalds suggesting non-accidental injury — safeguarding referral") is not selected because PANE top is below 0.20.]
@@ -2818,13 +2790,13 @@ Permutation of `burns-adult-flame-27pct`.
 Failure details:
 
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **flag-paediatric-burn** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-lund-browder** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-formal-fluids** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-maintenance-fluid** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-child-urine-target** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-paediatric-burns-referral** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-oral-fluids-only** (ios): none of 13 management items matched
+- **flag-paediatric-burn** (ios): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner)
+- **inv-lund-browder** (ios): no investigation output on ios
+- **mgmt-formal-fluids** (ios): no management item matched among 2 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-maintenance-fluid** (ios): no management item matched among 2 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-child-urine-target** (ios): no management item matched among 2 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-paediatric-burns-referral** (ios): no management item matched among 2 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-oral-fluids-only** (ios): none of 2 management items matched
 - **pathway-burns** (ios): recommended burns (Chief complaint mentions "scald"); expected burns
 - **flag-paediatric-burn** (web): no red flag matched among 11 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
 - **inv-lund-browder** (web): no investigation matched among 13 (web.pane.seeded, web.clinicalPrompts) [known gap: ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA ("major >20%", "minor <20%"), which does not match the adult 15% / child 10% resuscitation thresholds.]
@@ -2860,10 +2832,10 @@ Permutation of `burns-adult-flame-27pct`.
 Failure details:
 
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **flag-circumferential** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **mgmt-escharotomy** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-burns-referral** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-elevation** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **flag-circumferential** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **mgmt-escharotomy** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-burns-referral** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-elevation** (ios): no management item matched among 1 (ios.soap.plan)
 - **pathway-burns** (ios): recommended burns (Chief complaint mentions "burn"); expected burns
 - **flag-circumferential** (web): no red flag matched among 5 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
 - **mgmt-escharotomy** (web): no management item matched among 9 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: ICD T23.301A matches no pane-engine protocol (burn protocols registered for T31.3+ and T30.0/T14.0 only; no T20–T25 site codes) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
@@ -2943,13 +2915,13 @@ Failure details:
 
 - **dx-burn-top3** (ios): not in top 3 of ios.bayes: (empty list)
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **flag-inhalation** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **flag-special-areas** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-cohb** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-early-intubation** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-100-oxygen** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-formal-fluids** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-burns-referral** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **flag-inhalation** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner)
+- **flag-special-areas** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner)
+- **inv-cohb** (ios): no investigation output on ios
+- **mgmt-early-intubation** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-100-oxygen** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-formal-fluids** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-burns-referral** (ios): no management item matched among 1 (ios.soap.plan)
 - **pathway-burns** (ios): recommended burns (Chief complaint mentions "burn"); expected burns
 - **flag-inhalation** (web): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
 - **flag-special-areas** (web): no red flag matched among 14 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.]
@@ -3056,9 +3028,9 @@ Failure details:
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **alarm-sepsis** (ios): no alarm matched among 2 (ios.pipeline.alert)
 - **score-qsofa-calculator** (ios): = 3: ios.scoreCalculator.qsofa=3 (qSOFA 3/3 with suspected infection — HIGH risk of organ dysf)
-- **mgmt-vancomycin-metronidazole** (ios): no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)
+- **mgmt-vancomycin-metronidazole** (ios): no management item matched among 11 (ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan)
 - **mgmt-surgical-consult** (ios): management item found in ios.soap.plan: "urgent surgical review - same day."
-- **mgmt-no-antimotility** (ios): none of 16 management items matched
+- **mgmt-no-antimotility** (ios): none of 5 management items matched
 - **mnm-cdiff** (web): not in top 3 of web.pane: 1. Acute Diverticulitis \| 2. Acute Cholecystitis \| 3. Acute Cholangitis [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis".]
 - **mgmt-vancomycin-metronidazole** (web): no management item matched among 35 (web.clinicalPrompts) [known gap: C. difficile infection does not exist in PANE (no disease) or in the management protocols (A04.7 → no protocol); web symptom inference has only "Acute gastroenteritis". The only vancomycin is IV vancomycin in the septic-shock prompt, which does not treat CDI.]
 - **mgmt-surgical-consult** (web): no management item matched among 35 (web.clinicalPrompts) [known gap: No surgical consultation/colectomy output for fulminant CDI (no protocol; prompts cover sepsis only).]
@@ -3182,9 +3154,9 @@ Failure details:
 
 - **mnm-charcot** (ios): not in top 5 of ios.bayes: 1. Gout \| 2. Osteoarthritis \| 3. Septic Arthritis \| 4. Sickle Cell Crisis \| 5. Rheumatoid Arthritis
 - **level-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- **inv-mri** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-immobilise-offload** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-escalated-antibiotics** (ios): none of 11 management items matched
+- **inv-mri** (ios): no investigation output on ios
+- **mgmt-immobilise-offload** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-escalated-antibiotics** (ios): none of 1 management items matched
 - **mnm-charcot** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease [known gap: No engine has Charcot neuro-osteoarthropathy (PANE, symptom inference, triage). Symptom inference ranks cellulitis, gout, Fournier's.]
 - **level-priority** (web): web.triage: routine (acuity=routine, action=routine_booking, score=12); expected ≥ priority [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom, Post-operative or recent-procedure concern). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=12: no triage rule covers this presentation.]
 - **inv-mri** (web): no investigation matched among 14 (web.pane.seeded, web.clinicalPrompts) [known gap: No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.610 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.]
@@ -4018,19 +3990,19 @@ Permutation of `crc-cibh-fit-positive-older`.
 |---|---|---|---|---|---|---|
 | mnm-crc | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | BSG guideline 2021; NICE NG12 2023 | Add an IDA rule reading Hb + MCV/ferritin (lab results): man or post-menopausal woman → bidirectional endoscopy + coeliac serology (BSG 2021), and age ≥ 60 → suspected colorectal cancer pathway (NG12). |
 | flag-ida | redFlags | critical | FAIL (unverified) | FAIL (known gap) | BSG guideline 2021; NICE NG12 2023 |  |
-| inv-colonoscopy | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | BSG guideline 2021 |  |
-| inv-ogd | investigationInclude | critical | FAIL (unverified) | PASS | BSG guideline 2021 |  |
-| inv-coeliac | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guideline 2021 |  |
-| mgmt-iron | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guideline 2021 |  |
+| inv-colonoscopy | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | BSG guideline 2021 |  |
+| inv-ogd | investigationInclude | critical | PASS (verify: was unverified) | PASS | BSG guideline 2021 |  |
+| inv-coeliac | investigationInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG guideline 2021 |  |
+| mgmt-iron | managementInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG guideline 2021 |  |
 
 Failure details:
 
 - **mnm-crc** (ios): not in top 0 of ios.bayes: (empty list)
-- **flag-ida** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-colonoscopy** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-ogd** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-coeliac** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-iron** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **flag-ida** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
+- **inv-colonoscopy** (ios): investigation found in ios.radiation: "ogd + colonoscopy (if ≥50y or male any age) - gi blood loss - colorectal cancer / pu - mandatory..."
+- **inv-ogd** (ios): investigation found in ios.radiation: "ogd + colonoscopy (if ≥50y or male any age) - gi blood loss - colorectal cancer / p..."
+- **inv-coeliac** (ios): investigation found in ios.radiation: "coeliac screen (anti-ttg iga + total iga) - malabsorption - commonest cause in young wo..."
+- **mgmt-iron** (ios): management item found in ios.radiation.plan: "treat the cause (mandatory - do not just replace iron without investigation):"
 - **mnm-crc** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis [known gap: PANE has no anaemia/IDA feature and reads no labs; with fatigue/breathlessness only, the top 3 is the default cholecystitis/GORD/diverticulitis. Symptom inference ranks heart failure, anaemia, COPD.]
 - **flag-ida** (web): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: No output mentions iron deficiency: the triage cancer screen’s IDA criterion looks for "anaemia/pale/unusually tired" in symptom chips (no such chip exists) and never reads Hb/ferritin; the prompts fire on Hb only below 8 g/dL.]
 - **inv-colonoscopy** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No colonoscopy requested for IDA (D50.9 has no protocol; no lab-driven IDA rule).]
@@ -4252,12 +4224,12 @@ Failure details:
 
 - **dx-perianal-sepsis-top3** (ios): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - **level-same-day** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **inv-mri-pelvis** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-eua-seton** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-drainage** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-biologic** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-fistulotomy** (ios): none of 14 management items matched
-- **mgmt-no-sphincterotomy** (ios): none of 14 management items matched
+- **inv-mri-pelvis** (ios): no investigation output on ios
+- **mgmt-eua-seton** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-drainage** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-biologic** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-fistulotomy** (ios): none of 4 management items matched
+- **mgmt-no-sphincterotomy** (ios): none of 4 management items matched
 - **mgmt-eua-seton** (web): no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's perianal_abscess protocol; the panel now follows the confirmed diagnosis (crohns_disease), whose protocol has no EUA/seton step.]
 - **mgmt-drainage** (web): no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's perianal_abscess protocol; the panel now follows the confirmed diagnosis (crohns_disease), whose protocol has no drainage step.]
 
@@ -4387,11 +4359,11 @@ Failure details:
 
 - **mnm-limb-ischaemia** (ios): not in top 0 of ios.bayes: (empty list)
 - **level-at-least-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- **flag-incompressible** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-toe-pressure-or-imaging** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-vascular-referral** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-compression** (ios): none of 12 management items matched
-- **mgmt-no-antibiotics-uninfected** (ios): none of 12 management items matched
+- **flag-incompressible** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner)
+- **inv-toe-pressure-or-imaging** (ios): no investigation output on ios
+- **mgmt-vascular-referral** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-compression** (ios): none of 1 management items matched
+- **mgmt-no-antibiotics-uninfected** (ios): none of 1 management items matched
 - **flag-incompressible** (web): no red flag matched among 18 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring.]
 
 Guidelines:
@@ -4493,10 +4465,10 @@ Failure details:
 
 - **dx-diverticulitis-top3** (ios): 'Acute Diverticulitis' at rank 1 of ios.bayes (k=3); also in ios.ccEarly#3, ios.triage#3
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal pain and fever' gives 'routine'.]
-- **inv-blood-cultures** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-colonoscopy-after** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-iv-antibiotics** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-drainage** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-blood-cultures** (ios): no investigation output on ios
+- **inv-colonoscopy-after** (ios): no investigation output on ios
+- **mgmt-iv-antibiotics** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-drainage** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - **mgmt-drainage-in-documented-plan** (web): management item found in web.plan: "...v antibiotics: piperacillin-tazobactam 4.5 g tds. ct-guided percutaneous drainage if abscess ≥4 cm (ir referral)."
 - **variant-abscess** (web): detected diverticulitis_abscess in group Diverticulitis; expected diverticulitis_abscess
 
@@ -4518,9 +4490,9 @@ Permutation of `diverticulitis-uncomplicated-outpatient`.
 | level-emergency | emergencyLevel | critical | FAIL (known gap) | PASS | Surviving Sepsis Campaign 2021; WSES guidelines 2020 |  |
 | alarm-sepsis | mustAlarm | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | alarm-shock | mustAlarm | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
-| inv-blood-cultures | investigationInclude | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-hartmanns-or-damage-control | managementInclude | critical | FAIL (unverified) | PASS | WSES guidelines 2020 |  |
-| mgmt-antibiotics | managementInclude | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
+| inv-blood-cultures | investigationInclude | critical | PASS (verify: was unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-hartmanns-or-damage-control | managementInclude | critical | PASS (verify: was unverified) | PASS | WSES guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS (verify: was unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-icu | managementInclude | critical | PASS (verify: was unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-no-primary-anastomosis-in-shock | managementExclude | quality | PASS (verify: was unverified) | PASS | WSES guidelines 2020 |  |
 | variant-peritonitis | dxVariant | quality | n/a | PASS (gap resolved) | WSES guidelines 2020; Modified Hinchey classification 1999 |  |
@@ -4530,11 +4502,11 @@ Failure details:
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and collapse' gives 'routine'.]
 - **alarm-sepsis** (ios): no alarm matched among 2 (ios.textParser, ios.pipeline.alert)
 - **alarm-shock** (ios): no alarm matched among 2 (ios.textParser, ios.pipeline.alert)
-- **inv-blood-cultures** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-hartmanns-or-damage-control** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antibiotics** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-icu** (ios): management item found in ios.radiation.plan: "admit icu - thrombolysis: alteplase 100 mg iv over 2h (contraindications: recent surgery/..."
-- **mgmt-no-primary-anastomosis-in-shock** (ios): none of 15 management items matched
+- **inv-blood-cultures** (ios): investigation found in ios.radiation: "blood cultures × 2 - before antibiotics - bacteraemia likely"
+- **mgmt-hartmanns-or-damage-control** (ios): management item found in ios.radiation.plan: "hartmann's procedure (sigmoid - most common) or primary anastomosis if fit + low contamination"
+- **mgmt-antibiotics** (ios): management item found in ios.radiation.plan: "iv access × 2 + blood cultures before antibiotics"
+- **mgmt-icu** (ios): management item found in ios.radiation.referral: "intensive care (emergency): post-operative icu - peritonitis with septic shock"
+- **mgmt-no-primary-anastomosis-in-shock** (ios): none of 28 management items matched
 - **variant-peritonitis** (web): detected diverticulitis_peritonitis in group Diverticulitis; expected diverticulitis_peritonitis
 
 Guidelines:
@@ -4562,7 +4534,7 @@ Permutation of `diverticulitis-uncomplicated-outpatient`.
 Failure details:
 
 - **dx-diverticulitis-top3** (ios): 'Acute Diverticulitis' at rank 2 of ios.bayes (k=3); also in ios.ccEarly#4, ios.pipeline#1, ios.triage#3
-- **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal discomfort' gives 'routine'.]
+- **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal discomfort' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=19: no triage rule covers this presentation.]
 - **flag-immunosuppression** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.textParser, ios.pipeline.alert)
 - **mgmt-antibiotics** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
 - **mgmt-admit-iv** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
@@ -4588,11 +4560,11 @@ Permutation of `diverticulitis-uncomplicated-outpatient`.
 | level-emergency | emergencyLevel | critical | FAIL (known gap) | PASS | WSES guidelines 2020; AGA clinical practice update 2021; ASCRS clinical practice guidelines 2020 |  |
 | alarm-sepsis | mustAlarm | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | alarm-perforation | mustAlarm | critical | FAIL (unverified) | PASS | WSES guidelines 2020 |  |
-| mgmt-emergency-surgery | managementInclude | critical | FAIL (unverified) | PASS | WSES guidelines 2020 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS (verify: was unverified) | PASS | WSES guidelines 2020 |  |
 | mgmt-emergency-surgery-in-documented-plan | managementInclude | critical | n/a | PASS (gap resolved) | WSES guidelines 2020 | Word-boundary Hinchey matching and specific-first variant order (peritonitis before abscess). |
-| mgmt-antibiotics | managementInclude | critical | FAIL (unverified) | PASS | WSES guidelines 2020 |  |
-| inv-blood-cultures | investigationInclude | quality | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-primary-anastomosis-option | managementInclude | quality | FAIL (unverified) | PASS | WSES guidelines 2020 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS (verify: was unverified) | PASS | WSES guidelines 2020 |  |
+| inv-blood-cultures | investigationInclude | quality | PASS (verify: was unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-primary-anastomosis-option | managementInclude | quality | PASS (verify: was unverified) | PASS | WSES guidelines 2020 |  |
 | variant-peritonitis | dxVariant | quality | n/a | PASS (gap resolved) | WSES guidelines 2020; Modified Hinchey classification 1999 |  |
 
 Failure details:
@@ -4601,10 +4573,10 @@ Failure details:
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Severe generalised abdominal pain and fever' gives 'routine'.]
 - **alarm-sepsis** (ios): no alarm matched among 1 (ios.pipeline.alert)
 - **alarm-perforation** (ios): no alarm matched among 1 (ios.pipeline.alert)
-- **inv-blood-cultures** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-emergency-surgery** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-primary-anastomosis-option** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antibiotics** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-blood-cultures** (ios): investigation found in ios.radiation: "blood cultures × 2 - before antibiotics - bacteraemia likely"
+- **mgmt-emergency-surgery** (ios): management item found in ios.radiation.plan: "hartmann's procedure (sigmoid - most common) or primary anastomosis if fit + low contamination"
+- **mgmt-primary-anastomosis-option** (ios): management item found in ios.radiation.plan: "hartmann's procedure (sigmoid - most common) or primary anastomosis if fit + low contamination"
+- **mgmt-antibiotics** (ios): management item found in ios.radiation.plan: "iv access × 2 + blood cultures before antibiotics"
 - **dx-diverticulitis-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: Web: PANE top 3: cholecystitis, inguinal/femoral hernia, appendicitis (features lif_pain, nausea_vomiting, fever) — the same likelihood problem as the base case.]
 - **mgmt-emergency-surgery-in-documented-plan** (web): management item found in web.plan: "emergency laparoscopic or open hartmann's procedure: sigmoid resection + end colostomy."
 - **variant-peritonitis** (web): detected diverticulitis_peritonitis in group Diverticulitis; expected diverticulitis_peritonitis
@@ -4706,10 +4678,10 @@ Failure details:
 - **dx-dyspepsia-causes-top3** (ios): 'Peptic Ulcer Disease' at rank 1 of ios.bayes (k=3); also in ios.pipeline#1
 - **level-routine** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≤ priority
 - **no-cancer-alarm** (ios): none of 0 alarms matched
-- **inv-hpylori-non-invasive** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-no-urgent-ogd** (ios): none of 9 investigations matched
-- **mgmt-test-and-treat-or-ppi** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-lifestyle** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-hpylori-non-invasive** (ios): no investigation output on ios
+- **inv-no-urgent-ogd** (ios): none of 0 investigations matched
+- **mgmt-test-and-treat-or-ppi** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-lifestyle** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - **level-routine** (web): web.triage: routine (acuity=routine, action=routine_booking, score=0); expected ≤ priority
 - **inv-hpylori-non-invasive** (web): no investigation matched among 16 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K30 (uninvestigated/functional dyspepsia); the GORD management panel (PANE top) lists H. pylori only as a routine investigation, which is not seeded.]
 - **mgmt-test-and-treat-or-ppi** (web): no management item matched among 2 (web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only because the Assessment panel showed the PANE leader's GORD protocol; the panel now follows the confirmed diagnosis (K30), which maps to no protocol, so no panel is shown.]
@@ -4777,9 +4749,9 @@ Failure details:
 - **dx-stricture-or-gord-top3** (ios): 'GERD / Oesophagitis' at rank 1 of ios.bayes (k=3); also in ios.ccEarly#1, ios.pipeline#1, ios.triage#1
 - **mnm-malignancy** (ios): 'Oesophageal Carcinoma' at rank 3 of ios.bayes (k=4); also in ios.ccEarly#3, ios.pipeline#3, ios.triage#1
 - **level-at-least-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Upper GI / Dysphagia Pathway); expected ≥ priority
-- **flag-dysphagia** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-ogd** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-no-age-gated-ogd** (ios): none of 13 management items matched
+- **flag-dysphagia** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-ogd** (ios): no investigation output on ios
+- **mgmt-no-age-gated-ogd** (ios): none of 3 management items matched
 - **mnm-malignancy** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Acute Cholecystitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: GORD, cholecystitis, peptic ulcer — PANE never gets dysphagia_progressive (no CC hint for "Dysphagia", and the dysphagia chip set has no "Dysphagia" association to scan). Symptom inference ranks oesophageal/gastric carcinoma #2.]
 
 Guidelines:
@@ -4964,8 +4936,8 @@ Failure details:
 
 - **mnm-nsti** (ios): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **flag-sglt2** (ios): no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert)
-- **mgmt-exploration** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **flag-sglt2** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.textParser, ios.pipeline.alert)
+- **mgmt-exploration** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - **mnm-nsti** (web): not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Acute Cholecystitis \| 3. Pilonidal Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE’s necrotising_fasciitis disease is not reached from perineal presentations (the only anorectal features are anal_pain/perianal_swelling; the CC template is generic; crepitus/erythema answers do not outweigh the anorectal priors); symptom inference does rank Fournier’s first, but it is a secondary view. The confirmed "perianal abscess" label (K61.0) sends the plan to the perianal_abscess protocol, whose only NSTI mention is a red flag.]
 - **flag-sglt2** (web): no red flag matched among 20 (web.triage.reasons, web.protocol.redFlags, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: SGLT2 inhibitors are not recognised by any engine (no Fournier’s/genital-infection warning).]
 - **mgmt-exploration** (web): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output recommends surgical exploration/debridement: the plan is incision and drainage of a perianal abscess.]
@@ -5119,10 +5091,10 @@ Failure details:
 
 - **mnm-lymphoma-or-nodes** (ios): not in top 4 of ios.bayes: 1. Inguinal Hernia \| 2. Femoral Hernia \| 3. Umbilical Hernia \| 4. Incisional Hernia
 - **level-at-least-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Hernia Pathway); expected ≥ priority
-- **flag-malignancy** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-uss-or-biopsy** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-ldh** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-no-hernia-repair** (ios): none of 13 management items matched
+- **flag-malignancy** (ios): no red flag matched among 2 (ios.visitRisk, ios.allergyBanner)
+- **inv-uss-or-biopsy** (ios): no investigation output on ios
+- **inv-ldh** (ios): no investigation output on ios
+- **mgmt-no-hernia-repair** (ios): none of 3 management items matched
 - **mnm-lymphoma-or-nodes** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = inguinal hernia, cholecystitis, GORD. PANE has no lymphadenopathy feature from the groin site and its only node disease is "Cervical Lymphadenopathy"; the symptom engine ranks lymphoma #1. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - **inv-uss-or-biopsy** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No groin ultrasound or node biopsy is proposed; the confirmed ICD R59.1 has no protocol (R59.9 → cervical lymphadenopathy only).]
 - **inv-ldh** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No LDH (same cause as above).]
@@ -5336,14 +5308,14 @@ Permutation of `hernia-femoral-elderly-woman`.
 | mnm-hernia-cause | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | Bologna guidelines 2018; WSES guidelines 2017 | Feed exam chips ("Hernia present") and exam text into PANE features; in SBO with no previous surgery, surface external hernias (femoral/obturator) as must-not-miss. |
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | WSES guidelines 2017 |  |
 | alarm-obstruction | mustAlarm | critical | FAIL (unverified) | PASS | Bologna guidelines 2018 |  |
-| mgmt-emergency-surgery | managementInclude | critical | FAIL (unverified) | PASS | WSES guidelines 2017 |  |
-| mgmt-no-conservative-sbo-trial | managementExclude | critical | PASS (verify: was unverified) | PASS | Bologna guidelines 2018 |  |
+| mgmt-emergency-surgery | managementInclude | critical | PASS (verify: was unverified) | PASS | WSES guidelines 2017 |  |
+| mgmt-no-conservative-sbo-trial | managementExclude | critical | FAIL (unverified) | PASS | Bologna guidelines 2018 |  |
 | variant-strangulated | dxVariant | critical | n/a | PASS |  |  |
 | mnm-bowel-obstruction | mustNotMiss | quality | FAIL (unverified) | PASS |  |  |
 | flag-anticoagulant | redFlags | quality | PASS (verify: was unverified) | PASS |  |  |
 | inv-ct | investigationInclude | quality | PASS (verify: was unverified) | PASS | Bologna guidelines 2018 |  |
-| inv-lactate | investigationInclude | quality | FAIL (unverified) | PASS | WSES guidelines 2017 |  |
-| mgmt-ng-decompression | managementInclude | quality | FAIL (unverified) | PASS |  |  |
+| inv-lactate | investigationInclude | quality | PASS (verify: was unverified) | PASS | WSES guidelines 2017 |  |
+| mgmt-ng-decompression | managementInclude | quality | PASS (verify: was unverified) | PASS |  |  |
 
 Failure details:
 
@@ -5353,10 +5325,10 @@ Failure details:
 - **alarm-obstruction** (ios): no alarm matched among 3 (ios.pipeline.alert)
 - **flag-anticoagulant** (ios): red flag found in ios.visitRisk: "moderate: anticoagulant / antiplatelet: apixaban - bleeding risk for any procedure."
 - **inv-ct** (ios): investigation found in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%)"
-- **inv-lactate** (ios): no investigation matched among 22 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation)
-- **mgmt-emergency-surgery** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-ng-decompression** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-conservative-sbo-trial** (ios): none of 16 management items matched
+- **inv-lactate** (ios): investigation found in ios.radiation: "lactate (serum) - raised >2 → ischaemia / strangulation"
+- **mgmt-emergency-surgery** (ios): management item found in ios.pipeline.actions: "... - fbc, u&e, lft, coagulation, group & save required before emergency surgery."
+- **mgmt-ng-decompression** (ios): management item found in ios.radiation.plan: "nasogastric tube (ng) on free drainage - decompress + reduce vomiting"
+- **mgmt-no-conservative-sbo-trial** (ios): forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" (+1 more)
 - **mnm-hernia-cause** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Bowel Obstruction; also in web.triageSurgical#1 [known gap: PANE top 3 = cholecystitis, appendicitis, bowel obstruction (from the abdominal-pain template). No hernia: groin findings are only in exam text/chips, which PANE does not read. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 
 Guidelines:
@@ -5461,9 +5433,9 @@ Failure details:
 
 - **dx-incisional-top3** (ios): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - **level-routine** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≤ priority
-- **inv-ct** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-prehab** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-mesh** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-ct** (ios): no investigation output on ios
+- **mgmt-prehab** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-mesh** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - **dx-incisional-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.triageSurgical#1 [known gap: PANE applied no feature: the "Incisional / ventral hernia" template has no CC hint and the site chip "Incisional" matches no SITE_RULES pattern; the priors alone rank cholecystitis first.]
 - **level-routine** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=34); expected ≤ priority [known gap: Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15); "Hartmann's … reversed" counted as post-operative concern.]
 
@@ -5675,7 +5647,7 @@ Permutation of `hernia-umbilical-adult-elective`.
 | dx-umbilical-top3 | mustRankTopK | critical | FAIL (unverified) | FAIL (known gap) |  | Model P(feature \| not disease) or use a low default sensitivity (e.g. <=0.05) for features outside a disease's system; restrict the candidate set by the presenting system (breast / neck / groin). |
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | WSES guidelines 2017 |  |
 | alarm-complicated-hernia | mustAlarm | critical | FAIL (unverified) | PASS | WSES guidelines 2017 |  |
-| mgmt-emergency-surgery | managementInclude | critical | PASS (verify: was unverified) | PASS | WSES guidelines 2017 |  |
+| mgmt-emergency-surgery | managementInclude | critical | FAIL (unverified) | PASS | WSES guidelines 2017 |  |
 | flag-penicillin-allergy | redFlags | quality | PASS (verify: was unverified) | PASS |  |  |
 | inv-lactate | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | WSES guidelines 2017 |  |
 | mgmt-no-penicillin | managementExclude | quality | PASS (verify: was unverified) | FAIL (known gap) |  | Filter protocol medications and prompt templates against recorded allergies (drug-class aware) and show the alternative. |
@@ -5685,11 +5657,11 @@ Failure details:
 
 - **dx-umbilical-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Inguinal Hernia; also in ios.pipeline#5
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **alarm-complicated-hernia** (ios): no alarm matched among 2 (ios.pipeline.alert)
+- **alarm-complicated-hernia** (ios): no alarm matched among 3 (ios.pipeline.alert)
 - **flag-penicillin-allergy** (ios): red flag found in ios.visitRisk: "moderate: allergies: penicillin - check before prescribing."
 - **inv-lactate** (ios): no investigation matched among 8 (ios.pipeline.decisions, ios.radiation)
-- **mgmt-emergency-surgery** (ios): management item found in ios.pipeline.actions: "... - fbc, u&e, lft, coagulation, group & save required before emergency surgery."
-- **mgmt-no-penicillin** (ios): none of 12 management items matched
+- **mgmt-emergency-surgery** (ios): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-no-penicillin** (ios): none of 11 management items matched
 - **dx-umbilical-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3 = cholecystitis, GORD, PUD (female: inguinal x0.3, cholecystitis x2). PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - **inv-lactate** (web): no investigation matched among 25 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No lactate in the umbilical_hernia protocol or the hernia prompts.]
 - **mgmt-no-penicillin** (web): forbidden management item present in web.clinicalPrompts: "...rative: • nbm from midnight. consent signed. • antibiotics: co-amoxiclav 1.2g iv at induction (optional - low infection risk if no mesh contamination). ..." [known gap: The recorded penicillin allergy is not cross-checked: prompts propose piperacillin-tazobactam and co-amoxiclav (as found for the seed vignettes).]
@@ -5809,22 +5781,22 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | level-at-least-priority | emergencyLevel | critical | FAIL (unverified) | PASS | NICE NG12 2015; BSG guidelines 2021 |  |
 | flag-ida | redFlags | critical | FAIL (unverified) | FAIL (known gap) | BSG guidelines 2021; NICE NG12 2015 | clinical-inference.ts: add an IDA prompt from labs (low Hb for sex + low ferritin or MCV) → "BSG 2021: bidirectional endoscopy, coeliac serology; NG12 ≥60 urgent referral". |
-| inv-ogd | investigationInclude | critical | FAIL (unverified) | PASS | BSG guidelines 2021 |  |
-| inv-colonoscopy | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | BSG guidelines 2021; NICE NG12 2015 | Same IDA prompt. |
+| inv-ogd | investigationInclude | critical | PASS (verify: was unverified) | PASS | BSG guidelines 2021 |  |
+| inv-colonoscopy | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | BSG guidelines 2021; NICE NG12 2015 | Same IDA prompt. |
 | mnm-gi-malignancy | mustNotMiss | quality | n/a | PASS | BSG guidelines 2021 |  |
-| inv-coeliac-serology | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guidelines 2021 |  |
-| inv-urinalysis | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guidelines 2021 |  |
-| mgmt-iron-replacement | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guidelines 2021 |  |
+| inv-coeliac-serology | investigationInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG guidelines 2021 |  |
+| inv-urinalysis | investigationInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG guidelines 2021 |  |
+| mgmt-iron-replacement | managementInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG guidelines 2021 |  |
 
 Failure details:
 
 - **level-at-least-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- **flag-ida** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-ogd** (ios): no investigation matched among 8 (ios.pipeline.voi, ios.radiation)
-- **inv-colonoscopy** (ios): no investigation matched among 8 (ios.pipeline.voi, ios.radiation)
-- **inv-coeliac-serology** (ios): no investigation matched among 8 (ios.pipeline.voi, ios.radiation)
-- **inv-urinalysis** (ios): no investigation matched among 8 (ios.pipeline.voi, ios.radiation)
-- **mgmt-iron-replacement** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **flag-ida** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
+- **inv-ogd** (ios): investigation found in ios.radiation: "ogd + colonoscopy (if ≥50y or male any age) - gi blood loss - colorectal cancer / p..."
+- **inv-colonoscopy** (ios): investigation found in ios.radiation: "ogd + colonoscopy (if ≥50y or male any age) - gi blood loss - colorectal cancer / pu - mandatory..."
+- **inv-coeliac-serology** (ios): investigation found in ios.radiation: "coeliac screen (anti-ttg iga + total iga) - malabsorption - commonest cause in young wo..."
+- **inv-urinalysis** (ios): investigation found in ios.radiation: "urine dipstick (haematuria) - renal loss of iron in haemoglobinuria"
+- **mgmt-iron-replacement** (ios): management item found in ios.radiation.plan: "oral iron replacement (mild-moderate, tolerating orals):"
 - **flag-ida** (web): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: Nothing reads the anaemia indices: severe_anaemia prompt needs Hb <8; the NG12 IDA criterion in cancer-screening needs the words "anaemia/pale/unusually tired" in the symptom chips. Hb 9.1 / MCV 72 / ferritin 6 raise nothing.]
 - **inv-colonoscopy** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for D50.9 and no IDA prompt; colonoscopy never suggested.]
 - **inv-coeliac-serology** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: Same as inv-colonoscopy.]
@@ -5856,11 +5828,11 @@ Failure details:
 
 - **dx-ischaemic-colitis-top3** (ios): not in top 3 of ios.bayes: 1. Colorectal Carcinoma \| 2. Haemorrhoids \| 3. Inflammatory Bowel Disease \| 4. Anal Fissure
 - **level-admit** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **inv-ct-contrast** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-colonoscopy-48h** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-stool-culture** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-no-appendicectomy** (ios): none of 15 management items matched
-- **mgmt-no-therapeutic-heparin** (ios): none of 12 management items matched
+- **inv-ct-contrast** (ios): no investigation output on ios
+- **inv-colonoscopy-48h** (ios): no investigation output on ios
+- **inv-stool-culture** (ios): no investigation output on ios
+- **mgmt-no-appendicectomy** (ios): none of 4 management items matched
+- **mgmt-no-therapeutic-heparin** (ios): none of 1 management items matched
 - **mgmt-no-appendicectomy** (web): none of 25 management items matched
 
 Guidelines:
@@ -5879,15 +5851,15 @@ Permutation of `ischaemic-colitis-left`.
 |---|---|---|---|---|---|---|
 | mnm-ami | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | ACG clinical guideline 2015; ESVS clinical practice guidelines 2017 | Add acute mesenteric ischaemia to PANE (AF/embolic source, pain out of proportion, lactate) and a CTA-first protocol (ESVS 2017). |
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | ESVS clinical practice guidelines 2017 |  |
-| inv-cta | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | ACG clinical guideline 2015; ESVS clinical practice guidelines 2017 | In the ischaemic colitis protocol add: isolated right colon ischaemia, AF or lactate rise → CT angiography to exclude AMI (ACG 2015). |
-| mgmt-vascular | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017 |  |
+| inv-cta | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ACG clinical guideline 2015; ESVS clinical practice guidelines 2017 | In the ischaemic colitis protocol add: isolated right colon ischaemia, AF or lactate rise → CT angiography to exclude AMI (ACG 2015). |
+| mgmt-vascular | managementInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2017 |  |
 
 Failure details:
 
 - **mnm-ami** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Biliary Colic
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **inv-cta** (ios): no investigation matched among 13 (ios.pipeline.decisions, ios.radiation)
-- **mgmt-vascular** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-cta** (ios): investigation found in ios.radiation: "ct mesenteric angiography (ct-ma) - definitive - identifies embolus/thrombosis, extent, bowel viabilit..."
+- **mgmt-vascular** (ios): management item found in ios.radiation.plan: "embolectomy / thrombectomy: viable bowel + short ischaemia time"
 - **mnm-ami** (web): not in top 3 of web.pane: 1. Acute Appendicitis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#2 [known gap: Acute mesenteric ischaemia is not a PANE disease (top 3: appendicitis, hernia, cholecystitis); symptom inference ranks it #1. Same gap as the appendicitis seed vignettes.]
 - **inv-cta** (web): no investigation matched among 39 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: K55.0 maps to the ischaemic_colitis protocol, whose imaging is "CT abdomen/pelvis with IV contrast"; nothing asks for CT angiography when the ischaemia is right-sided or embolic.]
 - **mgmt-vascular** (web): no management item matched among 43 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Web, since the engine-matching fixes (2026-09): this passed only on the "Emergency laparotomy consent" line of the peritonism prompt, which fired on negated peritonism. No vascular/revascularisation output exists for right-sided ischaemia with AMI not excluded.]
@@ -5988,8 +5960,8 @@ Failure details:
 
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Swollen abdomen and right-sided abdominal pain' gives 'routine'.]
 - **alarm-sepsis** (ios): no alarm matched among 2 (ios.textParser, ios.pipeline.alert)
-- **mgmt-emergency-surgery** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-stent-with-impending-perforation** (ios): none of 15 management items matched
+- **mgmt-emergency-surgery** (ios): no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-no-stent-with-impending-perforation** (ios): none of 26 management items matched
 - **mgmt-no-stent-with-impending-perforation** (web): forbidden management item present in web.plan: "options: (1) sems bridge to elective resection, (2) emergency hartmann's, (3) defunctioning colos..." (+1 more) [known gap: Web: Bowel-obstruction prompt step: 'If LBO due to colonic malignancy: colonic stent as bridge to elective resection' is shown with no contraindication for caecal pneumatosis/closed loop (the dx-variant note mentions perforation only as 'If unavailable or perforated').]
 - **variant-lbo-malignant** (web): detected lbo_malignant in group Bowel Obstruction; expected lbo_malignant
 
@@ -6033,12 +6005,12 @@ Permutation of `lgib-oakland-low-risk-discharge`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | mnm-crc | mustNotMiss | critical | FAIL (unverified) | PASS | BSG guideline 2021; NICE NG12 2023 |  |
-| inv-colonoscopy | investigationInclude | critical | FAIL (unverified) | PASS | BSG guideline 2021; BSG guideline 2019 |  |
+| inv-colonoscopy | investigationInclude | critical | PASS (verify: was unverified) | PASS | BSG guideline 2021; BSG guideline 2019 |  |
 | mgmt-no-heparin | managementExclude | critical | PASS (verify: was unverified) | FAIL (known gap) | BSG guideline 2019 | Exclude K55.2x (angiodysplasia) from the ischaemic_colitis protocol prefixes; add an angiodysplasia/LGIB protocol (colonoscopy + APC, iron, continue secondary-prevention aspirin). |
 | mgmt-no-stop-aspirin | managementExclude | critical | PASS (verify: was unverified) | PASS | BSG guideline 2019 |  |
 | mnm-angiodysplasia | mustNotMiss | quality | FAIL (unverified) | FAIL (known gap) | BSG guideline 2019 |  |
-| inv-iron-studies | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guideline 2021 |  |
-| mgmt-iron | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guideline 2021 |  |
+| inv-iron-studies | investigationInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG guideline 2021 |  |
+| mgmt-iron | managementInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG guideline 2021 |  |
 | mgmt-apc | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guideline 2019 |  |
 | mgmt-no-empirical-antibiotics | managementExclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG guideline 2019 |  |
 
@@ -6046,13 +6018,13 @@ Failure details:
 
 - **mnm-crc** (ios): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Biliary Colic
 - **mnm-angiodysplasia** (ios): not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Biliary Colic
-- **inv-colonoscopy** (ios): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation)
-- **inv-iron-studies** (ios): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation)
-- **mgmt-iron** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-apc** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-heparin** (ios): none of 17 management items matched
-- **mgmt-no-stop-aspirin** (ios): none of 17 management items matched
-- **mgmt-no-empirical-antibiotics** (ios): none of 17 management items matched
+- **inv-colonoscopy** (ios): investigation found in ios.radiation: "ogd + colonoscopy (if ≥50y or male any age) - gi blood loss - colorectal cancer / pu - mandatory..."
+- **inv-iron-studies** (ios): investigation found in ios.radiation: "... studies (serum iron / tibc / transferrin saturation) - low ferritin (<15) + low saturation (<20%) = ida"
+- **mgmt-iron** (ios): management item found in ios.radiation.plan: "oral iron replacement (mild-moderate, tolerating orals):"
+- **mgmt-apc** (ios): no management item matched among 26 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-no-heparin** (ios): none of 26 management items matched
+- **mgmt-no-stop-aspirin** (ios): none of 26 management items matched
+- **mgmt-no-empirical-antibiotics** (ios): none of 26 management items matched
 - **mnm-angiodysplasia** (web): not in top 3 of web.pane: 1. Haemorrhoids \| 2. Acute Cholecystitis \| 3. Colorectal Cancer [known gap: Angiodysplasia is not a PANE disease; only the iOS ClinicalPathwayEngine GI-haemorrhage list names it.]
 - **inv-iron-studies** (web): no investigation matched among 30 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No output requests ferritin/iron studies for IDA with bleeding (the plan is the ischaemic-colitis protocol).]
 - **mgmt-iron** (web): no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No iron replacement anywhere in the plan (no IDA rule reads Hb/MCV/ferritin).]
@@ -6154,9 +6126,9 @@ Failure details:
 
 - **level-admit** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - **flag-antiplatelet** (ios): red flag found in ios.visitRisk: "moderate: anticoagulant / antiplatelet: clopidogrel - bleeding risk for any procedure."
-- **mgmt-repeat-colonoscopy** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-endoscopic-haemostasis** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antiplatelet-plan** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-repeat-colonoscopy** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-endoscopic-haemostasis** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-antiplatelet-plan** (ios): no management item matched among 1 (ios.soap.plan)
 - **mgmt-endoscopic-haemostasis** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: No post-polypectomy bleeding protocol (K91.840 has none); the only plan is the generic GI-bleed prompt without endoscopic haemostasis/clips.]
 - **mgmt-antiplatelet-plan** (web): no management item matched among 10 (web.clinicalPrompts) [known gap: The anticoagulant prompt lists warfarin/DOACs/heparins only; clopidogrel (and other antiplatelets) are not handled in the bleed plan.]
 
@@ -6189,12 +6161,12 @@ Failure details:
 
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **alarm-instability** (ios): no alarm matched among 1 (ios.pipeline.alert)
-- **inv-cta-first** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-upper-source** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-group-crossmatch** (ios): no investigation matched among 7 (ios.radiation)
+- **inv-cta-first** (ios): no investigation output on ios
+- **inv-upper-source** (ios): no investigation output on ios
+- **inv-group-crossmatch** (ios): no investigation output on ios
 - **mgmt-resuscitation** (ios): management item found in ios.pipeline.actions: "...2 h - lactate ≥2 - clearance target ≥10% per hour in sepsis resuscitation."
-- **mgmt-embolisation** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-terlipressin** (ios): none of 16 management items matched
+- **mgmt-embolisation** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-terlipressin** (ios): none of 5 management items matched
 - **score-rec-shock-index** (web): web:shockIndex not recommended; recommended: qsofa, news2, rockall, caprini, asa, rcri, cfs [known gap: No shock-index output on web; BSG 2019 defines instability by shock index > 1.]
 - **inv-cta-first** (web): no investigation matched among 27 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No output recommends CT angiography for unstable haematochezia: the plan is the UGIB protocol (OGD) and the GI-bleed prompt offers "urgent OGD / colonoscopy". The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan.]
 - **mgmt-no-terlipressin** (web): forbidden management item present in web.plan: "[immediate] suspected varices: terlipressin 2 mg qds + prophylactic iv ceftriaxone." (+1 more) [known gap: The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan. The plan text includes "Suspected varices: terlipressin" and variceal steps for a patient without liver disease.]
@@ -6216,7 +6188,7 @@ Permutation of `lgib-unstable-cta-first`.
 |---|---|---|---|---|---|---|
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | BSG guideline 2019 |  |
 | flag-warfarin | redFlags | critical | PASS (verify: was unverified) | PASS | BSG guideline 2019 |  |
-| inv-cta-first | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | BSG guideline 2019 |  |
+| inv-cta-first | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | BSG guideline 2019 |  |
 | mgmt-reverse-warfarin | managementInclude | critical | FAIL (unverified) | PASS | BSG guideline 2019 |  |
 | mgmt-restart-anticoag-plan | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG guideline 2019 |  |
 
@@ -6224,9 +6196,9 @@ Failure details:
 
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **flag-warfarin** (ios): red flag found in ios.visitRisk: "moderate: anticoagulant / antiplatelet: warfarin - bleeding risk for any procedure."
-- **inv-cta-first** (ios): investigation found in ios.radiation: "ctpa (ct pulmonary angiogram) - gold standard - confirms pe, extent, rv strain"
-- **mgmt-reverse-warfarin** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-restart-anticoag-plan** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-cta-first** (ios): no investigation output on ios
+- **mgmt-reverse-warfarin** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-restart-anticoag-plan** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
 - **inv-cta-first** (web): no investigation matched among 39 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No CT angiography output (see lgib-unstable-cta-first). The confirmed ICD K92.2 (GI haemorrhage, unspecified) matches the upper_gi_bleed protocol (icd10Prefixes K92) and the "Upper GI Bleed" dx-variant group; there is no lower GI bleeding protocol, so the plan is the variceal/non-variceal UGIB plan.]
 - **mgmt-restart-anticoag-plan** (web): no management item matched among 55 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output plans when to restart warfarin after the bleed; the only anticoagulant text is the reversal line and generic peri-operative bridging.]
 
@@ -6442,17 +6414,17 @@ Permutation of `mimic-ruptured-aaa`.
 |---|---|---|---|---|---|---|
 | mnm-aaa | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Age/sex prior and pulsatile-mass weighting for aortic_aneurysm; a prompt for 'loin pain + known AAA'. |
 | level-at-least-urgent | emergencyLevel | critical | FAIL (known gap) | PASS | ESVS clinical practice guidelines 2024 |  |
-| inv-cta | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Same ICD prefix fix (I71). |
-| mgmt-vascular-referral | managementInclude | critical | FAIL (unverified) | PASS (gap resolved) | ESVS clinical practice guidelines 2024 |  |
+| inv-cta | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Same ICD prefix fix (I71). |
+| mgmt-vascular-referral | managementInclude | critical | PASS (verify: was unverified) | PASS (gap resolved) | ESVS clinical practice guidelines 2024 |  |
 | mgmt-no-renal-colic-nsaid | managementExclude | quality | PASS (verify: was unverified) | PASS | ESVS clinical practice guidelines 2024 |  |
 
 Failure details:
 
 - **mnm-aaa** (ios): not in top 4 of ios.bayes: 1. Urinary Tract Infection \| 2. Renal / Ureteric Colic \| 3. Carcinoma of Prostate \| 4. Benign Prostatic Hypertrophy
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right loin pain radiating to the groin' gives 'routine'.]
-- **inv-cta** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-vascular-referral** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-renal-colic-nsaid** (ios): none of 14 management items matched
+- **inv-cta** (ios): investigation found in ios.radiation: "ct aorta with contrast (cta) - defines size, morphology, extent - essential pre-operatively"
+- **mgmt-vascular-referral** (ios): management item found in ios.radiation.plan: "evar (endovascular): preferred if suitable anatomy"
+- **mgmt-no-renal-colic-nsaid** (ios): none of 18 management items matched
 - **mnm-aaa** (web): not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: renal colic, inguinal/femoral hernia, cholecystitis (pulsatile_mass answered yes). Symptom inference ranks AAA #1.]
 - **inv-cta** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: Web: ICD I71.4 has no protocol (only 'I71.9' is mapped), so no CT angiography is suggested.]
 - **mgmt-vascular-referral** (web): management item found in web.managementPanel: "[conservative] cardiovascular risk reduction: statin, antiplatelet, smoking cessation, blood pressure control..."
@@ -6518,11 +6490,11 @@ Failure details:
 
 - **dx-ectopic-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. GERD / Oesophagitis \| 5. Acute Diverticulitis
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain' gives 'routine'.]
-- **inv-pregnancy-test** (ios): no investigation matched among 15 (ios.pipeline.decisions, ios.radiation)
-- **inv-transvaginal-us** (ios): no investigation matched among 15 (ios.pipeline.decisions, ios.radiation)
-- **mgmt-gynaecology** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-assumed-negative-hcg** (ios): none of 17 management items matched
-- **mgmt-no-appendicectomy-booked** (ios): none of 17 management items matched
+- **inv-pregnancy-test** (ios): no investigation matched among 6 (ios.pipeline.decisions)
+- **inv-transvaginal-us** (ios): no investigation matched among 6 (ios.pipeline.decisions)
+- **mgmt-gynaecology** (ios): no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-assumed-negative-hcg** (ios): none of 7 management items matched
+- **mgmt-no-appendicectomy-booked** (ios): none of 7 management items matched
 - **pathway-first-visit** (ios): recommended firstVisit (No previous visits on record); expected firstVisit
 - **dx-ectopic-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Choledocholithiasis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis. The template's 'lmp' answer ('7 weeks ago — missed period') is not mapped to missed_period, and amenorrhoea/spotting are not SOCRATES-extracted. Symptom inference ranks ectopic #1.]
 - **mgmt-no-assumed-negative-hcg** (web): forbidden management item present in web.clinicalPrompts: "...ak (< 1%), hartmann's pouch if appendix not identifiable. • β-hcg confirmed negative (female of reproductive age). • group & screen available; cross-match if perfor..." [known gap: Web: Guarding triggers the appendicectomy operative-plan prompt, which states 'β-HCG confirmed negative' before any test has been done.]
@@ -6551,11 +6523,11 @@ Failure details:
 
 - **dx-ectopic-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Acute Diverticulitis \| 5. Acute Pancreatitis
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden lower abdominal pain and collapse' gives 'routine'.]
-- **alarm-shock** (ios): no alarm matched among 3 (ios.pipeline.alert)
-- **alarm-ectopic** (ios): no alarm matched among 3 (ios.pipeline.alert)
+- **alarm-shock** (ios): no alarm matched among 2 (ios.pipeline.alert)
+- **alarm-ectopic** (ios): no alarm matched among 2 (ios.pipeline.alert)
 - **inv-crossmatch** (ios): investigation found in ios.pipeline.decisions: "blood group and save"
-- **mgmt-emergency-surgery** (ios): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
-- **mgmt-no-medical-management-when-ruptured** (ios): none of 5 management items matched
+- **mgmt-emergency-surgery** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-medical-management-when-ruptured** (ios): none of 6 management items matched
 - **dx-ectopic-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Choledocholithiasis; also in web.symptomInference#2 [known gap: Web: PANE top 3: cholecystitis, appendicitis, choledocholithiasis despite a positive pregnancy test and haemoperitoneum.]
 - **mgmt-no-medical-management-when-ruptured** (web): forbidden management item present in web.plan: "investigation: renal function, lfts (methotrexate suitability) (urgent)" (+1 more) [known gap: Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability tests and the methotrexate/expectant steps appear for a shocked patient (no ectopic dx-variant group).]
 
@@ -6639,11 +6611,11 @@ Guidelines:
 | level-emergency | emergencyLevel | critical | FAIL (known gap) | PASS | ESVS clinical practice guidelines 2024 |  |
 | alarm-shock | mustAlarm | critical | PASS (verify: was unverified) | PASS | ESVS clinical practice guidelines 2024 |  |
 | alarm-aaa | mustAlarm | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2024 | Add a prompt: pulsatile/expansile mass or known AAA + pain + hypotension → 'Suspected ruptured AAA — vascular surgery now, permissive hypotension'. |
-| mgmt-vascular-repair | managementInclude | critical | FAIL (unverified) | PASS (gap resolved) | ESVS clinical practice guidelines 2024 | Map the whole I71 family (I71.3, I71.4, I71.9) to the aortic protocol (getProtocolByIcd prefix 'I71'). |
+| mgmt-vascular-repair | managementInclude | critical | PASS (verify: was unverified) | PASS (gap resolved) | ESVS clinical practice guidelines 2024 | Map the whole I71 family (I71.3, I71.4, I71.9) to the aortic protocol (getProtocolByIcd prefix 'I71'). |
 | mgmt-no-nsaid-renal-colic | managementExclude | critical | FAIL (unverified) | PASS | ESVS clinical practice guidelines 2024 |  |
 | mnm-aaa-symptom-engine | mustNotMiss | quality | n/a | PASS |  |  |
 | inv-crossmatch | investigationInclude | quality | PASS (verify: was unverified) | PASS | ESVS clinical practice guidelines 2024 |  |
-| mgmt-permissive-hypotension | managementInclude | quality | FAIL (unverified) | PASS (gap resolved) | ESVS clinical practice guidelines 2024 |  |
+| mgmt-permissive-hypotension | managementInclude | quality | PASS (verify: was unverified) | PASS (gap resolved) | ESVS clinical practice guidelines 2024 |  |
 | mgmt-no-large-fluid-bolus | managementExclude | quality | PASS (verify: was unverified) | FAIL (known gap) | ESVS clinical practice guidelines 2024 |  |
 | pathway-first-visit | pathway | quality | PASS (verify: was unverified) | n/a |  |  |
 
@@ -6654,10 +6626,10 @@ Failure details:
 - **alarm-shock** (ios): alarm found in ios.textParser: "suspected ruptured aaa - pulsatile mass + haemodynamic compromise - catastrophic if missed action: emergency vascular surgery. group &..."
 - **alarm-aaa** (ios): alarm found in ios.textParser: "suspected ruptured aaa - pulsatile mass + haemodynamic compromise - catastrophic if missed action: eme..."
 - **inv-crossmatch** (ios): investigation found in ios.pipeline.decisions: "blood group and save"
-- **mgmt-vascular-repair** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-permissive-hypotension** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-vascular-repair** (ios): management item found in ios.radiation.plan: "evar preferred if anatomy allows - faster, lower mortality in experienced centres"
+- **mgmt-permissive-hypotension** (ios): management item found in ios.radiation.plan: "permissive hypotension: target sbp 80-90 mmhg until aortic control"
 - **mgmt-no-nsaid-renal-colic** (ios): forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..."
-- **mgmt-no-large-fluid-bolus** (ios): none of 15 management items matched
+- **mgmt-no-large-fluid-bolus** (ios): none of 19 management items matched
 - **pathway-first-visit** (ios): recommended firstVisit (No previous visits on record); expected firstVisit
 - **dx-aaa-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Renal Colic / Urolithiasis \| 3. Acute Cholecystitis; also in web.symptomInference#1, web.passive#1 [known gap: Web: PANE top 3: inguinal/femoral hernia, renal colic, cholecystitis — even with the PANE answer pulsatile_mass = yes. Symptom inference ranks ruptured AAA #1.]
 - **alarm-aaa** (web): no alarm matched among 8 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web: Alarms are 'Hypotension', 'Tachycardia' and the generic 'SBP 84 → Shock Protocol'; none names the aneurysm.]
@@ -6801,7 +6773,7 @@ Permutation of `nsti-leg-diabetic-sepsis`.
 | mgmt-surgical-exploration | managementInclude | critical | FAIL (unverified) | PASS | WSES/SIS-E consensus conference 2018 |  |
 | mgmt-clindamycin | managementInclude | critical | FAIL (unverified) | PASS | WSES/SIS-E consensus conference 2018; IDSA practice guideline 2014 |  |
 | mgmt-no-lrinec-reassurance | managementExclude | critical | PASS (verify: was unverified) | PASS | WSES/SIS-E consensus conference 2018; NSTI diagnostic accuracy 2019 |  |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | WSES/SIS-E consensus conference 2018 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | WSES/SIS-E consensus conference 2018 |  |
 | inv-blood-cultures | investigationInclude | quality | FAIL (unverified) | PASS | Surviving Sepsis Campaign guidelines 2021 2021 |  |
 | mgmt-no-oral-cellulitis-plan | managementExclude | quality | PASS (verify: was unverified) | PASS |  |  |
 
@@ -6809,13 +6781,13 @@ Failure details:
 
 - **mnm-nsti** (ios): not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **flag-pain-out-of-proportion** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-blood-cultures** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-surgical-exploration** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-clindamycin** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-lrinec-reassurance** (ios): none of 14 management items matched
-- **mgmt-no-oral-cellulitis-plan** (ios): none of 10 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- **flag-pain-out-of-proportion** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-blood-cultures** (ios): no investigation output on ios
+- **mgmt-surgical-exploration** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-clindamycin** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-lrinec-reassurance** (ios): none of 4 management items matched
+- **mgmt-no-oral-cellulitis-plan** (ios): none of 1 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **mnm-nsti** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Cellulitis \| 3. Skin Abscess / Furuncle; also in web.symptomInference#2, web.passive#2 [known gap: PANE top 3: Acute cholecystitis, Cellulitis, Skin abscess. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #2.]
 
 Guidelines:
@@ -6903,10 +6875,10 @@ Failure details:
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **alarm-sepsis-shock** (ios): no alarm matched among 2 (ios.pipeline.alert)
 - **flag-penicillin-allergy** (ios): red flag found in ios.visitRisk: "moderate: allergies: penicillin - check before prescribing."
-- **inv-blood-cultures** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-return-to-theatre** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-clindamycin** (ios): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-not-simple-ssi** (ios): none of 11 management items matched
+- **inv-blood-cultures** (ios): no investigation output on ios
+- **mgmt-return-to-theatre** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-clindamycin** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-not-simple-ssi** (ios): none of 1 management items matched
 - **pathway-ward-review** (ios): recommended wardReview (Inpatient); expected wardReview
 - **dx-nsti-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Acute cholecystitis, Acute cholangitis, GORD. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the wound CC template adds wound_erythema/wound_discharge but SSI is not in the top 3 either. Symptom inference ranks "post-operative complication" #1 and has no NSTI.]
 - **mnm-anastomotic-or-collection** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Acute Cholangitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 omits anastomotic leak and collections (see dx-nsti-top3).]
@@ -6935,7 +6907,7 @@ Guidelines:
 | no-sepsis-alarm | mustNotAlarm | quality | PASS (verify: was unverified) | PASS |  |  |
 | inv-ca199 | investigationInclude | quality | FAIL (unverified) | PASS | ESMO Clinical Practice Guideline 2023 |  |
 | inv-eus-tissue | investigationInclude | quality | FAIL (unverified) | PASS | NICE NG85 2018 |  |
-| inv-coagulation | investigationInclude | quality | PASS (verify: was unverified) | PASS |  |  |
+| inv-coagulation | investigationInclude | quality | FAIL (unverified) | PASS |  |  |
 | mgmt-no-routine-preop-drainage | managementExclude | quality | PASS (verify: was unverified) | PASS | DROP trial 2010; NICE NG85 2018; ESGE Clinical Guideline 2018 |  |
 
 Failure details:
@@ -6944,14 +6916,14 @@ Failure details:
 - **mnm-cholangiocarcinoma-ampullary** (ios): not in top 5 of ios.bayes: 1. Carcinoma of Head of Pancreas \| 2. Choledocholithiasis \| 3. Ascending Cholangitis \| 4. Viral Hepatitis \| 5. Haemolytic Jaundice
 - **level-at-least-priority** (ios): ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
 - **no-sepsis-alarm** (ios): none of 0 alarms matched
-- **flag-malignancy** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-ct-pancreas-protocol** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-ca199** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-eus-tissue** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-coagulation** (ios): investigation found in ios.radiation: "fbc / inr / aptt / renal function - baseline before anticoagulation"
-- **mgmt-hpb-mdt** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-routine-preop-drainage** (ios): none of 14 management items matched
-- **mgmt-no-appendicectomy** (ios): none of 14 management items matched
+- **flag-malignancy** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner)
+- **inv-ct-pancreas-protocol** (ios): no investigation output on ios
+- **inv-ca199** (ios): no investigation output on ios
+- **inv-eus-tissue** (ios): no investigation output on ios
+- **inv-coagulation** (ios): no investigation output on ios
+- **mgmt-hpb-mdt** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-routine-preop-drainage** (ios): none of 4 management items matched
+- **mgmt-no-appendicectomy** (ios): none of 4 management items matched
 
 Guidelines:
 
@@ -7007,16 +6979,16 @@ Permutation of `painless-jaundice-pancreatic-head`.
 | mnm-pancreatic-cancer | mustNotMiss | critical | FAIL (unverified) | PASS | NICE NG12 2015 |  |
 | level-at-least-priority | emergencyLevel | critical | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
 | flag-malignancy | redFlags | critical | FAIL (unverified) | PASS | NICE NG12 2015 |  |
-| inv-ct | investigationInclude | critical | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
+| inv-ct | investigationInclude | critical | FAIL (unverified) | PASS | NICE NG12 2015 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS (verify: was unverified) | PASS |  |  |
 
 Failure details:
 
 - **mnm-pancreatic-cancer** (ios): not in top 4 of ios.bayes: 1. Gastrointestinal Malignancy \| 2. Diabetes Mellitus Type 2 \| 3. Inflammatory Bowel Disease \| 4. Hyperthyroidism
 - **level-at-least-priority** (ios): ios.triage: priority (ClinicalPathwayEngine suggestedAcuity=Priority, pathway=Colorectal Screening Pathway); expected ≥ priority
-- **flag-malignancy** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-ct** (ios): investigation found in ios.radiation: "ctpa (ct pulmonary angiogram) - gold standard - confirms pe, extent, rv strain"
-- **mgmt-no-appendicectomy** (ios): none of 14 management items matched
+- **flag-malignancy** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)
+- **inv-ct** (ios): no investigation output on ios
+- **mgmt-no-appendicectomy** (ios): none of 4 management items matched
 
 Guidelines:
 
@@ -7517,8 +7489,8 @@ Permutation of `pancreatitis-gallstone-mild`.
 | mnm-aaa | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | lib/pane-engine: age/sex/smoking prior modifiers for aortic_aneurysm and a much stronger pulsatile_mass/haemodynamic_instability likelihood ratio; or a hard safety rule (age ≥60 + epigastric/back pain + SBP <90 or collapse → "Exclude ruptured AAA: bedside US/CTA, vascular surgeon"). |
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
 | alarm-haemodynamic | mustAlarm | critical | PASS (verify: was unverified) | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
-| inv-aortic-imaging | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | getProtocolByIcd: map I71.x to the aortic_aneurysm protocol; see mnm-aaa. |
-| mgmt-vascular-emergency | managementInclude | critical | FAIL (unverified) | PASS (gap resolved) | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | See inv-aortic-imaging. |
+| inv-aortic-imaging | investigationInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | getProtocolByIcd: map I71.x to the aortic_aneurysm protocol; see mnm-aaa. |
+| mgmt-vascular-emergency | managementInclude | critical | PASS (verify: was unverified) | PASS (gap resolved) | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 | See inv-aortic-imaging. |
 | mgmt-no-aggressive-fluids | managementExclude | critical | PASS (verify: was unverified) | PASS | ESVS 2024 Clinical Practice Guidelines on the management of abdominal aorto-iliac artery aneurysms 2024 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS (verify: was unverified) | PASS |  |  |
 
@@ -7527,10 +7499,10 @@ Failure details:
 - **mnm-aaa** (ios): not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. Biliary Colic
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **alarm-haemodynamic** (ios): alarm found in ios.textParser: "haemodynamic instability - critically low blood pressure - immediate resuscitation required ..."
-- **inv-aortic-imaging** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-vascular-emergency** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-aggressive-fluids** (ios): none of 12 management items matched
-- **mgmt-no-appendicectomy** (ios): none of 12 management items matched
+- **inv-aortic-imaging** (ios): investigation found in ios.radiation: "ct aorta with contrast (cta) - defines size, morphology, extent - essential pre-operati..."
+- **mgmt-vascular-emergency** (ios): management item found in ios.radiation.plan: "evar preferred if anatomy allows - faster, lower mortality in experienced centres"
+- **mgmt-no-aggressive-fluids** (ios): none of 16 management items matched
+- **mgmt-no-appendicectomy** (ios): none of 16 management items matched
 - **mnm-aaa** (web): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Inguinal / Femoral Hernia \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE ranks acute pancreatitis first; aortic_aneurysm has a post-modifier prior of 0.0024 for a 74-year-old male smoker and stays out of the top 3 even with the PANE answers pulsatile_mass and haemodynamic_instability = true. Symptom inference ranks ruptured AAA #1 (secondary view).]
 - **inv-aortic-imaging** (web): no investigation matched among 22 (web.pane.seeded, web.clinicalPrompts) [known gap: No aortic imaging suggested (the protocol for the confirmed I71.3 is not reached: no ICD mapping for I71.3, PANE not converged).]
 - **mgmt-vascular-emergency** (web): management item found in web.managementPanel: "... rbc, permissive hypotension (systolic 70-80 mmhg) until in theatre."
@@ -7553,7 +7525,7 @@ Permutation of `parathyroid-primary-hpt-surgical-indications`.
 | mnm-hypercalcaemia | mustNotMiss | critical | FAIL (unverified) | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | flag-severe-hypercalcaemia | redFlags | critical | PASS (verify: was unverified) | PASS | Society for Endocrinology emergency guidance 2016 |  |
-| mgmt-iv-saline | managementInclude | critical | FAIL (unverified) | PASS | Society for Endocrinology emergency guidance 2016 |  |
+| mgmt-iv-saline | managementInclude | critical | PASS (verify: was unverified) | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | mgmt-stop-calcium-thiazide | managementInclude | critical | FAIL (unverified) | PASS | Society for Endocrinology emergency guidance 2016 |  |
 | mgmt-no-thyroidectomy-template | managementExclude | critical | n/a | PASS (gap resolved) |  | Add a Parathyroid dx-variant group ahead of Thyroid; word-boundary matching. |
 | mgmt-bisphosphonate | managementInclude | quality | FAIL (unverified) | PASS | Society for Endocrinology emergency guidance 2016 |  |
@@ -7563,11 +7535,11 @@ Failure details:
 
 - **mnm-hypercalcaemia** (ios): not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **flag-severe-hypercalcaemia** (ios): red flag found in ios.pipeline.alert: "ca 3.84 mmol/l - hypercalcaemia crisis - iv fluid 1-2 l ns; iv bisphosphonate if malignancy-related; urgen..."
-- **mgmt-iv-saline** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-bisphosphonate** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-stop-calcium-thiazide** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-early-loop-diuretic** (ios): none of 14 management items matched
+- **flag-severe-hypercalcaemia** (ios): red flag found in ios.radiation.urgencyNote: "hyperkalaemia >6.5 + ecg changes: immediate treatment - calcium gluconate iv first."
+- **mgmt-iv-saline** (ios): management item found in ios.radiation.plan: "prerenal (commonest - dehydration, sepsis, cardiac output): iv fluid challenge; treat sepsis"
+- **mgmt-bisphosphonate** (ios): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-stop-calcium-thiazide** (ios): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-no-early-loop-diuretic** (ios): none of 27 management items matched
 - **mnm-hypercalcaemia** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Diverticulitis; also in web.symptomInference#2, web.passive#3 [known gap: PANE applied no feature ("Nausea / vomiting" template, SOCRATES empty); calcium is a lab value. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - **mgmt-no-thyroidectomy-template** (web): none of 16 management items matched
 
@@ -7596,10 +7568,10 @@ Failure details:
 
 - **dx-hyperparathyroid-top3** (ios): not in top 3 of ios.bayes: (empty list)
 - **level-not-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≤ priority
-- **inv-fhh-exclusion** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-localisation** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-parathyroidectomy** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-stop-thiazide** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **inv-fhh-exclusion** (ios): no investigation matched among 6 (ios.radiation)
+- **inv-localisation** (ios): no investigation matched among 6 (ios.radiation)
+- **mgmt-parathyroidectomy** (ios): no management item matched among 20 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-stop-thiazide** (ios): no management item matched among 20 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
 - **dx-hyperparathyroid-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Peptic Ulcer Disease; also in web.symptomInference#3, web.passive#3 [known gap: PANE applied no feature (template "Other / general surgical"); hypercalcaemia is a lab finding PANE does not read. PANE: unlisted features count at DEFAULT_SENSITIVITY 0.30 for every disease and there is no false-positive term, so high-prior abdominal diseases (cholecystitis 0.15, GORD 0.12, PUD 0.10; male inguinal hernia x5) outrank the organ-specific disease after a single non-abdominal feature.]
 - **mgmt-no-thyroidectomy-template** (web): none of 16 management items matched
 
@@ -7624,7 +7596,7 @@ Permutation of `pe-postop-day5`.
 Failure details:
 
 - **level-not-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≤ urgent
-- **inv-no-ctpa** (ios): none of 7 investigations matched
+- **inv-no-ctpa** (ios): none of 0 investigations matched
 - **level-not-emergency** (web): web.triage: emergency (acuity=urgent, action=emergency_now, score=40); expected ≤ urgent [known gap: Over-triage from negation: 'Not breathless' matches the post-operative/breathless rule and 'No haemoptysis' the haemoptysis rule (both urgent) → emergency_now for a PERC-negative patient.]
 
 Guidelines:
@@ -7689,7 +7661,7 @@ Permutation of `perianal-abscess-simple`.
 | mgmt-antibiotics | managementInclude | critical | FAIL (unverified) | PASS | ASCRS clinical practice guidelines 2022 |  |
 | mnm-nsti | mustNotMiss | quality | FAIL (unverified) | FAIL (known gap) | WSES/SIS-E consensus 2018 |  |
 | flag-diabetes | redFlags | quality | PASS (verify: was unverified) | PASS | ASCRS clinical practice guidelines 2022 |  |
-| mgmt-glycaemic | managementInclude | quality | FAIL (unverified) | PASS | ASCRS clinical practice guidelines 2022 |  |
+| mgmt-glycaemic | managementInclude | quality | PASS (verify: was unverified) | PASS | ASCRS clinical practice guidelines 2022 |  |
 
 Failure details:
 
@@ -7697,9 +7669,9 @@ Failure details:
 - **mnm-nsti** (ios): not in top 5 of ios.bayes: 1. Cellulitis / SSTI \| 2. Dengue Fever \| 3. Community-Acquired Pneumonia \| 4. Leptospirosis \| 5. Urinary Tract Infection
 - **level-same-day** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - **flag-diabetes** (ios): red flag found in ios.visitRisk: "note: diabetes - check glucose/hba1c; wound healing and infection risk; peri-procedure medic..."
-- **mgmt-drainage** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antibiotics** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-glycaemic** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-drainage** (ios): no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-antibiotics** (ios): no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-glycaemic** (ios): management item found in ios.radiation.plan: "or dpp-4 inhibitor (sitagliptin 100 mg od - if hypoglycaemia risk)"
 - **mnm-nsti** (web): not in top 3 of web.pane: 1. Perianal Abscess / Fistula \| 2. Inguinal / Femoral Hernia \| 3. Pilonidal Disease; also in web.symptomInference#1, web.passive#2 [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal abscess, hernia, pilonidal); symptom inference ranks Fournier’s #1.]
 
 Guidelines:
@@ -7788,10 +7760,10 @@ Failure details:
 
 - **mnm-pouch** (ios): not in top 0 of ios.bayes: (empty list); also in ios.triage#3
 - **level-at-least-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- **flag-dysphagia** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-imaging-or-endoscopy** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-barium-first** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-pouch-treatment-options** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **flag-dysphagia** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-imaging-or-endoscopy** (ios): no investigation output on ios
+- **inv-barium-first** (ios): no investigation output on ios
+- **mgmt-pouch-treatment-options** (ios): no management item matched among 1 (ios.soap.plan)
 - **mnm-pouch** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump.]
 - **inv-barium-first** (web): no investigation matched among 15 (web.pane.seeded, web.clinicalPrompts) [known gap: No protocol for K22.5; no output mentions a contrast swallow.]
 - **mgmt-pouch-treatment-options** (web): no management item matched among 6 (web.clinicalPrompts) [known gap: No protocol for K22.5.]
@@ -7842,8 +7814,8 @@ Permutation of `crc-lynch-surveillance-overdue`.
 
 Failure details:
 
-- **mgmt-3-year-surveillance** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-annual-colonoscopy** (ios): none of 11 management items matched
+- **mgmt-3-year-surveillance** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-annual-colonoscopy** (ios): none of 1 management items matched
 
 Guidelines:
 
@@ -7996,11 +7968,11 @@ Guidelines:
 | dx-aaa-top3 | mustRankTopK | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 | Give pulsatile_mass and haemodynamic_instability much stronger likelihood ratios for aortic_aneurysm (and none for pancreatitis), or add a hard rule: pulsatile mass + shock → AAA to the top. |
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 |  |
 | alarm-shock | mustAlarm | critical | PASS (verify: was unverified) | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
-| mgmt-emergency-repair | managementInclude | critical | FAIL (unverified) | PASS (gap resolved) | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 | Add I71.3 (ruptured AAA) and I71.4 to the aortic_aneurysm protocol icd10Prefixes (or use the prefix I71). |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
+| mgmt-emergency-repair | managementInclude | critical | PASS (verify: was unverified) | PASS (gap resolved) | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 | Add I71.3 (ruptured AAA) and I71.4 to the aortic_aneurysm protocol icd10Prefixes (or use the prefix I71). |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
 | alarm-raaa | mustAlarm | quality | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024 |  |
 | inv-crossmatch | investigationInclude | quality | PASS (verify: was unverified) | PASS |  |  |
-| mgmt-permissive-hypotension | managementInclude | quality | FAIL (unverified) | PASS (gap resolved) | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 | Add I71.3/I71.4 to the aortic_aneurysm protocol. |
+| mgmt-permissive-hypotension | managementInclude | quality | PASS (verify: was unverified) | PASS (gap resolved) | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 | Add I71.3/I71.4 to the aortic_aneurysm protocol. |
 | mgmt-no-large-fluid-bolus | managementExclude | quality | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2024 clinical practice guidelines 2024; NICE NG156 2020 | Suppress the 1 L bolus line when AAA/aortic rupture is suspected (pulsatile mass, known AAA) and say "permissive hypotension — senior/vascular decision". |
 | mgmt-no-ct-before-theatre-unstable | managementExclude | quality | PASS (verify: was unverified) | PASS | ESVS 2024 clinical practice guidelines 2024 |  |
 | pathway-first-visit | pathway | quality | PASS (verify: was unverified) | n/a |  |  |
@@ -8012,11 +7984,11 @@ Failure details:
 - **alarm-shock** (ios): alarm found in ios.textParser: "...ncy vascular surgery. group & cross-match × 6 u. permissive hypotension (sbp 70-90). ct angiography only if haemodynamically stable."
 - **alarm-raaa** (ios): alarm found in ios.textParser: "suspected ruptured aaa - pulsatile mass + haemodynamic compromise - catastrophic if missed action: eme..."
 - **inv-crossmatch** (ios): investigation found in ios.pipeline.decisions: "blood group and save"
-- **mgmt-emergency-repair** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-permissive-hypotension** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-large-fluid-bolus** (ios): none of 14 management items matched
-- **mgmt-no-ct-before-theatre-unstable** (ios): none of 14 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- **mgmt-emergency-repair** (ios): management item found in ios.radiation.plan: "evar preferred if anatomy allows - faster, lower mortality in experienced centres"
+- **mgmt-permissive-hypotension** (ios): management item found in ios.radiation.plan: "permissive hypotension: target sbp 80-90 mmhg until aortic control"
+- **mgmt-no-large-fluid-bolus** (ios): none of 19 management items matched
+- **mgmt-no-ct-before-theatre-unstable** (ios): none of 19 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 16 management items matched
 - **pathway-first-visit** (ios): recommended firstVisit (No previous visits on record); expected firstVisit
 - **dx-aaa-top3** (web): not in top 3 of web.pane: 1. Acute Pancreatitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE top 3: Acute pancreatitis (0.35), Peptic ulcer, GORD — even with pulsatile mass and instability answered; the aortic_aneurysm prior is 0.01 and epigastric pain radiating to the back favours pancreatitis. The management panel therefore shows the pancreatitis protocol. Symptom inference ranks ruptured AAA #1.]
 - **alarm-raaa** (web): no alarm matched among 9 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: Web alarms are the generic hypotension flag and "Emergency now"; nothing names ruptured AAA.]
@@ -8071,15 +8043,15 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | ASCRS clinical practice guidelines 2017 |  |
 | flag-strangulation | redFlags | critical | FAIL (unverified) | PASS | ASCRS clinical practice guidelines 2017 |  |
-| mgmt-emergency-perineal | managementInclude | critical | PASS (verify: was unverified) | PASS | ASCRS clinical practice guidelines 2017 |  |
+| mgmt-emergency-perineal | managementInclude | critical | FAIL (unverified) | PASS | ASCRS clinical practice guidelines 2017 |  |
 | dx-prolapse-top3 | mustRankTopK | quality | FAIL (unverified) | FAIL (known gap) | ASCRS clinical practice guidelines 2017 |  |
 
 Failure details:
 
 - **dx-prolapse-top3** (ios): not in top 3 of ios.bayes: (empty list)
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **flag-strangulation** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert)
-- **mgmt-emergency-perineal** (ios): management item found in ios.radiation.plan: "emergency ot: mass closure (looped nylon or pds) with retention sutures"
+- **flag-strangulation** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)
+- **mgmt-emergency-perineal** (ios): no management item matched among 5 (ios.pipeline.actions, ios.soap.plan)
 - **dx-prolapse-top3** (web): not in top 3 of web.pane: 1. Haemorrhoids \| 2. Anal Fissure \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#4, web.triageSurgical#1 [known gap: PANE ranks haemorrhoids/fissure: the "rectal prolapse" chip is not a PANE input and there is no prolapse CC hint for a presentation template; triage surgical matching and symptom inference do find it.]
 
 Guidelines:
@@ -8141,7 +8113,7 @@ Permutation of `sbo-adhesive-base`.
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | PASS | PASS | WSES Bologna guidelines 2018 |  |
-| mgmt-surgery | managementInclude | critical | FAIL (unverified) | PASS | WSES Bologna guidelines 2018 |  |
+| mgmt-surgery | managementInclude | critical | PASS (verify: was unverified) | PASS | WSES Bologna guidelines 2018 |  |
 | mgmt-surgery-in-documented-plan | managementInclude | quality | n/a | FAIL (known gap) | WSES Bologna guidelines 2018 | Add a 'failed NOM' variant (contrast not in colon at 24 h, no resolution by 72 h) with immediate + surgical phases. |
 | mgmt-no-repeat-contrast-challenge | managementExclude | quality | n/a | FAIL (known gap) | WSES Bologna guidelines 2018 |  |
 | mgmt-no-appendicectomy-template | managementExclude | quality | PASS (verify: was unverified) | PASS (gap resolved) |  |  |
@@ -8149,8 +8121,8 @@ Permutation of `sbo-adhesive-base`.
 
 Failure details:
 
-- **mgmt-surgery** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-appendicectomy-template** (ios): none of 17 management items matched
+- **mgmt-surgery** (ios): management item found in ios.radiation.plan: "surgical options: adhesiolysis, hernia repair, resection ± anastomosis"
+- **mgmt-no-appendicectomy-template** (ios): none of 27 management items matched
 - **pathway-ward-review** (ios): recommended wardReview (Inpatient); expected wardReview
 - **mgmt-surgery-in-documented-plan** (web): no management item matched among 14 (web.plan) [known gap: Web: sbo_adhesional variant (no 'surgical' phase) is selected; the failed contrast challenge is not a variant trigger, so the documented plan stays conservative.]
 - **mgmt-no-repeat-contrast-challenge** (web): forbidden management item present in web.plan: "...ve] adhesive sbo: conservative 48 h trial if no peritonism; water-soluble contrast study at 24 h." [known gap: Web: Plan text still contains 'water-soluble contrast study at 24 h' after a failed challenge.]
@@ -8338,10 +8310,10 @@ Permutation of `sigmoid-volvulus-base`.
 | alarm-sepsis | mustAlarm | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | alarm-shock | mustAlarm | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-emergency-resection | managementInclude | critical | FAIL (unverified) | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
-| mgmt-antibiotics | managementInclude | critical | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-antibiotics | managementInclude | critical | PASS (verify: was unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | mgmt-no-endoscopic-detorsion-with-gangrene | managementExclude | critical | PASS (verify: was unverified) | PASS | ASCRS clinical practice guidelines 2021; WSES consensus guidelines 2023 |  |
 | inv-blood-cultures | investigationInclude | quality | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
-| mgmt-icu | managementInclude | quality | PASS (verify: was unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
+| mgmt-icu | managementInclude | quality | FAIL (unverified) | PASS | Surviving Sepsis Campaign 2021 |  |
 | variant-lbo-volvulus | dxVariant | quality | n/a | PASS | ASCRS clinical practice guidelines 2021 |  |
 
 Failure details:
@@ -8349,11 +8321,11 @@ Failure details:
 - **level-emergency** (ios): ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Bowel Obstruction Pathway); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal distension, pain and fever' gives 'urgent'.]
 - **alarm-sepsis** (ios): no alarm matched among 3 (ios.textParser, ios.pipeline.alert)
 - **alarm-shock** (ios): no alarm matched among 3 (ios.textParser, ios.pipeline.alert)
-- **inv-blood-cultures** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-emergency-resection** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antibiotics** (ios): no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-icu** (ios): management item found in ios.radiation.plan: "admit icu - thrombolysis: alteplase 100 mg iv over 2h (contraindications: recent surgery/..."
-- **mgmt-no-endoscopic-detorsion-with-gangrene** (ios): none of 15 management items matched
+- **inv-blood-cultures** (ios): no investigation matched among 6 (ios.radiation)
+- **mgmt-emergency-resection** (ios): no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-antibiotics** (ios): management item found in ios.radiation.plan: "broad-spectrum antibiotics if operative: co-amoxiclav 1.2g iv or cefuroxime + metronidazole"
+- **mgmt-icu** (ios): no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **mgmt-no-endoscopic-detorsion-with-gangrene** (ios): none of 26 management items matched
 
 Guidelines:
 
@@ -8369,7 +8341,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| mgmt-anticoagulation | managementInclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 | Add an SVT protocol with ICD I80.0x (ESVS 2021 treatment thresholds). |
+| mgmt-anticoagulation | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 | Add an SVT protocol with ICD I80.0x (ESVS 2021 treatment thresholds). |
 | mnm-svt | mustNotMiss | quality | FAIL (unverified) | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 | Add superficial vein thrombosis (with SFJ/SPJ proximity) to PANE/symptom inference and a protocol (duplex; fondaparinux 45 days if ≥5 cm; therapeutic anticoagulation within 3 cm of the SFJ) with ICD I80.0x. |
 | level-at-least-priority | emergencyLevel | quality | FAIL (unverified) | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 |  |
 | flag-sfj-extension | redFlags | quality | FAIL (unverified) | FAIL (known gap) | ESVS 2021 clinical practice guidelines 2021 | Add an SVT protocol with ICD I80.0x. |
@@ -8380,10 +8352,10 @@ Failure details:
 
 - **mnm-svt** (ios): not in top 0 of ios.bayes: (empty list)
 - **level-at-least-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- **flag-sfj-extension** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-duplex** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-anticoagulation** (ios): management item found in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd"
-- **mgmt-no-antibiotics** (ios): none of 10 management items matched
+- **flag-sfj-extension** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-duplex** (ios): no investigation output on ios
+- **mgmt-anticoagulation** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-antibiotics** (ios): none of 1 management items matched
 - **mnm-svt** (web): not in top 3 of web.pane: 1. Varicose Veins \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no superficial vein thrombosis disease; top 3: Varicose veins, Acute cholecystitis, GORD. Symptom inference has no SVT either.]
 - **level-at-least-priority** (web): web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ priority [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=8: no triage rule covers this presentation.]
 - **flag-sfj-extension** (web): no red flag matched among 7 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: ICD I80.02 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.]
@@ -8643,18 +8615,18 @@ Guidelines:
 | level-at-least-urgent | emergencyLevel | critical | FAIL (unverified) | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 | Add post-thyroidectomy hypocalcaemia rules: symptoms (perioral tingling, carpopedal spasm) and adjusted calcium below range → urgent; IV calcium gluconate + ECG prompt. |
 | flag-hypocalcaemia | redFlags | critical | FAIL (unverified) | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
 | mgmt-iv-calcium | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
-| inv-ecg | investigationInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
+| inv-ecg | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
 | inv-magnesium | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
 | mgmt-oral-calcium-vitd | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | Society for Endocrinology emergency guidance 2016 |  |
 
 Failure details:
 
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ urgent
-- **flag-hypocalcaemia** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-ecg** (ios): investigation found in ios.radiation: "ecg (12-lead) - stat + repeat at 1h and 3h - stemi vs nstemi vs ua"
-- **inv-magnesium** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-iv-calcium** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-oral-calcium-vitd** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **flag-hypocalcaemia** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-ecg** (ios): no investigation output on ios
+- **inv-magnesium** (ios): no investigation output on ios
+- **mgmt-iv-calcium** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-oral-calcium-vitd** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=25); expected ≥ urgent [known gap: Triage priority_24_48h (score 25, post-op only): no rule for tingling/tetany/hypocalcaemia and lab values are not read by adaptiveTriage.]
 - **flag-hypocalcaemia** (web): no red flag matched among 6 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.preventative) [known gap: No web engine reads the adjusted calcium 1.78 mmol/L or the symptoms; E89.2 maps to no protocol.]
 - **inv-ecg** (web): no investigation matched among 18 (web.pane.seeded, web.clinicalPrompts) [known gap: No ECG/cardiac monitoring proposed.]
@@ -8690,9 +8662,9 @@ Failure details:
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ emergency
 - **alarm-emergency** (ios): no alarm output on ios
 - **alarm-airway-specific** (ios): no alarm output on ios
-- **mgmt-bedside-decompression** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-return-to-theatre** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-conservative-first** (ios): none of 14 management items matched
+- **mgmt-bedside-decompression** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-return-to-theatre** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-conservative-first** (ios): none of 3 management items matched
 - **dx-haematoma-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Surgical Site Infection (SSI) \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3 = cholecystitis, surgical site infection, GORD: the "Post-op wound concern" template hints wound_erythema/wound_discharge (infection features), and no neck-swelling feature exists. The T81.0 plan itself is correct (bedside wound opening).]
 - **alarm-airway-specific** (web): no alarm matched among 8 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: The alarm is the generic triage "Emergency now" (RR, SpO2, HR); no alarm names the neck haematoma or airway.]
 - **inv-no-imaging-before-decompression** (web): forbidden investigation present in web.plan.investigations: "uss wound (confirm haematoma, guide aspiration of liquefied collections)" (+3 more) [known gap: The generic postop_haematoma investigations include "USS wound (confirm haematoma …)" with no exception for a neck haematoma with airway compromise.]
@@ -8727,10 +8699,10 @@ Failure details:
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ emergency
 - **alarm-emergency** (ios): no alarm output on ios
 - **alarm-airway-specific** (ios): no alarm output on ios
-- **inv-core-biopsy** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-ct-neck-chest** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-airway** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-elective-thyroidectomy-plan** (ios): none of 13 management items matched
+- **inv-core-biopsy** (ios): no investigation output on ios
+- **inv-ct-neck-chest** (ios): no investigation output on ios
+- **mgmt-airway** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-elective-thyroidectomy-plan** (ios): none of 3 management items matched
 - **mnm-anaplastic-or-lymphoma** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis [known gap: PANE has no anaplastic thyroid carcinoma or thyroid lymphoma disease; top 3 = cholecystitis, colorectal cancer, GORD. The thyroid_carcinoma protocol is papillary-oriented.]
 - **mnm-thyroid-malignancy** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Colorectal Cancer \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#3, web.passive#2 [known gap: Thyroid carcinoma not in the PANE top 3 (see above).]
 - **alarm-airway-specific** (web): no alarm matched among 7 (web.triage.vitalRedFlags, web.triage.emergency, web.clinicalPrompts.safety) [known gap: The only alarm is the generic triage "Emergency now" (vital signs); nothing names stridor or the airway.]
@@ -8760,11 +8732,11 @@ Guidelines:
 Failure details:
 
 - **level-at-least-priority** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority
-- **flag-compression** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-tfts** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-ct** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-thyroidectomy** (ios): no management item matched among 31 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-airway-planning** (ios): no management item matched among 31 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
+- **flag-compression** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-tfts** (ios): no investigation output on ios
+- **inv-ct** (ios): no investigation output on ios
+- **mgmt-thyroidectomy** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-airway-planning** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - **flag-compression** (web): no red flag matched among 16 (web.triage.reasons, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.emergency) [known gap: No red flag names tracheal compression, stridor or retrosternal extension; triage escalates only because "breathless" matches the post-operative-concern rule. E04.2 maps to no protocol.]
 - **inv-ct** (web): no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: CT neck/thorax appears only inside the thyroidectomy prompt plan text, not as an investigation.]
 
@@ -8785,10 +8757,10 @@ Guidelines:
 | mgmt-primary-survey | managementInclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
 | mgmt-blood-products | managementInclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018; NICE NG39 2016 |  |
 | mgmt-laparotomy | managementInclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | ATLS 10th edition 2018 |  |
 | dx-abdominal-trauma-top3 | mustRankTopK | quality | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
 | flag-shock-class | redFlags | quality | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018 | Add an ATLS class estimate (HR, BP, pulse pressure, RR, GCS, base deficit) to the trauma red flags. |
-| inv-fast | investigationInclude | quality | PASS (verify: was unverified) | PASS | ATLS 10th edition 2018 |  |
+| inv-fast | investigationInclude | quality | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
 | inv-crossmatch | investigationInclude | quality | FAIL (unverified) | PASS |  |  |
 | mgmt-txa | managementInclude | quality | FAIL (unverified) | PASS | CRASH-2 2011; NICE NG39 2016 |  |
 | mgmt-pelvic-binder | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | NICE NG39 2016 | Add "pelvic binder if pelvic injury suspected with haemodynamic instability" to the blunt trauma protocol immediate phase. |
@@ -8800,16 +8772,16 @@ Failure details:
 - **dx-abdominal-trauma-top3** (ios): not in top 3 of ios.bayes: (empty list)
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **alarm-shock** (ios): alarm found in ios.textParser: "haemodynamic instability - critically low blood pressure - immediate resuscitation required ..."
-- **flag-shock-class** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser)
-- **inv-fast** (ios): investigation found in ios.radiation: "fasting lipid profile - cardiovascular risk"
-- **inv-crossmatch** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-primary-survey** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-blood-products** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-laparotomy** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-txa** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-pelvic-binder** (ios): no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-ct-while-unstable** (ios): none of 12 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- **flag-shock-class** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.textParser)
+- **inv-fast** (ios): no investigation output on ios
+- **inv-crossmatch** (ios): no investigation output on ios
+- **mgmt-primary-survey** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-blood-products** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-laparotomy** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-txa** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-pelvic-binder** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-ct-while-unstable** (ios): none of 1 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **pathway-trauma** (ios): recommended trauma (Booked as a trauma visit); expected trauma
 - **flag-shock-class** (web): no red flag matched among 32 (web.triage.reasons, web.triage.pathways, web.protocol.redFlags, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine names the ATLS haemorrhage class; the protocol uses "SBP <90 + HR >120" for MTP.]
 - **mgmt-pelvic-binder** (web): no management item matched among 53 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The blunt abdominal trauma protocol does not mention a pelvic binder for pelvic tenderness in shock.]
@@ -8834,7 +8806,7 @@ Guidelines:
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018; ATLS 10th edition 2018 |  |
 | flag-anticoagulant | redFlags | critical | PASS (verify: was unverified) | PASS | ATLS 10th edition 2018 |  |
 | mgmt-warfarin-reversal | managementInclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | ATLS 10th edition 2018 |  |
 | flag-beta-blocker-masking | redFlags | quality | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018; ATLS 10th edition 2018 | Add a relative-hypotension/shock-index rule and a beta-blocker caveat for trauma in older adults. |
 | inv-ct-trauma | investigationInclude | quality | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
 | mgmt-hdu-analgesia | managementInclude | quality | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
@@ -8845,12 +8817,12 @@ Failure details:
 
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **flag-anticoagulant** (ios): red flag found in ios.visitRisk: "high: anticoagulant / antiplatelet: warfarin - bleeding risk - check last dose, inr/renal function and hold/bridge plan."
-- **flag-beta-blocker-masking** (ios): no red flag matched among 12 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert)
-- **inv-ct-trauma** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-warfarin-reversal** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-hdu-analgesia** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-bridging-advice** (ios): none of 14 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- **flag-beta-blocker-masking** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)
+- **inv-ct-trauma** (ios): no investigation output on ios
+- **mgmt-warfarin-reversal** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-hdu-analgesia** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-bridging-advice** (ios): none of 4 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **pathway-trauma** (ios): recommended trauma (Booked as a trauma visit); expected trauma
 - **flag-beta-blocker-masking** (web): no red flag matched among 23 (web.triage.reasons, web.triage.pathways, web.clinicalPrompts.safety, web.clinicalPrompts.investigation, web.clinicalPrompts.preventative, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No engine flags relative hypotension (SBP 108 vs usual 165) or beta-blocker masking of tachycardia; triage relies on fixed thresholds.]
 - **mgmt-no-bridging-advice** (web): forbidden management item present in web.clinicalPrompts: "• anticoagulant bridging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haem..." [known gap: The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K).]
@@ -8874,7 +8846,7 @@ Permutation of `trauma-head-injury-gcs12`.
 | flag-anticoagulant | redFlags | critical | PASS (verify: was unverified) | PASS | NICE NG232 2023; ATLS 10th edition 2018 |  |
 | inv-ct-head | investigationInclude | critical | FAIL (unverified) | PASS | NICE NG232 2023 |  |
 | mgmt-no-discharge-without-ct | managementExclude | critical | PASS (verify: was unverified) | PASS | NICE NG232 2023 |  |
-| inv-falls-ecg | investigationInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | ATLS 10th edition 2018 |  |
+| inv-falls-ecg | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018 |  |
 | mgmt-reversal-plan | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018; ATLS 10th edition 2018 | Add "anticoagulated: urgent CT; reversal agent ready (andexanet/PCC for factor Xa inhibitors, idarucizumab for dabigatran, PCC + vitamin K for warfarin)" to the TBI protocol. |
 | mgmt-no-elective-bridging-advice | managementExclude | quality | PASS (verify: was unverified) | FAIL (known gap) | ATLS 10th edition 2018 | Make the anticoag_check prompt context-aware: trauma/bleeding/head injury → reversal and CT; elective procedure → bridging plan. |
 | pathway-trauma | pathway | quality | FAIL (unverified) | n/a |  |  |
@@ -8883,11 +8855,11 @@ Failure details:
 
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - **flag-anticoagulant** (ios): red flag found in ios.visitRisk: "moderate: anticoagulant / antiplatelet: apixaban - bleeding risk for any procedure."
-- **inv-ct-head** (ios): no investigation matched among 7 (ios.radiation)
-- **inv-falls-ecg** (ios): investigation found in ios.radiation: "ecg - hyperkalaemia - peaked t waves, wide qrs → emergency"
-- **mgmt-reversal-plan** (ios): no management item matched among 25 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-elective-bridging-advice** (ios): none of 25 management items matched
-- **mgmt-no-discharge-without-ct** (ios): none of 25 management items matched
+- **inv-ct-head** (ios): no investigation output on ios
+- **inv-falls-ecg** (ios): no investigation output on ios
+- **mgmt-reversal-plan** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-elective-bridging-advice** (ios): none of 1 management items matched
+- **mgmt-no-discharge-without-ct** (ios): none of 1 management items matched
 - **pathway-trauma** (ios): recommended firstVisit (No previous visits on record); expected trauma
 - **inv-falls-ecg** (web): no investigation matched among 29 (web.plan.investigations, web.pane.seeded, web.clinicalPrompts) [known gap: No falls/syncope work-up (ECG, lying-standing BP) is suggested for an older adult with repeated falls on anticoagulation.]
 - **mgmt-reversal-plan** (web): no management item matched among 45 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The TBI protocol has no anticoagulant-reversal step (DOAC reversal/PCC) and the anticoagulation prompt gives elective bridging advice instead.]
@@ -8945,24 +8917,24 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | flag-safeguarding | redFlags | critical | FAIL (unverified) | FAIL (known gap) | NICE CG89 2009 | Add a NICE CG89 safeguarding prompt (age <1 or not independently mobile with bruising; ear/neck/trunk bruises; inconsistent history; delay; immersion scald pattern) that routes to the safeguarding lead. |
 | mgmt-safeguarding-referral | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | NICE CG89 2009 | Add a NICE CG89 safeguarding prompt. |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | NICE CG89 2009 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | NICE CG89 2009 |  |
 | mnm-nai | mustNotMiss | quality | FAIL (unverified) | FAIL (known gap) | NICE CG89 2009 | Add suspected physical abuse to the paediatric differential (bruising in a non-mobile infant, TEN-4 sites, inconsistent history, delayed presentation). |
 | level-at-least-urgent | emergencyLevel | quality | FAIL (unverified) | PASS | NICE CG89 2009 |  |
 | inv-skeletal-survey | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | RCR/RCPCH 2017 | Add RCR/RCPCH investigations to the safeguarding prompt. |
 | inv-ct-head-infant | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | RCR/RCPCH 2017 | Add RCR/RCPCH investigations to the safeguarding prompt. |
-| inv-clotting | investigationInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | NICE CG89 2009 | Add RCR/RCPCH investigations to the safeguarding prompt. |
+| inv-clotting | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | NICE CG89 2009 | Add RCR/RCPCH investigations to the safeguarding prompt. |
 | pathway-trauma | pathway | quality | PASS (verify: was unverified) | n/a |  |  |
 
 Failure details:
 
 - **mnm-nai** (ios): not in top 4 of ios.bayes: 1. Iron Deficiency Anaemia \| 2. Macrocytic Anaemia (B12 / Folate) \| 3. Anaemia of Chronic Disease \| 4. Haemolytic Anaemia
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
-- **flag-safeguarding** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-skeletal-survey** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-ct-head-infant** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-clotting** (ios): investigation found in ios.radiation: "fbc / inr / aptt / renal function - baseline before anticoagulation"
-- **mgmt-safeguarding-referral** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- **flag-safeguarding** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner)
+- **inv-skeletal-survey** (ios): no investigation output on ios
+- **inv-ct-head-infant** (ios): no investigation output on ios
+- **inv-clotting** (ios): no investigation output on ios
+- **mgmt-safeguarding-referral** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **pathway-trauma** (ios): recommended trauma (Chief complaint mentions "fall from"); expected trauma
 - **mnm-nai** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. GORD / Reflux Oesophagitis \| 3. Acute Cholecystitis [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis.]
 - **flag-safeguarding** (web): no red flag matched among 9 (web.triage.reasons, web.clinicalPrompts.safety, web.triage.vitalRedFlags, web.triage.emergency) [known gap: No safeguarding rule exists in triage, prompts or protocols; T76.12XA maps to no protocol.]
@@ -8990,7 +8962,7 @@ Guidelines:
 | inv-fetal-monitoring | investigationInclude | critical | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
 | mgmt-uterine-displacement | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
 | mgmt-obstetric-team | managementInclude | critical | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | ATLS 10th edition 2018 |  |
 | inv-kleihauer | investigationInclude | quality | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018; BSH guideline 2014 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
 | inv-no-pregnancy-test | investigationExclude | quality | PASS (verify: was unverified) | FAIL (known gap) |  | Skip the pregnancy-test prompt when pregnancy status is recorded as pregnant. |
 | mgmt-anti-d | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018; BSH guideline 2014 | Add a trauma-in-pregnancy protocol/branch (left lateral tilt or manual uterine displacement after 20 weeks, early obstetric team, CTG ≥4–6 h, Kleihauer and anti-D if RhD negative, abruption) triggered by pregnancy status + trauma mechanism, with O9A.2 prefixes. |
@@ -9001,13 +8973,13 @@ Failure details:
 - **mnm-abruption** (ios): not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Pancreatitis \| 3. Irritable Bowel Syndrome \| 4. Acute Cholecystitis \| 5. Biliary Colic
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **flag-pregnancy** (ios): red flag found in ios.visitRisk: "moderate: could be pregnant? - confirm pregnancy status before imaging, drugs or procedures."
-- **inv-fetal-monitoring** (ios): no investigation matched among 13 (ios.pipeline.decisions, ios.radiation)
-- **inv-kleihauer** (ios): no investigation matched among 13 (ios.pipeline.decisions, ios.radiation)
-- **inv-no-pregnancy-test** (ios): none of 13 investigations matched
-- **mgmt-uterine-displacement** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-obstetric-team** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-anti-d** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- **inv-fetal-monitoring** (ios): no investigation matched among 6 (ios.pipeline.decisions)
+- **inv-kleihauer** (ios): no investigation matched among 6 (ios.pipeline.decisions)
+- **inv-no-pregnancy-test** (ios): none of 6 investigations matched
+- **mgmt-uterine-displacement** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-obstetric-team** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-anti-d** (ios): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **pathway-trauma** (ios): recommended trauma (Booked as a trauma visit); expected trauma
 - **mnm-abruption** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Blunt Abdominal Trauma \| 3. Splenic Laceration [known gap: PANE has no placental abruption; top 3: Acute cholecystitis, Blunt abdominal trauma, Splenic laceration. Symptom inference ranks ectopic pregnancy #1 at 30 weeks.]
 - **inv-fetal-monitoring** (web): no investigation matched among 25 (web.pane.seeded, web.clinicalPrompts) [known gap: No trauma-in-pregnancy content exists: O9A.213 maps to no protocol, PANE top is below 0.20, and the blunt-trauma protocol has no pregnancy branch; the pregnancy prompt only asks for a urine pregnancy test.]
@@ -9033,7 +9005,7 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | FAIL (unverified) | FAIL (known gap) | WSES classification and guidelines 2017 | Add trauma/burns red-flag rules to rules.ts (burn with TBSA, stab/gunshot/penetrating wound, evisceration, high-energy mechanism, head injury on anticoagulant) at urgent severity, and a shock-index or relative-hypotension rule. |
 | mgmt-nom-monitoring | managementInclude | critical | PASS (verify: was unverified) | PASS | WSES classification and guidelines 2017 |  |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | WSES classification and guidelines 2017 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | WSES classification and guidelines 2017 |  |
 | dx-splenic-top3 | mustRankTopK | quality | FAIL (unverified) | PASS | WSES classification and guidelines 2017 |  |
 | inv-serial-hb | investigationInclude | quality | PASS (verify: was unverified) | PASS | WSES classification and guidelines 2017 |  |
 | mgmt-no-routine-splenectomy | managementExclude | quality | PASS (verify: was unverified) | PASS | WSES classification and guidelines 2017 |  |
@@ -9045,8 +9017,8 @@ Failure details:
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - **inv-serial-hb** (ios): investigation found in ios.pipeline.decisions: "fbc, crp, u&e, lft, coagulation"
 - **mgmt-nom-monitoring** (ios): management item found in ios.pipeline.actions: "news2 trend chart - plot news2 trajectory over 2 observation sets."
-- **mgmt-no-routine-splenectomy** (ios): none of 17 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- **mgmt-no-routine-splenectomy** (ios): none of 6 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **pathway-trauma** (ios): recommended trauma (Booked as a trauma visit); expected trauma
 - **level-at-least-urgent** (web): web.triage: routine (acuity=routine, action=routine_booking, score=8); expected ≥ urgent [known gap: adaptiveTriage has no trauma keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns routine_booking (score 8) for a CT-proven grade III splenic laceration.]
 
@@ -9070,7 +9042,7 @@ Permutation of `trauma-splenic-injury-stable`.
 | mgmt-operative | managementInclude | critical | FAIL (unverified) | PASS | WSES classification and guidelines 2017; ATLS 10th edition 2018 |  |
 | mgmt-blood-products | managementInclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
 | mgmt-no-nom-unstable | managementExclude | critical | PASS (verify: was unverified) | PASS | WSES classification and guidelines 2017 |  |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | ATLS 10th edition 2018 |  |
 | dx-splenic-top3 | mustRankTopK | quality | FAIL (unverified) | PASS | WSES classification and guidelines 2017 |  |
 | inv-no-ct-unstable | investigationExclude | quality | PASS (verify: was unverified) | FAIL (known gap) | WSES classification and guidelines 2017; ATLS 10th edition 2018 | Qualify protocol CT investigations with "haemodynamically stable only". |
 | mgmt-txa | managementInclude | quality | FAIL (unverified) | PASS | CRASH-2 2011 |  |
@@ -9080,12 +9052,12 @@ Failure details:
 - **dx-splenic-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Acute Pancreatitis \| 5. Irritable Bowel Syndrome
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
 - **alarm-shock** (ios): alarm found in ios.textParser: "haemodynamic instability - critically low blood pressure - immediate resuscitation required ..."
-- **inv-no-ct-unstable** (ios): none of 13 investigations matched
-- **mgmt-operative** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-blood-products** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-txa** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-nom-unstable** (ios): none of 11 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- **inv-no-ct-unstable** (ios): none of 6 investigations matched
+- **mgmt-operative** (ios): no management item matched among 3 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-blood-products** (ios): no management item matched among 3 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-txa** (ios): no management item matched among 3 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-nom-unstable** (ios): none of 1 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **inv-no-ct-unstable** (web): forbidden investigation present in web.plan.investigations: "ct abdomen/pelvis with iv contrast (aast grading)" (+2 more) [known gap: The splenic protocol lists "CT abdomen/pelvis with IV contrast (AAST grading)" without "if stable" in the unstable patient.]
 
 Guidelines:
@@ -9105,7 +9077,7 @@ Guidelines:
 |---|---|---|---|---|---|---|
 | level-emergency | emergencyLevel | critical | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018; EAST practice management guideline 2010 | Add trauma/burns red-flag rules to rules.ts (burn with TBSA, stab/gunshot/penetrating wound, evisceration, high-energy mechanism, head injury on anticoagulant) at urgent severity, and a shock-index or relative-hypotension rule. |
 | mgmt-laparotomy | managementInclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018; EAST practice management guideline 2010 |  |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | ATLS 10th edition 2018 |  |
 | dx-penetrating-top3 | mustRankTopK | quality | FAIL (unverified) | FAIL (known gap) | ATLS 10th edition 2018 |  |
 | inv-cxr | investigationInclude | quality | FAIL (unverified) | PASS | ATLS 10th edition 2018 |  |
 | mgmt-tetanus | managementInclude | quality | FAIL (unverified) | PASS |  |  |
@@ -9117,12 +9089,12 @@ Failure details:
 
 - **dx-penetrating-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Inguinal Hernia \| 5. Acute Pancreatitis
 - **level-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **inv-cxr** (ios): no investigation matched among 15 (ios.pipeline.decisions, ios.radiation)
-- **mgmt-laparotomy** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-tetanus** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antibiotics** (ios): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-bedside-reduction** (ios): none of 15 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more)
+- **inv-cxr** (ios): no investigation matched among 6 (ios.pipeline.decisions)
+- **mgmt-laparotomy** (ios): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-tetanus** (ios): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-antibiotics** (ios): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-bedside-reduction** (ios): none of 5 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **pathway-trauma** (ios): recommended trauma (Booked as a trauma visit); expected trauma
 - **dx-penetrating-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Appendicitis \| 3. GORD / Reflux Oesophagitis [known gap: PANE top 3: Inguinal/femoral hernia, Acute appendicitis, GORD; the SOCRATES mapper has no trauma features and PANE needs mechanism answers.]
 - **level-emergency** (web): web.triage: urgent (acuity=priority, action=same_day_call, score=35); expected ≥ emergency [known gap: adaptiveTriage has no stab/penetrating/evisceration keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns same_day_call for an eviscerated stab wound.]
@@ -9144,7 +9116,7 @@ Permutation of `trauma-stab-abdomen-evisceration`.
 |---|---|---|---|---|---|---|
 | level-at-least-urgent | emergencyLevel | critical | FAIL (unverified) | FAIL (known gap) | EAST practice management guideline 2010 |  |
 | mgmt-serial-exam | managementInclude | critical | FAIL (unverified) | PASS | EAST practice management guideline 2010 |  |
-| mgmt-no-antithrombotic-plan | managementExclude | critical | FAIL (unverified) | PASS | EAST practice management guideline 2010 |  |
+| mgmt-no-antithrombotic-plan | managementExclude | critical | PASS (verify: was unverified) | PASS | EAST practice management guideline 2010 |  |
 | inv-ct-or-lwe | investigationInclude | quality | PASS (verify: was unverified) | PASS | EAST practice management guideline 2010 |  |
 | mgmt-no-mandatory-laparotomy | managementExclude | quality | PASS (verify: was unverified) | PASS | EAST practice management guideline 2010 |  |
 | pathway-trauma | pathway | quality | PASS (verify: was unverified) | n/a |  |  |
@@ -9153,9 +9125,9 @@ Failure details:
 
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - **inv-ct-or-lwe** (ios): investigation found in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%)"
-- **mgmt-serial-exam** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-mandatory-laparotomy** (ios): none of 16 management items matched
-- **mgmt-no-antithrombotic-plan** (ios): forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more)
+- **mgmt-serial-exam** (ios): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-mandatory-laparotomy** (ios): none of 5 management items matched
+- **mgmt-no-antithrombotic-plan** (ios): none of 1 management items matched
 - **pathway-trauma** (ios): recommended trauma (Booked as a trauma visit); expected trauma
 - **level-at-least-urgent** (web): web.triage: priority (acuity=review, action=priority_24_48h, score=15); expected ≥ urgent [known gap: Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=review, action=priority_24_48h, score=15: no triage rule covers this presentation.]
 
@@ -9390,7 +9362,7 @@ Guidelines:
 | mgmt-no-tranexamic-acid | managementExclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | flag-nsaid | redFlags | quality | FAIL (unverified) | PASS | ESGE Guideline 2021 |  |
 | score-rec-gbs | scoreRecommended | quality | PASS (verify: was unverified) | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
-| inv-fbc-urea | investigationInclude | quality | PASS (verify: was unverified) | PASS | NICE CG141 2012 |  |
+| inv-fbc-urea | investigationInclude | quality | FAIL (unverified) | PASS | NICE CG141 2012 |  |
 | mgmt-restrictive-transfusion | managementInclude | quality | FAIL (unverified) | PASS | ESGE Guideline 2021; BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ppi | managementInclude | quality | FAIL (unverified) | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-stop-nsaid | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | ESGE Guideline 2021; NICE CG184 2014 |  |
@@ -9402,17 +9374,17 @@ Failure details:
 - **dx-ugib-top3** (ios): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - **alarm-gi-bleed** (ios): no alarm matched among 1 (ios.pipeline.alert)
-- **flag-nsaid** (ios): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert)
+- **flag-nsaid** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert)
 - **score-rec-gbs** (ios): glasgow-blatchford recommended by ios.scoreMapper
-- **inv-fbc-urea** (ios): investigation found in ios.radiation: "fbc / inr / aptt / renal function - baseline before anticoagulation"
-- **inv-group-save** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-ogd** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-ogd-within-24h** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-restrictive-transfusion** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-ppi** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-stop-nsaid** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-hpylori** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-tranexamic-acid** (ios): none of 14 management items matched
+- **inv-fbc-urea** (ios): no investigation output on ios
+- **inv-group-save** (ios): no investigation output on ios
+- **inv-ogd** (ios): no investigation output on ios
+- **mgmt-ogd-within-24h** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-restrictive-transfusion** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-ppi** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-stop-nsaid** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-hpylori** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-tranexamic-acid** (ios): none of 4 management items matched
 - **dx-ugib-top3** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Inguinal / Femoral Hernia \| 3. Acute / Chronic Gastritis; also in web.symptomInference#1, web.passive#2, web.triageSurgical#1 [known gap: PANE top 3: GORD, inguinal hernia, gastritis. PANE never receives haematemesis/melaena: socrates-to-features has no answer rule for melaena, haematemesis, "vomiting blood" or coffee-ground vomit, and the "Upper GI bleed" CC hint sets only nausea_vomiting. With only epigastric_pain + nausea_vomiting, the male ×5 (×1.8 at ≥50) inguinal-hernia prior modifier or the cholecystitis/GORD priors win. Symptom inference and triageSurgical rank the bleed #1.]
 - **mgmt-stop-nsaid** (web): no management item matched among 42 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: The upper_gi_bleed protocol only says "PPI long-term if NSAID cannot be stopped"; no line tells the clinician to stop the NSAID.]
 - **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
@@ -9454,13 +9426,13 @@ Failure details:
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - **flag-antiplatelet** (ios): red flag found in ios.visitRisk: "moderate: anticoagulant / antiplatelet: clopidogrel - bleeding risk for any procedure."
 - **score-rec-gbs** (ios): glasgow-blatchford recommended by ios.scoreMapper
-- **inv-group-save** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-transfusion-threshold-8** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-cardiology-antiplatelet-decision** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-ogd-within-24h** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-blanket-stop-aspirin** (ios): none of 14 management items matched
-- **mgmt-no-patient-hold-advice** (ios): none of 14 management items matched
-- **mgmt-no-tranexamic-acid** (ios): none of 14 management items matched
+- **inv-group-save** (ios): no investigation output on ios
+- **mgmt-transfusion-threshold-8** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-cardiology-antiplatelet-decision** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-ogd-within-24h** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-blanket-stop-aspirin** (ios): none of 4 management items matched
+- **mgmt-no-patient-hold-advice** (ios): none of 4 management items matched
+- **mgmt-no-tranexamic-acid** (ios): none of 4 management items matched
 - **dx-ugib-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#5, web.triageSurgical#1 [known gap: PANE top 3: inguinal hernia, cholecystitis, GORD. PANE never receives haematemesis/melaena: socrates-to-features has no answer rule for melaena, haematemesis, "vomiting blood" or coffee-ground vomit, and the "Upper GI bleed" CC hint sets only nausea_vomiting. With only epigastric_pain + nausea_vomiting, the male ×5 (×1.8 at ≥50) inguinal-hernia prior modifier or the cholecystitis/GORD priors win. Symptom inference and triageSurgical rank the bleed #1.]
 - **mgmt-cardiology-antiplatelet-decision** (web): no management item matched among 42 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Antiplatelets are only a triage reason ("Anticoagulant or antiplatelet medication mentioned"); no plan line routes the aspirin/clopidogrel decision to cardiology. The anticoag prompt does not list aspirin or clopidogrel.]
 - **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
@@ -9489,7 +9461,7 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | mgmt-no-tranexamic-acid | managementExclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS (verify: was unverified) | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
 | score-rec-rockall | scoreRecommended | quality | PASS (verify: was unverified) | PASS | Rockall score 1996; NICE CG141 2012 |  |
-| inv-renal-function | investigationInclude | quality | PASS (verify: was unverified) | PASS | ESGE Guideline 2021 |  |
+| inv-renal-function | investigationInclude | quality | FAIL (unverified) | PASS | ESGE Guideline 2021 |  |
 | mgmt-transfusion-threshold-8 | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | ESGE Guideline 2021 | upper_gi_bleed protocol: add the ESGE cardiovascular threshold (Hb ≤8 g/dL, target ≥10) and key it on cardiac comorbidity. |
 
 Failure details:
@@ -9499,12 +9471,12 @@ Failure details:
 - **flag-anticoagulant** (ios): red flag found in ios.visitRisk: "moderate: anticoagulant / antiplatelet: rivaroxaban - bleeding risk for any procedure."
 - **score-rec-gbs** (ios): glasgow-blatchford recommended by ios.scoreMapper
 - **score-rec-rockall** (ios): rockall recommended by ios.scoreMapper
-- **inv-renal-function** (ios): investigation found in ios.radiation: "fbc / inr / aptt / renal function - baseline before anticoagulation"
-- **inv-group-save** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-ogd-within-24h** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-transfusion-threshold-8** (ios): no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-lmwh-bridging** (ios): none of 11 management items matched
-- **mgmt-no-tranexamic-acid** (ios): none of 11 management items matched
+- **inv-renal-function** (ios): no investigation output on ios
+- **inv-group-save** (ios): no investigation output on ios
+- **mgmt-ogd-within-24h** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-transfusion-threshold-8** (ios): no management item matched among 1 (ios.soap.plan)
+- **mgmt-no-lmwh-bridging** (ios): none of 1 management items matched
+- **mgmt-no-tranexamic-acid** (ios): none of 1 management items matched
 - **mgmt-transfusion-threshold-8** (web): no management item matched among 39 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Only the generic "transfuse to Hb 70–90 g/L" line; heart failure does not change the threshold to 8 g/dL.]
 - **mgmt-no-lmwh-bridging** (web): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: computeClinicalPrompts anticoag_check (any anticoagulant) adds the elective peri-operative plan line "hold DOAC 48–72h pre-op; warfarin — bridge with LMWH per haematology protocol" to an actively bleeding patient.]
 - **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
@@ -9541,9 +9513,9 @@ Failure details:
 - **level-at-least-urgent** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent
 - **alarm-gi-bleed** (ios): no alarm output on ios
 - **score-rec-gbs** (ios): glasgow-blatchford recommended by ios.scoreMapper
-- **inv-ogd** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-ogd-within-24h** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-tranexamic-acid** (ios): none of 13 management items matched
+- **inv-ogd** (ios): no investigation output on ios
+- **mgmt-ogd-within-24h** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-tranexamic-acid** (ios): none of 3 management items matched
 - **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 
 Guidelines:
@@ -9573,10 +9545,10 @@ Failure details:
 - **dx-ugib-top3** (ios): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - **level-not-emergency** (ios): ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≤ urgent
 - **score-rec-gbs** (ios): glasgow-blatchford recommended by ios.scoreMapper
-- **inv-ogd** (ios): no investigation matched among 7 (ios.radiation)
-- **mgmt-outpatient** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-tranexamic-acid** (ios): none of 14 management items matched
-- **mgmt-no-transfusion** (ios): none of 14 management items matched
+- **inv-ogd** (ios): no investigation output on ios
+- **mgmt-outpatient** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-tranexamic-acid** (ios): none of 3 management items matched
+- **mgmt-no-transfusion** (ios): none of 3 management items matched
 - **mgmt-outpatient** (web): no management item matched among 35 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No output says the patient can be managed as an outpatient; the GI-bleed prompt adds a resuscitation plan instead.]
 - **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 - **mgmt-no-transfusion** (web): forbidden management item present in web.clinicalPrompts: "• 2 × large-bore iv cannulae, hartmann's 500ml bolus, crossmatch 2 units prbc." [known gap: gi_bleed_panel prompt fires on any haematemesis/melaena symptom and adds "2 × large-bore IV cannulae, Hartmann's 500 ml bolus, crossmatch 2 units pRBC" regardless of Hb (14.6) or GBS (0).]
@@ -9607,8 +9579,8 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | mgmt-endoscopy-after-resus | managementInclude | critical | FAIL (unverified) | PASS | NICE CG141 2012; ESGE Guideline 2021 |  |
 | mgmt-no-tranexamic-acid | managementExclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESGE Guideline 2021; HALT-IT randomised trial 2020 | Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed. |
 | score-rec-gbs | scoreRecommended | quality | PASS (verify: was unverified) | PASS | ESGE Guideline 2021; Glasgow-Blatchford score 2000 |  |
-| inv-coagulation | investigationInclude | quality | PASS (verify: was unverified) | PASS | BSG-led multisociety consensus care bundle 2020 |  |
-| mgmt-critical-care | managementInclude | quality | PASS (verify: was unverified) | FAIL (known gap) | BSG-led multisociety consensus care bundle 2020 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
+| inv-coagulation | investigationInclude | quality | FAIL (unverified) | PASS | BSG-led multisociety consensus care bundle 2020 |  |
+| mgmt-critical-care | managementInclude | quality | FAIL (unverified) | FAIL (known gap) | BSG-led multisociety consensus care bundle 2020 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
 | mgmt-escalation-ir-surgery | managementInclude | quality | FAIL (unverified) | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 
 Failure details:
@@ -9618,14 +9590,14 @@ Failure details:
 - **alarm-haemodynamic** (ios): alarm found in ios.textParser: "haemodynamic instability - critically low blood pressure - immediate resuscitation required ..."
 - **alarm-gi-bleed** (ios): alarm found in ios.pipeline.alert: "...emia - consider transfusion; crossmatch 2-4 units; identify bleeding source; haematology input if non-haemorrhagic."
 - **score-rec-gbs** (ios): glasgow-blatchford recommended by ios.scoreMapper
-- **inv-group-crossmatch** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-coagulation** (ios): investigation found in ios.radiation: "fbc / inr / aptt / renal function - baseline before anticoagulation"
+- **inv-group-crossmatch** (ios): no investigation output on ios
+- **inv-coagulation** (ios): no investigation output on ios
 - **mgmt-resuscitation** (ios): management item found in ios.pipeline.actions: "...2 h - lactate ≥2 - clearance target ≥10% per hour in sepsis resuscitation."
-- **mgmt-transfusion** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-endoscopy-after-resus** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-critical-care** (ios): management item found in ios.radiation.plan: "admit icu - thrombolysis: alteplase 100 mg iv over 2h (contraindications: recent surgery/..."
-- **mgmt-escalation-ir-surgery** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-tranexamic-acid** (ios): none of 14 management items matched
+- **mgmt-transfusion** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-endoscopy-after-resus** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-critical-care** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-escalation-ir-surgery** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-tranexamic-acid** (ios): none of 4 management items matched
 - **dx-ugib-top3** (web): not in top 3 of web.pane: 1. Inguinal / Femoral Hernia \| 2. Acute Cholecystitis \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#2, web.triageSurgical#1 [known gap: PANE top 3: inguinal hernia, cholecystitis, GORD. PANE never receives haematemesis/melaena: socrates-to-features has no answer rule for melaena, haematemesis, "vomiting blood" or coffee-ground vomit, and the "Upper GI bleed" CC hint sets only nausea_vomiting. With only epigastric_pain + nausea_vomiting, the male ×5 (×1.8 at ≥50) inguinal-hernia prior modifier or the cholecystitis/GORD priors win. Symptom inference and triageSurgical rank the bleed #1.]
 - **mgmt-critical-care** (web): no management item matched among 53 (web.plan, web.protocol.medications, web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: No HDU/ICU/critical-care line in the protocol, prompts or dx variant; the only variant is "haemodynamically stable".]
 - **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
@@ -9649,7 +9621,7 @@ Permutation of `ugib-nonvariceal-gbs-high`.
 | dx-ugib-top3 | mustRankTopK | critical | FAIL (unverified) | PASS | ESGE Guideline 2021 |  |
 | level-at-least-urgent | emergencyLevel | critical | FAIL (unverified) | PASS | ESGE Guideline 2021 |  |
 | flag-anticoagulant | redFlags | critical | PASS (verify: was unverified) | PASS | ESGE Guideline 2021 |  |
-| inv-inr | investigationInclude | critical | PASS (verify: was unverified) | PASS | ESGE Guideline 2021 |  |
+| inv-inr | investigationInclude | critical | FAIL (unverified) | PASS | ESGE Guideline 2021 |  |
 | inv-group-save | investigationInclude | critical | FAIL (unverified) | PASS | BSG-led multisociety consensus care bundle 2020 |  |
 | mgmt-ogd-within-24h | managementInclude | critical | FAIL (unverified) | PASS | ESGE Guideline 2021; NICE CG141 2012 |  |
 | mgmt-no-lmwh-bridging | managementExclude | critical | PASS (verify: was unverified) | FAIL (known gap) | ESGE Guideline 2021 | clinical-inference.ts anticoag_check: suppress the bridging template when GI haemorrhage is present (gi_bleed_panel fired) and replace it with "Anticoagulant: withhold/reversal decision by clinician (ESGE 2021)". |
@@ -9666,13 +9638,13 @@ Failure details:
 - **flag-anticoagulant** (ios): red flag found in ios.visitRisk: "moderate: anticoagulant / antiplatelet: warfarin - bleeding risk for any procedure."
 - **flag-coagulopathy** (ios): red flag found in ios.pipeline.alert: "inr 4.8 - coagulopathy - assess bleeding risk; consider vitamin k iv; discuss ffp i..."
 - **score-rec-gbs** (ios): glasgow-blatchford recommended by ios.scoreMapper
-- **inv-inr** (ios): investigation found in ios.radiation: "fbc / inr / aptt / renal function - baseline before anticoagulation"
-- **inv-group-save** (ios): no investigation matched among 9 (ios.radiation)
-- **mgmt-reversal-considered** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-ogd-within-24h** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-lmwh-bridging** (ios): none of 13 management items matched
-- **mgmt-no-patient-hold-advice** (ios): none of 13 management items matched
-- **mgmt-no-tranexamic-acid** (ios): none of 13 management items matched
+- **inv-inr** (ios): no investigation output on ios
+- **inv-group-save** (ios): no investigation output on ios
+- **mgmt-reversal-considered** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-ogd-within-24h** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-lmwh-bridging** (ios): none of 3 management items matched
+- **mgmt-no-patient-hold-advice** (ios): none of 3 management items matched
+- **mgmt-no-tranexamic-acid** (ios): none of 3 management items matched
 - **mgmt-no-lmwh-bridging** (web): forbidden management item present in web.clinicalPrompts: "...dging: hold doac 48-72h pre-op (renal-adjusted); warfarin - bridge with lmwh per haematology protocol." [known gap: computeClinicalPrompts anticoag_check (any anticoagulant) adds the elective peri-operative plan line "hold DOAC 48–72h pre-op; warfarin — bridge with LMWH per haematology protocol" to an actively bleeding patient.]
 - **mgmt-no-tranexamic-acid** (web): forbidden management item present in web.protocol.medications: "tranexamic acid 1 g iv (intravenous) stat (single dose) - antifibrinolytic - if endoscopy ..." [known gap: upper_gi_bleed protocol medications list "Tranexamic acid 1 g IV stat — if endoscopy is delayed and haemorrhage is trauma-related or massive"; it appears in every plan built on that protocol.]
 
@@ -9731,17 +9703,17 @@ Guidelines:
 | level-at-least-priority | emergencyLevel | critical | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
 | flag-cancer-weight-loss | redFlags | critical | FAIL (unverified) | PASS | NICE NG12 2015 |  |
 | inv-ogd | investigationInclude | critical | FAIL (unverified) | PASS | NICE NG12 2015 |  |
-| inv-fbc | investigationInclude | quality | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
+| inv-fbc | investigationInclude | quality | FAIL (unverified) | PASS | NICE NG12 2015 |  |
 | mgmt-urgent-two-week-ogd | managementInclude | quality | FAIL (unverified) | PASS | NICE NG12 2015 |  |
 
 Failure details:
 
 - **dx-gastric-cancer-top3** (ios): not in top 3 of ios.bayes: 1. Gastrointestinal Malignancy \| 2. Inflammatory Bowel Disease \| 3. Diabetes Mellitus Type 2 \| 4. Hyperthyroidism
 - **level-at-least-priority** (ios): ios.triage: priority (ClinicalPathwayEngine suggestedAcuity=Priority, pathway=Colorectal Screening Pathway); expected ≥ priority
-- **flag-cancer-weight-loss** (ios): no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote)
-- **inv-ogd** (ios): no investigation matched among 9 (ios.radiation)
-- **inv-fbc** (ios): investigation found in ios.radiation: "fbc / inr / aptt / renal function - baseline before anticoagulation"
-- **mgmt-urgent-two-week-ogd** (ios): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
+- **flag-cancer-weight-loss** (ios): no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage)
+- **inv-ogd** (ios): no investigation output on ios
+- **inv-fbc** (ios): no investigation output on ios
+- **mgmt-urgent-two-week-ogd** (ios): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)
 - **dx-gastric-cancer-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. Peptic Ulcer Disease \| 3. GORD / Reflux Oesophagitis; also in web.symptomInference#1, web.passive#1, web.triageSurgical#1 [known gap: PANE top 3: cholecystitis, peptic ulcer, GORD — weight_loss/anorexia do not outweigh the cholecystitis prior (×2 female, ×1.6 age 30–70). Symptom inference, passive ranking and triageSurgical all rank gastric carcinoma #1.]
 
 Guidelines:
@@ -9829,7 +9801,7 @@ Permutation of `variceal-bleed-known-cirrhosis`.
 | mnm-variceal | mustNotMiss | quality | FAIL (unverified) | FAIL (known gap) | Baveno VII 2022 |  |
 | flag-liver-disease | redFlags | quality | FAIL (unverified) | PASS | Baveno VII 2022 |  |
 | score-rec-child-pugh | scoreRecommended | quality | FAIL (unverified) | PASS | Baveno VII 2022 |  |
-| inv-inr-lfts | investigationInclude | quality | PASS (verify: was unverified) | PASS | Baveno VII 2022 |  |
+| inv-inr-lfts | investigationInclude | quality | FAIL (unverified) | PASS | Baveno VII 2022 |  |
 | mgmt-band-ligation | managementInclude | quality | FAIL (unverified) | PASS (gap resolved) | Baveno VII 2022 | Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its "80–100 in varices" transfusion target at the same time. |
 | variant-variceal | dxVariant | quality | n/a | PASS (gap resolved) | Baveno VII 2022 | dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step. |
 
@@ -9838,13 +9810,13 @@ Failure details:
 - **dx-ugib-top3** (ios): not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - **mnm-variceal** (ios): not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea)
 - **level-emergency** (ios): ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency
-- **flag-liver-disease** (ios): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote)
+- **flag-liver-disease** (ios): no red flag matched among 4 (ios.visitRisk, ios.allergyBanner)
 - **score-rec-child-pugh** (ios): child-pugh not recommended; recommended: glasgow-blatchford, rockall, aims65, ios:forrest
-- **inv-inr-lfts** (ios): investigation found in ios.radiation: "fbc / inr / aptt / renal function - baseline before anticoagulation"
-- **mgmt-vasoactive** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-antibiotic-prophylaxis** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-band-ligation** (ios): no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)
-- **mgmt-no-liberal-transfusion-varices** (ios): none of 14 management items matched
+- **inv-inr-lfts** (ios): no investigation output on ios
+- **mgmt-vasoactive** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-antibiotic-prophylaxis** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-band-ligation** (ios): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)
+- **mgmt-no-liberal-transfusion-varices** (ios): none of 4 management items matched
 - **dx-ugib-top3** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Appendicitis; also in web.symptomInference#2, web.triageSurgical#1 [known gap: PANE top 3: cholecystitis, GORD, appendicitis. PANE never receives haematemesis/melaena: socrates-to-features has no answer rule for melaena, haematemesis, "vomiting blood" or coffee-ground vomit, and the "Upper GI bleed" CC hint sets only nausea_vomiting. With only epigastric_pain + nausea_vomiting, the male ×5 (×1.8 at ≥50) inguinal-hernia prior modifier or the cholecystitis/GORD priors win. Symptom inference and triageSurgical rank the bleed #1.]
 - **mnm-variceal** (web): not in top 3 of web.pane: 1. Acute Cholecystitis \| 2. GORD / Reflux Oesophagitis \| 3. Acute Appendicitis; also in web.symptomInference#1, web.passive#1 [known gap: PANE has no variceal node; symptom inference ranks "Portal hypertension / oesophageal varices" #1 from the chips.]
 - **mgmt-vasoactive** (web): management item found in web.managementPanel: "[immediate] suspected varices: terlipressin 2 mg qds + prophylactic iv ceftriaxone."
@@ -9865,9 +9837,6 @@ Guidelines:
 |---|---|---|---|---|---|
 | `aaa-renal-colic-mimic` | mnm-aaa | ios | critical | unverified | not in top 4 of ios.bayes: 1. Urinary Tract Infection \| 2. Renal / Ureteric Colic \| 3. Carcinoma of Prostate \| 4. Benign Prostatic Hypertrophy |
 | `aaa-renal-colic-mimic` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `aaa-renal-colic-mimic` | inv-aorta-imaging | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `aaa-renal-colic-mimic` | mgmt-vascular | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `aaa-renal-colic-mimic` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more) |
 | `abscess-recurrent-mrsa-pwid` | dx-abscess-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `abscess-recurrent-mrsa-pwid` | mnm-pseudoaneurysm | ios | quality | unverified | not in top 0 of ios.bayes: (empty list) |
 | `abscess-recurrent-mrsa-pwid` | level-at-least-urgent | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
@@ -9880,43 +9849,38 @@ Guidelines:
 | `abscess-thigh-adult` | dx-abscess-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `abscess-thigh-adult` | inv-pus-culture | ios | quality | unverified | no investigation output on ios |
 | `abscess-thigh-adult` | mgmt-incision-drainage | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
-| `achalasia-pseudoachalasia-elderly` | inv-ogd | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `achalasia-young` | inv-ogd | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `achalasia-young` | inv-manometry | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `achalasia-young` | inv-barium-swallow | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `achalasia-young` | mgmt-definitive-options | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `achalasia-pseudoachalasia-elderly` | inv-ogd | ios | critical | unverified | no investigation output on ios |
+| `achalasia-pseudoachalasia-elderly` | inv-ct | ios | quality | unverified | no investigation output on ios |
+| `achalasia-young` | inv-ogd | ios | critical | unverified | no investigation output on ios |
+| `achalasia-young` | inv-manometry | ios | quality | unverified | no investigation output on ios |
+| `achalasia-young` | inv-barium-swallow | ios | quality | unverified | no investigation output on ios |
+| `achalasia-young` | mgmt-definitive-options | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `adrenal-incidentaloma-indeterminate` | inv-metanephrines | ios | critical | unverified | no investigation matched among 8 (ios.radiation) |
 | `adrenal-incidentaloma-indeterminate` | inv-dst | ios | quality | unverified | no investigation matched among 8 (ios.radiation) |
 | `adrenal-incidentaloma-indeterminate` | inv-further-imaging | ios | quality | unverified | no investigation matched among 8 (ios.radiation) |
 | `adrenal-suspected-phaeochromocytoma` | mnm-phaeochromocytoma | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Biliary Colic \| 4. Acute Pancreatitis \| 5. Peptic Ulcer Disease; also in ios.ccEarly#4 |
-| `adrenal-suspected-phaeochromocytoma` | flag-phaeo | ios | critical | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `adrenal-suspected-phaeochromocytoma` | inv-metanephrines | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `adrenal-suspected-phaeochromocytoma` | mgmt-alpha-blockade | ios | critical | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `adrenal-suspected-phaeochromocytoma` | flag-phaeo | ios | critical | unverified | no red flag matched among 2 (ios.visitRisk, ios.allergyBanner) |
+| `adrenal-suspected-phaeochromocytoma` | inv-metanephrines | ios | critical | unverified | no investigation output on ios |
+| `adrenal-suspected-phaeochromocytoma` | mgmt-alpha-blockade | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `ali-embolic-af` | dx-ali-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `ali-embolic-af` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `ali-embolic-af` | flag-af-embolic-source | ios | quality | unverified | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser) |
-| `ali-embolic-af` | inv-cta-or-duplex | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `ali-embolic-af` | mgmt-heparin | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ali-embolic-af` | flag-af-embolic-source | ios | quality | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.textParser) |
+| `ali-embolic-af` | inv-cta-or-duplex | ios | quality | unverified | no investigation output on ios |
+| `ali-embolic-af` | mgmt-heparin | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `ali-embolic-af` | mgmt-emergency-revascularisation | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
 | `ali-thrombotic-diabetic-claudicant` | mnm-ali | ios | critical | unverified | not in top 0 of ios.bayes: (empty list) |
 | `ali-thrombotic-diabetic-claudicant` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `ali-thrombotic-diabetic-claudicant` | flag-acute-ischaemia | ios | quality | unverified | no red flag matched among 11 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `ali-thrombotic-diabetic-claudicant` | inv-cta | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `ali-thrombotic-diabetic-claudicant` | mgmt-heparin | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ali-thrombotic-diabetic-claudicant` | flag-acute-ischaemia | ios | quality | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner) |
+| `ali-thrombotic-diabetic-claudicant` | inv-cta | ios | quality | unverified | no investigation output on ios |
+| `ali-thrombotic-diabetic-claudicant` | mgmt-heparin | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `ali-thrombotic-diabetic-claudicant` | mgmt-urgent-vascular | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
 | `ami-embolic-af` | mnm-mesenteric-ischaemia | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Irritable Bowel Syndrome |
 | `ami-embolic-af` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden s |
 | `ami-embolic-af` | alarm-mesenteric | ios | critical | unverified | no alarm output on ios |
-| `ami-embolic-af` | inv-cta | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `ami-embolic-af` | inv-lactate | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `ami-embolic-af` | mgmt-revascularisation | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ami-embolic-af` | mgmt-antibiotics | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `ami-infarction-septic-shock` | mnm-mesenteric | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Inguinal Hernia |
 | `ami-infarction-septic-shock` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdomina |
 | `ami-infarction-septic-shock` | alarm-sepsis | ios | critical | unverified | no alarm matched among 2 (ios.pipeline.alert) |
 | `ami-infarction-septic-shock` | alarm-shock | ios | critical | unverified | no alarm matched among 2 (ios.pipeline.alert) |
-| `ami-infarction-septic-shock` | mgmt-emergency-laparotomy | ios | critical | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ami-infarction-septic-shock` | mgmt-revascularisation | ios | critical | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ami-infarction-septic-shock` | mgmt-second-look | ios | quality | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ami-infarction-septic-shock` | mgmt-icu | ios | quality | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `ami-venous-thrombosis-ocp` | mnm-mesenteric | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Acute Diverticulitis \| 5. Irritable Bowel Syndrome |
 | `ami-venous-thrombosis-ocp` | level-at-least-urgent | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: Web: adaptiveTriage: 'priority_24_48h' (score 20); the only reasons ar |
 | `ami-venous-thrombosis-ocp` | inv-pregnancy-test | ios | critical | unverified | no investigation matched among 6 (ios.pipeline.decisions) |
@@ -9925,11 +9889,11 @@ Guidelines:
 | `ami-venous-thrombosis-ocp` | mgmt-stop-cocp | ios | quality | unverified | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
 | `anal-cancer-red-flags` | mnm-anal-cancer | ios | critical | unverified | not in top 5 of ios.bayes: 1. Basal Cell Carcinoma \| 2. Melanoma \| 3. Squamous Cell Carcinoma \| 4. Lipoma \| 5. Sebaceous Cyst (Epidermoid) |
 | `anal-cancer-red-flags` | level-at-least-priority | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
-| `anal-cancer-red-flags` | flag-malignancy | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `anal-cancer-red-flags` | inv-biopsy | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `anal-cancer-red-flags` | inv-mri-pelvis | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `anal-cancer-red-flags` | inv-hiv-test | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `anal-cancer-red-flags` | mgmt-chemoradiotherapy | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `anal-cancer-red-flags` | flag-malignancy | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `anal-cancer-red-flags` | inv-biopsy | ios | critical | unverified | no investigation output on ios |
+| `anal-cancer-red-flags` | inv-mri-pelvis | ios | quality | unverified | no investigation output on ios |
+| `anal-cancer-red-flags` | inv-hiv-test | ios | quality | unverified | no investigation output on ios |
+| `anal-cancer-red-flags` | mgmt-chemoradiotherapy | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `anal-fissure-acute-posterior` | dx-fissure-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `anal-fissure-atypical-lateral-hiv` | mnm-anal-cancer | ios | critical | unverified | not in top 0 of ios.bayes: (empty list) |
 | `anal-fissure-atypical-lateral-hiv` | mnm-sti-crohn | ios | quality | unverified | not in top 0 of ios.bayes: (empty list) |
@@ -9940,10 +9904,10 @@ Guidelines:
 | `aortic-dissection-epigastric-back-pain` | alarm-dissection | ios | critical | unverified | no alarm matched among 1 (ios.pipeline.alert) |
 | `aortoenteric-fistula-herald-bleed` | mnm-aortoenteric-fistula | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Appendicitis (with nausea) \| 3. Small Bowel Obstruction \| 4. Drug-Induced Nausea / Vomiting \| 5. Gastroparesis |
 | `aortoenteric-fistula-herald-bleed` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `aortoenteric-fistula-herald-bleed` | flag-aortic-graft | ios | critical | unverified | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) |
-| `aortoenteric-fistula-herald-bleed` | inv-ct-angiography | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `aortoenteric-fistula-herald-bleed` | inv-blood-cultures | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `aortoenteric-fistula-herald-bleed` | mgmt-vascular-surgery | ios | critical | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `aortoenteric-fistula-herald-bleed` | flag-aortic-graft | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert) |
+| `aortoenteric-fistula-herald-bleed` | inv-ct-angiography | ios | critical | unverified | no investigation output on ios |
+| `aortoenteric-fistula-herald-bleed` | inv-blood-cultures | ios | quality | unverified | no investigation output on ios |
+| `aortoenteric-fistula-herald-bleed` | mgmt-vascular-surgery | ios | critical | unverified | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) |
 | `appendicitis-adult-typical` | dx-appendicitis-top3 | ios | critical | known gap | not in top 3 of ios.bayes: (empty list); also in ios.triage#1 [known gap: iOS: fallback mode (DiagnosticDatabase.json does not decode): the CC routes to the rightIliacFossaPain pool, which has no built-in list (`?? []`), so the differential |
 | `appendicitis-adult-typical` | dx-appendicitis-top1 | ios | quality | known gap | not in top 1 of ios.bayes: (empty list); also in ios.triage#1 [known gap: iOS: fallback mode (DiagnosticDatabase.json does not decode): the CC routes to the rightIliacFossaPain pool, which has no built-in list (`?? []`), so the differential |
 | `appendicitis-adult-typical` | score-alvarado-autofill | ios | quality | known gap | expected ≥ 7; got ios.autofill.alvarado=3 (Score 3/10 — appendicitis unlikely) [known gap: iOS auto-fill reads only temperature and WBC (3/10); history and examination items stay unticked.] |
@@ -9978,15 +9942,15 @@ Guidelines:
 | `appendicitis-pregnant-t2` | mnm-obstetric-cause | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis \| 4. Renal / Ureteric Colic \| 5. Acute Diverticulitis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fallback mode: th |
 | `appendicitis-pregnant-t2` | mnm-pyelonephritis | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis \| 4. Renal / Ureteric Colic \| 5. Acute Diverticulitis [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list ( |
 | `appendicitis-pregnant-t2` | level-at-least-urgent | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS ClinicalPathwayEngine: CC matches no pathway, so acuity stays rout |
-| `appendicitis-pregnant-t2` | flag-pregnancy | ios | critical | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) [known gap: iOS Patient has no pregnancy field; VisitRiskAssessment raises "Could be pregnant?" only on tr |
+| `appendicitis-pregnant-t2` | flag-pregnancy | ios | critical | known gap | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) [known gap: iOS Patient has no pregnancy field; VisitRiskAssessment raises "Could be pregnant?" only on tr |
 | `appendicitis-pregnant-t2` | inv-mri-after-inconclusive-us | ios | critical | known gap | no investigation matched among 14 (ios.pipeline.decisions, ios.radiation) [known gap: Neither the iOS radiation card nor the web appendicitis protocol mentions MRI; CT with contrast is the only second-line imaging offered.] |
 | `appendicitis-pregnant-t2` | inv-no-unqualified-ct | ios | quality | known gap | forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%..." (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.] |
-| `appendicitis-pregnant-t2` | mgmt-obstetric-involvement | ios | quality | unverified | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `appendicitis-pregnant-t2` | mgmt-obstetric-involvement | ios | quality | unverified | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `appendicitis-score-intermediate-band` | dx-appendicitis-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list); also in ios.triage#1 |
 | `appendicitis-score-intermediate-band` | score-rec-aas | ios | quality | unverified | aas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews |
 | `appendicitis-score-low-band` | mnm-gynaecological | ios | quality | unverified | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis \| 4. Acute Diverticulitis \| 5. Biliary Colic |
 | `appendicitis-score-low-band` | score-rec-air | ios | quality | unverified | air not recommended; recommended: news2, mews |
-| `appendicitis-score-low-band` | inv-pregnancy-test | ios | critical | unverified | no investigation matched among 13 (ios.pipeline.decisions, ios.radiation) |
+| `appendicitis-score-low-band` | inv-pregnancy-test | ios | critical | unverified | no investigation matched among 6 (ios.pipeline.decisions) |
 | `biliary-colic-asymptomatic-incidental-gallstones` | mgmt-reassure-safety-net | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `biliary-colic-incidental-polyp` | flag-polyp | ios | quality | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags) |
 | `biliary-colic-incidental-polyp` | mgmt-histology | ios | quality | unverified | no management item matched among 8 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
@@ -9997,31 +9961,31 @@ Guidelines:
 | `biliary-colic-uncomplicated` | score-rec-asge-cbd | ios | quality | unverified | asge-cbd not recommended; recommended: tg18-cholecystitis, tg18-cholangitis, news2, rcri, asa, mews |
 | `boerhaave-classic-mackler` | dx-perforation-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Pulmonary Embolism \| 3. Musculoskeletal Chest Pain \| 4. Stable Angina \| 5. GERD / Oesophagitis |
 | `boerhaave-classic-mackler` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `boerhaave-classic-mackler` | inv-ct-oral-contrast | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `boerhaave-classic-mackler` | inv-blood-cultures | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `boerhaave-classic-mackler` | mgmt-nil-by-mouth | ios | critical | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `boerhaave-classic-mackler` | mgmt-broad-spectrum-antibiotics | ios | critical | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `boerhaave-classic-mackler` | mgmt-surgical-referral | ios | critical | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `boerhaave-classic-mackler` | mgmt-antifungal | ios | quality | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `boerhaave-classic-mackler` | inv-ct-oral-contrast | ios | critical | unverified | no investigation output on ios |
+| `boerhaave-classic-mackler` | inv-blood-cultures | ios | quality | unverified | no investigation output on ios |
+| `boerhaave-classic-mackler` | mgmt-nil-by-mouth | ios | critical | unverified | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) |
+| `boerhaave-classic-mackler` | mgmt-broad-spectrum-antibiotics | ios | critical | unverified | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) |
+| `boerhaave-classic-mackler` | mgmt-surgical-referral | ios | critical | unverified | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) |
+| `boerhaave-classic-mackler` | mgmt-antifungal | ios | quality | unverified | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) |
 | `boerhaave-presenting-as-chest-pain` | mnm-perforation | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Coronary Syndrome \| 2. Pulmonary Embolism \| 3. Musculoskeletal Chest Pain \| 4. Stable Angina \| 5. GERD / Oesophagitis |
 | `boerhaave-presenting-as-chest-pain` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `boerhaave-presenting-as-chest-pain` | inv-ct-oral-contrast | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `boerhaave-presenting-as-chest-pain` | mgmt-no-anticoagulation-before-ct | ios | quality | unverified | forbidden management item present in ios.radiation.plan: "admit icu - thrombolysis: alteplase 100 mg iv over 2h (contraindications: recent surgery/stroke)" (+1 more) |
+| `boerhaave-presenting-as-chest-pain` | inv-ecg | ios | critical | unverified | no investigation output on ios |
+| `boerhaave-presenting-as-chest-pain` | inv-ct-oral-contrast | ios | critical | unverified | no investigation output on ios |
 | `boerhaave-presenting-as-pancreatitis` | mnm-perforation | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. GERD / Oesophagitis |
 | `boerhaave-presenting-as-pancreatitis` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `boerhaave-presenting-as-pancreatitis` | inv-ct-oral-contrast | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `boerhaave-presenting-as-pancreatitis` | mgmt-nil-by-mouth | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `boerhaave-presenting-as-pancreatitis` | inv-ct-oral-contrast | ios | critical | unverified | no investigation output on ios |
+| `boerhaave-presenting-as-pancreatitis` | mgmt-nil-by-mouth | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `breast-abscess-lactational` | level-at-least-urgent | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Breast Surgery Pathway); expected ≥ urgent |
 | `breast-abscess-lactational` | inv-uss | ios | critical | unverified | no investigation output on ios |
 | `breast-abscess-lactational` | inv-pus-culture | ios | quality | unverified | no investigation output on ios |
 | `breast-abscess-lactational` | mgmt-aspiration | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `breast-abscess-lactational` | mgmt-continue-breastfeeding | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
-| `breast-abscess-non-lactational-smoker` | inv-uss | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `breast-abscess-non-lactational-smoker` | mgmt-aspiration | ios | critical | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `breast-abscess-non-lactational-smoker` | mgmt-anaerobic-cover | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `breast-abscess-non-lactational-smoker` | mgmt-smoking-cessation | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `breast-abscess-non-lactational-smoker` | mgmt-exclude-malignancy | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `breast-family-history-brca` | mgmt-genetics-referral | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `breast-abscess-non-lactational-smoker` | inv-uss | ios | critical | unverified | no investigation output on ios |
+| `breast-abscess-non-lactational-smoker` | mgmt-aspiration | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `breast-abscess-non-lactational-smoker` | mgmt-anaerobic-cover | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `breast-abscess-non-lactational-smoker` | mgmt-smoking-cessation | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `breast-abscess-non-lactational-smoker` | mgmt-exclude-malignancy | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `breast-family-history-brca` | mgmt-genetics-referral | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `breast-inflammatory-cancer` | mnm-carcinoma | ios | critical | unverified | not in top 0 of ios.bayes: (empty list); also in ios.triage#3 |
 | `breast-inflammatory-cancer` | level-at-least-priority | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Breast Surgery Pathway); expected ≥ priority |
 | `breast-inflammatory-cancer` | mgmt-no-bcs-or-slnb | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "early stage: wide local excision + sentinel node biopsy ± mastectomy" |
@@ -10047,54 +10011,52 @@ Guidelines:
 | `breast-male-cancer` | inv-core-biopsy | ios | critical | unverified | no investigation output on ios |
 | `breast-male-cancer` | mgmt-genetics | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `breast-male-gynaecomastia` | dx-gynaecomastia-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
-| `breast-male-gynaecomastia` | inv-testes | ios | quality | unverified | no investigation matched among 8 (ios.radiation) |
-| `breast-male-gynaecomastia` | mgmt-medication-review | ios | quality | unverified | no management item matched among 26 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
+| `breast-male-gynaecomastia` | inv-testes | ios | quality | unverified | no investigation output on ios |
+| `breast-male-gynaecomastia` | mgmt-medication-review | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `breast-nipple-discharge-bloody-single-duct` | mnm-malignancy | ios | critical | unverified | not in top 0 of ios.bayes: (empty list) |
 | `breast-nipple-discharge-bloody-single-duct` | level-at-least-priority | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
 | `breast-nipple-discharge-bloody-single-duct` | flag-2ww | ios | critical | unverified | no red flag matched among 2 (ios.visitRisk, ios.allergyBanner) |
 | `breast-nipple-discharge-bloody-single-duct` | inv-mammogram | ios | critical | unverified | no investigation output on ios |
 | `breast-nipple-discharge-bloody-single-duct` | inv-uss | ios | critical | unverified | no investigation output on ios |
 | `breast-nipple-discharge-bloody-single-duct` | mgmt-duct-excision | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
-| `breast-pain-cyclical-alone` | mgmt-reassurance | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `breast-pain-cyclical-alone` | mgmt-reassurance | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `burns-adult-flame-27pct` | dx-major-burn-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `burns-adult-flame-27pct` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `burns-adult-flame-27pct` | flag-major-burn | ios | quality | unverified | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `burns-adult-flame-27pct` | inv-tbsa-assessment | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `burns-adult-flame-27pct` | mgmt-formal-fluids | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-adult-flame-27pct` | mgmt-from-time-of-burn | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-adult-flame-27pct` | mgmt-urine-output-titration | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-adult-flame-27pct` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-adult-flame-27pct` | mgmt-tetanus | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-adult-flame-27pct` | mgmt-no-unrelated-plan | ios | quality | unverified | forbidden management item present in ios.radiation.plan: "intensive phase (2 months): hrze - isoniazid + rifampicin + pyrazinamide + ethambutol daily" (+3 more) |
-| `burns-adult-scald-14pct` | mgmt-burns-discussion | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-adult-scald-14pct` | mgmt-dressings | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `burns-adult-flame-27pct` | flag-major-burn | ios | quality | unverified | no red flag matched among 4 (ios.visitRisk, ios.allergyBanner) |
+| `burns-adult-flame-27pct` | inv-tbsa-assessment | ios | quality | unverified | no investigation output on ios |
+| `burns-adult-flame-27pct` | mgmt-formal-fluids | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-adult-flame-27pct` | mgmt-from-time-of-burn | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-adult-flame-27pct` | mgmt-urine-output-titration | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-adult-flame-27pct` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-adult-flame-27pct` | mgmt-tetanus | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-adult-scald-14pct` | mgmt-burns-discussion | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-adult-scald-14pct` | mgmt-dressings | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `burns-chemical-alkali` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `burns-chemical-alkali` | flag-chemical | ios | quality | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `burns-chemical-alkali` | inv-eye-ph | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `burns-chemical-alkali` | mgmt-copious-irrigation | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-chemical-alkali` | mgmt-remove-clothing | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-chemical-alkali` | mgmt-ophthalmology | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-chemical-alkali` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `burns-chemical-alkali` | flag-chemical | ios | quality | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `burns-chemical-alkali` | inv-eye-ph | ios | quality | unverified | no investigation output on ios |
+| `burns-chemical-alkali` | mgmt-copious-irrigation | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-chemical-alkali` | mgmt-remove-clothing | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-chemical-alkali` | mgmt-ophthalmology | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-chemical-alkali` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
 | `burns-chemical-alkali` | pathway-burns | ios | quality | unverified | recommended firstVisit (No previous visits on record); expected burns |
 | `burns-child-immersion-nai` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `burns-child-immersion-nai` | flag-safeguarding | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `burns-child-immersion-nai` | flag-special-areas | ios | quality | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `burns-child-immersion-nai` | inv-skeletal-survey | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `burns-child-immersion-nai` | mgmt-safeguarding-referral | ios | critical | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-child-immersion-nai` | mgmt-paediatric-burns-referral | ios | critical | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-child-immersion-nai` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more) |
+| `burns-child-immersion-nai` | flag-safeguarding | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `burns-child-immersion-nai` | flag-special-areas | ios | quality | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `burns-child-immersion-nai` | inv-skeletal-survey | ios | quality | unverified | no investigation output on ios |
+| `burns-child-immersion-nai` | mgmt-safeguarding-referral | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-child-immersion-nai` | mgmt-paediatric-burns-referral | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
 | `burns-child-scald-12pct` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `burns-child-scald-12pct` | flag-paediatric-burn | ios | quality | unverified | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `burns-child-scald-12pct` | inv-lund-browder | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `burns-child-scald-12pct` | mgmt-formal-fluids | ios | critical | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-child-scald-12pct` | mgmt-maintenance-fluid | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-child-scald-12pct` | mgmt-child-urine-target | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-child-scald-12pct` | mgmt-paediatric-burns-referral | ios | critical | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `burns-child-scald-12pct` | flag-paediatric-burn | ios | quality | unverified | no red flag matched among 4 (ios.visitRisk, ios.allergyBanner) |
+| `burns-child-scald-12pct` | inv-lund-browder | ios | quality | unverified | no investigation output on ios |
+| `burns-child-scald-12pct` | mgmt-formal-fluids | ios | critical | unverified | no management item matched among 2 (ios.pipeline.actions, ios.soap.plan) |
+| `burns-child-scald-12pct` | mgmt-maintenance-fluid | ios | quality | unverified | no management item matched among 2 (ios.pipeline.actions, ios.soap.plan) |
+| `burns-child-scald-12pct` | mgmt-child-urine-target | ios | quality | unverified | no management item matched among 2 (ios.pipeline.actions, ios.soap.plan) |
+| `burns-child-scald-12pct` | mgmt-paediatric-burns-referral | ios | critical | unverified | no management item matched among 2 (ios.pipeline.actions, ios.soap.plan) |
 | `burns-circumferential-forearm-hand` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `burns-circumferential-forearm-hand` | flag-circumferential | ios | critical | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `burns-circumferential-forearm-hand` | mgmt-escharotomy | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-circumferential-forearm-hand` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-circumferential-forearm-hand` | mgmt-elevation | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `burns-circumferential-forearm-hand` | flag-circumferential | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `burns-circumferential-forearm-hand` | mgmt-escharotomy | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-circumferential-forearm-hand` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-circumferential-forearm-hand` | mgmt-elevation | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `burns-electrical-high-voltage` | dx-electrical-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Urinary Tract Infection \| 2. Benign Prostatic Hypertrophy \| 3. Carcinoma of Prostate \| 4. Renal / Ureteric Colic |
 | `burns-electrical-high-voltage` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
 | `burns-electrical-high-voltage` | flag-myoglobinuria | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
@@ -10105,13 +10067,13 @@ Guidelines:
 | `burns-electrical-high-voltage` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 2 (ios.pipeline.actions, ios.soap.plan) |
 | `burns-inhalation-enclosed-space` | dx-burn-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `burns-inhalation-enclosed-space` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `burns-inhalation-enclosed-space` | flag-inhalation | ios | critical | unverified | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `burns-inhalation-enclosed-space` | flag-special-areas | ios | quality | unverified | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `burns-inhalation-enclosed-space` | inv-cohb | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `burns-inhalation-enclosed-space` | mgmt-early-intubation | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-inhalation-enclosed-space` | mgmt-100-oxygen | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-inhalation-enclosed-space` | mgmt-formal-fluids | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `burns-inhalation-enclosed-space` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `burns-inhalation-enclosed-space` | flag-inhalation | ios | critical | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner) |
+| `burns-inhalation-enclosed-space` | flag-special-areas | ios | quality | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner) |
+| `burns-inhalation-enclosed-space` | inv-cohb | ios | critical | unverified | no investigation output on ios |
+| `burns-inhalation-enclosed-space` | mgmt-early-intubation | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-inhalation-enclosed-space` | mgmt-100-oxygen | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-inhalation-enclosed-space` | mgmt-formal-fluids | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `burns-inhalation-enclosed-space` | mgmt-burns-referral | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
 | `caecal-volvulus` | inv-pregnancy-test | ios | critical | unverified | no investigation matched among 11 (ios.pipeline.decisions, ios.radiation) |
 | `caecal-volvulus` | mgmt-resection | ios | critical | unverified | no management item matched among 26 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
 | `caustic-ingestion-alkali` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
@@ -10124,7 +10086,7 @@ Guidelines:
 | `cdiff-fulminant-colitis` | mnm-cdiff | ios | critical | unverified | not in top 4 of ios.bayes: 1. Colorectal Carcinoma \| 2. Irritable Bowel Syndrome \| 3. Diverticular Disease \| 4. Inflammatory Bowel Disease |
 | `cdiff-fulminant-colitis` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
 | `cdiff-fulminant-colitis` | alarm-sepsis | ios | critical | unverified | no alarm matched among 2 (ios.pipeline.alert) |
-| `cdiff-fulminant-colitis` | mgmt-vancomycin-metronidazole | ios | critical | unverified | no management item matched among 22 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) |
+| `cdiff-fulminant-colitis` | mgmt-vancomycin-metronidazole | ios | critical | unverified | no management item matched among 11 (ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan) |
 | `cellulitis-leg-adult` | dx-cellulitis-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `cellulitis-leg-adult` | mnm-dvt | ios | quality | unverified | not in top 0 of ios.bayes: (empty list) |
 | `cellulitis-leg-adult` | inv-mark-border | ios | quality | unverified | no investigation matched among 5 (ios.radiation) |
@@ -10136,8 +10098,8 @@ Guidelines:
 | `cellulitis-sepsis-elderly-diabetic` | inv-lactate | ios | quality | unverified | no investigation matched among 5 (ios.radiation) |
 | `charcot-foot-cellulitis-mimic` | mnm-charcot | ios | critical | unverified | not in top 5 of ios.bayes: 1. Gout \| 2. Osteoarthritis \| 3. Septic Arthritis \| 4. Sickle Cell Crisis \| 5. Rheumatoid Arthritis |
 | `charcot-foot-cellulitis-mimic` | level-priority | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
-| `charcot-foot-cellulitis-mimic` | inv-mri | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `charcot-foot-cellulitis-mimic` | mgmt-immobilise-offload | ios | critical | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `charcot-foot-cellulitis-mimic` | inv-mri | ios | quality | unverified | no investigation output on ios |
+| `charcot-foot-cellulitis-mimic` | mgmt-immobilise-offload | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `cholangitis-tg18-charcot-sepsis` | score-qsofa-autofill | ios | quality | known gap | expected = 2; got ios.autofill.qsofa=0 (qSOFA 0/3 — Lower risk, but reassess if clinical status chan) [known gap: iOS qSOFA auto-fill uses RR >22 and SBP <100 instead of Sepsis-3 RR ≥22 and SBP ≤100, so boundary values are missed.] |
 | `cholangitis-tg18-grade1-single-criterion` | no-sepsis-alarm-mild | ios | quality | known gap | forbidden alarm present in ios.textParser: "possible sepsis - systemic inflammatory response with potential infection source action: sepsis..." [known gap: iOS ClinicalTextParser has no negation handling: 'No confusion' counts as organ dysf |
 | `cholangitis-tg18-grade1-single-criterion` | score-tg18-calculator | ios | quality | known gap | expected = 1; got ios.scoreCalculator.tg18-cholangitis=2 (Tokyo Grade II — Moderate acute cholangitis; urgent ERCP wit) [known gap: iOS TokyoCholangitis and web clinical-scales count ONE Grade II criterion as Grade II (TG18 requires two).] |
@@ -10208,11 +10170,7 @@ Guidelines:
 | `crc-fit-positive-abdominal-pain` | flag-fit-positive | ios | critical | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
 | `crc-fit-positive-abdominal-pain` | mgmt-suspected-cancer-pathway | ios | critical | unverified | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `crc-ida-no-gi-symptoms` | mnm-crc | ios | critical | unverified | not in top 0 of ios.bayes: (empty list) |
-| `crc-ida-no-gi-symptoms` | flag-ida | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `crc-ida-no-gi-symptoms` | inv-colonoscopy | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `crc-ida-no-gi-symptoms` | inv-ogd | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `crc-ida-no-gi-symptoms` | inv-coeliac | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `crc-ida-no-gi-symptoms` | mgmt-iron | ios | quality | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `crc-ida-no-gi-symptoms` | flag-ida | ios | critical | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
 | `crc-lynch-surveillance-overdue` | flag-lynch | ios | critical | unverified | no red flag matched among 2 (ios.visitRisk, ios.allergyBanner) |
 | `crc-lynch-surveillance-overdue` | inv-colonoscopy | ios | critical | unverified | no investigation output on ios |
 | `crc-lynch-surveillance-overdue` | mgmt-2-yearly | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
@@ -10235,10 +10193,10 @@ Guidelines:
 | `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `crohns-perianal-complex-fistula` | dx-perianal-sepsis-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
 | `crohns-perianal-complex-fistula` | level-same-day | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `crohns-perianal-complex-fistula` | inv-mri-pelvis | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `crohns-perianal-complex-fistula` | mgmt-eua-seton | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `crohns-perianal-complex-fistula` | mgmt-drainage | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `crohns-perianal-complex-fistula` | mgmt-biologic | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `crohns-perianal-complex-fistula` | inv-mri-pelvis | ios | critical | unverified | no investigation output on ios |
+| `crohns-perianal-complex-fistula` | mgmt-eua-seton | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `crohns-perianal-complex-fistula` | mgmt-drainage | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `crohns-perianal-complex-fistula` | mgmt-biologic | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `dfi-moderate-osteomyelitis` | mnm-osteomyelitis | ios | critical | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
 | `dfi-moderate-osteomyelitis` | level-at-least-urgent | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `dfi-moderate-osteomyelitis` | flag-diabetic-foot | ios | quality | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner) |
@@ -10262,24 +10220,21 @@ Guidelines:
 | `dfi-severe-wet-gangrene-abscess` | mgmt-glycaemic | ios | quality | unverified | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) |
 | `dfu-ischaemic-calcified-abpi` | mnm-limb-ischaemia | ios | critical | unverified | not in top 0 of ios.bayes: (empty list) |
 | `dfu-ischaemic-calcified-abpi` | level-at-least-priority | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
-| `dfu-ischaemic-calcified-abpi` | flag-incompressible | ios | quality | unverified | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `dfu-ischaemic-calcified-abpi` | inv-toe-pressure-or-imaging | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `dfu-ischaemic-calcified-abpi` | mgmt-vascular-referral | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `dfu-ischaemic-calcified-abpi` | flag-incompressible | ios | quality | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner) |
+| `dfu-ischaemic-calcified-abpi` | inv-toe-pressure-or-imaging | ios | critical | unverified | no investigation output on ios |
+| `dfu-ischaemic-calcified-abpi` | mgmt-vascular-referral | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
 | `dfu-neuropathic-uninfected` | level-priority-not-emergency | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority, ≤ urgent |
 | `dfu-neuropathic-uninfected` | inv-vascular-assessment | ios | quality | unverified | no investigation output on ios |
 | `dfu-neuropathic-uninfected` | mgmt-offloading | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `dfu-neuropathic-uninfected` | mgmt-mdt-foot | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `diverticulitis-abscess-drainage` | level-at-least-urgent | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower  |
-| `diverticulitis-abscess-drainage` | inv-blood-cultures | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `diverticulitis-abscess-drainage` | inv-colonoscopy-after | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `diverticulitis-abscess-drainage` | mgmt-iv-antibiotics | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `diverticulitis-abscess-drainage` | mgmt-drainage | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `diverticulitis-abscess-drainage` | inv-blood-cultures | ios | quality | unverified | no investigation output on ios |
+| `diverticulitis-abscess-drainage` | inv-colonoscopy-after | ios | quality | unverified | no investigation output on ios |
+| `diverticulitis-abscess-drainage` | mgmt-iv-antibiotics | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `diverticulitis-abscess-drainage` | mgmt-drainage | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `diverticulitis-faecal-peritonitis-shock` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdomina |
 | `diverticulitis-faecal-peritonitis-shock` | alarm-sepsis | ios | critical | unverified | no alarm matched among 2 (ios.textParser, ios.pipeline.alert) |
 | `diverticulitis-faecal-peritonitis-shock` | alarm-shock | ios | critical | unverified | no alarm matched among 2 (ios.textParser, ios.pipeline.alert) |
-| `diverticulitis-faecal-peritonitis-shock` | inv-blood-cultures | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `diverticulitis-faecal-peritonitis-shock` | mgmt-hartmanns-or-damage-control | ios | critical | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `diverticulitis-faecal-peritonitis-shock` | mgmt-antibiotics | ios | critical | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `diverticulitis-immunosuppressed` | level-at-least-urgent | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower  |
 | `diverticulitis-immunosuppressed` | flag-immunosuppression | ios | quality | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.textParser, ios.pipeline.alert) |
 | `diverticulitis-immunosuppressed` | mgmt-antibiotics | ios | critical | unverified | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
@@ -10287,10 +10242,6 @@ Guidelines:
 | `diverticulitis-purulent-peritonitis` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Severe g |
 | `diverticulitis-purulent-peritonitis` | alarm-sepsis | ios | critical | unverified | no alarm matched among 1 (ios.pipeline.alert) |
 | `diverticulitis-purulent-peritonitis` | alarm-perforation | ios | critical | unverified | no alarm matched among 1 (ios.pipeline.alert) |
-| `diverticulitis-purulent-peritonitis` | inv-blood-cultures | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `diverticulitis-purulent-peritonitis` | mgmt-emergency-surgery | ios | critical | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `diverticulitis-purulent-peritonitis` | mgmt-primary-anastomosis-option | ios | quality | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `diverticulitis-purulent-peritonitis` | mgmt-antibiotics | ios | critical | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `diverticulitis-uncomplicated-outpatient` | level-same-day-not-emergency | ios | quality | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority, ≤ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC  |
 | `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | ios | quality | unverified | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
 | `dvt-pregnancy-22wk` | dx-dvt-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
@@ -10302,14 +10253,14 @@ Guidelines:
 | `dvt-wells-likely` | dx-dvt-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `dvt-wells-likely` | level-same-day | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `dvt-wells-likely` | flag-oestrogen | ios | quality | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `dyspepsia-young-no-alarm-test-and-treat` | inv-hpylori-non-invasive | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `dyspepsia-young-no-alarm-test-and-treat` | mgmt-test-and-treat-or-ppi | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `dyspepsia-young-no-alarm-test-and-treat` | mgmt-lifestyle | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `dyspepsia-young-no-alarm-test-and-treat` | inv-hpylori-non-invasive | ios | quality | unverified | no investigation output on ios |
+| `dyspepsia-young-no-alarm-test-and-treat` | mgmt-test-and-treat-or-ppi | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `dyspepsia-young-no-alarm-test-and-treat` | mgmt-lifestyle | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `dysphagia-progressive-over55` | level-at-least-priority | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Upper GI / Dysphagia Pathway); expected ≥ priority |
 | `dysphagia-progressive-over55` | flag-weight-loss | ios | quality | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
 | `dysphagia-progressive-under55` | level-at-least-priority | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Upper GI / Dysphagia Pathway); expected ≥ priority |
-| `dysphagia-progressive-under55` | flag-dysphagia | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `dysphagia-progressive-under55` | inv-ogd | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
+| `dysphagia-progressive-under55` | flag-dysphagia | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `dysphagia-progressive-under55` | inv-ogd | ios | critical | unverified | no investigation output on ios |
 | `eoe-young-atopic-recurrent-bolus` | mnm-eoe | ios | quality | unverified | not in top 4 of ios.bayes: 1. GERD / Oesophagitis \| 2. Achalasia \| 3. Oesophageal Carcinoma \| 4. Oesophageal Stricture / Peptic |
 | `eoe-young-atopic-recurrent-bolus` | level-priority-not-emergency | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority, ≤ urgent |
 | `eoe-young-atopic-recurrent-bolus` | inv-oesophageal-biopsies | ios | critical | unverified | no investigation matched among 4 (ios.radiation) |
@@ -10329,8 +10280,8 @@ Guidelines:
 | `fournier-gangrene` | mgmt-broad-abx | ios | critical | unverified | no management item matched among 11 (ios.pipeline.actions, ios.scoreCalculator.qsofa, ios.soap.plan) |
 | `fournier-sglt2-early-mimic` | mnm-nsti | ios | critical | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
 | `fournier-sglt2-early-mimic` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `fournier-sglt2-early-mimic` | flag-sglt2 | ios | quality | unverified | no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert) |
-| `fournier-sglt2-early-mimic` | mgmt-exploration | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `fournier-sglt2-early-mimic` | flag-sglt2 | ios | quality | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.textParser, ios.pipeline.alert) |
+| `fournier-sglt2-early-mimic` | mgmt-exploration | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `gastric-outlet-obstruction-elderly` | dx-goo-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Appendicitis (with nausea) \| 3. Gastroparesis \| 4. Gastric Outlet Obstruction \| 5. Small Bowel Obstruction; also in ios.pipeline#4 |
 | `gastric-outlet-obstruction-elderly` | mnm-malignancy | ios | quality | unverified | not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Appendicitis (with nausea) \| 3. Gastroparesis \| 4. Gastric Outlet Obstruction \| 5. Small Bowel Obstruction |
 | `gastric-outlet-obstruction-elderly` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
@@ -10345,9 +10296,9 @@ Guidelines:
 | `groin-mimic-femoral-artery-aneurysm` | mnm-aneurysm | ios | critical | unverified | not in top 4 of ios.bayes: 1. Inguinal Hernia \| 2. Femoral Hernia \| 3. Umbilical Hernia \| 4. Incisional Hernia |
 | `groin-mimic-lymphadenopathy` | mnm-lymphoma-or-nodes | ios | critical | unverified | not in top 4 of ios.bayes: 1. Inguinal Hernia \| 2. Femoral Hernia \| 3. Umbilical Hernia \| 4. Incisional Hernia |
 | `groin-mimic-lymphadenopathy` | level-at-least-priority | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Hernia Pathway); expected ≥ priority |
-| `groin-mimic-lymphadenopathy` | flag-malignancy | ios | critical | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `groin-mimic-lymphadenopathy` | inv-uss-or-biopsy | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `groin-mimic-lymphadenopathy` | inv-ldh | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
+| `groin-mimic-lymphadenopathy` | flag-malignancy | ios | critical | unverified | no red flag matched among 2 (ios.visitRisk, ios.allergyBanner) |
+| `groin-mimic-lymphadenopathy` | inv-uss-or-biopsy | ios | critical | unverified | no investigation output on ios |
+| `groin-mimic-lymphadenopathy` | inv-ldh | ios | quality | unverified | no investigation output on ios |
 | `groin-mimic-testicular-torsion` | dx-torsion-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Urinary Tract Infection \| 2. Benign Prostatic Hypertrophy \| 3. Renal / Ureteric Colic \| 4. Carcinoma of Prostate; also in ios.ccEarly#1 |
 | `groin-mimic-testicular-torsion` | mnm-torsion | ios | critical | unverified | not in top 4 of ios.bayes: 1. Urinary Tract Infection \| 2. Benign Prostatic Hypertrophy \| 3. Renal / Ureteric Colic \| 4. Carcinoma of Prostate; also in ios.ccEarly#1 |
 | `groin-mimic-testicular-torsion` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
@@ -10371,9 +10322,7 @@ Guidelines:
 | `hernia-femoral-richter-obstruction` | mnm-bowel-obstruction | ios | quality | unverified | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Biliary Colic \| 5. Acute Pancreatitis |
 | `hernia-femoral-richter-obstruction` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
 | `hernia-femoral-richter-obstruction` | alarm-obstruction | ios | critical | unverified | no alarm matched among 3 (ios.pipeline.alert) |
-| `hernia-femoral-richter-obstruction` | inv-lactate | ios | quality | unverified | no investigation matched among 22 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) |
-| `hernia-femoral-richter-obstruction` | mgmt-emergency-surgery | ios | critical | unverified | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `hernia-femoral-richter-obstruction` | mgmt-ng-decompression | ios | quality | unverified | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `hernia-femoral-richter-obstruction` | mgmt-no-conservative-sbo-trial | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "water-soluble contrast study (gastrografin) at 24h - therapeutic + diagnostic" (+1 more) |
 | `hernia-groin-incarcerated` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `hernia-groin-incarcerated` | inv-lactate | ios | quality | unverified | no investigation matched among 3 (ios.radiation) |
 | `hernia-groin-incarcerated` | mgmt-mesh-clean-field | ios | quality | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) |
@@ -10383,9 +10332,9 @@ Guidelines:
 | `hernia-groin-strangulated` | mgmt-emergency-surgery | ios | critical | unverified | no management item matched among 20 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) |
 | `hernia-groin-strangulated` | mgmt-bowel-viability | ios | quality | unverified | no management item matched among 20 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan) |
 | `hernia-incisional-midline-elective` | dx-incisional-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
-| `hernia-incisional-midline-elective` | inv-ct | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `hernia-incisional-midline-elective` | mgmt-prehab | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `hernia-incisional-midline-elective` | mgmt-mesh | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `hernia-incisional-midline-elective` | inv-ct | ios | quality | unverified | no investigation output on ios |
+| `hernia-incisional-midline-elective` | mgmt-prehab | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `hernia-incisional-midline-elective` | mgmt-mesh | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `hernia-inguinal-elective-minimal-symptoms` | mgmt-watchful-waiting-option | ios | quality | unverified | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
 | `hernia-inguinal-female-occult-femoral` | mgmt-laparoscopic | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `hernia-obturator-sbo-elderly-woman` | dx-obstruction-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Umbilical Hernia \| 3. Incisional Hernia \| 4. Femoral Hernia; also in ios.ccEarly#2 |
@@ -10405,8 +10354,9 @@ Guidelines:
 | `hernia-parastomal-symptomatic` | mgmt-stoma-nurse | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `hernia-paraumbilical-incarcerated-obese` | dx-umbilical-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Inguinal Hernia; also in ios.pipeline#5 |
 | `hernia-paraumbilical-incarcerated-obese` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `hernia-paraumbilical-incarcerated-obese` | alarm-complicated-hernia | ios | critical | unverified | no alarm matched among 2 (ios.pipeline.alert) |
+| `hernia-paraumbilical-incarcerated-obese` | alarm-complicated-hernia | ios | critical | unverified | no alarm matched among 3 (ios.pipeline.alert) |
 | `hernia-paraumbilical-incarcerated-obese` | inv-lactate | ios | quality | unverified | no investigation matched among 8 (ios.pipeline.decisions, ios.radiation) |
+| `hernia-paraumbilical-incarcerated-obese` | mgmt-emergency-surgery | ios | critical | unverified | no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `hernia-umbilical-adult-elective` | dx-umbilical-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Acute Pancreatitis \| 5. Biliary Colic |
 | `hernia-umbilical-adult-elective` | mgmt-smoking | ios | quality | unverified | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `hernia-umbilical-cirrhosis-ascites` | level-at-least-priority | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
@@ -10416,21 +10366,14 @@ Guidelines:
 | `infective-colitis-bloody-diarrhoea` | dx-infective-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Inflammatory Bowel Disease \| 2. Irritable Bowel Syndrome \| 3. Colorectal Carcinoma \| 4. Diverticular Disease |
 | `infective-colitis-bloody-diarrhoea` | inv-stool-culture | ios | critical | unverified | no investigation output on ios |
 | `iron-deficiency-anaemia-over60` | level-at-least-priority | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
-| `iron-deficiency-anaemia-over60` | flag-ida | ios | critical | unverified | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `iron-deficiency-anaemia-over60` | inv-ogd | ios | critical | unverified | no investigation matched among 8 (ios.pipeline.voi, ios.radiation) |
-| `iron-deficiency-anaemia-over60` | inv-colonoscopy | ios | critical | unverified | no investigation matched among 8 (ios.pipeline.voi, ios.radiation) |
-| `iron-deficiency-anaemia-over60` | inv-coeliac-serology | ios | quality | unverified | no investigation matched among 8 (ios.pipeline.voi, ios.radiation) |
-| `iron-deficiency-anaemia-over60` | inv-urinalysis | ios | quality | unverified | no investigation matched among 8 (ios.pipeline.voi, ios.radiation) |
-| `iron-deficiency-anaemia-over60` | mgmt-iron-replacement | ios | quality | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `iron-deficiency-anaemia-over60` | flag-ida | ios | critical | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
 | `ischaemic-colitis-left` | dx-ischaemic-colitis-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Colorectal Carcinoma \| 2. Haemorrhoids \| 3. Inflammatory Bowel Disease \| 4. Anal Fissure |
 | `ischaemic-colitis-left` | level-admit | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `ischaemic-colitis-left` | inv-ct-contrast | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `ischaemic-colitis-left` | inv-colonoscopy-48h | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `ischaemic-colitis-left` | inv-stool-culture | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
+| `ischaemic-colitis-left` | inv-ct-contrast | ios | quality | unverified | no investigation output on ios |
+| `ischaemic-colitis-left` | inv-colonoscopy-48h | ios | quality | unverified | no investigation output on ios |
+| `ischaemic-colitis-left` | inv-stool-culture | ios | quality | unverified | no investigation output on ios |
 | `ischaemic-colitis-right-af-ami` | mnm-ami | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Biliary Colic |
 | `ischaemic-colitis-right-af-ami` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `ischaemic-colitis-right-af-ami` | inv-cta | ios | critical | unverified | no investigation matched among 13 (ios.pipeline.decisions, ios.radiation) |
-| `ischaemic-colitis-right-af-ami` | mgmt-vascular | ios | quality | unverified | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `jaundice-mimic-acute-hepatitis-a` | level-at-least-urgent | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Biliary Pathway); expected ≥ urgent |
 | `jaundice-mimic-acute-hepatitis-a` | flag-liver-failure-watch | ios | quality | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
 | `jaundice-mimic-acute-hepatitis-a` | inv-viral-serology | ios | quality | unverified | no investigation output on ios |
@@ -10438,7 +10381,7 @@ Guidelines:
 | `jaundice-mimic-acute-hepatitis-a` | mgmt-public-health | ios | quality | unverified | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan) |
 | `lbo-cancer-impending-caecal-perforation` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Swollen  |
 | `lbo-cancer-impending-caecal-perforation` | alarm-sepsis | ios | critical | unverified | no alarm matched among 2 (ios.textParser, ios.pipeline.alert) |
-| `lbo-cancer-impending-caecal-perforation` | mgmt-emergency-surgery | ios | critical | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `lbo-cancer-impending-caecal-perforation` | mgmt-emergency-surgery | ios | critical | unverified | no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
 | `lbo-obstructing-sigmoid-cancer` | dx-colorectal-or-obstruction-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Diverticulitis \| 2. Acute Cholecystitis \| 3. Acute Appendicitis \| 4. Irritable Bowel Syndrome \| 5. Biliary Colic; also in ios.triage#1 |
 | `lbo-obstructing-sigmoid-cancer` | inv-staging-chest | ios | quality | unverified | no investigation matched among 6 (ios.radiation) |
 | `lbo-obstructing-sigmoid-cancer` | inv-cea | ios | quality | unverified | no investigation matched among 6 (ios.radiation) |
@@ -10447,10 +10390,7 @@ Guidelines:
 | `lbo-right-colon-cancer` | mgmt-right-hemicolectomy | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `lgib-angiodysplasia-aspirin` | mnm-crc | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Biliary Colic |
 | `lgib-angiodysplasia-aspirin` | mnm-angiodysplasia | ios | quality | unverified | not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Biliary Colic |
-| `lgib-angiodysplasia-aspirin` | inv-colonoscopy | ios | critical | unverified | no investigation matched among 12 (ios.pipeline.decisions, ios.radiation) |
-| `lgib-angiodysplasia-aspirin` | inv-iron-studies | ios | quality | unverified | no investigation matched among 12 (ios.pipeline.decisions, ios.radiation) |
-| `lgib-angiodysplasia-aspirin` | mgmt-iron | ios | quality | unverified | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `lgib-angiodysplasia-aspirin` | mgmt-apc | ios | quality | unverified | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `lgib-angiodysplasia-aspirin` | mgmt-apc | ios | quality | unverified | no management item matched among 26 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
 | `lgib-diverticular-apixaban` | mnm-crc | ios | quality | unverified | not in top 0 of ios.bayes: (empty list) |
 | `lgib-diverticular-apixaban` | level-admit | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `lgib-diverticular-apixaban` | score-rec-oakland | ios | quality | unverified | oakland not recommended; recommended: ios:oakland, hinchey, rockall, qsofa, ios:mpi, news2, mews |
@@ -10459,18 +10399,19 @@ Guidelines:
 | `lgib-oakland-low-risk-discharge` | dx-haemorrhoids-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `lgib-oakland-low-risk-discharge` | score-rec-oakland | ios | quality | unverified | oakland not recommended; recommended: glasgow-blatchford, ios:oakland, rockall, aims65, ios:forrest |
 | `lgib-post-polypectomy` | level-admit | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `lgib-post-polypectomy` | mgmt-repeat-colonoscopy | ios | critical | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `lgib-post-polypectomy` | mgmt-endoscopic-haemostasis | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `lgib-post-polypectomy` | mgmt-antiplatelet-plan | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `lgib-post-polypectomy` | mgmt-repeat-colonoscopy | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `lgib-post-polypectomy` | mgmt-endoscopic-haemostasis | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `lgib-post-polypectomy` | mgmt-antiplatelet-plan | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `lgib-unstable-cta-first` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
 | `lgib-unstable-cta-first` | alarm-instability | ios | critical | unverified | no alarm matched among 1 (ios.pipeline.alert) |
-| `lgib-unstable-cta-first` | inv-cta-first | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `lgib-unstable-cta-first` | inv-upper-source | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `lgib-unstable-cta-first` | inv-group-crossmatch | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `lgib-unstable-cta-first` | mgmt-embolisation | ios | quality | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `lgib-unstable-cta-first` | inv-cta-first | ios | critical | unverified | no investigation output on ios |
+| `lgib-unstable-cta-first` | inv-upper-source | ios | quality | unverified | no investigation output on ios |
+| `lgib-unstable-cta-first` | inv-group-crossmatch | ios | quality | unverified | no investigation output on ios |
+| `lgib-unstable-cta-first` | mgmt-embolisation | ios | quality | unverified | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) |
 | `lgib-unstable-warfarin` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `lgib-unstable-warfarin` | mgmt-reverse-warfarin | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `lgib-unstable-warfarin` | mgmt-restart-anticoag-plan | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `lgib-unstable-warfarin` | inv-cta-first | ios | critical | unverified | no investigation output on ios |
+| `lgib-unstable-warfarin` | mgmt-reverse-warfarin | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `lgib-unstable-warfarin` | mgmt-restart-anticoag-plan | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `liver-abscess-amoebic` | dx-liver-abscess-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `liver-abscess-amoebic` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Biliary Pathway); expected ≥ urgent |
 | `liver-abscess-amoebic` | inv-blood-cultures | ios | quality | unverified | no investigation output on ios |
@@ -10503,8 +10444,6 @@ Guidelines:
 | `mi-presenting-as-epigastric-pain` | alarm-cardiac | ios | critical | unverified | no alarm output on ios |
 | `mimic-aaa-symptomatic-renal-colic-label` | mnm-aaa | ios | critical | unverified | not in top 4 of ios.bayes: 1. Urinary Tract Infection \| 2. Renal / Ureteric Colic \| 3. Carcinoma of Prostate \| 4. Benign Prostatic Hypertrophy |
 | `mimic-aaa-symptomatic-renal-colic-label` | level-at-least-urgent | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right loin  |
-| `mimic-aaa-symptomatic-renal-colic-label` | inv-cta | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `mimic-aaa-symptomatic-renal-colic-label` | mgmt-vascular-referral | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `mimic-dka-abdominal-pain` | mnm-dka | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Pancreatitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. Acute Diverticulitis |
 | `mimic-dka-abdominal-pain` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdomina |
 | `mimic-dka-abdominal-pain` | alarm-dka | ios | critical | unverified | no alarm output on ios |
@@ -10514,14 +10453,14 @@ Guidelines:
 | `mimic-dka-abdominal-pain` | mgmt-potassium | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `mimic-ectopic-pregnancy` | dx-ectopic-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. GERD / Oesophagitis \| 5. Acute Diverticulitis |
 | `mimic-ectopic-pregnancy` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lo |
-| `mimic-ectopic-pregnancy` | inv-pregnancy-test | ios | critical | unverified | no investigation matched among 15 (ios.pipeline.decisions, ios.radiation) |
-| `mimic-ectopic-pregnancy` | inv-transvaginal-us | ios | critical | unverified | no investigation matched among 15 (ios.pipeline.decisions, ios.radiation) |
-| `mimic-ectopic-pregnancy` | mgmt-gynaecology | ios | critical | unverified | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `mimic-ectopic-pregnancy` | inv-pregnancy-test | ios | critical | unverified | no investigation matched among 6 (ios.pipeline.decisions) |
+| `mimic-ectopic-pregnancy` | inv-transvaginal-us | ios | critical | unverified | no investigation matched among 6 (ios.pipeline.decisions) |
+| `mimic-ectopic-pregnancy` | mgmt-gynaecology | ios | critical | unverified | no management item matched among 7 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
 | `mimic-ectopic-ruptured-shock` | dx-ectopic-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Acute Diverticulitis \| 5. Acute Pancreatitis |
 | `mimic-ectopic-ruptured-shock` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden l |
-| `mimic-ectopic-ruptured-shock` | alarm-shock | ios | critical | unverified | no alarm matched among 3 (ios.pipeline.alert) |
-| `mimic-ectopic-ruptured-shock` | alarm-ectopic | ios | critical | unverified | no alarm matched among 3 (ios.pipeline.alert) |
-| `mimic-ectopic-ruptured-shock` | mgmt-emergency-surgery | ios | critical | unverified | no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
+| `mimic-ectopic-ruptured-shock` | alarm-shock | ios | critical | unverified | no alarm matched among 2 (ios.pipeline.alert) |
+| `mimic-ectopic-ruptured-shock` | alarm-ectopic | ios | critical | unverified | no alarm matched among 2 (ios.pipeline.alert) |
+| `mimic-ectopic-ruptured-shock` | mgmt-emergency-surgery | ios | critical | unverified | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
 | `mimic-inferior-mi-ecg-confirmed` | mnm-acs | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Diverticulitis \| 4. Acute Pancreatitis \| 5. Peptic Ulcer Disease |
 | `mimic-inferior-mi-ecg-confirmed` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 30); the resulted ECG ( |
 | `mimic-inferior-mi-ecg-confirmed` | alarm-stemi | ios | critical | unverified | no alarm matched among 3 (ios.pipeline.alert) |
@@ -10529,8 +10468,6 @@ Guidelines:
 | `mimic-inferior-mi` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Epigastr |
 | `mimic-ruptured-aaa` | dx-aaa-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Renal / Ureteric Colic \| 2. Acute Cholecystitis \| 3. Acute Appendicitis \| 4. Acute Pancreatitis \| 5. Acute Diverticulitis |
 | `mimic-ruptured-aaa` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left loi |
-| `mimic-ruptured-aaa` | mgmt-vascular-repair | ios | critical | unverified | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `mimic-ruptured-aaa` | mgmt-permissive-hypotension | ios | quality | unverified | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `mimic-ruptured-aaa` | mgmt-no-nsaid-renal-colic | ios | critical | unverified | forbidden management item present in ios.pipeline.decisions: "...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ..." |
 | `mimic-testicular-torsion` | dx-torsion-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Renal / Ureteric Colic \| 4. Inguinal Hernia \| 5. Acute Pancreatitis |
 | `mimic-testicular-torsion` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicu |
@@ -10540,11 +10477,10 @@ Guidelines:
 | `nsaid-associated-gastric-ulcer` | mgmt-no-blanket-stop-aspirin | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "stop nsaids + aspirin if possible; use paracetamol instead" |
 | `nsti-early-low-lrinec` | mnm-nsti | ios | critical | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
 | `nsti-early-low-lrinec` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `nsti-early-low-lrinec` | flag-pain-out-of-proportion | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `nsti-early-low-lrinec` | inv-blood-cultures | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `nsti-early-low-lrinec` | mgmt-surgical-exploration | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `nsti-early-low-lrinec` | mgmt-clindamycin | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `nsti-early-low-lrinec` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more) |
+| `nsti-early-low-lrinec` | flag-pain-out-of-proportion | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `nsti-early-low-lrinec` | inv-blood-cultures | ios | quality | unverified | no investigation output on ios |
+| `nsti-early-low-lrinec` | mgmt-surgical-exploration | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `nsti-early-low-lrinec` | mgmt-clindamycin | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `nsti-fournier-diabetic` | dx-fournier-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
 | `nsti-fournier-diabetic` | mnm-fournier | ios | critical | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
 | `nsti-fournier-diabetic` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
@@ -10565,22 +10501,24 @@ Guidelines:
 | `nsti-postop-abdominal-wall` | mnm-anastomotic-or-collection | ios | quality | unverified | not in top 0 of ios.bayes: (empty list) |
 | `nsti-postop-abdominal-wall` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
 | `nsti-postop-abdominal-wall` | alarm-sepsis-shock | ios | critical | unverified | no alarm matched among 2 (ios.pipeline.alert) |
-| `nsti-postop-abdominal-wall` | inv-blood-cultures | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `nsti-postop-abdominal-wall` | mgmt-return-to-theatre | ios | critical | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `nsti-postop-abdominal-wall` | mgmt-clindamycin | ios | critical | unverified | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `nsti-postop-abdominal-wall` | inv-blood-cultures | ios | critical | unverified | no investigation output on ios |
+| `nsti-postop-abdominal-wall` | mgmt-return-to-theatre | ios | critical | unverified | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) |
+| `nsti-postop-abdominal-wall` | mgmt-clindamycin | ios | critical | unverified | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) |
 | `painless-jaundice-elderly-metastatic` | dx-pancreatic-cancer-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Carcinoma of Head of Pancreas \| 2. Choledocholithiasis \| 3. Viral Hepatitis \| 4. Ascending Cholangitis \| 5. Haemolytic Jaundice |
 | `painless-jaundice-elderly-metastatic` | mgmt-palliative-biliary-drainage | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `painless-jaundice-elderly-metastatic` | mgmt-palliative-care | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `painless-jaundice-elderly-metastatic` | mgmt-mdt | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `painless-jaundice-pancreatic-head` | dx-pancreatic-cancer-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Carcinoma of Head of Pancreas \| 2. Choledocholithiasis \| 3. Ascending Cholangitis \| 4. Viral Hepatitis \| 5. Haemolytic Jaundice |
 | `painless-jaundice-pancreatic-head` | mnm-cholangiocarcinoma-ampullary | ios | quality | unverified | not in top 5 of ios.bayes: 1. Carcinoma of Head of Pancreas \| 2. Choledocholithiasis \| 3. Ascending Cholangitis \| 4. Viral Hepatitis \| 5. Haemolytic Jaundice |
-| `painless-jaundice-pancreatic-head` | flag-malignancy | ios | critical | unverified | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `painless-jaundice-pancreatic-head` | inv-ct-pancreas-protocol | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `painless-jaundice-pancreatic-head` | inv-ca199 | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `painless-jaundice-pancreatic-head` | inv-eus-tissue | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `painless-jaundice-pancreatic-head` | mgmt-hpb-mdt | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `painless-jaundice-pancreatic-head` | flag-malignancy | ios | critical | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner) |
+| `painless-jaundice-pancreatic-head` | inv-ct-pancreas-protocol | ios | critical | unverified | no investigation output on ios |
+| `painless-jaundice-pancreatic-head` | inv-ca199 | ios | quality | unverified | no investigation output on ios |
+| `painless-jaundice-pancreatic-head` | inv-eus-tissue | ios | quality | unverified | no investigation output on ios |
+| `painless-jaundice-pancreatic-head` | inv-coagulation | ios | quality | unverified | no investigation output on ios |
+| `painless-jaundice-pancreatic-head` | mgmt-hpb-mdt | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `pancreatic-cancer-new-diabetes-weight-loss` | mnm-pancreatic-cancer | ios | critical | unverified | not in top 4 of ios.bayes: 1. Gastrointestinal Malignancy \| 2. Diabetes Mellitus Type 2 \| 3. Inflammatory Bowel Disease \| 4. Hyperthyroidism |
-| `pancreatic-cancer-new-diabetes-weight-loss` | flag-malignancy | ios | critical | unverified | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote) |
+| `pancreatic-cancer-new-diabetes-weight-loss` | flag-malignancy | ios | critical | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage) |
+| `pancreatic-cancer-new-diabetes-weight-loss` | inv-ct | ios | critical | unverified | no investigation output on ios |
 | `pancreatitis-alcohol` | dx-pancreatitis-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list); also in ios.ccEarly#3 |
 | `pancreatitis-alcohol` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `pancreatitis-alcohol` | flag-alcohol | ios | quality | unverified | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
@@ -10615,8 +10553,6 @@ Guidelines:
 | `pancreatitis-hypertriglyceridaemia` | mgmt-no-aggressive-fluids | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "iv fluids: hartmann's 250-500 ml/h initially (aggressive resuscitation in first 24h)" |
 | `pancreatitis-mimic-ruptured-aaa` | mnm-aaa | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Peptic Ulcer Disease \| 5. Biliary Colic |
 | `pancreatitis-mimic-ruptured-aaa` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `pancreatitis-mimic-ruptured-aaa` | inv-aortic-imaging | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `pancreatitis-mimic-ruptured-aaa` | mgmt-vascular-emergency | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `pancreatitis-moderately-severe` | dx-pancreatitis-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `pancreatitis-moderately-severe` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `pancreatitis-moderately-severe` | mgmt-no-early-cholecystectomy-with-collection | ios | critical | unverified | forbidden management item present in ios.radiation.referral: "...ral / hpb surgery (urgent (2 wk)): gallstone pancreatitis - cholecystectomy same admission or within 2 weeks - avoid re-admission risk" |
@@ -10633,23 +10569,21 @@ Guidelines:
 | `pancreatitis-severe-organ-failure` | mgmt-no-routine-ercp | ios | critical | unverified | forbidden management item present in ios.soap.plan: "investigations: lfts, amylase / lipase, uss abdomen, mrcp, ercp." |
 | `parathyroid-hypercalcaemic-crisis` | mnm-hypercalcaemia | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea) |
 | `parathyroid-hypercalcaemic-crisis` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `parathyroid-hypercalcaemic-crisis` | mgmt-iv-saline | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `parathyroid-hypercalcaemic-crisis` | mgmt-bisphosphonate | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `parathyroid-hypercalcaemic-crisis` | mgmt-stop-calcium-thiazide | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `parathyroid-hypercalcaemic-crisis` | mgmt-bisphosphonate | ios | quality | unverified | no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
+| `parathyroid-hypercalcaemic-crisis` | mgmt-stop-calcium-thiazide | ios | critical | unverified | no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
 | `parathyroid-primary-hpt-surgical-indications` | dx-hyperparathyroid-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
-| `parathyroid-primary-hpt-surgical-indications` | inv-fhh-exclusion | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `parathyroid-primary-hpt-surgical-indications` | inv-localisation | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `parathyroid-primary-hpt-surgical-indications` | mgmt-parathyroidectomy | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `parathyroid-primary-hpt-surgical-indications` | mgmt-stop-thiazide | ios | critical | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `parathyroid-primary-hpt-surgical-indications` | inv-fhh-exclusion | ios | quality | unverified | no investigation matched among 6 (ios.radiation) |
+| `parathyroid-primary-hpt-surgical-indications` | inv-localisation | ios | quality | unverified | no investigation matched among 6 (ios.radiation) |
+| `parathyroid-primary-hpt-surgical-indications` | mgmt-parathyroidectomy | ios | quality | unverified | no management item matched among 20 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
+| `parathyroid-primary-hpt-surgical-indications` | mgmt-stop-thiazide | ios | critical | unverified | no management item matched among 20 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
 | `pe-postop-day5` | dx-pe-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia \| 2. Heart Failure \| 3. Asthma (Acute Exacerbation) \| 4. COPD Exacerbation \| 5. Pulmonary Tuberculosis |
 | `pe-postop-day5` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `pe-postop-day5` | alarm-hypoxia | ios | critical | unverified | no alarm output on ios |
 | `perianal-abscess-diabetic-cellulitis` | dx-abscess-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Cellulitis / SSTI \| 2. Dengue Fever \| 3. Community-Acquired Pneumonia \| 4. Leptospirosis \| 5. Urinary Tract Infection |
 | `perianal-abscess-diabetic-cellulitis` | mnm-nsti | ios | quality | unverified | not in top 5 of ios.bayes: 1. Cellulitis / SSTI \| 2. Dengue Fever \| 3. Community-Acquired Pneumonia \| 4. Leptospirosis \| 5. Urinary Tract Infection |
 | `perianal-abscess-diabetic-cellulitis` | level-same-day | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `perianal-abscess-diabetic-cellulitis` | mgmt-drainage | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `perianal-abscess-diabetic-cellulitis` | mgmt-antibiotics | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `perianal-abscess-diabetic-cellulitis` | mgmt-glycaemic | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `perianal-abscess-diabetic-cellulitis` | mgmt-drainage | ios | critical | unverified | no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `perianal-abscess-diabetic-cellulitis` | mgmt-antibiotics | ios | critical | unverified | no management item matched among 21 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `perianal-abscess-hiv` | dx-abscess-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
 | `perianal-abscess-hiv` | mnm-anal-neoplasia | ios | quality | unverified | not in top 3 of ios.bayes: 1. Type 2 Diabetes Mellitus \| 2. Diabetic Complications \| 3. Type 1 Diabetes Mellitus |
 | `perianal-abscess-hiv` | level-same-day | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
@@ -10660,14 +10594,14 @@ Guidelines:
 | `perianal-abscess-simple` | mgmt-no-routine-antibiotics | ios | quality | unverified | forbidden management item present in ios.radiation.plan: "do not prescribe antibiotics without drainage - ineffective alone" |
 | `pharyngeal-pouch-elderly` | mnm-pouch | ios | quality | unverified | not in top 0 of ios.bayes: (empty list); also in ios.triage#3 |
 | `pharyngeal-pouch-elderly` | level-at-least-priority | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
-| `pharyngeal-pouch-elderly` | flag-dysphagia | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `pharyngeal-pouch-elderly` | inv-imaging-or-endoscopy | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `pharyngeal-pouch-elderly` | inv-barium-first | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `pharyngeal-pouch-elderly` | mgmt-pouch-treatment-options | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `pharyngeal-pouch-elderly` | flag-dysphagia | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `pharyngeal-pouch-elderly` | inv-imaging-or-endoscopy | ios | critical | unverified | no investigation output on ios |
+| `pharyngeal-pouch-elderly` | inv-barium-first | ios | quality | unverified | no investigation output on ios |
+| `pharyngeal-pouch-elderly` | mgmt-pouch-treatment-options | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `pilonidal-abscess-acute` | dx-pilonidal-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `pilonidal-abscess-acute` | level-soon | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
 | `pilonidal-abscess-acute` | mgmt-no-acute-excision | ios | quality | unverified | forbidden management item present in ios.radiation.plan: "excision with limberg flap or karydakis procedure - best outcomes, low recurrence" |
-| `polyp-surveillance-high-risk-3y` | mgmt-3-year-surveillance | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `polyp-surveillance-high-risk-3y` | mgmt-3-year-surveillance | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `ppu-elderly-steroids-masked` | dx-perforation-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Acute Pancreatitis \| 4. Acute Diverticulitis \| 5. Peptic Ulcer Disease |
 | `ppu-elderly-steroids-masked` | level-emergency | ios | critical | known gap | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdomina |
 | `ppu-elderly-steroids-masked` | alarm-sepsis | ios | critical | unverified | no alarm matched among 2 (ios.textParser, ios.pipeline.alert) |
@@ -10693,16 +10627,13 @@ Guidelines:
 | `ppu-septic-shock-delayed` | mgmt-icu | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `raaa-shock` | dx-aaa-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Pancreatitis \| 2. Acute Appendicitis \| 3. Acute Cholecystitis \| 4. Renal / Ureteric Colic \| 5. Peptic Ulcer Disease |
 | `raaa-shock` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `raaa-shock` | mgmt-emergency-repair | ios | critical | unverified | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `raaa-shock` | mgmt-permissive-hypotension | ios | quality | unverified | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `raaa-shock` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more) |
 | `rectal-bleeding-young-haemorrhoidal` | dx-haemorrhoids-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `rectal-prolapse-incarcerated` | dx-prolapse-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `rectal-prolapse-incarcerated` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `rectal-prolapse-incarcerated` | flag-strangulation | ios | critical | unverified | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) |
+| `rectal-prolapse-incarcerated` | flag-strangulation | ios | critical | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert) |
+| `rectal-prolapse-incarcerated` | mgmt-emergency-perineal | ios | critical | unverified | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan) |
 | `sbo-adhesive-base` | dx-obstruction-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Umbilical Hernia \| 3. Incisional Hernia \| 4. Femoral Hernia; also in ios.triage#1 |
 | `sbo-adhesive-base` | mgmt-potassium | ios | quality | unverified | no management item matched among 25 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
-| `sbo-gastrografin-failed` | mgmt-surgery | ios | critical | unverified | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `sbo-malignant-carcinomatosis` | dx-obstruction-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Cholecystitis \| 2. Acute Appendicitis \| 3. Acute Diverticulitis \| 4. Biliary Colic \| 5. Acute Pancreatitis; also in ios.triage#1 |
 | `sbo-malignant-carcinomatosis` | mgmt-palliative-mdt | ios | quality | unverified | no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
 | `sbo-malignant-carcinomatosis` | mgmt-medical-mbo | ios | quality | unverified | no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
@@ -10726,13 +10657,14 @@ Guidelines:
 | `sigmoid-volvulus-gangrenous` | level-emergency | ios | critical | known gap | ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Bowel Obstruction Pathway); expected ≥ emergency [known gap: iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal distension, pain and fever' gives 'u |
 | `sigmoid-volvulus-gangrenous` | alarm-sepsis | ios | critical | unverified | no alarm matched among 3 (ios.textParser, ios.pipeline.alert) |
 | `sigmoid-volvulus-gangrenous` | alarm-shock | ios | critical | unverified | no alarm matched among 3 (ios.textParser, ios.pipeline.alert) |
-| `sigmoid-volvulus-gangrenous` | inv-blood-cultures | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `sigmoid-volvulus-gangrenous` | mgmt-emergency-resection | ios | critical | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `sigmoid-volvulus-gangrenous` | mgmt-antibiotics | ios | critical | unverified | no management item matched among 15 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `sigmoid-volvulus-gangrenous` | inv-blood-cultures | ios | quality | unverified | no investigation matched among 6 (ios.radiation) |
+| `sigmoid-volvulus-gangrenous` | mgmt-emergency-resection | ios | critical | unverified | no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
+| `sigmoid-volvulus-gangrenous` | mgmt-icu | ios | quality | unverified | no management item matched among 26 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
 | `svt-gsv-near-sfj` | mnm-svt | ios | quality | unverified | not in top 0 of ios.bayes: (empty list) |
 | `svt-gsv-near-sfj` | level-at-least-priority | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
-| `svt-gsv-near-sfj` | flag-sfj-extension | ios | quality | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `svt-gsv-near-sfj` | inv-duplex | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
+| `svt-gsv-near-sfj` | flag-sfj-extension | ios | quality | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `svt-gsv-near-sfj` | inv-duplex | ios | quality | unverified | no investigation output on ios |
+| `svt-gsv-near-sfj` | mgmt-anticoagulation | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
 | `thyroid-bethesda-1-nondiagnostic` | mgmt-repeat-fna | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `thyroid-bethesda-3-aus` | mgmt-options | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `thyroid-bethesda-4-follicular-neoplasm` | mgmt-lobectomy | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
@@ -10748,47 +10680,48 @@ Guidelines:
 | `thyroid-nodule-hyperthyroid-hot` | mgmt-beta-blocker | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `thyroid-nodule-hyperthyroid-hot` | mgmt-definitive | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `thyroid-post-op-hypocalcaemia` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ urgent |
-| `thyroid-post-op-hypocalcaemia` | flag-hypocalcaemia | ios | critical | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `thyroid-post-op-hypocalcaemia` | inv-magnesium | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `thyroid-post-op-hypocalcaemia` | mgmt-iv-calcium | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `thyroid-post-op-hypocalcaemia` | mgmt-oral-calcium-vitd | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `thyroid-post-op-hypocalcaemia` | flag-hypocalcaemia | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `thyroid-post-op-hypocalcaemia` | inv-ecg | ios | quality | unverified | no investigation output on ios |
+| `thyroid-post-op-hypocalcaemia` | inv-magnesium | ios | quality | unverified | no investigation output on ios |
+| `thyroid-post-op-hypocalcaemia` | mgmt-iv-calcium | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `thyroid-post-op-hypocalcaemia` | mgmt-oral-calcium-vitd | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `thyroid-post-op-neck-haematoma` | dx-haematoma-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Branchial Cyst \| 2. Reactive Lymphadenopathy \| 3. Carotid Body Tumour \| 4. Thyroglossal Duct Cyst \| 5. Thyroid Carcinoma |
 | `thyroid-post-op-neck-haematoma` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ emergency |
 | `thyroid-post-op-neck-haematoma` | alarm-emergency | ios | critical | unverified | no alarm output on ios |
 | `thyroid-post-op-neck-haematoma` | alarm-airway-specific | ios | quality | unverified | no alarm output on ios |
-| `thyroid-post-op-neck-haematoma` | mgmt-bedside-decompression | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `thyroid-post-op-neck-haematoma` | mgmt-return-to-theatre | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `thyroid-post-op-neck-haematoma` | mgmt-bedside-decompression | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `thyroid-post-op-neck-haematoma` | mgmt-return-to-theatre | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `thyroid-rapid-enlargement-stridor` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Thyroid Pathway); expected ≥ emergency |
 | `thyroid-rapid-enlargement-stridor` | alarm-emergency | ios | critical | unverified | no alarm output on ios |
 | `thyroid-rapid-enlargement-stridor` | alarm-airway-specific | ios | quality | unverified | no alarm output on ios |
-| `thyroid-rapid-enlargement-stridor` | inv-core-biopsy | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `thyroid-rapid-enlargement-stridor` | inv-ct-neck-chest | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `thyroid-rapid-enlargement-stridor` | mgmt-airway | ios | critical | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `thyroid-rapid-enlargement-stridor` | inv-core-biopsy | ios | critical | unverified | no investigation output on ios |
+| `thyroid-rapid-enlargement-stridor` | inv-ct-neck-chest | ios | quality | unverified | no investigation output on ios |
+| `thyroid-rapid-enlargement-stridor` | mgmt-airway | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `thyroid-retrosternal-goitre-compression` | level-at-least-priority | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ priority |
-| `thyroid-retrosternal-goitre-compression` | flag-compression | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `thyroid-retrosternal-goitre-compression` | inv-tfts | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `thyroid-retrosternal-goitre-compression` | inv-ct | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `thyroid-retrosternal-goitre-compression` | mgmt-thyroidectomy | ios | critical | unverified | no management item matched among 31 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
-| `thyroid-retrosternal-goitre-compression` | mgmt-airway-planning | ios | quality | unverified | no management item matched among 31 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
+| `thyroid-retrosternal-goitre-compression` | flag-compression | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `thyroid-retrosternal-goitre-compression` | inv-tfts | ios | quality | unverified | no investigation output on ios |
+| `thyroid-retrosternal-goitre-compression` | inv-ct | ios | quality | unverified | no investigation output on ios |
+| `thyroid-retrosternal-goitre-compression` | mgmt-thyroidectomy | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `thyroid-retrosternal-goitre-compression` | mgmt-airway-planning | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `trauma-blunt-polytrauma-class3-shock` | dx-abdominal-trauma-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `trauma-blunt-polytrauma-class3-shock` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `trauma-blunt-polytrauma-class3-shock` | flag-shock-class | ios | quality | unverified | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser) |
-| `trauma-blunt-polytrauma-class3-shock` | inv-crossmatch | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `trauma-blunt-polytrauma-class3-shock` | mgmt-primary-survey | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-blunt-polytrauma-class3-shock` | mgmt-blood-products | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-blunt-polytrauma-class3-shock` | mgmt-laparotomy | ios | critical | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-blunt-polytrauma-class3-shock` | mgmt-txa | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-blunt-polytrauma-class3-shock` | mgmt-pelvic-binder | ios | quality | unverified | no management item matched among 12 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-blunt-polytrauma-class3-shock` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more) |
+| `trauma-blunt-polytrauma-class3-shock` | flag-shock-class | ios | quality | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.textParser) |
+| `trauma-blunt-polytrauma-class3-shock` | inv-fast | ios | quality | unverified | no investigation output on ios |
+| `trauma-blunt-polytrauma-class3-shock` | inv-crossmatch | ios | quality | unverified | no investigation output on ios |
+| `trauma-blunt-polytrauma-class3-shock` | mgmt-primary-survey | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `trauma-blunt-polytrauma-class3-shock` | mgmt-blood-products | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `trauma-blunt-polytrauma-class3-shock` | mgmt-laparotomy | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `trauma-blunt-polytrauma-class3-shock` | mgmt-txa | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
+| `trauma-blunt-polytrauma-class3-shock` | mgmt-pelvic-binder | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `trauma-elderly-occult-shock-warfarin` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `trauma-elderly-occult-shock-warfarin` | flag-beta-blocker-masking | ios | quality | unverified | no red flag matched among 12 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) |
-| `trauma-elderly-occult-shock-warfarin` | inv-ct-trauma | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `trauma-elderly-occult-shock-warfarin` | mgmt-warfarin-reversal | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-elderly-occult-shock-warfarin` | mgmt-hdu-analgesia | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-elderly-occult-shock-warfarin` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more) |
+| `trauma-elderly-occult-shock-warfarin` | flag-beta-blocker-masking | ios | quality | unverified | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert) |
+| `trauma-elderly-occult-shock-warfarin` | inv-ct-trauma | ios | quality | unverified | no investigation output on ios |
+| `trauma-elderly-occult-shock-warfarin` | mgmt-warfarin-reversal | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `trauma-elderly-occult-shock-warfarin` | mgmt-hdu-analgesia | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `trauma-head-injury-elderly-apixaban` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `trauma-head-injury-elderly-apixaban` | inv-ct-head | ios | critical | unverified | no investigation matched among 7 (ios.radiation) |
-| `trauma-head-injury-elderly-apixaban` | mgmt-reversal-plan | ios | quality | unverified | no management item matched among 25 (ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) |
+| `trauma-head-injury-elderly-apixaban` | inv-ct-head | ios | critical | unverified | no investigation output on ios |
+| `trauma-head-injury-elderly-apixaban` | inv-falls-ecg | ios | quality | unverified | no investigation output on ios |
+| `trauma-head-injury-elderly-apixaban` | mgmt-reversal-plan | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `trauma-head-injury-elderly-apixaban` | pathway-trauma | ios | quality | unverified | recommended firstVisit (No previous visits on record); expected trauma |
 | `trauma-head-injury-gcs12` | dx-tbi-top3 | ios | quality | unverified | not in top 3 of ios.bayes: (empty list) |
 | `trauma-head-injury-gcs12` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
@@ -10799,38 +10732,33 @@ Guidelines:
 | `trauma-head-injury-gcs12` | mgmt-neurosurgery | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `trauma-paediatric-nai-bruising` | mnm-nai | ios | quality | unverified | not in top 4 of ios.bayes: 1. Iron Deficiency Anaemia \| 2. Macrocytic Anaemia (B12 / Folate) \| 3. Anaemia of Chronic Disease \| 4. Haemolytic Anaemia |
 | `trauma-paediatric-nai-bruising` | level-at-least-urgent | ios | quality | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `trauma-paediatric-nai-bruising` | flag-safeguarding | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `trauma-paediatric-nai-bruising` | inv-skeletal-survey | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `trauma-paediatric-nai-bruising` | inv-ct-head-infant | ios | quality | unverified | no investigation matched among 9 (ios.radiation) |
-| `trauma-paediatric-nai-bruising` | mgmt-safeguarding-referral | ios | critical | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-paediatric-nai-bruising` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more) |
+| `trauma-paediatric-nai-bruising` | flag-safeguarding | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner) |
+| `trauma-paediatric-nai-bruising` | inv-skeletal-survey | ios | quality | unverified | no investigation output on ios |
+| `trauma-paediatric-nai-bruising` | inv-ct-head-infant | ios | quality | unverified | no investigation output on ios |
+| `trauma-paediatric-nai-bruising` | inv-clotting | ios | quality | unverified | no investigation output on ios |
+| `trauma-paediatric-nai-bruising` | mgmt-safeguarding-referral | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `trauma-pregnancy-30wk-rtc` | mnm-abruption | ios | critical | unverified | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Pancreatitis \| 3. Irritable Bowel Syndrome \| 4. Acute Cholecystitis \| 5. Biliary Colic |
 | `trauma-pregnancy-30wk-rtc` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `trauma-pregnancy-30wk-rtc` | inv-fetal-monitoring | ios | critical | unverified | no investigation matched among 13 (ios.pipeline.decisions, ios.radiation) |
-| `trauma-pregnancy-30wk-rtc` | inv-kleihauer | ios | quality | unverified | no investigation matched among 13 (ios.pipeline.decisions, ios.radiation) |
-| `trauma-pregnancy-30wk-rtc` | mgmt-uterine-displacement | ios | critical | unverified | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-pregnancy-30wk-rtc` | mgmt-obstetric-team | ios | critical | unverified | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-pregnancy-30wk-rtc` | mgmt-anti-d | ios | quality | unverified | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-pregnancy-30wk-rtc` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more) |
+| `trauma-pregnancy-30wk-rtc` | inv-fetal-monitoring | ios | critical | unverified | no investigation matched among 6 (ios.pipeline.decisions) |
+| `trauma-pregnancy-30wk-rtc` | inv-kleihauer | ios | quality | unverified | no investigation matched among 6 (ios.pipeline.decisions) |
+| `trauma-pregnancy-30wk-rtc` | mgmt-uterine-displacement | ios | critical | unverified | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
+| `trauma-pregnancy-30wk-rtc` | mgmt-obstetric-team | ios | critical | unverified | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
+| `trauma-pregnancy-30wk-rtc` | mgmt-anti-d | ios | quality | unverified | no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
 | `trauma-splenic-injury-stable` | dx-splenic-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Acute Pancreatitis \| 5. Irritable Bowel Syndrome |
 | `trauma-splenic-injury-stable` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `trauma-splenic-injury-stable` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more) |
 | `trauma-splenic-injury-unstable` | dx-splenic-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Acute Pancreatitis \| 5. Irritable Bowel Syndrome |
 | `trauma-splenic-injury-unstable` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `trauma-splenic-injury-unstable` | mgmt-operative | ios | critical | unverified | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-splenic-injury-unstable` | mgmt-blood-products | ios | critical | unverified | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-splenic-injury-unstable` | mgmt-txa | ios | quality | unverified | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-splenic-injury-unstable` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more) |
+| `trauma-splenic-injury-unstable` | mgmt-operative | ios | critical | unverified | no management item matched among 3 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
+| `trauma-splenic-injury-unstable` | mgmt-blood-products | ios | critical | unverified | no management item matched among 3 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
+| `trauma-splenic-injury-unstable` | mgmt-txa | ios | quality | unverified | no management item matched among 3 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
 | `trauma-stab-abdomen-evisceration` | dx-penetrating-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Acute Cholecystitis \| 3. Biliary Colic \| 4. Inguinal Hernia \| 5. Acute Pancreatitis |
 | `trauma-stab-abdomen-evisceration` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `trauma-stab-abdomen-evisceration` | inv-cxr | ios | quality | unverified | no investigation matched among 15 (ios.pipeline.decisions, ios.radiation) |
-| `trauma-stab-abdomen-evisceration` | mgmt-laparotomy | ios | critical | unverified | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-stab-abdomen-evisceration` | mgmt-tetanus | ios | quality | unverified | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-stab-abdomen-evisceration` | mgmt-antibiotics | ios | quality | unverified | no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-stab-abdomen-evisceration` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "doacs (preferred): rivaroxaban 15 mg bd × 21d → 20 mg od; or apixaban 10 mg bd × 7d → 5 mg bd" (+2 more) |
+| `trauma-stab-abdomen-evisceration` | inv-cxr | ios | quality | unverified | no investigation matched among 6 (ios.pipeline.decisions) |
+| `trauma-stab-abdomen-evisceration` | mgmt-laparotomy | ios | critical | unverified | no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
+| `trauma-stab-abdomen-evisceration` | mgmt-tetanus | ios | quality | unverified | no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
+| `trauma-stab-abdomen-evisceration` | mgmt-antibiotics | ios | quality | unverified | no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
 | `trauma-stab-abdomen-stable-snom` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `trauma-stab-abdomen-stable-snom` | mgmt-serial-exam | ios | critical | unverified | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `trauma-stab-abdomen-stable-snom` | mgmt-no-antithrombotic-plan | ios | critical | unverified | forbidden management item present in ios.radiation.plan: "...immediate referral for primary pci (cath lab activation) or thrombolysis if pci >120 min" (+2 more) |
+| `trauma-stab-abdomen-stable-snom` | mgmt-serial-exam | ios | critical | unverified | no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan) |
 | `trauma-tension-pneumothorax` | mnm-pneumothorax | ios | critical | unverified | not in top 0 of ios.bayes: (empty list) |
 | `trauma-tension-pneumothorax` | level-emergency | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
 | `trauma-tension-pneumothorax` | alarm-hypoxia-shock | ios | critical | unverified | no alarm output on ios |
@@ -10855,51 +10783,57 @@ Guidelines:
 | `uc-toxic-megacolon` | inv-no-colonoscopy | ios | critical | unverified | forbidden investigation present in ios.radiation: "colonoscopy + biopsy - gold standard diagnosis - extent and pattern" |
 | `ugib-cvd-dual-antiplatelet` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Heart Failure \| 2. Community-Acquired Pneumonia \| 3. Asthma (Acute Exacerbation) \| 4. COPD Exacerbation \| 5. Pulmonary Tuberculosis |
 | `ugib-cvd-dual-antiplatelet` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `ugib-cvd-dual-antiplatelet` | inv-group-save | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `ugib-cvd-dual-antiplatelet` | mgmt-transfusion-threshold-8 | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-cvd-dual-antiplatelet` | mgmt-cardiology-antiplatelet-decision | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-cvd-dual-antiplatelet` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ugib-cvd-dual-antiplatelet` | inv-group-save | ios | critical | unverified | no investigation output on ios |
+| `ugib-cvd-dual-antiplatelet` | mgmt-transfusion-threshold-8 | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-cvd-dual-antiplatelet` | mgmt-cardiology-antiplatelet-decision | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-cvd-dual-antiplatelet` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `ugib-elderly-doac-pre-endoscopy-rockall` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `ugib-elderly-doac-pre-endoscopy-rockall` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `ugib-elderly-doac-pre-endoscopy-rockall` | inv-group-save | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `ugib-elderly-doac-pre-endoscopy-rockall` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-elderly-doac-pre-endoscopy-rockall` | mgmt-transfusion-threshold-8 | ios | quality | unverified | no management item matched among 11 (ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ugib-elderly-doac-pre-endoscopy-rockall` | inv-renal-function | ios | quality | unverified | no investigation output on ios |
+| `ugib-elderly-doac-pre-endoscopy-rockall` | inv-group-save | ios | critical | unverified | no investigation output on ios |
+| `ugib-elderly-doac-pre-endoscopy-rockall` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 1 (ios.soap.plan) |
+| `ugib-elderly-doac-pre-endoscopy-rockall` | mgmt-transfusion-threshold-8 | ios | quality | unverified | no management item matched among 1 (ios.soap.plan) |
 | `ugib-melaena-only-woman` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `ugib-melaena-only-woman` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `ugib-melaena-only-woman` | alarm-gi-bleed | ios | critical | unverified | no alarm output on ios |
-| `ugib-melaena-only-woman` | inv-ogd | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `ugib-melaena-only-woman` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ugib-melaena-only-woman` | inv-ogd | ios | critical | unverified | no investigation output on ios |
+| `ugib-melaena-only-woman` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `ugib-nonvariceal-gbs-high` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea) |
 | `ugib-nonvariceal-gbs-high` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
 | `ugib-nonvariceal-gbs-high` | alarm-gi-bleed | ios | critical | unverified | no alarm matched among 1 (ios.pipeline.alert) |
-| `ugib-nonvariceal-gbs-high` | flag-nsaid | ios | quality | unverified | no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.pipeline.alert) |
-| `ugib-nonvariceal-gbs-high` | inv-group-save | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `ugib-nonvariceal-gbs-high` | inv-ogd | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `ugib-nonvariceal-gbs-high` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-nonvariceal-gbs-high` | mgmt-restrictive-transfusion | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-nonvariceal-gbs-high` | mgmt-ppi | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-nonvariceal-gbs-high` | mgmt-stop-nsaid | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-nonvariceal-gbs-high` | mgmt-hpylori | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ugib-nonvariceal-gbs-high` | flag-nsaid | ios | quality | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.pipeline.alert) |
+| `ugib-nonvariceal-gbs-high` | inv-fbc-urea | ios | quality | unverified | no investigation output on ios |
+| `ugib-nonvariceal-gbs-high` | inv-group-save | ios | critical | unverified | no investigation output on ios |
+| `ugib-nonvariceal-gbs-high` | inv-ogd | ios | critical | unverified | no investigation output on ios |
+| `ugib-nonvariceal-gbs-high` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-nonvariceal-gbs-high` | mgmt-restrictive-transfusion | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-nonvariceal-gbs-high` | mgmt-ppi | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-nonvariceal-gbs-high` | mgmt-stop-nsaid | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-nonvariceal-gbs-high` | mgmt-hpylori | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `ugib-nonvariceal-gbs-low-outpatient` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea) |
-| `ugib-nonvariceal-gbs-low-outpatient` | inv-ogd | ios | quality | unverified | no investigation matched among 7 (ios.radiation) |
-| `ugib-nonvariceal-gbs-low-outpatient` | mgmt-outpatient | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ugib-nonvariceal-gbs-low-outpatient` | inv-ogd | ios | quality | unverified | no investigation output on ios |
+| `ugib-nonvariceal-gbs-low-outpatient` | mgmt-outpatient | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `ugib-nonvariceal-unstable-shock` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea) |
 | `ugib-nonvariceal-unstable-shock` | level-emergency | ios | critical | unverified | ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `ugib-nonvariceal-unstable-shock` | inv-group-crossmatch | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `ugib-nonvariceal-unstable-shock` | mgmt-transfusion | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-nonvariceal-unstable-shock` | mgmt-endoscopy-after-resus | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-nonvariceal-unstable-shock` | mgmt-escalation-ir-surgery | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ugib-nonvariceal-unstable-shock` | inv-group-crossmatch | ios | critical | unverified | no investigation output on ios |
+| `ugib-nonvariceal-unstable-shock` | inv-coagulation | ios | quality | unverified | no investigation output on ios |
+| `ugib-nonvariceal-unstable-shock` | mgmt-transfusion | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-nonvariceal-unstable-shock` | mgmt-endoscopy-after-resus | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-nonvariceal-unstable-shock` | mgmt-critical-care | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-nonvariceal-unstable-shock` | mgmt-escalation-ir-surgery | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `ugib-on-warfarin-high-inr` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: (empty list) |
 | `ugib-on-warfarin-high-inr` | level-at-least-urgent | ios | critical | unverified | ios.triage: routine (ClinicalPathwayEngine suggestedAcuity=Routine, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ urgent |
-| `ugib-on-warfarin-high-inr` | inv-group-save | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `ugib-on-warfarin-high-inr` | mgmt-reversal-considered | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `ugib-on-warfarin-high-inr` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `ugib-on-warfarin-high-inr` | inv-inr | ios | critical | unverified | no investigation output on ios |
+| `ugib-on-warfarin-high-inr` | inv-group-save | ios | critical | unverified | no investigation output on ios |
+| `ugib-on-warfarin-high-inr` | mgmt-reversal-considered | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
+| `ugib-on-warfarin-high-inr` | mgmt-ogd-within-24h | ios | critical | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `ugib-post-endoscopy-rockall` | score-rec-rockall | ios | quality | unverified | rockall not recommended; recommended: (none) |
 | `ugib-post-endoscopy-rockall` | mgmt-oral-ppi-continuation | ios | quality | unverified | no management item matched among 11 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
 | `upper-abdominal-pain-weight-loss-over55` | dx-gastric-cancer-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Gastrointestinal Malignancy \| 2. Inflammatory Bowel Disease \| 3. Diabetes Mellitus Type 2 \| 4. Hyperthyroidism |
-| `upper-abdominal-pain-weight-loss-over55` | flag-cancer-weight-loss | ios | critical | unverified | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote) |
-| `upper-abdominal-pain-weight-loss-over55` | inv-ogd | ios | critical | unverified | no investigation matched among 9 (ios.radiation) |
-| `upper-abdominal-pain-weight-loss-over55` | mgmt-urgent-two-week-ogd | ios | quality | unverified | no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `upper-abdominal-pain-weight-loss-over55` | flag-cancer-weight-loss | ios | critical | unverified | no red flag matched among 3 (ios.visitRisk, ios.allergyBanner, ios.triage) |
+| `upper-abdominal-pain-weight-loss-over55` | inv-ogd | ios | critical | unverified | no investigation output on ios |
+| `upper-abdominal-pain-weight-loss-over55` | inv-fbc | ios | quality | unverified | no investigation output on ios |
+| `upper-abdominal-pain-weight-loss-over55` | mgmt-urgent-two-week-ogd | ios | quality | unverified | no management item matched among 3 (ios.pipeline.actions, ios.soap.plan) |
 | `variceal-bleed-known-cirrhosis` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea) |
 | `variceal-bleed-known-cirrhosis` | mnm-variceal | ios | quality | unverified | not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea) |
 | `variceal-bleed-known-cirrhosis` | level-emergency | ios | critical | unverified | ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
@@ -10917,11 +10851,12 @@ Guidelines:
 | `variceal-bleed-unrecognised-cirrhosis` | dx-ugib-top3 | ios | critical | unverified | not in top 3 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea) |
 | `variceal-bleed-unrecognised-cirrhosis` | mnm-variceal | ios | quality | unverified | not in top 5 of ios.bayes: 1. Acute Gastroenteritis \| 2. Small Bowel Obstruction \| 3. Drug-Induced Nausea / Vomiting \| 4. Gastroparesis \| 5. Appendicitis (with nausea) |
 | `variceal-bleed-unrecognised-cirrhosis` | level-emergency | ios | critical | unverified | ios.triage: urgent (ClinicalPathwayEngine suggestedAcuity=Urgent, pathway=Undifferentiated Abdominal Pain — Further Assessment Required); expected ≥ emergency |
-| `variceal-bleed-unrecognised-cirrhosis` | flag-liver-disease | ios | quality | unverified | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.radiation.redFlags, ios.radiation.urgencyNote) |
+| `variceal-bleed-unrecognised-cirrhosis` | flag-liver-disease | ios | quality | unverified | no red flag matched among 4 (ios.visitRisk, ios.allergyBanner) |
 | `variceal-bleed-unrecognised-cirrhosis` | score-rec-child-pugh | ios | quality | unverified | child-pugh not recommended; recommended: glasgow-blatchford, rockall, aims65, ios:forrest |
-| `variceal-bleed-unrecognised-cirrhosis` | mgmt-vasoactive | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `variceal-bleed-unrecognised-cirrhosis` | mgmt-antibiotic-prophylaxis | ios | critical | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
-| `variceal-bleed-unrecognised-cirrhosis` | mgmt-band-ligation | ios | quality | unverified | no management item matched among 14 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) |
+| `variceal-bleed-unrecognised-cirrhosis` | inv-inr-lfts | ios | quality | unverified | no investigation output on ios |
+| `variceal-bleed-unrecognised-cirrhosis` | mgmt-vasoactive | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `variceal-bleed-unrecognised-cirrhosis` | mgmt-antibiotic-prophylaxis | ios | critical | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
+| `variceal-bleed-unrecognised-cirrhosis` | mgmt-band-ligation | ios | quality | unverified | no management item matched among 4 (ios.pipeline.actions, ios.soap.plan) |
 | `aaa-renal-colic-mimic` | mnm-aaa | web | critical | known gap | not in top 3 of web.pane: 1. Renal Colic / Urolithiasis \| 2. Inguinal / Femoral Hernia \| 3. Acute Cholecystitis; also in web.symptomInference#3, web.passive#5 [known gap: PANE top 3: Renal colic (0.78), Inguinal/femoral hernia, Acute chol |
 | `aaa-renal-colic-mimic` | inv-aorta-imaging | web | critical | known gap | no investigation matched among 24 (web.pane.seeded, web.clinicalPrompts) [known gap: No engine suggests aortic ultrasound or CTA; the management panel shows the renal colic protocol (PANE top) and I71.3 maps to no protocol.] |
 | `aaa-renal-colic-mimic` | mgmt-vascular | web | quality | known gap | no management item matched among 16 (web.managementPanel, web.managementPanel.keyPoints, web.clinicalPrompts) [known gap: Management panel shows the renal colic protocol; no vascular step.] |
