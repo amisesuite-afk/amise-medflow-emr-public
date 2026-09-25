@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import DocumentCapture from '@/components/DocumentCapture';
+import ReportImportPanel from '@/components/report-import/ReportImportPanel';
 
 interface DocumentRow {
   id: string;
@@ -161,6 +162,13 @@ export default function DocumentsTab() {
 
   return (
     <div className="gap-y">
+      {/* Lab / imaging report PDFs: read and checked against the chart in the browser (no AI).
+          Front desk attaches the PDF; nurses and doctors can also save the results. */}
+      {patientId && (
+        <CollapsibleCard title="Import lab or imaging report" defaultOpen={false}>
+          <ReportImportPanel onSaved={() => void fetchDocuments()} />
+        </CollapsibleCard>
+      )}
       <CollapsibleCard title="Documents and correspondence">
         {!patientId ? (
           <div className="placeholder-tab">

@@ -11,6 +11,8 @@ import { useToast } from '@/components/ToastProvider';
 import DocumentCapture from '@/components/DocumentCapture';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 import { splitEssentialSecondary, isAlreadyOrdered } from '@/lib/investigation-merge';
+import ReportImportPanel from '@/components/report-import/ReportImportPanel';
+import ImportedReportsList from '@/components/report-import/ImportedReportsList';
 
 function filterBySex(lab: string, sex: string): boolean {
   if (lab.includes('(M)') && sex === 'female') return false;
@@ -286,8 +288,9 @@ export default function InvestigationsTab() {
     radiologyRequests, setRadiologyRequests,
     symptoms, symptomDetails, sex,
     patientName, age, dob, hpiNotes, mrNumber,
-    workingDiagnosis, icdCodes, paneTop, paneConverged,
+    workingDiagnosis, icdCodes, paneTop, paneConverged, patientId,
   } = useAppContext();
+  const [importedRefresh, setImportedRefresh] = useState(0);
 
   // Derive protocol from working diagnosis or ICD code (mirrors PlanTab logic)
   const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
@@ -829,6 +832,15 @@ export default function InvestigationsTab() {
           </div>
         </CollapsibleCard>
       )}
+
+      {/* Deterministic lab / imaging report import — read in the browser, no AI; clinician
+          reviews every value and the patient identity before anything is saved. */}
+      <CollapsibleCard title="Import lab or imaging report" defaultOpen={true}>
+        <ReportImportPanel onSaved={() => setImportedRefresh(n => n + 1)} />
+      </CollapsibleCard>
+      <CollapsibleCard title="Lab and imaging reports on file" defaultOpen={false}>
+        <ImportedReportsList patientId={patientId} refreshKey={importedRefresh} />
+      </CollapsibleCard>
 
       {/* AI result scan — staff upload, AI extraction, human confirm */}
       <CollapsibleCard
