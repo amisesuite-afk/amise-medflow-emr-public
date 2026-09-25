@@ -71,9 +71,8 @@ extension PatientScoreAutoPopulator {
         var i = ClinicalScoringEngine.KingsCriteriaInput()
         var f = ScoreAutoFill()
 
-        let text = ([patient.chiefComplaint, patient.hpi, patient.pmhNotes,
-                     patient.workingDiagnosis, patient.assessmentText]
-            .compactMap { $0 }.joined(separator: " ")).lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.pmhNotes,
+                              patient.workingDiagnosis, patient.assessmentText])
 
         let paracetamolKw = ["paracetamol", "acetaminophen", "panadol", "calpol",
                              "paracetamol overdose", "acetaminophen overdose", "paracetamol toxicity"]
@@ -153,8 +152,7 @@ extension PatientScoreAutoPopulator {
         var i = ChildPughInput()
         var f = ScoreAutoFill()
 
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.workingDiagnosis]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.workingDiagnosis])
 
         // Ascites inference
         if text.contains("refractory ascites") || text.contains("large volume ascites") || text.contains("tense ascites") {

@@ -22,9 +22,9 @@ extension PatientScoreAutoPopulator {
                          "stroke", "head injury", "bone marrow"]
         let minorKw = ["chemotherapy", "dialysis", "haemodialysis", "chronic obstructive",
                        "liver cirrhosis", "diabetes", "hip fracture"]
-        let allText = [patient.chiefComplaint, patient.hpi, patient.workingDiagnosis,
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.workingDiagnosis,
                        patient.pmhNotes, patient.assessmentText,
-                       patient.managementPlan].compactMap { $0 }.joined(separator: " ").lowercased()
+                       patient.managementPlan])
         if seriousKw.contains(where: { allText.contains($0) }) {
             i.diseaseSeverity = 2; f.autoFieldKeys.insert("diseaseSeverity")
         } else if minorKw.contains(where: { allText.contains($0) }) {
@@ -44,9 +44,8 @@ extension PatientScoreAutoPopulator {
     static func barthel(patient: Patient) -> (BarthelInput, ScoreAutoFill) {
         var i = BarthelInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                       patient.examGeneral, patient.pmhNotes, patient.notes, patient.managementPlan]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examGeneral, patient.pmhNotes, patient.notes, patient.managementPlan])
 
         // Continence — urinary
         if allText.contains("continent") || allText.contains("no incontinence") ||
@@ -124,9 +123,8 @@ extension PatientScoreAutoPopulator {
         var i = NIHSSInput()
         var f = ScoreAutoFill()
 
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                       patient.examNeuro, patient.notes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examNeuro, patient.notes])
 
         // Consciousness level — infer from documented GCS or clinical state
         if allText.contains("unresponsive") || allText.contains("gcs 3") || allText.contains("gcs 4") || allText.contains("gcs 5") {
@@ -212,10 +210,9 @@ extension PatientScoreAutoPopulator {
         f.addPending(key: "bmiScore", label: "1. BMI category (>20 / 18.5–20 / <18.5 kg/m²) — weigh and measure height", source: "Measure at bedside")
 
         // Weight loss score: detect keywords in PMH / HPI / assessment text
-        let text = ([patient.hpi, patient.pmhNotes, patient.chiefComplaint,
-                     patient.assessmentText, patient.workingDiagnosis]
-                    .compactMap { $0 } + patient.pmhEntries.map(\.condition))
-                   .joined(separator: " ").lowercased()
+        let text = ScoreText([patient.hpi, patient.pmhNotes, patient.chiefComplaint,
+                              patient.assessmentText, patient.workingDiagnosis]
+                             + patient.pmhEntries.map { Optional($0.condition) })
 
         if text.contains("weight loss") || text.contains("losing weight") || text.contains("unintentional weight") {
             if text.contains(">10%") || text.contains("significant weight loss") || text.contains("severe weight loss") || text.contains("cachex") {
@@ -250,9 +247,8 @@ extension PatientScoreAutoPopulator {
     static func ecog(patient: Patient) -> (ClinicalScoringEngine.ECOGInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.ECOGInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Grade 4 keywords — bedbound
         let g4Kw = ["bedbound", "bed-bound", "bed bound", "completely disabled", "fully dependent",
@@ -291,9 +287,8 @@ extension PatientScoreAutoPopulator {
     static func auditC(patient: Patient) -> (ClinicalScoringEngine.AUDITCInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.AUDITCInput()
         var f = ScoreAutoFill(); f.isAttempted = true
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                    patient.pmhNotes, patient.workingDiagnosis]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                    patient.pmhNotes, patient.workingDiagnosis])
         // Sex from patient model
         if patient.sex == .female { i.isFemale = true }
         // Alcohol use disorder keyword hints — if positive, set highest category as auto-filled
@@ -318,9 +313,8 @@ extension PatientScoreAutoPopulator {
     static func phq9(patient: Patient) -> (ClinicalScoringEngine.PHQ9Input, ScoreAutoFill) {
         var i = ClinicalScoringEngine.PHQ9Input()
         var f = ScoreAutoFill(); f.isAttempted = true
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                    patient.pmhNotes, patient.workingDiagnosis]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                    patient.pmhNotes, patient.workingDiagnosis])
         // Documented severe depression / suicidal ideation — flag Q6 & Q9
         let severeKw = ["severe depression", "suicidal", "self-harm", "self harm", "overdose attempt"]
         if severeKw.contains(where: { text.contains($0) }) {

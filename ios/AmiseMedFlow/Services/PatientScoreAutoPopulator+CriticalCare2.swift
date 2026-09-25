@@ -12,9 +12,8 @@ extension PatientScoreAutoPopulator {
     static func fourT(patient: Patient) -> (ClinicalScoringEngine.FourTInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.FourTInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.pmhNotes,
-                    patient.managementPlan, patient.assessmentText]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.pmhNotes,
+                    patient.managementPlan, patient.assessmentText])
 
         // Thrombocytopenia: detect platelet-related keywords
         if text.contains("thrombocytopen") || text.contains("platelet") {
@@ -91,9 +90,8 @@ extension PatientScoreAutoPopulator {
     static func kdigo(patient: Patient) -> (ClinicalScoringEngine.KDIGOInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.KDIGOInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Check for RRT keywords
         let rrtKw = ["renal replacement therapy", "haemodialysis", "hemodialysis", "haemofiltration",
@@ -159,8 +157,7 @@ extension PatientScoreAutoPopulator {
             notExplainedByCardiacFailure: false
         )
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes])
 
         // Stored PF ratio if previously computed
         if let pf = patient.berlinPFRatio {
@@ -204,8 +201,7 @@ extension PatientScoreAutoPopulator {
         var f = ScoreAutoFill()
         // GCS components are bedside assessments — not derivable from stored data.
         // The assessmentText and hpi are scanned for qualitative cues only.
-        let text = [patient.assessmentText, patient.hpi, patient.chiefComplaint]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.assessmentText, patient.hpi, patient.chiefComplaint])
         if text.contains("unconscious") || text.contains("unresponsive") || text.contains("comatose") {
             i.eyeOpening    = .none
             i.verbalResponse = .none

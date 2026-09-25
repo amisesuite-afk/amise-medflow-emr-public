@@ -11,8 +11,7 @@ extension PatientScoreAutoPopulator {
     static func mirels(patient: Patient) -> (ClinicalScoringEngine.MirelsInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.MirelsInput(site: 2, pain: 1, lesionType: 1, lesionSizeRatio: 1)
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.workingDiagnosis]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.workingDiagnosis])
 
         // Site — from diagnosis / history keywords
         if text.contains("peritrochanteric") || text.contains("femoral neck") || text.contains("trochanter") {
@@ -76,8 +75,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // Malignancy
-        let text = [patient.workingDiagnosis, patient.assessmentText, patient.hpi, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.workingDiagnosis, patient.assessmentText, patient.hpi, patient.pmhNotes])
         if text.contains("carcinoma") || text.contains("malignancy") || text.contains("cancer") || text.contains("metastas") {
             i.malignancy = text.contains("metastas") ? 8 : text.contains("nodal") ? 4 : 2
             f.addAutoFilled(key: "malignancy", label: "Malignancy detected → score \(i.malignancy)", source: "Diagnosis/Notes")
@@ -99,8 +97,7 @@ extension PatientScoreAutoPopulator {
     static func asa(patient: Patient) -> (ASAInput, ScoreAutoFill) {
         var i = ASAInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.assessmentText, patient.pmhNotes, patient.hpi]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.assessmentText, patient.pmhNotes, patient.hpi])
         // Heuristic: scan for severe/critical/moribund indicators
         if text.contains("moribund") || text.contains("not expected to survive") || text.contains("asa v") {
             i.asaClass = .v
@@ -125,8 +122,7 @@ extension PatientScoreAutoPopulator {
     static func mRS(patient: Patient) -> (ClinicalScoringEngine.MRSInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.MRSInput()
         var f = ScoreAutoFill()
-        let text = [patient.assessmentText, patient.hpi, patient.chiefComplaint]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.assessmentText, patient.hpi, patient.chiefComplaint])
         // Scan for disability indicators
         if text.contains("no disability") || text.contains("fully independent") {
             i.level = 0
@@ -148,8 +144,7 @@ extension PatientScoreAutoPopulator {
     static func clavienDindo(patient: Patient) -> (ClinicalScoringEngine.ClavienDindoInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.ClavienDindoInput()
         var f = ScoreAutoFill()
-        let text = [patient.assessmentText, patient.hpi, patient.chiefComplaint]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.assessmentText, patient.hpi, patient.chiefComplaint])
         // Scan for complication severity
         if text.contains("icu") || text.contains("intensive care") || text.contains("organ failure") {
             i.grade = 5   // IVa (single organ) or IVb — set conservatively

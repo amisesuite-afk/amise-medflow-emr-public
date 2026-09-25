@@ -32,6 +32,31 @@ struct ScoreAutoFill {
     }
 }
 
+// MARK: - Negation-aware free text for the populators' keyword checks
+
+/// The free text a populator scans for keywords ("rebound", "vomiting", "haemoptysis" …), read
+/// through `NegationMatcher`: "No rebound", "no vomiting", "denies haemoptysis" do not tick the
+/// criterion (clinical validation 2026-09: the populators joined the fields into one lowercased
+/// string and ticked criteria from documented negatives). Each field is its own clause, so a
+/// negation in one field cannot reach the next. `contains` keeps the old substring semantics
+/// ("migrat" still finds "migrated"); only negated occurrences are dropped.
+struct ScoreText {
+    private let source: NegationMatcher.Source
+
+    init(_ fields: [String?]) {
+        source = NegationMatcher.Source(NegationMatcher.joinClauses(fields))
+    }
+
+    init(_ text: String) {
+        source = NegationMatcher.Source(text)
+    }
+
+    /// True when `term` occurs at least once without being negated (case-insensitive).
+    func contains(_ term: String) -> Bool { source.contains(term) }
+
+    var isEmpty: Bool { source.lower.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+}
+
 // MARK: - Per-run shared patient data
 
 /// One auto-populate run's view of the patient data the helpers below read.

@@ -14,8 +14,7 @@ extension PatientScoreAutoPopulator {
             moreThanOneHepaticTumour: false, largestTumourOver5cm: false, ceaOver200: false
         )
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.workingDiagnosis]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.workingDiagnosis])
 
         // Node-positive primary
         if text.contains("node positive") || text.contains("lymph node involved") || text.contains("n1") || text.contains("n2") {
@@ -75,7 +74,7 @@ extension PatientScoreAutoPopulator {
 
         // Text scan for symptoms
         let texts: [String?] = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
-        let text = texts.compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText(texts)
         if text.contains("anorexia") || text.contains("loss of appetite") || text.contains("not eating") {
             i.anorexia = true
             f.addAutoFilled(key: "anorexia", label: "Anorexia detected in notes", source: "History")
@@ -143,8 +142,7 @@ extension PatientScoreAutoPopulator {
     static func rockall(patient: Patient) -> (RockallInput, ScoreAutoFill) {
         var i = RockallInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.assessmentText, patient.hpi]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.assessmentText, patient.hpi])
         // Age
         if let dob = patient.dateOfBirth {
             let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0

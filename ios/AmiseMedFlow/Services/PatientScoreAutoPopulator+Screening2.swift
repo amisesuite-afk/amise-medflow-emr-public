@@ -63,8 +63,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // History of high blood glucose — from text
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes])
         if text.contains("high blood sugar") || text.contains("hyperglycaemia") || text.contains("hyperglycemia")
             || text.contains("impaired fasting") || text.contains("prediabet") || text.contains("glucose intol") {
             i.highBloodGlucoseHistory = true
@@ -122,8 +121,7 @@ extension PatientScoreAutoPopulator {
             feltGuilty: false, eyeOpener: false
         )
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.socialHistory]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes, patient.socialHistory])
 
         // Existing AUDIT-C or alcohol history suggests pre-fill context
         if let auditC = patient.auditCScore, auditC >= 4 {
@@ -151,9 +149,8 @@ extension PatientScoreAutoPopulator {
             positiveBloodCultureMinor: false, echoMinor: false
         )
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes,
-                    patient.examCVS, patient.examGeneral]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes,
+                    patient.examCVS, patient.examGeneral])
 
         // Fever from vitals
         let latestV = patient.latestVitals
@@ -182,7 +179,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // New murmur → endocardialInvolvement minor
-        let cvsText = (patient.examCVS ?? "").lowercased()
+        let cvsText = ScoreText([patient.examCVS])
         if cvsText.contains("new murmur") || cvsText.contains("new regurgitation") || cvsText.contains("aortic regurgitation") ||
            cvsText.contains("mitral regurgitation") || cvsText.contains("new diastolic") {
             i.echoMinor = true

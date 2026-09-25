@@ -75,7 +75,7 @@ extension PatientScoreAutoPopulator {
         }
 
         // Comorbidities from PMH free text
-        let pmh = (patient.pmhNotes ?? "").lowercased()
+        let pmh = ScoreText([patient.pmhNotes])
         if ["cancer", "carcinoma", "malignancy", "neoplasm", "tumour", "tumor"].contains(where: { pmh.contains($0) }) {
             i.neoplasticDisease = true; f.autoFieldKeys.insert("neoplasticDisease")
         }
@@ -160,9 +160,8 @@ extension PatientScoreAutoPopulator {
     static func decaf(patient: Patient) -> (ClinicalScoringEngine.DECAFInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.DECAFInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // MRC dyspnoea — attempt detection from text
         let mrc5Kw = ["unable to leave house", "too breathless to leave", "housebound", "confined to"]
@@ -221,8 +220,7 @@ extension PatientScoreAutoPopulator {
     static func centor(patient: Patient) -> (ClinicalScoringEngine.CentorInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.CentorInput()
         var f = ScoreAutoFill(); f.isAttempted = true
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText])
         // Exudate
         if text.contains("exudate") || text.contains("pus on tonsil") || text.contains("tonsillar exudate") {
             i.tonsillarExudate = true
@@ -316,8 +314,7 @@ extension PatientScoreAutoPopulator {
     static func mmrc(patient: Patient) -> (ClinicalScoringEngine.MMRCInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.MMRCInput(grade: 0)
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes])
 
         // Restore previously stored grade
         if let stored = patient.mmrcGrade {

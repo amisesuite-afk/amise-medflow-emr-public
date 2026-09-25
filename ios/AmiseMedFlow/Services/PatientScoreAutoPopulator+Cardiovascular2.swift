@@ -11,9 +11,8 @@ extension PatientScoreAutoPopulator {
     static func euroScoreII(patient: Patient) -> (EuroScoreIIInput, ScoreAutoFill) {
         var i = EuroScoreIIInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                       patient.pmhNotes, patient.notes, patient.workingDiagnosis, patient.managementPlan]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.pmhNotes, patient.notes, patient.workingDiagnosis, patient.managementPlan])
 
         // Age from DOB — snap to nearest 5-year band supported by the picker
         if let dob = patient.dateOfBirth {
@@ -114,10 +113,9 @@ extension PatientScoreAutoPopulator {
     static func dasi(patient: Patient) -> (DASIInput, ScoreAutoFill) {
         var i = DASIInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
                        patient.pmhNotes, patient.notes, patient.workingDiagnosis,
-                       patient.managementPlan]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+                       patient.managementPlan])
 
         // Self-care / ADLs
         if allText.contains("independent") || allText.contains("adl") ||
@@ -232,9 +230,8 @@ extension PatientScoreAutoPopulator {
             f.addPending(key: "age", label: "Patient age required for Baux score — enter DOB or age manually", source: "Demographics")
         }
         // Detect inhalation injury from text
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan])
         let inhKw = ["inhalation injury", "smoke inhalation", "inhalation burn", "respiratory burn",
                      "airway burn", "carbonaceous sputum", "singed nasal", "hoarse voice", "stridor"]
         if inhKw.contains(where: { text.contains($0) }) {
@@ -250,9 +247,8 @@ extension PatientScoreAutoPopulator {
     static func spesi(patient: Patient) -> (ClinicalScoringEngine.SPESIInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.SPESIInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Age
         if let dob = patient.dateOfBirth {
@@ -311,9 +307,8 @@ extension PatientScoreAutoPopulator {
     static func perc(patient: Patient) -> (ClinicalScoringEngine.PERCInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.PERCInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Age from DOB
         if let dob = patient.dateOfBirth {

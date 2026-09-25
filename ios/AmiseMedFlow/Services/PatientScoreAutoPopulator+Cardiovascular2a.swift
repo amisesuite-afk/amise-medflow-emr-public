@@ -11,9 +11,8 @@ extension PatientScoreAutoPopulator {
     static func timi(patient: Patient) -> (TIMIInput, ScoreAutoFill) {
         var i = TIMIInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                       patient.pmhNotes, patient.workingDiagnosis, patient.notes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.pmhNotes, patient.workingDiagnosis, patient.notes])
 
         // Age
         if let dob = patient.dateOfBirth {
@@ -61,9 +60,8 @@ extension PatientScoreAutoPopulator {
     static func heart(patient: Patient) -> (HEARTInput, ScoreAutoFill) {
         var i = HEARTInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                       patient.workingDiagnosis, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.workingDiagnosis, patient.pmhNotes])
 
         // Age score
         if let dob = patient.dateOfBirth {
@@ -112,9 +110,8 @@ extension PatientScoreAutoPopulator {
     static func grace(patient: Patient) -> (GRACEInput, ScoreAutoFill) {
         var i = GRACEInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                       patient.pmhNotes, patient.workingDiagnosis, patient.notes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.pmhNotes, patient.workingDiagnosis, patient.notes])
 
         // Age category from DOB
         if let dob = patient.dateOfBirth {

@@ -9,9 +9,8 @@ extension PatientScoreAutoPopulator {
     static func cfs(patient: Patient) -> (ClinicalFrailtyInput, ScoreAutoFill) {
         var i = ClinicalFrailtyInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                       patient.examGeneral, patient.pmhNotes, patient.notes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examGeneral, patient.pmhNotes, patient.notes])
 
         // Try to infer frailty level from clinical text keywords
         if allText.contains("terminally ill") || allText.contains("terminal") ||
@@ -41,9 +40,8 @@ extension PatientScoreAutoPopulator {
     static func mallampati(patient: Patient) -> (MallampatiInput, ScoreAutoFill) {
         var i = MallampatiInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                       patient.examGeneral, patient.pmhNotes, patient.notes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                       patient.examGeneral, patient.pmhNotes, patient.notes])
 
         // Obesity predictor from clinical text or BMI
         if allText.contains("obese") || allText.contains("obesity") ||
@@ -94,10 +92,9 @@ extension PatientScoreAutoPopulator {
     static func waterlow(patient: Patient) -> (WaterlowInput, ScoreAutoFill) {
         var i = WaterlowInput()
         var f = ScoreAutoFill()
-        let allText = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
+        let allText = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
                        patient.examGeneral, patient.examSkin, patient.pmhNotes,
-                       patient.notes, patient.workingDiagnosis]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+                       patient.notes, patient.workingDiagnosis])
 
         // Sex and age combined score
         if let dob = patient.dateOfBirth {
@@ -164,9 +161,8 @@ extension PatientScoreAutoPopulator {
     static func cci(patient: Patient) -> (ClinicalScoringEngine.CCIInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.CCIInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Age from DOB
         if let dob = patient.dateOfBirth {
@@ -233,9 +229,8 @@ extension PatientScoreAutoPopulator {
     static func mfi5(patient: Patient) -> (ClinicalScoringEngine.MFI5Input, ScoreAutoFill) {
         var i = ClinicalScoringEngine.MFI5Input()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         if ["diabetes", "t2dm", "t1dm", "insulin", "metformin", "hypoglycaemic"].contains(where: { text.contains($0) }) {
             i.diabetes = true
@@ -273,8 +268,7 @@ extension PatientScoreAutoPopulator {
     static func braden(patient: Patient) -> (ClinicalScoringEngine.BradenInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.BradenInput()
         var f = ScoreAutoFill(); f.isAttempted = true
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes])
         // Bedfast keyword
         let bedfastKw = ["bedbound", "bed-bound", "bedfast", "immobile", "paralysis", "paraplegia", "quadriplegia"]
         if bedfastKw.contains(where: { text.contains($0) }) {

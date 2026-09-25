@@ -157,9 +157,8 @@ extension PatientScoreAutoPopulator {
     static func haps(patient: Patient) -> (ClinicalScoringEngine.HAPSInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.HAPSInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Peritonism absence
         let peritonismKw = ["peritonism", "peritoneal irritation", "generalised tenderness",
@@ -186,8 +185,8 @@ extension PatientScoreAutoPopulator {
         var i = ClinicalScoringEngine.GlasgowImrieInput()
         var f = ScoreAutoFill(); f.isAttempted = true
 
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                    patient.pmhNotes, patient.workingDiagnosis].compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                    patient.pmhNotes, patient.workingDiagnosis])
 
         // Age > 55
         let ageYears = Calendar.current.dateComponents([.year], from: patient.dateOfBirth ?? Date(), to: .now).year ?? 0

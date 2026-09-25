@@ -219,9 +219,8 @@ extension PatientScoreAutoPopulator {
     static func oakland(patient: Patient) -> (ClinicalScoringEngine.OaklandInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.OaklandInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.pmhNotes,
-                    patient.assessmentText]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.pmhNotes,
+                    patient.assessmentText])
 
         // Age
         if let dob = patient.dateOfBirth {

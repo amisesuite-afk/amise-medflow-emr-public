@@ -12,9 +12,11 @@ extension PatientScoreAutoPopulator {
     static func parkland(patient: Patient) -> (ClinicalScoringEngine.ParklandInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.ParklandInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let fields = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                      patient.assessmentText, patient.managementPlan, patient.pmhNotes]
+        let text = ScoreText(fields)
+        // The TBSA regex reads the raw text (a percentage is a measurement, not a finding).
+        let rawText = fields.compactMap { $0 }.joined(separator: " ").lowercased()
 
         // Weight from latest vitals
         if let v = patient.latestVitals,
@@ -27,8 +29,8 @@ extension PatientScoreAutoPopulator {
 
         // TBSA from free-text keywords
         let tbsaPattern = try? NSRegularExpression(pattern: #"(\d{1,3})\s*%\s*(?:tbsa|total body surface|burn)"#)
-        if let m = tbsaPattern?.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-           let r = Range(m.range(at: 1), in: text), let pct = Double(text[r]) {
+        if let m = tbsaPattern?.firstMatch(in: rawText, range: NSRange(rawText.startIndex..., in: rawText)),
+           let r = Range(m.range(at: 1), in: rawText), let pct = Double(rawText[r]) {
             i.tbsaPercent = min(pct, 100)
             f.addAutoFilled(key: "tbsaPercent", label: "\(Int(pct))% TBSA extracted from clinical text", source: "History/Examination")
         } else {
@@ -51,9 +53,8 @@ extension PatientScoreAutoPopulator {
     static func revisedGeneva(patient: Patient) -> (ClinicalScoringEngine.RevisedGenevaInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.RevisedGenevaInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Age from DOB
         if let dob = patient.dateOfBirth {
@@ -147,9 +148,8 @@ extension PatientScoreAutoPopulator {
             f.addAutoFilled(key: "age", label: "Age \(age) years — Caprini 1-point age bracket", source: "Demographics")
         }
 
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes,
-                    patient.workingDiagnosis, patient.prescriptions.map { $0.drug }.joined(separator: " ")]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText, patient.pmhNotes,
+                    patient.workingDiagnosis, patient.prescriptions.map { $0.drug }.joined(separator: " ")])
 
         // Malignancy
         if text.contains("carcinoma") || text.contains("cancer") || text.contains("malignancy") || text.contains("tumour") {

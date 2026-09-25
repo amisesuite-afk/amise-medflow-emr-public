@@ -10,9 +10,8 @@ extension PatientScoreAutoPopulator {
     static func airScore(patient: Patient) -> (ClinicalScoringEngine.AIRInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.AIRInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Vomiting
         let vomitKw = ["vomiting", "nausea and vomiting", "vomited", "emesis", "sick"]
@@ -56,9 +55,8 @@ extension PatientScoreAutoPopulator {
     static func hinchey(patient: Patient) -> (ClinicalScoringEngine.HincheyInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.HincheyInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Grade detection from text
         let grade4Kw = ["faecal peritonitis", "fecal peritonitis", "hinchey 4", "hinchey iv",
@@ -99,9 +97,8 @@ extension PatientScoreAutoPopulator {
     static func pas(patient: Patient) -> (ClinicalScoringEngine.PASInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.PASInput()
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
-                    patient.assessmentText, patient.managementPlan, patient.pmhNotes]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.workingDiagnosis, patient.hpi,
+                    patient.assessmentText, patient.managementPlan, patient.pmhNotes])
 
         // Anorexia
         if ["anorexia", "not eating", "reduced appetite", "loss of appetite", "off food"].contains(where: { text.contains($0) }) {
@@ -165,9 +162,8 @@ extension PatientScoreAutoPopulator {
     static func stone(patient: Patient) -> (ClinicalScoringEngine.STONEInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.STONEInput()
         var f = ScoreAutoFill(); f.isAttempted = true
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText,
-                    patient.workingDiagnosis]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText,
+                    patient.workingDiagnosis])
         // Nausea keyword
         let nauseaKw = ["nausea", "vomiting", "nauseous", "vomit"]
         if nauseaKw.contains(where: { text.contains($0) }) {
@@ -200,8 +196,7 @@ extension PatientScoreAutoPopulator {
     static func trueloveWitts(patient: Patient) -> (ClinicalScoringEngine.TruelovewIttsInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.TruelovewIttsInput()
         var f = ScoreAutoFill(); f.isAttempted = true
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText])
         // Stool frequency — needs clinical input
         f.addPending(key: "stoolsPerDay", label: "Stool frequency per day — current episode", source: "Clinical")
         // Blood in stool
@@ -238,8 +233,7 @@ extension PatientScoreAutoPopulator {
     static func harveyBradshaw(patient: Patient) -> (ClinicalScoringEngine.HarveyBradshawInput, ScoreAutoFill) {
         var i = ClinicalScoringEngine.HarveyBradshawInput()
         var f = ScoreAutoFill(); f.isAttempted = true
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText])
         // Wellbeing — patient self-report
         f.addPending(key: "generalWellbeing", label: "General wellbeing (0–4) — patient self-report", source: "Patient")
         // Abdominal pain severity
@@ -290,8 +284,7 @@ extension PatientScoreAutoPopulator {
             feelingOfIncompleteEmptying: false
         )
         var f = ScoreAutoFill()
-        let text = [patient.chiefComplaint, patient.hpi, patient.assessmentText]
-            .compactMap { $0 }.joined(separator: " ").lowercased()
+        let text = ScoreText([patient.chiefComplaint, patient.hpi, patient.assessmentText])
 
         if text.contains("relieved by defaec") || text.contains("relieved by bowel") || text.contains("better after stool") {
             i.painRelievedByDefecation = true
