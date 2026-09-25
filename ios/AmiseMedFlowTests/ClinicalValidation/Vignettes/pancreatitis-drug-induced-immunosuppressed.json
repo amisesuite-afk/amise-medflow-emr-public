@@ -284,11 +284,7 @@
           "guidelineRefs": [
             "acg-2024"
           ],
-          "note": "Continuing the causative drug causes recurrence (thiopurine pancreatitis recurs on rechallenge). Stop azathioprine and discuss an alternative with the IBD team.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Continuing the causative drug causes recurrence (thiopurine pancreatitis recurs on rechallenge). Stop azathioprine and discuss an alternative with the IBD team."
         },
         {
           "id": "mgmt-steroid-cover",

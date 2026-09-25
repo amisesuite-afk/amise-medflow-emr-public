@@ -329,11 +329,7 @@
           "guidelineRefs": [
             "nice-cg100"
           ],
-          "note": "Alcohol-dependent, vomiting, malnourished: thiamine before glucose-containing fluids to prevent Wernicke’s encephalopathy.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+          "note": "Alcohol-dependent, vomiting, malnourished: thiamine before glucose-containing fluids to prevent Wernicke’s encephalopathy."
         },
         {
           "id": "mgmt-withdrawal",

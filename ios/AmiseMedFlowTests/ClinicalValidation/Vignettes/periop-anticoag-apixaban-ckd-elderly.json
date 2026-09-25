@@ -185,11 +185,7 @@
             "pause-2019",
             "accp-2022"
           ],
-          "note": "DOAC interruption interval depends on renal function.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions, ios.radiation)"
+          "note": "DOAC interruption interval depends on renal function."
         }
       ],
       "mustExclude": [

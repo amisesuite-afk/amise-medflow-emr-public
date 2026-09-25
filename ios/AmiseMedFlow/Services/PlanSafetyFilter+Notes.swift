@@ -84,7 +84,8 @@ extension PlanSafetyFilter {
             extra.append((name: "INR (warfarin)", rationale: bleeding ? "Reversal decision (BSH; BSG/ESGE 2021)" : "Day before the procedure — proceed when < 1.5 (BSG/ESGE 2021; ACCP 2022)"))
         }
         if !drugsPresent(s.meds, doacs).isEmpty && (proc != .none || bleeding)
-            && !inv.contains("renal function") && !inv.contains("creatinine") && !inv.contains("egfr") && !inv.contains("u&e") {
+            // "U&E" alone does not prompt the creatinine clearance the DOAC timing needs.
+            && !inv.contains("renal function") && !inv.contains("creatinine") && !inv.contains("egfr") && !inv.contains("crcl") {
             extra.append((name: "Renal function (creatinine, eGFR / creatinine clearance)", rationale: "DOAC interruption timing depends on CrCl (PAUSE 2019; BSG/ESGE 2021)"))
         }
         return Evaluation(notes: notes, procedure: proc, extraInvestigations: extra)

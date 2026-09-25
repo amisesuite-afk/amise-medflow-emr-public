@@ -159,6 +159,8 @@ extension DiagnosisRadiationEngine {
 - Urgent ERCP within 24 h if concomitant cholangitis; not routinely for gallstone pancreatitis without cholangitis or obstruction (ACG 2024)
 - Surgical/HDU input if CRP >150 or organ failure
 - Alcohol counselling if alcohol aetiology
+- Alcohol-related: IV thiamine (Pabrinex) before glucose-containing fluids; assess and treat alcohol withdrawal (CIWA-Ar; NICE CG100)
+- Drug-induced (e.g. azathioprine / thiopurines, valproate): stop the causative drug, record it as an adverse reaction and do not rechallenge (ACG 2024)
 """,
             billingCodes: [
                 .init(icd10: "K85.90", icdDescription: "Acute pancreatitis, unspecified", cpt: nil, cptDescription: "Medical management"),
