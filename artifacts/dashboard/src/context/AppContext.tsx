@@ -13,6 +13,8 @@ import { switchEncounter, type EncounterSwitchResult, type EncounterSwitchTarget
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 import { scoreDiagnosis } from '@/lib/diagnosis-proc-mapper';
+import { EMPTY_SUPPLEMENT_HISTORY, normaliseSupplementHistory, type SupplementHistory } from '@/lib/supplement-catalogue';
+import { loadSupplementHistory, saveSupplementHistory } from '@/lib/supplement-store';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
@@ -303,6 +305,8 @@ interface CtxValue {
   medications: string[]; toggleMedication(v: string): void; setMedications(v: string[]): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
+  /** Herbs, teas, bush remedies & supplements (patient-level; patients.pathway_data_json "supplements"). */
+  supplementHistory: SupplementHistory; setSupplementHistory(v: SupplementHistory): void;
   toxicHabits: string[]; setToxicHabits(v: string[]): void; toggleToxicHabit(v: string): void;
   /** Ritual fasting, complementary therapies, night-shift work, usual sleep (lifestyle-practices.ts). */
   lifestyleHistory: LifestyleHistory; setLifestyleHistory(v: LifestyleHistory): void;
@@ -618,6 +622,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [medications, setMedications] = useState<string[]>([]);
   const [medicationsText, setMedicationsText] = useState('');
   const [allergies, setAllergies] = useState('');
+  const [supplementHistory, setSupplementHistoryState] = useState<SupplementHistory>(EMPTY_SUPPLEMENT_HISTORY);
+  /** True once the clinician edits the history in this session (then it is saved, never overwritten by a load). */
+  const supplementDirtyRef = useRef(false);
+  const setSupplementHistory = useCallback((v: SupplementHistory) => {
+    supplementDirtyRef.current = true;
+    setSupplementHistoryState(v);
+  }, []);
   const [toxicHabits, setToxicHabits] = useState<string[]>([]);
   const [lifestyleHistory, setLifestyleHistoryState] = useState<LifestyleHistory>(emptyLifestyleHistory);
   const [lifestyleStorageAvailable, setLifestyleStorageAvailable] = useState<boolean | null>(null);
@@ -931,6 +942,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.medications)) setMedications(d.medications as string[]);
       if (typeof d.medicationsText === 'string') setMedicationsText(d.medicationsText);
       if (typeof d.allergies === 'string') setAllergies(d.allergies);
+      if (d.supplementHistory && typeof d.supplementHistory === 'object') setSupplementHistoryState(normaliseSupplementHistory(d.supplementHistory));
       if (Array.isArray(d.pendingPrescriptions)) setPendingPrescriptions(d.pendingPrescriptions as ProtocolMedication[]);
       if (Array.isArray(d.familyHistory)) setFamilyHistory(d.familyHistory as string[]);
       if (typeof d.familyHistoryNotes === 'string') setFamilyHistoryNotes(d.familyHistoryNotes as string);
@@ -1065,6 +1077,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes, recentSurgeryDate,
       medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, lifestyleHistory, hpiNotes,
+      supplementHistory,
       pendingPrescriptions,
       patientId, encounterId,
       patientName, age, sex, dob, phone, email, address, quarter, referredBy,
@@ -1090,6 +1103,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes, recentSurgeryDate,
     medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, lifestyleHistory, hpiNotes,
+    supplementHistory,
     pendingPrescriptions,
     patientId, encounterId,
     patientName, age, sex, dob, phone, email, address, quarter, referredBy,
@@ -1122,6 +1136,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // ── Timer refs for autosave debouncing (hoisted so clearPatient can cancel them) ─
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const supplementTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const surgicalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toxicTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1191,6 +1206,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     saveEpoch.current++;
     if (autoSaveTimerRef.current) { clearTimeout(autoSaveTimerRef.current); autoSaveTimerRef.current = null; }
     if (allergyTimerRef.current) { clearTimeout(allergyTimerRef.current); allergyTimerRef.current = null; }
+    if (supplementTimerRef.current) { clearTimeout(supplementTimerRef.current); supplementTimerRef.current = null; }
     if (examTimerRef.current) { clearTimeout(examTimerRef.current); examTimerRef.current = null; }
     if (surgicalTimerRef.current) { clearTimeout(surgicalTimerRef.current); surgicalTimerRef.current = null; }
     if (toxicTimerRef.current) { clearTimeout(toxicTimerRef.current); toxicTimerRef.current = null; }
@@ -1215,6 +1231,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber('');
     setMrNumber(''); setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
     lifestyleDirtyRef.current = false; setLifestyleHistoryState(emptyLifestyleHistory()); setLifestyleStorageAvailable(null);
+    setSupplementHistoryState(EMPTY_SUPPLEMENT_HISTORY); supplementDirtyRef.current = false;
     setProblems([]);
     try {
       localStorage.removeItem(ENC_KEY);
@@ -1401,6 +1418,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return () => { if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, allergies]);
+
+  // ── Supplements: load the patient's stored history (unless edited here), autosave edits ─
+  // Patient-level, shared with iOS through patients.pathway_data_json (lib/supplement-store.ts).
+  useEffect(() => {
+    if (!patientId) return;
+    let cancelled = false;
+    void loadSupplementHistory(patientId).then(({ history }) => {
+      if (!cancelled && history && !supplementDirtyRef.current) setSupplementHistoryState(history);
+    });
+    return () => { cancelled = true; };
+  }, [patientId]);
+
+  useEffect(() => {
+    if (!patientId || !supplementDirtyRef.current) return;
+    if (supplementTimerRef.current) clearTimeout(supplementTimerRef.current);
+    supplementTimerRef.current = setTimeout(() => {
+      supplementTimerRef.current = null;
+      void trackedSave(() => saveSupplementHistory(patientId, supplementHistory),
+        { entityType: 'supplements', entityId: patientId, payload: { patientId, history: supplementHistory } });
+    }, 2000);
+    return () => { if (supplementTimerRef.current) clearTimeout(supplementTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, supplementHistory]);
 
   // ── Autosave examination findings (debounced 3 s) ─────────────────────────
   useEffect(() => {
@@ -1629,6 +1669,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText),
         { entityType: 'medications', entityId: encounterId, payload: { patientId, encounterId, chipMeds: medications, freeText: medicationsText } });
     }
+    if (supplementTimerRef.current && patientId) {
+      clearTimeout(supplementTimerRef.current);
+      supplementTimerRef.current = null;
+      void trackedSave(() => saveSupplementHistory(patientId, supplementHistory),
+        { entityType: 'supplements', entityId: patientId, payload: { patientId, history: supplementHistory } });
+    }
     if (allergyTimerRef.current && patientId) {
       clearTimeout(allergyTimerRef.current);
       allergyTimerRef.current = null;
@@ -1730,7 +1776,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan,
     assessmentUpdatedAt, planUpdatedAt,
     triageResult.acuity, triageResult.score, medications, medicationsText,
-    allergies, examFindings, examNotes, surgicalHistory, surgicalNotes,
+    allergies, supplementHistory, examFindings, examNotes, surgicalHistory, surgicalNotes,
     toxicHabits, lifestyleHistory, rosFindings, procedureData, traumaData,
     hpiNotes, pmhNotes, familyHistoryNotes, orderedInvestigations, encounterType, encounterMode,
     ward, dateAdmission, dateDischarge, admittingSurgeon, referringPhysician,
@@ -1744,7 +1790,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Track whether any debounce timer is pending (for beforeunload confirmation)
   const hasPendingTimers = useCallback(() =>
-    !!(autoSaveTimerRef.current || allergyTimerRef.current || examTimerRef.current ||
+    !!(autoSaveTimerRef.current || allergyTimerRef.current || supplementTimerRef.current || examTimerRef.current ||
        surgicalTimerRef.current || toxicTimerRef.current || lifestyleTimerRef.current || rosTimerRef.current ||
        procedureTimerRef.current || traumaTimerRef.current ||
        hpiTimerRef.current || pmhTimerRef.current || investigationTimerRef.current ||
@@ -1851,6 +1897,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     medications, toggleMedication, setMedications,
     medicationsText, setMedicationsText,
     allergies, setAllergies,
+    supplementHistory, setSupplementHistory,
     toxicHabits, setToxicHabits, toggleToxicHabit,
     lifestyleHistory, setLifestyleHistory, lifestyleStorageAvailable,
     occupation, setOccupation,

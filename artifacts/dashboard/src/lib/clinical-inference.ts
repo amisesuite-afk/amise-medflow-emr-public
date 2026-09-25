@@ -12,6 +12,8 @@ import {
   EMERGENCY_REDIRECT, type EmergencyAssessment, type RecognisedEmergency,
 } from '@workspace/triage-engine';
 import { computePreventivePrompts } from './preventive-screening-prompts';
+import { computeSupplementPrompts, type SupplementPrompt } from './supplement-prompts';
+import { EMPTY_SUPPLEMENT_HISTORY, type SupplementHistory } from './supplement-catalogue';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -85,6 +87,8 @@ export interface InferenceInput {
   postOpDays?: number | null;
   /** Other examination text (skin, wound, other) not covered by the named fields. */
   examOther?: string;
+  /** "Herbs, teas, bush remedies & supplements" history (supplement-prompts.ts). */
+  supplementHistory?: SupplementHistory;
 }
 
 // ── Pattern helpers ────────────────────────────────────────────────────────────
@@ -190,7 +194,33 @@ function emergencyPrompt(e: RecognisedEmergency): ClinicalPrompt {
   };
 }
 
-const PAEDIATRIC_DOSE_NOTE = 'weight-based dose — calculate per BNFc';
+/** A supplement alert / "ask about" prompt as a clinical prompt (every action needs a clinician tap). */
+function supplementClinicalPrompt(sp: SupplementPrompt): ClinicalPrompt {
+  const periop = sp.id.startsWith('periop_');
+  const safety = periop || sp.id === 'not_asked' || sp.id === 'ashwagandha_avoid';
+  const actions: ClinicalAction[] = periop
+    ? [{ step: 1, text: 'Discuss with the patient; the clinician decides whether it is stopped (nothing is stopped automatically)', addToPlan: `• ${sp.detail} Clinician to confirm.` }]
+    : sp.id === 'not_asked'
+      ? [{ step: 1, text: 'Ask the question and record the answer under Medications → Herbs, teas, bush remedies & supplements' }]
+      : sp.id === 'lead'
+        ? [
+            { step: 1, text: 'Ask about Ayurvedic (rasa shastra) preparations and turmeric products', addToPlan: '• Herbal / Ayurvedic product history taken (heavy-metal risk).' },
+            { step: 2, text: 'Consider a blood lead level', addToInvestigations: 'Blood lead level' },
+          ]
+        : [{ step: 1, text: sp.title.split(' — ').pop() ?? sp.title, addToPlan: `• ${sp.title}: asked.` }];
+  return {
+    id: `supplement_${sp.id}`,
+    type: safety ? 'safety' : 'investigation',
+    urgency: sp.level === 'high' || sp.level === 'moderate' ? 'priority' : 'routine',
+    icon: '🌿',
+    finding: sp.title,
+    text: sp.title,
+    rationale: sp.detail,
+    actions,
+  };
+}
+
+const PAEDIATRIC_DOSE_NOTE ='weight-based dose — calculate per BNFc';
 
 /**
  * Under-16s never see an adult dose (owner-approved default, 2026-09-25; BNFc): a fixed dose or
@@ -2340,6 +2370,26 @@ POST-OPERATIVE ORDERS:
       a.text = fix(a.text) ?? a.text;
       a.addToPlan = fix(a.addToPlan);
     }
+  }
+
+  // ── Herbs, teas, bush remedies & supplements (owner's evidence briefing §5 / §7) ──
+  // Perioperative alert per recorded product, the mandatory pre-procedure question, and the
+  // "ask about" prompts (supplement-prompts.ts; iOS twin SupplementAlerts.swift). Display and
+  // suggestion only: the clinician decides whether anything is stopped.
+  for (const sp of computeSupplementPrompts({
+    history: input.supplementHistory ?? EMPTY_SUPPLEMENT_HISTORY,
+    preOp: isPreOp,
+    clinicalText: [
+      ...comorbidities, input.historyText ?? '', ...ccEntries.map(e => e.complaint), ...symptoms,
+      assessment ?? '', examGeneral, examAbdomen, input.examNeuro ?? '', input.examOther ?? '', examExtremities,
+    ].filter(Boolean).join('.\n'),
+    conditionsText: [...comorbidities, assessment ?? ''].filter(Boolean).join('.\n'),
+    sex,
+    pregnant,
+    labs: investigationResults,
+    temperatureC: numVital(vitals, 'temperatureC'),
+  })) {
+    add(supplementClinicalPrompt(sp));
   }
 
   // ── Sort: urgent first → priority → routine; within tier: safety > investigation > preventative ──

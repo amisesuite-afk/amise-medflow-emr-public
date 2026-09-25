@@ -15,17 +15,21 @@ const PARTIAL_LIST_NOTE =
 interface Props {
   medications: string[];
   medicationsText: string;
+  /** Recorded herbs / supplements (supplementInteractionEntries): screened like drugs. */
+  supplements?: string[];
 }
 
 function withClass(entry: string, viaClass?: string) {
   return viaClass ? `${entry} (${viaClass})` : entry;
 }
 
-export default function DrugInteractionAlert({ medications, medicationsText }: Props) {
+const NO_SUPPLEMENTS: string[] = [];
+
+export default function DrugInteractionAlert({ medications, medicationsText, supplements = NO_SUPPLEMENTS }: Props) {
   const allMeds = useMemo(() => {
     const fromText = medicationsText.split(/[\n,;]+/).map(m => m.trim()).filter(Boolean);
-    return [...medications, ...fromText];
-  }, [medications, medicationsText]);
+    return [...medications, ...fromText, ...supplements];
+  }, [medications, medicationsText, supplements]);
 
   const hits = useMemo(() => checkInteractions(allMeds), [allMeds]);
 

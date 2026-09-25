@@ -62,6 +62,7 @@ export default function ClinicalPromptsStrip() {
     vitals, assessment,
     patientName,
     freeText, hpiNotes, surgicalHistory, allergies, icdCodes, workingDiagnosis, isPostOp, postOpDays, examWound,
+    supplementHistory,
   } = useAppContext();
 
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
@@ -93,6 +94,7 @@ export default function ClinicalPromptsStrip() {
     isPostOp,
     postOpDays: postOpDays.trim() && Number.isFinite(Number(postOpDays)) ? Number(postOpDays) : null,
     examOther: examWound,
+    supplementHistory,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [age, sex, symptoms.join(), comorbidities.join(), familyHistory.join(),
        toxicHabits.join(), medications.join(), medicationsText, pregnancyPossible,
@@ -105,7 +107,7 @@ export default function ClinicalPromptsStrip() {
        JSON.stringify(radiologyRequests.map(r => r.resultNotes + r.resultReceived)),
        // eslint-disable-next-line react-hooks/exhaustive-deps
        JSON.stringify(vitals), assessment,
-       freeText, hpiNotes, surgicalHistory.join(), allergies, icdCodes.join(), workingDiagnosis?.icdCode, isPostOp, postOpDays, examWound]);
+       freeText, hpiNotes, surgicalHistory.join(), allergies, icdCodes.join(), workingDiagnosis?.icdCode, isPostOp, postOpDays, examWound, supplementHistory]);
 
   const activePrompts = allPrompts.filter(p => !dismissed.has(p.id) && !confirmed.has(p.id));
   const actionableCount = activePrompts.filter(p => p.urgency !== 'routine').length;

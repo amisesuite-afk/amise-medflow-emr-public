@@ -4,6 +4,8 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
 import NarrativeInput from '@/components/NarrativeInput';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
+import SupplementHistoryCard from '@/components/SupplementHistoryCard';
+import { supplementInteractionEntries } from '@/lib/supplement-catalogue';
 import AllergyMedAlert from '@/components/AllergyMedAlert';
 import AiInteractionCheck from '@/components/AiInteractionCheck';
 import MedicationReconciliationCard from '@/components/MedicationReconciliationCard';
@@ -27,7 +29,8 @@ const MEDICATION_OPTIONS = [
 ];
 
 export default function MedicationsTab() {
-  const { medications, toggleMedication, medicationsText, setMedicationsText, allergies } = useAppContext();
+  const { medications, toggleMedication, medicationsText, setMedicationsText, allergies, supplementHistory } = useAppContext();
+  const supplementEntries = useMemo(() => supplementInteractionEntries(supplementHistory), [supplementHistory]);
 
   function handleMedsParsed(data: Record<string, unknown>) {
     const matched = (data.matched as string[] | undefined) ?? [];
@@ -55,7 +58,7 @@ export default function MedicationsTab() {
       />
 
       <AllergyMedAlert allergies={allergies} medications={medications} medicationsText={medicationsText} />
-      <DrugInteractionAlert medications={medications} medicationsText={medicationsText} />
+      <DrugInteractionAlert medications={medications} medicationsText={medicationsText} supplements={supplementEntries} />
       <AiInteractionCheck drugs={aiCheckDrugs} />
       <CollapsibleCard title="Current medications" badge={medications.length || undefined}>
         <ChipGroup options={MEDICATION_OPTIONS} selected={medications} onToggle={toggleMedication} />
@@ -72,6 +75,7 @@ export default function MedicationsTab() {
           />
         </div>
       </CollapsibleCard>
+      <SupplementHistoryCard />
       <MedicationReconciliationCard />
     </div>
   );

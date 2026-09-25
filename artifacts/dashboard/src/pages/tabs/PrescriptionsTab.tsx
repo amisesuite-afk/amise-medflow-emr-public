@@ -6,6 +6,7 @@ import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import AllergyMedAlert from '@/components/AllergyMedAlert';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
+import { supplementInteractionEntries } from '@/lib/supplement-catalogue';
 import AiInteractionCheck from '@/components/AiInteractionCheck';
 import { searchMedications } from '@workspace/triage-engine';
 import { adaptProtocolForPatient } from '@workspace/pane-engine';
@@ -468,7 +469,8 @@ export default function PrescriptionsTab() {
     <div className="gap-y">
 
       <AllergyMedAlert allergies={ctx.allergies} medications={allMedsForSafetyCheck} medicationsText={ctx.medicationsText} />
-      <DrugInteractionAlert medications={allMedsForSafetyCheck} medicationsText={ctx.medicationsText} />
+      <DrugInteractionAlert medications={allMedsForSafetyCheck} medicationsText={ctx.medicationsText}
+        supplements={supplementInteractionEntries(ctx.supplementHistory)} />
 
       {/* ── Prescribe New ── */}
       <CollapsibleCard title="Prescribe new medication" badge={rxItems.length || undefined}>

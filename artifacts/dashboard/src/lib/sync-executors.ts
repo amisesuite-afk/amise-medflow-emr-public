@@ -25,6 +25,8 @@ import {
 } from './db';
 import { saveLifestyleHistory } from './lifestyle-history-db';
 import { parseLifestyleHistory } from '@workspace/triage-engine/lifestyle-practices';
+import { saveSupplementHistory } from './supplement-store';
+import { normaliseSupplementHistory } from './supplement-catalogue';
 
 function payloadOf<T>(entry: OutboxEntry): T {
   return entry.payload as unknown as T;
@@ -52,6 +54,12 @@ registerExecutor('plan', async (entry) => {
 registerExecutor('medications', async (entry) => {
   const p = payloadOf<{ patientId: string; encounterId: string; chipMeds: string[]; freeText: string }>(entry);
   const { error } = await syncMedicationList(p.patientId, p.encounterId, p.chipMeds, p.freeText);
+  if (error) throw new Error(error);
+});
+
+registerExecutor('supplements', async (entry) => {
+  const p = payloadOf<{ patientId: string; history: unknown }>(entry);
+  const { error } = await saveSupplementHistory(p.patientId, normaliseSupplementHistory(p.history));
   if (error) throw new Error(error);
 });
 
