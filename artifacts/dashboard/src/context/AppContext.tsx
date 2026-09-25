@@ -10,6 +10,13 @@ import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, getLatestClosedEncounter, type EncounterSummary } from '@/lib/db';
 import { switchEncounter, type EncounterSwitchResult, type EncounterSwitchTarget } from '@/lib/encounter-switch';
+import { loadEncounterData, type EncounterData } from '@/lib/db';
+import {
+  createAutosaveGuard, resetGuard, clearSections, beginLoad, finishLoad, checkAutosave,
+  fingerprint, sectionValueFromState, sectionValueFromPayload, isReadOnlyEncounterStatus,
+  ALL_SAVE_SECTIONS, ENCOUNTER_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS, ENTITY_TYPE_SECTION,
+  type SaveSection, type SectionState,
+} from '@/lib/autosave-guard';
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 import { scoreDiagnosis } from '@/lib/diagnosis-proc-mapper';
@@ -326,6 +333,25 @@ interface CtxValue {
    * Never call setEncounterId() alone to switch encounters. See lib/encounter-switch.ts.
    */
   beginEncounter(target: EncounterSwitchTarget, apply?: () => void): EncounterSwitchResult;
+
+  // ── Loading a stored record (lib/autosave-guard.ts) ──
+  /** Autosave pauses until the record has loaded. Call right after clearPatient(); returns the load token. */
+  beginRecordLoad(): number;
+  /** Ends load `token` with nothing loaded (demo mode, or the load was abandoned). */
+  endRecordLoad(token: number): void;
+  /** Loads standing history and (with an id) the encounter, applies what loaded, ends the load. */
+  loadRecordIntoContext(token: number, patientId: string, encounterId: string | null): Promise<{ failed: SaveSection[]; error: string | null }>;
+  /** For beginEncounter(target, apply): puts a stored encounter's own sections into state. */
+  applyStoredEncounter(d: EncounterData): void;
+  /** Sections whose read failed: shown as "Couldn't load — retry"; not autosaved until edited or reloaded. */
+  notLoadedSections: SaveSection[];
+  /** A record load is in progress (nothing is autosaved). */
+  recordLoading: boolean;
+  retryNotLoaded(): Promise<void>;
+  /** The encounter is closed / cancelled: its sections are read-only (not autosaved) until reopened. */
+  encounterReadOnly: boolean;
+  /** Sends pending autosaves now and waits for in-flight ones (call before closing the encounter). */
+  flushAutosaves(): Promise<void>;
 
   examGeneral: string; setExamGeneral(v: string): void;
   examCardio: string; setExamCardio(v: string): void;
@@ -814,6 +840,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Sync status from the IndexedDB outbox (surfaced to the sync indicator)
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced');
 
+  // ── Autosave guard (lib/autosave-guard.ts) ────────────────────────────────
+  // No autosave while a record loads; none into a closed / cancelled encounter; and a section
+  // whose value is still what was loaded (or whose read FAILED — "not loaded") is not written
+  // until the clinician changes it or a retry loads it. Checked in trackedSave when a debounced
+  // save fires (and when the page-hide / switch flush sends it), so every autosave path is covered.
+  const guardRef = useRef(createAutosaveGuard());
+  const encounterIdRef = useRef<string | null>(null);
+  encounterIdRef.current = encounterId;
+  const readOnlyRef = useRef(false);
+  readOnlyRef.current = isReadOnlyEncounterStatus(encounterStatus);
+  const [notLoadedSections, setNotLoadedSections] = useState<SaveSection[]>([]);
+  const [recordLoading, setRecordLoading] = useState(false);
+  const syncGuardState = useCallback(() => {
+    const g = guardRef.current;
+    setNotLoadedSections(ALL_SAVE_SECTIONS.filter(s => g.notLoaded.has(s)));
+    setRecordLoading(g.hydrating);
+  }, []);
+  /** May this autosave be written now? Also unblocks a section on the clinician's first edit. */
+  const autosaveAllowed = useCallback((descriptor: { entityType: string; entityId: string; payload: Record<string, unknown> }): boolean => {
+    const section = ENTITY_TYPE_SECTION[descriptor.entityType];
+    if (!section) return true;
+    const decision = checkAutosave(guardRef.current, {
+      section,
+      fingerprint: fingerprint(sectionValueFromPayload(descriptor.entityType, descriptor.payload)),
+      readOnly: readOnlyRef.current && descriptor.entityId === encounterIdRef.current,
+    });
+    if (decision.allow && decision.unblocked) syncGuardState();
+    return decision.allow;
+  }, [syncGuardState]);
+
   const trackedSave = useCallback(async <T,>(
     fn: () => Promise<T>,
     /**
@@ -827,6 +883,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
      */
     descriptor?: { entityType: string; entityId: string; payload: Record<string, unknown> },
   ): Promise<T | undefined> => {
+    // Not written (and not queued): the record is loading, the encounter is closed, or the
+    // section still holds what was loaded / a failed read's placeholder.
+    if (descriptor && !autosaveAllowed(descriptor)) return undefined;
     const epoch = saveEpoch.current;
     pendingSaves.current++;
     _setSaveStatus('saving');
@@ -868,7 +927,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       return undefined;
     }
-  }, []);
+  }, [autosaveAllowed]);
 
   // Flush the IndexedDB outbox when the browser regains connectivity.
   // We keep direct closure retry for in-session closures (faster), and the
@@ -1193,6 +1252,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       invalidateInFlightSaves: () => { saveEpoch.current++; },
       resetEncounterState,
       setEncounter: t => {
+        // The other encounter's sections have no loaded values yet (a stored encounter's are
+        // marked by applyStoredEncounter() in `apply`, right after this).
+        clearSections(guardRef.current, ENCOUNTER_SAVE_SECTIONS);
+        syncGuardState();
         setEncounterId(t.encounterId);
         setEncounterStatus(t.status);
         setEncounterClosedAt(t.closedAt);
@@ -1233,12 +1296,177 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     lifestyleDirtyRef.current = false; setLifestyleHistoryState(emptyLifestyleHistory()); setLifestyleStorageAvailable(null);
     setSupplementHistoryState(EMPTY_SUPPLEMENT_HISTORY); supplementDirtyRef.current = false;
     setProblems([]);
+    // A load still running for the previous patient is abandoned (its token no longer matches).
+    resetGuard(guardRef.current);
+    pendingFinishRef.current = null;
+    syncGuardState();
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
       localStorage.removeItem('amise-patient-photo-v1');
       localStorage.removeItem('amise-exam-photos-v1');
     } catch { /* ignore */ }
+  }
+
+  // ── Loading a stored record into the consultation ─────────────────────────
+  // Every loader goes through here, so a failed read is marked "not loaded" (never applied as an
+  // empty value) and each loaded section gets its baseline (lib/autosave-guard.ts).
+
+  // A finished load, waiting for its data to be in state: the baseline is taken by the effect
+  // below, in the commit that applied the data (before any debounced save can fire).
+  const pendingFinishRef = useRef<{ token: number; loaded: SaveSection[]; failed: SaveSection[] } | null>(null);
+  const [guardEpoch, setGuardEpoch] = useState(0);
+
+  function markRecordLoaded(token: number, loaded: readonly SaveSection[], failed: readonly SaveSection[]) {
+    const failedSet = new Set(failed);
+    pendingFinishRef.current = { token, loaded: [...loaded], failed: loaded.filter(s => failedSet.has(s)) };
+    setGuardEpoch(e => e + 1);
+  }
+
+  const sectionState = (): SectionState => ({
+    assessment, differentials, icdCodes, cptCodes, plan, medications, medicationsText,
+    examFindings, examNotes, rosFindings, procedureData, traumaData, hpiNotes, orderedInvestigations,
+    dbEncounterType: toDbEncounterType(encounterType, encounterMode),
+    inpatient: { ward, dateAdmission, dateDischarge, admittingSurgeon, referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber },
+    clinicalScores, extractedLabs, allergies, surgicalHistory, surgicalNotes, recentSurgeryDate,
+    toxicHabits, pmhNotes, familyHistoryNotes,
+  });
+
+  useEffect(() => {
+    const p = pendingFinishRef.current;
+    if (!p) return;
+    pendingFinishRef.current = null;
+    const s = sectionState();
+    const fps: Partial<Record<SaveSection, string>> = {};
+    for (const sec of p.loaded) fps[sec] = fingerprint(sectionValueFromState(sec, s));
+    finishLoad(guardRef.current, p.token, p.loaded, p.failed, fps);
+    syncGuardState();
+  // Runs once per markRecordLoaded(), after the loaded data is in state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guardEpoch]);
+
+  /**
+   * Puts loaded data into state, section by section. A failed section is left as it is (empty
+   * after clearPatient / a switch) — never set from the empty placeholder. `patientSections`
+   * false leaves the standing history alone (another encounter of the same patient).
+   */
+  function applyEncounterData(d: EncounterData, opts: { patientSections: boolean; only?: ReadonlySet<SaveSection> }) {
+    const failed = new Set(d.failedSections);
+    const use = (s: SaveSection) => d.loadedSections.includes(s) && !failed.has(s)
+      && (opts.patientSections || !PATIENT_SAVE_SECTIONS.includes(s)) && (!opts.only || opts.only.has(s));
+    if (use('assessment')) {
+      setAssessment(d.assessment); setDifferentials(d.differentials); setIcdCodes(d.icdCodes);
+      setAssessmentUpdatedAt(d.assessmentUpdatedAt);
+    }
+    if (use('plan')) { setPlan(d.plan); setPlanUpdatedAt(d.planUpdatedAt); }
+    if (use('medications')) { setMedications(d.medications); setMedicationsText(d.medicationsFreeText); }
+    if (use('hpi')) {
+      setHpiNotes(d.hpiNotes);
+      // A stored HPI that the clinician then empties is a clearing (deletes the draft).
+      hpiSavedRef.current = !!d.hpiNotes.trim();
+    }
+    if (use('exam')) { setExamFindings(d.examFindings); setExamNotes(d.examNotes); }
+    if (use('investigations')) setOrderedInvestigations(d.orderedInvestigations);
+    if (use('ros')) setRosFindings(d.rosFindings as Record<string, RosFinding>);
+    if (use('procedure_data')) setProcedureData(d.procedureData);
+    if (use('trauma')) setTraumaData(d.traumaData ?? EMPTY_TRAUMA_DATA);
+    if (use('clinical_scores')) { setClinicalScores(d.clinicalScores); setExtractedLabs(d.extractedLabs); }
+    if (use('inpatient') && d.inpatientDetails) {
+      const ip = d.inpatientDetails;
+      const str = (k: string) => (typeof ip[k] === 'string' ? ip[k] as string : undefined);
+      setInpatientAdmin(prev => ({
+        ...prev,
+        ward: str('ward') ?? prev.ward, dateAdmission: str('dateAdmission') ?? prev.dateAdmission,
+        dateDischarge: str('dateDischarge') ?? prev.dateDischarge,
+        admittingSurgeon: str('admittingSurgeon') ?? prev.admittingSurgeon,
+        referringPhysician: str('referringPhysician') ?? prev.referringPhysician,
+        nokName: str('nokName') ?? prev.nokName, nokRelation: str('nokRelation') ?? prev.nokRelation,
+        nokTel: str('nokTel') ?? prev.nokTel, bloodGroup: str('bloodGroup') ?? prev.bloodGroup,
+        mrNumber: str('mrNumber') ?? prev.mrNumber,
+      }));
+    }
+    if (use('allergies')) setAllergies(d.allergens.join(', '));
+    if (use('surgical_history')) {
+      setSurgicalHistory(d.surgicalHistory); setSurgicalNotes(d.surgicalNotes); setRecentSurgeryDate(d.recentSurgeryDate);
+    }
+    if (use('toxic_habits')) setToxicHabits(d.toxicHabits);
+    if (use('pmh_notes')) { setPmhNotes(d.pmhNotes); setFamilyHistoryNotes(d.familyHistoryNotes); }
+  }
+
+  /** Autosave pauses until the record has loaded. Call right after clearPatient(). */
+  function beginRecordLoad(): number {
+    const token = beginLoad(guardRef.current);
+    syncGuardState();
+    return token;
+  }
+
+  /** The load `token` ends with nothing loaded (demo mode, or the caller gave up). */
+  function endRecordLoad(token: number) {
+    markRecordLoaded(token, [], []);
+  }
+
+  /**
+   * Loads the patient's standing history and (when `encounterId` is given) that encounter into
+   * state, then ends the load `token`. Nothing is applied when the patient or encounter changed
+   * meanwhile. Returns the sections that could not be loaded.
+   */
+  async function loadRecordIntoContext(token: number, patientIdVal: string, encounterIdVal: string | null): Promise<{ failed: SaveSection[]; error: string | null }> {
+    const expected: SaveSection[] = encounterIdVal ? [...ALL_SAVE_SECTIONS] : [...PATIENT_SAVE_SECTIONS];
+    let r: Awaited<ReturnType<typeof loadEncounterData>>;
+    try {
+      r = await loadEncounterData(encounterIdVal, patientIdVal);
+    } catch (e) {
+      r = { data: null, error: e instanceof Error ? e.message : 'Load failed' };
+    }
+    if (guardRef.current.loadToken !== token) return { failed: [], error: 'superseded' };
+    if (patientIdRef.current !== patientIdVal || (encounterIdVal && encounterIdRef.current !== encounterIdVal)) {
+      // Moved on without clearPatient(): apply nothing, but do not leave autosave paused.
+      markRecordLoaded(token, [], []);
+      return { failed: [], error: 'superseded' };
+    }
+    if (r.error || !r.data) {
+      markRecordLoaded(token, expected, expected);
+      return { failed: expected, error: r.error ?? 'Load failed' };
+    }
+    applyEncounterData(r.data, { patientSections: true });
+    markRecordLoaded(token, r.data.loadedSections, r.data.failedSections);
+    return { failed: r.data.failedSections, error: null };
+  }
+
+  /** Inside beginEncounter(target, apply): the stored encounter's own sections, loaded. */
+  function applyStoredEncounter(d: EncounterData) {
+    const token = beginLoad(guardRef.current);
+    applyEncounterData(d, { patientSections: false });
+    const loaded = d.loadedSections.filter(s => ENCOUNTER_SAVE_SECTIONS.includes(s));
+    markRecordLoaded(token, loaded, d.failedSections);
+  }
+
+  /** "Couldn't load — retry": reads again and fills in the sections that still hold nothing. */
+  async function retryNotLoaded(): Promise<void> {
+    const pid = patientIdRef.current;
+    const eid = encounterIdRef.current;
+    const g = guardRef.current;
+    if (!pid || g.notLoaded.size === 0) return;
+    const token = g.loadToken;
+    let r: Awaited<ReturnType<typeof loadEncounterData>>;
+    try { r = await loadEncounterData(eid, pid); } catch { return; }
+    if (g !== guardRef.current || token !== g.loadToken || pid !== patientIdRef.current || eid !== encounterIdRef.current) return;
+    if (!r.data) return;
+    const d = r.data;
+    // Sections the clinician has edited since are no longer "not loaded" and are left alone.
+    const nowLoaded = [...g.notLoaded].filter(s => d.loadedSections.includes(s) && !d.failedSections.includes(s));
+    if (!nowLoaded.length) return;
+    applyEncounterData(d, { patientSections: true, only: new Set(nowLoaded) });
+    markRecordLoaded(token, nowLoaded, []);
+  }
+
+  /** Sends pending autosaves now and waits (up to 7 s) for in-flight ones — before closing. */
+  async function flushAutosaves(): Promise<void> {
+    flushRef.current();
+    const deadline = Date.now() + 7_000;
+    while (pendingSaves.current > 0 && Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, 100));
+    }
   }
 
   const triageInput: AdaptiveTriageInput = useMemo(() => ({
@@ -1904,6 +2132,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     hpiNotes, setHpiNotes,
     clearPatient,
     beginEncounter,
+    beginRecordLoad, endRecordLoad, loadRecordIntoContext, applyStoredEncounter,
+    notLoadedSections, recordLoading, retryNotLoaded,
+    encounterReadOnly: isReadOnlyEncounterStatus(encounterStatus),
+    flushAutosaves,
     examGeneral, setExamGeneral,
     examCardio, setExamCardio,
     examResp, setExamResp,
