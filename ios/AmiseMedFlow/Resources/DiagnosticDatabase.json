@@ -132025,7 +132025,7 @@
             },
             {
               "key": "finding",
-              "value": "wall thicken|pericholecystic|sonographic murphy|distended gallbladder|cholecystitis",
+              "value": "gallbladder wall thicken|gallbladder&wall thicken|wall thickened&pericholecystic|pericholecystic|sonographic murphy|distended gallbladder|cholecystitis",
               "logLR": 12,
               "likelihoodRatio": 10,
               "evidenceLabel": "Ultrasound signs of cholecystitis",
