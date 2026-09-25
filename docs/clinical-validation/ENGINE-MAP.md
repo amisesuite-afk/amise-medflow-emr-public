@@ -1,0 +1,126 @@
+# Consultation decision pipeline — engine map
+
+Phase 0 of the clinical validation work. This file records which engine the consultation calls at
+each step, what it reads from the record, what it produces, and which output is authoritative for
+each clinical question. The vignette harnesses (`ios/AmiseMedFlowTests/ClinicalValidation/`,
+`scripts/src/clinval/`) call exactly these functions. Read-only: nothing here changes an engine.
+
+Mapped at `claude/pr-37-gbg22z` 499a886 (2026-09-25).
+
+## iOS (primary app)
+
+`ConsultationView` (`ios/AmiseMedFlow/Views/Consultation/`) drives everything. Order of calls in a
+new consultation:
+
+| # | Trigger (view code) | Engine · entry function | Reads (Patient / view state) | Produces | Shown as |
+|---|---|---|---|---|---|
+| 1 | `handleAppear` | `ConsultPathway.from(visitType) ?? ConsultPathway.recommend(for:)` (`Services/ConsultPathway.swift`) | `chiefComplaint` (burn/trauma/check-up words), `visitType`, `setting`, `ward`, `operationDate`, completed `encounters` | `Recommendation { pathway, reasons }`: firstVisit, followUp, wardReview, procedure, trauma, burns, wellness | First-door sheet; step order of the tab bar |
+| 1 | Risk step (`RiskSnapshotCard`) | `VisitRiskAssessment.assess(_:pathway:)` | latest `vitalsEntries` (NEWS2), `acuity`, `dateOfBirth`, `allergies`, `prescriptions` (anticoagulants, diabetes drugs), `pmhEntries`/`pmhNotes`, BMI, `socialHistory`, `postOpDays`, stored scores (ASA, RCRI, STOP-BANG, Caprini, CFS, MUST, qSOFA, HAS-BLED, GCS, eGFR) | `[RiskFlag]` (info / moderate / high) | Risk snapshot card |
+| 1 | Always | Allergy banner (`ConsultationView+Banners.allergyBanner`) | `allergies` | Red "ALLERGY ALERT" banner (also shows the NKDA marker) | Top of the consultation |
+| 2 | `onChange(chiefComplaint)` | `BayesianDiagnosisEngine.infer(chiefComplaint:socratesSelections: [:], pmhNotes:, surgicalHistory:, …, ageYears:, sex:, specialtyHint:)` | CC, PMH/PSHx entries, age, sex | Early differential, `prefix(4)` | CC tab |
+| 2 | CC debounce 0.8 s → `runPathway()` | `ClinicalPathwayEngine.assess(chiefComplaint:pmh:)` (`Services/ClinicalPathwayEngine.swift`) | CC text and PMH text **only** (keyword lists) | `TriageResult { suggestedAcuity, redFlags, pathway, differentials }` — `ConsultationView+Sheets` sets `patient.acuity` to it only when it is more urgent (`Acuity` raw value lower), so it can escalate but never de-escalate | CC tab triage card; `acuity` |
+| 3 | `onChange(hpi / examGeneral / examAbdo / investigationsJson)`, Diagnosis tab | `refreshBayesian()` → `ClinicalTextParser.parse(hpi:examGeneral:examAbdo:examOther:notes:)` | HPI, exam text, resulted investigations as "name: result" | `featureAugments` (SOCRATES-keyed chips), `clinicalAlarms` (FAST, thunderclap, sepsis, ruptured AAA, NF, limb ischaemia, UGI bleed, torsion, meningism, obstruction + peritonism, haemodynamic instability, dissection, pneumoperitoneum, malignancy), `ccHint` | Red/orange alarm banner |
+| 3 | same | `BayesianDiagnosisEngine.infer(…)` with augmented SOCRATES, all exam fields, investigations, vitals (HR, SBP, T, SpO₂, RR, NEWS2), longitudinal context | See left; routes by CC keyword + investigation names/results appended to the CC | `[DiagnosisResult]` top 5 (name, ICD, displayed %, confidence from log-gap, urgency) | Diagnosis tab "Suggested Differentials" (tap = working diagnosis) |
+| 4 | `handleAppear` + debounced changes | `ClinicalPipelineOrchestrator.runNow/schedule` → `SequentialDiagnosisEngine.seed` (itself `BayesianDiagnosisEngine.infer` with vitals/lab-augmented CC) → `DynamicBayesianNetwork.trajectories` → `ClinicalChangePointDetector.detect` → `BayesianDecisionEngine.decide` (+ `ManagementEngine`) → `ValueOfInformationEngine.rank` → `AutoFunctionEngine.generate` | Whole record via `PatientStateVector.from(patient:)`, SOCRATES selections | `hypotheses`, `trajectories`, `decisions` (priority, actions, investigations, disposition), `informationItems` (EVPI), `autoActions` (ask/order/calculate/document/compare/alert/schedule/prepare) | Diagnosis tab: Clinical Actions (prefix 6, filtered by visit type), 12 h trajectories, "Highest-value next investigations" (prefix 5) |
+| 5 | Diagnosis tab tap / ICD search | — | — | `workingDiagnosis`, `workingDiagnosisICD` | "Radiates to: Notes · Prescriptions · Billing" |
+| 6 | Plan tab | `DiagnosisRadiationEngine.radiate(workingDiagnosis:ageYears:sex:)` (first keyword match in `allEntries`) | `workingDiagnosis` text only (age/sex are passed but not used to change content) | `DiagnosisRadiation { investigations, planTemplate, referralSuggestions, redFlags, urgencyNote, followUp, billingCodes, consentCategory, scoringCriteria }` | Radiation card: add investigation, "Use plan" (fills `managementPlan` only if empty) |
+| 7 | Scores screen | `DiagnosisScoreMapper.recommendations(for:)` + `suggestedCategory(for:)` | `workingDiagnosis`, `workingDiagnosisICD`, CC | Ranked `ActiveScore` recommendations | Clinical Scores list |
+| 7 | Opening a score | `PatientScoreAutoPopulator.<score>(patient:)` inside `ScoreAutoPopulateContext` → `ClinicalScoringEngine.<score>(_:)` | latest vitals, resulted labs (whole-word `LabNameMatch`), clinical text | Pre-filled input + `ScoreAutoFill` (auto keys, pending fields) → `ClinicalScore { score, risk, interpretation, recommendations, redFlags }` | Score form |
+| 8 | "Draft plan" | `SOAPDraftEngine.draft(patient:)` | record + `SurgicalAlgorithmEngine.lookup(diagnosisName:)` (vademecum investigations, operative options, pearls) | `SOAPDraft { s, o, a, p }` | Assessment/plan draft |
+| – | PMH / meds / social changes | `SurgicalRiskEngine.assess(SurgicalRiskInputs)` | PMH chips, medication names, age, BMI, social chips, `LabPanel` | `[SurgicalRiskAlert]` | Peri-operative risk alerts (**not yet mirrored by the harness**: needs the view's PMH chip mapping) |
+
+Not on the consultation path: `SurgicalVademecum` / `SurgicalAlgorithmEngine` (Clinical Hub,
+Encyclopedia; SOAP uses a lookup), `DiagnosisDosingGuide` (Prescriptions), `BayesianSensorFusion`
+(unused), `ScreeningEngine` (Wellness pathway).
+
+### iOS engine mode: database vs fallback
+
+`BayesianDiagnosisEngine.externalPool(_:)` reads `Resources/DiagnosticDatabase.json` through
+`externalDatabase` (`try?` decode). The clinical-content review found the file does **not** decode
+with the Codable structs (thousands of features without a string `evidenceLabel`, fractional
+`logPrior`/`logLR`, numeric `value`s: `lint:guideline-registry` reports it, `DBLOAD|` test lines
+confirm on CI). The engine then runs on its built-in lists:
+
+- A CC route written `externalPool("x") ?? builtIn` uses the built-in list (e.g. `abdominalPain`, 10
+  candidates; `jaundice`, 5 candidates — no mesenteric ischaemia, no obstetric or septic causes).
+- A route written `externalPool("x") ?? []` returns **no candidates**: `rightIliacFossaPain`,
+  `biliaryColic`, `acutePancreatitis` and most of the newer pools (117 of 164 routes). Because
+  resulted investigation names/results are appended to the CC before routing, an ultrasound
+  report containing "gallstones" sends a right-upper-quadrant presentation to `biliaryColic` and
+  empties the differential.
+- The matrix cross-query and the "urgency safety net" also depend on the database, so they are off.
+
+Each iOS vignette result records the mode (`outputs.engineInfo.bayesDatabase` = `fallback` |
+`database`, plus the version and decode error from `DiagnosticDatabaseInfo.current`). Differential
+expectations are graded in whatever mode ran; results from the two modes are not comparable.
+
+Displayed probability: the review also found the displayed percentage treats stored ×5 ln(LR)
+units as full ln units, so confidence is overstated. No seed vignette asserts a displayed
+percentage; any future expectation about it must be `quality` and `knownGap`.
+
+## Web (dashboard)
+
+The dashboard consultation (`artifacts/dashboard/src/pages/tabs/*`, `context/AppContext.tsx`) calls
+shared, pure engines:
+
+| Step | Engine · entry function | Reads | Produces | Shown as |
+|---|---|---|---|---|
+| CC strip / HPI chips | `extractFeaturesFromSocrates(cc, answers)` (`lib/socrates-to-features.ts`) → `lib/pane-engine`: `applyModifiers(DISEASES, age, sex)` → `initPaneState` → `updatePosterior` per feature → `topDiagnoses(state, diseases, 3)` | CC template name (CC_HINTS regexes), SOCRATES answer strings, age, sex, optional PANE Q&A answers | PANE posterior, top 3 (`usePane`, `HpiTab.reseedPane`, `ChiefComplaintStrip`) | PANE differential; drives the Assessment management panel (top ≥ 0.20) and the Plan protocol (converged ≥ 0.85) |
+| HPI / Examination | `computeRankedDifferentials({symptoms, symptomDetails, age, sex})` (`lib/symptom-inference.ts`) | SmartSymptomPicker chips and branch details | Ranked differential (weights) | HPI and Examination "leading diagnosis" (≥ 40 %) |
+| Assessment | `computeRankedDifferentials({symptoms, symptomDetails: {}, examText})` | chips + exam/HPI free text (pathognomonic signs) | Passive ranking | Differential card grid order |
+| Triage (every change) | `adaptiveTriage(triageInput)` (`lib/triage-engine/src/adaptive-triage.ts`) | free text, symptom chips/details, comorbidities, medications, allergies, vitals, duration, pain score, post-op, `pregnancyPossible` | `acuity` (routine/review/priority/urgent), `recommendedAction` (emergency_now…), reasons, vital red flags, surgical matches, cancer screen | Acuity badge; front-desk script |
+| Pathway registry | `matchPathways({symptoms, freeText})` (`lib/triage-engine/src/pathway-matcher.ts`) | chips, free text | Ranked clinical pathways | Pathway panel (recorded in harness notes only) |
+| Assessment / Scales | `getCdsSuggestions(ctx)` (`lib/clinical-cds.ts`) | chips, exam chips, vitals, lab results, comorbidities, assessment, locked working diagnosis | Scale suggestions (Alvarado, TG18 cholangitis, NEWS2, qSOFA, BISAP, Glasgow-Blatchford, …) | "Suggested scales" |
+| Prompts strip | `computeClinicalPrompts(input)` (`lib/clinical-inference.ts`) | demographics, CC entries, PMH, meds, pregnancy possible, exam text, lab results, radiology results, vitals, assessment | Safety / investigation / preventative prompts with actions (add to investigations / plan) — including long operative-plan templates | Clinical prompts strip |
+| Assessment management panel | `getProtocol(diseaseId) ?? getProtocolByIcd(icd)` (`lib/pane-engine/src/management/`) → `ManagementPanel` | PANE top (≥ 0.20) or ICD | All phases of the protocol, key points, red flags | Assessment tab |
+| Plan tab | `detectDxVariants(assessment, icd, diseaseId)` (`lib/dx-variants.ts`) → `buildPlanText(protocol, …, allowedPhases, planPrefix)` | assessment text (keyword detection, first matching variant wins), ICD, disease id | Generated plan text filtered to the variant's phases; investigations; referral | Plan tab (the documented plan) |
+| HPI completion | `seedInvestigationsFromPane` | top-3 PANE protocols | stat/urgent investigations added to orders | Investigations tab |
+| Calculators | `ScalesTab` (`lib/clinical-scales.ts`: Alvarado, TG18 cholangitis, …) and `ClinicalScoresPanel` (`lib/clinical-scores.ts`: TG18 cholangitis & cholecystitis from labs + ticks, Ranson, BISAP, NEWS2) | manual ticks; clinical-scores also reads `extractedLabs` and vitals | Score / grade + action text | Scales tab; scores panel |
+
+Not yet mirrored by the web harness: `cc-matrices.ts` CC templates (ddx/labs/imaging per template:
+its `@/context/AppContext` type import does not resolve under the scripts tsconfig),
+`clinical-pathways.ts` (EMR completion guidance) and `safety-engine.ts` (consult-state reminders).
+
+## Which output is authoritative
+
+| Question | iOS | Web |
+|---|---|---|
+| Differential | `BayesianDiagnosisEngine.infer` top 5 on the Diagnosis tab (`ios.bayes`). Early CC list and the pipeline's hypotheses are secondary; `ClinicalPathwayEngine.differentials` is a fixed per-pathway list. | PANE top 3 (`web.pane`). Symptom inference and the passive ranking are secondary views of a different engine. |
+| Red flags / alarms | `ClinicalTextParser` alarms (banner) — text keywords only; pipeline `.alert` actions; `VisitRiskAssessment` flags; radiation `redFlags`/`urgencyNote`. | `adaptiveTriage` vital red flags and reasons; `computeClinicalPrompts` safety prompts; protocol red flags; dx-variant urgency note. |
+| Emergency level | `ClinicalPathwayEngine.assess().suggestedAcuity` — CC/PMH keywords only; vitals and alarms are not considered. | `adaptiveTriage().recommendedAction` (emergency_now → emergency; same_day_call → urgent; priority_24_48h → priority) — uses vitals. |
+| Which scores | `DiagnosisScoreMapper` (working diagnosis, ICD, CC). | `getCdsSuggestions` (symptoms, exam, vitals, labs, locked diagnosis). |
+| Score values | `ClinicalScoringEngine` (calculator) after `PatientScoreAutoPopulator` (partial auto-fill). | `clinical-scales.ts` and `clinical-scores.ts` — two independent TG18 cholangitis calculators with different rules. |
+| Investigations | `DiagnosisRadiationEngine` (per working diagnosis) + pipeline EVPI / decisions / order actions. | Plan protocol investigations; PANE-seeded stat/urgent tests; prompt actions. |
+| Management | `DiagnosisRadiationEngine.planTemplate` + referrals (one template per diagnosis, no severity or allergy adaptation); TG18 calculator recommendations; pipeline decisions; SOAP plan. | Plan tab generated text (protocol filtered by dx variant) — the documented plan; Assessment management panel shows all phases; protocol medications; prompt templates. |
+| Pathway | `ConsultPathway.recommend(for:)` | — (no equivalent; `matchPathways` is a different concept) |
+
+## Where iOS and web differ (phase 0 observations)
+
+- **Differential engines are unrelated**: iOS naive-Bayes pools (DiagnosticDatabase / built-in lists),
+  web PANE (disease/feature likelihoods with prior modifiers) plus a separate weight-based symptom
+  engine. Disease names, ids and coverage differ; the vignettes match on stems ("cholecyst").
+- **Emergency level**: iOS reads only CC/PMH keywords (an RUQ-pain cholecystitis is "routine", septic
+  shock without the words "septic shock" in the CC is not "emergency"); web uses vitals and scores
+  everything with a fever/vomiting/jaundice/cholangitis pattern as `emergency_now`.
+- **Pregnancy**: web has `pregnancyPossible` (triage, prompts); the iOS `Patient` has no pregnancy
+  field, and `VisitRiskAssessment` asks "Could be pregnant?" only on trauma/burns/procedure pathways.
+- **Negation**: `ClinicalTextParser` and the web symptom text matching have no negation handling
+  ("No confusion" fires the iOS sepsis alarm; "Murphy's sign negative" is a pathognomonic hit on web).
+- **TG18 grading**: iOS cholangitis counts one Grade II criterion as Grade II (TG18 needs two); web
+  `clinical-scales.ts` does the same (and treats fever ≥ 38 °C as the criterion instead of ≥ 39 °C);
+  web `clinical-scores.ts` needs two but omits the WBC criterion. Neither cholecystitis calculator
+  has the "palpable tender RUQ mass" Grade II criterion. Auto-fill never sets organ-dysfunction
+  fields on iOS; the web auto-derived grade needs manual imaging ticks before it diagnoses.
+- **qSOFA auto-fill (iOS)** uses RR > 22 and SBP < 100; Sepsis-3 is RR ≥ 22 and SBP ≤ 100.
+- **Severity-specific plans**: web selects a dx variant from the assessment text, but the Grade I
+  variants contain the bare base keyword ('cholecystitis', 'ascending cholangitis') and are checked
+  first, so Grade II/III texts get Grade I phases (cholecystostomy and ERCP disappear from the
+  generated plan); keyword word order ('severe cholangitis' vs 'severe acute cholangitis') decides
+  detection. iOS has one plan template per diagnosis with no severity branch.
+- **Allergies**: neither platform's plan templates check the recorded allergy (penicillins suggested
+  in penicillin anaphylaxis).
+- **Web prompt templates** (`computeClinicalPrompts`) embed full operative plans (e.g. post-operative
+  ibuprofen and 5 days of co-amoxiclav after simple appendicitis; "β-HCG confirmed negative" in a
+  pregnant patient; emergency laparotomy consent for Grade III cholangitis).
+
+The per-vignette evidence for each of these is in `REPORT.md` and `results/web-latest.md`.
