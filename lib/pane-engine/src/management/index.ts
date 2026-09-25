@@ -54,8 +54,42 @@ const ALL_PROTOCOLS = [
 
 const _byDiseaseId = new Map(ALL_PROTOCOLS.map(p => [p.diseaseId, p]));
 
+/**
+ * PANE disease ids whose management is an existing protocol under another id (the differential
+ * gained these nodes in 2026-09; see docs/clinical-validation/changes/fix-web-differential.md).
+ * `sah` and `anaplastic_thyroid` are deliberately not aliased while HpiTab seeds investigations
+ * from every top-3 PANE protocol: they would seed an immediate CT head / thyroid staging into
+ * unrelated consultations (e.g. low-risk syncope, post-thyroidectomy haematoma).
+ */
+export const PROTOCOL_ALIASES: Readonly<Record<string, string>> = {
+  acs: 'acute_coronary_syndrome',
+  aki: 'acute_kidney_injury',
+  asthma_exacerbation: 'acute_asthma',
+  cardiac_syncope: 'syncope',
+  cauda_equina: 'cauda_equina_syndrome',
+  cdiff_colitis: 'clostridioides_difficile',
+  diabetic_foot_infection: 'diabetic_foot',
+  dka: 'diabetic_ketoacidosis',
+  femoral_artery_aneurysm: 'aortic_aneurysm',
+  food_bolus: 'food_bolus_obstruction',
+  gastroenteritis: 'infective_colitis',
+  hhs: 'hyperosmolar_hyperglycaemic_state',
+  infected_obstructed_kidney: 'obstructed_infected_kidney',
+  meningitis: 'bacterial_meningitis',
+  mscc: 'metastatic_spinal_cord_compression',
+  phaeochromocytoma: 'adrenal_incidentaloma',
+  postop_collection: 'surgical_site_infection',
+  postop_pneumonia: 'pneumonia',
+  seizure: 'first_seizure',
+  sigmoid_volvulus: 'bowel_obstruction',
+  stroke: 'acute_stroke',
+  superficial_thrombophlebitis: 'superficial_vein_thrombosis',
+  tia: 'transient_ischaemic_attack',
+  toxic_megacolon: 'ulcerative_colitis',
+};
+
 export function getProtocol(diseaseId: string) {
-  return _byDiseaseId.get(diseaseId) ?? null;
+  return _byDiseaseId.get(diseaseId) ?? _byDiseaseId.get(PROTOCOL_ALIASES[diseaseId] ?? '') ?? null;
 }
 
 /** "K35.89 — Acute appendicitis" / "k35.89" / "K3589" → "K3589". */

@@ -339,7 +339,7 @@ export const vascularProtocols: ManagementProtocol[] = [
     ],
     investigations: [
       { label: 'D-dimer (if low pre-test probability — Wells <2)', urgency: 'stat' },
-      { label: 'CTPA (CT pulmonary angiography) — gold standard', urgency: 'stat' },
+      { label: 'CTPA (CT pulmonary angiography) — if the two-level Wells score is > 4 (PE likely), or if ≤ 4 with a positive D-dimer; not needed when PERC-negative at low pre-test probability (NICE NG158; ESC 2019)', urgency: 'stat' },
       { label: 'ECG (sinus tachycardia, S1Q3T3, new RBBB)', urgency: 'stat' },
       { label: 'ABG / pulse oximetry', urgency: 'stat' },
       { label: 'Troponin, BNP/NT-proBNP (risk stratification)', urgency: 'urgent' },

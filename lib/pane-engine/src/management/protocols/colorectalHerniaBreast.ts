@@ -808,7 +808,7 @@ export const breastProtocols: ManagementProtocol[] = [
     ],
     redFlags: ['Rapid growth or large (>5 cm) phyllodes — higher malignant potential; HPB/sarcoma MDT.'],
     investigations: [
-      { label: 'USS + mammography', urgency: 'urgent' },
+      { label: 'Breast ultrasound (first line under 40); mammography as well if age 40 or over', urgency: 'urgent' },
       { label: 'Core biopsy (may underestimate grade)', urgency: 'urgent' },
       { label: 'CT chest if malignant (pulmonary metastases)', urgency: 'urgent' },
     ],

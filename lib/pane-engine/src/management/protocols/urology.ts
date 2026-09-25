@@ -18,7 +18,7 @@ export const urologyProtocols: ManagementProtocol[] = [
       'Intractable pain, vomiting, or unable to maintain oral hydration — hospital admission.',
     ],
     investigations: [
-      { label: 'CT KUB (non-contrast) — stone size, location, hydronephrosis', urgency: 'urgent' },
+      { label: 'Low-dose CT KUB (non-contrast) — stone size, location, hydronephrosis; not in pregnancy or children (ultrasound first) (EAU 2024)', urgency: 'urgent' },
       { label: 'Urinalysis + MSU C&S', urgency: 'urgent' },
       { label: 'FBC, U&E, eGFR, CRP, blood cultures (if febrile)', urgency: 'urgent' },
       { label: 'USS KUB (pregnancy, children — avoids radiation)', urgency: 'urgent' },
@@ -205,7 +205,7 @@ export const urologyProtocols: ManagementProtocol[] = [
       'Recurrent UTIs (>3/year) — investigate for calculi, structural abnormality, or malignancy.',
     ],
     investigations: [
-      { label: 'MSU C&S (mid-stream urine — before antibiotics)', urgency: 'urgent' },
+      { label: 'Urine culture before antibiotics — MSU, or a catheter specimen (CSU) taken after changing a long-term catheter (NICE NG113)', urgency: 'urgent' },
       { label: 'Urinalysis (nitrites, leucocytes, blood)', urgency: 'urgent' },
       { label: 'FBC, CRP, blood cultures (if pyelonephritis / sepsis)', urgency: 'urgent' },
       { label: 'USS renal tract (complicated / recurrent UTI)', urgency: 'routine' },

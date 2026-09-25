@@ -461,6 +461,9 @@ const PREGNANCY_AVOID: { terms: string[]; reason: string }[] = [
   { terms: ['ramipril', 'lisinopril', 'enalapril', 'perindopril', 'losartan', 'candesartan', 'valsartan'], reason: 'ACE inhibitors / ARBs are avoided in pregnancy (BNF)' },
   { terms: ['atorvastatin', 'simvastatin', 'rosuvastatin'], reason: 'statins are avoided in pregnancy (BNF)' },
   { terms: ['trimethoprim'], reason: 'trimethoprim is avoided in the first trimester (folate antagonist — BNF, NICE NG111)' },
+  { terms: ['tamoxifen', 'anastrozole', 'letrozole', 'exemestane'], reason: 'tamoxifen and aromatase inhibitors are contraindicated in pregnancy — breast cancer in pregnancy is planned with the obstetric and oncology MDT (BNF; RCOG GTG 12)' },
+  { terms: ['trastuzumab', 'pertuzumab'], reason: 'HER2-targeted antibodies are avoided in pregnancy (oligohydramnios — BNF/SPC)' },
+  { terms: ['radioiodine', 'i-131'], reason: 'radioiodine is contraindicated in pregnancy (BNF)' },
 ];
 const ANTICOAGULANTS_AVOID_IN_PREGNANCY = [...DOACS, ...VKA];
 
@@ -586,6 +589,10 @@ function adaptLine(line: string, protocol: ManagementProtocol, s: Signals): Step
   }
 
   let text = line;
+  if (preg.status === 'pregnant' && !protocol.pregnancySpecific && preg.gestationWeeks !== null && preg.gestationWeeks < 20) {
+    const nsaid = affirmedMentions(line, NSAIDS);
+    if (nsaid.length) text += ` [Pregnancy (${preg.gestationWeeks} weeks): ${nsaid.join(', ')} only if the benefit outweighs the risk and never from 20 weeks — prefer paracetamol ± an opioid (BNF).]`;
+  }
   if (preg.status === 'pregnant' && affirmedMention(line, ['ercp']) && !/fluoroscop/i.test(line)) {
     text += ' [Pregnancy: minimise fluoroscopy time and shield the fetus; obstetric involvement (ASGE 2012 endoscopy in pregnancy).]';
   }
@@ -1008,12 +1015,26 @@ export function adaptProtocolForPatient(
   const investigations = protocol.investigations
     .filter(i => conditionHolds(i.onlyIf, s))
     .map(i => adaptInvestigation(i, s));
+  const extraInvestigations = (procedureKind: ProcedureKind): InvestigationItem[] => {
+    const extra: InvestigationItem[] = [];
+    const labels = investigations.map(i => lower(i.label)).join(' ; ');
+    const type1 = /\btype\s*(?:1|i)\s+diabet|\bt1dm\b|\biddm\b/.test(s.text);
+    if (procedureKind !== 'none' && (type1 || drugsPresent(s.meds, INSULINS).length) && !/ketone/.test(labels)) {
+      extra.push({ label: 'Capillary blood glucose and blood ketones (insulin-treated diabetes — CPOC 2021)', urgency: 'urgent' });
+    }
+    if (procedureKind !== 'none' && s.female && s.age !== null && s.age >= 12 && s.age <= 55
+      && (s.pregnancy.status === 'possible' || s.pregnancy.status === 'unknown') && !/hcg|pregnan/.test(labels)) {
+      extra.push({ label: 'Pregnancy test (urine or serum β-hCG) before surgery or ionising imaging — result required (NICE NG45)', urgency: 'urgent' });
+    }
+    return extra;
+  };
 
   const operative = opts.operative ?? hasOperativeSteps(protocol);
   const assessmentBleeding = findingPresent(lower(ctx.assessment).replace(NOT_ACTIVE_BLEEDING, ' '), BLEEDING_TEXT);
   const bleeding = kind === 'bleeding' || assessmentBleeding;
   const procedural = kind === 'surgical' || kind === 'procedure' || kind === 'bleeding';
   const procedure = kind === 'emergency' ? 'none' : procedureFor(protocol, ctx, procedural && operative);
+  investigations.push(...extraInvestigations(procedure));
   const acuteIllness = kind === 'emergency' || kind === 'bleeding'
     || protocol.management.some(st => st.phase === 'immediate')
     || findingPresent(lower(ctx.assessment), ACUTE_ILLNESS_TEXT);

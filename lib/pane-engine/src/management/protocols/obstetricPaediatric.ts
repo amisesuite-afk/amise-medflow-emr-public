@@ -82,7 +82,7 @@ export const obstetricPaediatricProtocols: ManagementProtocol[] = [
   // ── Trauma in pregnancy / placental abruption ───────────────────────────────────────
   {
     diseaseId: 'trauma_in_pregnancy',
-    icd10Prefixes: ['O9A.2', 'O45'],
+    icd10Prefixes: ['O9A.2'],
     label: 'Trauma in Pregnancy / Placental Abruption',
     kind: 'emergency',
     pregnancySpecific: true,
@@ -230,6 +230,35 @@ export const obstetricPaediatricProtocols: ManagementProtocol[] = [
       { phase: 'followup', step: 'Document verbatim history, body map and photographs; inform the senior clinician; do not confront the carer.' },
     ],
     referral: 'Child protection / children\'s social care + paediatrics (same day).',
+  },
+  // ── Placental abruption (RCOG GTG 63) ──────────────────────────────────────────────────
+  {
+    diseaseId: 'placental_abruption',
+    icd10Prefixes: ['O45'],
+    label: 'Placental Abruption (antepartum haemorrhage)',
+    kind: 'emergency',
+    pregnancySpecific: true,
+    guidelines: ['RCOG Green-top Guideline 63 (2011) antepartum haemorrhage', 'BSH 2014 anti-D immunoglobulin for prevention of haemolytic disease of the fetus and newborn'],
+    keyPoints: [
+      'Painful vaginal bleeding with a tender, tense uterus in the second half of pregnancy; bleeding can be concealed — maternal shock may exceed the visible loss (RCOG GTG 63).',
+      'Ultrasound does not exclude abruption.',
+      'Risk factors: hypertension / pre-eclampsia, abdominal trauma, cocaine, smoking, previous abruption.',
+    ],
+    redFlags: [
+      'Maternal shock, or bleeding out of proportion — major obstetric haemorrhage.',
+      'Coagulopathy (DIC) — check fibrinogen.',
+      'Reduced fetal movements or abnormal fetal heart — obstetric emergency.',
+    ],
+    investigations: [
+      { label: 'FBC, coagulation screen with fibrinogen, group and crossmatch, U&E, LFTs', urgency: 'stat', tier: 1, category: 'bloods' },
+      { label: 'Kleihauer test (RhD-negative women)', urgency: 'urgent', tier: 1, category: 'bloods' },
+    ],
+    management: [
+      { phase: 'immediate', step: OBSTETRIC_REDIRECT },
+      { phase: 'immediate', step: 'While waiting: left lateral position (from 20 weeks), oxygen, two large-bore cannulae, bloods and crossmatch; fetal assessment by the obstetric team (RCOG GTG 63).' },
+      { phase: 'conservative', step: 'RhD-negative: anti-D immunoglobulin with a Kleihauer-guided dose, via the obstetric team (BSH 2014).' },
+    ],
+    referral: 'Obstetric team — emergency transfer to a hospital with an obstetric unit.',
   },
   // Febrile infant and HSP are recognised by triage (another area); they get no ICD mapping here
   // because R50.9 / D69.0 also cover adults.

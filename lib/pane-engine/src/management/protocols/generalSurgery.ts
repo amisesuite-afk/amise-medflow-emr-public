@@ -26,7 +26,7 @@ export const generalSurgeryProtocols: ManagementProtocol[] = [
       { label: 'Urine dipstick', urgency: 'urgent', tier: 1, category: 'bedside' },
       { label: 'βhCG (females of reproductive age — exclude ectopic)', urgency: 'urgent', tier: 1, category: 'bedside' },
       { label: 'USS abdomen — RIF (appendix, free fluid)', urgency: 'urgent', tier: 2, category: 'imaging-uss', lrPos: 7.5 },
-      { label: 'CT abdomen/pelvis with IV contrast (adults) — if ultrasound is inconclusive', urgency: 'urgent', tier: 3, category: 'imaging-ct', lrPos: 13.0, conditional: 'If USS inconclusive or high clinical suspicion', onlyIf: 'not-pregnant' },
+      { label: 'CT abdomen/pelvis with IV contrast (adults, not pregnant — MRI in pregnancy) — if ultrasound is inconclusive', urgency: 'urgent', tier: 3, category: 'imaging-ct', lrPos: 13.0, conditional: 'If USS inconclusive or high clinical suspicion', onlyIf: 'not-pregnant' },
       { label: 'MRI abdomen/pelvis (non-contrast) if ultrasound is non-diagnostic — pregnancy (WSES 2020; ACR 2018)', urgency: 'urgent', tier: 3, category: 'imaging-mri', onlyIf: 'pregnant' },
     ],
     management: [
@@ -73,7 +73,7 @@ export const generalSurgeryProtocols: ManagementProtocol[] = [
       { label: 'Amylase / lipase (exclude pancreatitis)', urgency: 'urgent', tier: 1, category: 'bloods' },
       { label: 'Blood cultures × 2 (before antibiotics)', urgency: 'urgent', tier: 1, category: 'microbiology', conditional: 'If febrile or Grade II–III' },
       { label: 'USS abdomen (gallstones, wall thickening, pericholecystic fluid)', urgency: 'urgent', tier: 2, category: 'imaging-uss', lrPos: 8.5 },
-      { label: 'MRCP (CBD dilation or jaundice)', urgency: 'urgent', tier: 3, category: 'imaging-mri', lrPos: 15.0, conditional: 'If CBD dilation or jaundice on USS' },
+      { label: 'MRCP if the CBD is dilated or the patient is jaundiced', urgency: 'urgent', tier: 3, category: 'imaging-mri', lrPos: 15.0, conditional: 'If CBD dilation or jaundice on USS' },
       { label: 'CT abdomen (if MRCP unavailable or to assess complications)', urgency: 'urgent', tier: 3, category: 'imaging-ct', lrPos: 5.0, conditional: 'If MRCP unavailable' },
     ],
     management: [
@@ -396,7 +396,7 @@ export const generalSurgeryProtocols: ManagementProtocol[] = [
       { label: 'FBC, U&E (potassium), lactate', urgency: 'urgent', tier: 1, category: 'bloods', lrPos: 3.0, rationale: 'Lactate >2 mmol/L suggests bowel ischaemia' },
       { label: 'Group & save', urgency: 'urgent', tier: 1, category: 'bloods' },
       { label: 'AXR (dilated loops, air-fluid levels, coffee-bean sign)', urgency: 'urgent', tier: 2, category: 'imaging-xr', lrPos: 3.5 },
-      { label: 'CT abdomen/pelvis with IV contrast (level, cause, ischaemia)', urgency: 'urgent', tier: 3, category: 'imaging-ct', lrPos: 18.0, rationale: 'Gold standard — identifies level, aetiology, ischaemia, and closed loop' },
+      { label: 'CT abdomen/pelvis with IV contrast (level, cause, ischaemia) — in pregnancy MRI / ultrasound first where they answer the question', urgency: 'urgent', tier: 3, category: 'imaging-ct', lrPos: 18.0, rationale: 'Gold standard — identifies level, aetiology, ischaemia, and closed loop' },
     ],
     management: [
       { phase: 'immediate', step: 'IV access, IV fluid resuscitation; correct electrolytes (potassium, magnesium); urinary catheter and fluid balance.' },

@@ -1,5 +1,5 @@
 import type { ManagementProtocol } from '../types.js';
-import { EMERGENCY_REDIRECT } from './shared.js';
+import { EMERGENCY_REDIRECT, INTRA_ABDOMINAL_PENICILLIN_ALTERNATIVE } from './shared.js';
 
 /**
  * Surgical, endoscopic and allied protocols added after the clinical validation (2026-09,
@@ -490,6 +490,7 @@ export const surgicalAdditionsProtocols: ManagementProtocol[] = [
       'Chest pain, fever, surgical emphysema — perforation (CT).',
     ],
     investigations: [
+      { label: 'Emergency endoscopy (OGD) — within 6 h if complete obstruction, otherwise within 24 h (ESGE 2016)', urgency: 'stat', tier: 3, category: 'endoscopy' },
       { label: 'CT chest if perforation suspected; plain films do not show food boluses', urgency: 'urgent', tier: 3, category: 'imaging-ct' },
     ],
     management: [
@@ -974,5 +975,68 @@ export const surgicalAdditionsProtocols: ManagementProtocol[] = [
       { phase: 'conservative', step: 'Identified source: treat the source (targeted antibiotics, drainage).' },
     ],
     referral: 'Surgical team review.',
+  },
+
+  // ── Perforated peptic ulcer (WSES 2020) ───────────────────────────────────────────────
+  {
+    diseaseId: 'perforated_peptic_ulcer',
+    icd10Prefixes: ['K25.1', 'K25.2', 'K25.5', 'K25.6', 'K26.1', 'K26.2', 'K26.5', 'K26.6', 'K27.1', 'K27.2', 'K27.5', 'K27.6', 'K28.1', 'K28.2', 'K28.5', 'K28.6'],
+    label: 'Perforated Peptic Ulcer',
+    kind: 'surgical',
+    guidelines: ['WSES 2020 guidelines on perforated and bleeding peptic ulcer', 'Surviving Sepsis Campaign 2021'],
+    allergyAlternatives: { penicillin: INTRA_ABDOMINAL_PENICILLIN_ALTERNATIVE },
+    keyPoints: [
+      'Sudden severe epigastric pain with peritonism; free air on erect CXR or CT (CT if the CXR is non-diagnostic) (WSES 2020).',
+      'Early source control: delay to surgery increases mortality — resuscitate and operate without delay (WSES 2020).',
+      'Older, steroid-treated or immunosuppressed patients may have little peritonism.',
+    ],
+    redFlags: [
+      'Sepsis or septic shock with peritonitis — resuscitation and emergency surgery.',
+      'Steroids, immunosuppression or old age — peritonism may be absent; low threshold for CT.',
+    ],
+    investigations: [
+      { label: 'FBC, U&E, CRP, lactate, amylase, group and save, blood cultures', urgency: 'stat', tier: 1, category: 'bloods' },
+      { label: 'Erect CXR (free air under the diaphragm)', urgency: 'stat', tier: 2, category: 'imaging-xr' },
+      { label: 'CT abdomen/pelvis if the erect CXR is non-diagnostic', urgency: 'urgent', tier: 3, category: 'imaging-ct' },
+    ],
+    management: [
+      { phase: 'immediate', step: `Sudden severe abdominal pain with peritonism seen in clinic: ${EMERGENCY_REDIRECT}` },
+      { phase: 'immediate', step: 'Resuscitation (sepsis bundle), nil by mouth, NG tube, IV fluids, analgesia, IV proton-pump inhibitor, broad-spectrum IV antibiotics per the local intra-abdominal policy; antifungal only if immunocompromised or at high risk (WSES 2020).' },
+      { phase: 'surgical', step: 'Emergency surgery for source control: laparoscopic or open simple / omental patch repair (Graham) with peritoneal lavage; biopsy the edge of a gastric ulcer (WSES 2020).' },
+      { phase: 'conservative', step: 'Non-operative management only in highly selected stable patients with a sealed perforation on water-soluble contrast CT, with surgery if there is no improvement within 24 h (WSES 2020).' },
+      { phase: 'followup', step: 'Test for H. pylori and eradicate if positive; PPI for 8 weeks; stop NSAIDs; repeat OGD at 6–8 weeks for a gastric ulcer to exclude malignancy (WSES 2020).' },
+    ],
+    referral: 'Emergency general surgery (same day).',
+  },
+
+  // ── Incarcerated / strangulated abdominal wall hernia (WSES 2017) ──────────────────────
+  {
+    diseaseId: 'incarcerated_hernia',
+    icd10Prefixes: ['K46.0', 'K46.1'],
+    label: 'Incarcerated / Strangulated Hernia',
+    kind: 'surgical',
+    guidelines: ['WSES 2017 guidelines for emergency repair of complicated abdominal wall hernias', 'HerniaSurge 2018 groin hernia guideline'],
+    allergyAlternatives: { penicillin: INTRA_ABDOMINAL_PENICILLIN_ALTERNATIVE },
+    keyPoints: [
+      'Incarcerated = irreducible; strangulated = compromised blood supply. Skin change, peritonism, fever, tachycardia, raised lactate or WCC and CT findings suggest strangulation (WSES 2017).',
+      'Do not attempt reduction when strangulation is suspected — emergency repair.',
+      'Mesh repair is safe in clean and clean-contaminated fields; with gross contamination use a suture or biological repair (WSES 2017).',
+    ],
+    redFlags: [
+      'Tender, tense hernia with skin change, peritonism or systemic upset — strangulation; emergency surgery.',
+      'Vomiting, distension, absolute constipation — bowel obstruction from the hernia.',
+    ],
+    investigations: [
+      { label: 'FBC, U&E, CRP, lactate (strangulation markers), group and save', urgency: 'stat', tier: 1, category: 'bloods' },
+      { label: 'CT abdomen/pelvis if the diagnosis or bowel viability is uncertain — not if it would delay surgery for peritonism', urgency: 'urgent', tier: 3, category: 'imaging-ct' },
+    ],
+    management: [
+      { phase: 'immediate', step: 'Same-day emergency surgical admission: nil by mouth, IV fluids, analgesia, NG tube if obstructed; correct electrolytes.' },
+      { phase: 'conservative', step: 'Only if strangulation is not suspected: a single gentle reduction with analgesia by an experienced surgeon may be considered; if it reduces, admit, observe for peritonitis and repair semi-electively (WSES 2017).' },
+      { phase: 'surgical', step: 'Strangulation suspected, or reduction fails: emergency repair (open or laparoscopic); assess bowel viability and resect non-viable bowel; mesh in a clean or clean-contaminated field, suture or biological repair if grossly contaminated (WSES 2017).' },
+      { phase: 'surgical', step: 'Child: paediatric surgeon — reduction under analgesia then open herniotomy within 24–48 h; strangulation — emergency herniotomy.', onlyIf: 'under-16' },
+      { phase: 'followup', step: 'Wound review; smoking cessation and weight optimisation to lower recurrence risk.' },
+    ],
+    referral: 'Emergency general surgery (same day); paediatric surgery for children.',
   },
 ];
