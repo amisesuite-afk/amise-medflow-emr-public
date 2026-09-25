@@ -1045,7 +1045,8 @@ export default function HpiTab() {
       />
 
       {/* ── CC strip — add / edit complaints ── */}
-      <ChiefComplaintStrip />
+      {/* The questions are asked once, in the Adaptive HPI card below (UX review M12). */}
+      <ChiefComplaintStrip questionsInline={false} />
 
       {/* ── Phase 2: Continuity banner (returning patient within 6 months) ── */}
       {showContinuityBanner && mostRecent && (

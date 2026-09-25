@@ -16,6 +16,7 @@ import { allergyStatus, allergyNoteText } from '@/lib/allergy-status';
 import { examNoteLines } from '@/lib/exam-documentation';
 import { lifestyleSummary } from '@workspace/triage-engine/lifestyle-practices';
 import { supplementNoteLine } from '@/lib/supplement-catalogue';
+import { dedupePlanAgainstOrders } from '@/lib/plan-dedupe';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -650,9 +651,16 @@ ${(() => {
 ${ctx.plan ? `<div class="section">
 <div class="sec-hdr">Management Plan</div>
 <div class="sec-body" style="line-height:1.75">${(() => {
-  const planBody = ctx.plan;
-  const dedupNote = hasInvestigations
-    ? '<div style="font-size:11px;color:#0d9488;background:#f0fdfa;border:1px solid #99f6e4;border-radius:4px;padding:5px 10px;margin-bottom:10px">↑ Investigations already ordered above — plan sections 1–2 may overlap</div>'
+  // Plan lines that only repeat an investigation listed above are not printed twice (UX review
+  // M12; the record's plan is unchanged). Replaces the old "plan sections 1–2 overlap" banner.
+  const orderedLabels = hasInvestigations ? [
+    ...ctx.orderedInvestigations,
+    ...(ctx.radiologyRequests ?? []).map(r =>
+      [r.modality, r.anatomicalRegion, r.laterality && r.laterality !== 'N/A' ? r.laterality : ''].filter(Boolean).join(' — ')),
+  ] : [];
+  const { plan: planBody, removed } = dedupePlanAgainstOrders(ctx.plan, orderedLabels);
+  const dedupNote = removed > 0
+    ? `<div style="font-size:11px;color:#64748b;margin-bottom:8px">${removed} line${removed === 1 ? '' : 's'} already listed under Investigations above ${removed === 1 ? 'is' : 'are'} not repeated here.</div>`
     : '';
   return dedupNote + planTextToHtml(planBody);
 })()}</div>

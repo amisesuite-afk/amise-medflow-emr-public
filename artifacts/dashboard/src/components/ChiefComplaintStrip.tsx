@@ -159,7 +159,17 @@ function PromptField({
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export default function ChiefComplaintStrip() {
+interface ChiefComplaintStripProps {
+  /**
+   * Show the one-question-at-a-time SOCRATES card inside the strip. The HPI step passes false:
+   * its Adaptive HPI card below asks the same questions (same answers, `procedureData.cc`), so
+   * the strip showed every question twice (UX review M12). The strip then keeps the complaint
+   * chips, the clinical pearl and the suggested-test hint, and points to the card below.
+   */
+  questionsInline?: boolean;
+}
+
+export default function ChiefComplaintStrip({ questionsInline = true }: ChiefComplaintStripProps = {}) {
   const app = useAppContext();
   const {
     symptoms, symptomDetails, procedureData, setProcedureData,
@@ -453,6 +463,13 @@ export default function ChiefComplaintStrip() {
               </div>
             )}
 
+            {!questionsInline && (
+              <div data-testid="cc-questions-below" style={{ padding: '8px 16px 10px', fontSize: 12, color: '#94a3b8' }}>
+                ↓ Answer the questions in the <strong style={{ color: '#e2e8f0' }}>Adaptive HPI</strong> card below
+                {prog.total > 0 ? ` (${prog.answered}/${prog.total} answered)` : ''}.
+              </div>
+            )}
+            {questionsInline && (<>
             {/* Answered summary strip — scrollable horizontal chips, tap any to jump back */}
             {prog.answered > 0 && (
               <div style={{
@@ -637,6 +654,8 @@ export default function ChiefComplaintStrip() {
               })()}
             </div>
 
+            </>)}
+
             {/* Investigation hints */}
             {(tpl.labs.length > 0 || tpl.imaging.length > 0) && (
               <div style={{ padding: '0 16px 12px', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -657,8 +676,9 @@ export default function ChiefComplaintStrip() {
               </div>
             )}
 
-            {/* Closed-loop trigger — once all fields answered, surface HPI */}
-            <div style={{
+            {/* Closed-loop trigger — once all fields answered, surface HPI (inline mode only: on the
+                HPI step the questions and the narrative are already below). */}
+            {questionsInline && <div style={{
               padding: '10px 16px 14px',
               borderTop: '1px solid #1e293b',
               display: 'flex',
@@ -689,7 +709,7 @@ export default function ChiefComplaintStrip() {
               >
                 {allDone ? '✓ CC done — Review HPI →' : 'Skip to HPI →'}
               </button>
-            </div>
+            </div>}
           </div>
         );
       })()}
