@@ -4,6 +4,7 @@
 |---|---|
 | Status | **Plan only.** No code has been written for this. 2026-09-25, against `cc83845` |
 | Audience | The surgeon-owner (decisions, cost, risk) and a future developer (what to change, in what order) |
+| Deferred | The owner has deferred all of this until Amise MedFlow is finished; see `docs/MEDFLOW-PRODUCT-ROADMAP.md` |
 | Related | `docs/compliance/security-controls.md` (G-1), `docs/compliance/README.md` (A-21), `migrations/README.md`, `CLAUDE.md` ("Auth model is single-tenant, role-based") |
 
 Effort sizes are relative: **S** is days, **M** is one to three weeks, **L** is one to two months, **XL** is more than that. They assume one developer who knows the codebase.
