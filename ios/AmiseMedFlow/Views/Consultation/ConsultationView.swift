@@ -143,6 +143,9 @@ struct ConsultationView: View {
     // Split out of `body`: one ~30-modifier chain exceeded the type-checker time limit.
     private func baseContent(filled: Set<ConsultTab>, progress: PathwayProgress) -> some View {
         VStack(spacing: 0) {
+            // Whose record this is — on every step (UX review M1). The iPad record view shows
+            // the same identity in its own header above the embedded consultation.
+            if !embeddedInNav { patientIdentityHeader }
             if !patient.allergies.isEmpty { allergyBanner }
             // Clinical alarm banner — fires from free text parsing
             let activeAlarms = clinicalAlarms.filter { !dismissedAlarmIds.contains($0.id) }
@@ -163,7 +166,7 @@ struct ConsultationView: View {
         }
         .background(Color(.systemBackground))
         .onAppear { handleAppear() }
-        .navigationTitle("Consultation")
+        .navigationTitle(patient.consultationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(Color(.systemBackground), for: .navigationBar)

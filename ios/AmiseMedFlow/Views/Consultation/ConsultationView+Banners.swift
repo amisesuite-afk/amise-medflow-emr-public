@@ -95,6 +95,45 @@ extension ConsultationView {
         }
     }
 
+    // MARK: - Patient identity header (UX review M1)
+
+    /// Persistent identity strip at the top of every consultation step: name, age/sex, MRN.
+    /// The consultation title was only "Consultation" — nothing on screen said whose record it
+    /// was (wrong-patient risk). Hidden when embedded in the iPad record, whose header shows the
+    /// same identity above it.
+    var patientIdentityHeader: some View {
+        let title = patient.consultationTitle
+        let subtitle = patient.consultationSubtitle
+        return HStack(spacing: 8) {
+            Image(systemName: "person.crop.circle.fill")
+                .scaledFont(size: 16, weight: .semibold)
+                .foregroundStyle(AMColor.accent)
+                .accessibilityHidden(true)
+            Text(title)
+                .scaledFont(size: 15, weight: .bold)
+                .foregroundStyle(AMColor.ink)
+                .lineLimit(1)
+                .truncationMode(.tail)
+            if !subtitle.isEmpty {
+                Text(subtitle)
+                    .scaledFont(size: 13, weight: .medium)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16).padding(.vertical, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background { identityHeaderBg }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(ConsultationHeader.accessibilityText(title: title, subtitle: subtitle)))
+        .accessibilityAddTraits(.isHeader)
+        .accessibilityIdentifier("consult.patientHeader")
+    }
+
+    var identityHeaderBg: Color { Color(.secondarySystemBackground) }
+
     // MARK: - Allergy banner
 
     var allergyBanner: some View {

@@ -70,6 +70,10 @@ final class UXWalkthroughTests: XCTestCase {
             try ux.waitFor(ux.element("consult.step.risk"), "Consultation step bar")
             ux.note("Allergy banner visible in the consultation: "
                     + (ux.element("consult.allergyBanner").exists ? "yes" : "NO"))
+            // Patient identity on the consultation (UX review M1): header on iPhone and the iPad
+            // full-screen consultation; inside the iPad record the record header shows it.
+            ux.note("Patient identity header in the consultation: "
+                    + (ux.element("consult.patientHeader").exists ? "yes" : "no (record header)"))
 
             try walkFirstVisitSteps(ux)
             try computeScore(ux)
