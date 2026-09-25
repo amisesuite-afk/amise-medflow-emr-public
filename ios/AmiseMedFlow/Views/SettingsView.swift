@@ -321,6 +321,8 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    // Store status, file size and moved-aside copies (StoreHealth.swift).
+                    StoreDiagnosticsRows()
                     LabeledContent("Crash & freeze reporting", value: CrashReporting.statusText)
                     LabeledContent("Audit events waiting to upload", value: "\(AuditLog.pendingCount)")
                     if CrashReporting.isEnabled {

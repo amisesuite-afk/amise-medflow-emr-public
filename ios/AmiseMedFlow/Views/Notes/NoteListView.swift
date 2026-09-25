@@ -8,6 +8,7 @@ struct NoteListView: View {
     @State private var editingNote:    ClinicalNote?
     @State private var shareURL:       URL?
     @State private var showShareSheet  = false
+    @State private var showStorageBlocked = false
 
     private var sortedNotes: [ClinicalNote] {
         // Drafts first, then by date descending
@@ -134,6 +135,7 @@ struct NoteListView: View {
         .sheet(item: $editingNote) { note in
             NoteEditorView(note: note)
         }
+        .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         .sheet(isPresented: $showShareSheet) {
             if let url = shareURL {
                 ShareSheet(items: [url])
@@ -169,6 +171,11 @@ struct NoteListView: View {
     }
 
     private func signNote(_ note: ClinicalNote) {
+        // In-memory store: the signature would be lost on quit (StoreHealth.swift).
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
         AuditLog.record("sign", "clinical_note", patient: patient, resourceId: note.remoteId ?? note.syncCode,
                         details: ["note_type": note.noteType.rawValue])
         note.status = .signed

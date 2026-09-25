@@ -15,6 +15,7 @@ struct DischargeFlowSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @State var text: String
+    @State private var showStorageBlocked = false
 
     init(patient: Patient, note: ClinicalNote, onDischarge: @escaping (Patient) -> Void) {
         self.patient = patient
@@ -48,6 +49,11 @@ struct DischargeFlowSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Sign & Discharge") {
+                        // In-memory store: the signature would be lost on quit (StoreHealth.swift).
+                        guard !StoreHealth.blocksNewClinicalData else {
+                            showStorageBlocked = true
+                            return
+                        }
                         note.freeText = text
                         AuditLog.record("sign", "clinical_note", patient: patient,
                                         resourceId: note.remoteId ?? note.syncCode,
@@ -62,6 +68,7 @@ struct DischargeFlowSheet: View {
                     .fontWeight(.semibold)
                 }
             }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         }
     }
 }

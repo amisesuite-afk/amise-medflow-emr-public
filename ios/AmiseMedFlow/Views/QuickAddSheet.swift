@@ -43,6 +43,7 @@ struct QuickAddSheet: View {
     @State private var mrn       = ""
 
     @State private var showDuplicate = false
+    @State private var showStorageBlocked = false
     @State private var didSave = false   // blocks a double tap on Add from creating two records
     @State private var pendingName   = ""
 
@@ -105,6 +106,7 @@ struct QuickAddSheet: View {
             } message: {
                 Text("\"\(pendingName)\" is already registered (\(duplicateMRNs)). If this is a different person with the same name, enter their date of birth.")
             }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         }
     }
 
@@ -486,6 +488,11 @@ struct QuickAddSheet: View {
     }
 
     private func attemptSave() {
+        // In-memory store: the new patient would be lost on quit (StoreHealth.swift).
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
         let trimmed = fullName.trimmingCharacters(in: .whitespaces)
         pendingName = trimmed
         if !duplicateMatches.isEmpty {
@@ -497,6 +504,10 @@ struct QuickAddSheet: View {
 
     private func commitSave() {
         guard !didSave else { return }
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
         didSave = true
         let trimmed = fullName.trimmingCharacters(in: .whitespaces)
         let p = Patient(

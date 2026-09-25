@@ -23,6 +23,7 @@ struct WardRoundProgressSheet: View {
     @State var showFullRecord = false
     @State var showVitals = false
     @State var signed = false
+    @State var showStorageBlocked = false
 
     enum SOAPField: String, CaseIterable {
         case subjective = "S"
@@ -93,6 +94,7 @@ struct WardRoundProgressSheet: View {
             .sheet(isPresented: $showVitals) {
                 VitalsEntryView(patient: patient)
             }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         }
     }
 

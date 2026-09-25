@@ -280,7 +280,16 @@ extension NoteEditorView {
     // MARK: - Status picker
 
     var statusPicker: some View {
-        Picker("Status", selection: $note.status) {
+        // Signing is refused while the store is in memory (StoreHealth.swift): it would be lost on quit.
+        Picker("Status", selection: Binding<NoteStatus>(
+            get: { note.status },
+            set: { newValue in
+                if newValue == .signed && StoreHealth.blocksNewClinicalData {
+                    showStorageBlocked = true
+                    return
+                }
+                note.status = newValue
+            })) {
             ForEach(NoteStatus.allCases, id: \.self) { s in
                 Label(
                     s == .draft ? "Draft" : "Signed",

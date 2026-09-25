@@ -12,6 +12,7 @@ struct AddPatientView: View {
     var initialSetting: ClinicalSetting
 
     @State var showDuplicateAlert = false
+    @State var showStorageBlocked = false
     @State var didSave = false   // blocks a double tap on Add from creating two records
 
     // Identity
@@ -92,6 +93,7 @@ struct AddPatientView: View {
             } message: {
                 Text(duplicateMessage)
             }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         }
     }
 

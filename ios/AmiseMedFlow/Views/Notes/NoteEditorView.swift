@@ -19,6 +19,7 @@ struct NoteEditorView: View {
     @State private var showDischargeSheet   = false
     @State var dischargeTreatment   = ""
     @State var dischargeFollowUp    = ""
+    @State var showStorageBlocked   = false
 
     let soapPlaceholders = (
         s: "What the patient reports — symptoms, history, concerns",
@@ -119,6 +120,7 @@ struct NoteEditorView: View {
             } message: {
                 Text(aiError ?? "Unknown error")
             }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
             .sheet(isPresented: $showShareSheet) {
                 if let url = shareURL {
                     ShareSheet(items: [url])

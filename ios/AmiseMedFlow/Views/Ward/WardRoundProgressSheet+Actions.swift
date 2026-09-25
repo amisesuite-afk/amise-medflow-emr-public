@@ -65,6 +65,11 @@ extension WardRoundProgressSheet {
     }
 
     func signAndReview() {
+        // In-memory store: the signed note would be lost on quit (StoreHealth.swift).
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
         let note = ClinicalNote(noteType: .progress, patient: patient)
         note.subjective  = subjective.isEmpty ? nil : subjective
         note.objective   = objective.isEmpty  ? nil : objective

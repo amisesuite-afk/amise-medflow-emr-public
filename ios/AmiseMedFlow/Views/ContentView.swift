@@ -21,6 +21,8 @@ struct ContentView: View {
                 CompactRootView()
             }
         }
+        // Storage error banner (in-memory fallback / moved-aside store) above every main screen.
+        .storeHealthBanner()
         .onAppear {
             // Inject context so cloud sync works even if Settings is never opened
             sync.setModelContext(modelContext)
@@ -48,6 +50,7 @@ struct ContentView: View {
         )) {
             LoginView()
                 .environmentObject(sync)
+                .storeHealthBanner()
         }
         // Show AI/PHI consent gate once per installation, after sign-in
         .requireAIConsent()

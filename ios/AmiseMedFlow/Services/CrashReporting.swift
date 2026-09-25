@@ -87,6 +87,18 @@ enum CrashReporting {
         SentrySDK.addBreadcrumb(crumb)
     }
 
+    /// A failed step while opening the on-device store (StoreHealth.swift). Sends a new NSError
+    /// built from the error domain and code only — never the original error, whose userInfo can
+    /// hold file paths or other text — plus two fixed tags (the step and how the launch ended).
+    static func captureStoreFailure(domain: String, code: Int, stage: String, outcome: String) {
+        guard isEnabled else { return }
+        let sanitized = NSError(domain: domain, code: code, userInfo: nil)
+        SentrySDK.capture(error: sanitized) { scope in
+            scope.setTag(value: stage, key: "store_stage")
+            scope.setTag(value: outcome, key: "store_outcome")
+        }
+    }
+
     /// Settings → "Send test report": confirms reports reach Sentry.
     static func sendTestEvent() {
         guard isEnabled else { return }

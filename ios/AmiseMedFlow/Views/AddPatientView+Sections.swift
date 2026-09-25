@@ -120,6 +120,11 @@ extension AddPatientView {
     }
 
     func save() {
+        // In-memory store: the new patient would be lost on quit (StoreHealth.swift).
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
         let conflicts = duplicateMatches
         if !conflicts.isEmpty {
             showDuplicateAlert = true
@@ -130,6 +135,10 @@ extension AddPatientView {
 
     func commitSave() {
         guard !didSave else { return }
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
         didSave = true
         let p = Patient(
             fullName: fullName.trimmingCharacters(in: .whitespaces),

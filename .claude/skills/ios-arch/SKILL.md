@@ -268,6 +268,20 @@ the front-desk iPad, so it must never expose another patient's data:
 - No photo library inside the questionnaire (camera only), no staff triage labels (acuity).
 - `PreConsultEntrySheet` is staff transcription of a paper form, not patient-facing.
 
+## On-device store safety (never lose data silently)
+
+`AmiseMedFlowApp.makeModelContainer()` opens the SwiftData store through `StoreRecovery.open`
+(`Services/StoreHealth.swift`): on disk → the same untouched file again → only if the file can be
+read, move it aside with its `-wal`/`-shm` (`default-moved-aside-<UTC stamp>.store`) and open a
+fresh store once → in-memory fallback. **Never delete or reset the store file.**
+- In-memory: `StoreHealth.isInMemoryFallback` is true, `.storeHealthBanner()` (root, login cover,
+  hand-over) shows a red banner that cannot be dismissed, and new patients / note signing are
+  refused (`StoreHealth.blocksNewClinicalData` + `.storeWriteBlockedAlert(isPresented:)`). A new
+  way to create a patient or sign a note needs the same guard.
+- Each failed step goes to `CrashReporting.captureStoreFailure` (error domain and code only).
+- Settings → Diagnostics (`StoreDiagnosticsRows`) shows the status, file size and moved-aside
+  copies. Tests: `AmiseMedFlowTests/StoreHealthTests.swift`.
+
 ## SwiftData deleted-model crashes
 
 Reading any attribute of a deleted model after save (before `@Query` refreshes) crashes

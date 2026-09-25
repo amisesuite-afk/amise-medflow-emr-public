@@ -53,11 +53,13 @@ private struct PatientHandoverPresentation: ViewModifier {
             content.fullScreenCover(isPresented: $isPresented) {
                 PatientHandoverView(patient: patient, entryPoint: entryPoint,
                                     onFinish: { isPresented = false })
+                    .storeHealthBanner()
             }
         } else {
             content.sheet(isPresented: $isPresented) {
                 PatientHandoverView(patient: patient, entryPoint: entryPoint,
                                     onFinish: { isPresented = false })
+                    .storeHealthBanner()
             }
         }
     }

@@ -21,6 +21,7 @@ struct TodayDashboardView: View {
     // (full screen on iPad, sheet on iPhone; see consultationPresentation).
     @State private var calEncounterPatient: Patient? = nil
     @State private var showPreConsultSheet = false
+    @State private var showStorageBlocked = false
     @State var showCalEventDialog = false
 
     let cal = Calendar.current
@@ -206,6 +207,7 @@ struct TodayDashboardView: View {
             }
             .patientRecordPresentation(item: $selectedPatient)
             .sheet(isPresented: $showAdd) { AddPatientView() }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
             .sheet(isPresented: $showCalendarImport) {
                 CalendarImportSheet(events: calSvc.events)
             }
@@ -229,6 +231,12 @@ struct TodayDashboardView: View {
                     }
                 } else {
                     Button("Enter Pre-Consult Questionnaire") {
+                        // In-memory store: a new patient would be lost on quit (StoreHealth.swift).
+                        guard !StoreHealth.blocksNewClinicalData else {
+                            calEventActionTarget = nil
+                            showStorageBlocked = true
+                            return
+                        }
                         if let event = calEventActionTarget {
                             calEventActionPatient = createAndInsertPatient(from: event)
                         }

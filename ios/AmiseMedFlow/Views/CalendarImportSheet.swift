@@ -30,6 +30,7 @@ struct CalendarImportSheet: View {
     @State private var appointments: [CalendarAppointment] = []
     @State private var importing = false
     @State private var done = false
+    @State private var showStorageBlocked = false
 
     private var selectedCount: Int { appointments.filter { $0.selected && !$0.alreadyExists }.count }
 
@@ -75,6 +76,7 @@ struct CalendarImportSheet: View {
                 }
             }
             .onAppear { buildAppointments() }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         }
     }
 
@@ -190,6 +192,11 @@ struct CalendarImportSheet: View {
 
     private func importSelected() {
         guard selectedCount > 0 else { dismiss(); return }
+        // In-memory store: new patients would be lost on quit (StoreHealth.swift).
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
         importing = true
         let toAdd = appointments.filter { $0.selected && !$0.alreadyExists }
         for appt in toAdd {
