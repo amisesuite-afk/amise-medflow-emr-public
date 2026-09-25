@@ -88,6 +88,7 @@ struct FrontDeskPadView: View {
                     }
                     .buttonStyle(.plain)
                     .padding(.bottom, 4)
+                    .accessibilityIdentifier("fd.tab.\(tab.rawValue)")
                 }
 
                 Spacer()
@@ -385,6 +386,7 @@ private struct FDQuestionnaireView: View {
                         TextField("Name (3+ letters) or MRN…", text: $searchQuery)
                             .textFieldStyle(.roundedBorder)
                             .autocorrectionDisabled()
+                            .accessibilityIdentifier("fd.questionnaire.search")
 
                         if !trimmedQuery.isEmpty && filteredPatients.isEmpty {
                             Text(searchHint)
@@ -416,6 +418,7 @@ private struct FDQuestionnaireView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .padding(.vertical, 4)
+                                .accessibilityIdentifier("fd.questionnaire.result")
                             }
                         }
                     }
@@ -434,6 +437,7 @@ private struct FDQuestionnaireView: View {
                         Label("Walk-In Questionnaire (no patient selected)", systemImage: "person.fill.questionmark")
                             .foregroundStyle(AMColor.accent)
                     }
+                    .accessibilityIdentifier("fd.questionnaire.walkIn")
                 } footer: {
                     Text("Use this when the patient hasn't been registered yet. After staff exit, you can attach the answers to their record.")
                 }

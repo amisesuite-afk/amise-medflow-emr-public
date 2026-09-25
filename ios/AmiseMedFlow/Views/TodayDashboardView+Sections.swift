@@ -54,6 +54,7 @@ extension TodayDashboardView {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text(waitingAccessibilityLabel(patient)))
+                .accessibilityIdentifier("today.patientRow")
                 .listRowBackground(Color.orange.opacity(0.05))
             }
         } header: {
@@ -113,6 +114,7 @@ extension TodayDashboardView {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text(alertAccessibilityLabel(patient, board: board)))
+                .accessibilityIdentifier("today.patientRow")
                 .listRowBackground(Color.red.opacity(0.06))
             }
         } header: {
@@ -152,6 +154,7 @@ extension TodayDashboardView {
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text(A11yLabel.joined([
                     patient.fullName, "New results", board.resultsSummary[patient.id]])))
+                .accessibilityIdentifier("today.patientRow")
                 .listRowBackground(Color.teal.opacity(0.05))
             }
         } header: {
@@ -172,6 +175,7 @@ extension TodayDashboardView {
                     TodayPatientRow(patient: patient, style: .ward)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("today.patientRow")
             }
         } header: {
             HStack {
@@ -200,6 +204,7 @@ extension TodayDashboardView {
                     TodayPatientRow(patient: patient, style: .theatre)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("today.patientRow")
             }
         } header: {
             HStack {
@@ -226,6 +231,7 @@ extension TodayDashboardView {
                     TodayPatientRow(patient: patient, style: .endoscopy)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("today.patientRow")
             }
         } header: {
             HStack {
@@ -252,6 +258,7 @@ extension TodayDashboardView {
                     TodayPatientRow(patient: patient, style: .clinic)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("today.patientRow")
             }
         } header: {
             HStack {

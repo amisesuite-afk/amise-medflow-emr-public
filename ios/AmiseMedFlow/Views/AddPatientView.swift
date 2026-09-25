@@ -83,9 +83,11 @@ struct AddPatientView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .accessibilityIdentifier("addPatient.cancel")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") { save() }.disabled(!nameValid)
+                        .accessibilityIdentifier("addPatient.save")
                 }
             }
             .alert("Already registered", isPresented: $showDuplicateAlert) {
@@ -101,6 +103,7 @@ struct AddPatientView: View {
     private var patientSection: some View {
         Section("Patient") {
             TextField("Full name *", text: $fullName)
+                .accessibilityIdentifier("addPatient.name")
             Picker("Sex", selection: $sex) {
                 ForEach(Sex.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
@@ -223,6 +226,7 @@ struct AddPatientView: View {
         // MARK: Chief complaint — search field + quick chips
         Section("Chief Complaint") {
             TextField("Type complaint", text: $chiefComplaint)
+                .accessibilityIdentifier("addPatient.cc")
 
             let quickComplaints: [String] = [
                 "Abdominal pain", "RUQ pain", "RLQ pain", "Epigastric pain",

@@ -175,6 +175,7 @@ struct AdaptiveQuestionnaireSheet: View {
                     Button { onStaffExit() } label: {
                         Label("Staff: exit", systemImage: "lock.fill")
                             .labelStyle(.titleAndIcon)
+                            .accessibilityIdentifier("questionnaire.staffExit")
                     }
                     .disabled(isStaffExitInProgress)
                     .accessibilityHint("Staff authentication is required to leave the questionnaire.")

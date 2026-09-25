@@ -359,6 +359,7 @@ extension ConsultationView {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                     TextField("Search ICD-10 codes or diagnosis", text: $icdQuery)
                         .autocorrectionDisabled()
+                        .accessibilityIdentifier("consult.dx.search")
                         .onChange(of: icdQuery) { _, q in
                             icdSuggestions = q.count >= 2 ? ClinicalSearchService.searchICD(q) : []
                         }
@@ -386,6 +387,7 @@ extension ConsultationView {
                             Text(icd.category).font(.caption2).foregroundStyle(.tertiary)
                         }
                     }
+                    .accessibilityIdentifier("consult.dx.suggestion")
                 }
 
                 if let dx = patient.workingDiagnosis {

@@ -79,6 +79,7 @@ extension ConsultationView {
             VStack(alignment: .leading, spacing: 2) {
                 Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 TextField("Findings…", text: text, axis: .vertical).lineLimit(2...).font(.callout)
+                    .accessibilityIdentifier("consult.exam.\(label)")
             }
             if !chips.isEmpty {
                 ChipFlow(hSpacing: 6, vSpacing: 6) {

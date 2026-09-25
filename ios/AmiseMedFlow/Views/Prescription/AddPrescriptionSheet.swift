@@ -82,6 +82,7 @@ struct AddPrescriptionSheet: View {
                                 .accessibilityHidden(true)
                             TextField("Search drug name", text: $drugQuery)
                                 .autocorrectionDisabled()
+                                .accessibilityIdentifier("rx.drugSearch")
                                 .onChange(of: drugQuery) { _, q in
                                     drugSuggestions = q.count >= 2 ? ClinicalSearchService.searchDrugs(q) : []
                                     selectedDrug = nil
@@ -111,6 +112,7 @@ struct AddPrescriptionSheet: View {
                                     }
                                 }
                                 .padding(.vertical, 4)
+                                .accessibilityIdentifier("rx.drugSuggestion")
                                 Divider()
                             }
                         }
@@ -197,6 +199,7 @@ struct AddPrescriptionSheet: View {
                             // Severity is shown only by the icon's shape and colour here: speak it.
                             .accessibilityElement(children: .ignore)
                             .accessibilityLabel(Text(InteractionAccessibility.label(for: alert, includeManagement: false)))
+                            .accessibilityIdentifier("rx.liveInteraction")
                         }
                     } header: {
                         Label("Interaction Warning", systemImage: "exclamationmark.triangle.fill")
@@ -238,6 +241,7 @@ struct AddPrescriptionSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") { save() }
                         .disabled(drugQuery.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .accessibilityIdentifier("rx.save")
                 }
             }
         }

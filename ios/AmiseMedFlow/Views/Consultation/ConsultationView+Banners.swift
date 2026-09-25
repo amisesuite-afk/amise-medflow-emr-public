@@ -118,6 +118,7 @@ extension ConsultationView {
         .accessibilityLabel(Text("Allergy alert: " + patient.allergies
             .map { A11yLabel.joined([$0.name, $0.severity, $0.reaction]) }
             .joined(separator: "; ")))
+        .accessibilityIdentifier("consult.allergyBanner")
     }
 
     // MARK: - Clinical alarm banner

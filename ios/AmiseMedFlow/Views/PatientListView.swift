@@ -75,6 +75,7 @@ struct PatientListView: View {
                                     PatientRow(patient: patient)
                                 }
                                 .buttonStyle(.plain)
+                                .accessibilityIdentifier("patients.row")
                             }
                             .onDelete { offsets in
                                 deleteWithDuplicates(from: section.patients, at: offsets)
@@ -106,6 +107,7 @@ struct PatientListView: View {
                         SyncStatusBar()
                         Button { showAdd = true } label: { Image(systemName: "plus") }
                             .accessibilityLabel("Add patient")
+                            .accessibilityIdentifier("patients.add")
                     }
                 }
             }

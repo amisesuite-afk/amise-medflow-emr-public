@@ -29,6 +29,7 @@ struct VitalsHistoryView: View {
                                 .foregroundStyle(.white)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier("vitals.record")
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 60)
@@ -79,6 +80,7 @@ struct VitalsHistoryView: View {
                         .shadow(color: AMColor.accent.opacity(0.4), radius: 8, y: 4)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("vitals.add")
                 .padding(.trailing, 20)
                 .padding(.bottom, 24)
             }

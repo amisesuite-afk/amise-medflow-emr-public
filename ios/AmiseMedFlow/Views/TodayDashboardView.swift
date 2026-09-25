@@ -79,6 +79,7 @@ struct TodayDashboardView: View {
                                             TodayPatientRow(patient: patient, style: rowStyle(for: patient))
                                         }
                                         .buttonStyle(.plain)
+                                        .accessibilityIdentifier("today.patientRow")
                                     }
                                 }
                             }
@@ -129,6 +130,7 @@ struct TodayDashboardView: View {
                         .accessibilityLabel("Add patients from calendar")
                         Button { showAdd = true } label: { Image(systemName: "plus") }
                             .accessibilityLabel("Add patient")
+                            .accessibilityIdentifier("today.addPatient")
                     }
                 }
             }

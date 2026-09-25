@@ -86,6 +86,7 @@ struct VitalsEntryView: View {
                         .animation(.easeInOut(duration: 0.2), value: liveNews2.total)
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(Text(liveNews2AccessibilityLabel))
+                        .accessibilityIdentifier("vitals.news2Preview")
                         .accessibilityAddTraits(.updatesFrequently)
                     }
                 }
@@ -95,10 +96,12 @@ struct VitalsEntryView: View {
                     HStack {
                         TextField("Systolic", text: $bpSystolic).keyboardType(.numberPad)
                             .accessibilityLabel("Systolic blood pressure, mmHg")
+                            .accessibilityIdentifier("vitals.bpSystolic")
                         Text("/").foregroundStyle(.secondary)
                             .accessibilityHidden(true)
                         TextField("Diastolic", text: $bpDiastolic).keyboardType(.numberPad)
                             .accessibilityLabel("Diastolic blood pressure, mmHg")
+                            .accessibilityIdentifier("vitals.bpDiastolic")
                     }
                     quickChips(bpPresets.map { "\($0.sys)/\($0.dia)" },
                                current: bpSystolic.isEmpty ? "" : "\(bpSystolic)/\(bpDiastolic)") { v in
@@ -111,6 +114,7 @@ struct VitalsEntryView: View {
                 Section {
                     TextField("e.g. 72", text: $heartRate).keyboardType(.numberPad)
                         .accessibilityLabel("Heart rate, beats per minute")
+                        .accessibilityIdentifier("vitals.heartRate")
                     quickChips(hrPresets, current: heartRate) { heartRate = $0 }
                 } header: { Text("Heart rate (bpm)") }
 
@@ -118,6 +122,7 @@ struct VitalsEntryView: View {
                 Section {
                     TextField("e.g. 16", text: $respiratoryRate).keyboardType(.numberPad)
                         .accessibilityLabel("Respiratory rate, breaths per minute")
+                        .accessibilityIdentifier("vitals.respiratoryRate")
                     quickChips(rrPresets, current: respiratoryRate) { respiratoryRate = $0 }
                 } header: { Text("Respiratory rate (breaths/min)") }
 
@@ -125,6 +130,7 @@ struct VitalsEntryView: View {
                 Section {
                     TextField("e.g. 36.8", text: $temperatureStr).keyboardType(.decimalPad)
                         .accessibilityLabel("Temperature, degrees Celsius")
+                        .accessibilityIdentifier("vitals.temperature")
                     quickChips(tempPresets, current: temperatureStr) { temperatureStr = $0 }
                 } header: { Text("Temperature (°C)") }
 
@@ -132,6 +138,7 @@ struct VitalsEntryView: View {
                 Section {
                     TextField("e.g. 98", text: $spo2).keyboardType(.numberPad)
                         .accessibilityLabel("Oxygen saturation, percent")
+                        .accessibilityIdentifier("vitals.spo2")
                     quickChips(spo2Presets, current: spo2) { spo2 = $0 }
                     Toggle(isOn: $onSupplementalO2) {
                         Label("On supplemental O₂", systemImage: "wind")
@@ -216,6 +223,7 @@ struct VitalsEntryView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { save() }.disabled(!hasAnyValue)
+                        .accessibilityIdentifier("vitals.save")
                 }
             }
         }

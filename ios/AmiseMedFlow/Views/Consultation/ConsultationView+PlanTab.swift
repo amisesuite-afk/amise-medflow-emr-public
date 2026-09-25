@@ -49,6 +49,7 @@ extension ConsultationView {
                     TextEditor(text: Binding(get: { patient.managementPlan ?? "" },
                                             set: { patient.managementPlan = $0.isEmpty ? nil : $0; touch() }))
                         .frame(minHeight: 160)
+                        .accessibilityIdentifier("consult.plan.editor")
                         .medicalDictation(mode: .plan, patient: patient,
                                           text: Binding(get: { patient.managementPlan ?? "" },
                                                         set: { patient.managementPlan = $0.isEmpty ? nil : $0; touch() }))

@@ -268,6 +268,7 @@ extension PrescriptionView {
                     .padding(.vertical, 2)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(Text(InteractionAccessibility.label(for: alert, includeManagement: true)))
+                    .accessibilityIdentifier("rx.interactionAlert")
                 }
             }
         } header: {

@@ -86,6 +86,7 @@ struct PrescriptionView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Add prescription")
+                .accessibilityIdentifier("rx.add")
             }
             .padding(.trailing, 20)
             .padding(.bottom, 24)

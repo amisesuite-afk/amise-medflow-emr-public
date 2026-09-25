@@ -117,6 +117,7 @@ struct PatientDetailPadView: View {
                         .foregroundStyle(AMColor.accent)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("patient.back")
             }
 
             AcuityPip(acuity: patient.acuity)
@@ -180,6 +181,7 @@ struct PatientDetailPadView: View {
                 }
                 .buttonStyle(.plain)
                 .help("Save Visit Snapshot")
+                .accessibilityIdentifier("patient.saveVisit")
                 .confirmationDialog("Save visit snapshot for \(patient.fullName)?",
                                     isPresented: $showSaveVisitConfirm,
                                     titleVisibility: .visible) {
@@ -233,6 +235,7 @@ struct PatientDetailPadView: View {
                         }
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("patient.section.\(String(describing: section))")
                 }
             }
         }

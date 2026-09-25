@@ -52,6 +52,7 @@ extension ConsultationView {
                           axis: .vertical)
                     .font(.callout)
                     .lineLimit(3...)
+                    .accessibilityIdentifier("consult.cc.field")
                 if isAssessing {
                     HStack(spacing: 8) {
                         ProgressView().scaleEffect(0.8)

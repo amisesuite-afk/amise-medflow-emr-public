@@ -118,6 +118,7 @@ extension ConsultationView {
                     TextEditor(text: Binding(get: { patient.hpi ?? "" },
                                             set: { patient.hpi = $0.isEmpty ? nil : $0; touch() }))
                         .frame(minHeight: 140)
+                        .accessibilityIdentifier("consult.hpi.editor")
                         .medicalDictation(mode: .hpi, patient: patient,
                                           text: Binding(get: { patient.hpi ?? "" },
                                                         set: { patient.hpi = $0.isEmpty ? nil : $0; touch() }))

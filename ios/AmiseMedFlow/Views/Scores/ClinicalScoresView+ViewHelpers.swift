@@ -125,6 +125,7 @@ extension ClinicalScoresView {
                 }
                 .buttonStyle(.plain)
                 .padding(.horizontal)
+                .accessibilityIdentifier("scores.browseAll")
             }
             .padding(.top, 16)
             .padding(.bottom, 32)
@@ -240,6 +241,7 @@ extension ClinicalScoresView {
         .buttonStyle(.plain)
         // "NEWS2 7, high risk" rather than "7" (the colour alone carried the band).
         .accessibilityLabel(Text(monitoringAccessibilityLabel(score, live: liveNews2, saved: savedEntry)))
+        .accessibilityIdentifier("scores.monitor.\(String(describing: score))")
         .padding(.horizontal)
     }
 
@@ -284,6 +286,7 @@ extension ClinicalScoresView {
                     compactScoreCard(rec)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("scores.card.\(String(describing: rec.score))")
             }
         }
         .padding(.horizontal)

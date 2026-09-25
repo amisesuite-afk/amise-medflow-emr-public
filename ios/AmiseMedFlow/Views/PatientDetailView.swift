@@ -78,6 +78,7 @@ struct PatientDetailView: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("patient.quick.\(label)")
     }
 
     private var latestNews2: (score: Int, color: Color, risk: String)? {
@@ -165,6 +166,7 @@ struct PatientDetailView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
+                        .accessibilityIdentifier("patient.done")
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     // Own view: the handover text reads most of the chart, and building it here

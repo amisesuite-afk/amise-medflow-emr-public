@@ -21,6 +21,7 @@ extension ClinicalScoresView {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(r.systemName)
                         .font(.headline)
+                        .accessibilityIdentifier("scores.result")
                     Text(r.interpretation)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -172,6 +173,7 @@ extension ClinicalScoresView {
             .buttonStyle(.plain)
             .disabled(scoreSaved)
             .animation(.easeInOut(duration: 0.2), value: scoreSaved)
+            .accessibilityIdentifier("scores.saveToAssessment")
         }
         .padding(16)
         .background(.background, in: RoundedRectangle(cornerRadius: 14))

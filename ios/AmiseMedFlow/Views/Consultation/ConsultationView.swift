@@ -351,6 +351,7 @@ struct ConsultationView: View {
                 }
                 .accessibilityLabel("Save visit")
                 .accessibilityValue(encounterSavedFeedback ? "Saved" : "")
+                .accessibilityIdentifier("consult.saveVisit")
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if patient.encounterStatus != .complete {
@@ -370,6 +371,7 @@ struct ConsultationView: View {
                     // The green / grey tint is the only on-screen sign of how much is documented.
                     .accessibilityLabel("Complete encounter")
                     .accessibilityValue("\(completeness.filled) of \(completeness.total) steps documented")
+                    .accessibilityIdentifier("consult.complete")
                 } else {
                     Label("Encounter complete", systemImage: "checkmark.seal.fill")
                         .font(.system(size: 12, weight: .semibold))

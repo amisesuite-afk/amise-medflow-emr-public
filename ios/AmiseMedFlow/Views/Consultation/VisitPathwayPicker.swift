@@ -80,6 +80,7 @@ struct VisitPathwayPicker: View {
                 .stroke(color.opacity(highlighted || isCurrent ? 0.6 : 0.15), lineWidth: highlighted ? 1.5 : 1))
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("pathway.card.\(p.rawValue)")
     }
 }
 
@@ -104,6 +105,7 @@ struct VisitPathwaySheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(current == nil ? "Skip" : "Keep \(current!.title)") { dismiss() }
+                        .accessibilityIdentifier("pathway.dismiss")
                 }
             }
         }

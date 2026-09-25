@@ -33,6 +33,7 @@ extension ConsultationView {
             .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             .accessibilityLabel("Visit pathway: \(pathway.title)")
             .accessibilityHint("Choose a different visit pathway")
+            .accessibilityIdentifier("consult.pathwayPill")
             .padding(.leading, 8)
 
             ScrollViewReader { proxy in
@@ -58,6 +59,7 @@ extension ConsultationView {
                                 .minimumTouchTarget()
                         }
                         .accessibilityLabel("More sections")
+                        .accessibilityIdentifier("consult.more")
                     }
                     .padding(.horizontal, 4)
                 }
@@ -102,6 +104,7 @@ extension ConsultationView {
         // The filled dot and the underline are colour / shape only: say them.
         .accessibilityLabel(stepAccessibilityLabel(tab, number: number, isFilled: isFilled))
         .accessibilityAddTraits(activeTab == tab ? .isSelected : [])
+        .accessibilityIdentifier("consult.step.\(String(describing: tab))")
     }
 
     private func stepAccessibilityLabel(_ tab: ConsultTab, number: Int?, isFilled: Bool) -> String {
@@ -162,6 +165,7 @@ extension ConsultationView {
                     .minimumTouchTarget()
             }
             .accessibilityLabel("Back: \(pathway.label(for: prev))")
+            .accessibilityIdentifier("consult.back")
         }
     }
 
@@ -182,6 +186,7 @@ extension ConsultationView {
                 .minimumTouchTarget()
             }
             .accessibilityLabel("Next: \(pathway.label(for: next))")
+            .accessibilityIdentifier("consult.next")
         } else {
             Label("Last step", systemImage: "flag.checkered")
                 .scaledFont(size: 13, weight: .semibold)
