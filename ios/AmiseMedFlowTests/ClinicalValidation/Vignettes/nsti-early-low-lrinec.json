@@ -1,0 +1,397 @@
+{
+  "schemaVersion": 1,
+  "id": "nsti-early-low-lrinec",
+  "condition": "Necrotising soft-tissue infection (necrotising fasciitis)",
+  "category": "soft-tissue",
+  "permutationOf": "nsti-leg-diabetic-sepsis",
+  "permutationLabel": "Early NSTI, LRINEC 0, minimal skin signs",
+  "summary": "38-year-old woman, 18 h after a cat scratch to the forearm: severe pain out of proportion, woody induration beyond faint erythema, HR 112, T 38.2 °C; WBC 13, CRP 90, normal Na, creatinine, glucose, Hb 13.9 (LRINEC 0).",
+  "tags": [
+    "nsti",
+    "lrinec",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 62
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Severe right forearm pain",
+    "hpi": "Scratched by a cat on the right forearm yesterday. Overnight developed severe pain in the forearm, out of proportion to the faint redness, needing repeated morphine in the department. Feels feverish and unwell. Previously fit and well. Pregnancy test negative.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Forearm"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "arm pain",
+      "fever"
+    ],
+    "negatives": [
+      "rigors"
+    ],
+    "exam": {
+      "general": "Distressed by pain. HR 112, BP 118/72, T 38.2°C, RR 20.",
+      "msk": "Right forearm: faint pink erythema 4 × 6 cm around two scratches, woody hard induration of the forearm extending well beyond the erythema, severe tenderness beyond the skin changes, pain on passive finger extension. No crepitus. No bullae."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 112,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 20,
+        "temperatureC": 38.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.9,
+        "unit": "g/dL",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 90,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 138,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 72,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 6.1,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Veterinary nurse. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Necrotising fasciitis (suspected)",
+      "icd10": "M72.6",
+      "paneDiseaseId": "necrotising_fasciitis",
+      "assessmentText": "Suspected early necrotising soft-tissue infection of the right forearm despite LRINEC 0 — pain out of proportion with induration beyond erythema. Needs urgent surgical exploration."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "limb pain",
+          "fever",
+          "cellulitis"
+        ],
+        "examFindings": {
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "general": [
+            "In distress"
+          ]
+        },
+        "paneAnswers": {
+          "erythema_surrounding": true,
+          "fever": true,
+          "crepitus_soft_tissue": false
+        },
+        "durationDays": 1,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-nsti",
+          "severity": "critical",
+          "match": [
+            "necrotis",
+            "fasciitis"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018",
+            "fernando-2019"
+          ],
+          "note": "A LRINEC of 0 must not remove NSTI from the list when the clinical picture fits.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholecystitis, Cellulitis, Skin abscess. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #2.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-sis-ssti-2018"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-pain-out-of-proportion",
+          "severity": "critical",
+          "match": [
+            "necrotis",
+            "fasciitis",
+            "out of proportion",
+            "disproportionate"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-surgical-exploration",
+          "severity": "critical",
+          "match": [
+            "debrid",
+            "surgical exploration",
+            "re:explor(e|ation)[^.;]{0,40}(theatre|surg|operat)",
+            "re:(theatre|surgery)[^.;]{0,30}(immediate|emergency|urgent)"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "note": "Clinical suspicion → surgical exploration (finger test / incision), not observation.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-clindamycin",
+          "severity": "critical",
+          "match": [
+            "clindamycin"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018",
+            "idsa-ssti-2014"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-lrinec-reassurance",
+          "severity": "critical",
+          "match": [
+            "re:lrinec[^.;]{0,60}(low|unlikely|exclude|rule[sd]? out|reassur)",
+            "re:low (probability|risk) of (nf|necrotis)"
+          ],
+          "unless": [
+            "does not exclude",
+            "do not use",
+            "cannot exclude",
+            "not exclude",
+            "should not"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018",
+            "fernando-2019"
+          ],
+          "note": "A low LRINEC must not be presented as reassurance. The iOS LRINEC calculator is not driven by this harness; see the findings report.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-oral-cellulitis-plan",
+          "severity": "quality",
+          "match": [
+            "re:(oral|\\bpo\\b)[^.;]{0,30}(flucloxacillin|phenoxymethylpenicillin|co-amoxiclav)",
+            "re:(flucloxacillin|phenoxymethylpenicillin|co-amoxiclav)[^.;]{0,20}\\bpo\\b"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan",
+            "ios.soap.plan"
+          ],
+          "note": "The documented plan must not be an oral cellulitis regimen.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sis-ssti-2018",
+      "name": "WSES/SIS-E consensus conference — management of skin and soft-tissue infections",
+      "year": 2018,
+      "section": "Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene",
+      "citation": "Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58.",
+      "verified": false
+    },
+    {
+      "id": "fernando-2019",
+      "name": "NSTI diagnostic accuracy — systematic review and meta-analysis",
+      "year": 2019,
+      "section": "LRINEC ≥6 has low sensitivity for NSTI; a low score does not exclude it; clinical suspicion should prompt surgical exploration",
+      "citation": "Fernando SM, Tran A, Cheng W, et al. Necrotizing soft tissue infection: diagnostic accuracy of physical examination, imaging, and LRINEC score: a systematic review and meta-analysis. Ann Surg. 2019;269:58–65.",
+      "verified": false
+    },
+    {
+      "id": "lrinec-2004",
+      "name": "LRINEC score (Laboratory Risk Indicator for Necrotising Fasciitis)",
+      "year": 2004,
+      "section": "Score items and weights: CRP ≥150 mg/L (4); WBC 15–25 (1), >25 (2); Hb 11–13.5 (1), <11 (2); Na <135 (2); creatinine >141 µmol/L (2); glucose >10 mmol/L (1)",
+      "citation": "Wong CH, Khin LW, Heng KS, Tan KC, Low CO. The LRINEC (Laboratory Risk Indicator for Necrotizing Fasciitis) score: a tool for distinguishing necrotizing fasciitis from other soft tissue infections. Crit Care Med. 2004;32:1535–41.",
+      "verified": false
+    },
+    {
+      "id": "idsa-ssti-2014",
+      "name": "IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update)",
+      "year": 2014,
+      "section": "Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF",
+      "citation": "Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the same diagnosis with LRINEC 0. WSES/SIS and the Fernando meta-analysis: LRINEC has low sensitivity and must not rule out NSTI. The engines must keep NSTI on the differential, escalate, and plan surgical exploration. Tests whether a low score or near-normal labs lead to false reassurance.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

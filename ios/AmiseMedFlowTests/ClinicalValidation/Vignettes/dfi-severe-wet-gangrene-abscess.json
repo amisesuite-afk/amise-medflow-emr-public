@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "id": "dfi-severe-wet-gangrene-abscess",
+  "condition": "Severe diabetes-related foot infection (wet gangrene, deep abscess)",
+  "category": "soft-tissue",
+  "permutationOf": "dfi-moderate-osteomyelitis",
+  "permutationLabel": "IWGDF/IDSA grade 4: wet gangrene, plantar abscess, sepsis",
+  "summary": "72-year-old woman on insulin: wet gangrene of the 2nd–3rd toes, fluctuant plantar space swelling, cellulitis to the midfoot, foul smell; T 38.9 °C, HR 122, RR 24, BP 98/60; glucose 24, WBC 23, lactate 3.4; X-ray gas in the plantar soft tissues.",
+  "tags": [
+    "diabetic-foot",
+    "gangrene",
+    "sepsis",
+    "iwgdf"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 72,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Black toes and swollen foot",
+    "hpi": "One week of black discolouration of two toes on the left foot, now wet and smelling, with swelling of the sole and redness spreading up the foot over two days. Fevers and shaking. Insulin-treated diabetes, peripheral vascular disease.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Foot"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "toe gangrene",
+      "foot swelling",
+      "fever",
+      "rigors"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Unwell, T 38.9°C, HR 122, RR 24, BP 98/60. Alert.",
+      "msk": "Left foot: wet gangrene of the 2nd and 3rd toes with foul discharge; tense fluctuant swelling of the plantar arch (deep plantar space abscess); erythema to the midfoot; crepitus over the plantar arch. Pedal pulses absent, popliteal palpable."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 122,
+        "systolicBp": 98,
+        "diastolicBp": 60,
+        "respiratoryRate": 24,
+        "temperatureC": 38.9,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 24
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 23,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 260,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 132,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 24,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "X-ray left foot",
+        "modality": "XR",
+        "region": "Left foot",
+        "result": "Soft-tissue gas in the plantar arch and around the 2nd/3rd metatarsophalangeal joints. No fracture.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Peripheral arterial disease",
+      "Chronic kidney disease"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin aspart",
+        "dose": "sliding scale",
+        "frequency": "TDS",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Insulin glargine",
+        "dose": "30 units",
+        "frequency": "nocte",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "PAD"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "PAD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone. Ex-smoker 40 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Severe diabetic foot infection with wet gangrene and plantar abscess",
+      "icd10": "E11.52",
+      "assessmentText": "IWGDF/IDSA grade 4 (severe) diabetes-related foot infection: wet gangrene of toes, deep plantar space abscess with soft-tissue gas, sepsis, background PAD. Needs urgent surgical drainage and debridement."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Diabetic foot / infected foot",
+        "symptoms": [
+          "diabetic foot infection",
+          "foot ulcer",
+          "fever",
+          "rigors",
+          "cold foot"
+        ],
+        "symptomDetails": {
+          "diabetic foot infection": [
+            "Gangrene",
+            "Abscess",
+            "Toe / digit",
+            "Forefoot",
+            "Fever",
+            "Spreading redness",
+            "Foul odour",
+            "Poor peripheral pulses"
+          ]
+        },
+        "examFindings": {
+          "wound": [
+            "Wet gangrene",
+            "Abscess",
+            "Cellulitis",
+            "Malodorous",
+            "Pulses absent"
+          ],
+          "extremities": [
+            "DP absent",
+            "PT absent"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "skin_ulceration": true,
+          "erythema_surrounding": true,
+          "fever": true,
+          "crepitus_soft_tissue": true,
+          "absent_pulses": true
+        },
+        "durationDays": 7,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-dfi",
+          "severity": "critical",
+          "match": [
+            "diabetic foot",
+            "gangrene",
+            "foot infection"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholangitis, Acute cholecystitis, Acute diverticulitis (fever/rigors). Triage surgical matches rank diabetic foot #1; symptom inference #4.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "mnm-nsti",
+          "severity": "quality",
+          "match": [
+            "necrotis",
+            "fasciitis",
+            "gas gangrene"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ],
+          "note": "Soft-tissue gas and crepitus.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 omits NSTI/gas gangrene despite crepitus and soft-tissue gas.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "iwgdf-2023-infection",
+          "nice-ng19"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "hypotension",
+            "shock",
+            "haemodynamic",
+            "hemodynamic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-vascular-imaging",
+          "severity": "quality",
+          "match": [
+            "duplex",
+            "re:\\bangiogra",
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "toe pressure",
+            "re:\\babi\\b",
+            "abpi"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-urgent-surgery",
+          "severity": "critical",
+          "match": [
+            "debrid",
+            "surgical exploration",
+            "re:explor(e|ation)[^.;]{0,40}(theatre|surg|operat)",
+            "re:(theatre|surgery)[^.;]{0,30}(immediate|emergency|urgent)",
+            "amputation",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ],
+          "note": "IWGDF/IDSA: urgent surgery for deep abscess, gas and extensive wet gangrene.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain. Prompts give generic sepsis antibiotics only; no drainage/debridement of the plantar abscess.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "mgmt-iv-broad-spectrum",
+          "severity": "critical",
+          "match": [
+            "piperacillin",
+            "tazocin",
+            "meropenem",
+            "carbapenem",
+            "broad-spectrum",
+            "broad spectrum"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-vascular",
+          "severity": "quality",
+          "match": [
+            "vascular surg",
+            "vascular team",
+            "vascular review",
+            "vascular referral",
+            "vascular service",
+            "vascular on-call",
+            "revascularis"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ],
+          "note": "Absent pedal pulses: vascular assessment and revascularisation planning after source control.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.52 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "mgmt-glycaemic",
+          "severity": "quality",
+          "match": [
+            "insulin",
+            "glucose",
+            "glycaemic",
+            "vrii",
+            "sliding scale"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "iwgdf-2023-infection",
+      "name": "IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023)",
+      "year": 2023,
+      "section": "IWGDF/IDSA classification: 1 uninfected, 2 mild, 3 moderate (erythema >2 cm or deeper structures), 4 severe (with SIRS); (O) suffix for osteomyelitis; probe-to-bone plus plain X-ray, MRI when unclear; culture deep tissue (not swabs); do not give antibiotics for uninfected ulcers; urgent surgical consultation for severe infection, deep abscess, gas or necrotising infection, extensive gangrene",
+      "citation": "Senneville É, Albalawi Z, van Asten SA, et al. IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (IWGDF/IDSA 2023). Diabetes Metab Res Rev. 2024;40:e3687.",
+      "verified": false
+    },
+    {
+      "id": "iwgdf-2023-pad",
+      "name": "Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023)",
+      "year": 2023,
+      "section": "Assess every foot ulcer for PAD: pedal pulses plus Doppler waveforms, ABI and TBI (ABI unreliable when vessels are incompressible); toe pressure <30 mmHg or TBI <0.25 → urgent vascular imaging and consideration of revascularisation",
+      "citation": "Fitridge R, Chuter V, Mills J, et al. The intersocietal IWGDF, ESVS, SVS guidelines on peripheral artery disease in people with diabetes and a foot ulcer. Diabetes Metab Res Rev. 2024;40:e3686.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng19",
+      "name": "NICE NG19 — Diabetic foot problems: prevention and management",
+      "year": 2015,
+      "section": "Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services",
+      "citation": "National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019).",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: severe end — wet gangrene, deep abscess, gas and sepsis with PAD. Expectations: emergency, sepsis alarm, urgent surgical drainage/debridement, broad-spectrum IV antibiotics and vascular input.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

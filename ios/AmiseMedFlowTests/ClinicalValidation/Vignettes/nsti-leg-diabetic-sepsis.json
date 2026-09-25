@@ -1,0 +1,553 @@
+{
+  "schemaVersion": 1,
+  "id": "nsti-leg-diabetic-sepsis",
+  "condition": "Necrotising soft-tissue infection (necrotising fasciitis)",
+  "category": "soft-tissue",
+  "permutationOf": null,
+  "summary": "52-year-old man with type 2 diabetes: 36 h of left leg pain out of proportion to a small graze, tense oedema, dusky skin, bullae and crepitus; T 38.9 °C, HR 118, BP 96/58; CRP 290, WBC 22, Na 131, creatinine 160, glucose 16 (LRINEC 11).",
+  "tags": [
+    "nsti",
+    "sepsis",
+    "diabetes",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 94
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful swollen left leg",
+    "hpi": "Grazed left shin on a fence 3 days ago. Since yesterday severe pain in the calf, far worse than the skin looks, spreading quickly up the leg over hours. Fevers and rigors overnight. Type 2 diabetes on metformin and gliclazide, sugars running high. Pain out of proportion to the visible signs.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Lower leg"
+      ],
+      "character": [
+        "Burning",
+        "Throbbing"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "leg pain",
+      "leg swelling",
+      "fever",
+      "rigors"
+    ],
+    "negatives": [
+      "chest pain",
+      "shortness of breath"
+    ],
+    "exam": {
+      "general": "Unwell, sweaty, tachycardic 118, BP 96/58, temperature 38.9°C, RR 24. Alert.",
+      "msk": "Left lower leg: tense oedema from ankle to knee, dusky purple patches with haemorrhagic bullae over the anterior shin, crepitus on palpation, tenderness extending beyond the erythema, skin anaesthetic over the bullae. Small healing graze on shin.",
+      "skin": "Rapidly spreading erythema marked 2 h ago now 6 cm beyond the pen line. Crepitus. Haemorrhagic bullae."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "systolicBp": 96,
+        "diastolicBp": 58,
+        "respiratoryRate": 24,
+        "temperatureC": 38.9,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 16.2
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 22.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.8,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 290,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 160,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 16.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Construction worker. Smoker 20/day.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": false,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Necrotising fasciitis",
+      "icd10": "M72.6",
+      "paneDiseaseId": "necrotising_fasciitis",
+      "assessmentText": "Necrotising soft-tissue infection of the left leg (necrotising fasciitis) with sepsis in a diabetic. LRINEC 11. Needs emergency surgical debridement."
+    },
+    "platform": {
+      "ios": {
+        "specialtyHint": "general surgery"
+      },
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "limb pain",
+          "leg swelling",
+          "fever",
+          "rigors",
+          "cellulitis"
+        ],
+        "examFindings": {
+          "general": [
+            "Diaphoretic",
+            "In distress"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "extremities": [
+            "Oedema present",
+            "Wound present"
+          ],
+          "wound": [
+            "Cellulitis",
+            "Necrotic"
+          ]
+        },
+        "paneAnswers": {
+          "erythema_surrounding": true,
+          "crepitus_soft_tissue": true,
+          "fever": true,
+          "elevated_wbc": true,
+          "haemodynamic_instability": true
+        },
+        "durationDays": 2,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-nsti-top3",
+          "severity": "critical",
+          "match": [
+            "necrotis",
+            "fasciitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholangitis, Acute cholecystitis, Acute appendicitis — even with crepitus, erythema, instability and raised WBC answered in PANE. NSTI prior is 0.003; fever/rigors favour biliary diseases and socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. Symptom inference ranks NSTI #1.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal. Review the necrotising_fasciitis prior and give crepitus_soft_tissue a stronger likelihood ratio."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-sis-ssti-2018",
+          "ssc-2021"
+        ],
+        "note": "Suspected NSTI with sepsis: immediate surgical assessment and resuscitation.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis-shock",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "hypotension",
+            "shock",
+            "haemodynamic",
+            "hemodynamic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-nsti",
+          "severity": "critical",
+          "match": [
+            "necrotis",
+            "fasciitis",
+            "pain out of proportion",
+            "disproportionate pain"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "note": "The engine must name NSTI (or its hallmark) as a red flag, not only generic sepsis.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "flag-diabetes",
+          "severity": "quality",
+          "match": [
+            "diabet",
+            "hyperglyc"
+          ],
+          "note": "Diabetes is a major NSTI risk factor; glucose 16.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-lrinec",
+          "severity": "quality",
+          "score": "lrinec",
+          "guidelineRefs": [
+            "lrinec-2004"
+          ],
+          "note": "Supportive only; must never gate surgery.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "getCdsSuggestions has no LRINEC scale (clinical-cds.ts); iOS has one.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-rec-qsofa",
+          "severity": "quality",
+          "score": "qsofa",
+          "guidelineRefs": [
+            "sepsis-3"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 2,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis-3"
+          ],
+          "note": "RR ≥22 and SBP ≤100.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-debridement",
+          "severity": "critical",
+          "match": [
+            "debrid",
+            "surgical exploration",
+            "re:explor(e|ation)[^.;]{0,40}(theatre|surg|operat)",
+            "re:(theatre|surgery)[^.;]{0,30}(immediate|emergency|urgent)"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018",
+            "idsa-ssti-2014"
+          ],
+          "note": "Source control by urgent surgical debridement is the determinant of survival.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-clindamycin",
+          "severity": "critical",
+          "match": [
+            "clindamycin"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018",
+            "idsa-ssti-2014"
+          ],
+          "note": "Anti-toxin agent as part of the empirical regimen.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-broad-spectrum",
+          "severity": "critical",
+          "match": [
+            "piperacillin",
+            "tazocin",
+            "meropenem",
+            "carbapenem",
+            "broad-spectrum",
+            "broad spectrum"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018",
+            "idsa-ssti-2014"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-critical-care",
+          "severity": "quality",
+          "match": [
+            "icu",
+            "hdu",
+            "intensive care",
+            "critical care"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-wait-for-imaging",
+          "severity": "critical",
+          "match": [
+            "re:(await|wait for|pending)[^.;]{0,30}(ct|mri|imaging)[^.;]{0,40}(before|prior to)[^.;]{0,20}(surg|theatre|debrid)"
+          ],
+          "unless": [
+            "do not",
+            "don't",
+            "without waiting",
+            "no delay"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "note": "Imaging must not delay surgery when NSTI is clinically suspected.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sis-ssti-2018",
+      "name": "WSES/SIS-E consensus conference — management of skin and soft-tissue infections",
+      "year": 2018,
+      "section": "Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene",
+      "citation": "Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58.",
+      "verified": false
+    },
+    {
+      "id": "idsa-ssti-2014",
+      "name": "IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update)",
+      "year": 2014,
+      "section": "Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF",
+      "citation": "Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52.",
+      "verified": false
+    },
+    {
+      "id": "lrinec-2004",
+      "name": "LRINEC score (Laboratory Risk Indicator for Necrotising Fasciitis)",
+      "year": 2004,
+      "section": "Score items and weights: CRP ≥150 mg/L (4); WBC 15–25 (1), >25 (2); Hb 11–13.5 (1), <11 (2); Na <135 (2); creatinine >141 µmol/L (2); glucose >10 mmol/L (1)",
+      "citation": "Wong CH, Khin LW, Heng KS, Tan KC, Low CO. The LRINEC (Laboratory Risk Indicator for Necrotizing Fasciitis) score: a tool for distinguishing necrotizing fasciitis from other soft tissue infections. Crit Care Med. 2004;32:1535–41.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng51",
+      "name": "NICE NG51 — Sepsis: recognition, diagnosis and early management",
+      "year": 2016,
+      "section": "High-risk criteria (e.g. new altered mental state, RR ≥25, SBP ≤90, HR >130, lactate ≥2 with other criteria): blood cultures, IV antibiotics within 1 h, fluids, senior review",
+      "citation": "National Institute for Health and Care Excellence. Sepsis: recognition, diagnosis and early management (NG51). London: NICE; 2016 (updated).",
+      "verified": false
+    },
+    {
+      "id": "sepsis-3",
+      "name": "Sepsis-3 consensus definitions",
+      "year": 2016,
+      "section": "qSOFA: RR ≥22, altered mentation, SBP ≤100 mmHg",
+      "citation": "Singer M, Deutschman CS, Seymour CW, et al. The Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). JAMA. 2016;315:801–10.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base NSTI case with every classic feature (pain out of proportion, rapid spread, bullae, crepitus, sepsis) in a diabetic. Engines must rank NSTI first, escalate to emergency, alarm for sepsis, and recommend emergency debridement with broad-spectrum antibiotics including clindamycin. The CC is a presentation (\"Painful swollen left leg\"). PANE answers stand for the clinician confirming crepitus, erythema and instability in the PANE Q&A.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

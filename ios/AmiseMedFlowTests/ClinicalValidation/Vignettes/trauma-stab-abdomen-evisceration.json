@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-stab-abdomen-evisceration",
+  "condition": "Penetrating abdominal trauma (stab wound with evisceration)",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "summary": "26-year-old man stabbed in the left upper quadrant 30 min ago: omentum eviscerated through a 3 cm wound, BP 100/64, HR 112, guarding.",
+  "tags": [
+    "trauma",
+    "penetrating",
+    "laparotomy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 26,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Stab wound to abdomen",
+    "hpi": "Stabbed once in the left upper abdomen with a kitchen knife 30 minutes ago. Knife not in situ. Abdominal pain. Tetanus status unknown.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "LUQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "bleeding wound"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Anxious. HR 112, BP 100/64, RR 22, SpO2 97%.",
+      "abdomen": "3 cm stab wound left upper quadrant, below the costal margin, with omentum eviscerated. Tender with guarding in the left upper quadrant.",
+      "respiratory": "Air entry equal, no surgical emphysema."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 100,
+        "diastolicBp": 64,
+        "respiratoryRate": 22,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.6,
+        "unit": "g/dL",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Unemployed.",
+    "confirmedDiagnosis": {
+      "name": "Penetrating stab wound of abdomen with omental evisceration",
+      "icd10": "S31.609A",
+      "paneDiseaseId": "penetrating_abdominal_trauma",
+      "assessmentText": "Penetrating left upper quadrant stab wound with omental evisceration and peritonism. Laparotomy; left thoraco-abdominal site — exclude diaphragmatic injury and haemothorax."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain"
+        ],
+        "examFindings": {
+          "abdomen": [
+            "Tender LUQ",
+            "Guarding"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "abdominal_tenderness": true,
+          "guarding": true,
+          "mechanism_blunt": false,
+          "haemodynamic_instability": false
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-penetrating-top3",
+          "severity": "quality",
+          "match": [
+            "penetrating",
+            "stab"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "atls-10-abdomen"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Inguinal/femoral hernia, Acute appendicitis, GORD; the SOCRATES mapper has no trauma features and PANE needs mechanism answers.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "atls-10-abdomen",
+          "east-penetrating-2010"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "adaptiveTriage has no stab/penetrating/evisceration keywords (rules.ts RED_FLAGS / PATHWAY_DEFINITIONS) and the vital signs are below its fixed thresholds (HR >120, SBP <90, RR >24), so it returns same_day_call for an eviscerated stab wound.",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "Add trauma/burns red-flag rules to rules.ts (burn with TBSA, stab/gunshot/penetrating wound, evisceration, high-energy mechanism, head injury on anticoagulant) at urgent severity, and a shock-index or relative-hypotension rule."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cxr",
+          "severity": "quality",
+          "match": [
+            "cxr",
+            "chest x-ray",
+            "chest radiograph"
+          ],
+          "guidelineRefs": [
+            "atls-10-abdomen"
+          ],
+          "note": "Left thoraco-abdominal stab: haemothorax/pneumothorax and diaphragm.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-laparotomy",
+          "severity": "critical",
+          "match": [
+            "laparotomy"
+          ],
+          "guidelineRefs": [
+            "atls-10-abdomen",
+            "east-penetrating-2010"
+          ],
+          "note": "Evisceration and peritonism → laparotomy.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-tetanus",
+          "severity": "quality",
+          "match": [
+            "tetanus"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "piperacillin",
+            "co-amoxiclav",
+            "metronidazole",
+            "cefuroxime"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bedside-reduction",
+          "severity": "quality",
+          "match": [
+            "re:reduce[^.;]{0,20}(evisc|bowel|omentum)"
+          ],
+          "unless": [
+            "do not",
+            "don't",
+            "not attempt"
+          ],
+          "guidelineRefs": [
+            "atls-10-abdomen"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "atls-10-abdomen"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-abdomen",
+      "name": "ATLS 10th edition — abdominal and pelvic trauma",
+      "year": 2018,
+      "section": "Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5.",
+      "verified": false
+    },
+    {
+      "id": "east-penetrating-2010",
+      "name": "EAST practice management guideline — selective non-operative management of penetrating abdominal trauma",
+      "year": 2010,
+      "section": "Haemodynamic instability, peritonitis or evisceration → laparotomy; stable patients without peritonitis may undergo serial examination (± CT, local wound exploration)",
+      "citation": "Como JJ, Bokhari F, Chiu WC, et al. Practice management guidelines for selective nonoperative management of penetrating abdominal trauma. J Trauma. 2010;68:721–33.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base penetrating case with a mandatory laparotomy indication (evisceration, peritonism). Tests emergency level, laparotomy, tetanus and antibiotics, and the thoraco-abdominal CXR.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "id": "pe-postop-day5",
+  "condition": "Pulmonary embolism (post-operative)",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "62-year-old woman on day 5 after right hemicolectomy: sudden dyspnoea and right pleuritic chest pain, HR 118, RR 26, SpO₂ 91 %, BP 112/70 — Wells PE 7 (likely).",
+  "tags": [
+    "vte",
+    "pe",
+    "post-op",
+    "wells"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 62,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 165,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 5
+    },
+    "chiefComplaint": "Sudden shortness of breath",
+    "hpi": "Day 5 after laparoscopic right hemicolectomy for caecal cancer. Sudden breathlessness this morning with sharp right-sided chest pain on breathing in. No cough, no haemoptysis. Mobilising slowly. Enoxaparin prophylaxis started day 1.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Right chest"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Shortness of breath",
+        "Pleuritic pain"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "shortness of breath",
+      "pleuritic chest pain"
+    ],
+    "negatives": [
+      "cough",
+      "haemoptysis",
+      "calf swelling",
+      "fever"
+    ],
+    "exam": {
+      "general": "Breathless at rest. HR 118, RR 26, SpO2 91% on air, BP 112/70, T 37.6°C.",
+      "respiratory": "Chest clear, no pleural rub. No focal signs.",
+      "abdomen": "Port sites clean, abdomen soft, appropriately tender.",
+      "msk": "Calves soft, no swelling."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 112,
+        "diastolicBp": 70,
+        "respiratoryRate": 26,
+        "temperatureC": 37.6,
+        "spo2": 91,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.4,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 78,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Caecal adenocarcinoma"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic right hemicolectomy (day 5)"
+    ],
+    "medications": [
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired.",
+    "confirmedDiagnosis": {
+      "name": "Suspected pulmonary embolism (post-operative)",
+      "icd10": "I26.99",
+      "paneDiseaseId": "pulmonary_embolism",
+      "assessmentText": "Suspected post-operative pulmonary embolism, Wells PE 7 (likely): immediate CTPA, interim therapeutic anticoagulation if CTPA is delayed and bleeding risk acceptable (day 5 after bowel resection — senior decision)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "pleuritic chest pain"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Sudden",
+            "At rest",
+            "Chest pain"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Clear to auscultation"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "dyspnoea_pe": true,
+          "pleuritic_chest_pain": true,
+          "previous_surgery": true,
+          "leg_swelling": false,
+          "mechanism_blunt": false,
+          "chest_wall_tenderness": false
+        },
+        "durationDays": 0,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pe-top3",
+          "severity": "critical",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng158",
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-anastomotic-leak-or-pneumonia",
+          "severity": "quality",
+          "match": [
+            "anastomotic",
+            "pneumonia",
+            "atelectasis",
+            "sepsis"
+          ],
+          "note": "Post-operative tachycardia and hypoxia: leak and chest infection are the alternatives.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholecystitis, Pulmonary embolism, GORD. Note: without the PANE answers \"no trauma\" and \"no chest-wall tenderness\", PANE ranked traumatic pneumothorax, rib fractures and haemothorax above PE in a post-operative ward patient.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng158"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-wells-pe",
+          "severity": "quality",
+          "score": "wells-pe",
+          "guidelineRefs": [
+            "nice-ng158",
+            "wells-pe-2000"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ctpa",
+          "severity": "critical",
+          "match": [
+            "ctpa",
+            "ct pulmonary angiogra",
+            "pulmonary angiogra"
+          ],
+          "guidelineRefs": [
+            "nice-ng158",
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-oxygen",
+          "severity": "quality",
+          "match": [
+            "oxygen",
+            "re:\\bo2\\b",
+            "o₂"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-anticoagulation",
+          "severity": "quality",
+          "match": [
+            "anticoag",
+            "heparin",
+            "lmwh",
+            "enoxaparin 1.5",
+            "apixaban",
+            "rivaroxaban"
+          ],
+          "guidelineRefs": [
+            "nice-ng158",
+            "esc-pe-2019"
+          ],
+          "note": "Interim therapeutic anticoagulation if CTPA is delayed, weighed against post-operative bleeding risk.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-ddimer-gate",
+          "severity": "quality",
+          "match": [
+            "re:ctpa[^.;]{0,40}d-dimer[^.;]{0,15}positive",
+            "re:ctpa if wells[^.;]{0,12}≥ ?2"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "note": "Wells PE >4 (likely): CTPA directly, interim anticoagulation if delayed; ≤4: D-dimer first. A D-dimer gate or a Wells ≥2 threshold (the DVT cut-off) does not follow NICE NG158, and D-dimer is uninformative after surgery.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The hypoxia and tachycardia clinical prompts (clinical-inference.ts) add 'CTPA if Wells score ≥ 2 and D-dimer positive' and 'CTPA if Wells score ≥ 2' — the DVT cut-off and a D-dimer gate for a Wells-likely patient.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Use the two-level Wells PE: >4 → CTPA (interim anticoagulation if delayed); ≤4 → D-dimer, or PERC when clinical probability is low."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng158",
+      "name": "NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "esc-pe-2019",
+      "name": "2019 ESC guidelines — acute pulmonary embolism",
+      "year": 2019,
+      "section": "Suspected PE without haemodynamic instability: clinical probability (Wells/Geneva), D-dimer only when probability is not high, CTPA; anticoagulation started while awaiting results in high/intermediate probability",
+      "citation": "Konstantinides SV, Meyer G, Becattini C, et al. 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism. Eur Heart J. 2020;41:543–603.",
+      "verified": false
+    },
+    {
+      "id": "wells-pe-2000",
+      "name": "Wells PE score (two-level)",
+      "year": 2000,
+      "section": "Clinical signs of DVT 3; PE most likely diagnosis 3; HR >100 1.5; immobilisation ≥3 days or surgery within 4 weeks 1.5; previous VTE 1.5; haemoptysis 1; malignancy 1; >4 = PE likely",
+      "citation": "Wells PS, Anderson DR, Rodger M, et al. Derivation of a simple clinical model to categorize patients probability of pulmonary embolism. Thromb Haemost. 2000;83:416–20.",
+      "verified": false
+    },
+    {
+      "id": "years-2017",
+      "name": "YEARS algorithm for suspected PE",
+      "year": 2017,
+      "section": "Three items (clinical signs of DVT, haemoptysis, PE most likely diagnosis) with D-dimer thresholds of 1000 ng/mL (no items) or 500 ng/mL (≥1 item)",
+      "citation": "van der Hulle T, Cheung WY, Kooij S, et al. Simplified diagnostic management of suspected pulmonary embolism (the YEARS study): a prospective, multicentre, cohort study. Lancet. 2017;390:289–97.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base PE case: post-operative, Wells PE 7 (HR >100 1.5, surgery within 4 weeks 1.5, malignancy 1, PE most likely 3), hypoxic. PERC does not apply (age, HR, SpO₂, surgery); YEARS would apply a 500 ng/mL threshold but NICE sends Wells-likely patients straight to CTPA. Tests ranking, hypoxia alarm, CTPA and the D-dimer gate.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

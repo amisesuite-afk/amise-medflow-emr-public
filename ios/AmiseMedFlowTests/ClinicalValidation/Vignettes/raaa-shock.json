@@ -1,0 +1,416 @@
+{
+  "schemaVersion": 1,
+  "id": "raaa-shock",
+  "condition": "Ruptured abdominal aortic aneurysm",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "74-year-old male smoker: sudden severe back and abdominal pain, collapse, BP 76/40, HR 128, tender pulsatile epigastric mass; bedside ultrasound 7.2 cm AAA.",
+  "tags": [
+    "aaa",
+    "rupture",
+    "shock",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Sudden severe back and abdominal pain with collapse",
+    "hpi": "Sudden onset tearing pain in the back and abdomen 1 hour ago, radiating to the left flank, then collapsed at home. Smoker, hypertension. Never had an aortic scan.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Epigastric",
+        "Loin"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Back",
+        "Groin"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "back pain",
+      "collapse"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Pale, sweaty, GCS 14. BP 76/40, HR 128, RR 26, cool peripheries.",
+      "abdomen": "Tender, expansile pulsatile mass in the epigastrium. Mild distension. Femoral pulses weak bilaterally."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 128,
+        "systolicBp": 76,
+        "diastolicBp": 40,
+        "respiratoryRate": 26,
+        "temperatureC": 36.1,
+        "spo2": 95,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.8,
+        "unit": "g/dL",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 5.4,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Bedside ultrasound aorta (POCUS)",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Infrarenal abdominal aortic aneurysm 7.2 cm diameter. Retroperitoneum poorly seen.",
+        "minutesAgo": 3
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "COPD"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 45 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Ruptured abdominal aortic aneurysm",
+      "icd10": "I71.3",
+      "paneDiseaseId": "aortic_aneurysm",
+      "assessmentText": "Ruptured infrarenal abdominal aortic aneurysm (7.2 cm) with haemorrhagic shock. Immediate vascular surgery — emergency repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "back pain",
+          "pulsatile mass",
+          "syncope"
+        ],
+        "examFindings": {
+          "abdomen": [
+            "Mass palpable",
+            "Diffuse tenderness"
+          ],
+          "general": [
+            "Pale",
+            "Diaphoretic",
+            "In distress"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "pulsatile_mass": true,
+          "radiation_to_back": true,
+          "haemodynamic_instability": true,
+          "epigastric_pain": true
+        },
+        "durationDays": 0,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-aaa-top3",
+          "severity": "critical",
+          "match": [
+            "aneurysm",
+            "aaa"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute pancreatitis (0.35), Peptic ulcer, GORD — even with pulsatile mass and instability answered; the aortic_aneurysm prior is 0.01 and epigastric pain radiating to the back favours pancreatitis. The management panel therefore shows the pancreatitis protocol. Symptom inference ranks ruptured AAA #1.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Give pulsatile_mass and haemodynamic_instability much stronger likelihood ratios for aortic_aneurysm (and none for pancreatitis), or add a hard rule: pulsatile mass + shock → AAA to the top."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esvs-aaa-2024",
+          "nice-ng156"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "hypotension",
+            "shock",
+            "haemodynamic",
+            "hemodynamic",
+            "haemorrhag"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-raaa",
+          "severity": "quality",
+          "match": [
+            "aneurysm",
+            "aaa"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web alarms are the generic hypotension flag and \"Emergency now\"; nothing names ruptured AAA.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-crossmatch",
+          "severity": "quality",
+          "match": [
+            "crossmatch",
+            "cross-match",
+            "group and",
+            "blood products"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-repair",
+          "severity": "critical",
+          "match": [
+            "emergency repair",
+            "evar",
+            "open repair",
+            "vascular surg",
+            "theatre"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024",
+            "nice-ng156"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9; the panel shows pancreatitis from PANE) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add I71.3 (ruptured AAA) and I71.4 to the aortic_aneurysm protocol icd10Prefixes (or use the prefix I71)."
+        },
+        {
+          "id": "mgmt-permissive-hypotension",
+          "severity": "quality",
+          "match": [
+            "permissive hypotension",
+            "hypotensive resuscitation",
+            "sbp 70"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024",
+            "nice-ng156"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD I71.3 matches no pane-engine protocol (aortic aneurysm protocol registered as I71.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add I71.3/I71.4 to the aortic_aneurysm protocol."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-large-fluid-bolus",
+          "severity": "quality",
+          "match": [
+            "re:1\\s?l(itre)?[^.;]{0,20}bolus",
+            "aggressive fluid"
+          ],
+          "unless": [
+            "avoid",
+            "do not",
+            "not "
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024",
+            "nice-ng156"
+          ],
+          "note": "Large crystalloid boluses before aortic control worsen bleeding.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The hypotension clinical prompt ('shock_non_infective', clinical-inference.ts) always adds 'Hartmann's 1L bolus', including for suspected ruptured AAA where permissive hypotension applies.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Suppress the 1 L bolus line when AAA/aortic rupture is suspected (pulsatile mass, known AAA) and say \"permissive hypotension — senior/vascular decision\"."
+        },
+        {
+          "id": "mgmt-no-ct-before-theatre-unstable",
+          "severity": "quality",
+          "match": [
+            "re:ct[^.;]{0,30}(before|prior to)[^.;]{0,20}(theatre|surgery|transfer)"
+          ],
+          "unless": [
+            "if stable",
+            "only if",
+            "stable"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-aaa-2024",
+      "name": "ESVS 2024 clinical practice guidelines — abdominal aorto-iliac artery aneurysms",
+      "year": 2024,
+      "section": "Suspected rupture: immediate vascular surgical assessment and transfer to a vascular centre; permissive hypotension in the conscious patient; CT angiography only if the patient is stable enough; EVAR preferred when anatomy is suitable. Consider AAA in older patients presenting with flank/back pain mimicking renal colic",
+      "citation": "Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 Clinical Practice Guidelines on the Management of Abdominal Aorto-Iliac Artery Aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng156",
+      "name": "NICE NG156 — Abdominal aortic aneurysm: diagnosis and management",
+      "year": 2020,
+      "section": "Suspected symptomatic or ruptured AAA: immediate discussion with the regional vascular service; imaging should not delay transfer of an unstable patient; permissive hypotension",
+      "citation": "National Institute for Health and Care Excellence. Abdominal aortic aneurysm: diagnosis and management (NG156). London: NICE; 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base ruptured AAA with classic triad and shock. ICD-10 I71.3 (ruptured AAA) is the correct code and tests the ICD → protocol route (the protocol is registered under I71.9). Expectations: emergency, shock alarm, immediate repair, permissive hypotension and no large boluses.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

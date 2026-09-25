@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-splenic-injury-unstable",
+  "condition": "Splenic injury (haemodynamically unstable)",
+  "category": "trauma-burns",
+  "permutationOf": "trauma-splenic-injury-stable",
+  "permutationLabel": "Unstable after 1 L crystalloid, FAST positive, no CT",
+  "summary": "Same mechanism: HR 138, BP 78/42 after 1 L crystalloid, GCS 14, tender distended abdomen, FAST large free fluid.",
+  "tags": [
+    "trauma",
+    "spleen",
+    "shock"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 22,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 183,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Left upper abdominal pain after football injury",
+    "hpi": "Kicked hard in the left upper abdomen during a football match 90 minutes ago. Increasing abdominal pain, left shoulder-tip pain, dizziness and near collapse.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "LUQ",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Left shoulder"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "shoulder pain",
+      "dizziness"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Pale, sweaty, GCS 14. HR 138, BP 78/42 after 1 L crystalloid, RR 28. Haemodynamically unstable, non-responder.",
+      "abdomen": "Distended, tender with guarding in the left upper quadrant spreading across the abdomen. Kehr sign positive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 138,
+        "systolicBp": 78,
+        "diastolicBp": 42,
+        "respiratoryRate": 28,
+        "temperatureC": 36.2,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.4,
+        "unit": "g/dL",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.9,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [
+      {
+        "name": "FAST scan",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Large volume free fluid in the splenorenal recess, Morison's pouch and pelvis.",
+        "minutesAgo": 5
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student.",
+    "confirmedDiagnosis": {
+      "name": "Splenic injury with haemoperitoneum — haemodynamically unstable",
+      "icd10": "S36.039A",
+      "paneDiseaseId": "splenic_laceration",
+      "assessmentText": "Suspected splenic injury with haemoperitoneum and haemorrhagic shock not responding to fluid. Emergency laparotomy and splenectomy; activate massive haemorrhage protocol. No CT."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "shoulder pain",
+          "dizziness"
+        ],
+        "examFindings": {
+          "general": [
+            "Pale",
+            "Diaphoretic"
+          ],
+          "abdomen": [
+            "Distended",
+            "Tender LUQ",
+            "Guarding"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "mechanism_blunt": true,
+          "kehr_sign": true,
+          "abdominal_tenderness": true,
+          "guarding": true,
+          "haemodynamic_instability": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-splenic-top3",
+          "severity": "quality",
+          "match": [
+            "splen",
+            "abdominal trauma"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-spleen-2017"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-spleen-2017",
+          "atls-10-shock"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "hypotension",
+            "shock",
+            "haemodynamic",
+            "hemodynamic",
+            "haemorrhag"
+          ],
+          "guidelineRefs": [
+            "atls-10-shock"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-ct-unstable",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;]{0,30}(abdo|pelvi|trauma|whole)"
+          ],
+          "unless": [
+            "stable",
+            "if ",
+            "once"
+          ],
+          "guidelineRefs": [
+            "wses-spleen-2017",
+            "atls-10-abdomen"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The splenic protocol lists \"CT abdomen/pelvis with IV contrast (AAST grading)\" without \"if stable\" in the unstable patient.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Qualify protocol CT investigations with \"haemodynamically stable only\"."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-operative",
+          "severity": "critical",
+          "match": [
+            "laparotomy",
+            "damage control",
+            "damage-control",
+            "splenectomy"
+          ],
+          "guidelineRefs": [
+            "wses-spleen-2017",
+            "atls-10-abdomen"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-blood-products",
+          "severity": "critical",
+          "match": [
+            "massive transfusion",
+            "mtp",
+            "blood product",
+            "prbc",
+            "packed red",
+            "1:1:1",
+            "transfus",
+            "major haemorrhage protocol"
+          ],
+          "guidelineRefs": [
+            "atls-10-shock"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-txa",
+          "severity": "quality",
+          "match": [
+            "tranexamic",
+            "txa"
+          ],
+          "guidelineRefs": [
+            "crash-2"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nom-unstable",
+          "severity": "critical",
+          "match": [
+            "re:non-operative management[^.;]{0,40}(hdu|monitor|serial)"
+          ],
+          "unless": [
+            "stable",
+            "if "
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan",
+            "ios.soap.plan"
+          ],
+          "guidelineRefs": [
+            "wses-spleen-2017"
+          ],
+          "note": "Non-operative management is contraindicated in the unstable patient.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "atls-10-shock"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-spleen-2017",
+      "name": "WSES classification and guidelines — splenic trauma (adult and paediatric)",
+      "year": 2017,
+      "section": "Haemodynamically stable without other indications for laparotomy: non-operative management with close monitoring, serial examination and Hb, in a setting with immediate access to theatre and angiography; angioembolisation for contrast blush/pseudoaneurysm; haemodynamic instability or failed NOM → operative management (splenectomy); post-splenectomy vaccination",
+      "citation": "Coccolini F, Montori G, Catena F, et al. Splenic trauma: WSES classification and guidelines for adult and pediatric patients. World J Emerg Surg. 2017;12:40.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-abdomen",
+      "name": "ATLS 10th edition — abdominal and pelvic trauma",
+      "year": 2018,
+      "section": "Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-shock",
+      "name": "ATLS 10th edition — shock",
+      "year": 2018,
+      "section": "Chapter 3, Table 3-1: haemorrhage classes I (<15%), II (15–30%), III (31–40%), IV (>40%) with heart rate, blood pressure, pulse pressure, respiratory rate, urine output, GCS and base deficit; class III–IV need blood products / massive transfusion protocol; early haemorrhage control; minimise crystalloid; beta-blockers and age blunt the tachycardic response",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 3.",
+      "verified": false
+    },
+    {
+      "id": "crash-2",
+      "name": "CRASH-2 — tranexamic acid in bleeding trauma patients",
+      "year": 2011,
+      "section": "Tranexamic acid 1 g over 10 min then 1 g over 8 h, given within 3 h of injury; no benefit and possible harm when started after 3 h",
+      "citation": "CRASH-2 collaborators. The importance of early treatment with tranexamic acid in bleeding trauma patients: an exploratory analysis of the CRASH-2 randomised controlled trial. Lancet. 2011;377:1096–101.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: instability (fluid non-responder, positive FAST). WSES: operative management; no CT. Pairs with the stable case to test whether the plan changes with haemodynamic status.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

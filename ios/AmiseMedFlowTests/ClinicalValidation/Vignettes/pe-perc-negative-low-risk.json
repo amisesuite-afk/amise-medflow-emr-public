@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "id": "pe-perc-negative-low-risk",
+  "condition": "Pleuritic chest pain, PE excluded clinically (PERC negative)",
+  "category": "vascular",
+  "permutationOf": "pe-postop-day5",
+  "permutationLabel": "Low pre-test probability, PERC negative",
+  "summary": "28-year-old man with right pleuritic chest pain after a week of coughing; HR 84, SpO₂ 98 %, no risk factors — low clinical probability and PERC negative.",
+  "tags": [
+    "vte",
+    "pe",
+    "perc",
+    "over-investigation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 28,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 182,
+      "weightKg": 77
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Sharp right chest pain when breathing",
+    "hpi": "One week of a dry cough after a cold, now sharp right lower chest pain on deep breathing and coughing for 2 days. Not breathless. No leg swelling, no recent surgery, travel, hormone use or previous clots. No haemoptysis.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Right chest"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Cough"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Coughing"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "pleuritic chest pain",
+      "cough"
+    ],
+    "negatives": [
+      "shortness of breath",
+      "haemoptysis",
+      "leg swelling"
+    ],
+    "exam": {
+      "general": "Well. HR 84, RR 16, SpO2 98%, BP 124/76, T 37.0°C.",
+      "respiratory": "Tender over the right 8th rib costochondral area reproducing the pain. Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 84,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 16,
+        "temperatureC": 37,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Musculoskeletal chest wall pain after viral cough",
+      "icd10": "R07.81",
+      "assessmentText": "Pleuritic chest wall pain after a viral cough. Low clinical probability of PE and PERC negative — no D-dimer or CTPA needed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "pleuritic chest pain",
+          "dry cough"
+        ],
+        "examFindings": {
+          "respiratory": [
+            "Clear to auscultation"
+          ]
+        },
+        "paneAnswers": {
+          "pleuritic_chest_pain": true,
+          "dyspnoea_pe": false,
+          "leg_swelling": false,
+          "previous_surgery": false
+        },
+        "durationDays": 2,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "perc-2004"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Over-triage from negation: 'Not breathless' matches the post-operative/breathless rule and 'No haemoptysis' the haemoptysis rule (both urgent) → emergency_now for a PERC-negative patient.",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "Handle negation (\"no\", \"not\", \"denies\") in scanRedFlags."
+      }
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-ctpa",
+          "severity": "quality",
+          "match": [
+            "ctpa",
+            "ct pulmonary angiogra"
+          ],
+          "unless": [
+            "if ",
+            "not required",
+            "not needed"
+          ],
+          "guidelineRefs": [
+            "perc-2004",
+            "nice-ng158"
+          ],
+          "note": "PERC negative in a low-probability patient: no further PE testing.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "perc-2004",
+      "name": "Pulmonary Embolism Rule-out Criteria (PERC)",
+      "year": 2004,
+      "section": "In low pre-test probability only: age <50, HR <100, SpO₂ ≥95%, no haemoptysis, no oestrogen use, no prior VTE, no unilateral leg swelling, no surgery/trauma requiring hospitalisation within 4 weeks — all negative → no further testing",
+      "citation": "Kline JA, Mitchell AM, Kabrhel C, Richman PB, Courtney DM. Clinical criteria to prevent unnecessary diagnostic testing in emergency department patients with suspected pulmonary embolism. J Thromb Haemost. 2004;2:1247–55.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng158",
+      "name": "NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the opposite end — low pre-test probability with all eight PERC criteria negative. Tests over-investigation (CTPA with radiation and contrast) and over-triage.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

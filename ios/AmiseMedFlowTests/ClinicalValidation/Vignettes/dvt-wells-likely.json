@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "id": "dvt-wells-likely",
+  "condition": "Deep vein thrombosis",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "48-year-old woman 3 weeks after knee arthroscopy under general anaesthetic, on the combined pill: left calf swelling 4 cm, pitting oedema, tenderness along the deep veins — Wells DVT 4 (likely).",
+  "tags": [
+    "vte",
+    "dvt",
+    "wells"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 48,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 79
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Swollen painful left calf",
+    "hpi": "Four days of left calf pain and swelling. Left knee arthroscopy under general anaesthetic 3 weeks ago, mostly on the sofa since. Combined oral contraceptive. No chest pain, breathlessness or haemoptysis.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Lower leg"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "leg swelling",
+      "calf pain"
+    ],
+    "negatives": [
+      "shortness of breath",
+      "chest pain",
+      "haemoptysis"
+    ],
+    "exam": {
+      "general": "Well. HR 88, BP 126/78, SpO2 98%, T 37.2°C.",
+      "msk": "Left calf circumference 4 cm greater than the right (10 cm below the tibial tuberosity), pitting oedema to mid-shin, tenderness along the deep venous system. No erythema. Healed arthroscopy port sites."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 88,
+        "systolicBp": 126,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 37.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Left knee arthroscopy (3 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Combined oral contraceptive (ethinylestradiol/levonorgestrel)",
+        "dose": "30/150 mcg",
+        "frequency": "OD",
+        "indication": "Contraception"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected deep vein thrombosis of left leg",
+      "icd10": "I82.402",
+      "paneDiseaseId": "deep_vein_thrombosis",
+      "assessmentText": "Suspected left leg DVT, Wells score 4 (DVT likely): proximal leg vein ultrasound within 4 hours; interim anticoagulation if not possible."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "leg swelling",
+          "limb pain"
+        ],
+        "examFindings": {
+          "extremities": [
+            "DVT signs",
+            "Oedema present"
+          ]
+        },
+        "paneAnswers": {
+          "leg_swelling": true,
+          "calf_tenderness": true,
+          "previous_surgery": true
+        },
+        "durationDays": 4,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-dvt-top3",
+          "severity": "critical",
+          "match": [
+            "dvt",
+            "deep vein",
+            "venous thrombo"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-same-day",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng158"
+        ],
+        "note": "NICE NG158: ultrasound within 4 h, or interim anticoagulation — same-day care.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-oestrogen",
+          "severity": "quality",
+          "match": [
+            "oestrogen",
+            "estrogen",
+            "contracept",
+            "pill"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The combined oral contraceptive is not flagged. Triage also scores 'Possible cardiac event' and 'Haemoptysis' from the negated text 'No chest pain, breathlessness or haemoptysis'.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Handle negation in scanRedFlags; flag oestrogen-containing medication as a VTE risk factor."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-wells-dvt",
+          "severity": "quality",
+          "score": "wells-dvt",
+          "guidelineRefs": [
+            "nice-ng158",
+            "wells-dvt-2003"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-leg-ultrasound",
+          "severity": "critical",
+          "match": [
+            "duplex",
+            "re:(ultrasound|uss)[^.;]{0,30}(leg|vein|venous|limb)",
+            "compression ultrasound"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-anticoagulation",
+          "severity": "quality",
+          "match": [
+            "anticoag",
+            "apixaban",
+            "rivaroxaban",
+            "lmwh",
+            "enoxaparin"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "note": "Interim anticoagulation if the scan cannot be done within 4 h; treatment if confirmed.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng158",
+      "name": "NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "wells-dvt-2003",
+      "name": "Wells DVT score (two-level)",
+      "year": 2003,
+      "section": "Items: active cancer, paralysis/recent cast, bedridden ≥3 days or major surgery within 12 weeks, localised tenderness along deep veins, entire leg swollen, calf swelling ≥3 cm, pitting oedema, collateral superficial veins, previous DVT (+1 each); alternative diagnosis at least as likely (−2); ≥2 = likely",
+      "citation": "Wells PS, Anderson DR, Rodger M, et al. Evaluation of D-dimer in the diagnosis of suspected deep-vein thrombosis. N Engl J Med. 2003;349:1227–35.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base DVT case with a Wells score of 4 (surgery within 12 weeks, calf swelling ≥3 cm, pitting oedema, deep-vein tenderness). NICE NG158: DVT likely → proximal ultrasound within 4 h. Tests ranking, same-day urgency, ultrasound and Wells recommendation.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

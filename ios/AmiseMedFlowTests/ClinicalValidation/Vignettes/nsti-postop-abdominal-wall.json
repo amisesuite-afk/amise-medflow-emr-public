@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "id": "nsti-postop-abdominal-wall",
+  "condition": "Necrotising soft-tissue infection (post-operative abdominal wall)",
+  "category": "soft-tissue",
+  "permutationOf": "nsti-leg-diabetic-sepsis",
+  "permutationLabel": "Post-operative day 4 after laparotomy",
+  "summary": "70-year-old woman on day 4 after Hartmann's procedure: wound pain out of proportion, dusky skin spreading beyond the wound, grey \"dishwater\" discharge, crepitus; HR 126, T 38.4 °C, BP 92/60, lactate 4.1.",
+  "tags": [
+    "nsti",
+    "post-op",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 70,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 71
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 4
+    },
+    "chiefComplaint": "Wound pain and redness after operation",
+    "hpi": "Day 4 after emergency Hartmann's procedure for perforated diverticulitis. Since this morning severe wound pain, far more than expected, with dusky skin spreading onto the flank over 6 hours and thin grey foul discharge from the wound. Rigors.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "wound pain",
+      "wound discharge",
+      "fever",
+      "rigors"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Unwell, HR 126, BP 92/60, T 38.4°C, RR 24.",
+      "abdomen": "Midline wound: dusky grey skin edges, thin grey dishwater discharge, crepitus in the subcutaneous tissue extending 8 cm onto the left flank, tenderness beyond the erythema. Stoma pink.",
+      "skin": "Spreading dusky erythema from the wound onto the left flank, advancing over hours."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 126,
+        "systolicBp": 92,
+        "diastolicBp": 60,
+        "respiratoryRate": 24,
+        "temperatureC": 38.4,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 24.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 312,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 133,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 150,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Diverticular disease",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Hartmann's procedure (day 4)"
+    ],
+    "medications": [
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [
+      {
+        "name": "Penicillin",
+        "severity": "Moderate",
+        "reaction": "Urticarial rash"
+      }
+    ],
+    "socialHistory": "Retired teacher.",
+    "confirmedDiagnosis": {
+      "name": "Necrotising fasciitis of the abdominal wall",
+      "icd10": "M72.6",
+      "paneDiseaseId": "necrotising_fasciitis",
+      "assessmentText": "Post-operative necrotising soft-tissue infection of the laparotomy wound, day 4 after Hartmann's, with sepsis. Not a simple wound infection. Needs return to theatre for debridement."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Post-op wound concern",
+        "symptoms": [
+          "wound pain",
+          "wound discharge",
+          "wound redness",
+          "fever after surgery",
+          "rigors"
+        ],
+        "symptomDetails": {
+          "wound discharge": [
+            "Foul-smelling",
+            "Wound opened",
+            "Redness",
+            "Fever",
+            "Rigors",
+            "Tachycardia"
+          ],
+          "fever after surgery": [
+            "Day 4–5",
+            "Wound"
+          ]
+        },
+        "examFindings": {
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "wound": [
+            "Necrotic",
+            "Cellulitis",
+            "Malodorous"
+          ]
+        },
+        "paneAnswers": {
+          "crepitus_soft_tissue": true,
+          "erythema_surrounding": true,
+          "haemodynamic_instability": true
+        },
+        "durationDays": 1,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-nsti-top3",
+          "severity": "critical",
+          "match": [
+            "necrotis",
+            "fasciitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "note": "Crepitus, dishwater discharge and pain out of proportion must lift NSTI above simple SSI.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholecystitis, Acute cholangitis, GORD. socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up; the wound CC template adds wound_erythema/wound_discharge but SSI is not in the top 3 either. Symptom inference ranks \"post-operative complication\" #1 and has no NSTI.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-anastomotic-or-collection",
+          "severity": "quality",
+          "match": [
+            "anastomotic",
+            "collection",
+            "abscess",
+            "leak"
+          ],
+          "note": "Deep organ-space infection is the other post-laparotomy source.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3 omits anastomotic leak and collections (see dx-nsti-top3).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-sis-ssti-2018"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis-shock",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "hypotension",
+            "shock",
+            "haemodynamic",
+            "hemodynamic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-penicillin-allergy",
+          "severity": "quality",
+          "match": [
+            "penicillin"
+          ],
+          "note": "Penicillin allergy recorded: the regimen must account for it.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-return-to-theatre",
+          "severity": "critical",
+          "match": [
+            "debrid",
+            "surgical exploration",
+            "re:explor(e|ation)[^.;]{0,40}(theatre|surg|operat)",
+            "re:(theatre|surgery)[^.;]{0,30}(immediate|emergency|urgent)"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-clindamycin",
+          "severity": "critical",
+          "match": [
+            "clindamycin"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-not-simple-ssi",
+          "severity": "quality",
+          "match": [
+            "re:heal by secondary intention",
+            "re:co-amoxiclav 625[^.;]{0,30}(tds|po|oral)"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan",
+            "ios.soap.plan"
+          ],
+          "note": "The documented plan must not be the superficial-SSI plan (open, oral co-amoxiclav, heal by secondary intention).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sis-ssti-2018",
+      "name": "WSES/SIS-E consensus conference — management of skin and soft-tissue infections",
+      "year": 2018,
+      "section": "Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene",
+      "citation": "Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58.",
+      "verified": false
+    },
+    {
+      "id": "idsa-ssti-2014",
+      "name": "IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update)",
+      "year": 2014,
+      "section": "Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF",
+      "citation": "Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: post-operative NSTI of the laparotomy wound, easily mistaken for a superficial SSI. Tests the post-op context (isPostOp, wound CC template) against NSTI recognition, the penicillin-allergy flag and the documented plan.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

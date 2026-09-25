@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "id": "cellulitis-leg-adult",
+  "condition": "Cellulitis",
+  "category": "soft-tissue",
+  "permutationOf": null,
+  "summary": "45-year-old woman: 2 days of a hot, red, tender right shin with a clear edge, tinea between the toes, T 37.8 °C, HR 92; no fluctuance, no crepitus; WBC 11.2, CRP 48.",
+  "tags": [
+    "cellulitis",
+    "outpatient"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 163,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Red painful right leg",
+    "hpi": "Two days of spreading redness and pain over the right shin. Mild fever yesterday. Athlete's foot between the toes. No calf swelling, no recent travel or immobility. No previous episodes.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Lower leg"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "leg redness",
+      "leg pain",
+      "fever"
+    ],
+    "negatives": [
+      "calf swelling",
+      "rigors",
+      "shortness of breath"
+    ],
+    "exam": {
+      "general": "Well. T 37.8°C, HR 92, BP 128/80.",
+      "msk": "Right shin: 10 × 8 cm area of warm, tender, blanching erythema with a clear edge; pitting oedema of the ankle. No fluctuance, no crepitus, no bullae, tenderness confined to the erythema. Calf soft. Interdigital tinea pedis."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 92,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 37.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 48,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Office worker.",
+    "confirmedDiagnosis": {
+      "name": "Cellulitis of right lower limb",
+      "icd10": "L03.115",
+      "paneDiseaseId": "cellulitis",
+      "assessmentText": "Non-purulent cellulitis of the right lower leg, mild (no systemic toxicity). Portal of entry tinea pedis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "cellulitis",
+          "limb pain",
+          "fever"
+        ],
+        "examFindings": {
+          "extremities": [
+            "Oedema present"
+          ]
+        },
+        "paneAnswers": {
+          "erythema_surrounding": true,
+          "fever": true,
+          "swelling_fluctuant_soft": false,
+          "crepitus_soft_tissue": false
+        },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cellulitis-top3",
+          "severity": "critical",
+          "match": [
+            "cellulitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng141",
+            "idsa-ssti-2014"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-dvt",
+          "severity": "quality",
+          "match": [
+            "dvt",
+            "deep vein",
+            "venous thrombo"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "note": "Unilateral red swollen leg: DVT is the main alternative.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholecystitis, Cellulitis, GORD; DVT not listed. Triage surgical matches list DVT #1.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "nice-ng141"
+        ],
+        "note": "Mild cellulitis without systemic toxicity is an outpatient problem.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Over-triage: the HPI word 'spreading redness' matches the diabetic-foot red flag (rules.ts, urgent) → emergency_now in a non-diabetic with mild cellulitis.",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "Require a diabetes context (comorbidity or diabetic-foot words other than 'spreading redness') for the diabetic-foot red flag."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-shock-alarm",
+          "severity": "quality",
+          "match": [
+            "shock",
+            "haemodynamic instability"
+          ],
+          "note": "Normal haemodynamics.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-mark-border",
+          "severity": "quality",
+          "match": [
+            "mark",
+            "border",
+            "margin"
+          ],
+          "guidelineRefs": [
+            "nice-ng141"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-flucloxacillin",
+          "severity": "quality",
+          "match": [
+            "flucloxacillin"
+          ],
+          "guidelineRefs": [
+            "nice-ng141"
+          ],
+          "note": "NICE NG141 first-choice oral antibiotic for non-severe cellulitis.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+        },
+        {
+          "id": "mgmt-safety-net-nsti",
+          "severity": "quality",
+          "match": [
+            "necrotis",
+            "fasciitis",
+            "no response",
+            "not improving",
+            "review at 48",
+            "reassess"
+          ],
+          "guidelineRefs": [
+            "nice-ng141"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD L03.115 matches no pane-engine protocol (cellulitis protocol registered as L03.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-debridement",
+          "severity": "quality",
+          "match": [
+            "debridement"
+          ],
+          "unless": [
+            "if ",
+            "consider",
+            "necrotis"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng141",
+      "name": "NICE NG141 — Cellulitis and erysipelas: antimicrobial prescribing",
+      "year": 2019,
+      "section": "Recommendations 1.1: mark the extent; consider admission for severe illness or sepsis; first-choice oral antibiotic for non-severe cellulitis in adults is flucloxacillin; IV options when severely unwell",
+      "citation": "National Institute for Health and Care Excellence. Cellulitis and erysipelas: antimicrobial prescribing (NG141). London: NICE; 2019.",
+      "verified": false
+    },
+    {
+      "id": "idsa-ssti-2014",
+      "name": "IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update)",
+      "year": 2014,
+      "section": "Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF",
+      "citation": "Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng158",
+      "name": "NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base cellulitis case: mild, non-purulent, outpatient. Tests that the engines identify cellulitis, do not over-triage, propose a guideline first-line antibiotic and safety-net for NSTI. The ICD-10-CM code for right lower limb cellulitis (L03.115) is used, which tests the ICD → protocol route.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

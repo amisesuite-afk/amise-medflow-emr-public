@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "id": "dfu-neuropathic-uninfected",
+  "condition": "Neuropathic diabetes-related foot ulcer (uninfected)",
+  "category": "soft-tissue",
+  "permutationOf": "dfi-moderate-osteomyelitis",
+  "permutationLabel": "Uninfected neuropathic forefoot ulcer (IWGDF/IDSA 1)",
+  "summary": "55-year-old woman with type 2 diabetes and neuropathy: 1 cm clean plantar ulcer under the 2nd metatarsal head, no erythema or discharge, pulses palpable, ABPI 1.05.",
+  "tags": [
+    "diabetic-foot",
+    "offloading",
+    "antibiotic-stewardship"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 55,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Small wound on sole of left foot",
+    "hpi": "Noticed a painless small wound under the ball of the left foot two weeks ago with callus around it. No redness, swelling, discharge or fever. Numb feet. Diabetes 12 years.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Foot"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "foot ulcer"
+    ],
+    "negatives": [
+      "fever",
+      "redness",
+      "discharge",
+      "swelling"
+    ],
+    "exam": {
+      "general": "Well. T 36.7°C, HR 72, BP 134/82.",
+      "msk": "Left foot: 1 × 1 cm clean granulating plantar ulcer under the 2nd metatarsal head with surrounding callus. No erythema, induration, warmth or discharge. Probe does not reach bone. Pedal pulses palpable, ABPI 1.05. Absent monofilament sensation."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 134,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "abpi",
+        "name": "ABPI (left)",
+        "value": 1.05,
+        "unit": "",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Peripheral neuropathy"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Shop assistant, on her feet all day.",
+    "confirmedDiagnosis": {
+      "name": "Neuropathic diabetic foot ulcer, uninfected",
+      "icd10": "E11.621",
+      "assessmentText": "Uninfected neuropathic plantar forefoot ulcer (IWGDF/IDSA grade 1), pulses palpable. Needs offloading, debridement of callus and MDT foot care; no antibiotics."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Diabetic foot / infected foot",
+        "symptoms": [
+          "foot ulcer",
+          "numbness feet"
+        ],
+        "examFindings": {
+          "wound": [
+            "Granulating",
+            "Sensation reduced"
+          ],
+          "extremities": [
+            "Pulses present",
+            "Wound present"
+          ]
+        },
+        "paneAnswers": {
+          "skin_ulceration": true,
+          "fever": false,
+          "erythema_surrounding": false
+        },
+        "durationDays": 14,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-priority-not-emergency",
+        "severity": "quality",
+        "atLeast": "priority",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "nice-ng19"
+        ],
+        "note": "NICE NG19: MDT foot service within 1 working day — not an emergency, not routine.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Over-triage: 'foot ulcer' matches the diabetic-foot red flag (urgent) → emergency_now for a clean, uninfected, perfused ulcer; the negated 'no fever' also scores as 'Systemic red flag symptom'.",
+        "unverified": [
+          "ios"
+        ],
+        "proposedFix": "Grade the diabetic-foot red flag: ulcer alone → priority; infection, ischaemia, gangrene or fever → urgent. Handle negation."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-sepsis-alarm",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-vascular-assessment",
+          "severity": "quality",
+          "match": [
+            "re:\\babi\\b",
+            "abpi",
+            "ankle-brachial",
+            "ankle brachial",
+            "toe pressure",
+            "doppler",
+            "pulses"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-offloading",
+          "severity": "quality",
+          "match": [
+            "offload",
+            "off-load",
+            "total contact cast",
+            "non-removable",
+            "knee-high"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-offloading"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "mgmt-mdt-foot",
+          "severity": "quality",
+          "match": [
+            "re:\\bmdt\\b",
+            "multidisciplinary",
+            "foot care service",
+            "foot team",
+            "foot protection",
+            "podiat"
+          ],
+          "guidelineRefs": [
+            "nice-ng19"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No diabetic-foot, osteomyelitis or Charcot protocol exists in pane-engine, and ICD E11.621 maps to nothing; PANE has no diabetic-foot disease. Only the triage diabetic-foot pathway (Wagner-based checklist, not shown in the plan) and generic prompts remain.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antibiotics",
+          "severity": "quality",
+          "match": [
+            "flucloxacillin",
+            "co-amoxiclav",
+            "clindamycin",
+            "doxycycline",
+            "piperacillin",
+            "meropenem",
+            "re:(start|commence|prescribe|give)[^.;]{0,30}antibiotic"
+          ],
+          "unless": [
+            "if infect",
+            "if signs of infection",
+            "only if",
+            "do not"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ],
+          "note": "IWGDF/IDSA 2023: do not treat an uninfected ulcer with antibiotics.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "iwgdf-2023-infection",
+      "name": "IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023)",
+      "year": 2023,
+      "section": "IWGDF/IDSA classification: 1 uninfected, 2 mild, 3 moderate (erythema >2 cm or deeper structures), 4 severe (with SIRS); (O) suffix for osteomyelitis; probe-to-bone plus plain X-ray, MRI when unclear; culture deep tissue (not swabs); do not give antibiotics for uninfected ulcers; urgent surgical consultation for severe infection, deep abscess, gas or necrotising infection, extensive gangrene",
+      "citation": "Senneville É, Albalawi Z, van Asten SA, et al. IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (IWGDF/IDSA 2023). Diabetes Metab Res Rev. 2024;40:e3687.",
+      "verified": false
+    },
+    {
+      "id": "iwgdf-2023-offloading",
+      "name": "IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023)",
+      "year": 2023,
+      "section": "Neuropathic plantar forefoot/midfoot ulcer: non-removable knee-high offloading device first choice",
+      "citation": "Bus SA, Armstrong DG, Crews RT, et al. Guidelines on offloading foot ulcers in persons with diabetes (IWGDF 2023 update). Diabetes Metab Res Rev. 2024;40:e3647.",
+      "verified": false
+    },
+    {
+      "id": "iwgdf-2023-pad",
+      "name": "Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023)",
+      "year": 2023,
+      "section": "Assess every foot ulcer for PAD: pedal pulses plus Doppler waveforms, ABI and TBI (ABI unreliable when vessels are incompressible); toe pressure <30 mmHg or TBI <0.25 → urgent vascular imaging and consideration of revascularisation",
+      "citation": "Fitridge R, Chuter V, Mills J, et al. The intersocietal IWGDF, ESVS, SVS guidelines on peripheral artery disease in people with diabetes and a foot ulcer. Diabetes Metab Res Rev. 2024;40:e3686.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng19",
+      "name": "NICE NG19 — Diabetic foot problems: prevention and management",
+      "year": 2015,
+      "section": "Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services",
+      "citation": "National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: uninfected, perfused neuropathic ulcer. The right answer is offloading and MDT foot care within a working day, with no antibiotics and no emergency escalation. Tests over-treatment and over-triage.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

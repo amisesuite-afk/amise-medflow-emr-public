@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "id": "burns-adult-scald-14pct",
+  "condition": "Superficial partial-thickness scald, adult, below the formal fluid threshold",
+  "category": "trauma-burns",
+  "permutationOf": "burns-adult-flame-27pct",
+  "permutationLabel": "14 % superficial partial thickness — no formal IV resuscitation",
+  "summary": "35-year-old woman, 60 kg, hot-water scald to the fronts of both legs 1 h ago: 14 % TBSA superficial partial thickness, blistered, brisk capillary refill; observations normal.",
+  "tags": [
+    "burns",
+    "below-threshold",
+    "over-treatment"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 35,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "burns",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Scald to both legs from boiling water",
+    "hpi": "Dropped a large pan of boiling water 1 hour ago, scalding the fronts of both legs. Cooled under the shower for 20 minutes. Tetanus up to date. Not pregnant.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Thigh",
+        "Lower leg"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "burn",
+      "pain"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Alert. HR 92, BP 124/78, RR 16, SpO2 99%. Weight 60 kg.",
+      "skin": "Anterior thighs and shins bilaterally: blistered, moist, pink, blanching with brisk capillary refill, painful to touch — superficial partial thickness, 14% TBSA. Knees involved superficially. Feet, perineum spared. Not circumferential."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 92,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 60
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Chef.",
+    "confirmedDiagnosis": {
+      "name": "Superficial partial-thickness scald 14% TBSA, both legs",
+      "icd10": "T31.10",
+      "paneDiseaseId": "thermal_burn_minor",
+      "assessmentText": "Superficial partial-thickness scald of both anterior legs, 14% TBSA — below the adult formal fluid threshold: oral fluids, analgesia, dressings; discuss with burns service (size >10% partial thickness, knees)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "wound pain",
+          "skin lesion"
+        ],
+        "examFindings": {
+          "skin": [
+            "Lesion present"
+          ]
+        },
+        "paneAnswers": {
+          "burn_wound": true,
+          "blistering": true,
+          "erythema_burn": true,
+          "tbsa_significant": false,
+          "inhalation_injury": false
+        },
+        "durationDays": 0,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "burns-fluid-threshold"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-burns-discussion",
+          "severity": "quality",
+          "match": [
+            "burns unit",
+            "burn unit",
+            "burns centre",
+            "burn centre",
+            "burn center",
+            "burns service",
+            "burn service",
+            "burns specialist",
+            "regional burns",
+            "plastic surg"
+          ],
+          "guidelineRefs": [
+            "aba-referral",
+            "nnbc-2012"
+          ],
+          "note": "ABA: partial-thickness burns >10% TBSA; knees (major joints) involved.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        },
+        {
+          "id": "mgmt-dressings",
+          "severity": "quality",
+          "match": [
+            "dressing",
+            "non-adherent"
+          ],
+          "guidelineRefs": [
+            "isbi-2016"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-formal-iv-resuscitation",
+          "severity": "quality",
+          "match": [
+            "re:parkland[^.;]{0,80}(first 8|8 h|½|half)",
+            "formal fluid resuscitation"
+          ],
+          "unless": [
+            "not required",
+            "not indicated",
+            "below",
+            "if tbsa",
+            "if >",
+            "if ≥"
+          ],
+          "guidelineRefs": [
+            "burns-fluid-threshold"
+          ],
+          "note": "Formal IV resuscitation below the threshold risks over-resuscitation.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-burns",
+      "severity": "quality",
+      "equals": "burns",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "burns-fluid-threshold",
+      "name": "Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief)",
+      "year": 2026,
+      "section": "Formal IV fluid resuscitation only for burns ≥15% TBSA in adults and ≥10% in children, by the Parkland formula (4 mL/kg/%TBSA crystalloid over 24 h); half of the 24 h volume in the first 8 h from the time of burn, adjusted to urine output. The source statement (BBA / NNBC / local burns network) and the ≥ vs > wording are to be identified and verified by the surgeon",
+      "citation": "Amise Medical Services clinical-validation brief, 2026-09-25 (threshold to be traced to its published source). Parkland formula: Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150:874–94.",
+      "verified": false
+    },
+    {
+      "id": "aba-referral",
+      "name": "American Burn Association — burn centre referral criteria",
+      "year": 2006,
+      "section": "Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked)",
+      "citation": "American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006.",
+      "verified": false
+    },
+    {
+      "id": "nnbc-2012",
+      "name": "National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance",
+      "year": 2012,
+      "section": "Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source)",
+      "citation": "National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012.",
+      "verified": false
+    },
+    {
+      "id": "isbi-2016",
+      "name": "ISBI Practice Guidelines for Burn Care",
+      "year": 2016,
+      "section": "Initial assessment and resuscitation (TBSA estimation, fluid resuscitation guided by urine output, avoid over-resuscitation), inhalation injury, escharotomy, chemical and electrical injury",
+      "citation": "ISBI Practice Guidelines Committee. ISBI Practice Guidelines for Burn Care. Burns. 2016;42:953–1021.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: below the adult formal-fluid threshold (14 %, superficial partial thickness). Expectations flip: no Parkland infusion, dressings, discussion with the burns service. Tests over-treatment and the size threshold. ICD T31.10 has no protocol mapping.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

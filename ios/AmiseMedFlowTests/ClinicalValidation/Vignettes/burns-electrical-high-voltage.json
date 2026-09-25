@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "burns-electrical-high-voltage",
+  "condition": "High-voltage electrical injury",
+  "category": "trauma-burns",
+  "permutationOf": "burns-adult-flame-27pct",
+  "permutationLabel": "High-voltage electrical, small visible TBSA, myoglobinuria",
+  "summary": "30-year-old lineman, 75 kg, 11 kV contact 1 h ago with brief loss of consciousness: charred entry wound right hand, exit wound left foot, 4 % visible TBSA; tense right forearm; dark brown urine, CK 18,000, K 5.6.",
+  "tags": [
+    "burns",
+    "electrical",
+    "rhabdomyolysis",
+    "compartment"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 30,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 75
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "burns",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Electrical injury at work, high voltage",
+    "hpi": "Power-line worker, contact with an 11 kV line 1 hour ago. Thrown from the ladder, knocked out briefly. Burn on the right hand and left foot. Passing dark brown urine.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Hand",
+        "Foot",
+        "Forearm"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "burn",
+      "dark urine",
+      "loss of consciousness"
+    ],
+    "negatives": [
+      "chest pain"
+    ],
+    "exam": {
+      "general": "GCS 15. HR 112, BP 132/80, RR 20, SpO2 98%. Weight 75 kg.",
+      "skin": "Charred full-thickness entry wound on the right palm (1.5%) and exit wound on the left sole (1%), with surrounding partial-thickness burns — 4% visible TBSA. Right forearm tense and swollen, pain on passive finger extension.",
+      "cardiovascular": "Regular tachycardia."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 20,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 75
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "ck",
+        "name": "CK",
+        "value": 18000,
+        "unit": "U/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.6,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 118,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Dark brown urine, blood +++, microscopy no red cells (myoglobinuria)",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Electricity company lineman.",
+    "confirmedDiagnosis": {
+      "name": "High-voltage electrical injury with myoglobinuria and forearm compartment syndrome risk",
+      "icd10": "T75.4XXA",
+      "paneDiseaseId": "electrical_burn",
+      "assessmentText": "High-voltage (11 kV) electrical injury: visible TBSA 4% underestimates deep muscle injury; myoglobinuria, CK 18,000, K 5.6; tense forearm. ECG and cardiac monitoring, IV fluids to urine output 1–1.5 mL/kg/h until the urine clears, fasciotomy assessment, burns centre."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "dark urine",
+          "loss of consciousness",
+          "wound pain",
+          "limb pain"
+        ],
+        "examFindings": {
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "skin": [
+            "Lesion present"
+          ]
+        },
+        "paneAnswers": {
+          "burn_wound": true,
+          "loss_of_consciousness": true,
+          "haematuria": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-electrical-top3",
+          "severity": "quality",
+          "match": [
+            "electric"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: GORD, Inguinal/femoral hernia, Acute appendicitis — socrates-to-features maps the 'Burning' character chip to the heartburn feature, pulling GORD up. The plan is correct only because ICD T75.4XXA maps to the electrical-burn protocol.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "In socrates-to-features CHARACTER_RULES, stop mapping a 'burning' pain character to heartburn unless the site is epigastric/retrosternal."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "atls-10-burns"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-myoglobinuria",
+          "severity": "critical",
+          "match": [
+            "myoglobin",
+            "rhabdo",
+            "dark urine",
+            "hyperkal"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg-monitoring",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "cardiac monitor"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-ck",
+          "severity": "quality",
+          "match": [
+            "ck",
+            "creatine kinase",
+            "myoglobin"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-rhabdo-fluids",
+          "severity": "critical",
+          "match": [
+            "myoglobinuria",
+            "rhabdomyolysis",
+            "re:1\\s?[–-]\\s?(1\\.5|2) ml/kg"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "note": "Fluids are driven by pigmented urine, not by the visible TBSA.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-fasciotomy",
+          "severity": "quality",
+          "match": [
+            "fasciotomy",
+            "compartment"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-burns-referral",
+          "severity": "critical",
+          "match": [
+            "burns unit",
+            "burn unit",
+            "burns centre",
+            "burn centre",
+            "burn center",
+            "burns service",
+            "burn service",
+            "burns specialist",
+            "regional burns",
+            "plastic surg"
+          ],
+          "guidelineRefs": [
+            "aba-referral",
+            "nnbc-2012"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-oral-fluids-only",
+          "severity": "critical",
+          "match": [
+            "oral fluids may suffice",
+            "managed with oral fluids"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "note": "Small visible TBSA must not lead to oral fluids in high-voltage injury with myoglobinuria.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-burns",
+      "severity": "quality",
+      "equals": "burns",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-burns",
+      "name": "ATLS 10th edition — thermal injuries",
+      "year": 2018,
+      "section": "Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.)",
+      "verified": false
+    },
+    {
+      "id": "aba-referral",
+      "name": "American Burn Association — burn centre referral criteria",
+      "year": 2006,
+      "section": "Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked)",
+      "citation": "American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006.",
+      "verified": false
+    },
+    {
+      "id": "nnbc-2012",
+      "name": "National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance",
+      "year": 2012,
+      "section": "Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source)",
+      "citation": "National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: high-voltage electrical injury. The visible TBSA (4 %) is well below the fluid threshold, but deep muscle injury with myoglobinuria needs IV fluids to a higher urine-output target, ECG monitoring and compartment assessment. This is the case where a TBSA-driven fluid rule is dangerous.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

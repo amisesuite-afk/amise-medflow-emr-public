@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-elderly-occult-shock-warfarin",
+  "condition": "Blunt chest trauma with occult haemorrhagic shock in an anticoagulated older adult",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "summary": "79-year-old man on warfarin and bisoprolol fell down 6 stairs: 4 left rib fractures and a small haemothorax, HR 86, BP 108/70 (usual 165/90), RR 24, SpO₂ 93 %, lactate 4.2, INR 3.4, Hb 10.2.",
+  "tags": [
+    "trauma",
+    "elderly",
+    "anticoagulated",
+    "beta-blocker",
+    "rib-fractures"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Fall down stairs with left chest pain",
+    "hpi": "Fell down 6 stairs at home 2 hours ago, landing on the left side of the chest. Left chest pain on breathing. Did not hit head. Warfarin for AF, bisoprolol. Usual blood pressure around 165/90.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Left chest"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Shortness of breath"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Coughing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "chest pain",
+      "shortness of breath"
+    ],
+    "negatives": [
+      "loss of consciousness",
+      "head injury"
+    ],
+    "exam": {
+      "general": "Pale. HR 86 (on bisoprolol), BP 108/70 (usual 165/90), RR 24, SpO2 93% on air.",
+      "respiratory": "Tender left lateral ribs 6–9 with crepitus, reduced air entry and dullness at the left base. No paradoxical movement.",
+      "abdomen": "Soft, mild left upper quadrant tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 86,
+        "systolicBp": 108,
+        "diastolicBp": 70,
+        "respiratoryRate": 24,
+        "temperatureC": 36.4,
+        "spo2": 93,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.2,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 3.4,
+        "unit": "",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.2,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Chest X-ray",
+        "modality": "XR",
+        "region": "Chest",
+        "result": "Fractures of left ribs 6–9 laterally. Small left haemothorax. No pneumothorax.",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension",
+      "Ischaemic heart disease"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Warfarin",
+        "dose": "as per INR",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation / IHD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with wife.",
+    "confirmedDiagnosis": {
+      "name": "Multiple left rib fractures with haemothorax, supratherapeutic INR and occult shock",
+      "icd10": "S22.42XA",
+      "paneDiseaseId": "rib_fractures",
+      "assessmentText": "Four left rib fractures with small haemothorax in a 79-year-old on warfarin (INR 3.4) and bisoprolol: relative hypotension and lactate 4.2 — occult haemorrhagic shock masked by beta-blockade. Reverse warfarin (PCC + IV vitamin K), CT chest/abdomen, HDU, regional analgesia."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "chest pain",
+          "shortness of breath",
+          "pleuritic chest pain"
+        ],
+        "examFindings": {
+          "general": [
+            "Pale"
+          ],
+          "respiratory": [
+            "Reduced breath sounds (L)",
+            "Dull to percussion"
+          ]
+        },
+        "paneAnswers": {
+          "mechanism_blunt": true,
+          "chest_wall_tenderness": true,
+          "pleuritic_chest_pain": true,
+          "dyspnoea_pe": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "atls-10-geriatric",
+          "atls-10-shock"
+        ],
+        "note": "Relative hypotension and lactate 4.2 in a beta-blocked, anticoagulated older adult is shock.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "critical",
+          "match": [
+            "warfarin",
+            "anticoag",
+            "inr"
+          ],
+          "guidelineRefs": [
+            "atls-10-geriatric"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "flag-beta-blocker-masking",
+          "severity": "quality",
+          "match": [
+            "beta-block",
+            "bisoprolol",
+            "masked",
+            "blunted",
+            "relative hypotension"
+          ],
+          "guidelineRefs": [
+            "atls-10-geriatric",
+            "atls-10-shock"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No engine flags relative hypotension (SBP 108 vs usual 165) or beta-blocker masking of tachycardia; triage relies on fixed thresholds.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a relative-hypotension/shock-index rule and a beta-blocker caveat for trauma in older adults."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-trauma",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;]{0,30}(chest|thora|abdo|trauma)"
+          ],
+          "guidelineRefs": [
+            "atls-10-geriatric"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-warfarin-reversal",
+          "severity": "critical",
+          "match": [
+            "prothrombin complex",
+            "pcc",
+            "vitamin k",
+            "reversal",
+            "reverse"
+          ],
+          "guidelineRefs": [
+            "atls-10-geriatric"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-hdu-analgesia",
+          "severity": "quality",
+          "match": [
+            "hdu",
+            "epidural",
+            "serratus",
+            "nerve block",
+            "regional"
+          ],
+          "guidelineRefs": [
+            "atls-10-geriatric"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bridging-advice",
+          "severity": "quality",
+          "match": [
+            "bridging",
+            "re:hold doac"
+          ],
+          "guidelineRefs": [
+            "atls-10-geriatric"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Make the anticoag_check prompt context-aware (trauma/bleeding → reversal)."
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "atls-10-geriatric"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-geriatric",
+      "name": "ATLS 10th edition — geriatric trauma",
+      "year": 2018,
+      "section": "Chapter 11: blunted physiological response (beta-blockers, age) masks shock; \"normal\" blood pressure may represent hypotension; anticoagulation increases haemorrhage risk and needs early reversal; rib fractures carry higher morbidity in older patients",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 11.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-shock",
+      "name": "ATLS 10th edition — shock",
+      "year": 2018,
+      "section": "Chapter 3, Table 3-1: haemorrhage classes I (<15%), II (15–30%), III (31–40%), IV (>40%) with heart rate, blood pressure, pulse pressure, respiratory rate, urine output, GCS and base deficit; class III–IV need blood products / massive transfusion protocol; early haemorrhage control; minimise crystalloid; beta-blockers and age blunt the tachycardic response",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 3.",
+      "verified": false
+    }
+  ],
+  "rationale": "Geriatric trauma: beta-blockade and chronic hypertension hide shock (HR 86, SBP 108 — well below usual), anticoagulation worsens bleeding. Tests that engines look beyond absolute vital-sign thresholds, flag warfarin with reversal (not elective bridging), and recognise ≥3 rib fractures in the elderly. ICD S22.42XA (multiple rib fractures, left) tests the rib-fracture protocol mapping (registered as S29.0).",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

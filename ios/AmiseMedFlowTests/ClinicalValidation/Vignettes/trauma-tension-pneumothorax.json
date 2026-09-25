@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-tension-pneumothorax",
+  "condition": "Tension pneumothorax (traumatic)",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "summary": "41-year-old driver after a frontal collision: severe dyspnoea, SpO₂ 84 % on oxygen, RR 36, HR 138, BP 80/50, trachea deviated to the left, absent breath sounds and hyper-resonance on the right, distended neck veins.",
+  "tags": [
+    "trauma",
+    "thorax",
+    "tension-pneumothorax"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 41,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Chest injury in car crash, cannot breathe",
+    "hpi": "Driver in a frontal collision 20 minutes ago, struck the steering wheel. Right chest pain and rapidly worsening breathlessness in the ambulance.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Right chest"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Shortness of breath"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "shortness of breath",
+      "chest pain"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Agitated, cyanosed. RR 36, SpO2 84% on 15 L, HR 138, BP 80/50. Distended neck veins.",
+      "respiratory": "Trachea deviated to the left. Absent breath sounds and hyper-resonant percussion over the right hemithorax. Surgical emphysema right chest wall. Tension pneumothorax clinically."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 2,
+        "heartRate": 138,
+        "systolicBp": 80,
+        "diastolicBp": 50,
+        "respiratoryRate": 36,
+        "temperatureC": 36.5,
+        "spo2": 84,
+        "avpu": "A",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Taxi driver.",
+    "confirmedDiagnosis": {
+      "name": "Tension pneumothorax (right, traumatic)",
+      "icd10": "S27.0XXA",
+      "paneDiseaseId": "pneumothorax_traumatic",
+      "assessmentText": "Right tension pneumothorax after blunt chest trauma — clinical diagnosis. Immediate decompression without imaging, then chest drain."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "chest pain"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Sudden",
+            "At rest",
+            "Chest pain"
+          ],
+          "chest pain": [
+            "Sharp / stabbing",
+            "Shortness of breath"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Cyanosed",
+            "In distress"
+          ],
+          "respiratory": [
+            "Reduced breath sounds (R)",
+            "Trachea deviated"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "JVP elevated"
+          ]
+        },
+        "paneAnswers": {
+          "mechanism_blunt": true,
+          "dyspnoea_pe": true,
+          "chest_wall_tenderness": true,
+          "haemodynamic_instability": true,
+          "subcutaneous_emphysema": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pneumothorax",
+          "severity": "critical",
+          "match": [
+            "pneumothorax"
+          ],
+          "guidelineRefs": [
+            "atls-10-thorax"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "atls-10-thorax"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia-shock",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "hypotension",
+            "shock",
+            "haemodynamic",
+            "hemodynamic",
+            "haemorrhag"
+          ],
+          "guidelineRefs": [
+            "atls-10-thorax"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-tension",
+          "severity": "critical",
+          "match": [
+            "re:\\btension pneumo",
+            "tension physiology",
+            "re:\\btension\\b"
+          ],
+          "guidelineRefs": [
+            "atls-10-thorax"
+          ],
+          "note": "The engine must name tension physiology, not only \"pneumothorax\".",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-imaging-first",
+          "severity": "quality",
+          "match": [
+            "re:(cxr|chest x-ray|ct chest)[^.;]{0,30}(before|prior to|to confirm)[^.;]{0,20}(decompress|drain)"
+          ],
+          "unless": [
+            "do not",
+            "don't"
+          ],
+          "guidelineRefs": [
+            "atls-10-thorax"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-immediate-decompression",
+          "severity": "critical",
+          "match": [
+            "decompress",
+            "thoracostomy",
+            "needle decompression"
+          ],
+          "guidelineRefs": [
+            "atls-10-thorax"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-adult-site-not-2nd-ics",
+          "severity": "critical",
+          "match": [
+            "2nd ics",
+            "2nd intercostal",
+            "second intercostal"
+          ],
+          "unless": [
+            "child",
+            "paediatric",
+            "pediatric",
+            "avoid"
+          ],
+          "guidelineRefs": [
+            "atls-10-thorax"
+          ],
+          "note": "ATLS 10 moved adult needle decompression to the 4th/5th intercostal space anterior to the mid-axillary line (chest wall too thick at the 2nd ICS mid-clavicular line in many adults). Surgeon to confirm the site the practice teaches.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The pneumothorax protocol says \"needle decompression (14G cannula 2nd ICS MCL)\" for all patients (and a key point repeats it), while ATLS 10 moved the adult site to the 4th/5th ICS anterior to the mid-axillary line.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Change the adult site to the 4th/5th ICS just anterior to the mid-axillary line (2nd ICS MCL for children); surgeon to confirm."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-thorax",
+      "name": "ATLS 10th edition — thoracic trauma",
+      "year": 2018,
+      "section": "Chapter 4: tension pneumothorax is a clinical diagnosis treated by immediate decompression without waiting for imaging; in adults needle decompression at the 4th/5th intercostal space anterior to the mid-axillary line (2nd ICS mid-clavicular line remains acceptable in children), followed by chest tube",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 4.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-initial",
+      "name": "ATLS 10th edition — initial assessment and management",
+      "year": 2018,
+      "section": "Chapter 1: primary survey in order — control of exsanguinating external haemorrhage, airway with cervical spine restriction, breathing, circulation with haemorrhage control, disability, exposure (x/c-ABCDE); adjuncts (FAST, CXR, pelvic XR); resuscitation before definitive imaging in unstable patients",
+      "citation": "American College of Surgeons Committee on Trauma. Advanced Trauma Life Support (ATLS) Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 1.",
+      "verified": false
+    }
+  ],
+  "rationale": "Clinical tension pneumothorax with obstructive shock. ATLS 10: clinical diagnosis, immediate decompression without waiting for imaging; adult site 4th/5th ICS anterior to the mid-axillary line. Tests recognition, the decompression step and the recommended site.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

@@ -1,0 +1,421 @@
+{
+  "schemaVersion": 1,
+  "id": "burns-inhalation-enclosed-space",
+  "condition": "Inhalation injury with facial and hand burns (enclosed-space fire)",
+  "category": "trauma-burns",
+  "permutationOf": "burns-adult-flame-27pct",
+  "permutationLabel": "Inhalation injury, carbon monoxide, face and hands",
+  "summary": "52-year-old man, 85 kg, rescued from a burning house: singed nasal hairs, soot in the mouth, hoarse voice, carbonaceous sputum, early stridor; 18 % TBSA flame burns to face, neck, chest and both hands; SpO₂ 96 % on oxygen, COHb 18 %.",
+  "tags": [
+    "burns",
+    "inhalation",
+    "airway",
+    "carbon-monoxide",
+    "special-areas"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 85
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "burns",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Burns and smoke inhalation from house fire",
+    "hpi": "Trapped in a smoke-filled bedroom for about 10 minutes before rescue by firefighters 40 minutes ago. Voice becoming hoarse, coughing black sputum. Headache.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Face",
+        "Neck",
+        "Chest",
+        "Hand"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "burn",
+      "hoarse voice",
+      "cough",
+      "headache",
+      "stridor"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "GCS 14, agitated. HR 124, BP 136/84, RR 28, SpO2 96% on 15 L (pulse oximetry unreliable with CO). Weight 85 kg.",
+      "respiratory": "Hoarse voice, soft inspiratory stridor, carbonaceous sputum, soot in the oropharynx, singed nasal hairs and eyebrows. Scattered wheeze.",
+      "skin": "Flame burns to the face, anterior neck, upper chest and both hands (dorsum and palms), deep partial thickness — 18% TBSA."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 124,
+        "systolicBp": 136,
+        "diastolicBp": 84,
+        "respiratoryRate": 28,
+        "temperatureC": 36.5,
+        "spo2": 96,
+        "avpu": "V",
+        "onSupplementalO2": true,
+        "weightKg": 85
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "cohb",
+        "name": "Carboxyhaemoglobin (VBG)",
+        "value": 18,
+        "unit": "%",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.1,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Asthma"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 mcg",
+        "frequency": "PRN",
+        "indication": "Asthma"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone. Smoker.",
+    "confirmedDiagnosis": {
+      "name": "Inhalation injury with 18% TBSA flame burns (face, neck, hands) and carbon monoxide poisoning",
+      "icd10": "T27.3XXA",
+      "paneDiseaseId": "thermal_burn_major",
+      "assessmentText": "Inhalation injury (enclosed-space fire, hoarseness, stridor, carbonaceous sputum) with 18% TBSA deep partial-thickness burns to face, neck, chest and both hands, COHb 18%. Early intubation by the most experienced airway operator, 100% oxygen, formal fluid resuscitation, burns centre."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "hoarse voice",
+          "stridor",
+          "cough",
+          "headache",
+          "wound pain"
+        ],
+        "examFindings": {
+          "respiratory": [
+            "Wheeze"
+          ],
+          "general": [
+            "In distress",
+            "GCS < 15"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "burn_wound": true,
+          "inhalation_injury": true,
+          "singed_eyebrows": true,
+          "tbsa_significant": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-burn-top3",
+          "severity": "quality",
+          "match": [
+            "burn",
+            "inhalation"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "atls-10-burns"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-inhalation",
+          "severity": "critical",
+          "match": [
+            "inhalation",
+            "airway burn",
+            "stridor",
+            "airway oedema"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+        },
+        {
+          "id": "flag-special-areas",
+          "severity": "quality",
+          "match": [
+            "face",
+            "hand"
+          ],
+          "guidelineRefs": [
+            "aba-referral"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cohb",
+          "severity": "critical",
+          "match": [
+            "carboxyh",
+            "cohb",
+            "co-oximetry",
+            "carbon monoxide"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "note": "Pulse oximetry reads COHb as oxyhaemoglobin.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-early-intubation",
+          "severity": "critical",
+          "match": [
+            "intubat",
+            "secure airway",
+            "secure the airway",
+            "definitive airway"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns",
+            "isbi-2016"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+        },
+        {
+          "id": "mgmt-100-oxygen",
+          "severity": "critical",
+          "match": [
+            "100% o2",
+            "100% oxygen",
+            "high-flow oxygen",
+            "high flow oxygen",
+            "non-rebreather",
+            "15 l"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+        },
+        {
+          "id": "mgmt-formal-fluids",
+          "severity": "quality",
+          "match": [
+            "parkland",
+            "re:\\d\\s?ml\\s?[x×]\\s?(kg|weight)",
+            "re:ml/kg/%\\s?tbsa",
+            "fluid resuscitation",
+            "formal fluid"
+          ],
+          "guidelineRefs": [
+            "burns-fluid-threshold",
+            "aba-fluid-2008"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+        },
+        {
+          "id": "mgmt-burns-referral",
+          "severity": "critical",
+          "match": [
+            "burns unit",
+            "burn unit",
+            "burns centre",
+            "burn centre",
+            "burn center",
+            "burns service",
+            "burn service",
+            "burns specialist",
+            "regional burns",
+            "plastic surg"
+          ],
+          "guidelineRefs": [
+            "aba-referral",
+            "nnbc-2012"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T27.3XXA matches no pane-engine protocol (no inhalation-injury protocol; major-burn protocol only T31.3+) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE ranks the major burn #3 (0.09) so its seeded COHb test appears, but its intubation/oxygen steps do not.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Map T27 (burn of respiratory tract) and T31.x to the major-burn protocol and add an inhalation-injury red flag (enclosed space, hoarseness, stridor, soot, carbonaceous sputum)."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-burns",
+      "severity": "quality",
+      "equals": "burns",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-burns",
+      "name": "ATLS 10th edition — thermal injuries",
+      "year": 2018,
+      "section": "Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.)",
+      "verified": false
+    },
+    {
+      "id": "isbi-2016",
+      "name": "ISBI Practice Guidelines for Burn Care",
+      "year": 2016,
+      "section": "Initial assessment and resuscitation (TBSA estimation, fluid resuscitation guided by urine output, avoid over-resuscitation), inhalation injury, escharotomy, chemical and electrical injury",
+      "citation": "ISBI Practice Guidelines Committee. ISBI Practice Guidelines for Burn Care. Burns. 2016;42:953–1021.",
+      "verified": false
+    },
+    {
+      "id": "aba-referral",
+      "name": "American Burn Association — burn centre referral criteria",
+      "year": 2006,
+      "section": "Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked)",
+      "citation": "American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006.",
+      "verified": false
+    },
+    {
+      "id": "nnbc-2012",
+      "name": "National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance",
+      "year": 2012,
+      "section": "Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source)",
+      "citation": "National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012.",
+      "verified": false
+    },
+    {
+      "id": "aba-fluid-2008",
+      "name": "ABA practice guideline — burn shock resuscitation",
+      "year": 2008,
+      "section": "Formal resuscitation of large burns: crystalloid 2–4 mL/kg/%TBSA over the first 24 h from the time of burn, titrated to urine output (adults 0.5 mL/kg/h); avoid over-resuscitation",
+      "citation": "Pham TN, Cancio LC, Gibran NS. American Burn Association practice guidelines burn shock resuscitation. J Burn Care Res. 2008;29:257–66.",
+      "verified": false
+    },
+    {
+      "id": "burns-fluid-threshold",
+      "name": "Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief)",
+      "year": 2026,
+      "section": "Formal IV fluid resuscitation only for burns ≥15% TBSA in adults and ≥10% in children, by the Parkland formula (4 mL/kg/%TBSA crystalloid over 24 h); half of the 24 h volume in the first 8 h from the time of burn, adjusted to urine output. The source statement (BBA / NNBC / local burns network) and the ≥ vs > wording are to be identified and verified by the surgeon",
+      "citation": "Amise Medical Services clinical-validation brief, 2026-09-25 (threshold to be traced to its published source). Parkland formula: Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150:874–94.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: inhalation injury and CO poisoning with special areas (face, hands). ATLS: early definitive airway before oedema progresses; 100 % oxygen; COHb measurement because pulse oximetry is falsely reassuring. ICD T27.3XXA has no protocol mapping.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

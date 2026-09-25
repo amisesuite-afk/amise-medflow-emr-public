@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 1,
+  "id": "cellulitis-sepsis-elderly-diabetic",
+  "condition": "Cellulitis with sepsis",
+  "category": "soft-tissue",
+  "permutationOf": "cellulitis-leg-adult",
+  "permutationLabel": "Elderly, diabetic, sepsis (Eron III)",
+  "summary": "78-year-old man with diabetes and heart failure: left leg cellulitis with confusion, T 39.2 °C, HR 118, RR 24, BP 94/56, lactate 3.8, WBC 19.",
+  "tags": [
+    "cellulitis",
+    "sepsis",
+    "elderly",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 78,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Red swollen left leg and confusion",
+    "hpi": "Three days of redness spreading up the left lower leg from a leg ulcer. Today confused and drowsy according to his daughter, with rigors. Diabetes on insulin, heart failure, chronic venous leg ulcer.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Lower leg"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "leg redness",
+      "fever",
+      "rigors",
+      "confusion"
+    ],
+    "negatives": [
+      "crepitus"
+    ],
+    "exam": {
+      "general": "Drowsy, confused (new). T 39.2°C, HR 118, RR 24, BP 94/56, SpO2 94% on air.",
+      "msk": "Left leg: erythema from ankle to knee, warm and tender, tenderness confined to the erythema, venous ulcer on the medial malleolus with purulent slough. No bullae, no crepitus."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "systolicBp": 94,
+        "diastolicBp": 56,
+        "respiratoryRate": 24,
+        "temperatureC": 39.2,
+        "spo2": 94,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 188,
+        "unit": "mg/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 168,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.8,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 17.8,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Heart failure",
+      "Chronic venous leg ulcer"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin glargine",
+        "dose": "24 units",
+        "frequency": "nocte",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Furosemide",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      },
+      "sirs": {
+        "tempAbove38OrBelow36": true,
+        "hrAbove90": true,
+        "rrAbove20": true,
+        "wbcAbnormal": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Cellulitis of left lower limb with sepsis",
+      "icd10": "L03.116",
+      "paneDiseaseId": "cellulitis",
+      "assessmentText": "Severe (Eron III) cellulitis of the left leg with sepsis and new confusion, secondary to an infected venous ulcer. qSOFA 3. NSTI not clinically evident but must be reassessed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "cellulitis",
+          "fever",
+          "rigors",
+          "confusion",
+          "leg ulcer"
+        ],
+        "examFindings": {
+          "general": [
+            "In distress"
+          ],
+          "neurological": [
+            "Confused"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "extremities": [
+            "Wound present",
+            "Oedema present"
+          ]
+        },
+        "paneAnswers": {
+          "erythema_surrounding": true,
+          "fever": true,
+          "elevated_wbc": true,
+          "skin_ulceration": true,
+          "crepitus_soft_tissue": false
+        },
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cellulitis-top3",
+          "severity": "critical",
+          "match": [
+            "cellulitis",
+            "soft tissue infection"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "idsa-ssti-2014"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis (fever/rigors dominate; the 'leg' site adds leg_swelling). The management panel therefore shows the cholangitis protocol. Symptom inference ranks cellulitis #3.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Weight skin features (erythema_surrounding, skin_ulceration) against systemic fever in PANE; do not let fever/rigors alone select a biliary disease without RUQ or jaundice features."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-nsti",
+          "severity": "critical",
+          "match": [
+            "necrotis",
+            "fasciitis"
+          ],
+          "guidelineRefs": [
+            "idsa-ssti-2014",
+            "wses-sis-ssti-2018"
+          ],
+          "note": "IDSA: severe cellulitis with systemic toxicity must be assessed for necrotising infection.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholangitis, Liver abscess, Acute diverticulitis. Symptom inference ranks NSTI #4.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng51",
+          "ssc-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "nice-ng51",
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-beta-blocker",
+          "severity": "quality",
+          "match": [
+            "beta-block",
+            "bisoprolol"
+          ],
+          "note": "Beta-blockade blunts tachycardia.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No engine flags that bisoprolol blunts the tachycardic response.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-qsofa",
+          "severity": "quality",
+          "score": "qsofa",
+          "guidelineRefs": [
+            "sepsis-3"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "critical",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 3,
+          "guidelineRefs": [
+            "sepsis-3"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "score-qsofa-autofill",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "autofill",
+          "equals": 3,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis-3"
+          ],
+          "note": "Record has AVPU V, RR 24, SBP 94.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-antibiotics",
+          "severity": "critical",
+          "match": [
+            "re:\\biv\\b[^.;]{0,40}antibiotic",
+            "intravenous antibiotic",
+            "re:antibiotic[^.;]{0,40}\\biv\\b",
+            "benzylpenicillin",
+            "piperacillin",
+            "meropenem",
+            "vancomycin",
+            "flucloxacillin 2 g iv",
+            "ceftriaxone"
+          ],
+          "guidelineRefs": [
+            "nice-ng141",
+            "nice-ng51",
+            "idsa-ssti-2014"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-fluids",
+          "severity": "quality",
+          "match": [
+            "fluid",
+            "crystalloid",
+            "hartmann"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "note": "Cautious in heart failure.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-oral-only",
+          "severity": "quality",
+          "match": [
+            "re:eron i[^iv]",
+            "phenoxymethylpenicillin 500 mg"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan"
+          ],
+          "note": "A plan built on the Eron I oral regimen under-treats sepsis.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng141",
+      "name": "NICE NG141 — Cellulitis and erysipelas: antimicrobial prescribing",
+      "year": 2019,
+      "section": "Recommendations 1.1: mark the extent; consider admission for severe illness or sepsis; first-choice oral antibiotic for non-severe cellulitis in adults is flucloxacillin; IV options when severely unwell",
+      "citation": "National Institute for Health and Care Excellence. Cellulitis and erysipelas: antimicrobial prescribing (NG141). London: NICE; 2019.",
+      "verified": false
+    },
+    {
+      "id": "idsa-ssti-2014",
+      "name": "IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update)",
+      "year": 2014,
+      "section": "Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF",
+      "citation": "Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52.",
+      "verified": false
+    },
+    {
+      "id": "wses-sis-ssti-2018",
+      "name": "WSES/SIS-E consensus conference — management of skin and soft-tissue infections",
+      "year": 2018,
+      "section": "Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene",
+      "citation": "Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng51",
+      "name": "NICE NG51 — Sepsis: recognition, diagnosis and early management",
+      "year": 2016,
+      "section": "High-risk criteria (e.g. new altered mental state, RR ≥25, SBP ≤90, HR >130, lactate ≥2 with other criteria): blood cultures, IV antibiotics within 1 h, fluids, senior review",
+      "citation": "National Institute for Health and Care Excellence. Sepsis: recognition, diagnosis and early management (NG51). London: NICE; 2016 (updated).",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    },
+    {
+      "id": "sepsis-3",
+      "name": "Sepsis-3 consensus definitions",
+      "year": 2016,
+      "section": "qSOFA: RR ≥22, altered mentation, SBP ≤100 mmHg",
+      "citation": "Singer M, Deutschman CS, Seymour CW, et al. The Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). JAMA. 2016;315:801–10.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng158",
+      "name": "NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "DVT: two-level Wells; likely (≥2) → proximal leg vein ultrasound within 4 h (interim anticoagulation and D-dimer if delayed); unlikely → D-dimer. PE: two-level Wells; likely (>4) → CTPA immediately (interim anticoagulation if delayed); unlikely (≤4) → D-dimer; PERC may be used when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. Venous thromboembolic diseases: diagnosis, management and thrombophilia testing (NG158). London: NICE; 2020 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: severity (sepsis with new confusion, qSOFA 3), age, diabetes, beta-blocker. Expectations move from outpatient oral treatment to emergency IV antibiotics, blood cultures and NSTI exclusion.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

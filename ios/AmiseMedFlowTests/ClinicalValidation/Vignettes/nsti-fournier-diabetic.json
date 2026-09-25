@@ -1,0 +1,461 @@
+{
+  "schemaVersion": 1,
+  "id": "nsti-fournier-diabetic",
+  "condition": "Fournier's gangrene (perineal necrotising fasciitis)",
+  "category": "soft-tissue",
+  "permutationOf": "nsti-leg-diabetic-sepsis",
+  "permutationLabel": "Fournier's gangrene, uncontrolled diabetes, septic shock",
+  "summary": "64-year-old man with poorly controlled type 2 diabetes: 3 days of scrotal and perineal pain and swelling, a black patch on the scrotum, crepitus; T 38.7 °C, HR 124, BP 86/50; glucose 24.",
+  "tags": [
+    "nsti",
+    "fournier",
+    "diabetes",
+    "septic-shock"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 64,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 104
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Scrotal pain and swelling",
+    "hpi": "Three days of worsening pain and swelling of the scrotum and perineum, now spreading to the groin. Noticed a black area on the scrotum today and a foul smell. Fevers and shaking. Type 2 diabetes on insulin, poorly controlled. Perianal abscess drained 2 years ago.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Perineal",
+        "Groin"
+      ],
+      "character": [
+        "Throbbing",
+        "Burning"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "scrotal pain",
+      "scrotal swelling",
+      "perineal pain",
+      "fever",
+      "rigors"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Septic, confused at times. HR 124, BP 86/50, T 38.7°C, RR 26. Hypotension despite 1 L crystalloid.",
+      "other": "Genitalia/perineum: scrotum grossly swollen, erythematous with a 4 cm black necrotic patch, crepitus extending into the perineum and left groin, foul-smelling discharge. Tenderness beyond the erythema."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 124,
+        "systolicBp": 86,
+        "diastolicBp": 50,
+        "respiratoryRate": 26,
+        "temperatureC": 38.7,
+        "spo2": 94,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "glucoseMmol": 24.1
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 27.5,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.6,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 340,
+        "unit": "mg/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 129,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 210,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 24.1,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.8,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Obesity",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Incision and drainage of perianal abscess"
+    ],
+    "medications": [
+      {
+        "drug": "Insulin glargine",
+        "dose": "40 units",
+        "frequency": "nocte",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with wife. Drinks 20 units/week.",
+    "confirmedDiagnosis": {
+      "name": "Fournier's gangrene",
+      "icd10": "N49.3",
+      "paneDiseaseId": "necrotising_fasciitis",
+      "assessmentText": "Fournier's gangrene (necrotising fasciitis of the perineum and scrotum) with septic shock and hyperglycaemia. Needs emergency radical debridement."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "scrotal swelling",
+          "perianal pain",
+          "fever",
+          "rigors",
+          "confusion"
+        ],
+        "examFindings": {
+          "general": [
+            "Diaphoretic",
+            "In distress"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "perineal": [
+            "Erythema",
+            "Discharge",
+            "Mass / swelling"
+          ]
+        },
+        "paneAnswers": {
+          "erythema_surrounding": true,
+          "crepitus_soft_tissue": true,
+          "fever": true,
+          "haemodynamic_instability": true,
+          "scrotal_swelling": true
+        },
+        "durationDays": 3,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-fournier",
+          "severity": "critical",
+          "match": [
+            "fournier",
+            "necrotis",
+            "fasciitis"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a Fournier's gangrene disease (or map it to necrotising_fasciitis with scrotal/perineal features) and stop mapping a 'Groin' pain site to groin_swelling."
+        }
+      ],
+      "mustRankTopK": [
+        {
+          "id": "dx-fournier-top3",
+          "severity": "quality",
+          "match": [
+            "fournier",
+            "necrotis",
+            "fasciitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Inguinal/femoral hernia, Acute cholangitis, Acute cholecystitis. The 'Groin' site chip maps to groin_swelling (hernia) and PANE has no Fournier's disease. Symptom inference ranks Fournier's #1.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-sis-ssti-2018",
+          "ssc-2021"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis-shock",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "hypotension",
+            "shock",
+            "haemodynamic",
+            "hemodynamic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-hyperglycaemia",
+          "severity": "quality",
+          "match": [
+            "hyperglyc",
+            "glucose",
+            "dka",
+            "ketoacidosis"
+          ],
+          "note": "Glucose 24 in sepsis: DKA/HHS screen and insulin plan.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-ketones-glucose",
+          "severity": "quality",
+          "match": [
+            "ketone",
+            "glucose",
+            "vbg",
+            "blood gas"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-debridement",
+          "severity": "critical",
+          "match": [
+            "debrid",
+            "surgical exploration",
+            "re:explor(e|ation)[^.;]{0,40}(theatre|surg|operat)",
+            "re:(theatre|surgery)[^.;]{0,30}(immediate|emergency|urgent)"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add N49.3 (Fournier's gangrene) to the necrotising_fasciitis protocol icd10Prefixes."
+        },
+        {
+          "id": "mgmt-clindamycin",
+          "severity": "critical",
+          "match": [
+            "clindamycin"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018",
+            "idsa-ssti-2014"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD N49.3 matches no pane-engine protocol (NSTI protocol registered as M72.6 only) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add N49.3 to the necrotising_fasciitis protocol icd10Prefixes."
+        },
+        {
+          "id": "mgmt-broad-spectrum",
+          "severity": "critical",
+          "match": [
+            "piperacillin",
+            "tazocin",
+            "meropenem",
+            "carbapenem",
+            "broad-spectrum",
+            "broad spectrum"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-urology-colorectal",
+          "severity": "quality",
+          "match": [
+            "urolog",
+            "colostomy",
+            "faecal diversion",
+            "stoma"
+          ],
+          "guidelineRefs": [
+            "wses-sis-ssti-2018"
+          ],
+          "note": "Urology input for testes/urethra; faecal diversion when the perineal wound will be soiled.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD N49.3 matches no pane-engine protocol and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sis-ssti-2018",
+      "name": "WSES/SIS-E consensus conference — management of skin and soft-tissue infections",
+      "year": 2018,
+      "section": "Necrotising soft-tissue infections: clinical diagnosis (pain out of proportion, rapid progression, systemic toxicity); LRINEC has limited sensitivity and must not be used to rule out NSTI; prompt surgical debridement; empirical broad-spectrum antibiotics including an agent with anti-toxin activity (clindamycin) for streptococcal/clostridial infection; Fournier's gangrene",
+      "citation": "Sartelli M, Coccolini F, Kluger Y, et al. WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58.",
+      "verified": false
+    },
+    {
+      "id": "idsa-ssti-2014",
+      "name": "IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update)",
+      "year": 2014,
+      "section": "Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF",
+      "citation": "Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Septic shock / high likelihood of sepsis: blood cultures before antimicrobials, antimicrobials within 1 h, lactate, source control as soon as practical",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: perineal NSTI (Fournier's) with septic shock in uncontrolled diabetes. ICD N49.3 is the code a clinician picks for Fournier's; it tests whether the ICD route finds the NSTI protocol. The CC is 'Scrotal pain and swelling', which also tests that torsion/epididymitis do not crowd out a life-threatening NSTI.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

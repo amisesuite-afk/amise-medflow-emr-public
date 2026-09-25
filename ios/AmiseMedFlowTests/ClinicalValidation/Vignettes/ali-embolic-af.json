@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "id": "ali-embolic-af",
+  "condition": "Acute limb ischaemia (embolic)",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "76-year-old woman with atrial fibrillation (warfarin stopped after a fall): sudden left leg pain 4 h ago, pale, cold, pulseless below the femoral, numbness beyond the toes and weak toe dorsiflexion — Rutherford IIb.",
+  "tags": [
+    "ali",
+    "embolic",
+    "af",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Sudden painful cold left leg",
+    "hpi": "Sudden onset severe pain in the left leg 4 hours ago while watching television. The leg went pale, cold and numb, and she cannot move her toes well. Atrial fibrillation; warfarin stopped 2 months ago after a fall. No previous claudication.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Lower leg",
+        "Foot"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "leg pain",
+      "cold leg",
+      "numbness",
+      "weakness"
+    ],
+    "negatives": [
+      "chest pain",
+      "previous claudication"
+    ],
+    "exam": {
+      "general": "Distressed. HR 104 irregularly irregular, BP 148/86, T 36.8°C.",
+      "msk": "Left leg: pallor with mottling to mid-calf, cold to touch below the knee, pulseless — femoral pulse present, popliteal, dorsalis pedis and posterior tibial pulses absent, no Doppler arterial signal at the ankle. Paraesthesia and sensory loss over the foot beyond the toes; weak toe dorsiflexion (paralysis developing). Calf soft. Right leg pulses present.",
+      "cardiovascular": "Irregularly irregular pulse. No murmur."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 148,
+        "diastolicBp": 86,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ck",
+        "name": "CK",
+        "value": 640,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone, independent.",
+    "confirmedDiagnosis": {
+      "name": "Acute limb ischaemia of left leg (embolic)",
+      "icd10": "I74.3",
+      "assessmentText": "Acute embolic limb ischaemia of the left leg, Rutherford IIb (immediately threatened) — atrial fibrillation off anticoagulation. Needs IV heparin and emergency revascularisation."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "limb pain",
+          "cold foot",
+          "cold extremities",
+          "numbness",
+          "limb weakness"
+        ],
+        "examFindings": {
+          "extremities": [
+            "DP absent",
+            "PT absent"
+          ],
+          "cardiovascular": [
+            "Irregular rhythm",
+            "Peripheral pulses absent",
+            "Capillary refill > 2s"
+          ]
+        },
+        "paneAnswers": {
+          "absent_pulses": true,
+          "rest_pain": true,
+          "claudication": false
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ali-top3",
+          "severity": "critical",
+          "match": [
+            "limb isch",
+            "limb-threatening isch",
+            "acute isch",
+            "arterial embol",
+            "arterial occlusion",
+            "acute limb"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE top 3: Acute cholecystitis, GORD, Acute diverticulitis — PANE has no ALI disease. Symptom inference ranks ALI #1.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esvs-ali-2020"
+        ],
+        "note": "Rutherford IIb: emergency revascularisation.",
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-ali",
+          "severity": "critical",
+          "match": [
+            "limb isch",
+            "limb-threatening isch",
+            "acute isch",
+            "arterial embol",
+            "arterial occlusion",
+            "acute limb"
+          ],
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ],
+          "note": "A limb-threatening emergency with normal vital signs: only a condition-specific alarm surfaces it.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-af-embolic-source",
+          "severity": "quality",
+          "match": [
+            "atrial fibrillation",
+            "embol",
+            "anticoag"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cta-or-duplex",
+          "severity": "quality",
+          "match": [
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "duplex",
+            "re:\\bangiogra"
+          ],
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ],
+          "note": "Imaging must not delay revascularisation in IIb.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-heparin",
+          "severity": "critical",
+          "match": [
+            "heparin"
+          ],
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+        },
+        {
+          "id": "mgmt-emergency-revascularisation",
+          "severity": "critical",
+          "match": [
+            "revascularis",
+            "embolectomy",
+            "thrombectomy",
+            "thrombolysis",
+            "vascular surg"
+          ],
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "PANE has no acute limb ischaemia disease and no protocol matches I74.3, so there is no plan, no management panel and no ALI alarm; triage reaches emergency only because the HPI contains \"severe pain\" (read as the acute-abdomen rule) plus age/comorbidity points.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add an acute limb ischaemia disease and protocol (6 Ps, Rutherford I–III, immediate IV heparin, emergency/urgent revascularisation, CTA only if it will not delay IIb) with ICD I74.2–I74.4, and an ALI red-flag rule in rules.ts (sudden cold pale pulseless limb)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-claudication-plan",
+          "severity": "quality",
+          "match": [
+            "supervised exercise"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan",
+            "ios.soap.plan"
+          ],
+          "note": "A chronic PAD plan in acute ischaemia.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-ali-2020",
+      "name": "ESVS 2020 clinical practice guidelines — acute limb ischaemia",
+      "year": 2020,
+      "section": "Clinical diagnosis (pain, pallor, pulselessness, paraesthesia, paralysis, poikilothermia); Rutherford/TASC categories I, IIa, IIb, III; immediate IV heparin unless contraindicated; IIb (immediately threatened) needs emergency revascularisation; IIa urgent; imaging (CTA) must not delay revascularisation in IIb",
+      "citation": "Björck M, Earnshaw JJ, Acosta S, et al. European Society for Vascular Surgery (ESVS) 2020 Clinical Practice Guidelines on the Management of Acute Limb Ischaemia. Eur J Vasc Endovasc Surg. 2020;59:173–218.",
+      "verified": false
+    },
+    {
+      "id": "rutherford-1997",
+      "name": "Rutherford — recommended reporting standards for lower-extremity ischaemia (acute ischaemia categories)",
+      "year": 1997,
+      "section": "Acute limb ischaemia categories: I viable; IIa marginally threatened (minimal sensory loss, no weakness); IIb immediately threatened (sensory loss beyond toes, rest pain, mild–moderate weakness); III irreversible",
+      "citation": "Rutherford RB, Baker JD, Ernst C, et al. Recommended standards for reports dealing with lower extremity ischemia: revised version. J Vasc Surg. 1997;26:517–38.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base ALI case: embolic occlusion with all six Ps and motor deficit (Rutherford IIb). Vital signs are near-normal, so the engines must recognise the limb emergency from findings. ESVS 2020: immediate heparin and emergency revascularisation.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

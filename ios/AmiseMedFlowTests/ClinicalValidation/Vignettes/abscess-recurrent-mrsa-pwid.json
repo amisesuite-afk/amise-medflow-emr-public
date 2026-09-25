@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 1,
+  "id": "abscess-recurrent-mrsa-pwid",
+  "condition": "Skin abscess (MRSA risk)",
+  "category": "soft-tissue",
+  "permutationOf": "abscess-thigh-adult",
+  "permutationLabel": "Injecting drug use, previous MRSA, SIRS, groin site",
+  "summary": "34-year-old man who injects drugs: 3 days of a painful swelling in the right groin at an injection site, previous MRSA abscess; T 38.4 °C, HR 104; 5 cm fluctuant swelling with cellulitis.",
+  "tags": [
+    "abscess",
+    "mrsa",
+    "pwid"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful swelling in right groin",
+    "hpi": "Injects heroin into the right groin. Three days of a painful swelling at the injection site with fevers. MRSA abscess on the arm drained last year. No bleeding from the site.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Groin"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling",
+      "fever"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "T 38.4°C, HR 104, BP 118/70, RR 18.",
+      "skin": "Right groin over the femoral triangle: 5 cm tender fluctuant swelling with 4 cm of surrounding erythema, multiple injection marks. No expansile pulsation felt but femoral pulse close by. Distal pulses present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 38.4,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 120,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hepatitis C",
+      "Opioid use disorder"
+    ],
+    "surgicalHistory": [
+      "Incision and drainage of left arm abscess (MRSA)"
+    ],
+    "medications": [
+      {
+        "drug": "Methadone",
+        "dose": "60 mg",
+        "frequency": "OD",
+        "indication": "Opioid substitution"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Injects heroin into the groin. Unstable housing.",
+    "confirmedDiagnosis": {
+      "name": "Cutaneous abscess of groin (MRSA risk)",
+      "icd10": "L02.214",
+      "paneDiseaseId": "skin_abscess",
+      "assessmentText": "Groin injection-site abscess with surrounding cellulitis and SIRS in a person who injects drugs, previous MRSA. Exclude femoral pseudoaneurysm before drainage."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "abscess",
+          "groin swelling",
+          "fever"
+        ],
+        "examFindings": {
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "swelling_fluctuant_soft": true,
+          "erythema_surrounding": true,
+          "fever": true,
+          "elevated_wbc": true
+        },
+        "toxicHabits": [
+          "IV drug use"
+        ],
+        "durationDays": 3,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-abscess-top3",
+          "severity": "critical",
+          "match": [
+            "abscess"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "idsa-ssti-2014"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-pseudoaneurysm",
+          "severity": "quality",
+          "match": [
+            "pseudoaneurysm",
+            "false aneurysm",
+            "mycotic",
+            "aneurysm"
+          ],
+          "note": "A groin \"abscess\" at an injection site can be an infected femoral pseudoaneurysm; incising it causes catastrophic haemorrhage. Duplex before drainage. Vascular surgical practice with no guideline statement cited here, so quality until the surgeon decides the severity.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No engine has infected femoral pseudoaneurysm; PANE top 3: Acute appendicitis, Skin abscess, Acute cholecystitis (the Groin site chip adds groin_swelling).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "quality",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "idsa-ssti-2014"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-ivdu",
+          "severity": "quality",
+          "match": [
+            "inject",
+            "ivdu",
+            "iv drug",
+            "pwid"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "The 'IV drug use' toxic habit is not surfaced as a red flag. Triage also fires 'Possible cardiac event' from the words 'left arm' in the surgical history and 'GI or other bleeding' from 'No bleeding' (no negation).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Handle negation in scanRedFlags and do not match cardiac keywords inside surgical history."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-duplex-before-drainage",
+          "severity": "quality",
+          "match": [
+            "duplex",
+            "re:(ultrasound|uss|\\bus\\b)[^.;]{0,30}(groin|femoral|pulsat|vascular)",
+            "ct angiogra"
+          ],
+          "note": "Imaging of the femoral vessels before incising a groin injection-site swelling. No guideline statement cited; quality until the surgeon decides the severity.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No engine recommends imaging a groin injection-site swelling before incision.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-mrsa-culture",
+          "severity": "quality",
+          "match": [
+            "mrsa",
+            "re:\\bpus\\b",
+            "re:(wound|pus|abscess)[^.;]{0,20}(culture|swab)",
+            "swab"
+          ],
+          "guidelineRefs": [
+            "idsa-ssti-2014"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. PANE's top diagnosis (appendicitis, 0.21) drives the management panel instead.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+        },
+        {
+          "id": "inv-bbv",
+          "severity": "quality",
+          "match": [
+            "hiv",
+            "hepatitis",
+            "blood-borne",
+            "bbv"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No blood-borne virus screen suggested for a person who injects drugs.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-incision-drainage",
+          "severity": "quality",
+          "match": [
+            "incision and drainage",
+            "re:\\bi\\s?&\\s?d\\b",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "idsa-ssti-2014"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The management panel shows the appendicitis protocol (PANE top 0.21).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+        },
+        {
+          "id": "mgmt-mrsa-active-antibiotic",
+          "severity": "critical",
+          "match": [
+            "vancomycin",
+            "trimethoprim-sulfamethoxazole",
+            "co-trimoxazole",
+            "doxycycline",
+            "clindamycin",
+            "linezolid",
+            "teicoplanin"
+          ],
+          "guidelineRefs": [
+            "idsa-ssti-2014"
+          ],
+          "note": "IDSA: abscess with SIRS → antibiotic active against MRSA in addition to drainage.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD L02.214 matches no pane-engine protocol (skin abscess protocol registered as L02.9) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The management panel shows the appendicitis protocol (PANE top 0.21, groin site → groin_swelling).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "idsa-ssti-2014",
+      "name": "IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update)",
+      "year": 2014,
+      "section": "Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF",
+      "citation": "Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: MRSA risk, SIRS and a groin injection site. IDSA 2014 adds MRSA-active antibiotics with SIRS. The groin site adds a must-not-miss (infected pseudoaneurysm) that should be imaged before any incision.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

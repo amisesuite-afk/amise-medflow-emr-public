@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "id": "burns-child-scald-12pct",
+  "condition": "Scald burn in a child requiring formal fluid resuscitation",
+  "category": "trauma-burns",
+  "permutationOf": "burns-adult-flame-27pct",
+  "permutationLabel": "Child 3 years, 15 kg, 12 % TBSA by Lund–Browder",
+  "summary": "3-year-old boy, 15 kg, pulled a kettle onto himself 1 h ago: 12 % TBSA (Lund–Browder) partial-thickness scald to the anterior chest and right arm; HR 150, capillary refill 3 s. Parkland 720 mL/24 h plus maintenance fluid; urine output 1 mL/kg/h.",
+  "tags": [
+    "burns",
+    "paediatric",
+    "lund-browder",
+    "parkland"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 3,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 96,
+      "weightKg": 15
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "burns",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Scald from kettle",
+    "hpi": "Pulled the kettle cord from the kitchen counter 1 hour ago; boiling water poured over his chest and right arm. Mother cooled him under the tap for 20 minutes and brought him straight in. History consistent and development appropriate. Immunisations up to date.",
+    "socrates": {},
+    "symptoms": [
+      "burn",
+      "pain",
+      "crying"
+    ],
+    "negatives": [
+      "cough",
+      "stridor"
+    ],
+    "exam": {
+      "general": "Distressed, crying. HR 150, RR 30, capillary refill 3 s, T 36.9°C, SpO2 99%. Weight 15 kg.",
+      "skin": "Scald to the anterior chest and upper abdomen and the right upper arm and forearm with a downward flow pattern: blistered and pale-mottled patches — superficial and deep partial thickness. 12% TBSA by Lund–Browder chart. Face, hands and perineum spared. Not circumferential."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 150,
+        "respiratoryRate": 30,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 15
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 5.8,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with both parents. Attends nursery.",
+    "confirmedDiagnosis": {
+      "name": "Scald 12% TBSA (partial thickness), child",
+      "icd10": "T31.10",
+      "paneDiseaseId": "thermal_burn_minor",
+      "assessmentText": "Partial-thickness scald 12% TBSA (Lund–Browder) in a 3-year-old, 15 kg — above the paediatric formal-fluid threshold: Parkland 4 mL × 15 kg × 12% = 720 mL/24 h (half in the first 8 h from the burn) plus maintenance glucose-containing fluid; urine output 1 mL/kg/h; paediatric burns referral."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "wound pain",
+          "inconsolable crying",
+          "skin lesion"
+        ],
+        "examFindings": {
+          "skin": [
+            "Lesion present"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "burn_wound": true,
+          "blistering": true,
+          "tbsa_significant": true,
+          "inhalation_injury": false
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "atls-10-burns",
+          "burns-fluid-threshold"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-paediatric-burn",
+          "severity": "quality",
+          "match": [
+            "child",
+            "paediatric",
+            "pediatric"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-lund-browder",
+          "severity": "quality",
+          "match": [
+            "lund",
+            "browder"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "note": "Rule of nines overestimates limbs and underestimates the head in young children.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-formal-fluids",
+          "severity": "critical",
+          "match": [
+            "parkland",
+            "re:\\d\\s?ml\\s?[x×]\\s?(kg|weight)",
+            "re:ml/kg/%\\s?tbsa",
+            "fluid resuscitation",
+            "formal fluid"
+          ],
+          "guidelineRefs": [
+            "burns-fluid-threshold",
+            "atls-10-burns"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        },
+        {
+          "id": "mgmt-maintenance-fluid",
+          "severity": "quality",
+          "match": [
+            "maintenance"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "note": "Children need maintenance glucose-containing fluid in addition to the resuscitation volume.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        },
+        {
+          "id": "mgmt-child-urine-target",
+          "severity": "quality",
+          "match": [
+            "re:1\\s?ml/kg/h",
+            "re:1\\s?ml/kg/hr",
+            "re:1\\s?ml/kg per hour"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        },
+        {
+          "id": "mgmt-paediatric-burns-referral",
+          "severity": "critical",
+          "match": [
+            "burns unit",
+            "burn unit",
+            "burns centre",
+            "burn centre",
+            "burn center",
+            "burns service",
+            "burn service",
+            "burns specialist",
+            "regional burns",
+            "plastic surg"
+          ],
+          "guidelineRefs": [
+            "aba-referral",
+            "nnbc-2012"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "ICD T31.10 matches no pane-engine protocol (major-burn protocol registered for T31.3–T31.9 (≥30% TBSA) only; minor-burn protocol T30.0/T14.0) and the PANE top diagnosis is below 0.20, so neither the Plan tab nor the Assessment management panel produces anything; only generic clinical prompts are shown. The PANE burns are split at 20% TBSA (\"major >20%\", \"minor <20%\"), which does not match the adult 15% / child 10% resuscitation thresholds.",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-oral-fluids-only",
+          "severity": "quality",
+          "match": [
+            "oral fluids may suffice",
+            "managed with oral fluids"
+          ],
+          "guidelineRefs": [
+            "burns-fluid-threshold"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-burns",
+      "severity": "quality",
+      "equals": "burns",
+      "unverified": [
+        "ios"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "burns-fluid-threshold",
+      "name": "Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief)",
+      "year": 2026,
+      "section": "Formal IV fluid resuscitation only for burns ≥15% TBSA in adults and ≥10% in children, by the Parkland formula (4 mL/kg/%TBSA crystalloid over 24 h); half of the 24 h volume in the first 8 h from the time of burn, adjusted to urine output. The source statement (BBA / NNBC / local burns network) and the ≥ vs > wording are to be identified and verified by the surgeon",
+      "citation": "Amise Medical Services clinical-validation brief, 2026-09-25 (threshold to be traced to its published source). Parkland formula: Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150:874–94.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-burns",
+      "name": "ATLS 10th edition — thermal injuries",
+      "year": 2018,
+      "section": "Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.)",
+      "verified": false
+    },
+    {
+      "id": "aba-referral",
+      "name": "American Burn Association — burn centre referral criteria",
+      "year": 2006,
+      "section": "Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked)",
+      "citation": "American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006.",
+      "verified": false
+    },
+    {
+      "id": "nnbc-2012",
+      "name": "National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance",
+      "year": 2012,
+      "section": "Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source)",
+      "citation": "National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: child. At 12 % TBSA a child is above the paediatric formal-fluid threshold although an adult would not be. Tests the age-dependent threshold, Lund–Browder, maintenance fluid, the paediatric urine-output target and referral. The PANE \"major burn\" disease is labelled >20 % TBSA, so the only size-compatible PANE label is \"minor\" — a content gap for children.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}
