@@ -13,6 +13,7 @@ struct WardReviewPanel: View {
     @State private var loaded = false
     @State private var showVitals = false
     @State private var added = false
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private var latestVitals: VitalsEntry? {
         patient.vitalsEntries.filter(\.hasAnyValue).sorted { $0.recordedAt > $1.recordedAt }.first
@@ -32,7 +33,7 @@ struct WardReviewPanel: View {
 
     private var statusSection: some View {
         Section {
-            HStack(spacing: 16) {
+            statusLayout {
                 if let admitted = patient.admittedAt {
                     let d = Calendar.current.dateComponents([.day], from: admitted, to: .now).day ?? 0
                     metric("Admission day", "\(d + 1)")
@@ -57,9 +58,13 @@ struct WardReviewPanel: View {
                     Text(hours < 1 ? "Within the last hour" : "\(hours) h ago")
                         .font(.caption)
                         .foregroundStyle(hours >= 12 ? .orange : .secondary)
+                        // Orange (12 h or older) was the only sign the observations are stale.
+                        .accessibilityLabel(hours < 1 ? "Recorded within the last hour"
+                                            : "Recorded \(hours) hours ago\(hours >= 12 ? ", 12 hours or older" : "")")
                     Spacer()
                 }
                 Text(vitalsLine(v)).font(.caption.monospacedDigit())
+                    .accessibilityLabel(A11yLabel.spoken(vitalsLine(v)))
                 if v.news2Band > .low {
                     Label(v.news2Band.prompt, systemImage: "exclamationmark.triangle.fill")
                         .font(.caption.weight(.semibold)).foregroundStyle(.red)
@@ -84,8 +89,8 @@ struct WardReviewPanel: View {
                     HStack {
                         Text(item).font(.subheadline)
                         Spacer()
-                        markButton(item, .ok, "checkmark", .green)
-                        markButton(item, .concern, "exclamationmark", .orange)
+                        markButton(item, .ok, "checkmark", .green, spoken: "OK")
+                        markButton(item, .concern, "exclamationmark", .orange, spoken: "Concern")
                     }
                     if data.marks[item] == .concern {
                         TextField("Detail", text: Binding(
@@ -142,7 +147,8 @@ struct WardReviewPanel: View {
 
     // MARK: - Helpers
 
-    private func markButton(_ item: String, _ mark: WardReview.Mark, _ icon: String, _ color: Color) -> some View {
+    private func markButton(_ item: String, _ mark: WardReview.Mark, _ icon: String, _ color: Color,
+                            spoken: String) -> some View {
         let on = data.marks[item] == mark
         return Button {
             data.marks[item] = on ? nil : mark
@@ -154,15 +160,27 @@ struct WardReviewPanel: View {
                 .foregroundStyle(on ? .white : color)
                 .frame(width: 28, height: 28)
                 .background(on ? color : color.opacity(0.12), in: Circle())
+                // The circle stays 28 pt; the tappable area is 44 × 44.
+                .minimumTouchTarget()
         }
         .buttonStyle(.borderless)
+        .accessibilityLabel("\(item): \(spoken)")
+        .accessibilityAddTraits(on ? .isSelected : [])
+    }
+
+    /// Admission day, post-op day and bed side by side; stacked at accessibility text sizes.
+    private var statusLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(spacing: 16))
     }
 
     private func metric(_ label: String, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(label).font(.system(size: 10, weight: .semibold)).foregroundStyle(.secondary)
-            Text(value).font(.system(size: 17, weight: .bold).monospacedDigit())
+            Text(label).scaledFont(size: 10, weight: .semibold).foregroundStyle(.secondary)
+            Text(value).scaledFont(size: 17, weight: .bold, monospacedDigit: true)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private func vitalsLine(_ v: VitalsEntry) -> String {

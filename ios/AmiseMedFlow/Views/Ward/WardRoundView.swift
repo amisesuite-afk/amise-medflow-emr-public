@@ -76,6 +76,7 @@ struct WardRoundView: View {
                                     let complete = done == total
                                     Image(systemName: complete ? "checkmark.circle.fill" : "clock.badge.checkmark")
                                         .foregroundStyle(complete ? .green : .orange)
+                                        .accessibilityHidden(true)
                                     Text("\(done) / \(total) reviewed this session")
                                         .font(.subheadline)
                                     Spacer()
@@ -89,6 +90,7 @@ struct WardRoundView: View {
                                             .foregroundStyle(.secondary)
                                     }
                                 }
+                                .accessibilityElement(children: .combine)
                             }
                         }
                         ForEach(grouped, id: \.0) { loc, patients in
@@ -99,14 +101,18 @@ struct WardRoundView: View {
                                             .overlay(alignment: .topTrailing) {
                                                 if reviewedIDs.contains(patient.id) {
                                                     Label("Reviewed", systemImage: "checkmark.seal.fill")
-                                                        .font(.system(size: 9, weight: .semibold))
+                                                        .scaledFont(size: 9, weight: .semibold)
                                                         .foregroundStyle(.green)
                                                         .padding(.trailing, 4)
                                                         .padding(.top, 10)
+                                                        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                                                        .accessibilityHidden(true)   // spoken as the row's value
                                                 }
                                             }
                                     }
                                     .buttonStyle(.plain)
+                                    .accessibilityValue(reviewedIDs.contains(patient.id) ? "Reviewed this session" : "")
+                                    .accessibilityHint("Opens the ward round note")
                                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                         Button {
                                             markReviewed(patient)
@@ -187,6 +193,7 @@ struct WardRoundView: View {
                         Button { showTriage = true } label: {
                             Image(systemName: "chart.bar.xaxis.ascending")
                         }
+                        .accessibilityLabel("Triage dashboard")
                         if !inpatients.isEmpty {
                             Button {
                                 let pdf = ProcedureFormPDF.wardHandover(grouped: grouped, reviewedIDs: reviewedIDs)
@@ -194,8 +201,10 @@ struct WardRoundView: View {
                             } label: {
                                 Image(systemName: "square.and.arrow.up")
                             }
+                            .accessibilityLabel("Share ward handover PDF")
                         }
                         Button { showAdd = true } label: { Image(systemName: "plus") }
+                            .accessibilityLabel("Add inpatient")
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
@@ -213,6 +222,8 @@ struct WardRoundView: View {
                             }
                         }
                     }
+                    .accessibilityLabel("Filter by location")
+                    .accessibilityValue(locationFilter?.rawValue ?? "All locations")
                 }
             }
             .sheet(isPresented: $showAdd) {
