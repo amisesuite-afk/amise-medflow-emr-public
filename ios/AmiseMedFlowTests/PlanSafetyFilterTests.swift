@@ -118,6 +118,24 @@ final class PlanSafetyFilterTests: XCTestCase {
         XCTAssertTrue(notes(c).contains { $0.kind == .paediatric })
     }
 
+    /// Fixed adult fluid volumes are doses for a child, also on a urine-output titration line
+    /// (the web filter used to skip such lines); the mL/kg/h target and oxygen flows are kept.
+    func testUnder16FixedFluidVolumesReplacedEvenOnUrineOutputLines() {
+        let s = PlanSafetyFilter.signals(ctx(age: 6))
+        let v = PlanSafetyFilter.adaptLine("- Hartmann's 1 L stat then titrate to urine output > 0.5 mL/kg/h", s).text
+        XCTAssertFalse(v.contains("1 L"), v)
+        XCTAssertTrue(v.contains("fluids by weight — calculate per APLS/BNFc (mL/kg)"), v)
+        XCTAssertTrue(v.contains("titrate to urine output > 0.5 mL/kg/h"), v)
+        let bolus = PlanSafetyFilter.adaptLine("- Fluid challenge 500 mL; oxygen 2 L/min", s).text
+        XCTAssertFalse(bolus.contains("500 mL"), bolus)
+        XCTAssertTrue(bolus.contains("2 L/min"), bolus)
+        let perKg = PlanSafetyFilter.adaptLine("- IV crystalloid 20 mL/kg bolus", s).text
+        XCTAssertTrue(perKg.contains("20 mL/kg"), perKg)
+        // Adults keep the volumes.
+        let adult = PlanSafetyFilter.adaptLine("- Hartmann's 1 L stat", PlanSafetyFilter.signals(ctx(age: 40))).text
+        XCTAssertEqual(adult, "- Hartmann's 1 L stat")
+    }
+
     func testInfantHerniaNoMeshNoTEPTAPPNoTruss() {
         let r = DiagnosisRadiationEngine.radiate(workingDiagnosis: "Right inguinal hernia in an infant (reducible)", ageYears: 0, sex: .male,
                                                  context: ctx(age: 0))

@@ -333,11 +333,38 @@ extension DiagnosisRadiationEngine {
         pattern: #"\b\d+(?:[.,]\d+)?(?:\s*(?:–|-|to)\s*\d+(?:[.,]\d+)?)?\s*(?:mg|g|mcg|µg|micrograms?|units?|iu|ml|l|litres?|liters?|mmol|meq)\b(?!\s*/\s*(?:l|dl|min|m2|m²)\b)(?:\s*/\s*kg)?(?:\s*/\s*(?:h|hr|hour|day|d|24\s*h)\b)?"#,
         options: [.caseInsensitive])
 
-    /// Replaces adult doses in a text with the BNFc instruction. Urine-output targets and lab
-    /// thresholds are not doses and are kept.
+    /// The under-16 replacement for a fixed adult fluid volume. Same wording as the web filter.
+    static let paediatricFluids = "fluids by weight — calculate per APLS/BNFc (mL/kg)"
+
+    /// Fixed fluid volumes and fixed mL/h rates ("1 L", "500 mL", "250–500 mL/h"); per-kilogram
+    /// amounts ("20 mL/kg", "0.5 mL/kg/h") and oxygen flows ("2 L/min") are not matched.
+    private static let fluidRegex: NSRegularExpression? = try? NSRegularExpression(
+        pattern: #"\b\d+(?:[.,]\d+)?(?:\s*(?:–|-|to)\s*\d+(?:[.,]\d+)?)?\s*(?:ml|l|litres?|liters?)\b(?:\s*/\s*(?:h|hr|hour)\b)?(?!\s*/\s*(?:kg|min|l|dl|m2|m²)\b)"#,
+        options: [.caseInsensitive])
+
+    /// Under 16: fixed adult fluid volumes are doses too (a child's fluids are calculated by
+    /// weight). Applied to every line, including urine-output titration lines, whose "mL/kg/h"
+    /// target is kept.
+    static func suppressAdultFluids(_ line: String) -> String {
+        guard let re = fluidRegex else { return line }
+        let ns = line as NSString
+        let matches = re.matches(in: line, range: NSRange(location: 0, length: ns.length))
+        guard !matches.isEmpty else { return line }
+        var out = line
+        for m in matches.reversed() {
+            guard let range = Range(m.range, in: out) else { continue }
+            out.replaceSubrange(range, with: "[\(paediatricFluids)]")
+        }
+        return out
+    }
+
+    /// Replaces adult doses in a text with the BNFc instruction, and fixed adult fluid volumes
+    /// with the APLS/BNFc fluid instruction. Urine-output targets and lab thresholds are not
+    /// doses and are kept.
     static func suppressAdultDoses(_ text: String) -> String {
         guard let re = doseRegex else { return text }
-        return text.components(separatedBy: "\n").map { line -> String in
+        return text.components(separatedBy: "\n").map { raw -> String in
+            let line = suppressAdultFluids(raw)
             let lower = line.lowercased()
             if lower.contains("urine output") || lower.contains(" uo ") { return line }
             let ns = line as NSString
