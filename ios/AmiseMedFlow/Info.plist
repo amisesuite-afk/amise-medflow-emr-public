@@ -2,72 +2,75 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleDisplayName</key>
-    <string>Amise MedFlow</string>
-    <key>CFBundleName</key>
-    <string>$(PRODUCT_NAME)</string>
-    <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-    <key>CFBundleVersion</key>
-    <string>1</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
-    <key>CFBundlePackageType</key>
-    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-    <key>LSRequiresIPhoneOS</key>
-    <true/>
-    <key>UILaunchScreen</key>
-    <dict/>
-    <key>UIApplicationSceneManifest</key>
-    <dict>
-        <key>UIApplicationSupportsMultipleScenes</key>
-        <false/>
-    </dict>
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-        <string>armv7</string>
-    </array>
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-    <!-- Supabase config — set in Configuration.xcconfig -->
-    <key>SUPABASE_URL</key>
-    <string>$(SUPABASE_URL)</string>
-    <key>SUPABASE_ANON_KEY</key>
-    <string>$(SUPABASE_ANON_KEY)</string>
-    <!-- Privacy strings -->
-    <key>NSCameraUsageDescription</key>
-    <string>Camera is used for patient photo documentation.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Photo library is used for attaching clinical images.</string>
-    <key>NSCalendarsUsageDescription</key>
-    <string>Calendar access lets MedFlow display your operating schedule alongside patient cases.</string>
-    <key>NSCalendarsFullAccessUsageDescription</key>
-    <string>Calendar access lets MedFlow display your operating schedule alongside patient cases.</string>
-    <key>NSFaceIDUsageDescription</key>
-    <string>Face ID protects patient records and clinical data in Amise MedFlow.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Microphone access is required for voice dictation of clinical notes.</string>
-    <key>NSSpeechRecognitionUsageDescription</key>
-    <string>Speech recognition converts your dictated clinical notes to text for review and editing.</string>
-    <key>NSLocalNetworkUsageDescription</key>
-    <string>Amise MedFlow syncs patient data directly between your iPhone and iPad when they are on the same local network or in Bluetooth range, without requiring an internet connection.</string>
-    <key>NSBonjourServices</key>
-    <array>
-        <string>_amise-medflow._tcp</string>
-        <string>_amise-medflow._udp</string>
-    </array>
+	<key>CFBundleDisplayName</key>
+	<string>Amise MedFlow</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_amise-medflow._tcp</string>
+		<string>_amise-medflow._udp</string>
+	</array>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Calendar access lets MedFlow display your operating schedule alongside patient cases.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Calendar access lets MedFlow display your operating schedule alongside patient cases.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera is used for patient photo documentation.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Face ID protects patient records and clinical data in Amise MedFlow.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Amise MedFlow syncs patient data directly between your iPhone and iPad when they are on the same local network or in Bluetooth range, without requiring an internet connection.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is required for voice dictation of clinical notes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library is used for attaching clinical images.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Speech recognition converts your dictated clinical notes to text for review and editing.</string>
+	<key>SUPABASE_ANON_KEY</key>
+	<string>$(SUPABASE_ANON_KEY)</string>
+	<key>SUPABASE_URL</key>
+	<string>$(SUPABASE_URL)</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
 </dict>
 </plist>
