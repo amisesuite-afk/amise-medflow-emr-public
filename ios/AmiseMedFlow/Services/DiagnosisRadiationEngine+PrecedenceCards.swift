@@ -147,7 +147,7 @@ extension DiagnosisRadiationEngine {
              plan: """
 \(redirectLine)
 - Obstetric emergency — same-day obstetric admission; the obstetric team leads (NICE NG133)
-- Severe hypertension (≥160/110): antihypertensive by the obstetric team — labetalol, nifedipine or IV hydralazine (NICE NG133); no ACE inhibitors or ARBs antenatally
+- Severe hypertension (≥160/110): antihypertensive by the obstetric team — labetalol, nifedipine or IV hydralazine (NICE NG133); ACE-i/ARB contraindicated antenatally
 - Eclampsia or severe pre-eclampsia: magnesium sulfate — Collaborative Eclampsia Trial regimen, 4 g IV over 5–15 minutes then 1 g/hour for 24 hours (NICE NG133)
 - Seizure: left lateral position, airway, oxygen, magnesium sulfate; the definitive treatment is delivery (obstetric decision)
 - Fluid restriction (80 mL/h) in severe pre-eclampsia unless ongoing losses (NICE NG133); strict fluid balance
