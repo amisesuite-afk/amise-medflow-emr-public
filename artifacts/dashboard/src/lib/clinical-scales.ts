@@ -390,13 +390,15 @@ export function interpretWagner(grade: WagnerGrade): ScaleResult {
 export interface News2Inputs {
   respiratoryRate: number | null;
   spo2: number | null;
-  supplementalO2: boolean;
+  /** Air/O₂. `null` = not recorded (scored 0 and listed as missing, never assumed "air"). */
+  supplementalO2: boolean | null;
   /** SpO₂ Scale 2 — explicit clinician opt-in only (confirmed hypercapnic respiratory failure). */
   useSpO2Scale2?: boolean;
   systolicBp: number | null;
   heartRate: number | null;
   temperatureC: number | null;
-  consciousnessAvpu: News2Avpu;
+  /** ACVPU. `null` = not recorded (scored 0 and listed as missing, never assumed "Alert"). */
+  consciousnessAvpu: News2Avpu | null;
 }
 
 export function evaluateNews2Inputs(i: News2Inputs): News2Evaluation {

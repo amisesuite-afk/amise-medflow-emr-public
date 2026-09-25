@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { parseAvpu, parseOnSupplementalO2 } from '@/lib/vitals-news2-fields';
+import type { News2Avpu } from '@workspace/triage-engine';
 import { usePatientNews2Scale2 } from '@/hooks/usePatientNews2Scale2';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import {
@@ -144,11 +145,11 @@ function News2Card() {
   const [v, setV] = useState<News2Inputs>(() => ({
     respiratoryRate: _vn(ctx, 'respiratoryRate'),
     spo2:            _vn(ctx, 'spo2'),
-    supplementalO2:  storedO2 ?? false,
+    supplementalO2:  storedO2,        // null = not recorded (H-04: never assume air)
     useSpO2Scale2:   false,
     systolicBp:      _vn(ctx, 'systolicBp'),
     heartRate:       _vn(ctx, 'heartRate'),
-    consciousnessAvpu: storedAvpu ?? 'A',
+    consciousnessAvpu: storedAvpu,    // null = not recorded (H-04: never assume Alert)
     temperatureC:    _vn(ctx, 'temperatureC'),
   }));
   useEffect(() => {
@@ -173,7 +174,8 @@ function News2Card() {
         <label style={lblStyle}>Heart rate<input style={inpStyle} type="number" value={v.heartRate ?? ''} onChange={num('heartRate')} /></label>
         <label style={lblStyle}>Temp (°C)<input style={inpStyle} type="number" step="0.1" value={v.temperatureC ?? ''} onChange={num('temperatureC')} /></label>
         <label style={lblStyle}>Consciousness
-          <select style={inpStyle} value={v.consciousnessAvpu} onChange={e => setV(p => ({ ...p, consciousnessAvpu: e.target.value as News2Inputs['consciousnessAvpu'] }))}>
+          <select style={inpStyle} value={v.consciousnessAvpu ?? ''} onChange={e => setV(p => ({ ...p, consciousnessAvpu: e.target.value ? e.target.value as News2Avpu : null }))}>
+            <option value="">Not recorded</option>
             <option value="A">Alert</option>
             <option value="C">New confusion</option>
             <option value="V">Voice</option>
@@ -182,7 +184,14 @@ function News2Card() {
           </select>
         </label>
       </div>
-      <Chk label="On supplemental O₂" checked={v.supplementalO2} onChange={() => setV(p => ({ ...p, supplementalO2: !p.supplementalO2 }))} pts={2} />
+      <label style={{ ...lblStyle, marginBottom: 8 }}>Air / supplemental O₂ (O₂ +2)
+        <select style={inpStyle} value={v.supplementalO2 === null ? '' : v.supplementalO2 ? 'o2' : 'air'}
+          onChange={e => setV(p => ({ ...p, supplementalO2: e.target.value === '' ? null : e.target.value === 'o2' }))}>
+          <option value="">Not recorded</option>
+          <option value="air">Air</option>
+          <option value="o2">Supplemental O₂</option>
+        </select>
+      </label>
       {patientScale2.available ? (
         <div style={{ marginBottom: 6, fontSize: 13, color: '#6b7280' }}>
           SpO₂ Scale {v.useSpO2Scale2 ? '2' : '1'} — from the patient record (clinician opt-in for confirmed hypercapnic respiratory failure)
