@@ -91,7 +91,7 @@ describe('loadEncounterData failed sections', () => {
 
   it('with no encounter, reads only the patient sections', async () => {
     const r = await loadEncounterData(null, 'pat-1');
-    expect(r.data!.loadedSections).toEqual(PATIENT_SAVE_SECTIONS.filter(s => s !== 'lifestyle'));
+    expect(r.data!.loadedSections).toEqual(PATIENT_SAVE_SECTIONS.filter(s => s !== 'lifestyle' && s !== 'supplements'));
     expect(queried.some(k => /assessments|plans|medications|investigation_results|encounters|clinical_notes/.test(k))).toBe(false);
   });
 });

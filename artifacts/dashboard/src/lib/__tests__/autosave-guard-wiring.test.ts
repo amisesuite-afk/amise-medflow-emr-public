@@ -44,11 +44,12 @@ describe('autosave guard wiring', () => {
     }
   });
 
-  it('a failed lifestyle-history read is marked "not loaded" (its own loader)', () => {
-    expect(ctx).toMatch(/loadLifestyleHistory\(patientId\)\.then\(r => \{[\s\S]{0,200}markLifestyleLoad\(r\.error !== null\)/);
-    const mark = functionBody(ctx, 'markLifestyleLoad');
-    expect(mark).toContain("g.notLoaded.add('lifestyle')");
-    expect(mark).toContain('!lifestyleDirtyRef.current');
+  it('a failed lifestyle / supplements read is marked "not loaded" (their own loaders)', () => {
+    expect(ctx).toMatch(/loadLifestyleHistory\(patientId\)\.then\(r => \{[\s\S]{0,200}markSeparateLoad\('lifestyle', r\.error !== null\)/);
+    expect(ctx).toMatch(/loadSupplementHistory\(patientId\)\.then\([\s\S]{0,160}markSeparateLoad\('supplements', pathwayReadFailed\(error\)\)/);
+    const mark = functionBody(ctx, 'markSeparateLoad');
+    expect(mark).toContain('g.notLoaded.add(section)');
+    expect(mark).toContain('if (failed && !dirty)');
   });
 
   it('the applier never applies a failed section', () => {

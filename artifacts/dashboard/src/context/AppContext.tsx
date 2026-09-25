@@ -11,10 +11,12 @@ import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, getLatestClosedEncounter, type EncounterSummary } from '@/lib/db';
 import { switchEncounter, type EncounterSwitchResult, type EncounterSwitchTarget } from '@/lib/encounter-switch';
 import { loadEncounterData, type EncounterData } from '@/lib/db';
+import { isMissingColumnError } from '@/lib/vitals-news2-fields';
 import {
   createAutosaveGuard, resetGuard, clearSections, beginLoad, finishLoad, checkAutosave,
   fingerprint, sectionValueFromState, sectionValueFromPayload, isReadOnlyEncounterStatus,
-  ALL_SAVE_SECTIONS, ENCOUNTER_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS, RECORD_LOAD_SECTIONS, ENTITY_TYPE_SECTION,
+  ALL_SAVE_SECTIONS, ENCOUNTER_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS, RECORD_LOAD_SECTIONS, SEPARATELY_LOADED_SECTIONS,
+  ENTITY_TYPE_SECTION,
   type SaveSection, type SectionState,
 } from '@/lib/autosave-guard';
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
@@ -1329,7 +1331,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     dbEncounterType: toDbEncounterType(encounterType, encounterMode),
     inpatient: { ward, dateAdmission, dateDischarge, admittingSurgeon, referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber },
     clinicalScores, extractedLabs, allergies, surgicalHistory, surgicalNotes, recentSurgeryDate,
-    toxicHabits, pmhNotes, familyHistoryNotes, lifestyleHistory,
+    toxicHabits, pmhNotes, familyHistoryNotes, lifestyleHistory, supplementHistory,
   });
 
   useEffect(() => {
@@ -1442,21 +1444,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   /** "Couldn't load — retry": reads again and fills in the sections that still hold nothing. */
-  // The lifestyle history has its own loader (below). A failed read leaves this browser's copy
-  // (empty, or the encounter cache) in state: "not loaded", not saved until edited or reloaded.
-  const lifestyleValueRef = useRef(lifestyleHistory);
-  lifestyleValueRef.current = lifestyleHistory;
-  function markLifestyleLoad(failed: boolean) {
+  // The lifestyle history and the supplements have their own loaders (below, once per patient).
+  // A failed read leaves this browser's copy (empty, or the encounter cache) in state: "not
+  // loaded", not saved until edited or reloaded — unless the clinician has already edited it.
+  const separateValueRef = useRef({ lifestyle: lifestyleHistory as unknown, supplements: supplementHistory as unknown });
+  separateValueRef.current = { lifestyle: lifestyleHistory, supplements: supplementHistory };
+  function markSeparateLoad(section: 'lifestyle' | 'supplements', failed: boolean) {
     const g = guardRef.current;
-    if (failed && !lifestyleDirtyRef.current) {
-      g.notLoaded.add('lifestyle');
-      g.baseline.lifestyle = fingerprint(lifestyleValueRef.current);
+    const dirty = section === 'lifestyle' ? lifestyleDirtyRef.current : supplementDirtyRef.current;
+    if (failed && !dirty) {
+      g.notLoaded.add(section);
+      g.baseline[section] = fingerprint(separateValueRef.current[section]);
     } else {
-      g.notLoaded.delete('lifestyle');
-      delete g.baseline.lifestyle;
+      g.notLoaded.delete(section);
+      delete g.baseline[section];
     }
     syncGuardState();
   }
+  /** A pathway_data_json read failed for a reason other than the column not existing yet. */
+  const pathwayReadFailed = (error: string | null) =>
+    !!error && !isMissingColumnError({ message: error }, ['pathway_data_json']);
 
   async function retryNotLoaded(): Promise<void> {
     const pid = patientIdRef.current;
@@ -1468,10 +1475,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (lr && g === guardRef.current && pid === patientIdRef.current && g.notLoaded.has('lifestyle') && !lr.error) {
         setLifestyleStorageAvailable(lr.available);
         if (lr.lifestyle && !lifestyleDirtyRef.current) setLifestyleHistoryState(lr.lifestyle);
-        markLifestyleLoad(false);
+        markSeparateLoad('lifestyle', false);
       }
     }
-    if ([...g.notLoaded].every(s => s === 'lifestyle')) return;
+    if (g.notLoaded.has('supplements')) {
+      const sr = await loadSupplementHistory(pid).catch(() => null);
+      if (sr && g === guardRef.current && pid === patientIdRef.current && g.notLoaded.has('supplements') && !pathwayReadFailed(sr.error)) {
+        if (sr.history && !supplementDirtyRef.current) setSupplementHistoryState(sr.history);
+        markSeparateLoad('supplements', false);
+      }
+    }
+    if ([...g.notLoaded].every(s => SEPARATELY_LOADED_SECTIONS.includes(s))) return;
     const token = g.loadToken;
     let r: Awaited<ReturnType<typeof loadEncounterData>>;
     try { r = await loadEncounterData(eid, pid); } catch { return; }
@@ -1677,8 +1691,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!patientId) return;
     let cancelled = false;
-    void loadSupplementHistory(patientId).then(({ history }) => {
-      if (!cancelled && history && !supplementDirtyRef.current) setSupplementHistoryState(history);
+    void loadSupplementHistory(patientId).then(({ history, error }) => {
+      if (cancelled) return;
+      markSeparateLoad('supplements', pathwayReadFailed(error));
+      if (history && !supplementDirtyRef.current) setSupplementHistoryState(history);
     });
     return () => { cancelled = true; };
   }, [patientId]);
@@ -1748,7 +1764,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     void loadLifestyleHistory(patientId).then(r => {
       if (cancelled) return;
       setLifestyleStorageAvailable(r.available);
-      markLifestyleLoad(r.error !== null);
+      markSeparateLoad('lifestyle', r.error !== null);
       if (r.lifestyle && !lifestyleDirtyRef.current) setLifestyleHistoryState(r.lifestyle);
     });
     return () => { cancelled = true; };
