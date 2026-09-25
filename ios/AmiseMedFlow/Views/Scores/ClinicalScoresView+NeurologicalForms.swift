@@ -24,6 +24,12 @@ extension ClinicalScoresView {
 
     private var abcd2Form: some View {
         VStack(alignment: .leading, spacing: 12) {
+            // NICE NG128: not for triage — shown for reference only.
+            Label("Reference only. NICE NG128: do not use ABCD² or other scores to decide urgency — every suspected TIA gets aspirin 300 mg (unless contraindicated) and specialist assessment within 24 h of onset.",
+                  systemImage: "info.circle")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
             sectionHeader("Age")
             Picker("Age", selection: $abcd.ageOver60) {
                 Text("< 60 years (0)").tag(false)

@@ -90,11 +90,19 @@ enum DiagnosisScoreMapper {
            cc.contains("pneumonia") || cc.contains("breath") || cc.contains("dyspnoea") {
             return .sepsis
         }
-        if cc.contains("tia") || cc.contains("stroke") || cc.contains("weakness") ||
+        if mentionsTIA(cc) || cc.contains("stroke") || cc.contains("weakness") ||
            cc.contains("facial drop") || cc.contains("slurred speech") {
             return .neuro
         }
         return nil
+    }
+
+    /// "TIA" as a whole word, or "transient ischaemic/ischemic attack" (lowercased text).
+    /// Substring matching read "dementia" and "initial" as TIA.
+    static func mentionsTIA(_ lowercased: String) -> Bool {
+        if lowercased.contains("transient ischaemic") || lowercased.contains("transient ischemic") { return true }
+        let words = lowercased.split { !($0.isLetter || $0.isNumber) }
+        return words.contains("tia") || words.contains("tias")
     }
 
     // MARK: - Diagnosis keyword mapping
@@ -259,11 +267,14 @@ enum DiagnosisScoreMapper {
             add(.nrs2002,  "NRS-2002 — nutritional risk pre-operatively", 6)
         }
 
-        // Stroke / TIA
-        if dx.contains("tia") || dx.contains("transient ischaemic") || dx.contains("stroke") {
-            add(.abcd2, "ABCD² — 48-hour stroke risk after TIA", 1)
-            add(.nihss, "NIHSS — acute stroke severity", 2)
-            add(.mrs,   "mRS — functional outcome and disability grading", 3)
+        // Stroke / TIA. "tia" is matched as a whole word ("dementia", "initial" contain it).
+        // ABCD² is NOT recommended for TIA: NICE NG128 (2019, updated 2022) advises against using
+        // ABCD² or any risk score to decide urgency — every suspected TIA gets aspirin 300 mg and
+        // specialist assessment within 24 h of onset. The calculator stays in Clinical Scores
+        // (with that note) for anyone who wants it for reference.
+        if mentionsTIA(dx) || dx.contains("stroke") {
+            add(.nihss, "NIHSS — acute stroke severity / residual deficit", 1)
+            add(.mrs,   "mRS — functional outcome and disability grading", 2)
         }
 
         // ACS / Cardiac — risk + monitoring
