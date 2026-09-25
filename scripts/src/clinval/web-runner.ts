@@ -310,12 +310,17 @@ export function runWeb(v: Vignette): EngineOutputs {
   const assessDiseaseId = panelSource.source === 'pane' ? panelSource.diseaseId : null;
   const panelProtocol = (panelSource.diseaseId ? getProtocol(panelSource.diseaseId) : null)
     ?? (panelSource.icdCode ? getProtocolByIcd(panelSource.icdCode) : null);
-  // PlanTab: PANE converged (≥0.85) disease, else ICD (icdCodes[0] ?? workingDiagnosis.icdCode).
-  const planDiseaseId = (paneTop[0]?.probability ?? 0) >= 0.85 ? paneTop[0].disease.id : null;
-  const planProtocol = planDiseaseId ? getProtocol(planDiseaseId) : (icd ? getProtocolByIcd(icd) : null);
+  // PlanTab: confirmedPlanSource(workingDiagnosis, icdCodes) (lib/diagnosis-suggestion.ts, UX C4) —
+  // only a confirmed diagnosis (locked working diagnosis, else the recorded ICD-10 code), never an
+  // unconfirmed PANE convergence. (Mirrored inline: that module's AppContext type import does not
+  // resolve under the scripts tsconfig.) Before 2026-09-25 this mirror still used the PANE leader
+  // at ≥ 0.85, which PlanTab stopped doing in cd375f0.
+  const planDiseaseId = dx?.paneDiseaseId ?? null;
+  const planIcd = icd;
+  const planProtocol = (planDiseaseId ? getProtocol(planDiseaseId) : null) ?? (planIcd ? getProtocolByIcd(planIcd) : null);
   notes.push(`AssessmentTab ManagementPanel protocol: ${panelProtocol?.diseaseId ?? '(none)'}${assessDiseaseId ? ' (from PANE top)' : ' (from the confirmed diagnosis)'}`);
-  notes.push(`PlanTab protocol: ${planProtocol?.diseaseId ?? '(none)'}${planDiseaseId ? ' (PANE converged)' : ' (from ICD)'}`);
-  const variant = detectDxVariants(assessment, icd ?? undefined, planDiseaseId ?? dx?.paneDiseaseId ?? undefined);
+  notes.push(`PlanTab protocol: ${planProtocol?.diseaseId ?? '(none)'} (from the confirmed diagnosis)`);
+  const variant = detectDxVariants(assessment, planIcd ?? undefined, planDiseaseId ?? undefined);
   const dxVariant = { value: variant?.detectedVariant?.id ?? null, group: variant?.group.baseDiagnosis ?? null };
 
   const investigations: SourcedText[] = [];
