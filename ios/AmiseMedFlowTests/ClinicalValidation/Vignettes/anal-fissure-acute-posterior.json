@@ -215,11 +215,7 @@
           ],
           "guidelineRefs": [
             "ascrs-fissure-2023"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web computeClinicalPrompts fires the \"GI haemorrhage\" resuscitation prompt (2 large-bore cannulae, Hartmann’s bolus, cross-match 2 units) for any rectal-bleeding chip, regardless of volume, haemodynamics or Hb."
+          ]
         }
       ]
     }

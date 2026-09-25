@@ -248,12 +248,7 @@
           "guidelineRefs": [
             "nice-ng89"
           ],
-          "note": "NICE NG89: in renal failure use LMWH or UFH with dose adjustment for renal function.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The lap chole template orders 'LMWH (Enoxaparin 40mg SC) night before + day of surgery' with no renal qualification for a dialysis patient.",
-          "proposedFix": "Operative templates: 'LMWH dose-adjusted for renal function (UFH if eGFR <30 or dialysis per local protocol)' when creatinine/eGFR or dialysis is recorded."
+          "note": "NICE NG89: in renal failure use LMWH or UFH with dose adjustment for renal function."
         },
         {
           "id": "mgmt-no-nsaid",

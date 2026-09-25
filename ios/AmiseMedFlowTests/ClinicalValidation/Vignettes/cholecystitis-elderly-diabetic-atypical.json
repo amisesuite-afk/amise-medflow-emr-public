@@ -416,7 +416,6 @@
           ],
           "note": "CKD 3a, age 81, dehydrated: NSAIDs risk AKI.",
           "knownGap": [
-            "web",
             "ios"
           ],
           "knownGapNote": "Lap chole operative-plan post-op orders: \"Ibuprofen 400mg TDS (if eGFR normal)\" in an 81-year-old with CKD 3a (conditional on eGFR, but the plan text is inserted regardless). | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.pipeline.decisions: \"...iv access + iv fluids (hartmann's 1 l over 4 h); analgesia: diclofenac 75 mg im or morphine 2.5 mg iv; anti-emetic: metoclopramide or ondansetron iv; ...\"",

@@ -242,12 +242,7 @@
           "guidelineRefs": [
             "atls-10-geriatric"
           ],
-          "note": "Elective peri-operative bridging advice is the wrong frame for an anticoagulated head injury.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The 'anticoag_check' clinical prompt (clinical-inference.ts) always proposes 'hold DOAC 48–72 h pre-op; warfarin — bridge with LMWH', including after a head injury on apixaban.",
-          "proposedFix": "Make the anticoag_check prompt context-aware: trauma/bleeding/head injury → reversal and CT; elective procedure → bridging plan."
+          "note": "Elective peri-operative bridging advice is the wrong frame for an anticoagulated head injury."
         },
         {
           "id": "mgmt-no-discharge-without-ct",

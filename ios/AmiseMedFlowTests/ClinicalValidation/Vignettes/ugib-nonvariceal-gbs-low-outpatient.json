@@ -272,12 +272,7 @@
           "guidelineRefs": [
             "esge-2021"
           ],
-          "note": "Hb 14.6: no transfusion indication.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "gi_bleed_panel prompt fires on any haematemesis/melaena symptom and adds \"2 × large-bore IV cannulae, Hartmann's 500 ml bolus, crossmatch 2 units pRBC\" regardless of Hb (14.6) or GBS (0).",
-          "proposedFix": "gi_bleed_panel: make the resuscitation/crossmatch line conditional on instability, Hb or GBS."
+          "note": "Hb 14.6: no transfusion indication."
         }
       ]
     }

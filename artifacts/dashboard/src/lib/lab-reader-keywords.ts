@@ -37,6 +37,8 @@ export const WEB_LAB_READERS: WebLabReader[] = [
   { id: 'ca199', label: 'CA 19-9', keywords: ['ca 19-9', 'ca19-9', 'ca19', 'ca-19'], analyteKeys: ['ca199'] },
   { id: 'cea', label: 'CEA', keywords: ['cea', 'carcinoembryonic'], analyteKeys: ['cea'] },
   { id: 'creatinine', label: 'Creatinine', keywords: ['creatinine'], analyteKeys: ['creatinine'] },
+  // numLab('egfr'): renal impairment in the operative templates (NSAIDs, LMWH dose).
+  { id: 'egfr', label: 'eGFR', keywords: ['egfr'], analyteKeys: ['egfr'] },
   { id: 'bilirubin', label: 'Bilirubin', keywords: ['bilirubin', 'bili'], analyteKeys: ['bilirubin'] },
   { id: 'glucose', label: 'Glucose', keywords: ['glucose', 'blood sugar', 'bm'], analyteKeys: ['glucose'] },
   { id: 'sodium', label: 'Sodium', keywords: ['sodium', 'na+', 'na '], analyteKeys: ['sodium'] },

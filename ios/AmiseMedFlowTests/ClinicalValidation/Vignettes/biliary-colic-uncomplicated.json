@@ -366,12 +366,7 @@
             "no antibiotic",
             "not indicated"
           ],
-          "note": "No infection: antibiotics for uncomplicated biliary colic are not indicated (stewardship).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment panel shows the cholecystitis protocol (PANE top) with IV co-amoxiclav/pip-tazo; the Murphy's-sign prompt (fired by \"Murphy's sign negative\") adds IV co-amoxiclav.",
-          "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+          "note": "No infection: antibiotics for uncomplicated biliary colic are not indicated (stewardship)."
         },
         {
           "id": "mgmt-no-appendicectomy",

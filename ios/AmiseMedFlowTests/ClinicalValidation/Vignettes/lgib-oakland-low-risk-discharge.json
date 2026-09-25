@@ -289,12 +289,7 @@
           "guidelineRefs": [
             "bsg-lgib-2019"
           ],
-          "note": "Hb 14.6 g/dL: no transfusion or cross-match. BSG 2019 restrictive thresholds (Hb 70 g/L; 80 g/L with cardiovascular disease).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web computeClinicalPrompts fires the \"GI haemorrhage\" resuscitation prompt (2 large-bore cannulae, Hartmann’s bolus, cross-match 2 units) for any rectal-bleeding chip, regardless of volume, haemodynamics or Hb.",
-          "proposedFix": "Condition the resuscitation/cross-match actions on instability (shock index > 1, SBP < 90, Hb < 80 g/L) or a large-volume bleed."
+          "note": "Hb 14.6 g/dL: no transfusion or cross-match. BSG 2019 restrictive thresholds (Hb 70 g/L; 80 g/L with cardiovascular disease)."
         }
       ]
     }

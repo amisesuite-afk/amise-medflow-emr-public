@@ -211,3 +211,100 @@ describe('diabetes prompts use readPersonalRisk().knownDiabetes', () => {
     expect(planText({ comorbidities: ['Family history: brother type 1 diabetes'] })).not.toMatch(/basal insulin/);
   });
 });
+
+describe('operative templates (AAGBI/ESA fasting; SIGN 104; WSES 2020; NICE NG148 / NG89; EHS/AHS 2020)', () => {
+  const chole = (over: Partial<InferenceInput>) => planText({
+    ccEntries: [{ complaint: 'Right upper quadrant pain (biliary colic)', answers: {} }],
+    symptoms: ['right upper quadrant pain'],
+    ...over,
+  });
+  it('no fasting from midnight; no routine prophylaxis for low-risk lap chole', () => {
+    const t = chole({ assessment: 'Symptomatic cholelithiasis. ASA I.' });
+    expect(t).toMatch(/clear fluids up to 2 h/);
+    expect(t).not.toMatch(/(nbm|nil by mouth|fast\w*)\s+from\s+midnight/i);
+    expect(t).toMatch(/Antibiotic prophylaxis not indicated for low-risk elective laparoscopic cholecystectomy/);
+    expect(t).not.toMatch(/Post-operative antibiotics/);
+  });
+  it('acute cholecystitis: prophylaxis at induction; no post-op antibiotics for Grade I–II', () => {
+    const t = chole({ assessment: 'Acute calculous cholecystitis, TG18 Grade I.', examAbdomen: "Positive Murphy's sign" });
+    expect(t).toMatch(/single dose at induction/);
+    expect(t).toMatch(/not needed after cholecystectomy for TG18 Grade I–II/);
+  });
+  it('CKD or age ≥ 75: no ibuprofen; dialysis: renally adjusted LMWH, no enoxaparin 40 mg', () => {
+    const t = chole({ assessment: 'Symptomatic cholelithiasis.', comorbidities: ['End-stage renal failure on haemodialysis'] });
+    expect(t).toMatch(/NSAIDs avoided \(renal impairment/);
+    expect(t).not.toMatch(/Ibuprofen 400mg/);
+    expect(t).not.toMatch(/enoxaparin\s*40\s*mg/i);
+    expect(chole({ age: '81', assessment: 'Symptomatic cholelithiasis.' })).toMatch(/NSAIDs avoided \(age ≥ 75/);
+  });
+  it('uncomplicated appendicitis: no post-operative antibiotics', () => {
+    const t = planText({
+      ccEntries: [{ complaint: 'Right iliac fossa pain (appendicitis?)', answers: {} }],
+      examAbdomen: 'RIF tenderness with guarding and rebound', assessment: 'Acute appendicitis',
+    });
+    expect(t).toMatch(/Uncomplicated appendicitis: no post-operative antibiotics/);
+    expect(t).not.toMatch(/simple appendicitis[^\n]{0,120}5 days/i);
+  });
+  it('umbilical hernia gets the ventral template; cirrhosis with ascites is not a day case', () => {
+    const base = { ccEntries: [{ complaint: 'Umbilical hernia', answers: {} }], examAbdomen: 'Reducible umbilical hernia, 2 cm defect' };
+    const t = planText({ ...base, assessment: 'Reducible umbilical hernia, 2 cm defect.' });
+    expect(t).toMatch(/VENTRAL \(UMBILICAL/);
+    expect(t).not.toMatch(/INGUINAL HERNIA REPAIR \(TAPP\)/);
+    const c = planText({ ...base, assessment: 'Umbilical hernia in decompensated cirrhosis with ascites.', comorbidities: ['Alcohol-related liver cirrhosis', 'Ascites'] });
+    expect(c).toMatch(/hepatology optimisation first/);
+    expect(c).not.toMatch(/day[- ]case/i);
+  });
+  it('penicillin allergy: the penicillin line is withheld, not just annotated', () => {
+    const t = planText({
+      ccEntries: [{ complaint: 'Paraumbilical hernia — irreducible', answers: {} }], examAbdomen: 'Irreducible tender paraumbilical hernia',
+      assessment: 'Incarcerated paraumbilical hernia. Emergency repair.', allergies: ['Penicillin'],
+      symptoms: ['abdominal pain'], investigationResults: {}, vitals: { temperatureC: '38.6', heartRate: '118' },
+    });
+    expect(t).toMatch(/PENICILLIN ALLERGY recorded — the penicillin-class antibiotic proposed here is withheld/);
+    expect(t).not.toMatch(/co-amoxiclav|piperacillin|amoxicillin|flucloxacillin/i);
+  });
+});
+
+describe('prompt corrections (BSG 2019; NICE NG45 / NG158 / NG232; UKKA 2023; ACOG CO 723)', () => {
+  it('stable rectal bleeding: no large-bore cannulae or cross-match; unstable keeps them', () => {
+    const stable = planText({ age: '28', symptoms: ['rectal bleeding'], vitals: { systolicBp: '118', heartRate: '72' }, investigationResults: { Haemoglobin: '13.4 g/dL' } });
+    expect(stable).not.toMatch(/large-bore|crossmatch|cross-match/i);
+    expect(stable).toMatch(/Oakland score/);
+    const unstable = planText({ age: '70', symptoms: ['rectal bleeding'], vitals: { systolicBp: '84', heartRate: '118' } });
+    expect(unstable).toMatch(/large-bore/);
+  });
+  it('HbA1c is not read as haemoglobin', () => {
+    const t = planText({ age: '40', symptoms: ['rectal bleeding'], vitals: { systolicBp: '120', heartRate: '70' }, investigationResults: { 'Glycated haemoglobin (HbA1c)': '58 mmol/mol' } });
+    expect(t).not.toMatch(/large-bore/);
+  });
+  it('no routine clotting screen before elective surgery; kept with warfarin or liver disease', () => {
+    const inv = (over: Partial<InferenceInput>) => prompts(over).flatMap(p => p.actions.map(a => a.addToInvestigations ?? '')).join('\n');
+    expect(inv({})).not.toMatch(/PT\/INR/);
+    expect(inv({ medications: ['Warfarin'] })).toMatch(/PT\/INR/);
+    expect(inv({ comorbidities: ['Alcohol-related cirrhosis'] })).toMatch(/PT\/INR/);
+    expect(inv({ medications: ['Apixaban'] })).not.toMatch(/PT\/INR/);
+  });
+  it('suspected PE uses the two-level Wells score', () => {
+    const t = planText({ age: '35', vitals: { spo2: '91', heartRate: '118' } });
+    expect(t).toMatch(/Wells > 4 \(PE likely\) → CTPA directly/);
+    expect(t).not.toMatch(/Wells score ≥ 2/);
+  });
+  it('mild hyperkalaemia (5.5–5.9): no insulin–glucose; ≥ 6.0: insulin–glucose', () => {
+    expect(planText({ investigationResults: { Potassium: '5.8 mmol/L' } })).not.toMatch(/insulin[–-]glucose: 10 units/);
+    expect(planText({ investigationResults: { Potassium: '6.2 mmol/L' } })).toMatch(/insulin–glucose: 10 units/);
+  });
+  it('injury on an anticoagulant: CT head and reversal readiness, no bridging advice', () => {
+    const t = planText({ age: '82', medications: ['Apixaban'], historyText: 'Tripped at home and hit her forehead on the floor.', assessment: 'Minor head injury on apixaban.' });
+    expect(t).toMatch(/CT head within 8 hours/);
+    expect(t).not.toMatch(/bridg/i);
+  });
+  it('pregnancy: no occult-malignancy CT for weight loss', () => {
+    const t = planText({ sex: 'female', age: '27', symptoms: ['weight loss', 'vomiting'], historyText: '10 weeks pregnant, vomiting for 3 weeks.' });
+    expect(t).not.toMatch(/CT chest\/abdomen\/pelvis — occult malignancy/);
+    expect(t).toMatch(/ultrasound first/);
+  });
+  it('torsion: exploration if torsion cannot be excluded', () => {
+    const t = planText({ age: '19', symptoms: ['scrotal pain'], examExtremities: 'Tender swollen left testis' });
+    expect(t).toMatch(/exploration if torsion cannot be excluded/);
+  });
+});

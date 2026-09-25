@@ -270,12 +270,7 @@
             "flucloxacillin",
             "amoxicillin"
           ],
-          "note": "Penicillin allergy recorded; plans should not propose penicillins without an allergy check.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The recorded penicillin allergy is not cross-checked: prompts propose piperacillin-tazobactam and co-amoxiclav (as found for the seed vignettes).",
-          "proposedFix": "Filter protocol medications and prompt templates against recorded allergies (drug-class aware) and show the alternative."
+          "note": "Penicillin allergy recorded; plans should not propose penicillins without an allergy check."
         }
       ]
     },

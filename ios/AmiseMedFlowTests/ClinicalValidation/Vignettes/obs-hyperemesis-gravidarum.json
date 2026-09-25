@@ -356,12 +356,7 @@
             "if ultrasound",
             "non-diagnostic",
             "not in pregnancy"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: the unintentional-weight-loss alarm prompt adds '• CT chest/abdomen/pelvis — occult malignancy screen (alarm symptoms)' (and an upper GI endoscopy line) for a woman recorded at 10 weeks whose weight loss is from vomiting.",
-          "proposedFix": "Suppress the occult-malignancy CT when pregnancy is recorded (or require an explicit clinical question); prefer ultrasound/MRI (ACOG CO 723)."
+          ]
         },
         {
           "id": "mgmt-no-antithrombotic-plan",

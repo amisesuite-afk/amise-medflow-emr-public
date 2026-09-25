@@ -354,7 +354,6 @@
           ],
           "note": "Ultrasound has already confirmed appendicitis; CT (radiation) is not indicated in a child unless US is inconclusive.",
           "knownGap": [
-            "web",
             "ios"
           ],
           "knownGapNote": "Web: PlanTab buildPlanText drops the protocol's 'if USS inconclusive' conditional: the documented plan reads 'Investigation: CT abdomen/pelvis with IV contrast (urgent)' for a child whose ultrasound already confirmed appendicitis; the prompt strip adds 'CT abdomen/pelvis — appendix calibre'. | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.soap.plan: \"investigations: fbc, β-hcg (females), urinalysis / msu, ct abdomen/pelvis with iv contrast, uss abdomen.\"",
@@ -391,11 +390,7 @@
           "guidelineRefs": [
             "wses-2020"
           ],
-          "note": "WSES 2020: no postoperative antibiotics after appendicectomy for uncomplicated appendicitis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: Appendicectomy operative-plan prompt prescribes IV then oral co-amoxiclav for 5 days after simple appendicitis."
+          "note": "WSES 2020: no postoperative antibiotics after appendicectomy for uncomplicated appendicitis."
         }
       ]
     },

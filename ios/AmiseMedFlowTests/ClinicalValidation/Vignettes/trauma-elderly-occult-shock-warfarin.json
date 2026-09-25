@@ -276,12 +276,7 @@
           ],
           "guidelineRefs": [
             "atls-10-geriatric"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The 'anticoag_check' prompt proposes elective bridging for a bleeding trauma patient on warfarin (the INR prompt does add PCC + vitamin K). | iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"no lmwh bridging for most atrial fibrillation (bridge; accp 2022) - bridge only for high thrombo...\"",
-          "proposedFix": "Make the anticoag_check prompt context-aware (trauma/bleeding → reversal)."
+          ]
         },
         {
           "id": "mgmt-no-antithrombotic-plan",

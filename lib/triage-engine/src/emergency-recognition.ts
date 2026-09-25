@@ -28,7 +28,7 @@
 import { joinClauses, testAffirmed } from './negation';
 import { evaluateNews2, type News2Avpu, type News2Evaluation } from './news2';
 
-export const EMERGENCY_RULES_VERSION = '1.0.0';
+export const EMERGENCY_RULES_VERSION = '1.0.1';
 
 /** The redirect sentence. Victoria Hospital no longer exists and must never be named. */
 export const EMERGENCY_REDIRECT =
@@ -1399,7 +1399,7 @@ const RULES: Rule[] = [
       guideline: 'EAU 2024 guidelines (paediatric urology / urological trauma: acute scrotum)',
       actions: [
         REDIRECT_ACTION,
-        ACT.act('Emergency scrotal exploration — do not delay surgery for ultrasound when torsion is suspected (EAU 2024); salvage is time-critical'),
+        ACT.act('Emergency scrotal exploration if torsion cannot be excluded — do not delay surgery for ultrasound (EAU 2024); salvage is time-critical'),
       ],
     };
   },
@@ -1623,7 +1623,7 @@ const RULES: Rule[] = [
       actions: [
         ...(low ? [REDIRECT_ACTION] : []),
         ACT.inv(`CT head${low ? ' immediately (GCS ≤ 12)' : anticoag ? ' — anticoagulated: NICE NG232 time frame' : ' if any NICE NG232 criterion is met'}`),
-        ...(anticoag ? [ACT.act('Anticoagulant reversal if intracranial bleeding is confirmed (haematology); do not simply hold / bridge')] : []),
+        ...(anticoag ? [ACT.act('Drug-specific anticoagulant reversal if intracranial bleeding is confirmed (haematology; NICE NG232)')] : []),
       ],
     };
   },

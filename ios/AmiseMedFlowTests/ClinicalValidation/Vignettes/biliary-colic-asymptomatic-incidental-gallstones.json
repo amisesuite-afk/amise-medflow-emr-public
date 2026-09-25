@@ -203,12 +203,7 @@
             "if fever",
             "if cholecystitis",
             "not indicated"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Assessment panel (cholecystitis protocol from PANE top) lists IV co-amoxiclav/pip-tazo.",
-          "proposedFix": "AssessmentTab ManagementPanel: when the clinician has confirmed/locked a working diagnosis (ICD or disease id), show that protocol instead of the PANE top (≥0.20). Today a confirmed pancreatitis/amoebic abscess shows the cholecystitis or appendicitis protocol."
+          ]
         },
         {
           "id": "mgmt-no-appendicectomy",

@@ -322,12 +322,7 @@
           "guidelineRefs": [
             "esc-hf-2021"
           ],
-          "note": "Even a conditional 500 mL fluid challenge is inappropriate with pulmonary oedema on examination.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"• iv fluid challenge 500ml if hypovolaemia likely - reassess hr at 30 min.\".",
-          "proposedFix": "tachycardia_afebrile prompt: do not offer a fluid challenge when heart failure signs are recorded; offer ECG, BNP and diuretic review instead."
+          "note": "Even a conditional 500 mL fluid challenge is inappropriate with pulmonary oedema on examination."
         }
       ]
     }

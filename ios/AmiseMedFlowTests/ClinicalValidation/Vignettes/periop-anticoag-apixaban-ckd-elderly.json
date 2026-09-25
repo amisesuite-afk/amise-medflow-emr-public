@@ -203,12 +203,7 @@
             "pause-2019",
             "accp-2022"
           ],
-          "note": "PAUSE/ACCP 2022: no routine pre-operative coagulation testing with standardised DOAC interruption.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "PT/INR and APTT added by anticoag_check and preop_haem for a DOAC patient (PAUSE: not needed with standardised interruption).",
-          "proposedFix": "Replace the anticoag_check prompt in clinical-inference.ts with a rule table keyed on drug, indication and procedure bleeding risk (ACCP 2022 / BSG-ESGE 2021): warfarin — stop 5 days before, INR the day before, bridge only for mechanical mitral valve / recent VTE or stroke; DOAC — interrupt by drug, CrCl and bleeding risk, no bridging, no routine coagulation test; low-risk endoscopy — continue. Do not fire it for prophylactic-dose LMWH."
+          "note": "PAUSE/ACCP 2022: no routine pre-operative coagulation testing with standardised DOAC interruption."
         }
       ]
     },

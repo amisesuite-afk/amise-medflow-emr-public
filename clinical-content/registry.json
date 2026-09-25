@@ -939,7 +939,7 @@
       "title": "Recognise-and-redirect emergency layer: medical, obstetric, paediatric, neurological and surgical emergencies, safeguarding flags, risk modifiers",
       "platforms": ["web", "api"],
       "kind": "triage-rules",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "versionStamp": { "file": "lib/triage-engine/src/emergency-recognition.ts", "type": "regex", "pattern": "EMERGENCY_RULES_VERSION\\s*=\\s*'([^']+)'" },
       "files": ["lib/triage-engine/src/emergency-recognition.ts"],
       "tests": ["artifacts/api-server/src/test/triage-emergency.test.ts", "artifacts/dashboard/src/lib/__tests__/clinical-prompts-emergency.test.ts"],
@@ -956,7 +956,8 @@
       "changeAuthority": "Any repository committer. Ships on web/API deploy.",
       "notes": "First actions are suggestions only; the redirect names 911 and OKEU, St Jude's or Tapion Hospital. Doses only where the named guideline states them; under-16s get weight-based dosing per BNFc, except the RCUK 2021 age-banded IM adrenaline doses. Safeguarding flags say 'follow the practice's safeguarding procedure' — the practice must supply its local contacts.",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS C1–C3, G1.1, G1.3, G3 and the prompt/alarm parts of G2). See docs/clinical-validation/changes/fix-web-triage.md." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS C1–C3, G1.1, G1.3, G3 and the prompt/alarm parts of G2). See docs/clinical-validation/changes/fix-web-triage.md." },
+        { "version": "1.0.1", "date": "2026-09-25", "change": "Wording only: testicular torsion — emergency scrotal exploration 'if torsion cannot be excluded' (EAU 2024); anticoagulated head injury — drug-specific reversal if intracranial bleeding is confirmed (no 'hold / bridge' wording). See docs/clinical-validation/changes/web-last-gaps.md." }
       ]
     },
     {
@@ -1444,7 +1445,7 @@
         "artifacts/dashboard/src/lib/clinical-inference.ts",
         "artifacts/dashboard/src/lib/transcript-dx-mapper.ts"
       ],
-      "tests": ["artifacts/dashboard/src/lib/__tests__/clinical-prompts-emergency.test.ts", "artifacts/dashboard/src/lib/__tests__/clinical-inference-negation.test.ts"],
+      "tests": ["artifacts/dashboard/src/lib/__tests__/clinical-prompts-emergency.test.ts", "artifacts/dashboard/src/lib/__tests__/clinical-inference-negation.test.ts", "artifacts/dashboard/src/lib/__tests__/web-last-gaps.test.ts", "artifacts/dashboard/src/lib/__tests__/cds-working-diagnosis.test.ts"],
       "ciChecks": ["dashboard vitest", "clinval:web"],
       "guidelines": [],
       "citationStatus": "partial",
@@ -1456,7 +1457,8 @@
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
       "notes": "transcript-dx-mapper maps transcript text to pane-engine features and pathognomonic findings.",
       "changelog": [
-        { "version": "unversioned", "date": "2026-09-25", "change": "Prompts: emergency / safeguarding prompts from emergency-recognition.ts; operative templates only with a supporting working diagnosis; no adult doses under 16; no NSAIDs in pregnancy; β-HCG never assumed; COPD 88–92% (BTS 2017); no fluid bolus with heart-failure signs or PE; anaphylaxis and AAA before fluids; calcium gluconate 10% 30 mL (UKKA 2023); hyponatraemia volume status first (European 2014); procedure-specific anticoagulation (BSG/ESGE 2021, ACCP 2022, PAUSE) and stent-window plans (ESC/ESAIC 2022); dilated-CBD threshold; tetanus, asplenia, VTE, anaesthetic-hazard, obstetric-handover prompts. CDS: ABCD2 suggestion removed (NICE NG128). See docs/clinical-validation/changes/fix-web-triage.md." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "Prompts: emergency / safeguarding prompts from emergency-recognition.ts; operative templates only with a supporting working diagnosis; no adult doses under 16; no NSAIDs in pregnancy; β-HCG never assumed; COPD 88–92% (BTS 2017); no fluid bolus with heart-failure signs or PE; anaphylaxis and AAA before fluids; calcium gluconate 10% 30 mL (UKKA 2023); hyponatraemia volume status first (European 2014); procedure-specific anticoagulation (BSG/ESGE 2021, ACCP 2022, PAUSE) and stent-window plans (ESC/ESAIC 2022); dilated-CBD threshold; tetanus, asplenia, VTE, anaesthetic-hazard, obstetric-handover prompts. CDS: ABCD2 suggestion removed (NICE NG128). See docs/clinical-validation/changes/fix-web-triage.md." },
+        { "version": "unversioned", "date": "2026-09-25", "change": "web-last-gaps. Prompts: colonic stent by tumour side and contraindications (WSES 2018; ESGE 2020); inflammatory breast cancer and pregnancy anticoagulant wording; operative templates — fasting 6 h food / 2 h clear fluids (AAGBI 2010; ESA 2011), antibiotic prophylaxis only for high-risk lap chole (SIGN 104) and not routine for elective mesh repair (HerniaSurge 2018), no post-operative antibiotics after uncomplicated appendicitis (WSES 2020) or TG18 Grade I–II cholecystectomy, no NSAID with renal impairment / age ≥ 75 / heart failure / ulcer history / anticoagulant (NICE NG148; BNF), renally adjusted VTE prophylaxis (NICE NG89; BNF), ventral hernia template and cirrhosis-ascites inpatient repair (EHS/AHS 2020); penicillin lines withheld (not annotated) with a penicillin allergy; GI bleed resuscitation only when haemodynamically significant (BSG 2019; NICE CG141); no routine clotting screen before elective surgery (NICE NG45) or with a DOAC (PAUSE); two-level Wells for PE (NICE NG158); UKKA 2023 hyperkalaemia bands; anticoagulated injury — CT head and reversal readiness (NICE NG232); ultrasound first for children and pregnancy; meningococcal vaccines named; known diabetes via readPersonalRisk(). CDS: TG18 cholecystitis and BISAP suggested from the working diagnosis. See docs/clinical-validation/changes/web-last-gaps.md." }
       ]
     },
     {

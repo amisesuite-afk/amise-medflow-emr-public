@@ -105,12 +105,7 @@
           ],
           "guidelineRefs": [
             "nice-ng45"
-          ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "preop_haem adds PT/INR for an ASA 1 patient; the hernia template adds FBC and Group & Screen.",
-          "proposedFix": "preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt."
+          ]
         },
         {
           "id": "inv-no-preop-psa",

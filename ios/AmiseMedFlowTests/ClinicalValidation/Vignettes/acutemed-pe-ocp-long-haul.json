@@ -267,12 +267,7 @@
           "guidelineRefs": [
             "nice-ng158"
           ],
-          "note": "Wells PE >4 -> CTPA directly; a D-dimer gate or the DVT cut-off (≥2) does not follow NICE NG158.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web run 2026-09-25: forbidden management item present in web.clinicalPrompts: \"• ctpa if wells score ≥ 2 and d-dimer positive - exclude pulmonary embolism.\" (+1 more).",
-          "proposedFix": "Two-level Wells PE in the hypoxia/tachycardia prompts: >4 -> CTPA (interim anticoagulation if delayed); ≤4 -> D-dimer, or PERC when probability is low."
+          "note": "Wells PE >4 -> CTPA directly; a D-dimer gate or the DVT cut-off (≥2) does not follow NICE NG158."
         }
       ]
     }

@@ -319,12 +319,7 @@
             "iusti-eo-2016",
             "eau-paed-2024"
           ],
-          "note": "Exploration is right when torsion cannot be excluded; here gradual onset, urethritis and normal Doppler flow make an unconditional exploration plan over-treatment.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web: The scrotal-chip torsion prompt always adds \"Emergency scrotal exploration\" regardless of onset, Doppler result or confirmed epididymo-orchitis.",
-          "proposedFix": "Condition the torsion prompt on sudden onset / absent cremasteric reflex, or phrase exploration as \"if torsion cannot be excluded\"."
+          "note": "Exploration is right when torsion cannot be excluded; here gradual onset, urethritis and normal Doppler flow make an unconditional exploration plan over-treatment."
         }
       ]
     }

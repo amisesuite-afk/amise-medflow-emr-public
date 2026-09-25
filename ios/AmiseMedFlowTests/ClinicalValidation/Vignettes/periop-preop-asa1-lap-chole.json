@@ -176,12 +176,7 @@
           "guidelineRefs": [
             "nice-ng45"
           ],
-          "note": "NICE NG45: do not routinely offer haemostasis tests before elective surgery (ASA 1, intermediate surgery).",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The preop_haem prompt adds 'Prothrombin Time (PT/INR)' (+ APTT, Group & Screen) for every surgical consultation, regardless of ASA grade.",
-          "proposedFix": "preop_haem prompt: apply NICE NG45 by ASA grade and surgical grade (no routine PT/INR/APTT for ASA 1–2 without liver disease or anticoagulant; no ECG for ASA 1 under 40; no PSA as a pre-op test). The harness maps every non-emergency setting to encounterType 'surgical_consult', so ward reviews also get this prompt."
+          "note": "NICE NG45: do not routinely offer haemostasis tests before elective surgery (ASA 1, intermediate surgery)."
         },
         {
           "id": "inv-no-routine-ecg",
@@ -223,12 +218,7 @@
           "guidelineRefs": [
             "esa-fasting-2011"
           ],
-          "note": "ESA 2011: clear fluids up to 2 h, solids up to 6 h; \"nil by mouth from midnight\" prolongs fasting.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The lap_chole_pathway operative template starts 'NBM from midnight (or ≥ 6h solids / 2h clear fluids)'.",
-          "proposedFix": "Replace with 'Solids until 6 h and clear fluids until 2 h before anaesthesia' (ESA 2011) in the lap chole, appendicectomy and hernia templates."
+          "note": "ESA 2011: clear fluids up to 2 h, solids up to 6 h; \"nil by mouth from midnight\" prolongs fasting."
         },
         {
           "id": "mgmt-no-routine-antibiotic-prophylaxis",
@@ -239,12 +229,7 @@
           "guidelineRefs": [
             "sign-104"
           ],
-          "note": "SIGN 104: antibiotic prophylaxis is not recommended for low-risk laparoscopic cholecystectomy.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The lap chole template orders 'IV Co-amoxiclav 1.2g at induction (single prophylactic dose)' unconditionally.",
-          "proposedFix": "Make prophylaxis conditional on SIGN 104 high-risk criteria (e.g. acute cholecystitis, jaundice, CBD exploration, age/ASA) and check the allergy record."
+          "note": "SIGN 104: antibiotic prophylaxis is not recommended for low-risk laparoscopic cholecystectomy."
         },
         {
           "id": "mgmt-no-appendicectomy",

@@ -164,6 +164,18 @@ export function numLab(results: Record<string, string>, ...keyFragments: string[
   return null;
 }
 
+/** Haemoglobin in g/dL (g/L converted), whole-word; HbA1c / glycated haemoglobin are not Hb. */
+function haemoglobinGdl(results: Record<string, string>): number | null {
+  for (const [k, v] of Object.entries(results)) {
+    if (!/\b(haemoglobin|hemoglobin|hgb|hb)\b/i.test(k) || /a1c|glyc/i.test(k)) continue;
+    const m = v.match(/\d+\.?\d*/);
+    if (!m) continue;
+    const n = parseFloat(m[0]);
+    if (Number.isFinite(n)) return n > 25 ? n / 10 : n;
+  }
+  return null;
+}
+
 function hasLabKey(results: Record<string, string>, ...keyFragments: string[]): boolean {
   return Object.keys(results).some(k => keyFragments.some(f => lo(k).includes(lo(f))));
 }
@@ -223,6 +235,19 @@ function supplementClinicalPrompt(sp: SupplementPrompt): ClinicalPrompt {
 const PAEDIATRIC_DOSE_NOTE ='weight-based dose — calculate per BNFc';
 
 /**
+ * Suspected PE: the two-level Wells score (NICE NG158, 2020; ESC 2019). Wells > 4 (PE likely) →
+ * CTPA directly (interim anticoagulation if it is delayed); Wells ≤ 4 → D-dimer first, CTPA only
+ * if it is positive. The DVT cut-off (≥ 2) and a D-dimer gate for a likely PE are not used.
+ */
+function PE_WELLS_ACTION(step: number): ClinicalAction {
+  return {
+    step,
+    text: 'Suspected PE: two-level Wells score (NICE NG158) — > 4: CTPA directly; ≤ 4: D-dimer first',
+    addToPlan: '• Suspected pulmonary embolism — two-level Wells score (NICE NG158): Wells > 4 (PE likely) → CTPA directly, with interim anticoagulation if CTPA is delayed; Wells ≤ 4 → D-dimer, and CTPA only if it is positive. D-dimer is unhelpful after recent surgery and in pregnancy.',
+  };
+}
+
+/**
  * Under-16s never see an adult dose (owner-approved default, 2026-09-25; BNFc): a fixed dose or
  * volume in a prompt action ("Paracetamol 1g", "Hartmann's 1L bolus", "Pip-Tazo 4.5g",
  * "30ml/kg") is replaced by "weight-based dose — calculate per BNFc". No paediatric number is
@@ -278,6 +303,11 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   const hasJaundice = hasSx(symptoms, 'jaundice')
     || hasCc(ccEntries, 'jaundice', 'biliary', 'cholangitis', 'cholecystitis', 'cbd', 'hepat')
     || exam(examGeneral, 'jaundice', 'icteric');
+  // Jaundice in THIS patient (sign, symptom or bilirubin ≥ 34 µmol/L) — hasJaundice above also
+  // fires on a biliary complaint, which is too broad for SIGN 104 risk or NICE NG45 clotting tests.
+  const bilirubinLab = numLab(investigationResults, 'bilirubin');
+  const clinicalJaundice = hasSx(symptoms, 'jaundice') || exam(examGeneral, 'jaundice', 'jaundiced', 'icteric')
+    || (bilirubinLab !== null && bilirubinLab >= 34);
   const hasRuqPain = hasCc(ccEntries, 'right upper', 'ruq', 'biliary', 'cholecyst')
     || hasSx(symptoms, 'right upper quadrant', 'ruq pain');
   const hasFever = hasSx(symptoms, 'fever', 'pyrexia')
@@ -315,6 +345,8 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   });
   const paed = emergencyLayer.paediatric;
   const pregnant = emergencyLayer.pregnancy.pregnant;
+  // Imaging choice: a recorded pregnancy (the "pregnancy possible" tick alone is a β-HCG question).
+  const pregnancyForImaging = pregnant;
   const paedLimits = paediatricVitalLimits(emergencyLayer.ageYears);
   const recognised = (id: string) => emergencyLayer.emergencies.some(e => e.id === id);
   for (const e of emergencyLayer.emergencies) {
@@ -436,7 +468,13 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
       actions: [
         { step: 1, text: 'Calculate Alvarado score', addToPlan: '• Calculate Alvarado score (document: migratory pain, anorexia, nausea, RIF tenderness, rebound, elevated temp, leucocytosis, left shift).' },
         { step: 2, text: 'FBC, CRP, U&E — leucocytosis + CRP elevation', addToInvestigations: 'Full Blood Count (FBC)' },
-        { step: 3, text: 'CT abdomen/pelvis (if Alvarado 5–6 or atypical; skip if ≥ 7 + classic presentation)', addToPlan: '• CT abdomen/pelvis — appendix calibre, perforation, appendicolith.' },
+        // Children and pregnancy: ultrasound first; CT (child) or MRI (pregnancy) only if the
+        // ultrasound is inconclusive (WSES 2020; RCR iRefer; ACR Appropriateness Criteria 2018).
+        paed
+          ? { step: 3, text: 'Child: ultrasound first; CT only if ultrasound is inconclusive and the diagnosis is still uncertain (WSES 2020)', addToPlan: '• Child: ultrasound of the appendix first; CT only if ultrasound is inconclusive and the diagnosis is still uncertain (WSES 2020; RCR iRefer).' }
+          : pregnancyForImaging
+            ? { step: 3, text: 'Pregnancy: ultrasound first; MRI if ultrasound is inconclusive (WSES 2020; ACR 2018)', addToPlan: '• Pregnancy: ultrasound first; MRI (not CT) if ultrasound is inconclusive (WSES 2020; ACR 2018).' }
+            : { step: 3, text: 'CT abdomen/pelvis (if Alvarado 5–6 or atypical; skip if ≥ 7 + classic presentation)', addToPlan: '• CT abdomen/pelvis if the diagnosis is uncertain (Alvarado 5–6 or atypical) — appendix calibre, perforation, appendicolith.' },
         { step: 4, text: 'β-HCG if female of reproductive age (exclude ectopic)', addToInvestigations: isReproductiveAgeFemale ? 'Urine Pregnancy Test (F)' : undefined },
         { step: 5, text: 'NBM + IV access + analgesia + antibiotics', addToPlan: '• NBM, IV access, morphine PRN, IV Piperacillin-tazobactam 4.5g.' },
         ...(dxSupports('append') ? [
@@ -515,7 +553,7 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
       actions: [
         { step: 1, text: '⚠️ DO NOT delay for imaging if high clinical suspicion', addToPlan: '• Clinical diagnosis: do NOT delay exploration for imaging if torsion likely.' },
         { step: 2, text: 'Doppler USS scrotum only if diagnosis genuinely uncertain', addToPlan: '• Doppler USS scrotum — absent flow confirms torsion (use only if diagnosis uncertain).' },
-        { step: 3, text: 'Emergency scrotal exploration + de-torsion + fixation', addToPlan: '• Emergency scrotal exploration — de-torsion, assess viability, bilateral fixation (orchidopexy).' },
+        { step: 3, text: 'Emergency scrotal exploration if torsion cannot be excluded + de-torsion + fixation', addToPlan: '• Emergency scrotal exploration if torsion cannot be excluded — de-torsion, assess viability, bilateral fixation (orchidopexy) (EAU 2024).' },
         { step: 4, text: 'Consent — risk of orchidectomy if non-viable testis', addToPlan: '• Surgical consent includes risk of orchidectomy (non-viable testis).' },
       ],
       followUp: { label: 'Post-orchidopexy review', daysFromNow: 14 },
@@ -628,23 +666,41 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
     });
   }
 
-  // GI bleed
+  // GI bleed — resuscitation, cross-match and transfusion only when the bleed is haemodynamically
+  // significant (BSG 2019 acute LGIB: shock index > 1 = unstable; NICE CG141; restrictive
+  // transfusion Hb 70 g/L, 80 g/L with cardiovascular disease). A stable bleed is risk-stratified
+  // (Oakland / Glasgow-Blatchford) first — a young patient with a fissure or haemorrhoidal bleeding
+  // and a normal Hb does not need 2 large-bore cannulae and 2 units cross-matched.
   if (hasSx(symptoms, 'rectal bleeding', 'black stool', 'haematemesis', 'melaena')
     || hasCc(ccEntries, 'bleeding', 'haematemesis', 'rectal bleed', 'melaena', 'haematochezia')) {
+    const giSbp = numVital(vitals, 'systolicBp');
+    const giHr = numVital(vitals, 'heartRate');
+    const giHbGdl = haemoglobinGdl(investigationResults);
+    const giUnstable = (giSbp !== null && giSbp < 90)
+      || (giSbp !== null && giHr !== null && giHr / Math.max(giSbp, 1) > 1)
+      || (giHbGdl !== null && giHbGdl < 8)
+      || containsAnyAffirmed([input.historyText ?? '', ...ccEntries.map(e => e.complaint)].join('\n'), ['collapse', 'syncope', 'fainted', 'massive', 'large volume', 'passing clots', 'heavy bleeding']);
+    const lowerGi = hasSx(symptoms, 'rectal bleeding') || hasCc(ccEntries, 'rectal bleed', 'haematochezia', 'lower gi bleed');
     add({
       id: 'gi_bleed_panel',
       type: 'safety',
-      urgency: 'urgent',
+      urgency: giUnstable ? 'urgent' : 'priority',
       icon: '🩸',
-      finding: 'GI haemorrhage',
-      text: 'GI bleed resuscitation: FBC, Group & Screen, PT/INR, APTT, U&E',
-      rationale: 'GI haemorrhage — haemoglobin baseline, blood bank preparation, coagulation status, and renal function (BUN:Cr ratio for upper GI source) before endoscopy.',
+      finding: giUnstable ? 'GI haemorrhage — haemodynamically significant' : 'GI bleeding — haemodynamically stable',
+      text: giUnstable ? 'GI bleed resuscitation: FBC, Group & Screen, PT/INR, APTT, U&E' : 'GI bleeding: risk-stratify (Oakland / Glasgow-Blatchford); FBC, Group & Screen, U&E',
+      rationale: giUnstable
+        ? 'Haemodynamically significant GI bleeding (shock index > 1, SBP < 90, Hb < 80 g/L or a large-volume bleed): resuscitate, cross-match, restrictive transfusion (BSG 2019; NICE CG141).'
+        : 'Stable GI bleeding: risk-stratify before deciding on admission — Oakland score for lower GI bleeding (≤ 8: outpatient investigation), Glasgow-Blatchford for upper GI bleeding (0–1: outpatient management) (BSG 2019; NICE CG141).',
       actions: [
-        { step: 1, text: 'IV access (2 × large-bore) + resuscitation', addToPlan: '• 2 × large-bore IV cannulae, Hartmann\'s 500ml bolus, crossmatch 2 units pRBC.' },
-        { step: 2, text: 'FBC + Group & Screen / Crossmatch', addToInvestigations: 'Blood Group & Type' },
+        giUnstable
+          ? { step: 1, text: 'IV access (2 × large-bore) + resuscitation', addToPlan: '• Haemodynamically significant bleed: 2 × large-bore IV cannulae, crystalloid resuscitation, crossmatch; restrictive red-cell transfusion — threshold Hb 70 g/L (80 g/L with cardiovascular disease) (BSG 2019; NICE CG141).' }
+          : { step: 1, text: 'Haemodynamically stable: IV access and bloods; risk-stratify before admission', addToPlan: lowerGi
+              ? '• Haemodynamically stable lower GI bleeding: Oakland score — ≤ 8 with no other indication for admission: discharge for outpatient investigation; > 8: admit, colonoscopy on the next available list (BSG 2019).'
+              : '• Haemodynamically stable upper GI bleeding: Glasgow-Blatchford score — 0–1: outpatient management and endoscopy; higher: admit, endoscopy within 24 h (NICE CG141; ESGE 2021).' },
+        { step: 2, text: giUnstable ? 'FBC + Group & Screen / Crossmatch' : 'FBC + Group & Screen', addToInvestigations: 'Blood Group & Type' },
         { step: 3, text: 'PT/INR + APTT', addToInvestigations: 'Prothrombin Time (PT/INR)' },
         { step: 4, text: 'U&E + creatinine (BUN:Cr ratio for upper vs lower GI)', addToInvestigations: 'Urea & Electrolytes (U&E)' },
-        { step: 5, text: 'Gastroscopy (upper GI) or colonoscopy (lower GI) — timing by stability', addToPlan: '• Urgent OGD / colonoscopy — within 24h of haemodynamic stabilisation.' },
+        ...(giUnstable ? [{ step: 5, text: 'Gastroscopy (upper GI) or colonoscopy (lower GI) — timing by stability', addToPlan: '• Urgent OGD / colonoscopy — within 24h of haemodynamic stabilisation.' }] : []),
         ...(hasMed(medications, medicationsText, 'warfarin', 'rivaroxaban', 'apixaban', 'dabigatran', 'edoxaban')
           ? [{ step: 6, text: 'Anticoagulant recorded: withhold and reverse by drug with haematology (see the anticoagulation prompt)', addToPlan: '• Anticoagulant recorded: withhold and reverse by drug with haematology — warfarin: IV vitamin K + 4-factor PCC; dabigatran: idarucizumab; factor Xa inhibitor: andexanet alfa or PCC (ACC 2020 ECDP).' }]
           : []),
@@ -694,13 +750,24 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
         { step: 1, text: 'FBC + ESR + CRP', addToInvestigations: 'Full Blood Count (FBC)' },
         { step: 2, text: 'LFTs + TFTs', addToInvestigations: 'Thyroid Function Tests (TFTs)' },
         { step: 3, text: 'CEA + CA 19-9 + AFP', addToInvestigations: 'CEA' },
-        { step: 4, text: 'CT chest/abdomen/pelvis — occult malignancy screen', addToPlan: '• CT chest/abdomen/pelvis — occult malignancy screen (alarm symptoms).' },
+        // Pregnancy: no ionising "occult malignancy" imaging without a specific clinical question;
+        // ultrasound first, MRI if needed (ACOG Committee Opinion 723, 2017).
+        pregnancyForImaging
+          ? { step: 4, text: 'Pregnancy recorded: no CT screen for occult malignancy — ultrasound first, MRI for a specific question (ACOG CO 723)', addToPlan: '• Pregnancy: imaging for weight loss only for a specific clinical question — ultrasound first, MRI if needed; no ionising occult-malignancy screen (ACOG CO 723, 2017). Weight loss with vomiting in pregnancy: consider hyperemesis gravidarum.' }
+          : { step: 4, text: 'CT chest/abdomen/pelvis — occult malignancy screen', addToPlan: '• CT chest/abdomen/pelvis — occult malignancy screen (alarm symptoms).' },
         { step: 5, text: 'Upper GI endoscopy if dysphagia / epigastric pain', addToPlan: '• Upper GI endoscopy if dysphagia or epigastric symptoms present.' },
       ],
     });
   }
 
-  // Pre-operative standard workup
+  // Pre-operative standard workup. Haemostasis tests are not routine before elective surgery (NICE
+  // NG45): only with chronic liver disease, a vitamin K antagonist or heparin to be managed, a known
+  // bleeding disorder, jaundice, or an emergency operation. A DOAC with standard interruption needs
+  // no coagulation test (PAUSE; ACCP 2022).
+  const coagIndicated = encounterType === 'major_emergency'
+    || hasPmh(comorbidities, 'cirrhosis', 'liver disease', 'hepatic', 'haemophilia', 'hemophilia', 'von willebrand', 'bleeding disorder', 'coagulopathy', 'thrombocytopenia')
+    || hasMed(medications, medicationsText, 'warfarin', 'acenocoumarol', 'phenindione', 'heparin')
+    || clinicalJaundice;
   if (isPreOp) {
     add({
       id: 'preop_haem',
@@ -708,11 +775,13 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
       urgency: 'priority',
       icon: '⚕️',
       finding: 'Pre-operative assessment',
-      text: 'Pre-op bloods: FBC, PT/INR, APTT, Group & Screen',
-      rationale: 'Standard pre-operative haematological screen — required before general anaesthesia.',
+      text: coagIndicated ? 'Pre-op bloods: FBC, PT/INR, APTT, Group & Screen' : 'Pre-op bloods: FBC, Group & Screen, U&E (no routine clotting screen — NICE NG45)',
+      rationale: coagIndicated
+        ? 'Pre-operative haematological screen; haemostasis tests because of liver disease, a vitamin K antagonist / heparin, a bleeding disorder, jaundice or an emergency operation (NICE NG45).'
+        : 'Pre-operative haematological screen. Haemostasis tests are not offered routinely before elective surgery without liver disease, anticoagulant management or a bleeding disorder (NICE NG45).',
       actions: [
         { step: 1, text: 'FBC', addToInvestigations: 'Full Blood Count (FBC)' },
-        { step: 2, text: 'PT/INR + APTT', addToInvestigations: 'Prothrombin Time (PT/INR)' },
+        ...(coagIndicated ? [{ step: 2, text: 'PT/INR + APTT', addToInvestigations: 'Prothrombin Time (PT/INR)' }] : []),
         { step: 3, text: 'Group & Screen', addToInvestigations: 'Blood Group & Type' },
         { step: 4, text: 'U&E + creatinine', addToInvestigations: 'Urea & Electrolytes (U&E)' },
         !isNaN(ageNum) && ageNum >= 40
@@ -738,14 +807,38 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   const hrNow = numVital(vitals, 'heartRate');
   const activeBleeding = containsAnyAffirmed(historyAll, ['haematemesis', 'hematemesis', 'melaena', 'melena', 'vomiting blood', 'haemoperitoneum', 'active bleeding', 'heavy bleeding', 'massive bleeding', 'black stool', 'passing clots'])
     || (containsAnyAffirmed(historyAll, ['bleeding', 'haemorrhage', 'hemorrhage', 'fresh blood']) && ((sbpNow !== null && sbpNow < 100) || (hrNow !== null && hrNow > 100)))
-    || containsAnyAffirmed(dxHead, ['bleed', 'haemorrhag', 'hemorrhag', 'haemoperitoneum', 'haematoma'])
+    || containsAnyAffirmed(dxHead, ['bleed', 'haemorrhag', 'hemorrhag', 'haemoperitoneum', 'haematoma', 'haemothorax', 'hemothorax'])
     || hasRadResult(radiologyRequests, 'haemoperitoneum', 'active extravasation', 'intracranial haemorrhage', 'subdural');
   if (onAnticoag) {
     const drug = anticoagNames.find(d => hasMed(medications, medicationsText, d)) ?? 'anticoagulant';
     const warfarin = drug === 'warfarin';
     const doac = ['rivaroxaban', 'apixaban', 'dabigatran', 'edoxaban'].includes(drug);
     const mechanicalValve = hasPmh([...comorbidities, ...(input.surgicalHistory ?? [])], 'mechanical valve', 'mechanical mitral', 'mechanical aortic', 'mechanical heart valve', 'metallic valve');
-    add({
+    // An injury on an anticoagulant (fall, head injury, fracture) is not an elective peri-procedural
+    // question: imaging and reversal readiness, not interruption intervals or bridging
+    // (NICE NG232 2023; ACC 2020 ECDP).
+    const injuryOnAnticoag = !activeBleeding && containsAnyAffirmed([historyAll, dxHead].join('\n'), [
+      'head injury', 'hit her head', 'hit his head', 'hit my head', 'hit head', 'hit her forehead', 'hit his forehead',
+      /\bfell\b/, /\bfall (at home|down|from|onto|on)\b/, 'trauma', 'road traffic', 'collision', 'assault', 'fracture',
+    ]);
+    if (injuryOnAnticoag) {
+      add({
+        id: 'anticoag_check',
+        type: 'safety',
+        urgency: 'urgent',
+        icon: '💊',
+        finding: `Injury on ${drug}`,
+        text: 'Injury on an anticoagulant → exclude bleeding; reversal ready',
+        rationale: 'An injured patient on an anticoagulant: exclude bleeding (CT head within 8 hours of a head injury, NICE NG232) and keep drug-specific reversal ready (ACC 2020 ECDP). Elective interruption plans do not apply.',
+        actions: [
+          warfarin
+            ? { step: 1, text: 'INR now', addToInvestigations: 'Prothrombin Time (PT/INR)' }
+            : { step: 1, text: `${drug}: time of the last dose and renal function`, addToInvestigations: 'Creatinine + eGFR' },
+          { step: 2, text: 'Head injury on an anticoagulant: CT head within 8 hours of the injury (NICE NG232)', addToPlan: '• Head injury on an anticoagulant: CT head within 8 hours of the injury, even without other risk factors (NICE NG232 2023).' },
+          { step: 3, text: `Withhold the ${drug} until bleeding is excluded; drug-specific reversal if bleeding is confirmed or the patient is unstable`, addToPlan: `• Withhold the ${drug} until bleeding is excluded. If bleeding is confirmed or the patient is unstable: ${warfarin ? 'IV vitamin K + four-factor PCC' : drug === 'dabigatran' ? 'idarucizumab' : doac ? 'andexanet alfa or four-factor PCC' : 'protamine'} with haematology (ACC 2020 ECDP).` },
+        ],
+      });
+    } else add({
       id: 'anticoag_check',
       type: 'safety',
       urgency: activeBleeding ? 'urgent' : 'priority',
@@ -767,7 +860,13 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
               addToPlan: `• Anticoagulant reversal with haematology (ACC 2020 ECDP): ${warfarin ? 'IV vitamin K + four-factor PCC' : drug === 'dabigatran' ? 'idarucizumab' : doac ? 'andexanet alfa or four-factor PCC' : 'protamine'} for major / life-threatening bleeding.` },
           ]
         : [
-            { step: 1, text: 'PT/INR + APTT', addToInvestigations: 'Prothrombin Time (PT/INR)' },
+            // Coagulation test by drug: INR for a vitamin K antagonist; none with standard DOAC
+            // interruption (PAUSE; ACCP 2022).
+            ...(warfarin
+              ? [{ step: 1, text: 'INR (vitamin K antagonist)', addToInvestigations: 'Prothrombin Time (PT/INR)' }]
+              : doac
+                ? [{ step: 1, text: 'No routine coagulation test with standard DOAC interruption (PAUSE; ACCP 2022)' }]
+                : []),
             { step: 2, text: 'Renal function (DOAC interruption interval)', addToInvestigations: 'Creatinine + eGFR' },
             ...(warfarin ? [
               { step: 3, text: 'Warfarin: high-bleeding-risk procedure — stop warfarin 5 days before and check INR; low-risk endoscopy — continue and check INR is in range (BSG/ESGE 2021)', addToPlan: '• High-bleeding-risk procedure (e.g. polypectomy, sphincterotomy, surgery): stop warfarin 5 days before and check INR before the procedure. Low-risk endoscopy (diagnostic OGD / colonoscopy ± biopsy): continue warfarin, check INR is not above the therapeutic range (BSG/ESGE 2021; ACCP 2022).' },
@@ -882,7 +981,11 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
         { step: 1, text: 'Blood cultures × 2 before antibiotics', addToPlan: '• Blood cultures × 2 before first antibiotic dose.' },
         { step: 2, text: 'Procalcitonin + lactate', addToInvestigations: 'Lactate' },
         { step: 3, text: 'Sepsis-6 bundle within 1 hour', addToPlan: '• Sepsis-6 bundle: O₂, cultures, antibiotics, IV fluids, urine output monitoring, blood glucose.' },
-        { step: 4, text: 'Identify and treat source — imaging if abdominal source', addToPlan: '• CT abdomen if abdominal source suspected — abscess, perforation, ischaemia.' },
+        { step: 4, text: 'Identify and treat source — imaging if abdominal source', addToPlan: paed
+            ? '• Abdominal source suspected in a child: ultrasound first; CT only if ultrasound is inconclusive (RCR iRefer; ALARA).'
+            : pregnancyForImaging
+              ? '• Abdominal source suspected in pregnancy: ultrasound first, MRI if needed; CT only when the benefit outweighs the risk (ACOG CO 723).'
+              : '• CT abdomen if abdominal source suspected — abscess, perforation, ischaemia.' },
       ],
     });
   }
@@ -1458,12 +1561,11 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
         : { step: 1, text: 'Supplemental O₂ — titrate to SpO₂ 94–98% (BTS 2017)', addToPlan: '• Supplemental O₂: titrate to SpO₂ 94–98% (BTS 2017); reassess.' },
       { step: 2, text: 'ABG — type I vs type II failure, pH, pCO₂', addToInvestigations: 'Arterial Blood Gas (ABG)' },
       { step: 3, text: 'CXR — pneumonia, effusion, pneumothorax, pulmonary oedema', addToInvestigations: 'Chest X-ray — consolidation, pneumothorax, effusion, pulmonary oedema' },
-      { step: 4, text: 'D-dimer (if PE probability ≥ moderate — Wells score)', addToInvestigations: 'D-dimer' },
+      PE_WELLS_ACTION(4),
     ];
     if (spo2 !== null && spo2 < 90) {
       hypoxiaActions.push({ step: 5, text: 'Consider CPAP / NIV / intubation if SpO₂ < 90% or fatigue', addToPlan: '• Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review.' });
     }
-    hypoxiaActions.push({ step: spo2 !== null && spo2 < 90 ? 6 : 5, text: 'CT pulmonary angiogram if PE likely (Wells ≥ 2)', addToPlan: '• CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism.' });
     add({
       id: 'hypoxia_vitals',
       type: 'safety',
@@ -1539,10 +1641,10 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
       rationale: `Tachycardia ${hr} bpm without fever — differential: pulmonary embolism, hypovolaemia, pain, anaemia, arrhythmia, thyrotoxicosis. Must not be attributed to pain alone without workup.`,
       actions: [
         { step: 1, text: '12-lead ECG — AF, flutter, SVT, right heart strain (S1Q3T3)', addToInvestigations: '12-lead ECG — arrhythmia (AF, flutter, SVT), right heart strain (PE)' },
-        { step: 2, text: 'FBC (anaemia), U&E, TFTs (thyrotoxicosis), D-dimer', addToInvestigations: 'D-dimer' },
-        { step: 3, text: 'CTPA if D-dimer positive + Wells ≥ 2', addToPlan: '• CTPA if Wells score ≥ 2 — exclude pulmonary embolism.' },
+        { step: 2, text: 'FBC (anaemia), U&E, TFTs (thyrotoxicosis)', addToInvestigations: 'Full Blood Count (FBC)' },
+        PE_WELLS_ACTION(3),
         hfOrPe
-          ? { step: 4, text: 'Heart-failure signs or suspected PE recorded: no fluid challenge (ESC 2021 HF; ESC 2019 PE)', addToPlan: '• No IV fluid challenge — heart-failure signs or suspected PE recorded (ESC 2021; ESC 2019).' }
+          ? { step: 4, text: 'Heart-failure signs or suspected PE recorded: IV fluids withheld — BNP, echocardiography and diuretic review (ESC 2021 HF; ESC 2019 PE)', addToPlan: '• Heart-failure signs or suspected PE recorded: IV fluids withheld — BNP, echocardiography and diuretic review (ESC 2021; ESC 2019).' }
           : { step: 4, text: 'IV fluid challenge if hypovolaemia suspected — 500ml Hartmann\'s', addToPlan: '• IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min.' },
       ],
     });
@@ -1629,8 +1731,16 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
       // UK Kidney Association 2023: 30 mL of 10% calcium gluconate (or 10 mL of 10% calcium chloride).
       kActions.push({ step: 2, text: 'IV calcium gluconate 10% 30 mL over 5–10 min if ECG changes (UKKA 2023) — cardiac membrane stabilisation', addToPlan: '• If hyperkalaemic ECG changes: IV calcium gluconate 10% 30 mL (or calcium chloride 10% 10 mL) over 5–10 minutes — cardiac membrane protection, does not lower K⁺ (UKKA 2023). Repeat ECG; repeat dose if changes persist.' });
     }
-    kActions.push({ step: 3, text: 'IV insulin–glucose: 10 units soluble insulin with 25 g glucose (UKKA 2023)', addToPlan: '• IV insulin–glucose: 10 units soluble insulin with 25 g glucose — shift K⁺ intracellularly; monitor capillary glucose for hypoglycaemia (UKKA 2023).' });
-    kActions.push({ step: 4, text: 'Salbutamol 10–20mg nebulised — adjunct (if no cardiac disease)', addToPlan: '• Nebulised salbutamol 10–20mg — adjunct K⁺ shift (additive to insulin-dextrose).' });
+    // UKKA 2023 bands: mild 5.5–5.9 → treat the cause and recheck (no shift therapy); moderate
+    // 6.0–6.4 → insulin–glucose; severe ≥ 6.5 → insulin–glucose + nebulised salbutamol adjunct.
+    if (potassium >= 6.0 || recognised('hyperkalaemia')) {
+      kActions.push({ step: 3, text: 'IV insulin–glucose: 10 units soluble insulin with 25 g glucose (UKKA 2023)', addToPlan: '• IV insulin–glucose: 10 units soluble insulin with 25 g glucose — shift K⁺ intracellularly; monitor capillary glucose for hypoglycaemia (UKKA 2023).' });
+    } else {
+      kActions.push({ step: 3, text: 'Mild hyperkalaemia (K⁺ 5.5–5.9, UKKA 2023): treat the cause and repeat K⁺ (exclude a haemolysed sample); no potassium-shifting treatment below 6.0', addToPlan: '• Mild hyperkalaemia (K⁺ 5.5–5.9 mmol/L — UKKA 2023): treat the cause, stop contributing drugs, repeat K⁺ (exclude haemolysis); shifting treatment is for K⁺ ≥ 6.0 mmol/L.' });
+    }
+    if (potassium >= 6.5 || recognised('hyperkalaemia')) {
+      kActions.push({ step: 4, text: 'Salbutamol 10–20mg nebulised — adjunct (if no cardiac disease)', addToPlan: '• Nebulised salbutamol 10–20mg — adjunct K⁺ shift (additive to insulin–glucose; UKKA 2023).' });
+    }
     kActions.push({ step: 5, text: 'Identify cause: AKI, ACE-I, spironolactone, haemolysis, rhabdomyolysis', addToPlan: '• Identify and treat cause: hold ACE-I/ARBs/spironolactone; assess for AKI, rhabdomyolysis.' });
     kActions.push({ step: 6, text: 'Defer ALL surgery until K⁺ < 5.5 mmol/L', addToPlan: '• Surgery DEFERRED — K⁺ must be < 5.5 mmol/L before any general or regional anaesthesia.' });
     add({
@@ -1719,7 +1829,39 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   const obstructionDx = dxSupports('obstruct', 'volvulus', 'adhesion', 'ileus');
   const obstetricEmergency = recognised('pre_eclampsia') || recognised('ectopic') || recognised('obstetric_trauma');
 
-  // Cholecystectomy pathway
+  // ── Shared operative-template lines (clinical-validation periop findings) ─────────────────
+  // Fasting: food up to 6 h and clear fluids up to 2 h (AAGBI 2010; ESA 2011), not an overnight fast.
+  const FASTING_LINE = '• Fasting: food up to 6 h and clear fluids up to 2 h before anaesthesia (AAGBI 2010; ESA 2011).';
+  // Renal impairment / dialysis: NSAIDs avoided (NICE NG148) and LMWH adjusted (NICE NG89; BNF).
+  const egfrLab = numLab(investigationResults, 'egfr');
+  const onDialysis = hasPmh(comorbidities, 'dialysis', 'haemodialysis', 'hemodialysis', 'end-stage renal', 'esrf', 'eskd', 'end stage renal');
+  const renalImpairment = onDialysis || (egfrLab !== null && egfrLab < 60)
+    || hasPmh(comorbidities, 'ckd', 'chronic kidney', 'renal impairment', 'renal failure', 'kidney disease', 'nephropathy', 'renal insufficiency');
+  const nsaidReasons = [
+    renalImpairment ? 'renal impairment' : null,
+    !isNaN(ageNum) && ageNum >= 75 ? 'age ≥ 75' : null,
+    hasPmh(comorbidities, 'heart failure', 'cardiac failure') ? 'heart failure' : null,
+    hasPmh(comorbidities, 'peptic ulcer', 'gi bleed', 'gastrointestinal bleed', 'upper gi bleed') ? 'peptic ulcer / GI bleeding history' : null,
+    onAnticoag ? 'anticoagulant' : null,
+  ].filter((x): x is string => x !== null);
+  const ANALGESIA_LINE = nsaidReasons.length
+    ? `• Paracetamol 1g QDS (regular); NSAIDs avoided (${nsaidReasons.join(', ')} — NICE NG148; BNF).`
+    : '• Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular) if renal function is normal.';
+  const VTE_LINE = onDialysis
+    ? '• VTE prophylaxis (NICE NG89): mechanical prophylaxis; pharmacological prophylaxis dose-adjusted for renal failure — unfractionated heparin or a renally adjusted LMWH on dialysis, per renal team / local protocol (BNF).'
+    : renalImpairment
+      ? '• VTE prophylaxis (NICE NG89): mechanical prophylaxis + LMWH dose-adjusted for renal function (enoxaparin 20 mg once daily if CrCl < 30 mL/min — BNF).'
+      : '• VTE prophylaxis per NICE NG89 risk assessment: mechanical prophylaxis ± LMWH (e.g. enoxaparin 40 mg once daily) unless bleeding risk outweighs it.';
+
+  // Cholecystectomy pathway. Antibiotic prophylaxis only for high-risk laparoscopic cholecystectomy
+  // (SIGN 104: acute cholecystitis, jaundice, pregnancy, immunosuppression, …); none after
+  // cholecystectomy for TG18 Grade I–II cholecystitis.
+  const acuteCholecystitisDx = dxSupports('cholecystitis') && !dxSupports('chronic cholecystitis');
+  const lapCholeHighRisk = acuteCholecystitisDx || clinicalJaundice || pregnant || dxSupports('pancreatitis')
+    || hasPmh(comorbidities, 'immunosuppress', 'transplant', 'chemotherapy', 'hiv');
+  const LAP_CHOLE_PROPHYLAXIS_LINE = lapCholeHighRisk
+    ? '• Antibiotic prophylaxis: single dose at induction per the local antimicrobial policy (SIGN 104 high-risk laparoscopic cholecystectomy); check the allergy record.'
+    : '• Antibiotic prophylaxis not indicated for low-risk elective laparoscopic cholecystectomy (SIGN 104); a single dose if the operation becomes high-risk (conversion, bile spillage, cholangiography).';
   if (hasGallstoneIndication && gallDx && !obstetricEmergency) {
     add({
       id: 'lap_chole_pathway',
@@ -1741,9 +1883,9 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
           addToPlan: `LAPAROSCOPIC CHOLECYSTECTOMY — OPERATIVE PLAN
 ─────────────────────────────────────────────
 PRE-OPERATIVE:
-• NBM from midnight (or ≥ 6h solids / 2h clear fluids).
-• IV Co-amoxiclav 1.2g at induction (single prophylactic dose).
-• LMWH (Enoxaparin 40mg SC) night before + day of surgery; TED stockings.
+${FASTING_LINE}
+${LAP_CHOLE_PROPHYLAXIS_LINE}
+${VTE_LINE}
 • IV access; identify allergy status.
 • Consent signed and documented.
 
@@ -1770,10 +1912,9 @@ INTRAOPERATIVE FINDINGS: [dictate findings here]
 EBL: [X] ml. Specimen: gallbladder to histopathology. Swab count correct × 2.
 
 POST-OPERATIVE ORDERS:
-• Paracetamol 1g QDS (regular) + Ibuprofen 400mg TDS (if eGFR normal).
+${ANALGESIA_LINE}
 • Morphine 2.5–5mg SC/IV PRN for pain > 5/10.
-• Free fluids at 2h post-op; light diet same evening if tolerating fluids.
-• IV antibiotics: Co-amoxiclav 1.2g TDS × 24h (complicated cholecystitis only).
+• Free fluids at 2h post-op; light diet same evening if tolerating fluids.${acuteCholecystitisDx ? '\n• Post-operative antibiotics are not needed after cholecystectomy for TG18 Grade I–II acute cholecystitis; continue only for complicated disease (gangrene, perforation, abscess) (TG18).' : ''}
 • Remove IV cannula when tolerating PO.
 • Discharge criteria: pain controlled on oral analgesia, tolerating diet, mobile.
 • Wound review at 7 days (GP or nurse-led).
@@ -1835,9 +1976,9 @@ INTRAOPERATIVE FINDINGS: Appendix [inflamed/perforated/gangrenous/normal] at [po
 EBL: [X] ml. Swab count correct × 2.
 
 POST-OPERATIVE ORDERS:
-• Simple appendicitis: IV Amoxiclav 1.2g TDS × 24h → oral Co-amoxiclav × 5 days.
-• Perforated appendicitis: IV Pip-Tazo 4.5g TDS + Metronidazole 500mg TDS × 5 days; convert to oral when tolerating PO.
-• Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular).
+• Uncomplicated appendicitis: no post-operative antibiotics after appendicectomy (WSES 2020).
+• Complicated appendicitis (perforation, gangrene, abscess): IV Pip-Tazo 4.5g TDS for 3–5 days after adequate source control (maximum 7), switch to oral when tolerating PO (WSES 2020; STOP-IT).
+${ANALGESIA_LINE}
 • Morphine 5mg PRN if pain > 5/10.
 • Regular diet as tolerated (day 1 if simple; day 2–3 if perforated).
 • Mobilise day 1 — physiotherapy if perforated.
@@ -1885,31 +2026,61 @@ POST-OPERATIVE ORDERS:
         ]
       : [
           { step: 1, text: 'Confirm hernia type: inguinal (direct vs indirect), femoral, umbilical, incisional', addToPlan: '• Document: side, type (inguinal direct/indirect/femoral), reducibility, skin changes, scrotal extension.' },
-          { step: 2, text: 'Pre-op: FBC, Group & Screen, ECG (if ≥ 40), PSA if male ≥ 50 and not done', addToInvestigations: 'Full Blood Count (FBC)' },
+          { step: 2, text: 'Pre-op: FBC, Group & Screen; ECG per NICE NG45', addToInvestigations: 'Full Blood Count (FBC)' },
         ];
-    add({
-      id: 'hernia_repair_pathway',
-      type: 'safety',
-      urgency: isIncarcerated ? 'urgent' : 'priority',
-      icon: '⚕️',
-      finding: isIncarcerated ? 'Incarcerated / strangulated hernia' : 'Hernia — elective repair indicated',
-      diagnosis: 'Hernia Repair',
-      text: isIncarcerated ? 'Strangulated Hernia → Emergency Repair' : 'Hernia → Elective Repair Plan',
-      rationale: isIncarcerated
-        ? 'Irreducible tender hernia — strangulation risk. Emergency operative repair required without delay; bowel viability must be assessed.'
-        : 'Symptomatic inguinal/groin hernia — laparoscopic TAPP repair is preferred (bilateral disease, recurrence, bilateral, active patients). Lichtenstein for high anaesthetic risk.',
-      actions: [
-        ...herniaPreOpActions,
-        { step: 3, text: 'Consent — recurrence, chronic pain, mesh, cord/nerve injury, contralateral risk', addToPlan: '• Consent: hernia repair — recurrence (1–2% TAPP), chronic groin pain (5%), mesh infection (< 1%), testicular ischaemia/vas injury (< 1%), haematoma.' },
-        {
+    // The operative template follows the hernia site: a ventral (umbilical / paraumbilical /
+    // epigastric / incisional / parastomal) hernia is not repaired with the inguinal TAPP plan
+    // (EHS/AHS 2020 umbilical and epigastric hernia guideline; EHS 2014 incisional hernia).
+    const herniaSiteText = [dxHead, ...ccEntries.map(e => e.complaint), examAbdomen].join('\n');
+    const groinHernia = containsAnyAffirmed(herniaSiteText, ['inguinal', 'femoral', 'groin', 'scrotal']);
+    const ventralHernia = !containsAnyAffirmed(dxHead, ['inguinal', 'femoral', 'groin'])
+      && containsAnyAffirmed(herniaSiteText, ['umbilical', 'paraumbilical', 'para-umbilical', 'epigastric', 'ventral', 'incisional', 'parastomal', 'spigelian', 'linea alba']);
+    // Cirrhosis with ascites: ascites control first, inpatient repair, never day-case (EHS/AHS 2020).
+    const cirrhosisAscites = hasPmh(comorbidities, 'cirrhosis', 'ascites', 'portal hypertension', 'liver failure')
+      || containsAnyAffirmed([dxHead, examAbdomen].join('\n'), ['ascites', 'cirrhosis']);
+    const HERNIA_PROPHYLAXIS_LINE = isIncarcerated
+      ? '• Antibiotic prophylaxis: single dose at induction per the local antimicrobial policy (emergency repair; possible contamination); check the allergy record.'
+      : '• Antibiotic prophylaxis: not routinely recommended for elective mesh repair in average-risk patients (HerniaSurge 2018); a single dose for high-risk patients per local policy.';
+    const CIRRHOSIS_LINE = '• Cirrhosis / ascites: hepatology optimisation first — control ascites (diuretics, paracentesis; consider TIPS), correct coagulopathy; repair as an inpatient (planned admission); urgent repair if the skin is thinning, ulcerated or leaking, or the hernia incarcerates (EHS/AHS 2020).';
+    const DISCHARGE_LINE = cirrhosisAscites
+      ? '• Inpatient post-operative care (cirrhosis / ascites): monitor for ascitic leak, wound breakdown, encephalopathy and renal function; drain ascites as planned with hepatology.'
+      : '• Day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding.';
+    const herniaTemplateAction: ClinicalAction = ventralHernia && !groinHernia
+      ? {
+          step: 4,
+          text: 'Pre-populate ventral (umbilical / incisional) hernia operative plan',
+          addToPlan: `${isIncarcerated ? 'EMERGENCY ' : ''}VENTRAL (UMBILICAL / PARAUMBILICAL / INCISIONAL) HERNIA REPAIR — OPERATIVE PLAN
+─────────────────────────────────────────────────────────────
+PRE-OPERATIVE:
+${cirrhosisAscites ? `${CIRRHOSIS_LINE}\n` : ''}${FASTING_LINE}
+${HERNIA_PROPHYLAXIS_LINE}
+${VTE_LINE}
+• Smoking cessation and weight optimisation before elective repair where possible.
+
+REPAIR (EHS/AHS 2020; EHS 2014):
+• Umbilical / epigastric defect ≥ 1 cm: mesh repair (preperitoneal or retromuscular flat mesh); defect < 1 cm: suture repair may be considered.
+• Incisional hernia: mesh repair (retromuscular / sublay preferred); laparoscopic IPOM as an alternative.
+• Emergency / contaminated field: assess bowel viability; resect if non-viable; mesh use per contamination.
+
+INTRAOPERATIVE FINDINGS: Defect size [cm], contents [omentum/bowel], bowel viable [yes/no]. Mesh: [type/size/position].
+EBL: [X] ml. Swab count correct × 2.
+
+POST-OPERATIVE ORDERS:
+${ANALGESIA_LINE}
+• Morphine 5mg PRN if pain > 5/10.
+${DISCHARGE_LINE}
+• Activity: walking from day 1; avoid heavy lifting for 4 weeks.
+• Wound review at 10 days; outpatient review 6 weeks — recurrence, seroma, mesh complications.`,
+        }
+      : {
           step: 4,
           text: 'Pre-populate TAPP operative plan',
           addToPlan: `${isIncarcerated ? 'EMERGENCY ' : ''}LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP) — OPERATIVE PLAN
 ─────────────────────────────────────────────────────────────
 PRE-OPERATIVE:
-• NBM from midnight. Consent signed.
-• Antibiotics: Co-amoxiclav 1.2g IV at induction (optional — low infection risk if no mesh contamination).
-• LMWH + TED stockings.
+${cirrhosisAscites ? `${CIRRHOSIS_LINE}\n` : ''}${FASTING_LINE} Consent signed.
+${HERNIA_PROPHYLAXIS_LINE}
+${VTE_LINE}
 • Urinary catheter for bilateral or complex repairs (optional for unilateral).
 
 ANAESTHESIA: General anaesthesia. Spinal ± sedation for high anaesthetic risk (Lichtenstein alternative).
@@ -1933,15 +2104,35 @@ INTRAOPERATIVE FINDINGS: [Side] inguinal hernia — [direct/indirect/combined]. 
 EBL: [X] ml. Mesh: [brand/size]. Swab count correct × 2.
 
 POST-OPERATIVE ORDERS:
-• Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular analgesia).
+${ANALGESIA_LINE}
 • Morphine 5mg PRN if pain > 5/10.
 • Scrotal support 48h if male (reduces haematoma).
 • Ice pack to groin PRN × 24h.
-• Day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding.
+${DISCHARGE_LINE}
 • Activity: walking from day 1; avoid heavy lifting (> 10kg) for 4 weeks; driving after 1–2 weeks (when emergency stop possible).
 • Wound review at 10 days.
 • Outpatient review 6 weeks — check for recurrence, chronic pain, mesh complications.`,
-        },
+        };
+    const herniaConsentLine = ventralHernia && !groinHernia
+      ? '• Consent: ventral hernia repair — recurrence, seroma, wound infection, mesh infection, bowel injury, chronic pain.'
+      : '• Consent: hernia repair — recurrence (1–2% TAPP), chronic groin pain (5%), mesh infection (< 1%), testicular ischaemia/vas injury (< 1%), haematoma.';
+    add({
+      id: 'hernia_repair_pathway',
+      type: 'safety',
+      urgency: isIncarcerated ? 'urgent' : 'priority',
+      icon: '⚕️',
+      finding: isIncarcerated ? 'Incarcerated / strangulated hernia' : 'Hernia — elective repair indicated',
+      diagnosis: 'Hernia Repair',
+      text: isIncarcerated ? 'Strangulated Hernia → Emergency Repair' : 'Hernia → Elective Repair Plan',
+      rationale: isIncarcerated
+        ? 'Irreducible tender hernia — strangulation risk. Emergency operative repair required without delay; bowel viability must be assessed.'
+        : ventralHernia && !groinHernia
+          ? 'Symptomatic ventral (umbilical / incisional) hernia — mesh repair for defects ≥ 1 cm (EHS/AHS 2020).'
+          : 'Symptomatic inguinal/groin hernia — laparoscopic TAPP repair is preferred (bilateral disease, recurrence, bilateral, active patients). Lichtenstein for high anaesthetic risk.',
+      actions: [
+        ...herniaPreOpActions,
+        { step: 3, text: 'Consent — recurrence, chronic pain, mesh, cord/nerve injury, contralateral risk', addToPlan: herniaConsentLine },
+        herniaTemplateAction,
       ],
       followUp: { label: 'Post-hernia repair review', daysFromNow: 42 },
     });
@@ -2352,7 +2543,7 @@ POST-OPERATIVE ORDERS:
       text: 'Post-splenectomy: vaccinations, antibiotic prophylaxis, alert card',
       rationale: 'Asplenic patients are at lifelong risk of overwhelming post-splenectomy infection. Vaccination follows the current UKHSA Green Book chapter 7 schedule (BSH 2011 guideline).',
       actions: [
-        { step: 1, text: 'Vaccinate per UKHSA Green Book ch. 7: pneumococcal, Haemophilus influenzae type b / meningococcal C, MenACWY, MenB, annual influenza', addToPlan: '• Asplenia vaccinations per the current UKHSA Green Book ch. 7 schedule: pneumococcal, Hib/MenC, MenACWY, MenB and annual influenza.' },
+        { step: 1, text: 'Vaccinate per UKHSA Green Book ch. 7: pneumococcal, Haemophilus influenzae type b / meningococcal C, MenACWY, MenB, annual influenza', addToPlan: '• Asplenia vaccinations per the current UKHSA Green Book ch. 7 schedule: pneumococcal, Hib/MenC, meningococcal ACWY (MenACWY) and meningococcal B (MenB), and annual influenza.' },
         { step: 2, text: 'Offer lifelong antibiotic prophylaxis and an emergency standby antibiotic supply; alert card', addToPlan: '• Offer antibiotic prophylaxis and an emergency standby course (BSH 2011); splenectomy alert card; seek urgent assessment for any fever.' },
       ],
     });
@@ -2396,10 +2587,17 @@ POST-OPERATIVE ORDERS:
           out = out.replace(NSAID_RE, ' — no NSAIDs in pregnancy (avoid from 20 weeks; MHRA 2020)');
         }
         NSAID_RE.lastIndex = 0;
-        // Penicillin allergy recorded: never suggest a penicillin without saying so (C5).
+        // Penicillin allergy recorded: a penicillin is never proposed (C5). Each line that proposes
+        // one is replaced by a withheld line naming the class and the alternative route; lines
+        // that already deal with the allergy (e.g. "if penicillin allergy: …") are left as written.
         if (penicillinAllergy && PENICILLIN_RE.test(out)) {
           PENICILLIN_RE.lastIndex = 0;
-          out = `${out.replace(/\.$/, '')} — PENICILLIN ALLERGY recorded: avoid penicillins; use a non-penicillin alternative per the local antimicrobial guideline.`;
+          out = out.split('\n').map(line => {
+            PENICILLIN_RE.lastIndex = 0;
+            if (!PENICILLIN_RE.test(line) || /allerg|anaphyla/i.test(line)) return line;
+            const bullet = /^\s*•/.test(line) ? '• ' : '';
+            return `${bullet}⚠ PENICILLIN ALLERGY recorded — the penicillin-class antibiotic proposed here is withheld: use a non-penicillin alternative per the local antimicrobial guideline (after anaphylaxis, avoid cephalosporins and carbapenems too unless allergy advice says otherwise).`;
+          }).join('\n');
         }
         PENICILLIN_RE.lastIndex = 0;
         // Under 16: no adult fixed doses.

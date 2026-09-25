@@ -279,11 +279,7 @@
             "day-case",
             "day case"
           ],
-          "note": "Day-case repair is inappropriate in decompensated cirrhosis.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "computeClinicalPrompts fires the hernia pathway for any CC/exam containing \"hernia\", \"inguinal\" or \"umbilical\", and always attaches the adult \"LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)\" operative plan. Its post-operative orders include day-case discharge."
+          "note": "Day-case repair is inappropriate in decompensated cirrhosis."
         }
       ]
     }

@@ -182,12 +182,7 @@
             "inguinal hernia repair (tapp)",
             "laparoscopic inguinal hernia repair"
           ],
-          "note": "An inguinal TAPP operative plan is the wrong template for an umbilical hernia.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "computeClinicalPrompts fires the hernia pathway for any CC/exam containing \"hernia\", \"inguinal\" or \"umbilical\", and always attaches the adult \"LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP)\" operative plan. Here also \"EMERGENCY\" because \"non-tender\" matches \"tender\".",
-          "proposedFix": "Choose the operative template by hernia site (umbilical/ventral vs inguinal) and make the tender check negation-aware."
+          "note": "An inguinal TAPP operative plan is the wrong template for an umbilical hernia."
         }
       ]
     }

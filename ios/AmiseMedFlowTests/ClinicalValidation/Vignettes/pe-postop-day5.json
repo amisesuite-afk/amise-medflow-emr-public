@@ -294,12 +294,7 @@
           "guidelineRefs": [
             "nice-ng158"
           ],
-          "note": "Wells PE >4 (likely): CTPA directly, interim anticoagulation if delayed; ≤4: D-dimer first. A D-dimer gate or a Wells ≥2 threshold (the DVT cut-off) does not follow NICE NG158, and D-dimer is uninformative after surgery.",
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "The hypoxia and tachycardia clinical prompts (clinical-inference.ts) add 'CTPA if Wells score ≥ 2 and D-dimer positive' and 'CTPA if Wells score ≥ 2' — the DVT cut-off and a D-dimer gate for a Wells-likely patient.",
-          "proposedFix": "Use the two-level Wells PE: >4 → CTPA (interim anticoagulation if delayed); ≤4 → D-dimer, or PERC when clinical probability is low."
+          "note": "Wells PE >4 (likely): CTPA directly, interim anticoagulation if delayed; ≤4: D-dimer first. A D-dimer gate or a Wells ≥2 threshold (the DVT cut-off) does not follow NICE NG158, and D-dimer is uninformative after surgery."
         }
       ]
     },
