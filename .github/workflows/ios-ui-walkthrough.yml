@@ -1,0 +1,134 @@
+name: iOS — UI Walkthrough
+
+# Automated UI walkthrough for the usability review: XCUITest flows (ios/AmiseMedFlowUITests) on
+# an iPhone 16 Pro Max and an iPad Pro 13" simulator, with a screenshot at every step and tap /
+# screen counts per flow (ux-metrics.json). The app runs in its DEBUG-only demo mode
+# (-UITestDemoMode): synthetic in-memory patients, no sign-in, no sync, no Sentry, no secrets.
+#
+# A separate workflow on purpose: a UI-test failure never blocks the compile/unit-test checks
+# (ios-build-check.yml) or a release (ios.yml). Screenshots and metrics upload even on failure.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/**']
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios-ui-walkthrough.yml'
+
+concurrency:
+  group: ios-ui-walkthrough-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  walkthrough:
+    name: UI walkthrough (${{ matrix.device }})
+    runs-on: macos-15
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - device: iphone
+            label: iPhone 16 Pro Max
+          - device: ipad
+            label: iPad Pro 13-inch
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # Same Xcode selection as ios-build-check.yml / ios.yml.
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest-stable'
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      # Placeholders are enough: demo mode never contacts Supabase or Sentry.
+      - name: Use placeholder configuration
+        working-directory: ios
+        run: cp Configuration.xcconfig.example Configuration.xcconfig
+
+      - name: Available simulators
+        run: xcrun simctl list devices available | grep -E "iPhone 1[6-9] Pro Max|iPad Pro 13" || true
+
+      # Builds once, runs the flows, exports screenshots + metrics (ios/UIWalkthrough/run.sh).
+      - name: Run UI walkthrough
+        id: run
+        working-directory: ios
+        env:
+          UX_OUT_DIR: ${{ github.workspace }}/ux-walkthrough
+        run: ./UIWalkthrough/run.sh ${{ matrix.device }}
+
+      - name: Job summary
+        if: always()
+        run: |
+          if [ -f ux-walkthrough/ux-summary.md ]; then
+            cat ux-walkthrough/ux-summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No UX metrics were produced (see the build/test logs artifact)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload screenshots and metrics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ux-walkthrough-${{ matrix.device }}
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            ux-walkthrough/*/screenshots/
+            ux-walkthrough/*/metrics/
+            ux-walkthrough/ux-metrics.json
+            ux-walkthrough/ux-summary.md
+
+      - name: Upload logs and result bundle
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ux-logs-${{ matrix.device }}
+          if-no-files-found: ignore
+          retention-days: 7
+          path: |
+            ux-walkthrough/build.log
+            ux-walkthrough/*/test.log
+            ux-walkthrough/*/result.xcresult
+
+  # One ux-metrics.json with both devices, plus the combined table in the run summary.
+  metrics:
+    name: Combined UX metrics
+    needs: walkthrough
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Download device results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ux-walkthrough-*
+          path: collected
+          merge-multiple: true
+
+      - name: Merge metrics
+        run: |
+          mkdir -p ux-walkthrough
+          # Each device artifact holds <device>/screenshots and <device>/metrics.
+          find collected -mindepth 1 -maxdepth 1 -type d -exec cp -R {} ux-walkthrough/ \;
+          python3 ios/UIWalkthrough/collect_results.py merge ux-walkthrough
+          cat ux-walkthrough/ux-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload combined metrics
+        uses: actions/upload-artifact@v7
+        with:
+          name: ux-metrics
+          path: |
+            ux-walkthrough/ux-metrics.json
+            ux-walkthrough/ux-summary.md
