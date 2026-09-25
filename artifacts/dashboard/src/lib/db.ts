@@ -13,6 +13,7 @@ import {
 } from './vitals-news2-fields';
 import { buildDocumentInsert, describeDocumentSaveError } from './document-types';
 import { lifestyleQuestionnaireLine } from '@workspace/triage-engine/lifestyle-questions';
+import { ALL_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS, type SaveSection } from './autosave-guard';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -2112,101 +2113,120 @@ export interface EncounterData {
     burnInhalation: boolean;
   } | null;
   inpatientDetails: Record<string, unknown> | null;
+  /** The '(see notes)' free-text medicine row of this encounter's list ('' when none). */
+  medicationsFreeText: string;
+  /** Sections this call read (encounter sections only when an encounter id was given). */
+  loadedSections: SaveSection[];
+  /**
+   * Sections whose read FAILED. Their fields above are empty placeholders, not the record:
+   * callers must not apply them, and AppContext must not autosave them (lib/autosave-guard.ts).
+   */
+  failedSections: SaveSection[];
 }
 
-/** Fetches the clinical snapshot for an encounter: assessment, plan, allergies,
- *  and consultation-list medications. Used to repopulate AppContext when a
- *  returning patient is loaded from the patient registry. */
+/**
+ * Fetches the clinical snapshot for an encounter (assessment, plan, medicines, HPI, exam, ROS,
+ * investigation orders, procedure / trauma / admission notes, scores) and the patient's standing
+ * history (allergies, surgical history, habits, PMH notes). Used to fill AppContext when a record
+ * is opened. With `encounterId` null only the patient sections are read.
+ *
+ * Resilient partial load: one failing table does not blank the rest — but every failure is
+ * reported in `failedSections`, because an empty placeholder that reached state would be written
+ * back over the real data by autosave (lib/autosave-guard.ts). A missing table (42P01) counts as
+ * loaded and empty, as before.
+ */
 export async function loadEncounterData(
-  encounterId: string,
+  encounterId: string | null,
   patientId: string,
 ): Promise<{ data: EncounterData; error: null } | { data: null; error: string }> {
   if (!supabase) return { data: null, error: notConfigured('loadEncounterData') };
+  const client = supabase;
 
-  // Converts a Supabase query (PromiseLike<{data,error}>) to a plain Promise that
-  // never rejects — network-level throws become { data: null, error } so one flaky
-  // table can't blank the entire encounter load.
-  const sq = <T>(q: PromiseLike<{ data: T | null; error: unknown }>, label: string): Promise<{ data: T | null; error: unknown }> =>
-    Promise.resolve(q).catch((err): { data: T | null; error: unknown } => {
-      console.error(`[db] loadEncounterData ${label} (network reject):`, err);
-      return { data: null, error: err };
-    });
+  const failed = new Set<SaveSection>();
+  const fail = (section: SaveSection, label: string, err: unknown) => {
+    console.error(`[db] loadEncounterData ${label}:`, err);
+    failed.add(section);
+  };
+  // A Supabase query as a Promise that never rejects; an error response or a network-level throw
+  // marks the section failed.
+  const sq = <T>(section: SaveSection, label: string, q: () => PromiseLike<{ data: T | null; error: unknown }>): Promise<T | null> =>
+    Promise.resolve()
+      .then(q)
+      .then(r => { if (r.error) { fail(section, label, r.error); return null; } return r.data; },
+        err => { fail(section, `${label} (network reject)`, err); return null; });
+  const none = (): Promise<null> => Promise.resolve(null);
+  const enc = encounterId;
 
   const [assessRes, planRes, allergyRes, medRes, hpiRes, patRes, investRes, examRes, encScoresRes] = await Promise.all([
-    sq(supabase.from('assessments')
+    enc ? sq('assessment', 'assessments', () => client.from('assessments')
       .select('diagnosis, differentials, icd10_code, updated_at')
-      .eq('encounter_id', encounterId)
-      .maybeSingle(), 'assessments'),
-    sq(supabase.from('plans')
+      .eq('encounter_id', enc)
+      .maybeSingle()) : none(),
+    enc ? sq('plan', 'plans', () => client.from('plans')
       .select('description, updated_at')
-      .eq('encounter_id', encounterId)
+      .eq('encounter_id', enc)
       .eq('plan_type', 'management')
-      .maybeSingle(), 'plans'),
-    sq(supabase.from('allergies')
+      .maybeSingle()) : none(),
+    sq('allergies', 'allergies', () => client.from('allergies')
       .select('allergen')
       .eq('patient_id', patientId)
-      .eq('status', 'active'), 'allergies'),
-    sq(supabase.from('medications')
-      .select('drug_name')
+      .eq('status', 'active')),
+    enc ? sq('medications', 'medications', () => client.from('medications')
+      .select('drug_name, dose')
       .eq('patient_id', patientId)
-      .eq('encounter_id', encounterId)
+      .eq('encounter_id', enc)
       .eq('indication', 'consultation-list')
-      .eq('status', 'active'), 'medications'),
-    sq(supabase.from('clinical_notes')
+      .eq('status', 'active')) : none(),
+    enc ? sq('hpi', 'clinical_notes/hpi', () => client.from('clinical_notes')
       .select('content')
-      .eq('encounter_id', encounterId)
+      .eq('encounter_id', enc)
       .is('deleted_at', null)
       .like('content', '[HPI]%')
       .order('created_at', { ascending: false })
       .limit(1)
-      .maybeSingle(), 'clinical_notes/hpi'),
-    sq(supabase.from('patients')
+      .maybeSingle()) : none(),
+    sq('pmh_notes', 'patients', () => client.from('patients')
       .select('pmh_notes, family_history_notes')
       .eq('id', patientId)
-      .maybeSingle(), 'patients'),
-    sq(supabase.from('investigation_results')
+      .maybeSingle()),
+    enc ? sq('investigations', 'investigation_results', () => client.from('investigation_results')
       .select('test_name')
-      .eq('encounter_id', encounterId)
-      .eq('status', 'ordered'), 'investigation_results'),
-    sq(supabase.from('clinical_notes')
+      .eq('encounter_id', enc)
+      .eq('status', 'ordered')) : none(),
+    enc ? sq('exam', 'clinical_notes/exam', () => client.from('clinical_notes')
       .select('content')
-      .eq('encounter_id', encounterId)
+      .eq('encounter_id', enc)
       .is('deleted_at', null)
       .like('content', '[EXAMINATION_JSON]%')
       .order('created_at', { ascending: false })
       .limit(1)
-      .maybeSingle(), 'clinical_notes/exam'),
-    sq(supabase.from('encounters')
+      .maybeSingle()) : none(),
+    enc ? sq('clinical_scores', 'encounters/scores', () => client.from('encounters')
       .select('clinical_scores, extracted_labs')
-      .eq('id', encounterId)
-      .maybeSingle(), 'encounters/scores'),
+      .eq('id', enc)
+      .maybeSingle()) : none(),
   ]);
 
-  // Log individual query failures but continue with whatever data is available.
-  // A single table error must not blank the entire encounter (resilient partial load).
-  [
-    [assessRes.error, 'assessments'],
-    [planRes.error, 'plans'],
-    [allergyRes.error, 'allergies'],
-    [medRes.error, 'medications'],
-    [hpiRes.error, 'clinical_notes/hpi'],
-    [patRes.error, 'patients'],
-    [investRes.error, 'investigation_results'],
-    [examRes.error, 'clinical_notes/exam'],
-    [encScoresRes.error, 'encounters/scores'],
-  ].forEach(([err, table]) => {
-    if (err) console.error(`[db] loadEncounterData ${String(table)}:`, err);
-  });
+  const assessRow = assessRes as { diagnosis: string | null; differentials: string | null; icd10_code: string | null; updated_at: string | null } | null;
+  const planRow   = planRes   as { description: string | null; updated_at: string | null } | null;
+  const allergyRows = (allergyRes ?? []) as { allergen: string }[];
+  const medRows     = (medRes   ?? []) as { drug_name: string | null; dose: string | null }[];
+  const hpiContent  = (hpiRes   as { content: string } | null)?.content ?? '';
+  const patRow      = patRes    as { pmh_notes: string | null; family_history_notes: string | null } | null;
+  const investRows  = (investRes ?? []) as { test_name: string }[];
+  const scoresRow   = encScoresRes as { clinical_scores: Record<string, unknown> | null; extracted_labs: Record<string, number | null> | null } | null;
 
-  const assessRow = assessRes.data as { diagnosis: string | null; differentials: string | null; icd10_code: string | null; updated_at: string | null } | null;
-  const planRow   = planRes.data   as { description: string | null; updated_at: string | null } | null;
-  const allergyRows = (allergyRes.data ?? []) as { allergen: string }[];
-  const medRows     = (medRes.data   ?? []) as { drug_name: string }[];
-  const hpiContent  = (hpiRes.data   as { content: string } | null)?.content ?? '';
-  const patRow      = patRes.data    as { pmh_notes: string | null; family_history_notes: string | null } | null;
-  const investRows  = (investRes.data ?? []) as { test_name: string }[];
+  // The medicine list as syncMedicationList writes it: chips, plus one '(see notes)' free-text row.
+  const medChips: string[] = [];
+  let medFreeText = '';
+  for (const r of medRows) {
+    const name = (r.drug_name ?? '').trim();
+    if (!name) continue;
+    if (r.dose === '(see notes)') medFreeText = name;
+    else medChips.push(name);
+  }
 
-  const examContent = (examRes.data as { content: string } | null)?.content ?? '';
+  const examContent = (examRes as { content: string } | null)?.content ?? '';
   let restoredExamFindings: Record<string, string[]> = {};
   let restoredExamNotes: Record<string, string> = {};
   if (examContent.startsWith('[EXAMINATION_JSON]\n')) {
@@ -2217,35 +2237,35 @@ export async function loadEncounterData(
       };
       restoredExamFindings = parsed.examFindings ?? {};
       restoredExamNotes = parsed.examNotes ?? {};
-    } catch { /* malformed — return empty */ }
+    } catch {
+      // A stored examination that cannot be read is not an empty examination.
+      fail('exam', 'clinical_notes/exam (unreadable JSON)', 'malformed');
+    }
   }
 
+  type Ros = Record<string, { status: string; details: string[]; notes: string }>;
+  type Inpatient = { data: Record<string, unknown> | null; error: string | null };
+  const sub = <T>(section: SaveSection, label: string, run: (onError: (e: unknown) => void) => Promise<T>, empty: T): Promise<T> =>
+    run(e => fail(section, label, e)).catch(err => { fail(section, `${label} (rejected)`, err); return empty; });
+
   const [surgRes, toxicRes, rosRes, procRes, traumaRes, inpatientRes] = await Promise.all([
-    loadSurgicalHistory(patientId).catch(err => {
-      console.error('[db] loadEncounterData surgical_history (rejected):', err);
-      return { procedures: [] as string[], notes: '', recentSurgeryDate: '' };
-    }),
-    loadToxicHabits(patientId).catch(err => {
-      console.error('[db] loadEncounterData toxic_habits (rejected):', err);
-      return [] as string[];
-    }),
-    loadRosFindings(encounterId).catch(err => {
-      console.error('[db] loadEncounterData ros_findings (rejected):', err);
-      return {} as Record<string, { status: string; details: string[]; notes: string }>;
-    }),
-    loadProcedureData(encounterId).catch(err => {
-      console.error('[db] loadEncounterData procedure_data (rejected):', err);
-      return {} as Record<string, unknown>;
-    }),
-    loadTraumaRecord(encounterId).catch(err => {
-      console.error('[db] loadEncounterData trauma_record (rejected):', err);
-      return null;
-    }),
-    loadInpatientDetails(encounterId).catch(err => {
-      console.error('[db] loadEncounterData inpatient_details (rejected):', err);
-      return { data: null, error: null };
-    }),
+    sub('surgical_history', 'surgical_history', onError => loadSurgicalHistory(patientId, onError),
+      { procedures: [] as string[], notes: '', recentSurgeryDate: '' }),
+    sub('toxic_habits', 'toxic_habits', onError => loadToxicHabits(patientId, onError), [] as string[]),
+    enc ? sub<Ros>('ros', 'ros_findings', onError => loadRosFindings(enc, onError), {}) : Promise.resolve({} as Ros),
+    enc ? sub<Record<string, unknown>>('procedure_data', 'procedure_data', onError => loadProcedureData(enc, onError), {})
+      : Promise.resolve({} as Record<string, unknown>),
+    enc ? sub('trauma', 'trauma_record', onError => loadTraumaRecord(enc, onError), null) : Promise.resolve(null),
+    enc ? sub<Inpatient>('inpatient', 'inpatient_details', async onError => {
+      const r = await loadInpatientDetails(enc);
+      if (r.error) onError(r.error);
+      return r;
+    }, { data: null, error: null }) : Promise.resolve({ data: null, error: null } as Inpatient),
   ]);
+
+  // encounter_type is not read (it follows the visit type chosen in the UI), but after a load it
+  // must not be re-written until it is changed either.
+  const loadedSections: SaveSection[] = enc ? [...ALL_SAVE_SECTIONS] : [...PATIENT_SAVE_SECTIONS];
 
   return {
     data: {
@@ -2258,7 +2278,8 @@ export async function loadEncounterData(
       plan:          planRow?.description ?? '',
       planUpdatedAt: planRow?.updated_at ?? null,
       allergens:     allergyRows.map(r => r.allergen),
-      medications:   medRows.map(r => r.drug_name),
+      medications:   medChips,
+      medicationsFreeText: medFreeText,
       surgicalHistory:    surgRes.procedures,
       surgicalNotes:      surgRes.notes,
       recentSurgeryDate:  surgRes.recentSurgeryDate,
@@ -2273,8 +2294,10 @@ export async function loadEncounterData(
       orderedInvestigations: investRows.map(r => r.test_name),
       traumaData:      traumaRes,
       inpatientDetails: inpatientRes.data,
-      clinicalScores:  ((encScoresRes.data as { clinical_scores: Record<string, unknown> | null } | null)?.clinical_scores) ?? {},
-      extractedLabs:   ((encScoresRes.data as { extracted_labs: Record<string, number | null> | null } | null)?.extracted_labs) ?? {},
+      clinicalScores:  scoresRow?.clinical_scores ?? {},
+      extractedLabs:   scoresRow?.extracted_labs ?? {},
+      loadedSections,
+      failedSections: loadedSections.filter(sec => failed.has(sec)),
     },
     error: null,
   };
@@ -2394,6 +2417,8 @@ export async function syncSurgicalHistory(
 
 export async function loadSurgicalHistory(
   patientId: string,
+  /** Called when the read fails (not for a missing table): the empty result is not the record. */
+  onError?: (error: unknown) => void,
 ): Promise<{ procedures: string[]; notes: string; recentSurgeryDate: string }> {
   if (!supabase) return { procedures: [], notes: '', recentSurgeryDate: '' };
 
@@ -2405,6 +2430,7 @@ export async function loadSurgicalHistory(
   if (error) {
     if ((error as { code?: string }).code === '42P01') return { procedures: [], notes: '', recentSurgeryDate: '' };
     console.error('[db] loadSurgicalHistory:', error);
+    onError?.(error);
     return { procedures: [], notes: '', recentSurgeryDate: '' };
   }
 
@@ -2441,6 +2467,8 @@ export async function syncToxicHabits(
 
 export async function loadToxicHabits(
   patientId: string,
+  /** Called when the read fails (not for a missing table): the empty result is not the record. */
+  onError?: (error: unknown) => void,
 ): Promise<string[]> {
   if (!supabase) return [];
 
@@ -2452,6 +2480,7 @@ export async function loadToxicHabits(
   if (error) {
     if ((error as { code?: string }).code === '42P01') return [];
     console.error('[db] loadToxicHabits:', error);
+    onError?.(error);
     return [];
   }
 
@@ -2490,6 +2519,8 @@ export async function syncRosFindings(
 
 export async function loadRosFindings(
   encounterId: string,
+  /** Called when the read fails (not for a missing table): the empty result is not the record. */
+  onError?: (error: unknown) => void,
 ): Promise<Record<string, { status: string; details: string[]; notes: string }>> {
   if (!supabase) return {};
 
@@ -2501,6 +2532,7 @@ export async function loadRosFindings(
   if (error) {
     if ((error as { code?: string }).code === '42P01') return {};
     console.error('[db] loadRosFindings:', error);
+    onError?.(error);
     return {};
   }
 
@@ -2556,6 +2588,8 @@ export async function syncProcedureData(
 
 export async function loadProcedureData(
   encounterId: string,
+  /** Called when the read fails (not for a missing table): the empty result is not the record. */
+  onError?: (error: unknown) => void,
 ): Promise<Record<string, unknown>> {
   if (!supabase) return {};
 
@@ -2567,6 +2601,7 @@ export async function loadProcedureData(
   if (error) {
     if ((error as { code?: string }).code === '42P01') return {};
     console.error('[db] loadProcedureData:', error);
+    onError?.(error);
     return {};
   }
 
@@ -2644,6 +2679,8 @@ export async function syncTraumaRecord(
 
 export async function loadTraumaRecord(
   encounterId: string,
+  /** Called when the read fails (not for a missing table): the empty result is not the record. */
+  onError?: (error: unknown) => void,
 ): Promise<{
   mechanism: string[];
   timeOfInjury: string;
@@ -2671,6 +2708,7 @@ export async function loadTraumaRecord(
   if (error) {
     if ((error as { code?: string }).code === '42P01') return null;
     console.error('[db] loadTraumaRecord:', error);
+    onError?.(error);
     return null;
   }
 
