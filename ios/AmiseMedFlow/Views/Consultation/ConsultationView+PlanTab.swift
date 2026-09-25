@@ -136,7 +136,7 @@ extension ConsultationView {
     func pathwayResult(_ result: TriageResult) -> some View {
         Section {
             HStack {
-                AcuityPip(acuity: result.suggestedAcuity)
+                AcuityPip(acuity: result.suggestedAcuity).accessibilityHidden(true)
                 Text(result.suggestedAcuity.label).font(.subheadline.weight(.semibold))
                 Spacer()
                 Text("Confidence \(result.confidencePercent)%").font(.caption).foregroundStyle(.secondary)

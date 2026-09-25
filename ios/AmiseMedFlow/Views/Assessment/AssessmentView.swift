@@ -224,7 +224,7 @@ struct AssessmentView: View {
     private func resultSection(_ result: TriageResult) -> some View {
         Section("Pathway Result — \(result.pathway)") {
             HStack {
-                AcuityPip(acuity: result.suggestedAcuity)
+                AcuityPip(acuity: result.suggestedAcuity).accessibilityHidden(true)
                 Text(result.suggestedAcuity.label)
                     .font(.subheadline.weight(.semibold))
                 Spacer()

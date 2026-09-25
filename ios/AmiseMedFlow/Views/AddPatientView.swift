@@ -175,7 +175,7 @@ struct AddPatientView: View {
             Picker("Acuity", selection: $acuity) {
                 ForEach(Acuity.allCases, id: \.self) { a in
                     HStack {
-                        AcuityPip(acuity: a)
+                        AcuityPip(acuity: a).accessibilityHidden(true)
                         Text(a.label)
                     }.tag(a)
                 }

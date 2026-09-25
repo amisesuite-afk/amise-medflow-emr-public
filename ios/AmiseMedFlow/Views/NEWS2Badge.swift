@@ -23,10 +23,9 @@ struct NEWS2Badge: View {
         incomplete ? "N2:\(score) partial" : "N2:\(score)"
     }
 
+    /// "NEWS2 7, high risk" (A11yLabel.news2): the risk band is otherwise shown only by colour.
     private var accessibilityText: String {
-        incomplete
-            ? "NEWS2 \(score), \(risk), incomplete: some observations not recorded"
-            : "NEWS2 \(score), \(risk)"
+        A11yLabel.news2(score: score, risk: risk, incomplete: incomplete)
     }
 
     var body: some View {
@@ -40,7 +39,10 @@ struct NEWS2Badge: View {
         }
         .padding(.horizontal, 6).padding(.vertical, 3)
         .background(color.opacity(0.10), in: Capsule())
-        .accessibilityElement(children: .combine)
+        // Dense badge inside list rows: grows with text size up to xxxLarge, then holds.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        .fixedSize()
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(accessibilityText))
     }
 }

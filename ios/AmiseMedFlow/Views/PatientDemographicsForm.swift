@@ -122,7 +122,7 @@ struct PatientDemographicsForm: View {
             Picker("Acuity", selection: $patient.acuity) {
                 ForEach(Acuity.allCases, id: \.self) { acuity in
                     HStack {
-                        AcuityPip(acuity: acuity)
+                        AcuityPip(acuity: acuity).accessibilityHidden(true)
                         Text(acuity.label)
                     }.tag(acuity)
                 }

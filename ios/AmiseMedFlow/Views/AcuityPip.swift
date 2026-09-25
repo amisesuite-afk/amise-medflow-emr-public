@@ -35,5 +35,9 @@ struct AcuityPip: View {
         Circle()
             .fill(Color(hex: acuity.color))
             .frame(width: 10, height: 10)
+            // Colour alone carries acuity here, so VoiceOver reads the level. Where a text label
+            // sits next to the pip (pickers, pathway results) the call site hides the pip.
+            .accessibilityElement()
+            .accessibilityLabel(Text(A11yLabel.acuity(acuity.label)))
     }
 }
