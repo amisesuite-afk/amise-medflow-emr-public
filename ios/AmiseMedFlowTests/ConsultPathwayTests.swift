@@ -52,6 +52,26 @@ final class ConsultPathwayTests: XCTestCase {
         XCTAssertEqual(ConsultPathway.recommend(for: patient(cc: "Annual check-up")).pathway, .wellness)
     }
 
+    // Keywords match whole words: "burn" used to fire inside "Heartburn" and "burning", "flame"
+    // inside "inflamed", "stab" inside "stable", "rta" inside "portal", "crush" inside "crushing".
+    func testSubstringsDoNotSuggestBurnsOrTrauma() {
+        for cc in ["Heartburn for 3 months", "Burning epigastric pain", "Inflamed umbilical hernia",
+                   "Crushing central chest pain", "Portal hypertension", "Stable angina, for hernia repair",
+                   "Abdominal pain, no trauma"] {
+            XCTAssertEqual(ConsultPathway.recommend(for: patient(cc: cc)).pathway, .firstVisit, cc)
+        }
+    }
+
+    func testBurnAndTraumaWordsStillMatch() {
+        for cc in ["Burns to both hands", "Burnt left hand with hot oil", "Flame burn to chest"] {
+            XCTAssertEqual(ConsultPathway.recommend(for: patient(cc: cc)).pathway, .burns, cc)
+        }
+        for cc in ["Stab wound to abdomen", "Stabbed in the chest", "Crush injury left foot",
+                   "Head injuries after a fall"] {
+            XCTAssertEqual(ConsultPathway.recommend(for: patient(cc: cc)).pathway, .trauma, cc)
+        }
+    }
+
     // MARK: - Mapping
 
     func testVisitTypeMapping() {

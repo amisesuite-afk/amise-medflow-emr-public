@@ -134,10 +134,15 @@ enum ConsultPathway: String, CaseIterable, Identifiable {
 
     /// Suggest a pathway from the record. First matching rule wins, most specific first.
     static func recommend(for p: Patient) -> Recommendation {
-        let cc = (p.chiefComplaint ?? "").lowercased()
-        func mentions(_ words: [String]) -> String? { words.first { cc.contains($0) } }
+        // Whole words, negation-aware: "Heartburn", "burning pain" and "inflamed" are not burns,
+        // "portal", "aorta", "stable" and "crushing chest pain" are not trauma, "no trauma" is not
+        // trauma. Inflected forms that used to match as substrings are listed explicitly
+        // ("burnt", "stabbed"); plurals of words of four letters or more match ("burns", "stabs").
+        let cc = NegationMatcher.Source(p.chiefComplaint ?? "")
+        func mentions(_ words: [String]) -> String? { cc.firstAffirmed(words, wholeWord: true) }
 
-        if let w = mentions(["burn", "scald", "flame", "electrical injury", "chemical injury"]) {
+        if let w = mentions(["burn", "burnt", "burned", "scald", "scalded", "flame",
+                             "electrical injury", "chemical injury"]) {
             return .init(pathway: .burns, reasons: ["Chief complaint mentions \"\(w)\""])
         }
         if p.visitType == .burns {
@@ -146,8 +151,9 @@ enum ConsultPathway: String, CaseIterable, Identifiable {
         if p.visitType == .trauma {
             return .init(pathway: .trauma, reasons: ["Booked as a trauma visit"])
         }
-        if let w = mentions(["trauma", "rta", "road traffic", "mvc", "fall from", "assault",
-                             "stab", "gunshot", "machete", "chop", "crush", "injury"]) {
+        if let w = mentions(["trauma", "traumatic", "rta", "road traffic", "mvc", "fall from",
+                             "assault", "assaulted", "stab", "stabbed", "gunshot", "machete", "chop",
+                             "chopped", "crush", "crushed", "injury", "injuries"]) {
             return .init(pathway: .trauma, reasons: ["Chief complaint mentions \"\(w)\""])
         }
         if p.setting == .inpatient || p.visitType == .wardReview {
