@@ -85,6 +85,7 @@ import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import VisitContinuityPanel from '@/components/VisitContinuityPanel';
+import RecordLoadNotice from '@/components/RecordLoadNotice';
 import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
@@ -192,6 +193,7 @@ export default function HomePage() {
     progressNotes,
     mrNumber, setMrNumber,
     recentEncounters,
+    flushAutosaves,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -251,6 +253,9 @@ export default function HomePage() {
     if (!encounterId) { setTopSection('finaldoc'); return; }
     setCompleting(true);
     try {
+      // Edits typed in the last seconds are saved before the encounter closes — once it is
+      // closed, autosave no longer writes into it (lib/autosave-guard.ts).
+      await flushAutosaves();
       const authHeaders = await staffAuthHeaders();
       const res = await fetch(`${API_ORIGIN}/api/visit/complete/${encounterId}`, {
         method: 'POST',
@@ -705,6 +710,14 @@ export default function HomePage() {
             automatically when the encounter starts (one-tap change), with what this visit
             continues from and the standing history to review. Self-hides for a new patient. */}
         {topSection === 'consultation' && (!!patientId || !!patientName) && <VisitContinuityPanel />}
+
+        {/* Autosave guard state: record still loading, sections that couldn't be loaded (retry),
+            closed encounter read-only (reopen). Self-hides when none applies. */}
+        <RecordLoadNotice
+          showReadOnly={topSection === 'consultation'}
+          onReopen={encounterStatus === 'closed' ? () => void editEncounter() : undefined}
+          reopening={reopening}
+        />
 
         {/* No-patient quickstart — inline name/age/sex entry */}
         <NoPatientQuickstart />
