@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 1,
+  "id": "cauda-equina-retention-presentation",
+  "condition": "Cauda equina syndrome presenting as urinary retention",
+  "category": "other",
+  "permutationOf": "cauda-equina-syndrome-disc",
+  "permutationLabel": "Presents as painless retention (CES-R), woman",
+  "summary": "52-year-old woman with back pain after lifting presents with painless urinary retention (950 mL), saddle numbness and lax anal tone.",
+  "tags": [
+    "neuro",
+    "spine",
+    "retention",
+    "mimic",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 162,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Unable to pass urine since this morning",
+    "hpi": "Hurt her back lifting 3 days ago. Since this morning she cannot pass urine but it is not painful. On direct questioning her bottom feels numb when wiping and her bowels have not opened. Some pain in both legs. No previous urinary problems.",
+    "symptoms": [
+      "urinary retention",
+      "lower back pain",
+      "numbness",
+      "constipation"
+    ],
+    "negatives": [
+      "suprapubic pain",
+      "fever",
+      "dysuria",
+      "haematuria"
+    ],
+    "exam": {
+      "general": "Comfortable. Pulse 80/min, BP 132/80, temperature 36.8°C.",
+      "abdomen": "Palpable, non-tender bladder. PR: lax anal tone, reduced perianal sensation.",
+      "neuro": "Reduced pinprick S3–S5, ankle reflexes absent bilaterally, power normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 80,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 74
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 76,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Bladder scan",
+        "modality": "US",
+        "result": "950 mL residual.",
+        "minutesAgo": 10,
+        "region": "Bladder"
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Co-codamol 30/500",
+        "dose": "2 tablets",
+        "frequency": "QDS",
+        "indication": "Back pain"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Care assistant.",
+    "confirmedDiagnosis": {
+      "name": "Cauda equina syndrome with urinary retention (CES-R)",
+      "icd10": "G83.4",
+      "assessmentText": "Painless urinary retention (950 mL) with saddle anaesthesia and lax anal tone after a back injury: CES-R. Catheterise, emergency MRI, immediate spinal surgery referral."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "urinary retention",
+          "lower back pain",
+          "numbness",
+          "constipation"
+        ],
+        "symptomDetails": {
+          "lower back pain": [
+            "Bilateral",
+            "Bladder / bowel dysfunction",
+            "Saddle anaesthesia",
+            "Mechanical (better with rest)"
+          ]
+        },
+        "durationDays": 0.4,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-cauda-equina",
+          "severity": "critical",
+          "match": [
+            "cauda equina"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3 cholecystitis, GORD, peptic ulcer; symptom inference ranks sciatica/disc disease then BPH.",
+          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "bass-sbns-ces-2018"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "unverified": [
+          "ios"
+        ],
+        "knownGapNote": "Web: Triage \"routine_booking\" (score 0) for painless retention with saddle anaesthesia: neither \"urinary retention\" nor the back-pain red-flag answers are triage rules.",
+        "proposedFix": "Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-cauda-equina",
+          "severity": "critical",
+          "match": [
+            "cauda equina",
+            "saddle"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No CES alarm.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-emergency-mri",
+          "severity": "critical",
+          "match": [
+            "re:\\bmri\\b"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No MRI.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-spinal-surgical-referral",
+          "severity": "critical",
+          "match": [
+            "spinal surg",
+            "neurosurg",
+            "spinal team",
+            "orthopaedic spin",
+            "decompression"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No spinal referral.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        },
+        {
+          "id": "mgmt-catheterise",
+          "severity": "quality",
+          "match": [
+            "catheter"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No catheter either (G83.4 has no protocol; the retention chip does not reach any prompt).",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bph-retention-plan",
+          "severity": "critical",
+          "match": [
+            "tamsulosin",
+            "twoc",
+            "trial without catheter"
+          ],
+          "unless": [
+            "after mri",
+            "not "
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ],
+          "note": "Treating painless retention with saddle anaesthesia as prostatic/idiopathic retention delays the MRI.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bass-sbns-ces-2018",
+      "name": "SBNS/BASS — Standards of care for investigation and management of cauda equina syndrome",
+      "year": 2018,
+      "section": "Suspected CES (bilateral radicular pain, saddle sensory change, bladder/bowel/sexual dysfunction): emergency MRI; immediate discussion with the on-call spinal surgical team; decompression as soon as possible; do not wait for urinary retention (retention indicates CES-R); post-void residual bladder scan as part of assessment",
+      "citation": "Society of British Neurological Surgeons & British Association of Spine Surgeons. Standards of care for investigation and management of cauda equina syndrome. 2018. See also: GIRFT National Suspected Cauda Equina Syndrome Pathway, 2023.",
+      "verified": false
+    }
+  ],
+  "rationale": "Painless retention in a woman with back pain is CES until proven otherwise: MRI and spinal surgery, not an alpha-blocker and TWOC (SBNS/BASS 2018).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

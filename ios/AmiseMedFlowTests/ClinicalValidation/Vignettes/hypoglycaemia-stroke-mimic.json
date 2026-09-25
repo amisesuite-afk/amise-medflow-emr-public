@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "id": "hypoglycaemia-stroke-mimic",
+  "condition": "Hypoglycaemia presenting as stroke (stroke mimic)",
+  "category": "general-medicine",
+  "permutationOf": "stroke-acute-fast-positive",
+  "permutationLabel": "Mimic: insulin-treated diabetic with focal deficit and glucose 1.9",
+  "summary": "63-year-old man with type 1 diabetes found with right facial droop, right arm weakness and dysarthria after exercise and a missed meal; capillary glucose 1.9.",
+  "tags": [
+    "diabetes",
+    "mimic",
+    "stroke",
+    "do-not-miss",
+    "neuro"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 81
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Sudden right-sided weakness and slurred speech",
+    "hpi": "Type 1 diabetes on basal-bolus insulin. Played football yesterday evening and skipped supper. Wife found him at 07:00 with right arm weakness, right facial droop and slurred speech; last seen well at 23:00. Paramedics called as a stroke alert. Capillary glucose on arrival 1.9 mmol/L.",
+    "symptoms": [
+      "limb weakness",
+      "facial weakness",
+      "speech difficulty",
+      "confusion",
+      "drenching sweats"
+    ],
+    "negatives": [
+      "headache",
+      "head injury",
+      "seizure"
+    ],
+    "exam": {
+      "general": "Sweaty, drowsy. Pulse 104/min, BP 152/88, RR 18, temperature 36.2°C, SpO2 98%.",
+      "neuro": "Right facial droop, right arm drift and weakness (power 3/5), dysarthria. GCS 13."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 152,
+        "diastolicBp": 88,
+        "respiratoryRate": 18,
+        "temperatureC": 36.2,
+        "spo2": 98,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "glucoseMmol": 1.9,
+        "weightKg": 81
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 1.9,
+        "unit": "mmol/L",
+        "minutesAgo": 5
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 139,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 1 diabetes mellitus"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin degludec",
+        "dose": "26 units",
+        "frequency": "OD",
+        "indication": "Type 1 diabetes"
+      },
+      {
+        "drug": "Insulin aspart",
+        "dose": "per carbohydrate count",
+        "frequency": "with meals",
+        "indication": "Type 1 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Engineer. Plays five-a-side football.",
+    "confirmedDiagnosis": {
+      "name": "Hypoglycaemia presenting as a stroke mimic",
+      "icd10": "E10.649",
+      "assessmentText": "Severe hypoglycaemia (1.9) with focal neurology: treat glucose first and reassess before any stroke treatment decision."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "limb weakness",
+          "facial weakness",
+          "speech difficulty",
+          "confusion",
+          "hypoglycaemia episode"
+        ],
+        "durationDays": 0.3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hypoglycaemia",
+          "severity": "critical",
+          "match": [
+            "hypoglyc"
+          ],
+          "guidelineRefs": [
+            "nice-ng128",
+            "jbds-hypo-2023"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks stroke/TIA #1 and hypoglycaemia #2.",
+          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng128",
+          "jbds-hypo-2023"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoglycaemia",
+          "severity": "critical",
+          "match": [
+            "hypoglyc"
+          ],
+          "guidelineRefs": [
+            "nice-ng128",
+            "jbds-hypo-2023"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-treat-hypoglycaemia",
+          "severity": "critical",
+          "match": [
+            "iv glucose",
+            "glucose 10%",
+            "glucose 20%",
+            "10% glucose",
+            "20% glucose",
+            "dextrose",
+            "glucagon",
+            "quick-acting carbohydrate",
+            "fast-acting carbohydrate",
+            "oral glucose",
+            "glucose gel"
+          ],
+          "guidelineRefs": [
+            "nice-ng128",
+            "jbds-hypo-2023"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Only the triage vital flag fires; the five management outputs are preventative (PSA, colonoscopy, ACR, pre-op ECG). No glucose treatment.",
+          "proposedFix": "Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-thrombolysis-before-glucose",
+          "severity": "critical",
+          "match": [
+            "alteplase",
+            "thrombolys",
+            "tenecteplase"
+          ],
+          "unless": [
+            "exclude hypoglyc",
+            "after glucose",
+            "if symptoms persist",
+            "check glucose",
+            "hypoglycaemia excluded"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "note": "Thrombolysis for a hypoglycaemic stroke mimic is a serious harm.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng128",
+      "name": "NICE NG128 — Stroke and transient ischaemic attack in over 16s: diagnosis and initial management",
+      "year": 2019,
+      "section": "1.1 Rapid recognition (FAST); exclude hypoglycaemia as the cause of sudden-onset neurological symptoms; suspected TIA: aspirin 300 mg immediately unless contraindicated and specialist assessment within 24 h; do not use scoring systems (ABCD2) to assess TIA risk; 1.2 imaging: non-enhanced CT immediately if thrombolysis/thrombectomy indicated, on anticoagulants or bleeding tendency; thrombolysis with alteplase within 4.5 h; thrombectomy; aspirin 300 mg after haemorrhage excluded; admit to a stroke unit",
+      "citation": "National Institute for Health and Care Excellence. Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. NICE guideline NG128. London: NICE; 2019 (updated 2022).",
+      "verified": false
+    },
+    {
+      "id": "jbds-hypo-2023",
+      "name": "JBDS-IP — The hospital management of hypoglycaemia in adults with diabetes mellitus",
+      "year": 2023,
+      "section": "Hypoglycaemia <4.0 mmol/L; conscious and able to swallow: quick-acting carbohydrate, recheck in 10–15 min; unconscious, fitting or nil by mouth: IV glucose (10% or 20%) or IM glucagon; sulfonylurea-induced hypoglycaemia can be prolonged or recur — monitor and review the drug",
+      "citation": "Joint British Diabetes Societies for Inpatient Care. The hospital management of hypoglycaemia in adults with diabetes mellitus (JBDS-IP 01, revised edition; year to be confirmed).",
+      "verified": false
+    }
+  ],
+  "rationale": "Hypoglycaemia is the classic treatable stroke mimic. NICE NG128 requires glucose to be excluded before stroke treatment; JBDS: IV glucose or glucagon.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

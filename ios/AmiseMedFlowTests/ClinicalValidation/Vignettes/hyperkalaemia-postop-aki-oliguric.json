@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "id": "hyperkalaemia-postop-aki-oliguric",
+  "condition": "Hyperkalaemia with post-operative AKI",
+  "category": "general-medicine",
+  "permutationOf": "hyperkalaemia-severe-ckd-acei",
+  "permutationLabel": "Post-operative day 3, oliguric AKI stage 3, nephrotoxins",
+  "summary": "66-year-old woman, day 3 after Hartmann's procedure, oliguric; creatinine 268 (baseline 78), K 6.7 with peaked T waves, on gentamicin, ibuprofen and ramipril.",
+  "tags": [
+    "post-operative",
+    "aki",
+    "do-not-miss",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 66,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 3
+    },
+    "chiefComplaint": "Low urine output after bowel operation",
+    "hpi": "Day 3 after emergency Hartmann's procedure for perforated sigmoid diverticulitis. Urine output 15 mL/h for the last 8 hours. Received gentamicin for 3 days, ibuprofen PRN on the ward, and ramipril was restarted yesterday. Feels weak. No chest pain.",
+    "symptoms": [
+      "generalised weakness",
+      "fatigue"
+    ],
+    "negatives": [
+      "chest pain",
+      "vomiting",
+      "fever"
+    ],
+    "exam": {
+      "general": "Alert. Pulse 104/min, BP 104/58, RR 20, temperature 37.6°C, SpO2 95% on air. Mild peripheral oedema.",
+      "abdomen": "Midline wound clean, stoma pink and working. Abdomen soft, appropriately tender around the wound. Catheter in situ draining concentrated urine.",
+      "cardiovascular": "ECG: peaked T waves, QRS 96 ms, sinus rhythm."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 104,
+        "diastolicBp": 58,
+        "respiratoryRate": 20,
+        "temperatureC": 37.6,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 8.1,
+        "weightKg": 72
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 6.7,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 268,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 21.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 18,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 136,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 145,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 8.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Diverticular disease",
+      "Baseline creatinine 78 µmol/L"
+    ],
+    "surgicalHistory": [
+      "Hartmann's procedure 3 days ago (perforated diverticulitis)"
+    ],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension (restarted yesterday)"
+      },
+      {
+        "drug": "Ibuprofen",
+        "dose": "400 mg",
+        "frequency": "TDS PRN",
+        "indication": "Analgesia"
+      },
+      {
+        "drug": "Gentamicin",
+        "dose": "5 mg/kg",
+        "frequency": "OD",
+        "indication": "Intra-abdominal sepsis"
+      },
+      {
+        "drug": "Metronidazole",
+        "dose": "500 mg",
+        "frequency": "TDS",
+        "indication": "Intra-abdominal sepsis"
+      },
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired nurse.",
+    "confirmedDiagnosis": {
+      "name": "Post-operative AKI (KDIGO stage 3) with severe hyperkalaemia",
+      "icd10": "N17.9",
+      "assessmentText": "Oliguric AKI stage 3 (creatinine 268 from 78) after emergency laparotomy, nephrotoxins (gentamicin, ibuprofen, ramipril); potassium 6.7 with peaked T waves."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "generalised weakness",
+          "fatigue"
+        ],
+        "durationDays": 0.3
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ukka-hyperk-2023"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "unverified": [
+          "ios"
+        ],
+        "knownGapNote": "Web: Triage \"same_day_call\" (score 44, one point below the emergency threshold): potassium 6.7 with peaked T waves and oliguric AKI are not triage inputs. The emergency level previously came from negated history.",
+        "proposedFix": "As hyperkalaemia-severe-ckd-acei; add oliguria / AKI stage 3."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hyperkalaemia",
+          "severity": "critical",
+          "match": [
+            "hyperkal",
+            "potassium"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "alarm-aki",
+          "severity": "critical",
+          "match": [
+            "acute kidney",
+            "aki",
+            "renal impairment",
+            "creatinine"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ecg-monitoring",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "cardiac monitor"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ],
+          "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-urinalysis",
+          "severity": "quality",
+          "match": [
+            "urinalysis",
+            "urine dipstick"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-iv-calcium",
+          "severity": "critical",
+          "match": [
+            "calcium gluconate",
+            "calcium chloride"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ],
+          "note": "Peaked T waves are an ECG change: IV calcium.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-insulin-glucose",
+          "severity": "critical",
+          "match": [
+            "re:insulin[^.;\\n]{0,60}(glucose|dextrose)",
+            "actrapid"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-stop-nephrotoxins",
+          "severity": "critical",
+          "match": [
+            "re:(stop|hold|withhold|omit|avoid)[^.;\\n]{0,60}(nsaid|ibuprofen|gentamicin|aminoglycoside|ace|ramipril)"
+          ],
+          "guidelineRefs": [
+            "nice-ng148",
+            "kdigo-aki-2012"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-fluid-assessment",
+          "severity": "quality",
+          "match": [
+            "fluid balance",
+            "fluid status",
+            "volume status",
+            "fluid challenge",
+            "fluid assessment"
+          ],
+          "guidelineRefs": [
+            "nice-ng148",
+            "kdigo-aki-2012"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-in-aki",
+          "severity": "critical",
+          "match": [
+            "re:ibuprofen \\d",
+            "re:diclofenac \\d",
+            "re:naproxen \\d",
+            "re:ketorolac",
+            "re:\\bnsaid\\b[^.;\\n]{0,30}(first|analges)"
+          ],
+          "unless": [
+            "avoid nsaid",
+            "hold nsaid",
+            "stop nsaid",
+            "do not give"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "note": "Any NSAID suggestion in AKI is harmful, even \"if eGFR normal\".",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ukka-hyperk-2023",
+      "name": "UK Kidney Association — Clinical practice guideline: treatment of acute hyperkalaemia in adults",
+      "year": 2023,
+      "section": "Severity (mild 5.5–5.9, moderate 6.0–6.4, severe ≥6.5 mmol/L); urgent 12-lead ECG and cardiac monitoring; IV calcium (calcium chloride 10% 10 mL or calcium gluconate 10% 30 mL) for ECG changes; insulin–glucose (10 units soluble insulin with 25 g glucose) with glucose monitoring to prevent hypoglycaemia; nebulised salbutamol as adjunct; stop/withhold drugs that raise potassium; treat the cause; dialysis for refractory hyperkalaemia",
+      "citation": "UK Kidney Association. Clinical Practice Guidelines: Treatment of Acute Hyperkalaemia in Adults. UKKA; 2023 (update of the 2020 Renal Association guideline).",
+      "verified": false
+    },
+    {
+      "id": "kdigo-aki-2012",
+      "name": "KDIGO Clinical Practice Guideline for Acute Kidney Injury",
+      "year": 2012,
+      "section": "2.1 Definition and staging (creatinine rise ≥26.5 µmol/L in 48 h or ≥1.5× baseline in 7 days, or urine output <0.5 mL/kg/h for 6 h; stage by creatinine ratio/urine output); 3.1 fluids and haemodynamic management; discontinue nephrotoxic agents; evaluate cause",
+      "citation": "Kidney Disease: Improving Global Outcomes (KDIGO) Acute Kidney Injury Work Group. KDIGO Clinical Practice Guideline for Acute Kidney Injury. Kidney Int Suppl. 2012;2:1–138.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "Surgical AKI with severe hyperkalaemia: UKKA emergency treatment plus NICE NG148 nephrotoxin withdrawal.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

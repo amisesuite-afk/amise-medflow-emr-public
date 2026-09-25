@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "id": "renal-colic-pregnant",
+  "condition": "Renal colic in pregnancy",
+  "category": "urology",
+  "permutationOf": "renal-colic-typical",
+  "permutationLabel": "Pregnant, 26 weeks",
+  "summary": "28-year-old at 26 weeks with right loin-to-groin colic and haematuria, afebrile; ultrasound shows right hydronephrosis beyond the pelvic brim.",
+  "tags": [
+    "renal",
+    "stone",
+    "pregnancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 28,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 26
+      },
+      "heightCm": 165,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right loin pain in pregnancy",
+    "hpi": "26 weeks pregnant. Six hours of colicky right loin pain radiating to the right groin, nausea. No fever, no dysuria. Fetal movements normal, no bleeding or contractions.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Loin",
+        "Right side"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Nausea",
+        "Haematuria"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "loin pain",
+      "renal colic",
+      "nausea",
+      "haematuria"
+    ],
+    "negatives": [
+      "fever",
+      "dysuria",
+      "vaginal bleeding",
+      "contractions"
+    ],
+    "exam": {
+      "general": "Uncomfortable. Pulse 98/min, BP 112/70, RR 18, temperature 37.0°C.",
+      "abdomen": "Gravid uterus consistent with dates, non-tender. Right loin tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 98,
+        "systolicBp": 112,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 37.0,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 72
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Blood 2+, nitrite negative, leucocytes trace",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 52,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 12,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS kidneys",
+        "modality": "US",
+        "result": "Moderate right hydronephrosis with a dilated proximal ureter beyond the pelvic brim; no stone seen; left kidney normal.",
+        "minutesAgo": 45,
+        "region": "Renal tract"
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Pregnancy multivitamin",
+        "dose": "1 tablet",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher.",
+    "confirmedDiagnosis": {
+      "name": "Suspected right ureteric colic in pregnancy (26 weeks)",
+      "icd10": "O26.83",
+      "assessmentText": "Suspected right ureteric calculus at 26 weeks; afebrile. Paracetamol/opioid analgesia, avoid NSAIDs; obstetric review; MRI if ultrasound inconclusive."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "onset": "Sudden, 6 hours ago",
+          "site": "Right loin / flank",
+          "character": "Colicky",
+          "radiation": "Right groin",
+          "associated": "Nausea, blood in urine",
+          "timing": "Intermittent",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "loin pain",
+          "renal colic",
+          "nausea",
+          "haematuria"
+        ],
+        "durationDays": 0.25,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-renal-colic-top3",
+          "severity": "critical",
+          "match": [
+            "renal colic",
+            "urolith",
+            "ureteric",
+            "nephrolith",
+            "calcul"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "eau-urolith-2024"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ultrasound-first",
+          "severity": "critical",
+          "match": [
+            "ultrasound",
+            "uss",
+            "re:\\bus\\b",
+            "mri"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-ct-first",
+          "severity": "quality",
+          "match": [
+            "ct kub",
+            "re:\\bct\\b",
+            "ctu",
+            "computed tomography"
+          ],
+          "unless": [
+            "avoid",
+            "pregnan",
+            "last resort",
+            "if us",
+            "only if",
+            "if mri"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "note": "EAU 2024: ultrasound first, MRI second, low-dose CT as a last resort in pregnancy.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE seeds \"CT KUB (non-contrast)\" (renal_colic) and \"CT abdomen/pelvis with IV contrast\" (appendicitis) as urgent orders in a 26-week pregnancy.",
+          "proposedFix": "Do not seed ionising imaging when pregnant (HpiTab.seedInvestigationsFromPane); prefer the USS KUB line."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-obstetric",
+          "severity": "critical",
+          "match": [
+            "obstetric",
+            "fetal",
+            "foetal",
+            "ctg",
+            "cardiotocograph",
+            "maternity",
+            "midwif"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No obstetric review; the β-hCG/ectopic prompt fires instead.",
+          "proposedFix": "When pregnancy is recorded, add an obstetric-review / fetal-monitoring action to every emergency prompt and strip NSAIDs from protocol medications."
+        },
+        {
+          "id": "mgmt-paracetamol-opioid",
+          "severity": "quality",
+          "match": [
+            "paracetamol",
+            "morphine",
+            "opioid"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line.",
+          "proposedFix": "Map pregnancy-coded ureteric colic (O26.8 with N20) to the renal colic protocol with a pregnancy branch: paracetamol/opioid, no NSAID, ultrasound first."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-pregnancy",
+          "severity": "critical",
+          "match": [
+            "re:ibuprofen \\d",
+            "re:diclofenac \\d",
+            "re:naproxen \\d",
+            "re:ketorolac",
+            "re:\\bnsaid\\b[^.;\\n]{0,30}(first|analges)",
+            "re:diclofenac[^.;\\n]{0,20}(im|pr|first)"
+          ],
+          "unless": [
+            "avoid nsaid",
+            "avoid in pregnancy",
+            "not in pregnancy",
+            "contraindicated in pregnancy",
+            "hold nsaid",
+            "stop nsaid",
+            "do not give"
+          ],
+          "guidelineRefs": [
+            "fda-nsaid-2020",
+            "eau-urolith-2024"
+          ],
+          "note": "26 weeks: NSAIDs are avoided (FDA 2020; EAU: contraindicated in the third trimester).",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-ercp",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "whipple"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "note": "A dilated ureter is not a dilated bile duct: no biliary indication for ERCP in this pregnant patient.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: \"Dilated proximal ureter\" in the ultrasound report matches the dilated-CBD rule (any \"dilated\"): MRCP, \"ERCP — therapeutic\", CA 19-9 and \"HPB surgical review — Whipple / Hartmann's\" are offered to a pregnant woman with hydronephrosis.",
+          "proposedFix": "Require \"CBD\"/\"bile duct\" in the dilated-CBD rule (hasRadResult) and parse the organ, not the word \"dilated\"."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-urolith-2024",
+      "name": "EAU Guidelines on Urolithiasis",
+      "year": 2024,
+      "section": "Renal colic: NSAIDs first-line analgesia (caution in reduced renal function); low-dose non-contrast CT to confirm; pregnancy: ultrasound first-line, MRI second-line, low-dose CT last resort; medical expulsive therapy (alpha-blocker) for distal ureteric stones >5 mm; obstructed infected kidney: urgent decompression (percutaneous nephrostomy or retrograde ureteral stent) with antibiotics, urine and blood cultures, definitive stone treatment delayed until infection resolved; anuria / obstructed solitary kidney: urgent decompression",
+      "citation": "Skolarikos A, Jung H, Neisius A, et al. EAU Guidelines on Urolithiasis. EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    },
+    {
+      "id": "fda-nsaid-2020",
+      "name": "FDA Drug Safety Communication — avoid NSAIDs in pregnancy at 20 weeks or later",
+      "year": 2020,
+      "section": "NSAIDs at about 20 weeks of gestation or later can cause fetal renal dysfunction and oligohydramnios; avoid unless specifically advised (low-dose aspirin excepted)",
+      "citation": "US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "Pregnancy changes imaging (ultrasound, then MRI) and analgesia (no NSAIDs); obstetric review (EAU 2024).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

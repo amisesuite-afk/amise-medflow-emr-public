@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "stroke-acute-fast-positive",
+  "condition": "Acute ischaemic stroke",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "FAST positive within the thrombolysis window",
+  "summary": "69-year-old man with AF (not anticoagulated): sudden right facial droop, right arm weakness and dysphasia 75 min ago; BP 182/98, glucose 6.8, NIHSS 11.",
+  "tags": [
+    "neuro",
+    "stroke",
+    "do-not-miss",
+    "time-critical"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 69,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 86
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Sudden weakness of right arm and slurred speech",
+    "hpi": "Seventy-five minutes ago at breakfast his wife noticed a right facial droop, right arm weakness and difficulty finding words, all starting suddenly. Known atrial fibrillation, declined anticoagulation. Hypertension. No headache, no head injury, no seizure.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ]
+    },
+    "symptoms": [
+      "facial weakness",
+      "limb weakness",
+      "speech difficulty",
+      "word-finding difficulty"
+    ],
+    "negatives": [
+      "headache",
+      "seizure",
+      "head injury",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Alert. Pulse 96/min irregularly irregular, BP 182/98, RR 16, temperature 36.8°C, SpO2 97%.",
+      "neuro": "Right facial droop sparing the forehead, right arm drift with power 2/5, right leg 4/5, expressive dysphasia. NIHSS 11. Capillary glucose 6.8.",
+      "cardiovascular": "Irregularly irregular pulse, no murmur."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 182,
+        "diastolicBp": 98,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 6.8,
+        "weightKg": 86
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 6.8,
+        "unit": "mmol/L",
+        "minutesAgo": 5
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 140,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 92,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 240,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Atrial fibrillation (not anticoagulated)",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "AF rate control"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute ischaemic stroke (left MCA territory), within the thrombolysis window",
+      "icd10": "I63.9",
+      "assessmentText": "Acute left MCA stroke, onset 75 minutes ago, NIHSS 11, AF: immediate non-contrast CT head and CT angiography, thrombolysis / thrombectomy assessment by the stroke team."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "facial weakness",
+          "limb weakness",
+          "speech difficulty",
+          "word-finding difficulty"
+        ],
+        "durationDays": 0.05
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-stroke",
+          "severity": "critical",
+          "match": [
+            "stroke",
+            "cerebrovascular",
+            "re:\\btia\\b",
+            "re:\\bcva\\b",
+            "cerebral infarct",
+            "transient ischaemic"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference ranks stroke/TIA #1.",
+          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+        },
+        {
+          "id": "mnm-stroke-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "stroke",
+            "cerebrovascular",
+            "re:\\btia\\b",
+            "re:\\bcva\\b",
+            "cerebral infarct",
+            "transient ischaemic"
+          ],
+          "source": "web.symptomInference",
+          "guidelineRefs": [
+            "nice-ng128"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng128"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "unverified": [
+          "ios"
+        ],
+        "knownGapNote": "Web: Triage \"priority_24_48h\" (score 19) for a FAST-positive stroke at 75 minutes: RED_FLAGS has no neurological rule; facial weakness / limb weakness / speech chips add nothing.",
+        "proposedFix": "Add neurological red-flag rules to lib/triage-engine rules.ts (sudden focal weakness/facial droop/speech disturbance, thunderclap headache, neck stiffness with fever/non-blanching rash, saddle anaesthesia with bladder/bowel change, new leg weakness with known cancer) → emergency."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-stroke",
+          "severity": "critical",
+          "match": [
+            "stroke",
+            "re:\\bfast\\b",
+            "cerebrovascular"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Only the SBP 182 \"hypertensive urgency\" prompt fires, and it offers oral amlodipine.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-head",
+          "severity": "critical",
+          "match": [
+            "ct head",
+            "ct brain",
+            "re:\\bct\\b[^.;\\n]{0,20}(head|brain)",
+            "non-contrast ct",
+            "mri brain",
+            "ct angiogra",
+            "cta"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No CT head (I63 has no protocol; no neurological prompts).",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-reperfusion",
+          "severity": "critical",
+          "match": [
+            "thrombolys",
+            "alteplase",
+            "tenecteplase",
+            "thrombectomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No thrombolysis / thrombectomy / stroke team.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        },
+        {
+          "id": "mgmt-stroke-unit",
+          "severity": "quality",
+          "match": [
+            "stroke unit",
+            "stroke team",
+            "hyperacute stroke",
+            "stroke specialist",
+            "neurology review"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No stroke team or stroke unit; \"focal neurology (stroke)\" appears only as an end-organ check inside the hypertension prompt.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        },
+        {
+          "id": "mgmt-swallow-screen",
+          "severity": "quality",
+          "match": [
+            "swallow"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No swallow screen.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-aspirin-before-imaging",
+          "severity": "critical",
+          "match": [
+            "re:aspirin[^.;\\n]{0,10}300"
+          ],
+          "unless": [
+            "after",
+            "haemorrhage excluded",
+            "24 h",
+            "24h",
+            "once ct"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "note": "NICE NG128: aspirin 300 mg only once haemorrhage is excluded (24 h after thrombolysis).",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng128",
+      "name": "NICE NG128 — Stroke and transient ischaemic attack in over 16s: diagnosis and initial management",
+      "year": 2019,
+      "section": "1.1 Rapid recognition (FAST); exclude hypoglycaemia as the cause of sudden-onset neurological symptoms; suspected TIA: aspirin 300 mg immediately unless contraindicated and specialist assessment within 24 h; do not use scoring systems (ABCD2) to assess TIA risk; 1.2 imaging: non-enhanced CT immediately if thrombolysis/thrombectomy indicated, on anticoagulants or bleeding tendency; thrombolysis with alteplase within 4.5 h; thrombectomy; aspirin 300 mg after haemorrhage excluded; admit to a stroke unit",
+      "citation": "National Institute for Health and Care Excellence. Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. NICE guideline NG128. London: NICE; 2019 (updated 2022).",
+      "verified": false
+    }
+  ],
+  "rationale": "Time-critical: NICE NG128 recognition, immediate CT, thrombolysis/thrombectomy, stroke unit.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

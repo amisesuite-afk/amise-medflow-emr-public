@@ -1,0 +1,344 @@
+{
+  "schemaVersion": 1,
+  "id": "urinary-retention-acute-bph",
+  "condition": "Acute urinary retention",
+  "category": "urology",
+  "permutationOf": null,
+  "permutationLabel": "Typical: BPE, precipitated by cold remedy",
+  "summary": "74-year-old man with LUTS, unable to pass urine for 12 h after a pseudoephedrine/chlorphenamine cold remedy; tender bladder, 1100 mL on scan.",
+  "tags": [
+    "retention",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Unable to pass urine since last night",
+    "hpi": "Years of poor stream and getting up 3 times a night. Took an over-the-counter cold remedy (pseudoephedrine and chlorphenamine) for 2 days. Unable to pass urine for 12 hours, painful lower abdomen. No back pain, no leg symptoms, no numbness.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Suprapubic"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "urinary retention",
+      "suprapubic pain",
+      "poor urinary stream",
+      "hesitancy",
+      "nocturia"
+    ],
+    "negatives": [
+      "back pain",
+      "saddle numbness",
+      "leg weakness",
+      "haematuria",
+      "fever"
+    ],
+    "exam": {
+      "general": "Distressed. Pulse 100/min, BP 162/90, RR 18, temperature 36.8°C.",
+      "abdomen": "Tender, dull, palpable bladder to midway to the umbilicus. PR: smooth, symmetrically enlarged prostate; normal anal tone and perianal sensation."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 100,
+        "systolicBp": 162,
+        "diastolicBp": 90,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 78
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Not obtainable before catheterisation",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Bladder scan",
+        "modality": "US",
+        "result": "1100 mL residual.",
+        "minutesAgo": 10,
+        "region": "Bladder"
+      }
+    ],
+    "comorbidities": [
+      "Lower urinary tract symptoms (benign prostatic enlargement)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Pseudoephedrine / chlorphenamine (cold remedy)",
+        "dose": "1 tablet",
+        "frequency": "QDS",
+        "indication": "Cold"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired.",
+    "confirmedDiagnosis": {
+      "name": "Acute urinary retention (BPE, precipitated by decongestant/antihistamine)",
+      "icd10": "R33.8",
+      "paneDiseaseId": "urinary_retention",
+      "assessmentText": "Painful acute urinary retention (1100 mL) in BPE precipitated by pseudoephedrine/chlorphenamine; catheterise, alpha-blocker, TWOC."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "onset": "Last night",
+          "site": "Suprapubic",
+          "character": "Pressure",
+          "associated": "Cannot pass urine",
+          "timing": "Constant",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "urinary retention",
+          "suprapubic pain",
+          "poor urinary stream",
+          "hesitancy",
+          "nocturia"
+        ],
+        "durationDays": 0.5,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-retention-top3",
+          "severity": "critical",
+          "match": [
+            "retention"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eau-luts-2024",
+            "nice-cg97"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE applies only suprapubic_pain; top 3 inguinal hernia, GORD, cholecystitis. The \"urinary retention\" chip does not reach PANE (urinary_retention_symptoms is never set by socrates-to-features). The R33 protocol is still used from the ICD.",
+          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "eau-luts-2024",
+          "nice-cg97"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-renal-function",
+          "severity": "quality",
+          "match": [
+            "creatinine",
+            "u&e",
+            "renal function",
+            "egfr"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024",
+            "nice-cg97"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-catheterise",
+          "severity": "critical",
+          "match": [
+            "catheter",
+            "catheteris"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024",
+            "nice-cg97"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-alpha-blocker",
+          "severity": "quality",
+          "match": [
+            "tamsulosin",
+            "alpha-blocker",
+            "alpha blocker",
+            "alfuzosin"
+          ],
+          "guidelineRefs": [
+            "nice-cg97"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-twoc",
+          "severity": "quality",
+          "match": [
+            "twoc",
+            "trial without catheter",
+            "trial of void"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024",
+            "nice-cg97"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-stop-precipitant",
+          "severity": "quality",
+          "match": [
+            "decongestant",
+            "pseudoephedrine",
+            "antihistamine",
+            "anticholinergic",
+            "chlorphenamine",
+            "precipita"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy",
+            "re:\\blaparotomy\\b",
+            "bowel obstruction — operative plan"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024",
+            "nice-cg97"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy — consent",
+            "emergency laparoscopic appendicectomy"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024",
+            "nice-cg97"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-luts-2024",
+      "name": "EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention)",
+      "year": 2024,
+      "section": "Acute urinary retention: bladder decompression by urethral (or suprapubic) catheter; alpha-blocker before trial without catheter; renal function; identify precipitants (anticholinergics, constipation)",
+      "citation": "Gravas S, Gacci M, Gratzke C, et al. EAU Guidelines on Management of Non-Neurogenic Male LUTS. EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg97",
+      "name": "NICE CG97 — Lower urinary tract symptoms in men: management",
+      "year": 2010,
+      "section": "Acute urinary retention: offer an alpha blocker before catheter removal; chronic retention with renal impairment (high-pressure chronic retention): catheterise and refer to urology before bladder outflow surgery",
+      "citation": "National Institute for Health and Care Excellence. Lower urinary tract symptoms in men: management. Clinical guideline CG97. London: NICE; 2010 (updated 2015).",
+      "verified": false
+    }
+  ],
+  "rationale": "Catheterise, alpha-blocker before TWOC, stop the precipitant (EAU 2024, NICE CG97).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

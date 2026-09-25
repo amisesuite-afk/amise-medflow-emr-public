@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "id": "urosepsis-elderly-immunosuppressed-catheter",
+  "condition": "Urosepsis (catheter-associated) with septic shock",
+  "category": "urology",
+  "permutationOf": "pyelonephritis-adult-female",
+  "permutationLabel": "Elderly, immunosuppressed (steroid + methotrexate), long-term catheter",
+  "summary": "78-year-old man with a long-term catheter on prednisolone and methotrexate; confusion, rigors, BP 86/50, HR 124, lactate 4.1, cloudy catheter urine.",
+  "tags": [
+    "infection",
+    "elderly",
+    "immunosuppressed",
+    "sepsis",
+    "renal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 78,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "New confusion and shivering",
+    "hpi": "Long-term urethral catheter for 2 years (failed TWOC). Rheumatoid arthritis on methotrexate and prednisolone 7.5 mg daily for years. Since this morning shaking chills, new confusion, catheter draining cloudy, offensive urine. Carer reports he has hardly passed any urine into the bag today.",
+    "symptoms": [
+      "confusion",
+      "rigors",
+      "fever",
+      "malaise"
+    ],
+    "negatives": [
+      "cough",
+      "diarrhoea",
+      "abdominal pain",
+      "headache"
+    ],
+    "exam": {
+      "general": "Drowsy, confused, mottled knees. Pulse 124/min, BP 86/50, RR 26, temperature 38.4°C, SpO2 94% on air.",
+      "abdomen": "Soft, mild suprapubic tenderness, no peritonism. Catheter bag: 40 mL cloudy urine.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 124,
+        "systolicBp": 86,
+        "diastolicBp": 50,
+        "respiratoryRate": 26,
+        "temperatureC": 38.4,
+        "spo2": 94,
+        "avpu": "C",
+        "onSupplementalO2": false,
+        "weightKg": 76
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 21.0,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 210,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 190,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick (catheter)",
+        "resultText": "Nitrite positive, leucocytes 3+, blood 2+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 7.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Rheumatoid arthritis (immunosuppressed)",
+      "Chronic urinary retention with long-term catheter",
+      "Baseline creatinine 95 µmol/L"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Methotrexate",
+        "dose": "15 mg",
+        "frequency": "weekly",
+        "indication": "Rheumatoid arthritis"
+      },
+      {
+        "drug": "Prednisolone",
+        "dose": "7.5 mg",
+        "frequency": "OD",
+        "indication": "Rheumatoid arthritis"
+      },
+      {
+        "drug": "Folic acid",
+        "dose": "5 mg",
+        "frequency": "weekly"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with carer support.",
+    "confirmedDiagnosis": {
+      "name": "Urosepsis with septic shock (catheter-associated UTI) in an immunosuppressed patient",
+      "icd10": "N39.0",
+      "assessmentText": "Catheter-associated urinary sepsis with hypotension, lactate 4.1 and AKI; on prednisolone and methotrexate."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "confusion",
+          "rigors",
+          "fever",
+          "malaise"
+        ],
+        "durationDays": 0.5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-urosepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "urosepsis",
+            "pyelonephritis",
+            "urinary tract infection",
+            "re:\\buti\\b"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE top 3 inguinal hernia, GORD, cholecystitis (no features; no sepsis or urosepsis node). Symptom inference ranks sepsis #1.",
+          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng51"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-news2",
+          "severity": "quality",
+          "score": "news2",
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-culture",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-urine-from-new-catheter",
+          "severity": "quality",
+          "match": [
+            "re:(change|replace|new)[^.;\\n]{0,40}catheter",
+            "csu",
+            "catheter specimen",
+            "urine culture"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: The UTI protocol asks for \"MSU C&S (mid-stream urine)\" in a catheterised man; the catheter change appears only as plan text (\"CAUTI: remove or change catheter\").",
+          "proposedFix": "When a catheter is recorded, ask for a catheter specimen after changing the catheter."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-antibiotics",
+          "severity": "critical",
+          "match": [
+            "re:\\biv\\b[^.;\\n]{0,60}(antibiotic|piperacillin|meropenem|ceftriaxone|gentamicin|co-amoxiclav|cefuroxime|amikacin)",
+            "broad-spectrum",
+            "ceftriaxone",
+            "piperacillin",
+            "meropenem",
+            "gentamicin",
+            "cefuroxime"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-fluid-bolus",
+          "severity": "critical",
+          "match": [
+            "fluid bolus",
+            "30ml/kg",
+            "30 ml/kg",
+            "500 ml",
+            "500ml",
+            "fluid resuscitation"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-steroid-cover",
+          "severity": "critical",
+          "match": [
+            "stress dose",
+            "steroid cover",
+            "hydrocortisone",
+            "sick day",
+            "re:doubl[^.;\\n]{0,20}(dose|steroid|prednisolone)"
+          ],
+          "guidelineRefs": [
+            "sfe-steroid-2020"
+          ],
+          "note": "Prednisolone 7.5 mg for years: adrenal crisis risk in septic shock; parenteral hydrocortisone.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Prednisolone is not recognised: no hydrocortisone / steroid-cover action in septic shock.",
+          "proposedFix": "Add a steroid-dependence rule (prednisolone ≥5 mg or equivalent): parenteral hydrocortisone in sepsis/surgery (SfE/AAGBI/RCP 2020)."
+        },
+        {
+          "id": "mgmt-hold-methotrexate",
+          "severity": "quality",
+          "match": [
+            "re:(hold|withhold|stop|omit)[^.;\\n]{0,40}methotrexate"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Methotrexate is not mentioned.",
+          "proposedFix": "Add immunosuppressant review to the sepsis prompt."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy",
+            "re:\\blaparotomy\\b",
+            "bowel obstruction — operative plan"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "note": "Urinary source with a soft abdomen: no laparotomy.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng51",
+      "name": "NICE NG51 — Suspected sepsis: recognition, diagnosis and early management",
+      "year": 2024,
+      "section": "High-risk criteria (new confusion, SBP ≤90, HR >130, RR ≥25, lactate); blood cultures and broad-spectrum IV antibiotics within 1 hour for high risk; IV fluid bolus; lactate; senior review; source control",
+      "citation": "National Institute for Health and Care Excellence. Suspected sepsis in people aged 16 or over: recognition, assessment and early management. NICE guideline NG51 (updated 2024). London: NICE.",
+      "verified": false
+    },
+    {
+      "id": "sfe-steroid-2020",
+      "name": "Guidance for the prevention and emergency management of adult patients with adrenal insufficiency (Society for Endocrinology / AAGBI / RCP)",
+      "year": 2020,
+      "section": "Patients on long-term glucocorticoids (e.g. prednisolone ≥5 mg daily for ≥4 weeks) are at risk of adrenal crisis; during acute illness or sepsis give parenteral hydrocortisone / increased steroid cover",
+      "citation": "Simpson H, Tomlinson J, Wass J, Dean J, Arlt W. Guidance for the prevention and emergency management of adult patients with adrenal insufficiency. Clin Med (Lond). 2020;20:371–378.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "High-risk sepsis (NICE NG51): cultures, IV antibiotics and fluids within the hour; steroid-dependent patients need hydrocortisone cover.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

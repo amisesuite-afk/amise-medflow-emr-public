@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "id": "aki-prerenal-diarrhoea-acei-nsaid",
+  "condition": "Acute kidney injury (pre-renal, nephrotoxic drugs)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "Elderly, volume depletion, ACE inhibitor + NSAID + diuretic",
+  "summary": "74-year-old woman with 4 days of diarrhoea and vomiting still taking ramipril, furosemide, metformin and ibuprofen; BP 96/58, creatinine 248 (baseline 96).",
+  "tags": [
+    "aki",
+    "elderly",
+    "drug-induced",
+    "renal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Diarrhoea and vomiting, dizzy",
+    "hpi": "Four days of diarrhoea and vomiting (grandchildren had gastroenteritis). Kept taking all her tablets including ramipril, furosemide, metformin and ibuprofen for knee arthritis. Dizzy on standing, passing little urine.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Cramping"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Change in bowel habit"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "diarrhoea",
+      "vomiting",
+      "dizziness",
+      "dehydration"
+    ],
+    "negatives": [
+      "rectal bleeding",
+      "fever",
+      "rash",
+      "haematuria"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes, reduced skin turgor. Pulse 104/min, BP 96/58 (usual 150/80), RR 18, temperature 37.2°C.",
+      "abdomen": "Soft, non-tender, active bowel sounds. Bladder not palpable."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 96,
+        "diastolicBp": 58,
+        "respiratoryRate": 18,
+        "temperatureC": 37.2,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 68
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 248,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 22.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 134,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 19,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 9.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 22,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Protein trace, blood negative, leucocytes negative, nitrite negative",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Heart failure (EF 45%)",
+      "Type 2 diabetes mellitus",
+      "Osteoarthritis",
+      "Baseline creatinine 96 µmol/L"
+    ],
+    "surgicalHistory": [
+      "Total knee replacement"
+    ],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Furosemide",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Ibuprofen",
+        "dose": "400 mg",
+        "frequency": "TDS",
+        "indication": "Knee pain"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with husband.",
+    "confirmedDiagnosis": {
+      "name": "Acute kidney injury stage 2 (pre-renal, gastroenteritis, ACE inhibitor + NSAID + diuretic)",
+      "icd10": "N17.9",
+      "assessmentText": "AKI stage 2 (creatinine 248 from baseline 96) from volume depletion with ramipril, furosemide and ibuprofen continued; metformin also continued."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "socratesAnswers": {
+          "onset": "4 days",
+          "site": "Generalised",
+          "character": "Cramping",
+          "associated": "Diarrhoea, vomiting, dizzy, little urine",
+          "timing": "Intermittent",
+          "relief": "Nothing",
+          "severity": "2/10"
+        },
+        "symptoms": [
+          "diarrhoea",
+          "vomiting",
+          "dizziness",
+          "dehydration"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Food",
+            "After meals"
+          ],
+          "dizziness": [
+            "Presyncope on standing",
+            "On standing"
+          ]
+        },
+        "durationDays": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-aki",
+          "severity": "critical",
+          "match": [
+            "acute kidney",
+            "re:\\baki\\b",
+            "renal failure",
+            "renal impairment"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE has no node for this condition (surgical diseases only); top 3 cholecystitis, GORD, peptic ulcer. The AKI (creatinine) prompt fires.",
+          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+        },
+        {
+          "id": "mnm-aki-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "acute kidney",
+            "re:\\baki\\b"
+          ],
+          "source": "web.symptomInference",
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: Symptom inference ranks gastroenteritis, pyloric stenosis, cholecystitis, BPPV and DKA; AKI is not in its top 5 (it reads chips, not creatinine).",
+          "proposedFix": "Feed creatinine against baseline into symptom inference."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "kdigo-aki-2012",
+          "nice-ng148"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-aki",
+          "severity": "critical",
+          "match": [
+            "acute kidney",
+            "aki",
+            "renal impairment",
+            "creatinine"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-urinalysis",
+          "severity": "quality",
+          "match": [
+            "urinalysis",
+            "urine dipstick"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "note": "NICE NG148: urinalysis for everyone with AKI. Graded as management because the web prompt adds it as a plan line.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-stop-acei",
+          "severity": "critical",
+          "match": [
+            "re:(stop|hold|withhold|omit|suspend)[^.;\\n]{0,40}(ace|ramipril|arb|lisinopril|losartan)"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-stop-nsaid",
+          "severity": "critical",
+          "match": [
+            "re:(stop|hold|withhold|omit|avoid)[^.;\\n]{0,40}(nsaid|ibuprofen|diclofenac|naproxen)"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-stop-diuretic",
+          "severity": "quality",
+          "match": [
+            "re:(stop|hold|withhold|omit)[^.;\\n]{0,40}(diuretic|furosemide)"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: The AKI prompt holds \"NSAIDs, ACE-I, ARBs, metformin\" but not diuretics (furosemide continues).",
+          "proposedFix": "Add diuretics to the AKI hold list (NICE NG148)."
+        },
+        {
+          "id": "mgmt-hold-metformin",
+          "severity": "quality",
+          "match": [
+            "re:(hold|stop|withhold|omit)[^.;\\n]{0,60}metformin"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-iv-fluids",
+          "severity": "critical",
+          "match": [
+            "iv fluid",
+            "fluid challenge",
+            "crystalloid",
+            "0.9%",
+            "hartmann's",
+            "rehydrat"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "kdigo-aki-2012",
+      "name": "KDIGO Clinical Practice Guideline for Acute Kidney Injury",
+      "year": 2012,
+      "section": "2.1 Definition and staging (creatinine rise ≥26.5 µmol/L in 48 h or ≥1.5× baseline in 7 days, or urine output <0.5 mL/kg/h for 6 h; stage by creatinine ratio/urine output); 3.1 fluids and haemodynamic management; discontinue nephrotoxic agents; evaluate cause",
+      "citation": "Kidney Disease: Improving Global Outcomes (KDIGO) Acute Kidney Injury Work Group. KDIGO Clinical Practice Guideline for Acute Kidney Injury. Kidney Int Suppl. 2012;2:1–138.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "KDIGO stage 2 AKI. NICE NG148: urinalysis, fluids, stop ACE inhibitor, NSAID and diuretic, review metformin.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "id": "renal-colic-typical",
+  "condition": "Renal colic (ureteric calculus)",
+  "category": "urology",
+  "permutationOf": null,
+  "permutationLabel": "Typical, afebrile, 5 mm distal stone",
+  "summary": "36-year-old man with sudden left loin-to-groin colic, vomiting and haematuria; CT KUB 5 mm left VUJ stone, afebrile, creatinine 94.",
+  "tags": [
+    "renal",
+    "stone"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 36,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Left loin pain coming in waves",
+    "hpi": "Sudden severe left loin pain 3 hours ago, coming in waves and moving down into the left groin. Cannot keep still. Vomited once. No fever. Similar episode 2 years ago that passed on its own.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Loin",
+        "Left side"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Haematuria"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "renal colic",
+      "loin pain",
+      "haematuria",
+      "vomiting",
+      "abdominal pain"
+    ],
+    "negatives": [
+      "fever",
+      "dysuria",
+      "diarrhoea"
+    ],
+    "exam": {
+      "general": "Restless, cannot lie still. Pulse 96/min, BP 146/88, RR 18, temperature 36.9°C.",
+      "abdomen": "Soft, mild left flank tenderness, no peritonism, no pulsatile mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 146,
+        "diastolicBp": 88,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 82
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Blood 3+, nitrite negative, leucocytes negative",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 94,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 10.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 8,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT KUB (low-dose, non-contrast)",
+        "modality": "CT",
+        "result": "5 mm calculus at the left vesicoureteric junction with mild left hydroureteronephrosis. No other calculi.",
+        "minutesAgo": 45,
+        "region": "KUB"
+      }
+    ],
+    "comorbidities": [
+      "Previous renal colic"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Construction worker; works outdoors in the heat.",
+    "confirmedDiagnosis": {
+      "name": "Left ureteric colic — 5 mm distal ureteric calculus",
+      "icd10": "N20.1",
+      "paneDiseaseId": "renal_colic",
+      "assessmentText": "Left ureteric colic from a 5 mm VUJ calculus, afebrile, normal renal function."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "onset": "Sudden, 3 hours ago",
+          "site": "Left loin / flank",
+          "character": "Colicky, comes in waves",
+          "radiation": "Left groin",
+          "associated": "Vomiting, blood in urine",
+          "timing": "Intermittent",
+          "relief": "Nothing",
+          "severity": "9/10"
+        },
+        "symptoms": [
+          "renal colic",
+          "loin pain",
+          "haematuria",
+          "vomiting",
+          "abdominal pain"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "LLQ",
+            "Sudden",
+            "< 6 hours",
+            "Colicky",
+            "Loin",
+            "Severe (7–9)",
+            "Vomiting",
+            "Intermittent / colicky"
+          ]
+        },
+        "durationDays": 0.15,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-renal-colic-top3",
+          "severity": "critical",
+          "match": [
+            "renal colic",
+            "urolith",
+            "ureteric",
+            "nephrolith",
+            "calcul"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "quality",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "eau-urolith-2024"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ncct",
+          "severity": "quality",
+          "match": [
+            "ct kub",
+            "non-contrast ct",
+            "ncct",
+            "re:\\bct\\b[^.;\\n]{0,30}(kub|urinary|non-contrast|unenhanced)"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-urinalysis",
+          "severity": "quality",
+          "match": [
+            "urinalysis",
+            "urine dipstick",
+            "msu"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "inv-renal-function",
+          "severity": "quality",
+          "match": [
+            "creatinine",
+            "u&e",
+            "renal function",
+            "egfr"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-nsaid-analgesia",
+          "severity": "quality",
+          "match": [
+            "nsaid",
+            "diclofenac",
+            "ibuprofen",
+            "naproxen",
+            "ketorolac"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "note": "EAU: NSAIDs first-line for renal colic when not contraindicated.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-met-alpha-blocker",
+          "severity": "quality",
+          "match": [
+            "tamsulosin",
+            "alpha-blocker",
+            "alpha blocker",
+            "medical expulsive"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy — consent",
+            "emergency laparoscopic appendicectomy"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy",
+            "re:\\blaparotomy\\b",
+            "bowel obstruction — operative plan"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "note": "Afebrile renal colic with a soft abdomen: no laparotomy or peritonitis antibiotics.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-urolith-2024",
+      "name": "EAU Guidelines on Urolithiasis",
+      "year": 2024,
+      "section": "Renal colic: NSAIDs first-line analgesia (caution in reduced renal function); low-dose non-contrast CT to confirm; pregnancy: ultrasound first-line, MRI second-line, low-dose CT last resort; medical expulsive therapy (alpha-blocker) for distal ureteric stones >5 mm; obstructed infected kidney: urgent decompression (percutaneous nephrostomy or retrograde ureteral stent) with antibiotics, urine and blood cultures, definitive stone treatment delayed until infection resolved; anuria / obstructed solitary kidney: urgent decompression",
+      "citation": "Skolarikos A, Jung H, Neisius A, et al. EAU Guidelines on Urolithiasis. EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base renal colic: NSAID analgesia, low-dose NCCT, medical expulsive therapy for a distal stone (EAU 2024).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

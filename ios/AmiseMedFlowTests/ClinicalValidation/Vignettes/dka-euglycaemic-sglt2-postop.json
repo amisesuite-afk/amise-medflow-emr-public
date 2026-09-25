@@ -1,0 +1,545 @@
+{
+  "schemaVersion": 1,
+  "id": "dka-euglycaemic-sglt2-postop",
+  "condition": "Euglycaemic diabetic ketoacidosis (SGLT2 inhibitor)",
+  "category": "general-medicine",
+  "permutationOf": "dka-type1-young-typical",
+  "permutationLabel": "Type 2 diabetes on empagliflozin, post-operative day 2, glucose 10.2",
+  "summary": "58-year-old man with type 2 diabetes on empagliflozin, day 2 after laparoscopic cholecystectomy, vomiting and tachypnoea; glucose 10.2 but ketones 5.1, pH 7.19.",
+  "tags": [
+    "diabetes",
+    "sglt2",
+    "post-operative",
+    "do-not-miss",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 94
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 2
+    },
+    "chiefComplaint": "Nausea, vomiting and fast breathing after gallbladder operation",
+    "hpi": "Day 2 after elective laparoscopic cholecystectomy. Type 2 diabetes on metformin and empagliflozin; empagliflozin was given on the morning of surgery and continued on the ward. Eating very little since the operation. Since last night nausea, vomiting, malaise and breathlessness. Port sites comfortable. Capillary glucose 10.2 mmol/L, so the ward team did not suspect a diabetic emergency.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "nausea",
+      "vomiting",
+      "shortness of breath",
+      "malaise",
+      "anorexia"
+    ],
+    "negatives": [
+      "fever",
+      "chest pain",
+      "calf pain",
+      "wound discharge"
+    ],
+    "exam": {
+      "general": "Tired, dry mucous membranes, deep rapid breathing, ketotic breath. Pulse 112/min, BP 118/70, RR 26, temperature 37.1°C, SpO2 97% on air.",
+      "abdomen": "Port sites clean and dry. Abdomen soft, mild epigastric tenderness, no distension. Bowel sounds present.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 26,
+        "temperatureC": 37.1,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 10.2,
+        "weightKg": 94
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 10.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ketones",
+        "name": "Blood ketones",
+        "value": 5.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ph",
+        "name": "Venous pH",
+        "value": 7.19,
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 11,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 4.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 137,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 96,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 38,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 12,
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 62,
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension",
+      "Obesity"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic cholecystectomy 2 days ago (symptomatic gallstones)"
+    ],
+    "medications": [
+      {
+        "drug": "Empagliflozin",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS",
+        "indication": "Post-operative analgesia"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Taxi driver. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Euglycaemic diabetic ketoacidosis (SGLT2 inhibitor associated)",
+      "icd10": "E11.10",
+      "assessmentText": "Euglycaemic DKA on day 2 after laparoscopic cholecystectomy, associated with empagliflozin continued peri-operatively and poor oral intake (glucose 10.2, ketones 5.1, pH 7.19)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "socratesAnswers": {
+          "onset": "Last night",
+          "site": "Epigastric",
+          "character": "Dull",
+          "associated": "Vomiting, nausea, not eating, breathless",
+          "timing": "Constant",
+          "relief": "Nothing",
+          "severity": "2/10"
+        },
+        "symptoms": [
+          "nausea",
+          "vomiting",
+          "shortness of breath",
+          "malaise",
+          "anorexia",
+          "post-op nausea"
+        ],
+        "symptomDetails": {
+          "nausea": [
+            "Severe — unable to eat",
+            "Vomiting"
+          ],
+          "vomiting": [
+            "Food",
+            "Multiple episodes daily"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-dka",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "dka"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "note": "Glucose is only 10.2: an engine that keys DKA on glucose will miss it.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE has no node for this condition (surgical diseases only); top 3 inguinal hernia, cholecystitis, GORD. Symptom inference does not rank DKA in its top 5 either (glucose 10.2 is below its trigger).",
+          "proposedFix": "Add medical-emergency diseases to lib/pane-engine (or a separate medical-mimic layer) driven by labs/vitals/chips, or show the symptom-inference leader beside the PANE top 3 when PANE has no matching node."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "jbds-dka-2023",
+          "ada-hhc-2024",
+          "cpoc-diabetes-2022"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-ketoacidosis",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "dka",
+            "ketone"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "note": "The alarm must come from ketones/acidosis, not glucose.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Every DKA trigger keys on glucose (triage vital flag >20, prompt BGL >15, lab glucose >11). With glucose 10.2 and ketones 5.1 / pH 7.19 no DKA alarm appears; ketones and pH are not read.",
+          "proposedFix": "Trigger a DKA prompt on blood ketones ≥3.0 mmol/L or pH <7.3 / bicarbonate <15 at any glucose, and flag SGLT2 inhibitors (empagliflozin, dapagliflozin, canagliflozin) as a euglycaemic-DKA risk."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-gas",
+          "severity": "quality",
+          "match": [
+            "blood gas",
+            "abg",
+            "vbg",
+            "venous gas",
+            "re:\\bph\\b"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No blood gas is suggested: the ABG action sits in the BGL >15 prompt, which does not fire.",
+          "proposedFix": "Same as alarm-ketoacidosis."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ketone-monitoring",
+          "severity": "critical",
+          "match": [
+            "ketone"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "note": "Blood ketones diagnose and monitor DKA (JBDS). Graded as management because the web prompts add ketone testing as a plan line, not an investigation order.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No ketone action: the ketone lines belong to the glucose-triggered prompts.",
+          "proposedFix": "Same as alarm-ketoacidosis."
+        },
+        {
+          "id": "mgmt-stop-sglt2",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withhold|hold|omit|discontinu|suspend)[^.;\\n]{0,40}(sglt2|empagliflozin|gliflozin)",
+            "re:(sglt2|empagliflozin|gliflozin)[^.;\\n]{0,40}(stop|withh|hold|omit|discontinu|suspend)"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No output mentions the SGLT2 inhibitor; empagliflozin is not recognised by any rule.",
+          "proposedFix": "Add an SGLT2-inhibitor rule: stop/withhold when unwell or peri-operative, check ketones (CPOC, MHRA)."
+        },
+        {
+          "id": "mgmt-fixed-rate-insulin",
+          "severity": "critical",
+          "match": [
+            "fixed-rate",
+            "fixed rate",
+            "friii",
+            "0.1 units/kg"
+          ],
+          "unless": [
+            "hold",
+            "omit"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No insulin plan (glucose-triggered prompts only).",
+          "proposedFix": "Same as alarm-ketoacidosis."
+        },
+        {
+          "id": "mgmt-glucose-with-insulin",
+          "severity": "critical",
+          "match": [
+            "10% glucose",
+            "glucose 10%",
+            "10% dextrose",
+            "dextrose 10%",
+            "20% glucose",
+            "glucose 20%"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "note": "With glucose already <14 mmol/L, JBDS starts 10% glucose alongside the insulin infusion; insulin alone risks hypoglycaemia.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: No glucose-with-insulin plan. Even when the DKA prompt fires it offers insulin without 10% glucose.",
+          "proposedFix": "In the DKA prompt, add 10% glucose alongside the insulin infusion when glucose <14 mmol/L (always in euglycaemic DKA)."
+        },
+        {
+          "id": "mgmt-iv-fluids",
+          "severity": "quality",
+          "match": [
+            "0.9% sodium chloride",
+            "0.9% saline",
+            "0.9% nacl",
+            "sodium chloride 0.9%",
+            "crystalloid",
+            "iv fluid",
+            "hartmann's",
+            "fluid resuscitation",
+            "rehydrat"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy",
+            "re:\\blaparotomy\\b",
+            "bowel obstruction — operative plan"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "note": "Post-operative vomiting and tachypnoea from DKA must not drive a re-operation plan.",
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy — consent",
+            "emergency laparoscopic appendicectomy"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "ada-hhc-2024",
+            "cpoc-diabetes-2022"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "jbds-dka-2023",
+      "name": "JBDS-IP — The management of diabetic ketoacidosis in adults (current revision)",
+      "year": 2023,
+      "section": "Diagnosis (ketonaemia ≥3.0 mmol/L or ketonuria ≥2+, bicarbonate <15 mmol/L and/or venous pH <7.3, glucose >11 mmol/L or known diabetes); fixed-rate IV insulin infusion (0.1 units/kg/h); 0.9% sodium chloride; potassium replacement by serum level; continue long-acting insulin; add 10% glucose when glucose falls below 14 mmol/L; euglycaemic DKA with SGLT2 inhibitors (glucose may be normal)",
+      "citation": "Dhatariya KK; Joint British Diabetes Societies for Inpatient Care. The management of diabetic ketoacidosis in adults — an updated guideline from the Joint British Diabetes Society for Inpatient Care. Diabet Med. 2022;39:e14788 (JBDS-IP 02; edition/year to be confirmed against the current JBDS document).",
+      "verified": false
+    },
+    {
+      "id": "ada-hhc-2024",
+      "name": "Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS)",
+      "year": 2024,
+      "section": "DKA diagnosis (glucose or prior diabetes, ketones, pH/bicarbonate) including euglycaemic DKA with SGLT2 inhibitors; HHS diagnosis (marked hyperglycaemia, hyperosmolality, no significant ketoacidosis); IV fluids, insulin, potassium; search for precipitant",
+      "citation": "Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75.",
+      "verified": false
+    },
+    {
+      "id": "cpoc-diabetes-2022",
+      "name": "CPOC — Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery",
+      "year": 2022,
+      "section": "SGLT2 inhibitors: omit before surgery and restart only when eating and drinking normally; check blood ketones in unwell patients on SGLT2 inhibitors even when glucose is normal (euglycaemic DKA)",
+      "citation": "Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022).",
+      "verified": false
+    }
+  ],
+  "rationale": "Euglycaemic DKA is a known SGLT2-inhibitor complication after surgery. The diagnosis rests on ketones; treatment adds glucose to the insulin infusion from the start and stops the SGLT2 inhibitor (JBDS, ADA 2024, CPOC).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

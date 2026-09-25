@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "id": "renal-colic-solitary-kidney-anticoagulated",
+  "condition": "Obstructed solitary kidney (ureteric stone, anuria)",
+  "category": "urology",
+  "permutationOf": "renal-colic-typical",
+  "permutationLabel": "Solitary kidney, CKD 3b, anticoagulated (apixaban), anuric",
+  "summary": "64-year-old man with a solitary kidney, CKD 3b and AF on apixaban; 18 h of left colic, anuric for 10 h, creatinine 420, K 5.9; 7 mm ureteric stone.",
+  "tags": [
+    "renal",
+    "stone",
+    "ckd",
+    "anticoagulated",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 64,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Left loin pain and no urine for 10 hours",
+    "hpi": "Right nephrectomy 2014 for renal cancer; CKD 3b (baseline creatinine 150). Atrial fibrillation on apixaban. Eighteen hours of left loin-to-groin colic; has not passed urine for 10 hours. No fever.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Sudden"
+      ],
+      "site": [
+        "Loin",
+        "Left side"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "loin pain",
+      "renal colic",
+      "vomiting",
+      "nausea"
+    ],
+    "negatives": [
+      "fever",
+      "rigors",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "In pain. Pulse 90/min irregular, BP 150/90, RR 18, temperature 36.9°C.",
+      "abdomen": "Healed right flank scar. Left renal angle tenderness. Bladder empty on scan."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 90,
+        "systolicBp": 150,
+        "diastolicBp": 90,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 90
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 420,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 24.0,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.0,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 18,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.1,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT KUB (low-dose, non-contrast)",
+        "modality": "CT",
+        "result": "Solitary left kidney. 7 mm calculus in the left mid ureter with moderate hydronephrosis. Absent right kidney (post-nephrectomy).",
+        "minutesAgo": 45,
+        "region": "KUB"
+      }
+    ],
+    "comorbidities": [
+      "Solitary kidney (right nephrectomy 2014, renal cell carcinoma)",
+      "Chronic kidney disease stage 3b",
+      "Atrial fibrillation"
+    ],
+    "surgicalHistory": [
+      "Right radical nephrectomy 2014"
+    ],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired policeman.",
+    "confirmedDiagnosis": {
+      "name": "Obstructed solitary kidney with anuria — 7 mm ureteric stone",
+      "icd10": "N20.1",
+      "paneDiseaseId": "renal_colic",
+      "assessmentText": "Obstructed solitary left kidney with anuric AKI (creatinine 420, K 5.9) on apixaban: emergency decompression."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "onset": "Sudden, 18 hours ago",
+          "site": "Left loin / flank",
+          "character": "Colicky",
+          "radiation": "Left groin",
+          "associated": "Vomiting, no urine for 10 hours",
+          "timing": "Intermittent",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "loin pain",
+          "renal colic",
+          "vomiting",
+          "nausea"
+        ],
+        "durationDays": 0.75,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "eau-urolith-2024",
+          "nice-ng148"
+        ],
+        "unverified": [
+          "ios"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-aki",
+          "severity": "critical",
+          "match": [
+            "acute kidney",
+            "aki",
+            "renal impairment",
+            "creatinine"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-urgent-decompression",
+          "severity": "critical",
+          "match": [
+            "nephrostomy",
+            "ureteric stent",
+            "ureteral stent",
+            "jj stent",
+            "dj stent",
+            "re:\\bpcn\\b",
+            "decompress",
+            "retrograde stent"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024",
+            "nice-ng148"
+          ],
+          "note": "Obstructed solitary kidney with anuria: urgent decompression (EAU; NICE NG148 immediate urology referral).",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: Plan and panel give the standard colic pathway (diclofenac, MET, ESWL/URS/PCNL); the solitary-kidney red flag says \"emergency urological referral\" but no decompression; the anuria is not read.",
+          "proposedFix": "Renal colic protocol: an \"obstructed solitary kidney / anuria / bilateral obstruction\" branch with urgent nephrostomy or stent, driven by creatinine rise, anuria or history of nephrectomy."
+        },
+        {
+          "id": "mgmt-urology",
+          "severity": "quality",
+          "match": [
+            "urolog"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-anticoagulant-plan",
+          "severity": "quality",
+          "match": [
+            "apixaban",
+            "anticoag",
+            "doac"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "note": "The decompression needs a plan for apixaban.",
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid",
+          "severity": "critical",
+          "match": [
+            "re:ibuprofen \\d",
+            "re:diclofenac \\d",
+            "re:naproxen \\d",
+            "re:ketorolac",
+            "re:\\bnsaid\\b[^.;\\n]{0,30}(first|analges)",
+            "re:diclofenac[^.;\\n]{0,20}(im|pr|first)"
+          ],
+          "unless": [
+            "avoid nsaid",
+            "hold nsaid",
+            "stop nsaid",
+            "do not give",
+            "nsaids contraindicated in"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024",
+            "nice-ng148"
+          ],
+          "note": "AKI on CKD in a solitary kidney, anticoagulated: NSAIDs are contraindicated.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: \"Diclofenac 75 mg IM / PR (first-line)\" in plan, panel and medications for AKI on CKD in a solitary kidney on apixaban.",
+          "proposedFix": "Suppress NSAIDs when eGFR is low, creatinine is rising, or an anticoagulant is recorded."
+        },
+        {
+          "id": "mgmt-no-conservative-met",
+          "severity": "quality",
+          "match": [
+            "tamsulosin",
+            "medical expulsive"
+          ],
+          "unless": [
+            "after decompression",
+            "not "
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "note": "Conservative stone passage is not an option for an anuric solitary kidney.",
+          "knownGap": [
+            "web"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGapNote": "Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney.",
+          "proposedFix": "As mgmt-urgent-decompression."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-urolith-2024",
+      "name": "EAU Guidelines on Urolithiasis",
+      "year": 2024,
+      "section": "Renal colic: NSAIDs first-line analgesia (caution in reduced renal function); low-dose non-contrast CT to confirm; pregnancy: ultrasound first-line, MRI second-line, low-dose CT last resort; medical expulsive therapy (alpha-blocker) for distal ureteric stones >5 mm; obstructed infected kidney: urgent decompression (percutaneous nephrostomy or retrograde ureteral stent) with antibiotics, urine and blood cultures, definitive stone treatment delayed until infection resolved; anuria / obstructed solitary kidney: urgent decompression",
+      "citation": "Skolarikos A, Jung H, Neisius A, et al. EAU Guidelines on Urolithiasis. EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "Anuria with an obstructed solitary kidney needs emergency decompression; NSAIDs are harmful with AKI, CKD and anticoagulation (EAU 2024, NICE NG148).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}
