@@ -26,6 +26,14 @@
  *      entry in APPOINTMENT_INSTRUCTIONS, every mapped instruction set exists,
  *      and consultation-style visits (thyroid clinic, pre-op assessment, …)
  *      resolve to text with no fasting or sedation.
+ *   6. Herbal products (surgeon decision 2026-09-25): the ONLY patient text
+ *      that may say "stop" is the approved herbal-products paragraph, verbatim
+ *      and identical in the front-desk instructions, the api-server prep
+ *      templates and the dashboard (HERBAL_PREOP_PATIENT_TEXT). It names no
+ *      prescribed medicine, so rule 1 still flags any sentence that pairs a
+ *      prescribed medicine with stop (self-tests below). It is required in the
+ *      procedure sets and absent from the assessment, consultation and minor
+ *      procedure sets.
  *   5. Dr Kabiye's preparation decisions, in the booking email and the
  *      dashboard staff text: ERCP work-up is the ERCP procedure at Tapion under
  *      general anaesthesia (6 h / 2 h fast, escort for 24 h, call-the-clinic
@@ -48,6 +56,7 @@ import {
 } from '../../artifacts/front-desk/lib/instructions';
 import { APPOINTMENT_TYPES } from '../../artifacts/front-desk/lib/scheduling';
 import { HEALTH_ARTICLES, articleText } from '../../artifacts/front-desk/content/health-info';
+import { HERBAL_PREOP_PATIENT_TEXT } from '../../artifacts/dashboard/src/lib/supplement-catalogue';
 
 // scripts/src/lint-patient-instructions.ts -> scripts/src -> scripts -> repo root
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
@@ -112,6 +121,22 @@ for (const bad of MUST_FLAG) {
   if (medicationInstructionViolations(bad).length === 0) failures.push(`self-test: rule missed unsafe text: "${bad}"`);
 }
 if (!MIDNIGHT_FAST.test('Nil by mouth from midnight.')) failures.push('self-test: midnight rule missed "Nil by mouth from midnight."');
+
+// ── Herbal-products carve-out (surgeon decision 2026-09-25) ───────────────────
+// Narrow by construction: the approved paragraph names no prescribed medicine, so it passes rule 1
+// as written; a sentence that adds a prescribed medicine to stop wording still fails.
+for (const s of medicationInstructionViolations(HERBAL_PREOP_PATIENT_TEXT)) {
+  failures.push(`self-test: the approved herbal text was flagged: "${s}"`);
+}
+for (const bad of [
+  'Herbal remedies and aspirin: please stop them 2 weeks before your operation.',
+  'Herbal remedies, bush teas and supplements: please stop them and your insulin 2 weeks before your operation or procedure.',
+  'Stop your garlic tablets and warfarin 2 weeks before surgery.',
+  'Bush teas and blood thinners: stop them 2 weeks before your procedure.',
+  'Please stop metformin and ginseng 2 weeks before your procedure.',
+]) {
+  if (medicationInstructionViolations(bad).length === 0) failures.push(`self-test: herbal carve-out let a prescribed-medicine instruction through: "${bad}"`);
+}
 
 // ── Front-desk instruction set (emailed automatically) ────────────────────────
 for (const [key, inst] of Object.entries(PROCEDURE_INSTRUCTIONS)) {
@@ -214,7 +239,8 @@ for (const key of ['ercp_workup', 'ercp']) {
   if (!joined(key).includes(FASTING_TEXT)) failures.push(`instructions.ts ${key}: missing the standard 6 h food / 2 h clear-fluid fasting line`);
   if (!/take you home, and stay with you for 24 hours/.test(text)) failures.push(`instructions.ts ${key}: missing "a responsible adult must bring you … take you home, and stay with you for 24 hours"`);
   if (!text.includes('If you take blood thinners, please call the clinic before your appointment for instructions.')) failures.push(`instructions.ts ${key}: missing the blood-thinners call-the-clinic line`);
-  if (/\bsedat\w*/i.test(text)) failures.push(`instructions.ts ${key}: ERCP is done under general anaesthesia — no sedation wording`);
+  // The approved herbal paragraph names "procedures with sedation" in general; ERCP's own wording has none.
+  if (/\bsedat\w*/i.test(text.split(HERBAL_PREOP_PATIENT_TEXT).join(''))) failures.push(`instructions.ts ${key}: ERCP is done under general anaesthesia — no sedation wording`);
 }
 if (MAPPING_BY_TYPE.ercp_workup !== 'ercp_workup') failures.push('APPOINTMENT_INSTRUCTIONS: "ercp_workup" must map to "ercp_workup"');
 if (APPOINTMENT_TYPES.ercp_workup.location !== 'tapion') failures.push('scheduling.ts APPOINTMENT_TYPES.ercp_workup: location must be tapion');
@@ -266,6 +292,27 @@ for (const type of ['lab_collection', 'lab_urine', 'lab_histology']) {
     failures.push('BookingInboxTab.tsx pre_op: the assessment visit must say no fasting');
   }
   if (!/8–10 hours/.test(s('lab_fasting'))) failures.push('BookingInboxTab.tsx lab_fasting: must carry the 8–10 h fasting-bloods wording');
+}
+
+// 6. Herbal products (surgeon decision 2026-09-25): identical paragraph in the three places; in the
+//    procedure sets only.
+{
+  const HERBAL_REQUIRED = ['ercp_workup', 'ercp', 'colonoscopy', 'gastroscopy', 'flexi_sig', 'elective_surgery',
+    'hernia_repair', 'cholecystectomy', 'colorectal', 'thyroid_surgery'];
+  const HERBAL_ABSENT = ['pre_op_assessment', 'minor_procedure', 'general_appointment', 'new_consult', 'follow_up',
+    'post_op', 'breast', 'thyroid_clinic', 'diabetic_foot', 'telephone', 'lab_fasting'];
+  for (const key of HERBAL_REQUIRED) {
+    if (!everything(key).includes(HERBAL_PREOP_PATIENT_TEXT)) failures.push(`instructions.ts ${key}: missing the approved herbal-products paragraph (surgeon decision 2026-09-25)`);
+  }
+  for (const key of HERBAL_ABSENT) {
+    if (/herbal remedies/i.test(everything(key))) failures.push(`instructions.ts ${key}: the herbal-products paragraph is for operations and procedures with sedation or anaesthesia only`);
+  }
+  for (const [key, inst] of Object.entries(PROCEDURE_INSTRUCTIONS)) {
+    const all = [...inst.beforeVisit, ...inst.onTheDay, ...(inst.afterCare ?? []), ...inst.whatToBring, ...inst.urgentSigns].join('\n');
+    if (/herbal remedies/i.test(all) && !all.includes(HERBAL_PREOP_PATIENT_TEXT)) failures.push(`instructions.ts ${key}: herbal-products wording differs from the approved paragraph`);
+  }
+  const sms = readFileSync(join(REPO_ROOT, 'artifacts/api-server/src/lib/sms.ts'), 'utf8');
+  if (!sms.includes(JSON.stringify(HERBAL_PREOP_PATIENT_TEXT))) failures.push('api-server lib/sms.ts: PREP_HERBAL differs from the approved herbal-products paragraph');
 }
 
 // Unknown types get the neutral set — never another type's preparation.

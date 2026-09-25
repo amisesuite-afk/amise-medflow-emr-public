@@ -42,6 +42,16 @@ const URGENT_SIGNS_GENERAL = [
 const MEDICATIONS_CALL =
   'MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.';
 
+// Surgeon decision 2026-09-25 (docs/clinical-validation/SURGEON-DECISIONS.md): patients MAY be
+// told to stop HERBAL products 2 weeks before an operation or a procedure with sedation or an
+// anaesthetic, with the reason and the circumstances. Prescribed medicines are unchanged (H-10:
+// never take / hold / stop). Same words as the api-server prep templates (lib/sms.ts) and the
+// dashboard (supplement-catalogue.ts HERBAL_PREOP_PATIENT_TEXT); lint:patient-instructions pins
+// all three. Not added to minor procedures under local anaesthetic or the pre-op assessment
+// visit (pending sign-off).
+const HERBAL_SUPPLEMENTS_STOP =
+  "Herbal remedies, bush teas and supplements: please stop them 2 weeks before your operation or procedure. This includes garlic tablets, ginkgo, ginseng, ginger supplements, turmeric (curcumin), St John's wort, kava, echinacea, ashwagandha, ephedra (ma huang) and bush teas or herbal mixtures (tablets, capsules, extracts or strong teas — normal amounts in food are fine). Why: some of these increase bleeding, change how the anaesthetic or sedation works, raise blood pressure or blood sugar problems, or stop your other medicines working properly. When: this applies to planned operations and to procedures with sedation or an anaesthetic, including gastroscopy, colonoscopy and ERCP. If your operation is less than 2 weeks away, stop them now and tell the team what you take. If you take valerian every night, do not stop it suddenly — call the clinic. This does not apply to medicines prescribed by a doctor: do not stop any prescribed medicine unless the clinic tells you to. Please bring all your herbs, teas and supplements (or their labels) to your appointment.";
+
 const BLOOD_THINNERS_CALL =
   'BLOOD THINNERS: If you take blood thinners, please call the clinic before your appointment for instructions.';
 
@@ -179,6 +189,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       FASTING_STANDARD,
       BLOOD_THINNERS_CALL,
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'A responsible adult must bring you to Tapion Hospital, take you home, and stay with you for 24 hours after your procedure — you cannot drive after a general anaesthetic.',
       'Gather all relevant imaging (ultrasound, CT, MRCP) and blood test results (especially liver function tests — LFTs and bilirubin).',
       'Make a note of all medications, particularly blood-thinning agents (warfarin, rivaroxaban, apixaban, clopidogrel, aspirin).',
@@ -218,6 +229,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       FASTING_STANDARD,
       BLOOD_THINNERS_CALL,
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'A responsible adult must bring you to Tapion Hospital, take you home, and stay with you for 24 hours after your procedure — you cannot drive or operate machinery for 24 hours after a general anaesthetic.',
       'Plan for a full day at the hospital (arrival, preparation, procedure, and recovery).',
       'You may be required to stay overnight — arrange accordingly.',
@@ -262,6 +274,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       'Stay close to a toilet once you start the bowel preparation.',
       'On the day of your procedure: finish your bowel prep as directed. Clear fluids only, then nothing to drink for 2 hours before your appointment time.',
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Arrange for a responsible adult to drive you home — you cannot drive after sedation.',
     ],
     onTheDay: [
@@ -299,6 +312,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
     beforeVisit: [
       FASTING_STANDARD,
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'If you take medication for acid reflux (proton pump inhibitors), check with Dr Kabiye whether to pause them.',
       'If sedation is planned: arrange for a responsible adult to drive you home.',
       'If throat spray only (no sedation): you may be able to drive yourself — confirm with the team.',
@@ -339,6 +353,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       'Follow the bowel preparation instructions provided (usually a single enema or mini-prep on the morning of the procedure).',
       'Light breakfast only on the morning of the procedure (toast, tea — avoid heavy or greasy food).',
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'You may not need sedation — ask us about your options.',
       'If sedation is planned: arrange for a responsible adult to drive you home — you cannot drive after sedation.',
       'If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us — we may need to reschedule.',
@@ -529,6 +544,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       'Pre-operative assessment: you will be seen by the team before your surgery date to review your fitness for anaesthesia.',
       FASTING_STANDARD,
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Shower with soap or antiseptic wash (e.g. Dettol or Savlon) the evening before and the morning of surgery.',
       'Remove nail polish (fingers and toes), jewellery, piercings, and contact lenses before arriving.',
       'Do not apply creams, lotions, or deodorant to the surgical site on the day.',
@@ -567,6 +583,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       'Pre-operative assessment required before your surgery date.',
       FASTING_STANDARD,
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Shower with antiseptic wash the evening before and morning of surgery.',
       'Remove jewellery, nail polish, and contact lenses.',
       'Arrange transport — you cannot drive after general anaesthesia.',
@@ -605,6 +622,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       'Pre-operative assessment required.',
       FASTING_STANDARD,
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Arrange transport — cannot drive after anaesthesia.',
     ],
     onTheDay: [
@@ -642,6 +660,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       'Bowel preparation: as prescribed by Dr Kabiye — follow timing instructions exactly.',
       FASTING_STANDARD,
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Arrange transport.',
     ],
     onTheDay: [
@@ -683,6 +702,7 @@ const PROCEDURE_INSTRUCTIONS_DEFS = {
       'Pre-operative assessment including blood tests (thyroid function, calcium levels) and ENT vocal cord review.',
       FASTING_STANDARD,
       MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Arrange transport.',
     ],
     onTheDay: [

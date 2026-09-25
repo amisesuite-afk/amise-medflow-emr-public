@@ -135,6 +135,13 @@ const PREP_FASTING =
   'FASTING: Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time, unless otherwise instructed below.';
 const PREP_MEDICATIONS =
   'MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.';
+// Surgeon decision 2026-09-25 (docs/clinical-validation/SURGEON-DECISIONS.md): patients MAY be
+// told to stop HERBAL products 2 weeks before an operation or a procedure with sedation or an
+// anaesthetic, with the reason and the circumstances. Prescribed medicines are unchanged (H-10).
+// Same words as artifacts/front-desk/lib/instructions.ts HERBAL_SUPPLEMENTS_STOP;
+// outbound-safety.test.ts and lint:patient-instructions pin them.
+export const PREP_HERBAL =
+  "Herbal remedies, bush teas and supplements: please stop them 2 weeks before your operation or procedure. This includes garlic tablets, ginkgo, ginseng, ginger supplements, turmeric (curcumin), St John's wort, kava, echinacea, ashwagandha, ephedra (ma huang) and bush teas or herbal mixtures (tablets, capsules, extracts or strong teas — normal amounts in food are fine). Why: some of these increase bleeding, change how the anaesthetic or sedation works, raise blood pressure or blood sugar problems, or stop your other medicines working properly. When: this applies to planned operations and to procedures with sedation or an anaesthetic, including gastroscopy, colonoscopy and ERCP. If your operation is less than 2 weeks away, stop them now and tell the team what you take. If you take valerian every night, do not stop it suddenly — call the clinic. This does not apply to medicines prescribed by a doctor: do not stop any prescribed medicine unless the clinic tells you to. Please bring all your herbs, teas and supplements (or their labels) to your appointment.";
 const PREP_CONTINGENCIES =
   'CONTINGENCIES: If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us immediately -- we may need to reschedule. If you have a medical emergency at any time, call 911 or go to the nearest emergency department (OKEU Hospital, St Jude\'s Hospital or Tapion Hospital) immediately -- do not wait.';
 
@@ -144,6 +151,7 @@ const GENERAL_PREP = [
   PREP_TRANSPORT,
   PREP_FASTING,
   PREP_MEDICATIONS,
+  PREP_HERBAL,
   PREP_CONTINGENCIES,
 ].join('\n');
 
@@ -190,6 +198,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     PREP_BRING,
     'TRANSPORT: A responsible adult must bring you to Tapion Hospital, take you home, and stay with you for 24 hours after your procedure -- you CANNOT drive after a general anaesthetic. You should not take public transport alone.',
     PREP_MEDICATIONS,
+    PREP_HERBAL,
     PREP_CONTINGENCIES,
   ].join('\n'),
 
@@ -233,6 +242,7 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
     PREP_BRING,
     PREP_TRANSPORT,
     PREP_MEDICATIONS,
+    PREP_HERBAL,
     PREP_CONTINGENCIES,
   ].join('\n'),
 

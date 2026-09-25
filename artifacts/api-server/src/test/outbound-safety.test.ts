@@ -27,7 +27,7 @@ vi.mock('twilio', () => ({
 }));
 
 const { sendOrDraft } = await import('../lib/gmail.js');
-const { sendSms, allPrepInstructions, getPrepInstructions, smsBody48h } = await import('../lib/sms.js');
+const { sendSms, allPrepInstructions, getPrepInstructions, smsBody48h, PREP_HERBAL } = await import('../lib/sms.js');
 const { sendMetaWhatsApp, sendTelnyxWhatsApp } = await import('../lib/whatsapp-send.js');
 const { createEvent, updateEventDescription } = await import('../lib/calendar.js');
 const { getMode, resolveEmailMode, reminderEmailMode } = await import('../lib/outbound.js');
@@ -213,6 +213,56 @@ describe('calendar write MODE gate', () => {
 
 // ── H-10: prep templates ──────────────────────────────────────────────────────
 
+// Surgeon decision 2026-09-25 (docs/clinical-validation/SURGEON-DECISIONS.md): the herbal-products
+// text (PREP_HERBAL) may tell patients to stop HERBAL remedies, bush teas and supplements 2 weeks
+// before. The carve-out is narrow: only a sentence of that approved text, verbatim, that names no
+// prescribed medicine. Prescribed medicines stay under H-10.
+const splitSentences = (text: string) => text.split(/\n|(?<=[.!?])\s+/).map(x => x.trim()).filter(Boolean);
+const HERBAL_SENTENCES = new Set(splitSentences(PREP_HERBAL));
+const PRESCRIBED = /\b(insulin|metformin|gliclazide|diabetes (tablets?|medicines?)|blood thinners?|anticoagulants?|warfarin|coumadin|aspirin|clopidogrel|plavix|ticagrelor|apixaban|eliquis|rivaroxaban|xarelto|dabigatran|edoxaban|heparin|enoxaparin)\b/i;
+const MEDICINE = /\b(insulin|diabetes tablets?|blood thinners?|anticoagulants?|medications?|medicines?|warfarin|coumadin|aspirin|clopidogrel|plavix|apixaban|eliquis|rivaroxaban|xarelto|dabigatran|heparin|enoxaparin|metformin|gliclazide)\b/i;
+const INSTRUCTION = /\b(do not take|don'?t take|do not stop|stop taking|stop|stopping|hold|take (your|essential|any)|you may take)\b/i;
+
+/** A sentence that tells the patient to take / stop / hold a medicine (H-10), after the herbal carve-out. */
+function medicineInstruction(sentence: string): boolean {
+  const s = sentence.trim();
+  if (!MEDICINE.test(s) || !INSTRUCTION.test(s)) return false;
+  return !(HERBAL_SENTENCES.has(s) && !PRESCRIBED.test(s));
+}
+
+describe('herbal-products carve-out (surgeon decision 2026-09-25)', () => {
+  it('the approved herbal text passes', () => {
+    for (const s of splitSentences(PREP_HERBAL)) expect(medicineInstruction(s), s).toBe(false);
+    expect(checkForbiddenContent(PREP_HERBAL)).toEqual({ safe: true, violations: [] });
+  });
+
+  it('is narrow: stop wording with a prescribed medicine still fails', () => {
+    for (const bad of [
+      'Herbal remedies and aspirin: please stop them 2 weeks before your operation.',
+      'Please stop your warfarin 2 weeks before your operation.',
+      'Herbal remedies, bush teas and supplements: please stop them and your insulin 2 weeks before your operation or procedure.',
+      'Stop your metformin and garlic tablets 2 weeks before surgery.',
+      'Bush teas and blood thinners: stop them 2 weeks before your procedure.',
+      'Do not stop your clopidogrel.',
+    ]) {
+      expect(medicineInstruction(bad), bad).toBe(true);
+    }
+  });
+
+  it('a changed herbal sentence loses the carve-out', () => {
+    expect(medicineInstruction('This does not apply to medicines prescribed by a doctor: stop them too.')).toBe(true);
+  });
+
+  it('procedure templates carry the herbal text; visits without sedation or anaesthetic do not', () => {
+    for (const t of ['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'surgery_theatre', 'flexi_sig']) {
+      expect(getPrepInstructions(t), t).toContain(PREP_HERBAL);
+    }
+    for (const t of ['pre_op', 'lab_fasting', 'new_consult', 'diabetic_foot']) {
+      expect(getPrepInstructions(t), t).not.toContain('Herbal remedies');
+    }
+  });
+});
+
 describe('endoscopy / pre-op prep templates (H-10)', () => {
   const templates = Object.entries(allPrepInstructions());
   const MED_HOLD = /\b(do not|don'?t|stop|hold|omit|skip)\b/i;
@@ -231,12 +281,8 @@ describe('endoscopy / pre-op prep templates (H-10)', () => {
   });
 
   it.each(templates)('%s: gives no instruction to take, stop or hold any medicine', (_name, text) => {
-    const sentences = text.split(/\n|(?<=[.!?])\s+/);
-    const MEDICINE = /\b(insulin|diabetes tablets?|blood thinners?|anticoagulants?|medications?|medicines?)\b/i;
-    const INSTRUCTION = /\b(do not take|don'?t take|do not stop|stop taking|hold|take (your|essential|any)|you may take)\b/i;
-    for (const s of sentences) {
-      if (MEDICINE.test(s)) expect(s, s).not.toMatch(INSTRUCTION);
-    }
+    // Only the verbatim herbal-products sentences are exempt (carve-out above).
+    for (const s of splitSentences(text)) expect(medicineInstruction(s), s).toBe(false);
   });
 
   it.each(templates)('%s: passes the FORBIDDEN_PATTERNS screen', (_name, text) => {
@@ -296,7 +342,8 @@ describe('prep templates follow the surgeon\'s decisions', () => {
     expect(t).toMatch(SIX_HOUR_FAST);
     expect(t).toContain('take you home, and stay with you for 24 hours');
     expect(t).toContain('BLOOD THINNERS: If you take blood thinners, please call the clinic before your appointment for instructions.');
-    expect(t).not.toMatch(/sedation/i);
+    // The approved herbal text names "procedures with sedation" in general; ERCP's own wording has none.
+    expect(t.replace(PREP_HERBAL, '')).not.toMatch(/sedation/i);
   });
 
   it('lab_fasting: 8-10 hour fasting-bloods wording, not procedure prep', () => {

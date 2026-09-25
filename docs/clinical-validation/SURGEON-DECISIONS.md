@@ -195,3 +195,30 @@ emergency reached only through "No vomiting") now fail and are listed as known g
 
 In progress: the same negation handling for the iOS text parser ("No crepitus" still raises the
 necrotising-fasciitis alarm on iOS) and "Heartburn" opening the Burns pathway on iOS.
+
+## H. Decisions made (dated, with the owner)
+
+### H1. Patients may be told to stop herbal products 2 weeks before surgery — DECIDED 2026-09-25
+
+- **Owner:** Dr Dawit Daniel Kabiye (practice owner), 2026-09-25, relayed with the herbs /
+  supplements work (`docs/clinical-validation/changes/supplements-interactions.md`).
+- **Decision:** patient-facing pre-op text MAY tell patients to stop herbal supplements 2 weeks
+  before an operation or a procedure with sedation or an anaesthetic, and must give the reason and
+  the circumstances. Prescribed medicines are unchanged: hazard H-10 still forbids take / hold /
+  stop wording for them.
+- **Approved text** (same words in `artifacts/front-desk/lib/instructions.ts` HERBAL_SUPPLEMENTS_STOP,
+  `artifacts/api-server/src/lib/sms.ts` PREP_HERBAL, the dashboard's printed prep sheet and
+  `supplement-catalogue.ts` / `SupplementCatalogue.swift`): "Herbal remedies, bush teas and
+  supplements: please stop them 2 weeks before your operation or procedure. This includes garlic
+  tablets, ginkgo, ginseng, ginger supplements, turmeric (curcumin), St John's wort, kava, echinacea,
+  ashwagandha, ephedra (ma huang) and bush teas or herbal mixtures (tablets, capsules, extracts or
+  strong teas — normal amounts in food are fine). Why: … When: … If your operation is less than 2
+  weeks away, stop them now and tell the team what you take. If you take valerian every night, do
+  not stop it suddenly — call the clinic. This does not apply to medicines prescribed by a doctor:
+  do not stop any prescribed medicine unless the clinic tells you to. …"
+- **Enforcement:** `lint:patient-instructions` and `outbound-safety.test.ts` allow stop wording only
+  in the verbatim approved sentences, which name no prescribed medicine; tests confirm that stop
+  wording with warfarin, aspirin, insulin, metformin, clopidogrel or "blood thinners" still fails.
+- **Still open (not decided):** vitamin E and fish oil (not in the briefing); wording for emergency
+  / urgent surgery; whether the pre-op assessment visit and minor procedures under local
+  anaesthetic should carry the paragraph.
