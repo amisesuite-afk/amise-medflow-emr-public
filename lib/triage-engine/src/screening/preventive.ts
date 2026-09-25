@@ -23,7 +23,7 @@
 import { containsAffirmed, joinClauses } from '../negation';
 
 /** Rule-set version (clinical-content/registry.json `preventive-screening`). Bump with a changelog entry. */
-export const PREVENTIVE_SCREENING_VERSION = '1.0.0';
+export const PREVENTIVE_SCREENING_VERSION = '1.0.1';
 
 export type PreventiveSex = 'male' | 'female' | 'other' | 'unknown';
 export type SmokingStatus = 'current' | 'former' | 'never' | 'unknown';
@@ -252,10 +252,11 @@ export function readPersonalRisk(pastHistory: string[], notes: string[] = [], ag
   const NOT_CARRIER = /\b(negative|not detected|no (pathogenic )?variant|pending|family|fhx|mother|father|sister|brother|aunt|relative)\b/i;
   const brcaCarrier = ownEntry(/\b(brca ?[12]?|palb2)\b/i, NOT_CARRIER) || noteSentences.some(s => affirmed(s, BRCA) && !NOT_CARRIER.test(s));
 
-  const hystSentences = sentences([...own, ...notes]).filter(s => affirmed(s, /\bhysterectomy\b/i));
+  // Sentences about relatives ("Her mother had a hysterectomy") are skipped.
+  const hystSentences = sentences([...own, ...notes]).filter(s => !FAMILY_WORDS.test(s) && affirmed(s, /\bhysterectomy\b/i));
   const totalHysterectomy = hystSentences.some(s => !/\b(subtotal|supra-?cervical|partial)\b|cervix (retained|conserved|preserved|left in situ)/i.test(s));
 
-  const colonoscopy = readLastNormalColonoscopy([...own, ...notes], age);
+  const colonoscopy = readLastNormalColonoscopy([...own, ...noteSentences], age);
 
   return {
     lynchCarrier,

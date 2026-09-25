@@ -994,7 +994,7 @@
       "title": "Preventive screening and surveillance (web port of the iOS ScreeningEngine, updated to USPSTF / ACG / US MSTF / ADA)",
       "platforms": ["web"],
       "kind": "screening-rules",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "versionStamp": { "file": "lib/triage-engine/src/screening/preventive.ts", "type": "regex", "pattern": "PREVENTIVE_SCREENING_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "lib/triage-engine/src/screening/preventive.ts",
@@ -1022,7 +1022,8 @@
       "changeAuthority": "Any repository committer. Ships on dashboard deploy. Keep in step with the iOS ScreeningEngine (ios-screening-engine): differences are listed in docs/clinical-validation/changes/fix-web-screening.md.",
       "notes": "Replaces the fixed preventative rules in clinical-inference.ts (CRC from 50 with no upper limit, annual mammography, smear-only cervical screening, PSA from 50 with no upper limit). Local choices awaiting sign-off: PSA discussion from 45 with a family history (ACS 2023); universal adult HBV screening (CDC 2023); direct 2WW referral for rectal bleeding ≥ 50.",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS G2.19): port of the iOS ScreeningEngine to lib/triage-engine, aligned to USPSTF (primary), ACG/US MSTF, ACR/NCCN, ADA 2024, NICE NG136; adds post-polypectomy intervals, Lynch and BRCA pathways, hysterectomy exclusion, AAA, HBV/HCV/HIV, H. pylori FDR, out-of-office BP confirmation and 10-year CV risk." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Created (SURGEON-DECISIONS G2.19): port of the iOS ScreeningEngine to lib/triage-engine, aligned to USPSTF (primary), ACG/US MSTF, ACR/NCCN, ADA 2024, NICE NG136; adds post-polypectomy intervals, Lynch and BRCA pathways, hysterectomy exclusion, AAA, HBV/HCV/HIV, H. pylori FDR, out-of-office BP confirmation and 10-year CV risk." },
+        { "version": "1.0.1", "date": "2026-09-25", "change": "Hysterectomy and last-normal-colonoscopy statements about a relative are no longer read as the patient's (sentences naming a relative are skipped, as for polyps). The dashboard adapter now passes the past surgical history (with the past medical history) and the HPI (with the assessment), so hysterectomy, previous colonoscopy and polypectomy are read from them. See docs/clinical-validation/changes/web-last-gaps.md." }
       ]
     },
     {

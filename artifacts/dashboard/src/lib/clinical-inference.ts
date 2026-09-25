@@ -9,7 +9,7 @@
 
 import {
   containsAffirmed, containsAnyAffirmed, assessEmergencies, paediatricVitalLimits, diagnosisHead,
-  EMERGENCY_REDIRECT, type EmergencyAssessment, type RecognisedEmergency,
+  readPersonalRisk, EMERGENCY_REDIRECT, type EmergencyAssessment, type RecognisedEmergency,
 } from '@workspace/triage-engine';
 import { computePreventivePrompts } from './preventive-screening-prompts';
 import { computeSupplementPrompts, type SupplementPrompt } from './supplement-prompts';
@@ -260,10 +260,14 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   const add = (p: ClinicalPrompt) => { if (!prompts.some(x => x.id === p.id)) prompts.push(p); };
 
   const isReproductiveAgeFemale = sex === 'female' && ageNum >= 12 && ageNum <= 55;
-  // Diabetes in THIS patient: not "previous gestational diabetes", "pre-diabetes" or a relative's
+  // Diabetes in THIS patient, by the preventive module's rule (readPersonalRisk().knownDiabetes,
+  // lib/triage-engine/src/screening/preventive.ts): read from the structured past history only;
+  // not "previous gestational diabetes", pre-diabetes, "screen for diabetes" or a relative's
   // diabetes (a risk factor is not a diagnosis — clinical-validation prevobspaed finding).
-  const hasDiabetes = comorbidities.some(c => containsAffirmed(c, 'diabet')
-    && !/\b(gestational|pre-?diabet\w*|borderline|impaired (fasting|glucose)|family history|mother|father|sister|brother|parent|grand\w*)\b/i.test(c));
+  // Entries naming a relative ("Mother type 2 diabetes") are left out first.
+  const ownComorbidities = comorbidities.filter(c => !/\b(mother|father|sister|brother|parents?|grand\w*|aunt|uncle|cousin|relatives?)\b/i.test(c));
+  const hasDiabetes = readPersonalRisk(ownComorbidities).knownDiabetes;
+  const hasType1Diabetes = hasDiabetes && ownComorbidities.some(c => containsAnyAffirmed(c, ['type 1 diabetes', 'type 1 diabetic', 't1dm', 'insulin-dependent']));
   const isPreOp = encounterType === 'surgical_consult' || encounterType === 'major_emergency'
     || hasSx(symptoms, 'pre-operative') || hasCc(ccEntries, 'pre-op', 'pre-operative');
   const hasAbdominalCc = hasCc(ccEntries,
@@ -2301,7 +2305,7 @@ POST-OPERATIVE ORDERS:
   if (modifier('anaesthetic_osa')) hazardActions.push({ step: hazardActions.length + 1, text: 'Obstructive sleep apnoea / STOP-Bang risk: anaesthetic review and post-operative monitoring', addToPlan: '• Obstructive sleep apnoea (STOP-Bang): anaesthetic pre-assessment; bring CPAP; opioid-sparing analgesia and post-operative monitoring plan.' });
   if (modifier('steroids') && isPreOp) hazardActions.push({ step: hazardActions.length + 1, text: 'Long-term glucocorticoid: peri-operative hydrocortisone cover', addToPlan: '• Long-term steroids: peri-operative hydrocortisone steroid cover per the AAGBI / Society for Endocrinology 2020 guideline (Woodcock et al.); do not omit the usual dose.' });
   if (hasMed(medications, medicationsText, 'gliflozin', 'sglt2', 'sglt-2') && isPreOp) hazardActions.push({ step: hazardActions.length + 1, text: 'SGLT2 inhibitor: withhold the day before and the day of surgery; check ketones peri-operatively (CPOC 2021)', addToPlan: '• SGLT2 inhibitor: withhold the day before and the day of surgery (CPOC 2021); check blood ketones if unwell peri-operatively (euglycaemic DKA); restart only when eating and drinking normally.' });
-  if (hasPmh(comorbidities, 'type 1 diabetes', 'type 1 diabetic', 't1dm', 'insulin-dependent') && isPreOp) hazardActions.push({ step: hazardActions.length + 1, text: 'Type 1 diabetes: never omit basal insulin — continue long-acting basal insulin; VRIII if more than one missed meal (CPOC 2021)', addToPlan: '• Type 1 diabetes: continue long-acting basal insulin throughout (never omit — DKA risk); variable-rate IV insulin infusion if more than one meal will be missed (CPOC 2021).' });
+  if (hasType1Diabetes && isPreOp) hazardActions.push({ step: hazardActions.length + 1, text: 'Type 1 diabetes: never omit basal insulin — continue long-acting basal insulin; VRIII if more than one missed meal (CPOC 2021)', addToPlan: '• Type 1 diabetes: continue long-acting basal insulin throughout (never omit — DKA risk); variable-rate IV insulin infusion if more than one meal will be missed (CPOC 2021).' });
   if (hazardActions.length) {
     add({
       id: 'periop_alerts',

@@ -203,8 +203,12 @@ export function computePreventivePrompts(input: InferenceInput): ClinicalPrompt[
     age: isNaN(ageNum) ? null : ageNum,
     sex,
     pregnancyPossible: input.pregnancyPossible,
-    pastHistory: input.comorbidities,
-    notes: [input.assessment ?? ''],
+    // Past surgical history is part of the structured past history (hysterectomy, colectomy,
+    // polypectomy); the HPI is clinician free text like the assessment (previous colonoscopy,
+    // polypectomy findings). Both are read negation-aware, and sentences about relatives are
+    // skipped (preventive.ts readPersonalRisk / parsePolypFindings).
+    pastHistory: [...input.comorbidities, ...(input.surgicalHistory ?? [])],
+    notes: [input.assessment ?? '', input.historyText ?? ''],
     familyHistory: input.familyHistory,
     toxicHabits: input.toxicHabits,
     bmi: readBmi([input.examGeneral, ...input.comorbidities]),

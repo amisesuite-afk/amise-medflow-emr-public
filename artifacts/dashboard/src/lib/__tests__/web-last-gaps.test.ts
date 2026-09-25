@@ -165,3 +165,49 @@ describe('malignant large-bowel obstruction: colonic stent by side and contraind
     expect(t).not.toMatch(/stent/i);
   });
 });
+
+describe('screening prompts read the surgical history and the HPI (preventive 1.0.1)', () => {
+  const ids = (over: Partial<InferenceInput>) => prompts({ encounterType: 'quick_consult', ...over }).map(p => p.id);
+  it('a total hysterectomy in the surgical history stops cervical screening', () => {
+    expect(ids({ age: '45', sex: 'female' })).toContain('screen_cervical');
+    expect(ids({ age: '45', sex: 'female', surgicalHistory: ['Total abdominal hysterectomy 2015 (fibroids)'] })).not.toContain('screen_cervical');
+  });
+  it("a relative's hysterectomy in the HPI does not", () => {
+    expect(ids({ age: '45', sex: 'female', historyText: 'Her mother had a hysterectomy for fibroids.' })).toContain('screen_cervical');
+  });
+  it('a polypectomy in the HPI gives polyp surveillance instead of average-risk screening', () => {
+    const got = ids({ age: '58', sex: 'male', historyText: 'Colonoscopy last year: two tubular adenomas under 10 mm removed.' });
+    expect(got).toContain('screen_crc_polyp_surveillance');
+    expect(got).not.toContain('screen_crc_average');
+  });
+  it('a recent normal colonoscopy in the HPI is read as up to date', () => {
+    const p = prompts({ encounterType: 'quick_consult', age: '55', sex: 'male', historyText: 'Colonoscopy 3 years ago was normal.' })
+      .find(x => x.id === 'screen_crc_average');
+    expect(p === undefined || /up to date/i.test(`${p.text} ${p.rationale}`)).toBe(true);
+  });
+  it("a relative's normal colonoscopy is not the patient's", () => {
+    const p = prompts({ encounterType: 'quick_consult', age: '55', sex: 'male', historyText: 'His brother had a normal colonoscopy 2 years ago.' })
+      .find(x => x.id === 'screen_crc_average');
+    expect(p).toBeDefined();
+    expect(`${p!.text} ${p!.rationale}`).not.toMatch(/up to date/i);
+  });
+});
+
+describe('diabetes prompts use readPersonalRisk().knownDiabetes', () => {
+  const ids = (comorbidities: string[]) => prompts({ age: '38', sex: 'female', comorbidities }).map(p => p.id);
+  it("previous gestational diabetes or a relative's diabetes is not known diabetes", () => {
+    expect(ids(['Previous gestational diabetes'])).not.toContain('diabetes_hba1c');
+    expect(ids(['Family history: mother type 2 diabetes'])).not.toContain('diabetes_hba1c');
+    expect(ids(['Mother type 2 diabetes'])).not.toContain('diabetes_hba1c');
+    expect(ids(['Pre-diabetes'])).not.toContain('diabetes_hba1c');
+    expect(ids(['Diabetes insipidus'])).not.toContain('diabetes_hba1c');
+  });
+  it('type 2 diabetes is', () => {
+    expect(ids(['Type 2 diabetes on metformin'])).toContain('diabetes_hba1c');
+    expect(ids(['T2DM'])).toContain('diabetes_hba1c');
+  });
+  it("the type 1 basal-insulin alert is for the patient's own type 1 diabetes only", () => {
+    expect(planText({ comorbidities: ['Type 1 diabetes'] })).toMatch(/continue long-acting basal insulin/);
+    expect(planText({ comorbidities: ['Family history: brother type 1 diabetes'] })).not.toMatch(/basal insulin/);
+  });
+});

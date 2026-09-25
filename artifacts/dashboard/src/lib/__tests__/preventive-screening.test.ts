@@ -20,7 +20,7 @@ const planText = (over: Partial<PreventiveScreeningInput>, id: string) =>
   (item(over, id)?.actions ?? []).map(a => `${a.text} ${a.plan ?? ''} ${a.investigation ?? ''}`).join(' | ');
 
 describe('version stamp', () => {
-  it('is 1.0.0', () => expect(PREVENTIVE_SCREENING_VERSION).toBe('1.0.0'));
+  it('is 1.0.1', () => expect(PREVENTIVE_SCREENING_VERSION).toBe('1.0.1'));
 });
 
 describe('suppression', () => {
