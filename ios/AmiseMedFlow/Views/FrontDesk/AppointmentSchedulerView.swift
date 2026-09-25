@@ -97,17 +97,22 @@ struct AppointmentSchedulerView: View {
         }
     }
 
+    // Privacy (surgeon's requirement): the scheduler is opened at the front desk, whose screen can
+    // be seen across the counter, so there is no default patient list. Names appear only after a
+    // real search: 3+ letters of the name or an MRN, at most 5 matches (QuestionnairePatientSearch).
     private var filteredPatients: [Patient] {
-        let q = patientSearch.trimmingCharacters(in: .whitespaces).lowercased()
-        if q.isEmpty { return Array(allPatients.prefix(20)) }
-        return allPatients.filter {
-            $0.fullName.lowercased().contains(q) ||
-            ($0.mrn?.lowercased().contains(q) ?? false) ||
-            ($0.phone?.contains(q) ?? false)
-        }.prefix(20).map { $0 }
+        QuestionnairePatientSearch.matches(query: patientSearch, in: allPatients)
     }
 
-    private var canSave: Bool { selectedPatient != nil }
+    private var trimmedPatientSearch: String { QuestionnairePatientSearch.normalized(patientSearch) }
+
+    private var patientSearchHint: String {
+        QuestionnairePatientSearch.isNameSearch(trimmedPatientSearch)
+            ? "No match. Check the spelling or use the MRN."
+            : "Type at least \(QuestionnairePatientSearch.minimumNameLength) letters of the name, or the MRN."
+    }
+
+    private var canSave: Bool { selectedPatient?.isLive == true }
 
     // MARK: Body
 
@@ -170,14 +175,21 @@ struct AppointmentSchedulerView: View {
                     operationDate: apptDate
                 )
             }
+            .onAppear {
+                // Opened from a patient card: start with that patient, so staff never need to
+                // search for someone already on screen.
+                if selectedPatient == nil, let p = initialPatient, p.isLive {
+                    selectedPatient = p
+                }
+            }
         }
     }
 
     // MARK: - Sections
 
     private var patientSection: some View {
-        Section("Patient") {
-            if let p = selectedPatient {
+        Section {
+            if let p = selectedPatient, p.isLive {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(p.fullName).fontWeight(.semibold)
@@ -191,8 +203,14 @@ struct AppointmentSchedulerView: View {
                         .font(.caption).foregroundStyle(AMColor.accent)
                 }
             } else {
-                TextField("Search name, MRN, phone…", text: $patientSearch)
+                TextField("Name (3+ letters) or MRN…", text: $patientSearch)
                     .autocorrectionDisabled()
+
+                if !trimmedPatientSearch.isEmpty && filteredPatients.isEmpty {
+                    Text(patientSearchHint)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
 
                 if !filteredPatients.isEmpty {
                     ForEach(filteredPatients) { patient in
@@ -200,18 +218,10 @@ struct AppointmentSchedulerView: View {
                             selectedPatient = patient
                             patientSearch = ""
                         } label: {
-                            HStack {
-                                AcuityPip(acuity: patient.acuity)
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(patient.fullName).foregroundStyle(.primary)
-                                    HStack(spacing: 4) {
-                                        if let mrn = patient.mrn {
-                                            Text("MRN \(mrn)").font(.caption2).foregroundStyle(.secondary)
-                                        }
-                                        if let age = patient.ageDisplay {
-                                            Text(age).font(.caption2).foregroundStyle(.secondary)
-                                        }
-                                    }
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(patient.fullName).foregroundStyle(.primary)
+                                if let mrn = patient.mrn, !mrn.isEmpty {
+                                    Text("MRN \(mrn)").font(.caption2).foregroundStyle(.secondary)
                                 }
                             }
                         }
@@ -225,6 +235,12 @@ struct AppointmentSchedulerView: View {
                     Label("Register New Patient", systemImage: "person.badge.plus")
                         .foregroundStyle(AMColor.accent)
                 }
+            }
+        } header: {
+            Text("Patient")
+        } footer: {
+            if selectedPatient?.isLive != true {
+                Text("For privacy, no patient list is shown. At most \(QuestionnairePatientSearch.maxResults) matches appear.")
             }
         }
     }
@@ -323,7 +339,7 @@ struct AppointmentSchedulerView: View {
     // MARK: - Save
 
     private func save() async {
-        guard let patient = selectedPatient else { return }
+        guard let patient = selectedPatient, patient.isLive else { return }
         isSaving = true
         savedError = nil
 

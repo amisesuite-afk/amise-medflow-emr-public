@@ -22,17 +22,23 @@ struct CompactFrontDeskView: View {
         allPatients.filter { $0.setting == .endoscopy }.deduped().count
     }
 
-    private var filteredPatients: [Patient] {
-        let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        if q.isEmpty {
-            // Show most-recent 30 patients when no query — never a blank screen
-            return Array(allPatients.prefix(30))
-        }
-        return allPatients.filter {
-            $0.fullName.lowercased().contains(q) ||
-            ($0.mrn?.lowercased().contains(q) ?? false) ||
-            ($0.phone?.contains(q) ?? false)
-        }.prefix(20).map { $0 }
+    // Privacy (surgeon's requirement), same rule as the iPad Check-In tab: before any search only
+    // today's patients (booked or checked in today, practice time zone) are listed, by name and
+    // time (FrontDeskTodayList). Anyone else needs a real search: 3+ letters of the name or an MRN,
+    // at most 5 matches (QuestionnairePatientSearch). The search is cleared when leaving the tab.
+    private var trimmedQuery: String { QuestionnairePatientSearch.normalized(searchQuery) }
+    private var isSearching: Bool { !trimmedQuery.isEmpty }
+
+    private var todaysPatients: [Patient] { FrontDeskTodayList.todaysPatients(allPatients) }
+
+    private var searchResults: [Patient] {
+        QuestionnairePatientSearch.matches(query: searchQuery, in: allPatients)
+    }
+
+    private var searchHint: String {
+        QuestionnairePatientSearch.isNameSearch(trimmedQuery)
+            ? "No match. Check the spelling or use the MRN."
+            : "Type at least \(QuestionnairePatientSearch.minimumNameLength) letters of the name, or the MRN."
     }
 
     private var waitingPatients: [Patient] {
@@ -72,45 +78,56 @@ struct CompactFrontDeskView: View {
                 .tabItem { Label("Settings", systemImage: "gearshape") }
                 .tag(5)
         }
+        .onChange(of: selectedTab) { oldTab, _ in
+            // Nothing typed on the Check-In tab stays behind when staff leave it.
+            if oldTab == 0 { searchQuery = "" }
+        }
     }
 
     private var checkInTab: some View {
         NavigationStack {
             List {
                 Section {
-                    TextField("Search name, MRN, phone…", text: $searchQuery)
+                    TextField("Name (3+ letters) or MRN…", text: $searchQuery)
                         .autocorrectionDisabled()
+                    if isSearching && searchResults.isEmpty {
+                        Text(searchHint)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } footer: {
+                    Text(isSearching
+                         ? "At most \(QuestionnairePatientSearch.maxResults) matches appear."
+                         : "For privacy, only today's patients are listed. Search to find anyone else.")
                 }
-                if !filteredPatients.isEmpty {
-                    Section("Results") {
-                        ForEach(filteredPatients) { patient in
+
+                if isSearching {
+                    if !searchResults.isEmpty {
+                        Section("Results") {
+                            ForEach(searchResults) { patient in
+                                checkInLink(for: patient, showsMRN: true)
+                            }
+                        }
+                    } else if QuestionnairePatientSearch.isNameSearch(trimmedQuery) {
+                        Section {
                             NavigationLink {
-                                PatientDemographicsForm(patient: patient)
-                                    .navigationTitle(patient.fullName)
-                                    .navigationBarTitleDisplayMode(.inline)
+                                AddPatientView(initialSetting: .outpatient)
                             } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    HStack {
-                                        AcuityPip(acuity: patient.acuity)
-                                        Text(patient.fullName).font(.subheadline.weight(.semibold))
-                                    }
-                                    HStack(spacing: 4) {
-                                        if let mrn = patient.mrn { Text("MRN \(mrn)").font(.caption2).foregroundStyle(AMColor.accent) }
-                                        Text(patient.ageDisplay ?? "").font(.caption2).foregroundStyle(.secondary)
-                                        Text(patient.sex.rawValue).font(.caption2).foregroundStyle(.secondary)
-                                    }
-                                }
-                                .padding(.vertical, 2)
+                                Label("Register New Patient", systemImage: "person.badge.plus")
+                                    .foregroundStyle(AMColor.accent)
                             }
                         }
                     }
-                } else if !searchQuery.isEmpty {
-                    Section {
-                        NavigationLink {
-                            AddPatientView(initialSetting: .outpatient)
-                        } label: {
-                            Label("Register New Patient", systemImage: "person.badge.plus")
-                                .foregroundStyle(AMColor.accent)
+                } else {
+                    Section("Today · booked or checked in") {
+                        if todaysPatients.isEmpty {
+                            Text("No patients booked or checked in today.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(todaysPatients) { patient in
+                                checkInLink(for: patient, showsMRN: false)
+                            }
                         }
                     }
                 }
@@ -125,6 +142,32 @@ struct CompactFrontDeskView: View {
                     }
                 }
             }
+        }
+    }
+
+    /// A Check-In row: name and today's time only. The MRN is added for typed search results;
+    /// MRN, acuity and demographics are on the patient's own screen.
+    private func checkInLink(for patient: Patient, showsMRN: Bool) -> some View {
+        NavigationLink {
+            PatientDemographicsForm(patient: patient)
+                .navigationTitle(patient.fullName)
+                .navigationBarTitleDisplayMode(.inline)
+        } label: {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(patient.fullName).font(.subheadline.weight(.semibold))
+                HStack(spacing: 6) {
+                    if let slot = FrontDeskTodayList.slot(for: patient) {
+                        Label(FrontDeskTodayList.label(for: slot, timeZone: .ect),
+                              systemImage: slot.kind == .appointment ? "clock" : "person.fill.checkmark")
+                            .font(.caption2.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                    if showsMRN, let mrn = patient.mrn, !mrn.isEmpty {
+                        Text("MRN \(mrn)").font(.caption2).foregroundStyle(AMColor.accent)
+                    }
+                }
+            }
+            .padding(.vertical, 2)
         }
     }
 
@@ -144,16 +187,13 @@ struct CompactFrontDeskView: View {
                                 .navigationTitle(patient.fullName)
                                 .navigationBarTitleDisplayMode(.inline)
                         } label: {
+                            // Name and arrival time only (front-desk privacy rule): no
+                            // complaint or other clinical detail on a screen that can be seen.
                             HStack {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(patient.fullName).font(.subheadline.weight(.semibold))
-                                    if let cc = patient.chiefComplaint {
-                                        Text(cc).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-                                    }
-                                }
+                                Text(patient.fullName).font(.subheadline.weight(.semibold))
                                 Spacer()
                                 if let ct = patient.checkInTime {
-                                    Text(DateFormatter.ectShort.string(from: ct))
+                                    Text(FrontDeskTodayList.timeText(ct, timeZone: .ect))
                                         .font(.caption2.monospacedDigit())
                                         .foregroundStyle(.secondary)
                                 }

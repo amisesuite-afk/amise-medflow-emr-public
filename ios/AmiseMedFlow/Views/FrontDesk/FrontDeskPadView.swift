@@ -132,39 +132,52 @@ struct FrontDeskPadView: View {
 }
 
 // MARK: - Check-In tab
+// Privacy (surgeon's requirement): the front-desk screen can be seen across the counter, so this
+// tab never shows a browsable roster. Before any search it lists only today's patients — booked
+// today (operationDate) or checked in today (checkInTime), in the practice time zone — with the
+// name and time only (FrontDeskTodayList). Anyone else is found only by a real search: 3+ letters
+// of the name or an MRN, at most 5 matches (QuestionnairePatientSearch). Acuity appears only on
+// the selected row; the MRN on the selected row and on typed search results. The search is
+// cleared when the tab disappears.
 
 private struct FDCheckInView: View {
     @Query private var queriedAllPatients: [Patient]
     // Deleted/detached records are dropped before any view reads them (SwiftData
     // crashes when a body touches a deleted model before @Query refreshes).
     private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
-    @Environment(\.modelContext) private var context
 
     @State private var searchQuery = ""
     @State private var selectedPatient: Patient?
     @State private var showAddPatient = false
 
-    private var filteredPatients: [Patient] {
-        let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !q.isEmpty else { return Array(allPatients.prefix(30)) }
-        return allPatients.filter {
-            $0.fullName.lowercased().contains(q) ||
-            ($0.mrn?.lowercased().contains(q) ?? false) ||
-            ($0.phone?.lowercased().contains(q) ?? false)
-        }.prefix(30).map { $0 }
+    private var trimmedQuery: String { QuestionnairePatientSearch.normalized(searchQuery) }
+    private var isSearching: Bool { !trimmedQuery.isEmpty }
+
+    private var todaysPatients: [Patient] { FrontDeskTodayList.todaysPatients(allPatients) }
+
+    private var searchResults: [Patient] {
+        QuestionnairePatientSearch.matches(query: searchQuery, in: allPatients)
+    }
+
+    private var listedPatients: [Patient] { isSearching ? searchResults : todaysPatients }
+
+    /// The selected patient, only while the record is still live.
+    private var liveSelection: Patient? {
+        guard let p = selectedPatient, p.isLive else { return nil }
+        return p
     }
 
     var body: some View {
         NavigationStack {
             HStack(spacing: 0) {
-                // ── Left column: search + patient list ──────────────────────
+                // ── Left column: search + today's list / search results ───────
                 VStack(spacing: 0) {
                     // Explicit search bar — does NOT auto-focus on appear
                     HStack(spacing: 8) {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(.secondary)
                             .font(.system(size: 14))
-                        TextField("Search name, MRN or phone…", text: $searchQuery)
+                        TextField("Name (3+ letters) or MRN…", text: $searchQuery)
                             .autocorrectionDisabled()
                             .textInputAutocapitalization(.never)
                         if !searchQuery.isEmpty {
@@ -173,6 +186,7 @@ private struct FDCheckInView: View {
                                     .foregroundStyle(.secondary)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Clear search")
                         }
                     }
                     .padding(.horizontal, 12)
@@ -181,31 +195,18 @@ private struct FDCheckInView: View {
 
                     Divider()
 
-                    if filteredPatients.isEmpty {
-                        VStack(spacing: 12) {
-                            Spacer()
-                            if searchQuery.isEmpty {
-                                Image(systemName: "person.crop.circle")
-                                    .font(.system(size: 36)).foregroundStyle(.tertiary)
-                                Text("No patients registered yet")
-                                    .font(.subheadline).foregroundStyle(.secondary)
-                            } else {
-                                Text("No match for \"\(searchQuery)\"")
-                                    .font(.subheadline).foregroundStyle(.secondary)
-                                Button("Register New Patient") { showAddPatient = true }
-                                    .buttonStyle(.borderedProminent).tint(AMColor.accent)
-                            }
-                            Spacer()
-                        }
-                        .frame(maxWidth: .infinity)
+                    if listedPatients.isEmpty {
+                        emptyState
                     } else {
                         List {
                             Section {
-                                ForEach(filteredPatients) { patient in
-                                    let isSelected = selectedPatient?.persistentModelID == patient.persistentModelID
+                                ForEach(listedPatients) { patient in
+                                    let isSelected = liveSelection?.persistentModelID == patient.persistentModelID
                                     Button { selectedPatient = patient } label: {
                                         HStack(spacing: 0) {
-                                            FDPatientRow(patient: patient)
+                                            FDPatientRow(patient: patient,
+                                                         isSelected: isSelected,
+                                                         showsMRN: isSelected || isSearching)
                                             Spacer(minLength: 4)
                                             Image(systemName: "chevron.right")
                                                 .font(.system(size: 11, weight: .semibold))
@@ -220,8 +221,13 @@ private struct FDCheckInView: View {
                                     )
                                 }
                             } header: {
-                                Text("Tap a patient to open their details →")
+                                Text(isSearching ? "Search results" : "Today · booked or checked in")
                                     .font(.caption2).foregroundStyle(.tertiary).textCase(nil)
+                            } footer: {
+                                Text(isSearching
+                                     ? "At most \(QuestionnairePatientSearch.maxResults) matches appear."
+                                     : "For privacy, only today's patients are listed. Search to find anyone else.")
+                                    .font(.caption2).foregroundStyle(.tertiary)
                             }
                         }
                         .listStyle(.plain)
@@ -232,7 +238,7 @@ private struct FDCheckInView: View {
                 Rectangle().fill(Color(.separator)).frame(width: 1)
 
                 // ── Right panel: demographics ──────────────────────────────
-                if let patient = selectedPatient {
+                if let patient = liveSelection {
                     NavigationStack {
                         FDPatientDemographicsPanel(patient: patient)
                             .navigationTitle(patient.fullName)
@@ -247,7 +253,7 @@ private struct FDCheckInView: View {
                         Text("Select a Patient")
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.secondary)
-                        Text("Use the search on the left to find a patient,\nthen tap their row to open their details here.")
+                        Text("Tap a patient on today's list, or search by name (3+ letters)\nor MRN, then tap their row to open their details here.")
                             .font(.subheadline)
                             .foregroundStyle(.tertiary)
                             .multilineTextAlignment(.center)
@@ -269,37 +275,74 @@ private struct FDCheckInView: View {
         .sheet(isPresented: $showAddPatient) {
             AddPatientView(initialSetting: .outpatient)
         }
+        .onDisappear {
+            // Nothing typed here stays behind when staff leave the tab. The selected patient is
+            // kept: the demographics panel may be presenting the questionnaire full screen,
+            // which can make this tab disappear.
+            searchQuery = ""
+        }
+    }
+
+    @ViewBuilder
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Spacer()
+            if !isSearching {
+                Image(systemName: "calendar")
+                    .font(.system(size: 36)).foregroundStyle(.tertiary)
+                Text("No patients booked or checked in today")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                Text("Search by name (3+ letters) or MRN to find anyone else.")
+                    .font(.caption).foregroundStyle(.tertiary)
+                    .multilineTextAlignment(.center)
+            } else if QuestionnairePatientSearch.isNameSearch(trimmedQuery) {
+                Text("No match. Check the spelling or use the MRN.")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                Button("Register New Patient") { showAddPatient = true }
+                    .buttonStyle(.borderedProminent).tint(AMColor.accent)
+            } else {
+                Text("Type at least \(QuestionnairePatientSearch.minimumNameLength) letters of the name, or the MRN.")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity)
     }
 }
 
+/// One Check-In row: the name and today's time only. Acuity shows on the selected row only; the
+/// MRN on the selected row and on typed search results (to tell same-name matches apart).
 private struct FDPatientRow: View {
     let patient: Patient
+    let isSelected: Bool
+    let showsMRN: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 6) {
-                AcuityPip(acuity: patient.acuity)
+                if isSelected {
+                    AcuityPip(acuity: patient.acuity)
+                }
                 Text(patient.fullName)
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
             }
             HStack(spacing: 6) {
-                if let mrn = patient.mrn, !mrn.isEmpty {
+                if let slot = FrontDeskTodayList.slot(for: patient) {
+                    Label(FrontDeskTodayList.label(for: slot, timeZone: .ect),
+                          systemImage: slot.kind == .appointment ? "clock" : "person.fill.checkmark")
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+                if showsMRN, let mrn = patient.mrn, !mrn.isEmpty {
                     Text("MRN \(mrn)")
                         .font(.caption2.weight(.medium))
                         .foregroundStyle(AMColor.accent)
                 }
-                Text(patient.ageDisplay ?? "")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                Text(patient.sex.rawValue)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-            if let phone = patient.phone, !phone.isEmpty {
-                Text(phone)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 4)

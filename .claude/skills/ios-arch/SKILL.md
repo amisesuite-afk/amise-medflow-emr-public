@@ -281,6 +281,13 @@ the front-desk iPad, so it must never expose another patient's data:
   Walk-in answers are attached to a record only after staff exit (`WalkInAnswersAttachView`).
 - Patient lists for picking the questionnaire patient use `QuestionnairePatientSearch` (nothing
   until 3+ name characters or an MRN, max 5). Tests: `AmiseMedFlowTests/QuestionnairePrivacyTests.swift`.
+- The other front-desk patient lists follow the same privacy rule (the screen can be seen across
+  the counter). Check-In (iPad `FDCheckInView`, iPhone `CompactFrontDeskView`) lists before any
+  search only today's patients, booked (`operationDate`) or checked in (`checkInTime`) today in
+  `TimeZone.ect` (`Services/FrontDeskTodayList.swift`), by name and time; everyone else only via
+  `QuestionnairePatientSearch`; acuity only on the selected row; search cleared on leaving the tab.
+  The scheduler picker (`AppointmentSchedulerView`) has no default list. Clinician lists are not
+  affected. Tests: `AmiseMedFlowTests/FrontDeskListsTests.swift` (midnight AST edge cases).
 - No photo library inside the questionnaire (camera only), no staff triage labels (acuity).
 - `PreConsultEntrySheet` is staff transcription of a paper form, not patient-facing.
 
