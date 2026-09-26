@@ -58,6 +58,10 @@ final class SharedClinicalContentTests: XCTestCase {
         XCTAssertNotNil(LifestyleQuestions.content)
         XCTAssertTrue(LifestyleQuestions.isAvailable)
         XCTAssertEqual(LifestyleQuestions.content?.version, LifestylePractices.content?.version)
+
+        XCTAssertNotNil(NegationMatcher.cueFile)
+        XCTAssertTrue(NegationMatcher.isAvailable)
+        XCTAssertFalse(NegationMatcher.containsAffirmed("No guarding, no rebound", "rebound"))
     }
 
     /// The lifestyle labels are keyed by the stored values: every enum case has exactly one label.

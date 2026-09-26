@@ -187,6 +187,14 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     swift: { files: ['ios/AmiseMedFlow/Services/LifestyleQuestions.swift'], root: 'LifestyleQuestions.Content', ignore: HEADER_IGNORE },
     ts: { files: ['lib/triage-engine/src/lifestyle-questions.ts'], root: 'LifestyleQuestionFile', ignore: HEADER_IGNORE },
   },
+  // Negation cue lists (data only; the NegEx-style rule stays twinned, same vectors on both
+  // platforms: negation-parity.test.ts).
+  {
+    name: 'negation-cues',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/NegationMatcher.swift'], root: 'NegationMatcher.CueFile', ignore: HEADER_IGNORE },
+    ts: { files: ['lib/triage-engine/src/negation.ts'], root: 'NegationCueFile', ignore: HEADER_IGNORE },
+  },
 ];
 
 /** Key of a configured file in the problem list and `checked` ("zebra-rules", "vademecum/findings"). */

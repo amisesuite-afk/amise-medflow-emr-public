@@ -3,10 +3,11 @@
  * dashboard's consultation engines (clinical prompts, dx variants, PANE feature mapping,
  * passive ranking).
  *
- * iOS twin: ios/AmiseMedFlow/Services/NegationMatcher.swift (same rule, cue lists and windows).
- * Change both together; scripts/src/negation-parity.test.ts checks that the two test files
- * (artifacts/dashboard/src/lib/__tests__/negation.test.ts, ios/AmiseMedFlowTests/NegationMatcherTests.swift)
- * keep the same vectors.
+ * iOS twin: ios/AmiseMedFlow/Services/NegationMatcher.swift (same rule and windows). The cue
+ * lists are one shared file both read, clinical-content/rules/negation-cues.json (change the JSON,
+ * not a platform copy); the rule is twinned: change both together. scripts/src/negation-parity.test.ts
+ * checks that the two test files (artifacts/dashboard/src/lib/__tests__/negation.test.ts,
+ * ios/AmiseMedFlowTests/NegationMatcherTests.swift) keep the same vectors.
  *
  * Clinicians document pertinent negatives ("No guarding, no rebound", "Murphy's sign negative",
  * "afebrile", "not jaundiced"). A plain substring or regex test reads those as positive findings,
@@ -52,6 +53,8 @@
  * boundaries ("hinchey i" must not match "hinchey iii", "thyroidectomy" must not match
  * "parathyroidectomy").
  */
+
+import rawCues from '../../../clinical-content/rules/negation-cues.json';
 
 export interface AffirmedMatchOptions {
   /**
@@ -109,60 +112,74 @@ function tokenize(lower: string): Token[] {
   return tokens;
 }
 
+// ── Cue lists: the shared clinical rule file clinical-content/rules/negation-cues.json ─────────
+// NegationMatcher.swift reads the same file (through SharedClinicalContent); lint:shared-content
+// checks it against its schema and both platforms' types. The rule below stays twinned.
+
+/** clinical-content/rules/negation-cues.json. */
+export interface NegationCueFile {
+  version: string;
+  /** Pre-negation cues → the number of words allowed between the cue and the term. */
+  preCues: Record<string, number>;
+  /** Contractions that negate (deliberately excludes can't / couldn't / won't: "can't swallow"). */
+  negatingContractions: string[];
+  /** Words that, directly after a cue, make it a pseudo-negation ("no change", "not improving"). */
+  pseudoAfter: Record<string, string[]>;
+  /** After "not", "never" or a negating contraction: a double negative or a hedge. */
+  pseudoAfterVerbNegation: string[];
+  /** Words between a verb negation and a double-negative verb ("has not yet settled"). */
+  verbNegationFillers: string[];
+  /** Words that end a negation scope: a new assertion starts. */
+  scopeTerminators: string[];
+  /** Words that continue a negation scope without counting towards the window. */
+  scopeContinuers: string[];
+  /** Post-negation cues. */
+  postCues: string[];
+  /** "not X" after a term: "rebound not elicited". */
+  notFollowers: string[];
+  /** Words skipped (not counted) between a term and a post-cue. */
+  copulas: string[];
+  /** Whole words that negate a root found inside them. */
+  fusedNegatives: string[];
+  /** "pain-free", "symptom-free": the term's word followed by a hyphen and one of these. */
+  hyphenFree: string[];
+  maxPreWindow: number;
+}
+
+const CUES = rawCues as unknown as NegationCueFile;
+/** Content version of the shared cue lists. */
+export const NEGATION_CUES_VERSION: string = CUES.version;
+
 /** Pre-negation cues → the number of words allowed between the cue and the term. */
-const PRE_CUES: Record<string, number> = {
-  no: 5, not: 5, nil: 5, denies: 5, denied: 5, deny: 5, denying: 5, without: 5, never: 5,
-  neither: 5, absence: 5,
-  negative: 1, neg: 1, absent: 1,
-  non: 0,
-};
+const PRE_CUES: Record<string, number> = CUES.preCues;
 
 /** Contractions that negate (deliberately excludes can't / couldn't / won't: "can't swallow"). */
-const NEGATING_CONTRACTIONS = new Set([
-  "doesn't", "don't", "didn't", "isn't", "wasn't", "aren't", "weren't", "hasn't", "haven't", "hadn't",
-]);
+const NEGATING_CONTRACTIONS: ReadonlySet<string> = new Set(CUES.negatingContractions);
 
 /** Words that, directly after a cue, make it a pseudo-negation ("no change", "not improving"). */
-const PSEUDO_AFTER: Record<string, ReadonlySet<string>> = {
-  no: new Set(['change', 'changes', 'increase', 'improvement', 'better', 'relief', 'doubt', 'significant']),
-  not: new Set([
-    'only', 'improving', 'improved', 'improve', 'relieved', 'settling', 'settled', 'responding', 'responded',
-    'controlled', 'certain', 'sure', 'clear', 'excluded', 'ruled', 'necessarily',
-  ]),
-  without: new Set(['improvement', 'relief', 'response', 'delay']),
-  nil: new Set(['by']),
-};
+const PSEUDO_AFTER: Record<string, ReadonlySet<string>> = Object.fromEntries(
+  Object.entries(CUES.pseudoAfter).map(([cue, words]) => [cue, new Set(words)]),
+);
 
 /** Words that end a negation scope: a new assertion starts. */
-const SCOPE_TERMINATORS = new Set([
-  'but', 'however', 'although', 'though', 'except', 'yet', 'whereas', 'while', 'whilst', 'apart', 'other',
-  'besides', 'despite', 'and', 'with', 'which', 'who', 'has', 'have', 'had', 'shows', 'showed', 'showing',
-  'reveals', 'revealed', 'demonstrates', 'demonstrated', 'plus', 'then', 'now', 'still', 'because', 'due',
-  'reports', 'reported', 'complains', 'complained', 'presents', 'presented', 'describes', 'described',
-]);
+const SCOPE_TERMINATORS: ReadonlySet<string> = new Set(CUES.scopeTerminators);
 
 /** Words that continue a negation scope without counting towards the window. */
-const SCOPE_CONTINUERS = new Set(['or', 'nor']);
+const SCOPE_CONTINUERS: ReadonlySet<string> = new Set(CUES.scopeContinuers);
 
 /** Post-negation cues. */
-const POST_CUES = new Set(['negative', 'neg', 'absent', 'nil', 'none', 'excluded']);
+const POST_CUES: ReadonlySet<string> = new Set(CUES.postCues);
 /** "not X" after a term: "rebound not elicited". */
-const NOT_FOLLOWERS = new Set([
-  'present', 'seen', 'elicited', 'demonstrated', 'identified', 'detected', 'found', 'palpable', 'felt', 'noted',
-  'evident', 'visualised', 'visualized', 'appreciated',
-]);
+const NOT_FOLLOWERS: ReadonlySet<string> = new Set(CUES.notFollowers);
 /** Words skipped (not counted) between a term and a post-cue. */
-const COPULAS = new Set(['is', 'was', 'are', 'were', 'be', 'been', 'remains', 'remained', 'appears', 'appeared']);
+const COPULAS: ReadonlySet<string> = new Set(CUES.copulas);
 
 /** Whole words that negate a root found inside them. */
-const FUSED_NEGATIVES = new Set([
-  'afebrile', 'apyrexial', 'apyrexic', 'anicteric', 'asymptomatic', 'atraumatic',
-  'nontender', 'nondistended', 'nonpalpable', 'impalpable', 'irreducible', 'painless',
-]);
+const FUSED_NEGATIVES: ReadonlySet<string> = new Set(CUES.fusedNegatives);
 /** "pain-free", "symptom-free": the term's word followed by a hyphen and one of these. */
-const HYPHEN_FREE = new Set(['free']);
+const HYPHEN_FREE: ReadonlySet<string> = new Set(CUES.hyphenFree);
 
-const MAX_PRE_WINDOW = 6;
+const MAX_PRE_WINDOW: number = CUES.maxPreWindow;
 
 function isWordChar(ch: string | undefined): boolean {
   return ch !== undefined && /[\p{L}\p{N}]/u.test(ch);
@@ -231,11 +248,9 @@ function cueAt(tokens: Token[], i: number): number | null {
  * After "not", "never" or a negating contraction: a double negative or a hedge ("hasn't stopped
  * bleeding", "not settling", "don't know if it's bleeding") — the finding is present or uncertain.
  */
-const PSEUDO_AFTER_VERB_NEGATION = new Set([
-  'stopped', 'stopping', 'stop', 'gone', 'going', 'settled', 'settling', 'eased', 'easing', 'better', 'improved',
-  'improving', 'resolved', 'resolving', 'subsided', 'subsiding', 'relieved', 'controlled', 'responding', 'responded',
-  'know', 'think', 'remember', 'sure', 'certain',
-]);
+const PSEUDO_AFTER_VERB_NEGATION: ReadonlySet<string> = new Set(CUES.pseudoAfterVerbNegation);
+/** Words between a verb negation and a double-negative verb ("has not yet settled"). */
+const VERB_NEGATION_FILLERS: ReadonlySet<string> = new Set(CUES.verbNegationFillers);
 
 function isPseudoNegation(tokens: Token[], cueIdx: number): boolean {
   const cue = tokens[cueIdx].text;
@@ -247,7 +262,7 @@ function isPseudoNegation(tokens: Token[], cueIdx: number): boolean {
   // "doesn't seem to have stopped", "has not yet settled": look one word further.
   const n2 = nextWordIndex(tokens, n);
   return (cue === 'not' || NEGATING_CONTRACTIONS.has(cue)) && n2 >= 0 && PSEUDO_AFTER_VERB_NEGATION.has(tokens[n2].text)
-    && (next === 'yet' || next === 'really' || next === 'fully' || next === 'completely' || next === 'been' || next === 'had');
+    && VERB_NEGATION_FILLERS.has(next);
 }
 
 function preNegated(tokens: Token[], wordStart: number): boolean {

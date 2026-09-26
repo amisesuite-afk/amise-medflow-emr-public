@@ -10,7 +10,7 @@
 // `ZebraCheck.RuleFile`, `SupplementCatalogue.Content`, `LifestylePractices.Content`,
 // `ExamEvidenceCatalogue.SignsFile` / `.RulesFile`, `DiagnosticReasoningRules.RuleFile`,
 // `TreatmentDecisions.Content`, `WhatsMissing.Rules`, `VisitContinuity.WordRules`,
-// `LifestyleQuestions.Content`) through
+// `LifestyleQuestions.Content`, `NegationMatcher.CueFile`) through
 // `load(_:_:)`. A missing file or a decode failure never crashes and never guesses: the engine
 // gets nil and shows nothing (no zebra, no supplement prompt, no lifestyle prompt), the failure is
 // written to the unified log, and Settings → Diagnostics lists every file with its version or
@@ -67,6 +67,7 @@ enum SharedClinicalContent {
         case whatsMissingRules = "whats-missing-rules"
         case visitContinuity = "visit-continuity"
         case lifestyleQuestions = "lifestyle-questions"
+        case negationCues = "negation-cues"
 
         /// Row title in Settings → Diagnostics.
         var title: String {
@@ -84,6 +85,7 @@ enum SharedClinicalContent {
             case .whatsMissingRules:   return "What's missing rules"
             case .visitContinuity:     return "Visit continuity words"
             case .lifestyleQuestions:  return "Lifestyle questionnaire questions"
+            case .negationCues:        return "Negation cues"
             }
         }
     }
@@ -225,6 +227,9 @@ enum SharedClinicalContent {
             checked = errorAndSource(decodeWithSource(VisitContinuity.WordRules.self, file, bundle: bundle))
         case .lifestyleQuestions:
             checked = errorAndSource(decodeWithSource(LifestyleQuestions.Content.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(LifestyleQuestions.Content.self, file, bundle: bundle))
+        case .negationCues:
+            checked = errorAndSource(decodeWithSource(NegationMatcher.CueFile.self, file, bundle: bundle))
         }
         let failure = checked.failure
         let source = checked.source

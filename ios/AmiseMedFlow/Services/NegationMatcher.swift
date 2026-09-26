@@ -2,9 +2,15 @@ import Foundation
 
 // MARK: - Negation-aware free-text matching
 //
-// Swift twin of `lib/triage-engine/src/negation.ts` (web). Same rule, same cue lists, same windows;
-// the test vectors in `AmiseMedFlowTests/NegationMatcherTests.swift` mirror
-// `artifacts/dashboard/src/lib/__tests__/negation.test.ts`. Change both together.
+// Swift twin of `lib/triage-engine/src/negation.ts` (web). Same rule, same windows; the cue lists
+// are one shared file both platforms read, clinical-content/rules/negation-cues.json (here through
+// SharedClinicalContent, File.negationCues; lint:shared-content checks `CueFile` against its schema).
+// The test vectors in `AmiseMedFlowTests/NegationMatcherTests.swift` mirror
+// `artifacts/dashboard/src/lib/__tests__/negation.test.ts`. Change the rule on both platforms together.
+//
+// A missing or undecodable cue file gives empty cue lists: nothing is negated, so every match is
+// kept (the safety bias below: over-triage rather than a missed finding), and Settings →
+// Diagnostics says why.
 //
 // Clinicians document pertinent negatives ("No guarding, no rebound", "Murphy's sign negative",
 // "afebrile", "not jaundiced", "No crepitus"). A plain `contains` reads those as positive findings,
@@ -302,78 +308,82 @@ enum NegationMatcher {
         return tokens
     }
 
-    // MARK: - Cue lists (identical to negation.ts)
+    // MARK: - Cue lists (shared file clinical-content/rules/negation-cues.json)
+
+    /// clinical-content/rules/negation-cues.json (checked against its schema by lint:shared-content).
+    struct CueFile: Codable {
+        let version: String
+        /// Pre-negation cues → the number of words allowed between the cue and the term.
+        let preCues: [String: Int]
+        /// Contractions that negate (deliberately excludes can't / couldn't / won't: "can't swallow").
+        let negatingContractions: [String]
+        /// Words that, directly after a cue, make it a pseudo-negation ("no change", "not improving").
+        let pseudoAfter: [String: [String]]
+        /// After "not", "never" or a negating contraction: a double negative or a hedge.
+        let pseudoAfterVerbNegation: [String]
+        /// Words between a verb negation and a double-negative verb ("has not yet settled").
+        let verbNegationFillers: [String]
+        /// Words that end a negation scope: a new assertion starts.
+        let scopeTerminators: [String]
+        /// Words that continue a negation scope without counting towards the window.
+        let scopeContinuers: [String]
+        /// Post-negation cues.
+        let postCues: [String]
+        /// "not X" after a term: "rebound not elicited".
+        let notFollowers: [String]
+        /// Words skipped (not counted) between a term and a post-cue.
+        let copulas: [String]
+        /// Whole words that negate a root found inside them.
+        let fusedNegatives: [String]
+        /// "pain-free", "symptom-free": the term's word followed by a hyphen and one of these.
+        let hyphenFree: [String]
+        let maxPreWindow: Int
+    }
+
+    /// The shared cue lists (nil when the file is missing or does not decode: nothing is negated).
+    static let cueFile: CueFile? = SharedClinicalContent.load(CueFile.self, .negationCues)
+
+    /// The cue lists are loaded. When false, no occurrence is negated (every match is kept).
+    static var isAvailable: Bool { cueFile != nil }
 
     /// Pre-negation cues → the number of words allowed between the cue and the term.
-    private static let preCues: [String: Int] = [
-        "no": 5, "not": 5, "nil": 5, "denies": 5, "denied": 5, "deny": 5, "denying": 5, "without": 5,
-        "never": 5, "neither": 5, "absence": 5,
-        "negative": 1, "neg": 1, "absent": 1,
-        "non": 0,
-    ]
+    private static let preCues: [String: Int] = cueFile?.preCues ?? [:]
 
     /// Contractions that negate (deliberately excludes can't / couldn't / won't: "can't swallow").
-    private static let negatingContractions: Set<String> = [
-        "doesn't", "don't", "didn't", "isn't", "wasn't", "aren't", "weren't", "hasn't", "haven't", "hadn't",
-    ]
+    private static let negatingContractions: Set<String> = Set(cueFile?.negatingContractions ?? [])
 
     /// Words that, directly after a cue, make it a pseudo-negation ("no change", "not improving").
-    private static let pseudoAfter: [String: Set<String>] = [
-        "no": ["change", "changes", "increase", "improvement", "better", "relief", "doubt", "significant"],
-        "not": [
-            "only", "improving", "improved", "improve", "relieved", "settling", "settled", "responding", "responded",
-            "controlled", "certain", "sure", "clear", "excluded", "ruled", "necessarily",
-        ],
-        "without": ["improvement", "relief", "response", "delay"],
-        "nil": ["by"],
-    ]
+    private static let pseudoAfter: [String: Set<String>] = (cueFile?.pseudoAfter ?? [:]).mapValues { Set($0) }
 
     /// Words that end a negation scope: a new assertion starts.
-    private static let scopeTerminators: Set<String> = [
-        "but", "however", "although", "though", "except", "yet", "whereas", "while", "whilst", "apart", "other",
-        "besides", "despite", "and", "with", "which", "who", "has", "have", "had", "shows", "showed", "showing",
-        "reveals", "revealed", "demonstrates", "demonstrated", "plus", "then", "now", "still", "because", "due",
-        "reports", "reported", "complains", "complained", "presents", "presented", "describes", "described",
-    ]
+    private static let scopeTerminators: Set<String> = Set(cueFile?.scopeTerminators ?? [])
 
     /// Words that continue a negation scope without counting towards the window.
-    private static let scopeContinuers: Set<String> = ["or", "nor"]
+    private static let scopeContinuers: Set<String> = Set(cueFile?.scopeContinuers ?? [])
 
     /// Post-negation cues.
-    private static let postCues: Set<String> = ["negative", "neg", "absent", "nil", "none", "excluded"]
+    private static let postCues: Set<String> = Set(cueFile?.postCues ?? [])
 
     /// "not X" after a term: "rebound not elicited".
-    private static let notFollowers: Set<String> = [
-        "present", "seen", "elicited", "demonstrated", "identified", "detected", "found", "palpable", "felt", "noted",
-        "evident", "visualised", "visualized", "appreciated",
-    ]
+    private static let notFollowers: Set<String> = Set(cueFile?.notFollowers ?? [])
 
     /// Words skipped (not counted) between a term and a post-cue.
-    private static let copulas: Set<String> = [
-        "is", "was", "are", "were", "be", "been", "remains", "remained", "appears", "appeared",
-    ]
+    private static let copulas: Set<String> = Set(cueFile?.copulas ?? [])
 
     /// Whole words that negate a root found inside them.
-    private static let fusedNegatives: Set<String> = [
-        "afebrile", "apyrexial", "apyrexic", "anicteric", "asymptomatic", "atraumatic",
-        "nontender", "nondistended", "nonpalpable", "impalpable", "irreducible", "painless",
-    ]
+    private static let fusedNegatives: Set<String> = Set(cueFile?.fusedNegatives ?? [])
 
     /// "pain-free", "symptom-free": the term's word followed by a hyphen and one of these.
-    private static let hyphenFree: Set<String> = ["free"]
+    private static let hyphenFree: Set<String> = Set(cueFile?.hyphenFree ?? [])
 
     /// After "not", "never" or a negating contraction: a double negative or a hedge ("hasn't stopped
     /// bleeding", "not settling", "don't know if it's bleeding") — the finding is present or uncertain.
-    private static let pseudoAfterVerbNegation: Set<String> = [
-        "stopped", "stopping", "stop", "gone", "going", "settled", "settling", "eased", "easing", "better", "improved",
-        "improving", "resolved", "resolving", "subsided", "subsiding", "relieved", "controlled", "responding", "responded",
-        "know", "think", "remember", "sure", "certain",
-    ]
+    private static let pseudoAfterVerbNegation: Set<String> = Set(cueFile?.pseudoAfterVerbNegation ?? [])
 
     /// Words between a verb negation and a double-negative verb ("has not yet settled").
-    private static let verbNegationFillers: Set<String> = ["yet", "really", "fully", "completely", "been", "had"]
+    private static let verbNegationFillers: Set<String> = Set(cueFile?.verbNegationFillers ?? [])
 
-    private static let maxPreWindow = 6
+    private static let maxPreWindow: Int = cueFile?.maxPreWindow ?? 0
 
     // MARK: - Rule
 

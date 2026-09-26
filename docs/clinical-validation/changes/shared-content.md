@@ -116,6 +116,7 @@ identical to the file it replaces (checked by a structural comparison before and
 | `treatment-decision-support` 1.0.0 | `treatment-decisions.json` (moved from `lib/pane-engine/src/decision/`) + `treatment-decisions.schema.json` | `lib/pane-engine/src/decision/index.ts` (`DECISION_CONTENT`, types in `types.ts`) | `TreatmentDecisionContent.swift` (`TreatmentDecisions.Content`, `SharedClinicalContent.File.treatmentDecisions`) | `ios/AmiseMedFlow/Resources/TreatmentDecisions.json` (byte-identical copy, deleted) |
 | `whats-missing` 1.0.0 | `whats-missing-rules.json` (moved from `lib/pane-engine/src/whats-missing/`) + `whats-missing-rules.schema.json` | `lib/pane-engine/src/whats-missing/rules.ts` (`WHATS_MISSING_RULES`) | `WhatsMissingRules.swift` (`WhatsMissing.Rules`, `SharedClinicalContent.File.whatsMissingRules`) | `ios/AmiseMedFlow/Resources/WhatsMissingRules.json` (byte-identical copy, deleted) |
 | `lifestyle-practices` 0.1.0 (questionnaire wording) | `lifestyle-questions.json` (a companion file of `lifestyle-practices.json`: same registry id and version; 3 questions with their text, help text, option values, labels and `triggersKeys`, and the 3 "(patient-reported)" line labels) + `lifestyle-questions.schema.json` | `lib/triage-engine/src/lifestyle-questions.ts` (`LIFESTYLE_QUESTIONS`, line labels; new `LIFESTYLE_QUESTIONS_VERSION`) | `LifestyleQuestions.swift` (`LifestyleQuestions.Content`, `SharedClinicalContent.File.lifestyleQuestions`) | the TS question literals and line labels; the Swift text, option and prefix literals. The queue rule (`placeLifestyleQuestions`, templates) and the iOS answer logic stay in code |
+| `negation-cues` 1.0.0 (new registry entry; `negation.ts` was under `excluded`) | `negation-cues.json` (15 pre-negation cues with windows, 10 negating contractions, pseudo-negations after 4 cues, 25 double-negative verbs and 6 fillers, 41 scope terminators, 2 continuers, 6 post-cues, 14 "not X" followers, 10 copulas, 12 fused negatives, "-free", window 6) + `negation-cues.schema.json` | `lib/triage-engine/src/negation.ts` (new `NEGATION_CUES_VERSION`) | `NegationMatcher.swift` (`NegationMatcher.CueFile`, `SharedClinicalContent.File.negationCues`) | the TS and Swift cue literals; the rule stays twinned |
 | `visit-continuity` 1.0.0 (new registry entry; was under `excluded`) | `visit-continuity.json` (58 stop words, 6 body regions / 46 words, suffixes `ing` / `ed` / `s` unless ending `ss` with at least 4 letters left, minimum word length 4) + `visit-continuity.schema.json` | `lib/triage-engine/src/visit-continuity.ts` (`VISIT_CONTINUITY_WORD_RULES`, new `VISIT_CONTINUITY_RULES_VERSION`) | `VisitContinuity.swift` (`VisitContinuity.WordRules`, `SharedClinicalContent.File.visitContinuity`) | the TS and Swift stop-word lists, region maps and suffix literals; the matching logic stays twinned |
 
 Lint additions (`scripts/src/shared-content.ts`, unit-tested in `shared-content.test.ts`): a
@@ -170,6 +171,20 @@ repository root. On iOS a missing or undecodable file means `LifestyleQuestions.
 false: the iPad questionnaire asks no lifestyle question (`asksLifestyleQuestions`), no
 "(patient-reported)" line is written, and none is read back from `pmhNotes`.
 
+**Negation cues.** The web and iOS lists were compared first, list by list (a script parsed both
+sources): every list is identical, in the same order, and so are the windows (5 / 1 / 0) and the
+pre-window limit (6). The one difference is form, not content: the web wrote the double-negative
+fillers inline (`next === 'yet' || …`), iOS as a set; both now read `verbNegationFillers`. The JSON
+was generated from the web source and cross-checked against the Swift source. Behaviour evidence:
+the negation vectors (`negation.test.ts`, the same vectors as `NegationMatcherTests.swift` by
+`negation-parity.test.ts`), every negation-aware engine test and `clinval:web` (0 blocking) pass
+unchanged. On iOS a missing or undecodable file gives empty cue lists: nothing is negated, so every
+match is kept (the matcher's documented safety bias: over-triage, never a hidden finding).
+
+**Not moved.** Drug interactions and classes (out of scope for this phase by decision: they need
+their own data lint and the opioid + benzodiazepine grade decision). The record-clauses list
+vocabulary (`record-clauses.ts` / `RecordClauses.swift`) stays twinned with its shared vectors.
+
 ### For the iOS CI to confirm (phase 2; Swift cannot be compiled here)
 
 1. The app bundle has `rules/treatment-decisions.json` and no `TreatmentDecisions.json` at the
@@ -200,6 +215,14 @@ false: the iPad questionnaire asks no lifestyle question (`asksLifestyleQuestion
    `testSharedQuestionsLoaded`; the existing line and read-back tests pin the wording end to end)
    and `SharedClinicalContentTests` pass; Settings → Diagnostics lists "Lifestyle questionnaire
    questions 0.1.0".
+7. The app bundle has `rules/negation-cues.json`; `NegationMatcher.swift` (new `CueFile` Codable
+   struct, `cueFile`, `isAvailable`; the cue statics now read the file) compiles.
+   `NegationMatcherTests` (the shared vectors), `RecordClauseTests`, every engine test that reads
+   text through `NegationMatcher`, `SharedClinicalContentTests` and the iOS clinical-validation run
+   pass unchanged; Settings → Diagnostics lists "Negation cues 1.0.0".
+8. On a device after phase 2: Settings → Diagnostics → "Shared clinical rules: 11 of 11 loaded", and
+   no `Resources/TreatmentDecisions.json` / `Resources/WhatsMissingRules.json` in the app bundle
+   (`lint:shared-content` fails if either comes back into the repository).
 
 ### Needs sign-off (phase 2)
 
@@ -221,3 +244,7 @@ Nothing clinical: no content changed. The existing sign-off lists still apply
    `lifestyle-practices` rule set) and is now also held to `lint:patient-instructions`. Also confirm
    the iOS fallback: if the file cannot be read, the iPad questionnaire does not ask the lifestyle
    questions.
+6. P1 matching, governance only (verbatim move). Confirm — the negation cue lists used by every
+   free-text matcher on both platforms are now a registered rule set, `negation-cues` 1.0.0, in one
+   shared file; no cue or window changed. Also confirm the iOS fallback: if the file cannot be read,
+   nothing is negated and every mention counts (over-triage rather than a hidden finding).

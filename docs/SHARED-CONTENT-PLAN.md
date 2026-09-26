@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | Phase 1 done (2026-09-26, branch `shared-content`). Phase 2 in progress (2026-09-26, branch `shared-content-p2`; per-row status below). Owner-approved item |
+| Status | Phase 1 done (2026-09-26, branch `shared-content`). Phase 2 done (2026-09-26, branch `shared-content-p2`): treatment decisions, what's missing, visit continuity, lifestyle questionnaire wording, negation cues; drug interactions deferred. Owner-approved item |
 | Mechanism | `clinical-content/rules/*.json` + `clinical-content/schemas/*.schema.json`, checked by `pnpm --filter @workspace/scripts run lint:shared-content` |
 | Related | `docs/CLINICAL-CONTENT-INVENTORY.md`, `clinical-content/registry.json`, `docs/CLINICAL-CONTENT-UPGRADES.md` §10, change log `docs/clinical-validation/changes/shared-content.md` |
 
@@ -34,8 +34,8 @@ disagree today, judged from the parity mechanism.
 | Visit continuity: stop words, body-region map, suffix rules (`visit-continuity`, registered in phase 2) | `triage-engine/src/visit-continuity.ts` (logic) | `Services/VisitContinuity.swift` (logic) | Was: vectors ported by hand (DRIFT NOTE). Now: **`clinical-content/rules/visit-continuity.json`** (word rules), `lint:shared-content`, shared vectors `VisitContinuityVectors.json` + the ported vectors | **Yes — data; logic twinned** | 270 / 120 | P3 | Low (data shared, logic pinned by shared vectors) | **2 — done (2026-09-26)** |
 | Lifestyle questionnaire questions (`lifestyle-practices`) | `triage-engine/src/lifestyle-questions.ts` (queue rule) | `Services/LifestyleQuestions.swift` (answers, lines) | Was: `lifestyle-questions-ios-parity.test.ts` parsed the Swift source. Now: **`clinical-content/rules/lifestyle-questions.json`** (a companion file of `lifestyle-practices`, same version; `COMPANION_FILES` in the lint), `lint:shared-content`, `lint:patient-instructions` reads the web export | **Yes — wording; logic twinned** | 115 / 204 | P2 (patient-facing wording) | None (one file) | **2 — done (2026-09-26)** |
 | Diagnostic-reasoning thresholds, probe-cost terms, time-out checklist, longitudinal thresholds, other-specimen terms, adapter rules (`diagnostic-reasoning-rules`) | `diagnostic-reasoning/core.ts`, `longitudinal.ts`, `families.ts`, `adapter-rules.ts` | `DiagnosticReasoningCore.swift`, `DiagnosticReasoningRules.swift`, `LongitudinalPatterns.swift`, `ZebraCheck.swift` | **`clinical-content/rules/diagnostic-reasoning-rules.json`** (thresholds, families vocabulary, label matching, contradiction threshold, coexisting states; iOS compiles the thresholds in, pinned by `diagnostic-reasoning-parity.test.ts`) + shared vectors `DiagnosticReasoningVectors.json` | Half: rules data shared, logic twinned with vectors | 707 / 676 (mostly logic) | P1 | Low-medium | **2 — rules file done (2026-09-26)** |
-| Negation cues and scope rules | `triage-engine/src/negation.ts` | `Services/NegationMatcher.swift` | `negation-parity.test.ts` compares the two test-vector lists, not the cue lists | No | 460 / 585 | P1 (used by every matcher) | Medium | 2 (cue lists only; logic stays) |
-| Drug interactions and classes, incl. the 41 herbal / supplement–drug rules (`drug-interactions`) | `dashboard/src/lib/drug-interactions.ts`, `drug-classes.ts` | `DrugInteractionService.swift`, `DrugClasses.swift` | `lint:interaction-parity` (pairs, members, grades; one allow-listed grade difference) | No | 1,070 / 1,933 | P1 | Low (strong lint) but large | 2 (own lint; out of scope for phase 1) |
+| Negation cues and scope rules (`negation-cues`, registered in phase 2) | `triage-engine/src/negation.ts` (rule) | `Services/NegationMatcher.swift` (rule) | Was: `negation-parity.test.ts` compared the two test-vector lists, not the cue lists (they were identical, same order). Now: **`clinical-content/rules/negation-cues.json`** (cue lists), `lint:shared-content`, vectors still compared | **Yes — cue lists; rule twinned** | 460 / 585 | P1 (used by every matcher) | Low (lists shared, rule pinned by vectors) | **2 — done (2026-09-26)** |
+| Drug interactions and classes, incl. the 41 herbal / supplement–drug rules (`drug-interactions`) | `dashboard/src/lib/drug-interactions.ts`, `drug-classes.ts` | `DrugInteractionService.swift`, `DrugClasses.swift` | `lint:interaction-parity` (pairs, members, grades; one allow-listed grade difference) | No | 1,070 / 1,933 | P1 | Low (strong lint) but large | 2b — **not moved in phase 2** (out of scope by decision: needs its own data lint and the opioid + benzodiazepine grade decision first) |
 | NG12 suspected cancer (`cancer-screening` / `ios-suspected-cancer-screening`) | `triage-engine/src/cancer-screening.ts` | `SuspectedCancerScreening.swift`, `+Prompt.swift` | Ported tests (`SuspectedCancerScreeningTests`, 22); version stamps 1.1.0 on both, not compared | No | 514 / 459 | P2 | Medium-high | 3 |
 | Preventive screening (`preventive-screening` / `ios-screening-engine`) | `triage-engine/src/screening/preventive.ts` | `ScreeningEngine` in `Views/Consultation/PathwayData.swift` | None; known differences listed in `fix-web-screening.md` | No | 892 / ~285 | P2 | High (known to differ) | 3 (needs a clinical decision on the differences first) |
 | NEWS2 bands (`news2`) | `triage-engine/src/news2.ts` | `Services/NEWS2Chart.swift` | Same RCP boundary vectors in `news2.test.ts` and `NEWS2Tests.swift` (27), not compared automatically | No | 325 / 264 | P1 | Low | 3 (bands are small and code-shaped; move with a shared vector file) |
@@ -102,6 +102,16 @@ JSON, so it waits for the phase-2 relocation.
 5. Drug interactions and classes, with the supplement–drug rules, under their own lint: rules as
    `{a, b, severity, effect, action}` data, class member lists as data; `lint:interaction-parity`
    becomes a data check (the grade allow-list moves into the file as an explicit, reviewed field).
+
+**Phase 2 — status (2026-09-26, branch `shared-content-p2`).** Done, in this order: the
+treatment-decision table and the what's-missing rules (relocated, iOS copies deleted), the
+visit-continuity word rules (new registry entry `visit-continuity`), the lifestyle questionnaire
+wording (a companion file of `lifestyle-practices`), the negation cue lists (new registry entry
+`negation-cues`). No content changed; every move was checked by a before/after comparison (see
+`docs/clinical-validation/changes/shared-content.md`, Phase 2). Not done: drug interactions and
+classes (deferred by decision, item 5 above). Still twinned and worth a later look: the
+record-clauses list vocabulary (`record-clauses.ts` / `RecordClauses.swift`, derived from the
+negation cues but with its own additions; shared vectors already).
 
 **Phase 3 (clinical reconciliation first).** NG12 suspected cancer, preventive screening, NEWS2
 bands, plan safety filters, emergency recognition. These differ today, or are P1 with rule logic

@@ -125,6 +125,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/triage-engine/src/lifestyle-questions.ts',
   'lib/triage-engine/src/visit-continuity.ts',
   'ios/AmiseMedFlow/Services/VisitContinuity.swift',
+  'lib/triage-engine/src/negation.ts',
+  'ios/AmiseMedFlow/Services/NegationMatcher.swift',
   // Diagnostic reasoning layer (web + iOS twins)
   'lib/triage-engine/src/diagnostic-reasoning/*.ts',
   'artifacts/dashboard/src/lib/diagnostic-reasoning.ts',

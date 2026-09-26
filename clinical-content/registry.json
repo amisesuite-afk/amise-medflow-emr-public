@@ -1085,6 +1085,48 @@
       ]
     },
     {
+      "id": "negation-cues",
+      "title": "Negation cue lists of the negation-aware text matcher (NegEx-style: pre- and post-negation cues with windows, pseudo-negations, scope terminators, fused negatives)",
+      "platforms": ["web", "ios", "api", "front-desk"],
+      "kind": "mapping",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "clinical-content/rules/negation-cues.json", "type": "json-key", "key": "version" },
+      "files": [
+        "clinical-content/rules/negation-cues.json",
+        "clinical-content/schemas/negation-cues.schema.json",
+        "lib/triage-engine/src/negation.ts",
+        "ios/AmiseMedFlow/Services/NegationMatcher.swift"
+      ],
+      "tests": [
+        "artifacts/dashboard/src/lib/__tests__/negation.test.ts",
+        "ios/AmiseMedFlowTests/NegationMatcherTests.swift",
+        "scripts/src/negation-parity.test.ts",
+        "ios/AmiseMedFlowTests/SharedClinicalContentTests.swift",
+        "scripts/src/shared-content.test.ts"
+      ],
+      "ciChecks": [
+        "lint:shared-content (clinical-content/rules/negation-cues.json is the single source of the cue lists for web and iOS)",
+        "scripts vitest negation-parity (web and iOS test vectors identical)",
+        "dashboard vitest (negation.test.ts and every negation-aware engine test)",
+        "ios-build-check.yml unit tests (NegationMatcherTests: the same vectors)",
+        "clinval:web"
+      ],
+      "guidelines": [
+        { "name": "NegEx", "version": "2001", "section": "Pre- and post-negation triggers, pseudo-negations, scope", "citation": "Chapman WW et al. A simple algorithm for identifying negated findings and diseases in discharge summaries. J Biomed Inform 2001;34:301-310 (method only; the cue lists are the practice's own)" }
+      ],
+      "citationStatus": "file-header",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Engineering lists built from the clinical-validation findings (2026-09: pertinent negatives read as positive findings); exercised by the shared test vectors and clinval:web. Not a clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer. Web ships on dashboard / api-server / front-desk deploy; iOS with an app release. Change the one shared file clinical-content/rules/negation-cues.json (both platforms read it) and add a vector to both test files (negation-parity.test.ts keeps them identical). A change can hide a finding from every engine: review the clinval:web diff.",
+      "notes": "Used by every free-text matcher on both platforms (triage red flags, clinical prompts, dx variants, PANE feature mapping, iOS NegationMatcher users). Data only in the shared file; the rule (tokens, clause scope, windows, pseudo-negation checks, the phrases \"free of\", \"negative for\", \"-ve\", \"ruled out\", \"cannot be excluded\") stays twinned in negation.ts / NegationMatcher.swift. Safety bias: when negation is uncertain the match is kept. iOS: when the file is missing or does not decode, no cue list is loaded, nothing is negated and every match is kept (over-triage, never a hidden finding); Settings → Diagnostics says why. record-clauses.ts / RecordClauses.swift keep their own derived list vocabulary (not moved).",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-26", "change": "Registered and moved to one shared file (shared content phase 2): the cue lists typed twice in negation.ts and NegationMatcher.swift (identical on both platforms, same order) are now clinical-content/rules/negation-cues.json with a JSON Schema; both platforms read it. The web's inline double-negative fillers (yet, really, fully, completely, been, had) became the listed verbNegationFillers, as iOS already had them. No cue, window or rule changed (governance only; see the shared-content change log, Phase 2)." }
+      ]
+    },
+    {
       "id": "dx-variants",
       "title": "Sub-diagnosis variants and the management phases each may show",
       "platforms": ["web"],
@@ -2318,7 +2360,6 @@
     { "path": "ios/AmiseMedFlow/Services/PreConsultQuestionnairePDF+History.swift", "reason": "PDF rendering." },
     { "path": "ios/AmiseMedFlow/Services/QuestionnairePatientSearch.swift", "reason": "Patient search (privacy), not clinical content." },
     { "path": "ios/AmiseMedFlow/Services/SyncService+PathwayData.swift", "reason": "Sync of stored pathway data, not clinical content." },
-    { "path": "ios/AmiseMedFlow/Services/AIService.swift", "reason": "Disabled (AIError.disabled); prompts to be registered if AI is re-enabled." },
-    { "path": "lib/triage-engine/src/negation.ts", "reason": "Negation-aware text matching used by the registered rule sets; no clinical rules, terms or thresholds of its own." }
+    { "path": "ios/AmiseMedFlow/Services/AIService.swift", "reason": "Disabled (AIError.disabled); prompts to be registered if AI is re-enabled." }
   ]
 }
