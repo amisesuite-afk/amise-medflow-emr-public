@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "updated": "2026-09-26",
   "sources": [
     "Per-feature literature citations in pools.*.candidates[].features[].citation (8,316 of 14,358 features carry one at 1.0.0; the rest, and every logPrior, have no recorded source)",
@@ -8,7 +8,7 @@
     "coreConditions (2.0.0): each feature has likelihoodRatio and citation; each candidate has source (guideline name and year) and prevalenceTier. Complaint-weight features cited EXPERT are engineering estimates awaiting clinical sign-off."
   ],
   "lastUpdated": "2026-09-26",
-  "note": "2.1.0 (unreviewed): decodes with the iOS Codable structs (integer logLR / logPrior, string value / evidenceLabel). logLR = round(ln(LR) x 5) throughout; 8 pools that were in natural-log units were converted. Every logPrior is a compressed prevalence tier (common 0, uncommon -5, rare -10; field prevalenceTier). 1.0.0 feature weights are capped (history/exam +-8, test result +-12, age/sex +-5, non-specific laboratory chip +5, bare test name +3; the former value is kept as originalLogLR). The curated pool coreConditions (per-feature LR and citation, candidate source, applicability, supersedes) and the top-level presentations list are routed from the chief complaint alone. Change log: docs/clinical-validation/changes/fix-ios-differential.md. 2.1.0: curated content for the last iOS clinical-validation criticals (new Gastric Outlet Obstruction, post-operative day features \"postOpDay\", masking contexts \"maskedBy\" on negative features, strong report features tightened); change log docs/clinical-validation/changes/ios-last-criticals.md. 2.2.0: examination-sign (\"sign\", value \"<id>:present|absent\") and decision-rule (\"rule\", value \"<rule>:<band>\") features from clinical-content/rules/exam-signs.json and decision-rules.json (logLR = round(5 × ln LR), likelihoodRatio and citation on each; absent signs only where the absence is meaningful), and the curated Abdominal Wall Pain (ACNES) candidate. Change log: docs/clinical-validation/changes/evidence-exam.md.",
+  "note": "2.1.0 (unreviewed): decodes with the iOS Codable structs (integer logLR / logPrior, string value / evidenceLabel). logLR = round(ln(LR) x 5) throughout; 8 pools that were in natural-log units were converted. Every logPrior is a compressed prevalence tier (common 0, uncommon -5, rare -10; field prevalenceTier). 1.0.0 feature weights are capped (history/exam +-8, test result +-12, age/sex +-5, non-specific laboratory chip +5, bare test name +3; the former value is kept as originalLogLR). The curated pool coreConditions (per-feature LR and citation, candidate source, applicability, supersedes) and the top-level presentations list are routed from the chief complaint alone. Change log: docs/clinical-validation/changes/fix-ios-differential.md. 2.1.0: curated content for the last iOS clinical-validation criticals (new Gastric Outlet Obstruction, post-operative day features \"postOpDay\", masking contexts \"maskedBy\" on negative features, strong report features tightened); change log docs/clinical-validation/changes/ios-last-criticals.md. 2.2.0: examination-sign (\"sign\", value \"<id>:present|absent\") and decision-rule (\"rule\", value \"<rule>:<band>\") features from clinical-content/rules/exam-signs.json and decision-rules.json (logLR = round(5 × ln LR), likelihoodRatio and citation on each; absent signs only where the absence is meaningful), and the curated Abdominal Wall Pain (ACNES) candidate. Change log: docs/clinical-validation/changes/evidence-exam.md. 2.3.0: the decision rules that gained an iOS calculator (ios-outcomes-calculators) generate their \"rule\" band features too: STONE (Moore 2014) for the renal / ureteric colic candidates and the Canadian CT head rule for subdural, extradural and cerebral contusion (Ottawa ankle and knee, NEXUS and the Canadian C-spine rule have no iOS candidate; the syncope rules are prognostic). Change log: docs/clinical-validation/changes/ios-outcomes-calculators.md.",
   "conversionFormula": "logLR = round(ln(LR±) × 5)  [e.g. LR+ 3.0 → ln(3)×5 = 5.5 → 6; LR− 0.4 → ln(0.4)×5 = −4.6 → −5]",
   "pools": {
     "abdominalPain": {
@@ -1386,6 +1386,22 @@
               "logLR": 12,
               "originalLogLR": 13,
               "evidenceLabel": "Urine dipstick haematuria non-visible ureteric colic stone confirmed"
+            },
+            {
+              "key": "rule",
+              "value": "stone:low",
+              "logLR": -12,
+              "evidenceLabel": "STONE score (ureteric stone): 0-5: low probability (about 10 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 0.1
+            },
+            {
+              "key": "rule",
+              "value": "stone:high",
+              "logLR": 10,
+              "evidenceLabel": "STONE score (ureteric stone): 10-13: high probability (about 89 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 7.8
             }
           ],
           "urgency": 1,
@@ -2149,6 +2165,22 @@
               "evidenceLabel": "Stone on non-contrast CT KUB",
               "citation": "NCCT sensitivity 96–97%, specificity 96–99% — gold standard",
               "originalLogLR": 22
+            },
+            {
+              "key": "rule",
+              "value": "stone:low",
+              "logLR": -12,
+              "evidenceLabel": "STONE score (ureteric stone): 0-5: low probability (about 10 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 0.1
+            },
+            {
+              "key": "rule",
+              "value": "stone:high",
+              "logLR": 10,
+              "evidenceLabel": "STONE score (ureteric stone): 10-13: high probability (about 89 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 7.8
             }
           ],
           "systems": [
@@ -40954,6 +40986,30 @@
               "value": "Anaemia symptoms",
               "logLR": 4,
               "evidenceLabel": "Anaemia (haemorrhage)"
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:none",
+              "logLR": -18,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): No criterion: CT not required",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 0.03
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:medium",
+              "logLR": 2,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): Medium-risk criterion only",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 1.5
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:high",
+              "logLR": 6,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): High-risk criterion",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 3.2
             }
           ],
           "systems": [
@@ -41085,6 +41141,30 @@
               "logLR": 5,
               "evidenceLabel": "Raised INR (anticoagulation — risk factor)",
               "originalLogLR": 6
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:none",
+              "logLR": -18,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): No criterion: CT not required",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 0.03
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:medium",
+              "logLR": 2,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): Medium-risk criterion only",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 1.5
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:high",
+              "logLR": 6,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): High-risk criterion",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 3.2
             }
           ],
           "systems": [
@@ -41206,6 +41286,30 @@
               "value": "elevated glucose",
               "logLR": 4,
               "evidenceLabel": "Hyperglycaemia (stress response)"
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:none",
+              "logLR": -18,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): No criterion: CT not required",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 0.03
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:medium",
+              "logLR": 2,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): Medium-risk criterion only",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 1.5
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:high",
+              "logLR": 6,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): High-risk criterion",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 3.2
             }
           ],
           "systems": [
@@ -41637,6 +41741,30 @@
               "value": "Anaemia symptoms",
               "logLR": 4,
               "evidenceLabel": "Anaemia"
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:none",
+              "logLR": -18,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): No criterion: CT not required",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 0.03
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:medium",
+              "logLR": 2,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): Medium-risk criterion only",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 1.5
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:high",
+              "logLR": 6,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): High-risk criterion",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 3.2
             }
           ],
           "systems": [
@@ -47487,6 +47615,22 @@
               "value": "renal impairment",
               "logLR": 4,
               "evidenceLabel": "Elevated creatinine (obstruction)"
+            },
+            {
+              "key": "rule",
+              "value": "stone:low",
+              "logLR": -12,
+              "evidenceLabel": "STONE score (ureteric stone): 0-5: low probability (about 10 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 0.1
+            },
+            {
+              "key": "rule",
+              "value": "stone:high",
+              "logLR": 10,
+              "evidenceLabel": "STONE score (ureteric stone): 10-13: high probability (about 89 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 7.8
             }
           ],
           "prevalenceTier": "uncommon"
@@ -109205,6 +109349,22 @@
               "value": "elevated crp",
               "logLR": 4,
               "evidenceLabel": "Elevated CRP (urosepsis risk)"
+            },
+            {
+              "key": "rule",
+              "value": "stone:low",
+              "logLR": -12,
+              "evidenceLabel": "STONE score (ureteric stone): 0-5: low probability (about 10 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 0.1
+            },
+            {
+              "key": "rule",
+              "value": "stone:high",
+              "logLR": 10,
+              "evidenceLabel": "STONE score (ureteric stone): 10-13: high probability (about 89 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 7.8
             }
           ],
           "prevalenceTier": "uncommon"
@@ -123346,6 +123506,22 @@
               "value": "renal impairment",
               "logLR": 4,
               "evidenceLabel": "Elevated creatinine (obstruction)"
+            },
+            {
+              "key": "rule",
+              "value": "stone:low",
+              "logLR": -12,
+              "evidenceLabel": "STONE score (ureteric stone): 0-5: low probability (about 10 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 0.1
+            },
+            {
+              "key": "rule",
+              "value": "stone:high",
+              "logLR": 10,
+              "evidenceLabel": "STONE score (ureteric stone): 10-13: high probability (about 89 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 7.8
             }
           ],
           "prevalenceTier": "uncommon"
@@ -133937,6 +134113,30 @@
               "likelihoodRatio": 1.5,
               "evidenceLabel": "Age 65 or over",
               "citation": "NICE NG232 (2023) Head injury: assessment and early management"
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:none",
+              "logLR": -18,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): No criterion: CT not required",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 0.03
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:medium",
+              "logLR": 2,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): Medium-risk criterion only",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 1.5
+            },
+            {
+              "key": "rule",
+              "value": "canadian-ct-head:high",
+              "logLR": 6,
+              "evidenceLabel": "Canadian CT head rule (minor head injury, GCS 13-15): High-risk criterion",
+              "citation": "Stiell IG et al. The Canadian CT Head Rule for patients with minor head injury, Lancet 2001;357:1391-6; NICE NG232 (2023) head injury",
+              "likelihoodRatio": 3.2
             }
           ]
         },
@@ -137479,6 +137679,22 @@
               "likelihoodRatio": 0.3,
               "evidenceLabel": "No loin pain, haematuria or stone history",
               "citation": "EAU Guidelines on Urolithiasis (2024); Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone (STONE score). BMJ 2014;348:g2191"
+            },
+            {
+              "key": "rule",
+              "value": "stone:low",
+              "logLR": -12,
+              "evidenceLabel": "STONE score (ureteric stone): 0-5: low probability (about 10 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 0.1
+            },
+            {
+              "key": "rule",
+              "value": "stone:high",
+              "logLR": 10,
+              "evidenceLabel": "STONE score (ureteric stone): 10-13: high probability (about 89 %)",
+              "citation": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
+              "likelihoodRatio": 7.8
             }
           ],
           "supersedes": [

@@ -86,7 +86,8 @@ extension DiagnosisScoreMapper {
         }
         // N20: Kidney stone
         if code.hasPrefix("N20") || code.hasPrefix("N21") {
-            add(.stone,  "STONE score (ICD \(code))", 1)
+            add(.stoneUreteric, "STONE score — probability of an uncomplicated ureteric stone (ICD \(code))", 1)
+            add(.stone,  "Stone CT features (local 0–6 score, not STONE)", 3)
             add(.ckdEpi, "CKD-EPI baseline eGFR", 3)
         }
         // N17: AKI

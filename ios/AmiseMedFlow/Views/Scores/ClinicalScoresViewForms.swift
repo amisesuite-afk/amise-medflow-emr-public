@@ -38,6 +38,9 @@ extension ClinicalScoresView {
     // Returns AnyView on purpose: the score.category dispatch used to fold ~100 form types into one
     // nested generic; instantiating it overflowed the main-thread stack (Swift demangler recursion).
     private func formBodyByCategory(_ score: ActiveScore) -> AnyView {
+        // Decision rules from clinical-content/rules/decision-rules.json have their own forms,
+        // whatever their category (ClinicalScoresView+DecisionRuleForms.swift).
+        if let ruleForm = decisionRuleFormBody(score) { return ruleForm }
         switch score.category {
         case .all: return AnyView(EmptyView())
         case .acute: return acuteFormBody(score)

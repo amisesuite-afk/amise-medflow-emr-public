@@ -103,7 +103,9 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case auditC           = "AUDIT-C (Alcohol Screen)"
     case phq9             = "PHQ-9 (Depression)"
     case sapsII           = "SAPS II (ICU Severity)"
-    case stone            = "STONE Score (Nephrolithiasis)"
+    // The local 0–6 stone CT features score (formerly shown as "STONE"); the published STONE score
+    // (Moore 2014) is `stoneUreteric`. Case name kept: it is the calculator's form state key.
+    case stone            = "Stone CT Features (local 0–6, not STONE)"
     case losAngeles       = "LA Classification (GERD)"
     case meld3            = "MELD 3.0 (Liver Severity)"
     case braden           = "Braden Scale (Pressure Injury)"
@@ -126,6 +128,16 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case pts              = "Paediatric Trauma Score (PTS)"
     case ripasa           = "RIPASA (Appendicitis Score)"
     case fgsi             = "FGSI (Fournier Gangrene)"
+    // Decision rules with an entry in clinical-content/rules/decision-rules.json (ios.activeScore);
+    // ClinicalScoringEngine+DecisionRules*.swift, ClinicalScoresView+DecisionRuleForms.swift.
+    case stoneUreteric    = "STONE Score (Ureteric Stone)"
+    case ottawaAnkle      = "Ottawa Ankle and Foot Rules"
+    case ottawaKnee       = "Ottawa Knee Rule"
+    case canadianCTHead   = "Canadian CT Head Rule"
+    case nexus            = "NEXUS C-Spine Criteria"
+    case canadianCSpine   = "Canadian C-Spine Rule"
+    case sfSyncope        = "San Francisco Syncope Rule"
+    case canadianSyncope  = "Canadian Syncope Risk Score"
 
     var category: ScoreCategory {
         switch self {
@@ -237,6 +249,12 @@ enum ActiveScore: String, CaseIterable, Identifiable {
             return .acute
         case .fgsi:
             return .sepsis
+        case .stoneUreteric, .ottawaAnkle, .ottawaKnee:
+            return .acute
+        case .canadianCTHead, .nexus, .canadianCSpine:
+            return .neuro
+        case .sfSyncope, .canadianSyncope:
+            return .cardiac
         case .cha2ds2vasc, .hasBled, .heart, .timi, .grace, .rcri, .dasi, .euroScoreII:
             return .cardiac
         case .mews, .news2, .waterlow, .surgicalApgar:
@@ -343,6 +361,14 @@ enum ActiveScore: String, CaseIterable, Identifiable {
         case .pts:            return "cross.circle.fill"
         case .ripasa:         return "allergens"
         case .fgsi:           return "exclamationmark.triangle.fill"
+        case .stoneUreteric:  return "drop.degreesign"
+        case .ottawaAnkle:    return "figure.walk"
+        case .ottawaKnee:     return "figure.walk.circle"
+        case .canadianCTHead: return "brain.head.profile"
+        case .nexus:          return "figure.stand"
+        case .canadianCSpine: return "figure.stand"
+        case .sfSyncope:      return "waveform.path.ecg"
+        case .canadianSyncope: return "heart.text.clipboard"
         }
     }
 }

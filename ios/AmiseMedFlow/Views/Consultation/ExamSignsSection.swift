@@ -192,6 +192,14 @@ struct ExamSignsSection: View {
         case "centor":    return patient.centorScore.map { Double($0) }
         case "lrinec":    return patient.lrinecScore.map { Double($0) }
         case "curb65":    return patient.curb65Score.map { Double($0) }
+        case "stone":            return patient.stoneUretericScore.map { Double($0) }
+        case "ottawa-ankle":     return patient.ottawaAnkleScore.map { Double($0) }
+        case "ottawa-knee":      return patient.ottawaKneeScore.map { Double($0) }
+        case "canadian-ct-head": return patient.canadianCTHeadScore.map { Double($0) }
+        case "nexus":            return patient.nexusScore.map { Double($0) }
+        case "canadian-c-spine": return patient.canadianCSpineScore.map { Double($0) }
+        case "sf-syncope":       return patient.sfSyncopeScore.map { Double($0) }
+        case "canadian-syncope": return patient.canadianSyncopeScore.map { Double($0) }
         default:          return nil
         }
     }

@@ -2,9 +2,13 @@
 // Decision-rule bands as Bayesian evidence on iOS (evidence-exam 1.0.0).
 //
 // A diagnostic rule whose result is stored on the patient (Alvarado, AIR, Wells PE, PERC,
-// Wells DVT, HEART, Centor/McIsaac, LRINEC — the ones with an `ios` entry in
-// clinical-content/rules/decision-rules.json) becomes a DiagnosticDatabase.json 2.2.0 "rule" feature,
-// value "<rule id>:<band id>", with the band's likelihood ratio (logLR = round(5 × ln LR)).
+// Wells DVT, HEART, Centor/McIsaac, LRINEC; since 2.3.0 also STONE, Ottawa ankle and knee, Canadian
+// CT head, NEXUS and the Canadian C-spine rule — the ones with an `ios` entry in
+// clinical-content/rules/decision-rules.json) becomes a DiagnosticDatabase.json "rule" feature,
+// value "<rule id>:<band id>", with the band's likelihood ratio (logLR = round(5 × ln LR)). A rule
+// whose target has no iOS candidate (Ottawa, NEXUS, Canadian C-spine) is recorded but moves nothing;
+// the syncope rules are prognostic and never enter (observedBands keeps diagnostic rules only).
+// scripts/src/decision-rules-ios-links.test.ts checks every link against the Swift source.
 // Policy (decision-rules.json evidencePolicy):
 //   - a band below 1 counts only when the rule's absence is meaningful (LRINEC's low band never);
 //   - AIR is used instead of Alvarado when both are stored; PERC only when Wells PE is 4 or less;

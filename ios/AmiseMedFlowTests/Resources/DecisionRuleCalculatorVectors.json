@@ -1,0 +1,49 @@
+{
+  "note": "Shared vectors for the decision-rule calculators on both platforms: web RULE_SPECS (artifacts/dashboard/src/lib/decision-rule-scores.ts, test decision-rule-vectors.test.ts) and iOS ClinicalScoringEngine+DecisionRules*.swift (DecisionRuleCalculatorTests.swift). `rule` is the web calculator key (decision-rules.json web.calculator), `ruleId` the decision-rules.json id, `values` the web form values (checkbox keys true, choice keys their option value), `total` the recorded value and `band` its decision-rules.json band. Published examples are marked in `name`. Change both platforms together.",
+  "cases": [
+    { "name": "Ottawa ankle: nothing present", "rule": "ottawaAnkle", "ruleId": "ottawa-ankle", "values": {}, "total": 0, "band": "negative" },
+    { "name": "Ottawa ankle: lateral malleolus tenderness", "rule": "ottawaAnkle", "ruleId": "ottawa-ankle", "values": { "lateral": true }, "total": 1, "band": "positive" },
+    { "name": "Ottawa ankle: navicular tenderness and unable to bear weight", "rule": "ottawaAnkle", "ruleId": "ottawa-ankle", "values": { "navicular": true, "weightBearing": true }, "total": 2, "band": "positive" },
+    { "name": "Ottawa ankle: every criterion", "rule": "ottawaAnkle", "ruleId": "ottawa-ankle", "values": { "lateral": true, "medial": true, "fifthMt": true, "navicular": true, "weightBearing": true }, "total": 5, "band": "positive" },
+
+    { "name": "Ottawa knee: nothing present", "rule": "ottawaKnee", "ruleId": "ottawa-knee", "values": {}, "total": 0, "band": "negative" },
+    { "name": "Ottawa knee: age 55 or over alone (published: one criterion is enough)", "rule": "ottawaKnee", "ruleId": "ottawa-knee", "values": { "age55": true }, "total": 1, "band": "positive" },
+    { "name": "Ottawa knee: patella, fibular head, cannot flex to 90", "rule": "ottawaKnee", "ruleId": "ottawa-knee", "values": { "patella": true, "fibula": true, "flex90": true }, "total": 3, "band": "positive" },
+
+    { "name": "Canadian CT head: no criterion", "rule": "canadianCtHead", "ruleId": "canadian-ct-head", "values": {}, "total": 0, "band": "none" },
+    { "name": "Canadian CT head: amnesia 30 min or more (medium risk only)", "rule": "canadianCtHead", "ruleId": "canadian-ct-head", "values": { "amnesia30": true }, "total": 1, "band": "medium" },
+    { "name": "Canadian CT head: dangerous mechanism and amnesia (still medium)", "rule": "canadianCtHead", "ruleId": "canadian-ct-head", "values": { "amnesia30": true, "dangerous": true }, "total": 1, "band": "medium" },
+    { "name": "Canadian CT head: amnesia and age 65 (high risk wins)", "rule": "canadianCtHead", "ruleId": "canadian-ct-head", "values": { "amnesia30": true, "age65": true }, "total": 2, "band": "high" },
+    { "name": "Canadian CT head: vomiting twice", "rule": "canadianCtHead", "ruleId": "canadian-ct-head", "values": { "vomiting2": true }, "total": 2, "band": "high" },
+    { "name": "Canadian CT head: GCS below 15 at 2 h", "rule": "canadianCtHead", "ruleId": "canadian-ct-head", "values": { "gcs2h": true }, "total": 2, "band": "high" },
+
+    { "name": "NEXUS: all five low-risk criteria met", "rule": "nexus", "ruleId": "nexus", "values": {}, "total": 0, "band": "negative" },
+    { "name": "NEXUS: midline tenderness", "rule": "nexus", "ruleId": "nexus", "values": { "midline": true }, "total": 1, "band": "positive" },
+    { "name": "NEXUS: intoxication and distracting injury", "rule": "nexus", "ruleId": "nexus", "values": { "intoxication": true, "distracting": true }, "total": 2, "band": "positive" },
+
+    { "name": "Canadian C-spine: nothing recorded (no low-risk factor: image)", "rule": "canadianCSpine", "ruleId": "canadian-c-spine", "values": {}, "total": 1, "band": "positive" },
+    { "name": "Canadian C-spine: low-risk factor and rotates 45 degrees (published: no imaging)", "rule": "canadianCSpine", "ruleId": "canadian-c-spine", "values": { "lowRisk": true, "rotate": true }, "total": 0, "band": "negative" },
+    { "name": "Canadian C-spine: low-risk factor but cannot rotate", "rule": "canadianCSpine", "ruleId": "canadian-c-spine", "values": { "lowRisk": true }, "total": 1, "band": "positive" },
+    { "name": "Canadian C-spine: age 65 overrides the low-risk assessment", "rule": "canadianCSpine", "ruleId": "canadian-c-spine", "values": { "lowRisk": true, "rotate": true, "age65": true }, "total": 1, "band": "positive" },
+    { "name": "Canadian C-spine: paraesthesia overrides the low-risk assessment", "rule": "canadianCSpine", "ruleId": "canadian-c-spine", "values": { "lowRisk": true, "rotate": true, "paraesthesia": true }, "total": 1, "band": "positive" },
+
+    { "name": "STONE: every item (published maximum 13, high)", "rule": "stone", "ruleId": "stone", "values": { "male": true, "timing": "lt6", "nonBlack": true, "nausea": "vomiting", "haematuria": true }, "total": 13, "band": "high" },
+    { "name": "STONE: male, pain under 6 h, vomiting, haematuria (10, high)", "rule": "stone", "ruleId": "stone", "values": { "male": true, "timing": "lt6", "nausea": "vomiting", "haematuria": true }, "total": 10, "band": "high" },
+    { "name": "STONE: male, non-black, pain 6-24 h (6, moderate)", "rule": "stone", "ruleId": "stone", "values": { "male": true, "nonBlack": true, "timing": "6to24" }, "total": 6, "band": "moderate" },
+    { "name": "STONE: female, pain 6-24 h, nausea alone (2, low)", "rule": "stone", "ruleId": "stone", "values": { "timing": "6to24", "nausea": "nausea" }, "total": 2, "band": "low" },
+    { "name": "STONE: nothing present, pain over 24 h (0, low)", "rule": "stone", "ruleId": "stone", "values": { "timing": "gt24", "nausea": "none" }, "total": 0, "band": "low" },
+    { "name": "STONE: female, non-black, haematuria, pain under 6 h (9, moderate upper bound)", "rule": "stone", "ruleId": "stone", "values": { "nonBlack": true, "haematuria": true, "timing": "lt6" }, "total": 9, "band": "moderate" },
+
+    { "name": "San Francisco syncope: no CHESS criterion", "rule": "sfSyncope", "ruleId": "sf-syncope", "values": {}, "total": 0, "band": "negative" },
+    { "name": "San Francisco syncope: heart failure", "rule": "sfSyncope", "ruleId": "sf-syncope", "values": { "chf": true }, "total": 1, "band": "positive" },
+    { "name": "San Francisco syncope: ECG, breathless, systolic below 90", "rule": "sfSyncope", "ruleId": "sf-syncope", "values": { "ecg": true, "sob": true, "sbp90": true }, "total": 3, "band": "positive" },
+
+    { "name": "Canadian syncope: vasovagal predisposition and ED diagnosis vasovagal (published minimum -3)", "rule": "canadianSyncope", "ruleId": "canadian-syncope", "values": { "vasovagalPredisposition": true, "edDiagnosis": "vasovagal" }, "total": -3, "band": "very-low" },
+    { "name": "Canadian syncope: ED diagnosis vasovagal alone", "rule": "canadianSyncope", "ruleId": "canadian-syncope", "values": { "edDiagnosis": "vasovagal" }, "total": -2, "band": "very-low" },
+    { "name": "Canadian syncope: nothing present", "rule": "canadianSyncope", "ruleId": "canadian-syncope", "values": { "edDiagnosis": "neither" }, "total": 0, "band": "low" },
+    { "name": "Canadian syncope: predisposition and heart disease cancel out", "rule": "canadianSyncope", "ruleId": "canadian-syncope", "values": { "vasovagalPredisposition": true, "heartDisease": true }, "total": 0, "band": "low" },
+    { "name": "Canadian syncope: heart disease", "rule": "canadianSyncope", "ruleId": "canadian-syncope", "values": { "heartDisease": true }, "total": 1, "band": "medium" },
+    { "name": "Canadian syncope: troponin and QTc", "rule": "canadianSyncope", "ruleId": "canadian-syncope", "values": { "troponin": true, "qtc": true }, "total": 4, "band": "high" },
+    { "name": "Canadian syncope: every positive item and ED diagnosis cardiac (published maximum 11)", "rule": "canadianSyncope", "ruleId": "canadian-syncope", "values": { "heartDisease": true, "sbp": true, "troponin": true, "axis": true, "qrs": true, "qtc": true, "edDiagnosis": "cardiac" }, "total": 11, "band": "very-high" }
+  ]
+}

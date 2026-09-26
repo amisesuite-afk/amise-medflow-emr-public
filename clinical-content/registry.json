@@ -17,7 +17,7 @@
       "title": "Bayesian differential database (pools, candidates, features, priors, likelihood ratios)",
       "platforms": ["ios"],
       "kind": "bayesian-model-data",
-      "contentVersion": "2.2.0",
+      "contentVersion": "2.3.0",
       "versionStamp": { "file": "ios/AmiseMedFlow/Resources/DiagnosticDatabase.json", "type": "json-key", "key": "version" },
       "files": ["ios/AmiseMedFlow/Resources/DiagnosticDatabase.json"],
       "tests": [
@@ -46,7 +46,8 @@
         { "version": "1.0.0", "date": "2026-09-25", "change": "Version stamp added (version 1.0 → 1.0.0, updated, sources). No clinical value changed." },
         { "version": "2.0.0", "date": "2026-09-25", "change": "Made decodable (evidenceLabel added to 3,552 features, 512 natural-log logLR ×5, fractional logPrior and non-string values fixed). Priors replaced by prevalence tiers; 1.0.0 feature weights capped (history/exam ±8, test result ±12, age/sex ±5, non-specific lab chip +5, bare test name +3); sex/pregnancy applicability on 85 candidates. New curated pool coreConditions (121 medical, surgical, obstetric, paediatric and neurological candidates, e.g. ACS, PE, sepsis, DKA/HHS, stroke, SAH, meningitis, cauda equina, torsion, ectopic, pre-eclampsia/HELLP, intussusception, pyloric stenosis, malrotation, mesenteric ischaemia, AAA, limb ischaemia, NSTI, Fournier's) with cited likelihood ratios, and presentations. Guidelines and every content decision: docs/clinical-validation/changes/fix-ios-differential.md. Not clinically reviewed." },
         { "version": "2.1.0", "date": "2026-09-25", "change": "Content for the last iOS clinical-validation criticals (run 36182660885): new curated Gastric Outlet Obstruction (vomiting and upper GI presentations); acute and acalculous cholecystitis in the fever presentation; post-operative day features (postOpDay: neck haematoma 0-1 / 7+, anastomotic leak 3-30); masking contexts (maskedBy) on perforated-ulcer peritonism absent and ACS chest pain absent; new or widened features for PE (DVT wording, syncope, RV strain), atypical ACS, Boerhaave, aorto-enteric fistula, NSTI (tenderness beyond the erythema, LRINEC >= 6), cellulitis, PID / tubo-ovarian abscess, acalculous cholecystitis, hypoglycaemia (glucose not low), mesenteric ischaemia (age 75, supersedes NOMI); new negatives for C. difficile, anaphylaxis, incarcerated hernia, ischaemic colitis, aorto-enteric fistula; strong (LR >= 10) features that matched unrelated reports tightened (oesophago-gastric carcinoma, DVT, DKA, anastomotic leak, liver abscess, stroke, obturator hernia, Charcot foot, pericarditis, acute cholecystitis wall thickening). Every change, LR and citation: docs/clinical-validation/changes/ios-last-criticals.md. Not clinically reviewed." },
-        {"version": "2.2.0", "date": "2026-09-26", "change": "Evidence-exam: examination-sign features (key \"sign\", value \"<id>:present|absent\") and decision-rule band features (key \"rule\", value \"<rule>:<band>\") generated from clinical-content/rules/exam-signs.json and decision-rules.json by scripts/src/gen-exam-evidence-db.ts (logLR = round(5 x ln LR), likelihoodRatio and citation on each; absent signs only where the absence is meaningful; name fragments matched at word starts); new curated Abdominal Wall Pain (ACNES) candidate in the abdominal pain presentation. The Swift scorer reads the Exam-step chips (ExamSignRecord) and the stored rule results (DecisionRuleEvidence), which replace the fixed score adjustments for Alvarado, AIR, Wells PE / DVT, PERC, HEART, Centor and LRINEC. Every value fromMemory; sign-off list docs/clinical-validation/changes/evidence-exam.md. Not clinically reviewed."}
+        {"version": "2.2.0", "date": "2026-09-26", "change": "Evidence-exam: examination-sign features (key \"sign\", value \"<id>:present|absent\") and decision-rule band features (key \"rule\", value \"<rule>:<band>\") generated from clinical-content/rules/exam-signs.json and decision-rules.json by scripts/src/gen-exam-evidence-db.ts (logLR = round(5 x ln LR), likelihoodRatio and citation on each; absent signs only where the absence is meaningful; name fragments matched at word starts); new curated Abdominal Wall Pain (ACNES) candidate in the abdominal pain presentation. The Swift scorer reads the Exam-step chips (ExamSignRecord) and the stored rule results (DecisionRuleEvidence), which replace the fixed score adjustments for Alvarado, AIR, Wells PE / DVT, PERC, HEART, Centor and LRINEC. Every value fromMemory; sign-off list docs/clinical-validation/changes/evidence-exam.md. Not clinically reviewed."},
+        {"version": "2.3.0", "date": "2026-09-26", "change": "ios-outcomes-calculators: decision-rule band features (key \"rule\") for the rules that gained an iOS calculator, from decision-rules.json 1.1.0 by scripts/src/gen-exam-evidence-db.ts: STONE (Moore 2014) low / high bands on the six renal / ureteric colic candidates (moderate band LR 1: no feature) and the Canadian CT head rule none / medium / high on subdural, extradural and cerebral contusion candidates (15 + 12 features; 131 rule features in all). Ottawa ankle / knee, NEXUS and the Canadian C-spine rule have no iOS candidate; the syncope rules are prognostic. No other value changed. Every value fromMemory; sign-off list docs/clinical-validation/changes/ios-outcomes-calculators.md. Not clinically reviewed."}
       ]
     },
     {
@@ -1972,12 +1973,16 @@
       "title": "Clinical decision rules as Bayesian evidence: band likelihood ratios (diagnostic) or risks (prognostic), the rule / component grouping policy, and the new rule calculators",
       "platforms": ["web", "ios"],
       "kind": "decision-support-rules",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.1.0",
       "versionStamp": {"file": "clinical-content/rules/decision-rules.json", "type": "json-key", "key": "version"},
       "files": [
         "clinical-content/rules/decision-rules.json",
         "clinical-content/schemas/decision-rules.schema.json",
         "ios/AmiseMedFlow/Services/DecisionRuleEvidence.swift",
+        "ios/AmiseMedFlow/Services/ClinicalScoringEngine+DecisionRules.swift",
+        "ios/AmiseMedFlow/Services/ClinicalScoringEngine+DecisionRules2.swift",
+        "ios/AmiseMedFlow/Services/PatientScoreAutoPopulator+DecisionRules.swift",
+        "ios/AmiseMedFlow/Views/Scores/ClinicalScoresView+DecisionRuleForms.swift",
         "artifacts/dashboard/src/components/DecisionRuleCard.tsx",
         "artifacts/dashboard/src/lib/decision-rule-scores.ts"
       ],
@@ -1986,12 +1991,17 @@
         "artifacts/dashboard/src/lib/__tests__/decision-rule-scores.test.ts",
         "scripts/src/exam-evidence-content.test.ts",
         "scripts/src/exam-evidence-db.test.ts",
-        "ios/AmiseMedFlowTests/ExamEvidenceTests.swift"
+        "ios/AmiseMedFlowTests/ExamEvidenceTests.swift",
+        "ios/AmiseMedFlowTests/DecisionRuleCalculatorTests.swift",
+        "artifacts/dashboard/src/lib/__tests__/decision-rule-vectors.test.ts",
+        "scripts/src/decision-rules-ios-links.test.ts"
       ],
       "ciChecks": [
         "lint:shared-content (JSON Schema; Swift and TypeScript types)",
         "scripts vitest exam-evidence-content (the web engine reads the shared file; cross-references)",
         "dashboard vitest decision-rule-scores (the new calculators and their record pre-fill)",
+        "dashboard vitest decision-rule-vectors (the web calculators against the vectors the iOS calculators share: ios/AmiseMedFlowTests/Resources/DecisionRuleCalculatorVectors.json)",
+        "scripts vitest decision-rules-ios-links (every ios link names an ActiveScore case, a Patient field and an infer parameter that the Swift code reads into the rule band)",
         "pane-engine vitest evidence (band selection, AIR over Alvarado, PERC only with Wells PE 4 or less, LRINEC low band not applied, grouping)",
         "clinval:web (exam-perc-negative-low-wells, exam-ottawa-ankle-negative, exam-stone-score-high-renal-colic, exam-air-high-appendicitis)"
       ],
@@ -2005,9 +2015,10 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Edit the shared file clinical-content/rules/decision-rules.json (and its schema and types for a new field; lint:shared-content), run scripts/src/gen-exam-evidence-db.ts, bump the version and add a changelog entry.",
-      "notes": "24 rules (15 diagnostic, 9 prognostic). A rule counts only when its value is recorded by the clinician (web: Use in decision support; iOS: the stored calculator result). Prognostic rules never change the differential. Rules without a web target diagnosis (Ottawa, NEXUS, Canadian C-spine, Centor) show the finding's post-test probability. iOS has no calculator yet for Ottawa, Canadian CT head, NEXUS, Canadian C-spine, STONE (the iOS 'STONE' is a different score) or the syncope rules.",
+      "notes": "24 rules (15 diagnostic, 9 prognostic). A rule counts only when its value is recorded by the clinician (web: Use in decision support; iOS: the stored calculator result). Prognostic rules never change the differential. Rules without a web target diagnosis (Ottawa, NEXUS, Canadian C-spine, Centor) show the finding's post-test probability. iOS calculators for every rule with an `ios` entry (1.1.0 adds STONE, Ottawa ankle and knee, Canadian CT head, NEXUS, Canadian C-spine and both syncope rules); the older iOS 'STONE' calculator is relabelled 'Stone CT features (local 0-6, not STONE)' and is not mapped. Glasgow-Blatchford, TG18, qSOFA, NEWS2, Caprini and RCRI have iOS calculators that are not linked to their bands.",
       "changelog": [
-        {"version": "1.0.0", "date": "2026-09-26", "change": "First version (evidence-exam), with the web calculators for AIR, PERC, Ottawa ankle / knee, Canadian CT head, NEXUS, Canadian C-spine, Centor/McIsaac, STONE, LRINEC, San Francisco syncope rule and the Canadian syncope risk score. See docs/clinical-validation/changes/evidence-exam.md."}
+        {"version": "1.0.0", "date": "2026-09-26", "change": "First version (evidence-exam), with the web calculators for AIR, PERC, Ottawa ankle / knee, Canadian CT head, NEXUS, Canadian C-spine, Centor/McIsaac, STONE, LRINEC, San Francisco syncope rule and the Canadian syncope risk score. See docs/clinical-validation/changes/evidence-exam.md."},
+        {"version": "1.1.0", "date": "2026-09-26", "change": "ios-outcomes-calculators: iOS calculators linked (ios.param / ios.activeScore) for STONE, Ottawa ankle and knee, Canadian CT head, NEXUS, Canadian C-spine, San Francisco syncope rule and the Canadian syncope risk score; STONE target iOS name fragments added (ureteric colic, renal colic, ureteric calculus); Canadian CT head iOS fragments narrowed to subdural, extradural, cerebral contusion (head injury and traumatic brain matched concussion / mild traumatic brain injury, which a negative rule must not push down). Bands, likelihood ratios and risks unchanged. See docs/clinical-validation/changes/ios-outcomes-calculators.md."}
       ]
     }
   ],

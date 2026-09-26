@@ -1,5 +1,6 @@
 /**
- * iOS DiagnosticDatabase.json 2.2.0 — examination-sign and decision-rule features (evidence-exam).
+ * iOS DiagnosticDatabase.json 2.2.0 / 2.3.0 — examination-sign and decision-rule features (evidence-exam;
+ * 2.3.0 adds the bands of the rules that gained an iOS calculator, ios-outcomes-calculators).
  *
  *   pnpm --filter @workspace/scripts exec tsx src/gen-exam-evidence-db.ts
  *
@@ -28,9 +29,10 @@ export const DB_FILE = join(REPO_ROOT, 'ios/AmiseMedFlow/Resources/DiagnosticDat
 const SIGNS_FILE = join(REPO_ROOT, 'clinical-content/rules/exam-signs.json');
 const RULES_FILE = join(REPO_ROOT, 'clinical-content/rules/decision-rules.json');
 
-export const EVIDENCE_DB_VERSION = '2.2.0';
+export const EVIDENCE_DB_VERSION = '2.3.0';
 const UPDATED = '2026-09-26';
 const NOTE_220 = ' 2.2.0: examination-sign ("sign", value "<id>:present|absent") and decision-rule ("rule", value "<rule>:<band>") features from clinical-content/rules/exam-signs.json and decision-rules.json (logLR = round(5 × ln LR), likelihoodRatio and citation on each; absent signs only where the absence is meaningful), and the curated Abdominal Wall Pain (ACNES) candidate. Change log: docs/clinical-validation/changes/evidence-exam.md.';
+const NOTE_230 = ' 2.3.0: the decision rules that gained an iOS calculator (ios-outcomes-calculators) generate their "rule" band features too: STONE (Moore 2014) for the renal / ureteric colic candidates and the Canadian CT head rule for subdural, extradural and cerebral contusion (Ottawa ankle and knee, NEXUS and the Canadian C-spine rule have no iOS candidate; the syncope rules are prognostic). Change log: docs/clinical-validation/changes/ios-outcomes-calculators.md.';
 export const ACNES_NAME = 'Abdominal Wall Pain (Anterior Cutaneous Nerve Entrapment)';
 
 type Obj = Record<string, unknown>;
@@ -136,6 +138,10 @@ function acnesCandidate(): Obj {
   };
 }
 
+function withNote(note: string, marker: string, text: string): string {
+  return note.includes(marker) ? note : note + text;
+}
+
 export function buildEvidenceDatabase(db: Obj, signsFile: Obj, rulesFile: Obj): Obj {
   const signs = signsFile.signs as Sign[];
   const groups = signsFile.targetGroups as Record<string, Group>;
@@ -159,7 +165,7 @@ export function buildEvidenceDatabase(db: Obj, signsFile: Obj, rulesFile: Obj): 
     version: EVIDENCE_DB_VERSION,
     updated: UPDATED,
     lastUpdated: UPDATED,
-    note: note.includes(' 2.2.0:') ? note : note + NOTE_220,
+    note: withNote(withNote(note, ' 2.2.0:', NOTE_220), ' 2.3.0:', NOTE_230),
   };
 }
 

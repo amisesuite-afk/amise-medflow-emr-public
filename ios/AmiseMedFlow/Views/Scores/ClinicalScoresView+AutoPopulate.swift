@@ -321,6 +321,30 @@ extension ClinicalScoresView {
         case .fgsi:
             let (input, fill) = PatientScoreAutoPopulator.fgsi(patient: patient)
             fgsiI = input; autoFill = fill
+        case .stoneUreteric:
+            let (input, fill) = PatientScoreAutoPopulator.stoneUreteric(patient: patient)
+            stoneUretericI = input; autoFill = fill
+        case .ottawaAnkle:
+            let (input, fill) = PatientScoreAutoPopulator.ottawaAnkle(patient: patient)
+            ottawaAnkleI = input; autoFill = fill
+        case .ottawaKnee:
+            let (input, fill) = PatientScoreAutoPopulator.ottawaKnee(patient: patient)
+            ottawaKneeI = input; autoFill = fill
+        case .canadianCTHead:
+            let (input, fill) = PatientScoreAutoPopulator.canadianCTHead(patient: patient)
+            canadianCTHeadI = input; autoFill = fill
+        case .nexus:
+            let (input, fill) = PatientScoreAutoPopulator.nexus(patient: patient)
+            nexusI = input; autoFill = fill
+        case .canadianCSpine:
+            let (input, fill) = PatientScoreAutoPopulator.canadianCSpine(patient: patient)
+            canadianCSpineI = input; autoFill = fill
+        case .sfSyncope:
+            let (input, fill) = PatientScoreAutoPopulator.sfSyncope(patient: patient)
+            sfSyncopeI = input; autoFill = fill
+        case .canadianSyncope:
+            let (input, fill) = PatientScoreAutoPopulator.canadianSyncope(patient: patient)
+            canadianSyncopeI = input; autoFill = fill
         }
     }
 

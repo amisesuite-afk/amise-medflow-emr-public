@@ -196,6 +196,16 @@ struct ClinicalScoresView: View {
     // FGSI
     @State var fgsiI = ClinicalScoringEngine.FGSIInput(temperature: 37.0, heartRate: 80, respiratoryRate: 16, sodium: 138.0, potassium: 4.0, creatinine: 88.0, haematocrit: 40.0, wbc: 7.0, bicarbonate: 24.0)
 
+    // Decision rules (ClinicalScoringEngine+DecisionRules*.swift; ClinicalScoresView+DecisionRuleForms.swift)
+    @State var stoneUretericI   = ClinicalScoringEngine.STONEUretericInput()
+    @State var ottawaAnkleI     = ClinicalScoringEngine.OttawaAnkleInput()
+    @State var ottawaKneeI      = ClinicalScoringEngine.OttawaKneeInput()
+    @State var canadianCTHeadI  = ClinicalScoringEngine.CanadianCTHeadInput()
+    @State var nexusI           = ClinicalScoringEngine.NEXUSInput()
+    @State var canadianCSpineI  = ClinicalScoringEngine.CanadianCSpineInput()
+    @State var sfSyncopeI       = ClinicalScoringEngine.SanFranciscoSyncopeInput()
+    @State var canadianSyncopeI = ClinicalScoringEngine.CanadianSyncopeInput()
+
     // Auto-population tracking
     @State var autoFill = ScoreAutoFill()
     @State var mewsSaved = false

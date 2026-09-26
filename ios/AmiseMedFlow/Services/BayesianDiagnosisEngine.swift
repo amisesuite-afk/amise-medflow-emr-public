@@ -167,7 +167,7 @@ enum BayesianDiagnosisEngine {
         auditCScore: Int? = nil,        // AUDIT-C 0–12; ≥4(M)/≥3(F) = hazardous drinking
         phq9Score: Int? = nil,          // PHQ-9 0–27; ≥10 = moderate depression
         sapsIIScore: Int? = nil,        // SAPS II 0–163; ≥40 = >30% predicted mortality
-        stoneScore: Int? = nil,         // STONE 0–5; ≥4 = high probability ureteric colic
+        stoneScore: Int? = nil,         // Stone CT features 0–6 (local; not STONE); ≥4 = legacy ureteric colic boost
         losAngelesGrade: Int? = nil,    // LA Class 0–4; ≥3 = severe oesophagitis
         meld3Score: Double? = nil,      // MELD 3.0 continuous; ≥15 = transplant threshold
         bradenScore: Int? = nil,        // Braden 6–23; ≤12 = high/very-high pressure injury risk
@@ -199,6 +199,16 @@ enum BayesianDiagnosisEngine {
         stopBangScore: Int? = nil,      // STOP-BANG 0–8; ≥3 = intermediate/high OSA risk
         cha2ds2vascScore: Int? = nil,   // CHA₂DS₂-VASc 0–9; ≥2M/≥3F = anticoagulation
         hasBledScore: Int? = nil,       // HAS-BLED 0–9; ≥3 = high bleeding risk
+        // Decision rules added with ios-outcomes-calculators (decision-rules.json `ios.param`): the
+        // stored value becomes the rule's band feature (DecisionRuleEvidence); no legacy adjustment.
+        stoneUretericScore: Int? = nil,  // STONE (Moore 2014) 0–13
+        ottawaAnkleScore: Int? = nil,    // Ottawa ankle and foot rules: criteria present
+        ottawaKneeScore: Int? = nil,     // Ottawa knee rule: criteria present
+        canadianCTHeadScore: Int? = nil, // Canadian CT head rule: 0 none, 1 medium, 2 high
+        nexusScore: Int? = nil,          // NEXUS: low-risk criteria not met
+        canadianCSpineScore: Int? = nil, // Canadian C-spine rule: 0 no imaging, 1 imaging
+        sfSyncopeScore: Int? = nil,      // San Francisco syncope rule (prognostic: display only)
+        canadianSyncopeScore: Int? = nil, // Canadian syncope risk score (prognostic: display only)
         latestHR: Int? = nil,         // measured heart rate (bpm)
         latestSBP: Int? = nil,        // systolic BP (mmHg)
         latestTemp: Double? = nil,    // temperature (°C)
@@ -2347,6 +2357,15 @@ enum BayesianDiagnosisEngine {
         if let v = heartScore { ruleValues["heart"] = Double(v) }
         if let v = centorScore { ruleValues["centor"] = Double(v) }
         if let v = lrinecScore { ruleValues["lrinec"] = Double(v) }
+        if let v = stoneUretericScore { ruleValues["stone"] = Double(v) }
+        if let v = ottawaAnkleScore { ruleValues["ottawa-ankle"] = Double(v) }
+        if let v = ottawaKneeScore { ruleValues["ottawa-knee"] = Double(v) }
+        if let v = canadianCTHeadScore { ruleValues["canadian-ct-head"] = Double(v) }
+        if let v = nexusScore { ruleValues["nexus"] = Double(v) }
+        if let v = canadianCSpineScore { ruleValues["canadian-c-spine"] = Double(v) }
+        // Prognostic: observedBands leaves them out (they never change the differential).
+        if let v = sfSyncopeScore { ruleValues["sf-syncope"] = Double(v) }
+        if let v = canadianSyncopeScore { ruleValues["canadian-syncope"] = Double(v) }
         let ruleBands: Set<String> = DecisionRuleEvidence.replacesLegacyAdjustments
             ? DecisionRuleEvidence.observedBands(ruleValues) : []
         let legacyRules = !DecisionRuleEvidence.replacesLegacyAdjustments
@@ -3760,7 +3779,9 @@ enum BayesianDiagnosisEngine {
             }
         }
 
-        // STONE boost: high score elevates renal/ureteric colic candidates
+        // Stone CT features boost (the local 0–6 score formerly labelled "STONE"; weights unchanged):
+        // a high score elevates renal/ureteric colic candidates. The published STONE score
+        // (stoneUretericScore) enters as a decision-rule band instead (DecisionRuleEvidence).
         if let st = stoneScore, st >= 4 {
             let stTargets = ["nephrolithiasis", "ureteric colic", "renal colic", "kidney stone",
                              "urolithiasis", "hydronephrosis", "obstructive uropathy"]
@@ -3768,7 +3789,7 @@ enum BayesianDiagnosisEngine {
             for i in scored.indices {
                 let nameLow = scored[i].candidate.name.lowercased()
                 guard stTargets.contains(where: { nameLow.contains($0) }) else { continue }
-                let label = "STONE \(st)/5 — high probability ureteric colic"
+                let label = "Stone CT features \(st)/6 — high probability ureteric colic"
                 scored[i].logPosterior += adj
                 scored[i].evidence.append(label)
                 scored[i].evidenceSources["score", default: []].append(label)

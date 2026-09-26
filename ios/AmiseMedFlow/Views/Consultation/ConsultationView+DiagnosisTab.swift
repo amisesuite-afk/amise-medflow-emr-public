@@ -247,7 +247,7 @@ extension ConsultationView {
             sex: patient.sex,
             longitudinal: patient.longitudinalContext,
             // Stored decision-rule results: Bayesian evidence with their band likelihood ratios
-            // (DecisionRuleEvidence, DiagnosticDatabase.json 2.2.0 "rule" features).
+            // (DecisionRuleEvidence, DiagnosticDatabase.json "rule" features, 2.2.0 and later).
             alvaradoScore: patient.alvaradoScore,
             wellsDVTScore: patient.wellsDVTScore,
             wellsPEScore: patient.wellsPEScore,
@@ -256,6 +256,14 @@ extension ConsultationView {
             airScore: patient.airScore,
             percViolations: patient.percViolations,
             centorScore: patient.centorScore,
+            stoneUretericScore: patient.stoneUretericScore,
+            ottawaAnkleScore: patient.ottawaAnkleScore,
+            ottawaKneeScore: patient.ottawaKneeScore,
+            canadianCTHeadScore: patient.canadianCTHeadScore,
+            nexusScore: patient.nexusScore,
+            canadianCSpineScore: patient.canadianCSpineScore,
+            sfSyncopeScore: patient.sfSyncopeScore,
+            canadianSyncopeScore: patient.canadianSyncopeScore,
             latestHR: latestVitals?.heartRate,
             latestSBP: latestVitals?.bpSystolic,
             latestTemp: latestVitals?.temperatureCelsius,

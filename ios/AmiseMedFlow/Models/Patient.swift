@@ -201,7 +201,7 @@ final class Patient {
     var auditCScore: Int?         // AUDIT-C Alcohol Screening (0–12)
     var phq9Score: Int?           // PHQ-9 Depression Score (0–27)
     var sapsIIScore: Int?         // SAPS II ICU Severity Score (0–163)
-    var stoneScore: Int?          // STONE Score for nephrolithiasis (0–5)
+    var stoneScore: Int?          // Stone CT features score (local, 0–6; NOT the STONE score — see stoneUretericScore)
     var losAngelesGrade: Int?     // LA Classification for GERD/oesophagitis (0–4; 0=none, 4=Grade D)
     var meld3Score: Double?       // MELD 3.0 liver severity score (continuous; ≥15 = transplant threshold)
     var bradenScore: Int?         // Braden Scale pressure injury risk (6–23; ≤18 = at risk)
@@ -234,6 +234,17 @@ final class Patient {
     var stopBangScore: Int?       // STOP-BANG OSA Screen (0–8; ≥3 = intermediate/high OSA risk)
     var cha2ds2vascScore: Int?    // CHA₂DS₂-VASc AF stroke risk (0–9; ≥2 male/≥3 female = anticoag)
     var hasBledScore: Int?        // HAS-BLED bleeding risk (0–9; ≥3 = high bleeding risk on anticoag)
+    // Decision rules (clinical-content/rules/decision-rules.json `ios.param`): the recorded value falls
+    // in the rule's band, which feeds the Bayesian engine (DecisionRuleEvidence). Optional, local only
+    // (like every stored score): a lightweight SwiftData migration.
+    var stoneUretericScore: Int?  // STONE score, Moore 2014 (0–13; 10+ = uncomplicated ureteric stone likely)
+    var ottawaAnkleScore: Int?    // Ottawa ankle and foot rules: criteria present (0 = no X-ray)
+    var ottawaKneeScore: Int?     // Ottawa knee rule: criteria present (0 = no X-ray)
+    var canadianCTHeadScore: Int? // Canadian CT head rule: 0 none, 1 medium risk only, 2 high risk
+    var nexusScore: Int?          // NEXUS: low-risk criteria not met (0 = no imaging)
+    var canadianCSpineScore: Int? // Canadian C-spine rule: 0 imaging not required, 1 imaging indicated
+    var sfSyncopeScore: Int?      // San Francisco syncope rule: CHESS criteria present (prognostic)
+    var canadianSyncopeScore: Int? // Canadian syncope risk score (-3 to 11; prognostic)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?

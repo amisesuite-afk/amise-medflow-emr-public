@@ -345,8 +345,30 @@ enum DiagnosisScoreMapper {
         // Kidney stone / urology
         if dx.contains("kidney stone") || dx.contains("nephrolithiasis") ||
            dx.contains("urolithiasis") || dx.contains("ureteric") || dx.contains("renal calculus") {
-            add(.stone,  "STONE score — CT-confirmed stone probability", 1)
+            add(.stoneUreteric, "STONE score — probability of an uncomplicated ureteric stone before imaging", 1)
+            add(.stone,  "Stone CT features (local 0–6 score, not STONE) — after CT KUB", 3)
             add(.ckdEpi, "CKD-EPI — baseline eGFR", 3)
+        }
+
+        // Injury decision rules (clinical-content/rules/decision-rules.json)
+        if dx.contains("ankle") && (dx.contains("sprain") || dx.contains("fracture") || dx.contains("injur")) {
+            add(.ottawaAnkle, "Ottawa ankle and foot rules — is an X-ray needed?", 1)
+        }
+        if dx.contains("knee") && (dx.contains("sprain") || dx.contains("fracture") || dx.contains("injur")) {
+            add(.ottawaKnee, "Ottawa knee rule — is an X-ray needed?", 1)
+        }
+        if dx.contains("head injur") || dx.contains("concussion") {
+            add(.canadianCTHead, "Canadian CT head rule — minor head injury, GCS 13–15", 1)
+        }
+        if dx.contains("neck injur") || dx.contains("whiplash") || dx.contains("cervical spine injur") {
+            add(.canadianCSpine, "Canadian C-spine rule — imaging decision in alert, stable adults", 1)
+            add(.nexus, "NEXUS low-risk criteria — cervical spine imaging", 2)
+        }
+
+        // Syncope (prognostic rules: they do not change the differential)
+        if dx.contains("syncope") || dx.contains("faint") {
+            add(.canadianSyncope, "Canadian syncope risk score — 30-day serious adverse events", 1)
+            add(.sfSyncope, "San Francisco syncope rule (CHESS) — 7-day serious outcome", 2)
         }
 
         // AKI

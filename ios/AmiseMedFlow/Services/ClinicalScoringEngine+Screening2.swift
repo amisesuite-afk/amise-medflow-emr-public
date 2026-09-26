@@ -1,12 +1,18 @@
 // ClinicalScoringEngine+Screening2.swift
-// STONE Score (nephrolithiasis), Centor/McIsaac (pharyngitis), IPSS (prostate).
+// Stone CT features score (local, 0–6; NOT the STONE score), Centor/McIsaac (pharyngitis), IPSS (prostate).
+// The STONE score of Moore et al. (BMJ 2014) is ClinicalScoringEngine+DecisionRules2.swift.
 // No AI, no network calls — HIPAA-safe.
 
 import Foundation
 
 extension ClinicalScoringEngine {
 
-    // MARK: - STONE Score (Nephrolithiasis Risk)
+    // MARK: - Stone CT features score (local composite, 0–6)
+    // Relabelled 2026-09-26 (ios-outcomes-calculators): this was shown as "STONE Score" and cited
+    // Moore et al. 2014, but it scores stone size, UVJ narrowing, obstruction, nausea and haematuria —
+    // not the published STONE items (sex, timing, origin, nausea, erythrocytes; 0–13). The formula is
+    // unchanged; only its name, range and note. It is not decision-rule evidence (decision-rules.json
+    // `stone` maps to stoneUreteric). The type name is kept for the stored form state.
     struct STONEInput: Equatable {
         var sizeMm: Int = 0          // Stone size on CT (mm): 1–5mm=2, 6–10mm=1, >10mm=0
         var toUreters: Int = 0       // Tightness at ureter/UVJ: yes=1, no=0
@@ -50,13 +56,13 @@ extension ClinicalScoringEngine {
                       "Admit if: stone ≥10 mm, obstruction, infection, uncontrolled pain, solitary kidney"]
         }
         return ClinicalScore(
-            name:          "STONE Score",
+            name:          "Stone CT Features Score (not STONE)",
             score:         Double(total),
-            maxScore:      5,
+            maxScore:      6,
             risk:          risk,
             interpretation: interp,
             recommendations: recs,
-            evidenceNote:  "Moore CL et al. Ann Emerg Med 2014;64:239–247. 5-variable pre-imaging score: Size (<1/1–5/6–10/>10 mm = 0/2/1/0), Tightness (UVJ narrowing = +1), Obstruction (hydronephrosis = +1), Nausea (+1), Erythrocytes (+1). Score 0–5; ≥4 = high probability. Validated to triage CT KUB use in suspected ureteric colic."
+            evidenceNote:  "Local composite of CT and clinical features, 0–6: stone size on CT (1–5 mm 2, 6–10 mm 1, otherwise 0), narrowing at the ureterovesical junction (+1), obstruction (hydronephrosis or ureteric dilatation, +1), nausea or vomiting (+1), haematuria (+1). Not externally validated and NOT the STONE score of Moore CL et al. (BMJ 2014;348:g2191: sex, timing, origin, nausea, erythrocytes; 0–13), which is the separate 'STONE Score (Ureteric Stone)' calculator. Its bands are local and it is not used as decision-rule evidence."
         )
     }
 

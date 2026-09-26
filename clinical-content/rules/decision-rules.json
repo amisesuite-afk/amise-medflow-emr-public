@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/decision-rules.schema.json",
   "id": "decision-rules",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "Clinical decision rules as evidence (band likelihood ratios and risks) for the web and iOS Bayesian engines",
   "updated": "2026-09-26",
   "lastReviewed": "unknown",
@@ -14,7 +14,7 @@
     "ruleSupersedesSigns": "While a rule's band is recorded, the rule's component examination signs are neutral for the rule's target diagnoses (they still count for other diagnoses): the rule already contains them.",
     "componentsGrouped": "The rule's component findings from the history, observations and results (paneFeatures) are grouped with the rule for its target: a positive band adds only the part of its likelihood ratio that those findings have not already given (combined effect = the larger of the two); a band below 1 is applied in full, because the engines record findings as present, and a low score is evidence of their absence.",
     "sameTarget": "When two rules for the same target are recorded, supersededBy names the one that is kept (AIR over Alvarado). PERC counts only when no Wells PE above 4 is recorded (appliesWhen).",
-    "ios": "iOS applies the same bands from the stored calculator results (DiagnosticDatabase.json 2.2.0 'rule' features) in place of the older fixed score adjustments for those rules; its component-grouping policy covers the examination signs only."
+    "ios": "iOS applies the same bands from the stored calculator results (DiagnosticDatabase.json 'rule' features, 2.2.0 and later) in place of the older fixed score adjustments for those rules; its component-grouping policy covers the examination signs only. A rule whose target has no iOS candidate (Ottawa ankle and knee, NEXUS, Canadian C-spine) is recorded and shown with its band but moves no diagnosis."
   },
   "rules": [
     {
@@ -456,7 +456,10 @@
       "web": {
         "calculator": "ottawaAnkle"
       },
-      "ios": null,
+      "ios": {
+        "param": "ottawaAnkleScore",
+        "activeScore": "ottawaAnkle"
+      },
       "bands": [
         {
           "id": "negative",
@@ -509,7 +512,10 @@
       "web": {
         "calculator": "ottawaKnee"
       },
-      "ios": null,
+      "ios": {
+        "param": "ottawaKneeScore",
+        "activeScore": "ottawaKnee"
+      },
       "bands": [
         {
           "id": "negative",
@@ -559,15 +565,18 @@
         ],
         "ios": [
           "subdural",
-          "head injury",
-          "traumatic brain"
+          "extradural",
+          "cerebral contusion"
         ],
         "pretest": 0.08
       },
       "web": {
         "calculator": "canadianCtHead"
       },
-      "ios": null,
+      "ios": {
+        "param": "canadianCTHeadScore",
+        "activeScore": "canadianCTHead"
+      },
       "bands": [
         {
           "id": "none",
@@ -631,7 +640,10 @@
       "web": {
         "calculator": "nexus"
       },
-      "ios": null,
+      "ios": {
+        "param": "nexusScore",
+        "activeScore": "nexus"
+      },
       "bands": [
         {
           "id": "negative",
@@ -684,7 +696,10 @@
       "web": {
         "calculator": "canadianCSpine"
       },
-      "ios": null,
+      "ios": {
+        "param": "canadianCSpineScore",
+        "activeScore": "canadianCSpine"
+      },
       "bands": [
         {
           "id": "negative",
@@ -871,12 +886,19 @@
         "pane": [
           "renal_colic"
         ],
-        "ios": []
+        "ios": [
+          "ureteric colic",
+          "renal colic",
+          "ureteric calculus"
+        ]
       },
       "web": {
         "calculator": "stone"
       },
-      "ios": null,
+      "ios": {
+        "param": "stoneUretericScore",
+        "activeScore": "stoneUreteric"
+      },
       "bands": [
         {
           "id": "low",
@@ -926,7 +948,7 @@
       ],
       "source": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score, BMJ 2014;348:g2191",
       "quality": "single study",
-      "note": "The iOS 'STONE' calculator (ClinicalScoringEngine+Screening2.swift, 0-6, stone size and position) is a different score and is not mapped to these bands.",
+      "note": "iOS calculator: STONE Score (Ureteric Stone), ClinicalScoringEngine+DecisionRules2.swift (the older local 'Stone CT features' 0-6 score is a different score and is not mapped to these bands). Derived in the USA; the origin item is not validated in Caribbean populations.",
       "fromMemory": true,
       "supersededBy": [],
       "negativeMeaningful": true
@@ -1274,7 +1296,10 @@
       "web": {
         "calculator": "sfSyncope"
       },
-      "ios": null,
+      "ios": {
+        "param": "sfSyncopeScore",
+        "activeScore": "sfSyncope"
+      },
       "bands": [
         {
           "id": "negative",
@@ -1326,7 +1351,10 @@
       "web": {
         "calculator": "canadianSyncope"
       },
-      "ios": null,
+      "ios": {
+        "param": "canadianSyncopeScore",
+        "activeScore": "canadianSyncope"
+      },
       "bands": [
         {
           "id": "very-low",
