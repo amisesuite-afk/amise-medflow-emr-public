@@ -32,10 +32,12 @@ extension ConsultationView {
                                 if let plan = last.plan, !plan.isEmpty {
                                     Text("Plan: \(plan)").font(.caption).lineLimit(4)
                                 }
-                                Text(VisitContinuity.isSameProblem(current: patient.chiefComplaint, previous: last)
-                                     ? "Same problem — update the condition, PMH, surgery, medicines and allergies as you go."
-                                     : "Today's complaint looks new — full history for the new problem.")
-                                    .font(.caption2).foregroundStyle(AMColor.accent)
+                                if VisitContinuity.isAvailable {
+                                    Text(VisitContinuity.isSameProblem(current: patient.chiefComplaint, previous: last)
+                                         ? "Same problem — update the condition, PMH, surgery, medicines and allergies as you go."
+                                         : "Today's complaint looks new — full history for the new problem.")
+                                        .font(.caption2).foregroundStyle(AMColor.accent)
+                                }
                             }
                             .accessibilityElement(children: .combine)
                         } header: { Text("Continuing from") }

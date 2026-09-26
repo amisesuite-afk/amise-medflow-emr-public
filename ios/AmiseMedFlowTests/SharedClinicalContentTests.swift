@@ -50,6 +50,10 @@ final class SharedClinicalContentTests: XCTestCase {
 
         XCTAssertNotNil(WhatsMissing.rules)
         XCTAssertFalse(WhatsMissing.rules?.groups.isEmpty ?? true)
+
+        XCTAssertNotNil(VisitContinuity.wordRules)
+        XCTAssertTrue(VisitContinuity.isAvailable)
+        XCTAssertEqual(VisitContinuity.meaningfulWords("RUQ"), ["region-abdomen"])
     }
 
     /// The lifestyle labels are keyed by the stored values: every enum case has exactly one label.

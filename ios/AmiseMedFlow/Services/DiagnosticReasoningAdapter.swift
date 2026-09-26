@@ -404,6 +404,7 @@ enum DiagnosticReasoningAdapter {
         let unexplained = DiagnosticReasoning.unexplainedFindings(timeInput, hypothesisIds: explainers.hypotheses.map(\.id))
         let earlier = earlierEncounters(p, now: now)
         let same = earlier.filter { e in
+            guard VisitContinuity.isAvailable else { return false }
             let prev = VisitContinuity.PreviousVisit(date: e.encounterDate, complaint: e.chiefComplaint,
                                                      diagnosis: e.workingDiagnosis, diagnosisICD: e.workingDiagnosisICD,
                                                      plan: e.managementPlan)

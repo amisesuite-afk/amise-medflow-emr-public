@@ -9,7 +9,7 @@
 // Each engine decodes its file once with its own Codable structs (for example
 // `ZebraCheck.RuleFile`, `SupplementCatalogue.Content`, `LifestylePractices.Content`,
 // `ExamEvidenceCatalogue.SignsFile` / `.RulesFile`, `DiagnosticReasoningRules.RuleFile`,
-// `TreatmentDecisions.Content`, `WhatsMissing.Rules`) through
+// `TreatmentDecisions.Content`, `WhatsMissing.Rules`, `VisitContinuity.WordRules`) through
 // `load(_:_:)`. A missing file or a decode failure never crashes and never guesses: the engine
 // gets nil and shows nothing (no zebra, no supplement prompt, no lifestyle prompt), the failure is
 // written to the unified log, and Settings → Diagnostics lists every file with its version or
@@ -64,6 +64,7 @@ enum SharedClinicalContent {
         static let vademecumAreas: [File] = [.vademecumAbdominalPain, .vademecumCoughBreathlessness]
         case treatmentDecisions = "treatment-decisions"
         case whatsMissingRules = "whats-missing-rules"
+        case visitContinuity = "visit-continuity"
 
         /// Row title in Settings → Diagnostics.
         var title: String {
@@ -79,6 +80,7 @@ enum SharedClinicalContent {
             case .vademecumCoughBreathlessness: return "Vademecum: cough / breathlessness (shadow)"
             case .treatmentDecisions:  return "Treatment decisions"
             case .whatsMissingRules:   return "What's missing rules"
+            case .visitContinuity:     return "Visit continuity words"
             }
         }
     }
@@ -214,6 +216,9 @@ enum SharedClinicalContent {
             checked = errorAndSource(decodeWithSource(TreatmentDecisions.Content.self, file, bundle: bundle))
         case .whatsMissingRules:
             checked = errorAndSource(decodeWithSource(WhatsMissing.Rules.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(WhatsMissing.Rules.self, file, bundle: bundle))
+        case .visitContinuity:
+            checked = errorAndSource(decodeWithSource(VisitContinuity.WordRules.self, file, bundle: bundle))
         }
         let failure = checked.failure
         let source = checked.source

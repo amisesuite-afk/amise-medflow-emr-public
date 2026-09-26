@@ -115,6 +115,7 @@ identical to the file it replaces (checked by a structural comparison before and
 |---|---|---|---|---|
 | `treatment-decision-support` 1.0.0 | `treatment-decisions.json` (moved from `lib/pane-engine/src/decision/`) + `treatment-decisions.schema.json` | `lib/pane-engine/src/decision/index.ts` (`DECISION_CONTENT`, types in `types.ts`) | `TreatmentDecisionContent.swift` (`TreatmentDecisions.Content`, `SharedClinicalContent.File.treatmentDecisions`) | `ios/AmiseMedFlow/Resources/TreatmentDecisions.json` (byte-identical copy, deleted) |
 | `whats-missing` 1.0.0 | `whats-missing-rules.json` (moved from `lib/pane-engine/src/whats-missing/`) + `whats-missing-rules.schema.json` | `lib/pane-engine/src/whats-missing/rules.ts` (`WHATS_MISSING_RULES`) | `WhatsMissingRules.swift` (`WhatsMissing.Rules`, `SharedClinicalContent.File.whatsMissingRules`) | `ios/AmiseMedFlow/Resources/WhatsMissingRules.json` (byte-identical copy, deleted) |
+| `visit-continuity` 1.0.0 (new registry entry; was under `excluded`) | `visit-continuity.json` (58 stop words, 6 body regions / 46 words, suffixes `ing` / `ed` / `s` unless ending `ss` with at least 4 letters left, minimum word length 4) + `visit-continuity.schema.json` | `lib/triage-engine/src/visit-continuity.ts` (`VISIT_CONTINUITY_WORD_RULES`, new `VISIT_CONTINUITY_RULES_VERSION`) | `VisitContinuity.swift` (`VisitContinuity.WordRules`, `SharedClinicalContent.File.visitContinuity`) | the TS and Swift stop-word lists, region maps and suffix literals; the matching logic stays twinned |
 
 Lint additions (`scripts/src/shared-content.ts`, unit-tested in `shared-content.test.ts`): a
 TypeScript fixed-length tuple (`Triple = [number, number, number]`) is checked as an array whose
@@ -138,6 +139,20 @@ shared file, the copies are gone, the vectors are current); it keeps its check t
 structs and core name every key and text, and `gen-whats-missing-vectors.ts` reads the rules through
 the web core as before (only its comment names the new path).
 
+**Visit continuity.** The word rules were generated from the web module and compared with the Swift
+source first: the region lists are identical word for word, and the stop words are identical as a
+set (the Swift literal listed "again" twice). The web module's word-rule export and
+`meaningfulWords` output for 23 probe texts were dumped before and after the change and are
+identical. New shared vectors `ios/AmiseMedFlowTests/Resources/VisitContinuityVectors.json`
+(38 `meaningfulWords` and 16 `isSameProblem` cases, expected values from the web) are run by the
+dashboard `visit-continuity.test.ts` and by `VisitContinuityTests.swift`. On iOS a missing or
+undecodable file now means no word is meaningful and `VisitContinuity.isAvailable` is false: the
+consultation pathway then skips the returning-patient branch (the booked visit type decides, as for
+a first visit), the history tab shows the last visit without the "same problem / looks new"
+caption, and the diagnostic-reasoning adapter counts no earlier visit as the same problem (the
+longitudinal patterns already show nothing without meaningful words). With the file present,
+behaviour is unchanged.
+
 ### For the iOS CI to confirm (phase 2; Swift cannot be compiled here)
 
 1. The app bundle has `rules/treatment-decisions.json` and no `TreatmentDecisions.json` at the
@@ -153,6 +168,13 @@ the web core as before (only its comment names the new path).
    `WhatsMissingTests` (shared `whats-missing-vectors.json`), `SharedClinicalContentTests`
    (`WhatsMissing.rules` loaded) and the iOS clinical-validation run (`ios.missing`) pass unchanged;
    Settings → Diagnostics lists "What's missing rules 1.0.0".
+5. The app bundle has `rules/visit-continuity.json`; `VisitContinuity.swift` (new `WordRules` /
+   `SuffixRules` Codable structs, `wordRules`, `isAvailable`; `stem` now takes the suffix rules),
+   `ConsultPathway.swift`, `ConsultationView+HistoryTab.swift` (caption inside `if
+   VisitContinuity.isAvailable`) and `DiagnosticReasoningAdapter.swift` (guard in the `same` filter)
+   compile. `VisitContinuityTests` (new `testSharedWordRulesLoaded`, `testSharedVectors` over
+   `Resources/VisitContinuityVectors.json`, which must be in the test bundle) and
+   `SharedClinicalContentTests` pass; Settings → Diagnostics lists "Visit continuity words 1.0.0".
 
 ### Needs sign-off (phase 2)
 
@@ -164,3 +186,8 @@ Nothing clinical: no content changed. The existing sign-off lists still apply
    copies.
 3. Governance only (behaviour-neutral move). Confirm — the what's-missing rules are now one shared
    file (`clinical-content/rules/whats-missing-rules.json`) instead of two byte-identical copies.
+4. Workflow. Confirm — the visit-continuity word lists (which words decide "same problem as the
+   last visit": stop words such as "pain", "lump", "swelling", and the six body regions) are now a
+   registered rule set, `visit-continuity` 1.0.0, in one shared file; the words themselves are
+   unchanged. Also confirm the iOS fallback: if the file cannot be read, iOS makes no
+   follow-up / new-problem suggestion and the booked visit type decides.

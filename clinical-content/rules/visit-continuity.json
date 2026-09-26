@@ -1,0 +1,44 @@
+{
+  "$schema": "../schemas/visit-continuity.schema.json",
+  "$comment": "Word rules of the visit-continuity check (is today's complaint the same problem as the last visit?): stop words, body-region map and suffix trimming. Data only; the matching logic stays twinned in lib/triage-engine/src/visit-continuity.ts and ios/AmiseMedFlow/Services/VisitContinuity.swift, which both read this one file (iOS through SharedClinicalContent). Shared vectors: ios/AmiseMedFlowTests/Resources/VisitContinuityVectors.json. A workflow default only: the clinician confirms or changes the visit type.",
+  "id": "visit-continuity",
+  "version": "1.0.0",
+  "minWordLength": 4,
+  "stopWords": [
+    "pain", "painful", "ache", "aching", "with", "without", "since", "days", "weeks", "months",
+    "years", "hours", "left", "right", "both", "bilateral", "severe", "mild", "moderate", "acute",
+    "chronic", "worse", "worsening", "better", "improving", "review", "follow", "followup",
+    "check", "visit", "problem", "issue", "patient", "history", "after", "before", "about", "some",
+    "more", "less", "also", "still", "again", "recurrent", "ongoing", "new", "unspecified",
+    "other", "site", "area", "general", "symptoms", "symptom", "lump", "lumps", "swelling", "mass",
+    "masses"
+  ],
+  "regions": {
+    "region-abdomen": [
+      "abdomen", "abdominal", "belly", "stomach", "tummy", "epigastric", "epigastrium", "ruq",
+      "luq", "rlq", "llq", "rif", "lif", "umbilical", "periumbilical", "flank", "hypochondrium",
+      "suprapubic"
+    ],
+    "region-groin": [
+      "groin", "inguinal", "femoral", "scrotal", "scrotum"
+    ],
+    "region-anorectal": [
+      "anal", "anus", "perianal", "rectal", "rectum", "bottom", "piles", "haemorrhoids",
+      "hemorrhoids"
+    ],
+    "region-breast": [
+      "breast", "breasts", "nipple", "axilla", "axillary"
+    ],
+    "region-neck": [
+      "neck", "thyroid", "goitre", "goiter"
+    ],
+    "region-foot": [
+      "foot", "feet", "toe", "toes", "heel"
+    ]
+  },
+  "suffixRules": {
+    "suffixes": ["ing", "ed", "s"],
+    "keepEnding": "ss",
+    "minStemLength": 4
+  }
+}

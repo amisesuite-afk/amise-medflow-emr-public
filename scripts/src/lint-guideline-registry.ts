@@ -123,6 +123,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'artifacts/api-server/src/lib/lab-feed/loinc.ts',
   'lib/triage-engine/src/lifestyle-practices.ts',
   'lib/triage-engine/src/lifestyle-questions.ts',
+  'lib/triage-engine/src/visit-continuity.ts',
+  'ios/AmiseMedFlow/Services/VisitContinuity.swift',
   // Diagnostic reasoning layer (web + iOS twins)
   'lib/triage-engine/src/diagnostic-reasoning/*.ts',
   'artifacts/dashboard/src/lib/diagnostic-reasoning.ts',

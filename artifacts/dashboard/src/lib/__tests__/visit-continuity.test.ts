@@ -1,15 +1,19 @@
 /**
  * Returning patient: follow-up of the same problem, or a new problem.
  *
- * DRIFT NOTE: the first describe block is ios/AmiseMedFlowTests/VisitContinuityTests.swift ported
- * one for one, so both platforms agree on what counts as "the same problem". When a vector changes
- * on one platform, change it on the other (and VisitContinuity.swift / visit-continuity.ts) in the
- * same PR.
+ * The word rules are the shared file clinical-content/rules/visit-continuity.json (both platforms
+ * read it). The logic is twinned: the shared vectors
+ * ios/AmiseMedFlowTests/Resources/VisitContinuityVectors.json are run here and by
+ * VisitContinuityTests.swift, and the first describe block is ios/AmiseMedFlowTests/VisitContinuityTests.swift
+ * ported one for one. When a vector changes on one platform, change it on the other (and
+ * VisitContinuity.swift / visit-continuity.ts) in the same PR.
  */
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   isSameProblem, lastVisit, meaningfulWords, previousVisitProblem, recommendContinuity,
-  daysSinceVisit, type PreviousVisit,
+  daysSinceVisit, VISIT_CONTINUITY_RULES_VERSION, type PreviousVisit,
 } from '@workspace/triage-engine/visit-continuity';
 import { VISIT_TYPE_TABS, visitTypeTabLabel } from '@/lib/visit-type-tabs';
 
@@ -72,6 +76,31 @@ describe('VisitContinuity (iOS parity vectors)', () => {
     }
     expect(visitTypeTabLabel('follow_up', 'encounter_history')).toBe('Last visit');
     expect(visitTypeTabLabel('follow_up', 'hpi')).toBe('S — Interval');
+  });
+});
+
+// ── Shared vectors (also run by VisitContinuityTests.swift) ──────────────────────────────────
+const VECTORS_PATH = fileURLToPath(new URL('../../../../../ios/AmiseMedFlowTests/Resources/VisitContinuityVectors.json', import.meta.url));
+const VECTORS = JSON.parse(readFileSync(VECTORS_PATH, 'utf8')) as {
+  rulesVersion: string;
+  words: { text: string; words: string[] }[];
+  same: { current: string | null; complaint: string | null; diagnosis: string | null; same: boolean }[];
+};
+
+describe('VisitContinuity shared vectors (web = iOS)', () => {
+  it('are for the current shared word rules', () => {
+    expect(VECTORS.rulesVersion).toBe(VISIT_CONTINUITY_RULES_VERSION);
+    expect(VECTORS.words.length).toBeGreaterThan(30);
+    expect(VECTORS.same.length).toBeGreaterThan(10);
+  });
+
+  it.each(VECTORS.words)('meaningfulWords($text)', v => {
+    expect([...meaningfulWords(v.text)].sort()).toEqual(v.words);
+  });
+
+  it.each(VECTORS.same)('isSameProblem($current | $complaint / $diagnosis)', v => {
+    const prev: PreviousVisit = { date: '2026-09-01T12:00:00Z', complaint: v.complaint, diagnosis: v.diagnosis, diagnosisICD: null, plan: null };
+    expect(isSameProblem(v.current, prev)).toBe(v.same);
   });
 });
 

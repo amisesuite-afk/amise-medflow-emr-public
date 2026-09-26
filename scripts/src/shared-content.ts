@@ -169,6 +169,14 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     },
     ts: { files: ['lib/pane-engine/src/whats-missing/rules.ts', 'lib/pane-engine/src/whats-missing/types.ts'], root: 'MissingRules', ignore: HEADER_IGNORE },
   },
+  // Visit continuity word rules (data only; the matching logic stays twinned, shared vectors
+  // ios/AmiseMedFlowTests/Resources/VisitContinuityVectors.json).
+  {
+    name: 'visit-continuity',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/VisitContinuity.swift'], root: 'VisitContinuity.WordRules', ignore: HEADER_IGNORE },
+    ts: { files: ['lib/triage-engine/src/visit-continuity.ts'], root: 'VisitContinuityWordRuleFile', ignore: HEADER_IGNORE },
+  },
 ];
 
 /** Key of a configured file in the problem list and `checked` ("zebra-rules", "vademecum/findings"). */

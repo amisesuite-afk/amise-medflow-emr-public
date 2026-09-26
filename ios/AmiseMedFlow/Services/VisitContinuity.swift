@@ -7,8 +7,15 @@
 // it is a new-problem (first-visit) consultation. Pure except for reading the patient's records;
 // tested in VisitContinuityTests.
 //
-// Web twin: lib/triage-engine/src/visit-continuity.ts — keep the stop words, region map and
-// suffix trimming identical (vectors shared with the dashboard's visit-continuity.test.ts).
+// Web twin: lib/triage-engine/src/visit-continuity.ts. The word rules (stop words, region map,
+// suffix trimming, minimum word length) are data in the shared clinical rule file
+// clinical-content/rules/visit-continuity.json, which both platforms read (here through
+// SharedClinicalContent, File.visitContinuity; lint:shared-content checks `WordRules` against its
+// schema). The matching logic stays twinned: both run the shared vectors
+// AmiseMedFlowTests/Resources/VisitContinuityVectors.json, and the vectors in VisitContinuityTests
+// are ported in the dashboard's visit-continuity.test.ts. A missing or undecodable file gives no
+// word rules: every text has no meaningful words, `isAvailable` is false and the callers make no
+// same-problem / new-problem call (Settings → Diagnostics says why).
 
 import Foundation
 
@@ -70,51 +77,68 @@ enum VisitContinuity {
         return !now.isDisjoint(with: before)
     }
 
-    /// Lower-cased content words of four letters or more, with simple plural/suffix trimming.
+    /// Lower-cased content words of `minWordLength` letters or more (four), with simple
+    /// plural/suffix trimming. Empty when the shared word rules are not loaded.
     static func meaningfulWords(_ text: String) -> Set<String> {
+        guard let rules = wordRules else { return [] }
         let words = text.lowercased()
             .components(separatedBy: CharacterSet.letters.inverted)
             .filter { !$0.isEmpty }
         var out = Set<String>()
         for w in words {
             if let region = regionOf[w] { out.insert(region); continue }   // "RUQ" ≈ "abdominal"
-            guard w.count >= 4, !stopWords.contains(w) else { continue }
-            out.insert(stem(w))
+            guard w.count >= rules.minWordLength, !stopWords.contains(w) else { continue }
+            out.insert(stem(w, rules.suffixRules))
         }
         return out
     }
 
+    // MARK: - Word rules (shared file)
+
+    /// clinical-content/rules/visit-continuity.json (checked against its schema by lint:shared-content).
+    struct WordRules: Codable {
+        let version: String
+        /// A word shorter than this is not a content word, unless it is a region word.
+        let minWordLength: Int
+        /// Words that say nothing about which problem it is.
+        let stopWords: [String]
+        /// Region token ("region-abdomen") → its body-region words.
+        let regions: [String: [String]]
+        let suffixRules: SuffixRules
+    }
+
+    struct SuffixRules: Codable {
+        /// Tried in this order; the first that fits is trimmed.
+        let suffixes: [String]
+        /// A word ending in this is not trimmed ("abscess").
+        let keepEnding: String
+        /// At least this many letters must remain.
+        let minStemLength: Int
+    }
+
+    /// The shared word rules (nil when the file is missing or does not decode).
+    static let wordRules: WordRules? = SharedClinicalContent.load(WordRules.self, .visitContinuity)
+
+    /// The word rules are loaded. When false, callers make no same-problem / new-problem call.
+    static var isAvailable: Bool { wordRules != nil }
+
     /// Body-region words, so a reworded complaint about the same area is not a new problem.
     private static let regionOf: [String: String] = {
         var m: [String: String] = [:]
-        for w in ["abdomen", "abdominal", "belly", "stomach", "tummy", "epigastric", "epigastrium",
-                  "ruq", "luq", "rlq", "llq", "rif", "lif", "umbilical", "periumbilical", "flank",
-                  "hypochondrium", "suprapubic"] { m[w] = "region-abdomen" }
-        for w in ["groin", "inguinal", "femoral", "scrotal", "scrotum"] { m[w] = "region-groin" }
-        for w in ["anal", "anus", "perianal", "rectal", "rectum", "bottom", "piles", "haemorrhoids",
-                  "hemorrhoids"] { m[w] = "region-anorectal" }
-        for w in ["breast", "breasts", "nipple", "axilla", "axillary"] { m[w] = "region-breast" }
-        for w in ["neck", "thyroid", "goitre", "goiter"] { m[w] = "region-neck" }
-        for w in ["foot", "feet", "toe", "toes", "heel"] { m[w] = "region-foot" }
+        for (region, words) in wordRules?.regions ?? [:] {
+            for w in words { m[w] = region }
+        }
         return m
     }()
 
-    private static func stem(_ w: String) -> String {
-        for suffix in ["ing", "ed", "s"] where w.hasSuffix(suffix) && !w.hasSuffix("ss")
-            && w.count - suffix.count >= 4 {
+    private static func stem(_ w: String, _ rules: SuffixRules) -> String {
+        for suffix in rules.suffixes where w.hasSuffix(suffix) && !w.hasSuffix(rules.keepEnding)
+            && w.count - suffix.count >= rules.minStemLength {
             return String(w.dropLast(suffix.count))
         }
         return w
     }
 
     /// Words that say nothing about which problem it is.
-    private static let stopWords: Set<String> = [
-        "pain", "painful", "ache", "aching", "with", "without", "since", "days", "weeks", "months",
-        "years", "hours", "left", "right", "both", "bilateral", "severe", "mild", "moderate",
-        "acute", "chronic", "worse", "worsening", "better", "improving", "review", "follow",
-        "followup", "check", "visit", "problem", "issue", "patient", "history", "after", "before",
-        "about", "some", "more", "less", "also", "still", "again", "recurrent", "ongoing", "new",
-        "unspecified", "other", "site", "area", "general", "symptoms", "symptom",
-        "lump", "lumps", "swelling", "mass", "masses", "again",
-    ]
+    private static let stopWords: Set<String> = Set(wordRules?.stopWords ?? [])
 }

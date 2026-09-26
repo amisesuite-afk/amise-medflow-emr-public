@@ -937,7 +937,7 @@
       "notes": "Clinician-facing suggestions on the Plan step (web DecisionSupportPanel, also compact in the ManagementPanel; iOS DecisionSupportSection). Nothing is added, ordered or prescribed without a tap. The plan-safety filters (planSafety / PlanSafetyFilter) are applied to every line and stay the final hard filter; an option they withhold is 'not for this patient'. A confirmed diagnosis wins over other engine differentials (managementPanelSource rule). Never patient-facing (hazard H-10).",
       "changelog": [
         { "version": "1.0.0", "date": "2026-09-25", "change": "Created: 21 score action sets, 8 result rules, 11 decisions (appendicitis, cholecystitis, diverticulitis, upper GI bleeding, pulmonary embolism, VTE prophylaxis, sepsis antibiotic timing, inguinal hernia, gallstone pancreatitis, emergency laparotomy, peri-procedural bridging) with 18 options, 28 global and 15 decision-specific modifiers, 74 sources. See docs/clinical-validation/changes/bayes-treatment.md." },
-        { "version": "1.0.0", "date": "2026-09-26", "change": "Relocated, no content change (shared content phase 2): the web copy lib/pane-engine/src/decision/treatment-decisions.json moved to clinical-content/rules/treatment-decisions.json with a JSON Schema (clinical-content/schemas/treatment-decisions.schema.json); the byte-identical iOS copy Resources/TreatmentDecisions.json is deleted and iOS reads the shared file through SharedClinicalContent. Header only: $schema, id and $comment. Every string, number and grade unchanged (docs/clinical-validation/changes/shared-content.md, Phase 2)." }
+        { "version": "1.0.0", "date": "2026-09-26", "change": "Relocated, no content change (shared content phase 2): the web copy lib/pane-engine/src/decision/treatment-decisions.json moved to clinical-content/rules/treatment-decisions.json with a JSON Schema (clinical-content/schemas/treatment-decisions.schema.json); the byte-identical iOS copy Resources/TreatmentDecisions.json is deleted and iOS reads the shared file through SharedClinicalContent. Header only: $schema, id and $comment. Every string, number and grade unchanged (governance only; see the shared-content change log, Phase 2)." }
       ]
     },
     {
@@ -1042,8 +1042,46 @@
         {
           "version": "1.0.0",
           "date": "2026-09-26",
-          "change": "Relocated, no content change (shared content phase 2): the web copy lib/pane-engine/src/whats-missing/whats-missing-rules.json moved to clinical-content/rules/whats-missing-rules.json with a JSON Schema (clinical-content/schemas/whats-missing-rules.schema.json); the byte-identical iOS copy Resources/WhatsMissingRules.json is deleted and iOS reads the shared file through SharedClinicalContent. Header only: $schema, $comment and id added. Every string, number and term unchanged (docs/clinical-validation/changes/shared-content.md, Phase 2)."
+          "change": "Relocated, no content change (shared content phase 2): the web copy lib/pane-engine/src/whats-missing/whats-missing-rules.json moved to clinical-content/rules/whats-missing-rules.json with a JSON Schema (clinical-content/schemas/whats-missing-rules.schema.json); the byte-identical iOS copy Resources/WhatsMissingRules.json is deleted and iOS reads the shared file through SharedClinicalContent. Header only: $schema, $comment and id added. Every string, number and term unchanged (governance only; see the shared-content change log, Phase 2)."
         }
+      ]
+    },
+    {
+      "id": "visit-continuity",
+      "title": "Visit continuity — is today's complaint the same problem as the last visit (stop words, body-region map, suffix trimming): follow-up of the last problem vs a new-problem consultation",
+      "platforms": ["web", "ios"],
+      "kind": "workflow-rules",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "clinical-content/rules/visit-continuity.json", "type": "json-key", "key": "version" },
+      "files": [
+        "clinical-content/rules/visit-continuity.json",
+        "clinical-content/schemas/visit-continuity.schema.json",
+        "lib/triage-engine/src/visit-continuity.ts",
+        "ios/AmiseMedFlow/Services/VisitContinuity.swift"
+      ],
+      "tests": [
+        "artifacts/dashboard/src/lib/__tests__/visit-continuity.test.ts",
+        "ios/AmiseMedFlowTests/VisitContinuityTests.swift",
+        "ios/AmiseMedFlowTests/Resources/VisitContinuityVectors.json",
+        "ios/AmiseMedFlowTests/SharedClinicalContentTests.swift",
+        "scripts/src/shared-content.test.ts"
+      ],
+      "ciChecks": [
+        "lint:shared-content (clinical-content/rules/visit-continuity.json is the single source of the word rules for web and iOS)",
+        "dashboard vitest (shared vectors VisitContinuityVectors.json and the ported iOS vectors)",
+        "ios-build-check.yml unit tests (VisitContinuityTests: the same vectors)"
+      ],
+      "guidelines": [],
+      "citationStatus": "none",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Word lists written from the owner's instruction (Dr Kabiye, 2026-09-25: a returning patient is a follow-up of the last problem unless today's complaint is a new, different one); exercised by the shared vectors. Not a clinical review.",
+      "reviewPriority": "P3",
+      "nextReviewDue": "2027-03-31",
+      "changeAuthority": "Any repository committer. Web ships on dashboard deploy; iOS with an app release. Change the one shared file clinical-content/rules/visit-continuity.json (both platforms read it) and, for a behaviour change, the shared vectors ios/AmiseMedFlowTests/Resources/VisitContinuityVectors.json.",
+      "notes": "A workflow default, not a diagnostic, triage or treatment rule: it proposes follow-up vs new-problem consultation, which the clinician confirms or changes. Also read by the longitudinal patterns of the diagnostic-reasoning layer (same-problem visits). Data only in the shared file; the matching logic (split on non-letters, region words first, minimum length, stop words, first fitting suffix) stays twinned in visit-continuity.ts / VisitContinuity.swift. iOS: when the file is missing or does not decode, no word is meaningful, VisitContinuity.isAvailable is false and no same-problem / new-problem call is made (the booked visit type decides); Settings → Diagnostics says why.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-26", "change": "Registered and moved to one shared file (shared content phase 2): the stop words, body-region map, suffix rules and minimum word length that were typed twice (visit-continuity.ts and VisitContinuity.swift, kept in step by hand-ported vectors) are now clinical-content/rules/visit-continuity.json with a JSON Schema; both platforms read it. Same words and rules as before (the iOS list had \"again\" twice; set-identical). Shared vectors VisitContinuityVectors.json added (governance only; see the shared-content change log, Phase 2)." }
       ]
     },
     {
@@ -2278,7 +2316,6 @@
     { "path": "ios/AmiseMedFlow/Services/QuestionnairePatientSearch.swift", "reason": "Patient search (privacy), not clinical content." },
     { "path": "ios/AmiseMedFlow/Services/SyncService+PathwayData.swift", "reason": "Sync of stored pathway data, not clinical content." },
     { "path": "ios/AmiseMedFlow/Services/AIService.swift", "reason": "Disabled (AIError.disabled); prompts to be registered if AI is re-enabled." },
-    { "path": "lib/triage-engine/src/negation.ts", "reason": "Negation-aware text matching used by the registered rule sets; no clinical rules, terms or thresholds of its own." },
-    { "path": "lib/triage-engine/src/visit-continuity.ts", "reason": "Visit-type workflow default (follow-up of the last problem vs new complaint, by word / body-region overlap with the last visit); no diagnostic, triage or treatment rules. Twin of ios VisitContinuity.swift; the clinician confirms or changes the visit type." }
+    { "path": "lib/triage-engine/src/negation.ts", "reason": "Negation-aware text matching used by the registered rule sets; no clinical rules, terms or thresholds of its own." }
   ]
 }

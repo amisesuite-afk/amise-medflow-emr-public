@@ -182,8 +182,9 @@ enum ConsultPathway: String, CaseIterable, Identifiable {
             return .init(pathway: .wellness, reasons: ["Chief complaint mentions \"\(w)\""])
         }
         // Returning patient: a follow-up of the last problem, unless today's complaint is a new,
-        // different one (VisitContinuity).
-        if let last = VisitContinuity.lastVisit(for: p) {
+        // different one (VisitContinuity; skipped when its shared word rules are not loaded, so the
+        // booked visit type decides).
+        if VisitContinuity.isAvailable, let last = VisitContinuity.lastVisit(for: p) {
             let days = Calendar.current.dateComponents([.day], from: last.date, to: .now).day ?? 0
             let seen = "Seen before — last visit \(days) day\(days == 1 ? "" : "s") ago"
             if VisitContinuity.isSameProblem(current: p.chiefComplaint, previous: last) {

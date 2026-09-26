@@ -6,14 +6,42 @@
 // problem unless today's chief complaint is a new, different one, in which case it is a
 // new-problem (first-visit) consultation.
 //
-// DRIFT NOTE: the word rules below (stop words, body-region map, suffix trimming, four-letter
-// minimum) must stay identical to VisitContinuity.swift. The iOS test vectors in
+// The word rules (stop words, body-region map, suffix trimming, four-letter minimum) are data in
+// the shared clinical rule file clinical-content/rules/visit-continuity.json, which
+// VisitContinuity.swift reads too (through SharedClinicalContent); lint:shared-content checks it
+// against its schema and both platforms' types. The matching logic below stays twinned with
+// VisitContinuity.swift: both run the shared vectors
+// ios/AmiseMedFlowTests/Resources/VisitContinuityVectors.json, and the iOS test vectors in
 // ios/AmiseMedFlowTests/VisitContinuityTests.swift are ported one for one in
-// artifacts/dashboard/src/lib/__tests__/visit-continuity.test.ts — change both files and both
-// test files in the same PR.
+// artifacts/dashboard/src/lib/__tests__/visit-continuity.test.ts — change the logic on both
+// platforms in the same PR.
 //
 // Pure: no I/O, no React. The dashboard adapts its encounter summaries into `VisitRecord`s
 // (artifacts/dashboard/src/lib/visit-continuity-web.ts).
+
+import rawWordRules from '../../../clinical-content/rules/visit-continuity.json';
+
+/** The shared word rules (clinical-content/rules/visit-continuity.json). */
+export interface VisitContinuityWordRuleFile {
+  version: string;
+  /** A word shorter than this (in letters) is not a content word, unless it is a region word. */
+  minWordLength: number;
+  /** Words that say nothing about which problem it is. */
+  stopWords: string[];
+  /** Region token → its body-region words. */
+  regions: Record<string, string[]>;
+  suffixRules: {
+    /** Tried in this order; the first that fits is trimmed. */
+    suffixes: string[];
+    /** A word ending in this is not trimmed ("abscess"). */
+    keepEnding: string;
+    /** At least this many letters must remain. */
+    minStemLength: number;
+  };
+}
+
+const WORD_RULES = rawWordRules as unknown as VisitContinuityWordRuleFile;
+export const VISIT_CONTINUITY_RULES_VERSION: string = WORD_RULES.version;
 
 /** Eastern Caribbean Time — America/St_Lucia, UTC-4, no DST (CLAUDE.md "Timezone"). */
 export const VISIT_CONTINUITY_UTC_OFFSET_MINUTES = -240;
@@ -184,7 +212,7 @@ export function meaningfulWords(text: string): Set<string> {
   for (const w of words) {
     const region = REGION_OF.get(w);
     if (region) { out.add(region); continue; }   // "RUQ" ≈ "abdominal"
-    if (charCount(w) < 4 || STOP_WORDS.has(w)) continue;
+    if (charCount(w) < WORD_RULES.minWordLength || STOP_WORDS.has(w)) continue;
     out.add(stem(w));
   }
   return out;
@@ -197,22 +225,14 @@ function charCount(w: string): number {
 /** Body-region words, so a reworded complaint about the same area is not a new problem. */
 const REGION_OF: ReadonlyMap<string, string> = (() => {
   const m = new Map<string, string>();
-  const add = (region: string, words: string[]) => { for (const w of words) m.set(w, region); };
-  add('region-abdomen', ['abdomen', 'abdominal', 'belly', 'stomach', 'tummy', 'epigastric', 'epigastrium',
-    'ruq', 'luq', 'rlq', 'llq', 'rif', 'lif', 'umbilical', 'periumbilical', 'flank',
-    'hypochondrium', 'suprapubic']);
-  add('region-groin', ['groin', 'inguinal', 'femoral', 'scrotal', 'scrotum']);
-  add('region-anorectal', ['anal', 'anus', 'perianal', 'rectal', 'rectum', 'bottom', 'piles', 'haemorrhoids',
-    'hemorrhoids']);
-  add('region-breast', ['breast', 'breasts', 'nipple', 'axilla', 'axillary']);
-  add('region-neck', ['neck', 'thyroid', 'goitre', 'goiter']);
-  add('region-foot', ['foot', 'feet', 'toe', 'toes', 'heel']);
+  for (const [region, words] of Object.entries(WORD_RULES.regions)) for (const w of words) m.set(w, region);
   return m;
 })();
 
 function stem(w: string): string {
-  for (const suffix of ['ing', 'ed', 's']) {
-    if (w.endsWith(suffix) && !w.endsWith('ss') && charCount(w) - suffix.length >= 4) {
+  const { suffixes, keepEnding, minStemLength } = WORD_RULES.suffixRules;
+  for (const suffix of suffixes) {
+    if (w.endsWith(suffix) && !w.endsWith(keepEnding) && charCount(w) - suffix.length >= minStemLength) {
       return w.slice(0, w.length - suffix.length);
     }
   }
@@ -220,15 +240,7 @@ function stem(w: string): string {
 }
 
 /** Words that say nothing about which problem it is. */
-const STOP_WORDS: ReadonlySet<string> = new Set([
-  'pain', 'painful', 'ache', 'aching', 'with', 'without', 'since', 'days', 'weeks', 'months',
-  'years', 'hours', 'left', 'right', 'both', 'bilateral', 'severe', 'mild', 'moderate',
-  'acute', 'chronic', 'worse', 'worsening', 'better', 'improving', 'review', 'follow',
-  'followup', 'check', 'visit', 'problem', 'issue', 'patient', 'history', 'after', 'before',
-  'about', 'some', 'more', 'less', 'also', 'still', 'again', 'recurrent', 'ongoing', 'new',
-  'unspecified', 'other', 'site', 'area', 'general', 'symptoms', 'symptom',
-  'lump', 'lumps', 'swelling', 'mass', 'masses',
-]);
+const STOP_WORDS: ReadonlySet<string> = new Set(WORD_RULES.stopWords);
 
 /** Exposed for the parity test only. */
 export const VISIT_CONTINUITY_WORD_RULES = { stopWords: STOP_WORDS, regionOf: REGION_OF } as const;
