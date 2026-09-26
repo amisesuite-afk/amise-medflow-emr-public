@@ -1,10 +1,10 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-26T04:38:20.879Z.
+Generated 2026-09-26T05:17:42.837Z.
 
-- iOS: 433 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-26T04:20:28Z).
+- iOS: 441 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-26T04:47:06Z).
 - iOS differential engine mode: database (BayesianDiagnosisEngine used DiagnosticDatabase.json).
-- Web: 441 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-26T04:35:25.980Z, clinval-web/1).
+- Web: 454 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-26T05:15:53.355Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -14,8 +14,8 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| ios | 433 | 3149 | 2811 | 222 | 116 | 2 | 0 | 218 | 0 | 0 |
-| web | 441 | 3164 | 2992 | 78 | 94 | 0 | 0 | 76 | 0 | 0 |
+| ios | 441 | 3164 | 2822 | 225 | 117 | 2 | 0 | 218 | 3 | 8 |
+| web | 454 | 3190 | 3018 | 78 | 94 | 0 | 0 | 76 | 0 | 0 |
 
 ## Blocking failures
 
@@ -1389,7 +1389,7 @@ Guidelines:
 
 Failure details:
 
-- **inv-blood-cultures** (ios): no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
+- **inv-blood-cultures** (ios): no investigation matched among 10 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation)]
 
 Guidelines:
 
@@ -3380,8 +3380,8 @@ Guidelines:
 Failure details:
 
 - **dx-crohn-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis]
-- **flag-immunosuppressed** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert)]
-- **mgmt-resection-plan** (ios): no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **flag-immunosuppressed** (ios): no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert)]
+- **mgmt-resection-plan** (ios): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -4117,8 +4117,13 @@ Permutation of `dysphagia-progressive-over55`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| dx-oesophageal-cancer-top3 | mustRankTopK | critical | not run | PASS | NICE NG12 2015 |  |
-| inv-ogd | investigationInclude | quality | not run | PASS | NICE NG12 2015 |  |
+| dx-oesophageal-cancer-top3 | mustRankTopK | critical | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
+| inv-ogd | investigationInclude | quality | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
+
+Failure details:
+
+- **dx-oesophageal-cancer-top3** (ios): 'Oesophageal / Gastric Carcinoma' at rank 1 of ios.bayes (k=3); also in ios.ccEarly#1, ios.pipeline#1
+- **inv-ogd** (ios): investigation found in ios.radiation: "ogd + biopsy - tissue diagnosis - mandatory"
 
 Guidelines:
 
@@ -4206,6 +4211,216 @@ Guidelines:
 
 - **iusti-eo-2016** — IUSTI/WHO European guideline on the management of epididymo-orchitis (2016), Exclude torsion (surgical exploration if in doubt); test for chlamydia and gonorrhoea (NAAT) and urine culture; likely STI: ceftriaxone plus doxycycline; enteric organisms likely: fluoroquinolone; scrotal support and analgesia; partner notification. Street EJ, Justice ED, Kopa Z, et al. The 2016 European guideline on the management of epididymo-orchitis. Int J STD AIDS. 2017;28:744–749. *(statement wording/numbering not yet verified against the source)*
 - **eau-paed-2024** — EAU/ESPU Guidelines on Paediatric Urology — acute scrotum (2024), Testicular torsion is a clinical diagnosis; urgent surgical exploration; Doppler ultrasound must not delay surgery; explore when torsion cannot be excluded. Radmayr C, Bogaert G, Burgu B, et al. EAU Guidelines on Paediatric Urology. EAU Guidelines Office, Arnhem; 2024 edition. Section: Acute scrotum in children. *(statement wording/numbering not yet verified against the source)*
+
+### Acute appendicitis with a high AIR score
+
+#### `exam-air-high-appendicitis` — AIR score 10 recorded; McBurney's point tenderness present
+
+19-year-old man, 20 hours of periumbilical pain moving to the right iliac fossa, vomiting; McBurney's point tender with guarding; AIR 10 recorded.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| appendicitis-top1 | mustRankTopK | critical | not run | PASS |  |  |
+| air-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines on the diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR, AAS). World J Emerg Surg 2020;15:27 *(statement wording/numbering not yet verified against the source)*
+- **andersson-2008** — Andersson M, Andersson RE. The appendicitis inflammatory response score (2008), High probability 9-12. World J Surg 2008;32:1843-9 *(statement wording/numbering not yet verified against the source)*
+
+### Abdominal wall pain (anterior cutaneous nerve entrapment)
+
+#### `exam-carnett-abdominal-wall-pain` — Carnett's sign positive
+
+36-year-old woman with 8 months of well-localised right-sided abdominal pain at a fingertip-sized spot, normal bloods, previous laparoscopy; Carnett's sign positive.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| abdominal-wall-top3 | mustRankTopK | quality | not run | PASS |  |  |
+| carnett-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **mcgee-2022** — McGee S. Evidence-Based Physical Diagnosis, 5th ed. (2022), Abdominal pain and tenderness; hernia; lymphadenopathy; liver. *(statement wording/numbering not yet verified against the source)*
+- **takada-2011** — Takada T et al. Carnett's sign in chronic abdominal pain (2011), Carnett's sign accuracy. J Gen Intern Med 2011 *(statement wording/numbering not yet verified against the source)*
+
+### Decompensated cirrhosis with stigmata of chronic liver disease
+
+#### `exam-cld-stigmata-jaundice` — Spider naevi, palmar erythema and a fluid wave recorded
+
+58-year-old man who drinks heavily, 3 weeks of yellow eyes, a swelling abdomen and ankle swelling; spider naevi, palmar erythema and a fluid wave on examination.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| cirrhosis-top3 | mustRankTopK | critical | not run | PASS |  |  |
+| spider-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **udell-2012** — Udell JA et al. Does this patient with liver disease have cirrhosis? (JAMA Rational Clinical Examination) (2012), Spider angiomata, palmar erythema, ascites. JAMA 2012;307:832-42 *(statement wording/numbering not yet verified against the source)*
+- **williams-simel-1992** — Williams JW, Simel DL. Does this patient have ascites? (1992), Fluid wave LR+ 6.0. JAMA 1992;267:2645-8 *(statement wording/numbering not yet verified against the source)*
+
+### Femoral hernia (lump below and lateral to the pubic tubercle)
+
+#### `exam-hernia-femoral-below-tubercle` — Groin lump below and lateral to the pubic tubercle
+
+74-year-old woman with a small, firm right groin lump for 3 months; the neck lies below the inguinal ligament and lateral to the pubic tubercle.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| femoral-top2 | mustRankTopK | critical | not run | PASS |  |  |
+| tubercle-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge Group. International guidelines for groin hernia management (2018), Femoral hernia: diagnosis and prompt repair. Hernia 2018;22:1-165 *(statement wording/numbering not yet verified against the source)*
+- **mcgee-2022** — McGee S. Evidence-Based Physical Diagnosis, 5th ed. (2022), Abdominal pain and tenderness; hernia; lymphadenopathy; liver. *(statement wording/numbering not yet verified against the source)*
+
+### Uncomplicated inguinal hernia (cough impulse, reducible, above the tubercle)
+
+#### `exam-hernia-inguinal-cough-impulse` — Cough impulse, reducible, above and medial to the tubercle
+
+46-year-old man, 6 months of a left groin bulge on lifting; cough impulse, reduces completely, neck above and medial to the pubic tubercle.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| inguinal-top1 | mustRankTopK | critical | not run | PASS |  |  |
+| cough-impulse-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge Group. International guidelines for groin hernia management (2018), Diagnosis by examination. Hernia 2018;22:1-165 *(statement wording/numbering not yet verified against the source)*
+
+### Incarcerated groin hernia (irreducible on examination)
+
+#### `exam-hernia-irreducible-incarcerated` — Hernia examined and does not reduce
+
+63-year-old man with a known right groin hernia that has been painful and stuck out for 8 hours, with vomiting; on examination it is tense, tender and does not reduce.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| incarcerated-top2 | mustRankTopK | critical | not run | PASS |  |  |
+| emergency-or-urgent | emergencyLevel | critical | not run | PASS |  |  |
+
+Guidelines:
+
+- **wses-2017** — WSES guidelines for emergency repair of complicated abdominal wall hernias (2017), Diagnosis of incarceration and strangulation. World J Emerg Surg 2017;12:37 *(statement wording/numbering not yet verified against the source)*
+
+### Acute cholecystitis with Murphy's sign absent (elderly, diabetic)
+
+#### `exam-murphy-negative-elderly-cholecystitis` — Murphy's sign examined and absent
+
+79-year-old man with diabetes, two days of vague right upper quadrant discomfort, vomiting and fever; Murphy's sign absent on examination. Cholecystitis stays in the differential (LR- 0.5 only halves the odds).
+
+Permutation of `cholecystitis-elderly-diabetic-atypical`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| cholecystitis-still-top3 | mustRankTopK | critical | not run | PASS |  |  |
+| murphy-absent-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **trowbridge-2003** — Trowbridge RL et al. Does this patient have acute cholecystitis? (JAMA Rational Clinical Examination) (2003), Murphy's sign LR+ 2.8, LR- 0.5. JAMA 2003;289:80-6 *(statement wording/numbering not yet verified against the source)*
+- **tg18-chole** — Tokyo Guidelines 2018: acute cholecystitis diagnostic criteria (2018), Diagnostic criteria (local signs: Murphy's sign). *(statement wording/numbering not yet verified against the source)*
+
+### Acute cholecystitis (Murphy's sign present)
+
+#### `exam-murphy-positive-cholecystitis` — Murphy's sign recorded present on the Exam step
+
+41-year-old woman, 30 hours of constant right upper quadrant pain after a fatty meal, low-grade fever; Murphy's sign present on examination.
+
+Permutation of `cholecystitis-tg18-grade1`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| cholecystitis-top2 | mustRankTopK | critical | not run | PASS |  |  |
+| murphy-lr-shown | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **trowbridge-2003** — Trowbridge RL et al. Does this patient have acute cholecystitis? (JAMA Rational Clinical Examination) (2003), Murphy's sign LR+ 2.8, LR- 0.5. JAMA 2003;289:80-6 *(statement wording/numbering not yet verified against the source)*
+- **tg18-chole** — Tokyo Guidelines 2018: acute cholecystitis diagnostic criteria (2018), Diagnostic criteria (local signs: Murphy's sign). *(statement wording/numbering not yet verified against the source)*
+
+### Ankle inversion injury, Ottawa ankle rules negative
+
+#### `exam-ottawa-ankle-negative` — Ottawa ankle rules recorded negative
+
+27-year-old man twisted his right ankle playing football; can walk, no bony tenderness at the malleoli, fifth metatarsal or navicular; Ottawa rules negative.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| ottawa-post-test | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **bachmann-2003** — Bachmann LM et al. Accuracy of Ottawa ankle rules to exclude fractures of the ankle and mid-foot: systematic review (2003), Pooled sensitivity 97.6 %. BMJ 2003;326:417 *(statement wording/numbering not yet verified against the source)*
+
+### Gastroenteritis with dehydration in a toddler (prolonged capillary refill)
+
+#### `exam-paeds-dehydration-crt` — Prolonged capillary refill and reduced skin turgor recorded
+
+2-year-old with 2 days of vomiting and watery diarrhoea, fewer wet nappies; capillary refill prolonged and skin turgor reduced.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| gastroenteritis-top3 | mustRankTopK | critical | not run | PASS |  |  |
+| crt-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **steiner-2004** — Steiner MJ et al. Is this child dehydrated? (JAMA Rational Clinical Examination) (2004), Prolonged capillary refill LR+ 4.1. JAMA 2004;291:2746-54 *(statement wording/numbering not yet verified against the source)*
+- **nice-cg84** — NICE CG84 Diarrhoea and vomiting caused by gastroenteritis in under 5s (2009), Clinical dehydration. *(statement wording/numbering not yet verified against the source)*
+
+### Pleuritic chest pain, low Wells and PERC negative
+
+#### `exam-perc-negative-low-wells` — Wells PE 0 and PERC 0 recorded
+
+31-year-old woman with sharp left chest pain on breathing after a viral illness; no risk factors; Wells PE 0 and PERC negative recorded.
+
+Permutation of `pe-perc-negative-low-risk`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| pe-not-leading | mustRankTopK | quality | not run | PASS |  |  |
+| perc-lr | reasoningInclude | quality | not run | PASS |  |  |
+| wells-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **kline-2004** — Kline JA et al. Clinical criteria to prevent unnecessary diagnostic testing in emergency department patients with suspected pulmonary embolism (2004), PERC rule. J Thromb Haemost 2004;2:1247-55 *(statement wording/numbering not yet verified against the source)*
+- **nice-ng158** — NICE NG158 Venous thromboembolic diseases (2020), Two-level Wells PE score. *(statement wording/numbering not yet verified against the source)*
+
+### Ureteric colic with a high STONE score
+
+#### `exam-stone-score-high-renal-colic` — STONE score 13 recorded
+
+38-year-old man with 3 hours of severe colicky right loin pain radiating to the groin, vomiting and haematuria on dipstick; STONE score 13 recorded.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| renal-colic-top1 | mustRankTopK | critical | not run | PASS |  |  |
+| stone-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **moore-2014** — Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score (2014), High score 10-13: stone in about 89 %. BMJ 2014;348:g2191 *(statement wording/numbering not yet verified against the source)*
+
+### Gastric carcinoma with a left supraclavicular node
+
+#### `exam-supraclavicular-node-gastric` — Hard left supraclavicular node recorded
+
+66-year-old man, 3 months of epigastric discomfort, early satiety and 8 kg weight loss; hard, fixed left supraclavicular node.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| gastric-top3 | mustRankTopK | critical | not run | PASS |  |  |
+| node-lr | reasoningInclude | quality | not run | PASS |  |  |
+
+Guidelines:
+
+- **mcgee-2022** — McGee S. Evidence-Based Physical Diagnosis, 5th ed. (2022), Abdominal pain and tenderness; hernia; lymphadenopathy; liver. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng12** — NICE NG12 Suspected cancer: recognition and referral (2015), Upper GI: weight loss with upper abdominal pain, aged 55 and over. *(statement wording/numbering not yet verified against the source)*
 
 ### Fistula-in-ano — complex anterior transsphincteric (female)
 
@@ -4549,7 +4764,7 @@ Permutation of `gyn-ovarian-torsion-dermoid`.
 
 Failure details:
 
-- **mgmt-gynaecology** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-gynaecology** (ios): no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -5076,8 +5291,13 @@ Permutation of `breast-lump-under-30`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| dx-fibroadenoma-top3 | mustRankTopK | quality | not run | PASS | NICE NG12 2015 |  |
-| dx-breast-cancer-listed | mustNotMiss | quality | not run | PASS | NICE NG12 2015 |  |
+| dx-fibroadenoma-top3 | mustRankTopK | quality | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
+| dx-breast-cancer-listed | mustNotMiss | quality | FAIL (unverified) | PASS | NICE NG12 2015 |  |
+
+Failure details:
+
+- **dx-fibroadenoma-top3** (ios): 'Fibroadenoma / Benign Breast Lump' at rank 1 of ios.bayes (k=3); also in ios.ccEarly#1, ios.pipeline#1, ios.triage#1
+- **dx-breast-cancer-listed** (ios): not in top 5 of ios.bayes: 1. Fibroadenoma / Benign Breast Lump \| 2. Incisional Hernia \| 3. Lymphadenopathy (Lymphoma / Metastatic / Reactive) \| 4. Femoral Hernia \| 5. Deep Vein Thrombosis; also in ios.triage#3
 
 Guidelines:
 
@@ -5091,11 +5311,12 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| dx-acei-cough-top3-ios | mustRankTopK | critical | not run | n/a | ERS guidelines on the diagnosis and treatment of chronic cough in adults and children 2020 |  |
-| dx-acei-cough-top3-web | mustRankTopK | quality | not run | FAIL (known gap) | ERS guidelines on the diagnosis and treatment of chronic cough in adults and children 2020 |  |
+| dx-acei-cough-top3-ios | mustRankTopK | critical | PASS (verify: was unverified) | n/a | ERS guidelines on the diagnosis and treatment of chronic cough in adults and children 2020 |  |
+| dx-acei-cough-top3-web | mustRankTopK | quality | PASS | FAIL (known gap) | ERS guidelines on the diagnosis and treatment of chronic cough in adults and children 2020 |  |
 
 Failure details:
 
+- **dx-acei-cough-top3-ios** (ios): 'ACE Inhibitor Cough' at rank 1 of ios.bayes (k=3); also in ios.pipeline#1
 - **dx-acei-cough-top3-web** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Peptic Ulcer Disease \| 3. Lipoma [known gap: pane-engine models no ACE-inhibitor cough (or any chronic-cough cause): the cough frame answers reach acei_arb_use, cough and chronic_course, and PANE ranks GORD / peptic ulcer / lipoma. Needs a pane cough module (sign-off list, history-by-complaint.md).]
 
 Guidelines:
@@ -5113,13 +5334,15 @@ Permutation of `hpi-frame-cough-chronic-acei`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| dx-lung-cancer-top3-ios | mustRankTopK | critical | not run | n/a | NICE NG12 2015 |  |
-| dx-lung-cancer-top3-picker | mustRankTopK | quality | not run | PASS | NICE NG12 2015 |  |
-| dx-lung-cancer-top3-pane | mustRankTopK | quality | not run | FAIL (known gap) | NICE NG12 2015 |  |
-| flag-haemoptysis | redFlags | quality | not run | PASS | NICE NG12 2015 |  |
+| dx-lung-cancer-top3-ios | mustRankTopK | critical | PASS (verify: was unverified) | n/a | NICE NG12 2015 |  |
+| dx-lung-cancer-top3-picker | mustRankTopK | quality | n/a | PASS | NICE NG12 2015 |  |
+| dx-lung-cancer-top3-pane | mustRankTopK | quality | PASS | FAIL (known gap) | NICE NG12 2015 |  |
+| flag-haemoptysis | redFlags | quality | FAIL (unverified) | PASS | NICE NG12 2015 |  |
 
 Failure details:
 
+- **dx-lung-cancer-top3-ios** (ios): 'Lung Carcinoma' at rank 1 of ios.bayes (k=3); also in ios.pipeline#1
+- **flag-haemoptysis** (ios): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)
 - **dx-lung-cancer-top3-pane** (web): not in top 3 of web.pane: 1. Community-acquired Pneumonia (Adult / Child) \| 2. Oesophageal Carcinoma \| 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); also in web.symptomInference#3, web.passive#2 [known gap: pane-engine models no lung cancer: with haemoptysis, weight loss and smoking it ranks pneumonia, oesophageal carcinoma and COPD. The SmartSymptomPicker ranking lists lung carcinoma (see dx-lung-cancer-top3-picker).]
 
 Guidelines:
@@ -5134,7 +5357,11 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| dx-heart-failure-top3 | mustRankTopK | critical | not run | PASS | NICE NG106 2018 |  |
+| dx-heart-failure-top3 | mustRankTopK | critical | PASS (verify: was unverified) | PASS | NICE NG106 2018 |  |
+
+Failure details:
+
+- **dx-heart-failure-top3** (ios): 'Acute Heart Failure / Pulmonary Oedema' at rank 1 of ios.bayes (k=3); also in ios.ccEarly#3, ios.pipeline#1
 
 Guidelines:
 
@@ -5151,8 +5378,12 @@ Permutation of `hernia-inguinal-elective-minimal-symptoms`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| dx-inguinal-hernia-top1 | mustRankTopK | critical | not run | PASS | International guidelines for groin hernia management (HerniaSurge) 2018 |  |
-| level-routine | emergencyLevel | quality | not run | PASS | International guidelines for groin hernia management (HerniaSurge) 2018 |  |
+| dx-inguinal-hernia-top1 | mustRankTopK | critical | PASS (verify: was unverified) | PASS | International guidelines for groin hernia management (HerniaSurge) 2018 |  |
+| level-routine | emergencyLevel | quality | PASS | PASS | International guidelines for groin hernia management (HerniaSurge) 2018 |  |
+
+Failure details:
+
+- **dx-inguinal-hernia-top1** (ios): 'Inguinal Hernia' at rank 1 of ios.bayes (k=1); also in ios.ccEarly#1, ios.pipeline#1
 
 Guidelines:
 
@@ -5168,7 +5399,11 @@ Permutation of `painless-jaundice-pancreatic-head`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| dx-pancreatic-cancer-top3 | mustRankTopK | critical | not run | PASS | NICE NG12 2015 |  |
+| dx-pancreatic-cancer-top3 | mustRankTopK | critical | PASS (verify: was unverified) | PASS | NICE NG12 2015 |  |
+
+Failure details:
+
+- **dx-pancreatic-cancer-top3** (ios): 'Pancreatic Carcinoma' at rank 1 of ios.bayes (k=3); also in ios.ccEarly#3, ios.pipeline#1
 
 Guidelines:
 
@@ -5184,7 +5419,11 @@ Permutation of `rectal-bleeding-young-haemorrhoidal`.
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| dx-haemorrhoids-top3 | mustRankTopK | quality | not run | PASS | ASCRS Clinical Practice Guidelines for the Management of Hemorrhoids 2024 |  |
+| dx-haemorrhoids-top3 | mustRankTopK | quality | FAIL (unverified) | PASS | ASCRS Clinical Practice Guidelines for the Management of Hemorrhoids 2024 |  |
+
+Failure details:
+
+- **dx-haemorrhoids-top3** (ios): not in top 3 of ios.bayes: 1. Anxiety Disorder \| 2. Medication Side Effect / Adverse Drug Reaction \| 3. Perianal Abscess \| 4. Femoral Hernia \| 5. Upper GI Bleeding (Peptic Ulcer)
 
 Guidelines:
 
@@ -8398,7 +8637,7 @@ Guidelines:
 
 Failure details:
 
-- **flag-nsaid** (ios): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity)]
+- **flag-nsaid** (ios): no red flag matched among 13 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity)]
 - **score-rec-boey** (ios): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews]
 - **score-rec-boey** (web): boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews]
 
@@ -9594,7 +9833,7 @@ Guidelines:
 Failure details:
 
 - **mnm-volvulus** (ios): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Acute Pancreatitis; also in ios.triage#4 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI); also in ios.triage#4]
-- **mgmt-potassium** (ios): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: Web: No potassium replacement despite K 3.2. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-potassium** (ios): no management item matched among 28 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: Web: No potassium replacement despite K 3.2. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -10815,7 +11054,7 @@ Guidelines:
 | `anal-fissure-acute-posterior` | dx-fissure-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Medication Side Effect / Adverse Drug Reaction \| 2. Anxiety Disorder \| 3. Acute Kidney Injury \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency [known gap: iOS CI 2026-09-25 (run 36169134350, da |
 | `anal-fissure-atypical-lateral-hiv` | mnm-sti-crohn | ios | quality | known gap | not in top 5 of ios.bayes: 1. Perianal Abscess \| 2. Anal Carcinoma \| 3. Inguinal Hernia \| 4. Fournier's Gangrene \| 5. Femoral Hernia [known gap: Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red |
 | `anal-fissure-chronic-refractory` | mgmt-continence-assessment | ios | quality | known gap | no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pi |
-| `aortoenteric-fistula-herald-bleed` | inv-blood-cultures | ios | quality | known gap | no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.decisions, ios |
+| `aortoenteric-fistula-herald-bleed` | inv-blood-cultures | ios | quality | known gap | no investigation matched among 10 (ios.pipeline.decisions, ios.pipeline.voi, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pip |
 | `appendicitis-elderly-atypical` | mnm-caecal-neoplasm | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Small Bowel Obstruction \| 3. Acute Diverticulitis \| 4. Acute Mesenteric Ischaemia \| 5. Obturator Hernia [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain  |
 | `appendicitis-elderly-atypical` | mgmt-no-discharge-on-low-score | ios | quality | known gap | forbidden management item present in ios.scoreCalculator.air: "...appendicitis unlikely. consider observation, analgesia, and discharge with safety-net advice. d/w senior if clinical picture worsens." (+1 more) [known gap: iOS AIR calculato |
 | `appendicitis-paediatric-9y` | score-rec-pas | ios | quality | known gap | pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recomme |
@@ -10868,8 +11107,8 @@ Guidelines:
 | `choledocholithiasis-elderly-warfarin` | mnm-malignant-obstruction | ios | quality | known gap | not in top 5 of ios.bayes: 1. Choledocholithiasis \| 2. Ascending Cholangitis \| 3. Liver Cirrhosis (Decompensated) \| 4. Acute Pancreatitis \| 5. Acute Appendicitis [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystiti |
 | `crc-young-onset-34` | mnm-ibd | ios | quality | known gap | not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Perianal Abscess \| 3. Colorectal Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Ischaemic Colitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of i |
 | `crohns-ileocaecal-abscess` | dx-crohn-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acut |
-| `crohns-ileocaecal-abscess` | flag-immunosuppressed | ios | quality | known gap | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBa |
-| `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | known gap | no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode) |
+| `crohns-ileocaecal-abscess` | flag-immunosuppressed | ios | quality | known gap | no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyB |
+| `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | known gap | no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode) |
 | `dfu-ischaemic-calcified-abpi` | flag-incompressible | ios | quality | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 ( |
 | `dka-type1-young-typical` | mgmt-continue-basal-insulin | ios | quality | known gap | no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item mat |
 | `dvt-wells-likely` | flag-oestrogen | ios | quality | known gap | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 6 (ios.visitRisk, ios.al |
@@ -10882,7 +11121,7 @@ Guidelines:
 | `fistula-in-ano-simple-low` | dx-fistula-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Anxiety Disorder \| 4. Fournier's Gangrene \| 5. Femoral Hernia [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Skin Absce |
 | `gastric-outlet-obstruction-elderly` | mnm-malignancy | ios | quality | known gap | not in top 5 of ios.bayes: 1. Gastric Outlet Obstruction \| 2. Small Bowel Obstruction \| 3. Acute Gastroenteritis \| 4. Acute Pancreatitis \| 5. Acute Appendicitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top  |
 | `gord-alarm-weight-loss-over55` | mgmt-urgent-two-week-ogd | ios | quality | known gap | no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pi |
-| `gyn-ruptured-haemorrhagic-cyst-apixaban` | mgmt-gynaecology | ios | quality | known gap | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pi |
+| `gyn-ruptured-haemorrhagic-cyst-apixaban` | mgmt-gynaecology | ios | quality | known gap | no management item matched among 14 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pi |
 | `h-pylori-penicillin-anaphylaxis` | mgmt-bismuth-quadruple | ios | quality | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `h-pylori-positive-eradication` | mgmt-eradication | ios | quality | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
 | `h-pylori-positive-eradication` | mgmt-14-day-or-bismuth | ios | quality | known gap | no management item matched among 6 (ios.pipeline.actions, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)] |
@@ -10895,6 +11134,9 @@ Guidelines:
 | `hernia-inguinal-elective-minimal-symptoms` | mgmt-watchful-waiting-option | ios | quality | known gap | no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item  |
 | `hernia-inguinal-female-occult-femoral` | mgmt-laparoscopic | ios | quality | known gap | no management item matched among 7 (ios.pipeline.actions, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `hernia-parastomal-symptomatic` | dx-parastomal-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Inguinal Hernia \| 2. Incisional Hernia \| 3. Umbilical / Paraumbilical Hernia \| 4. Femoral Hernia \| 5. Incarcerated / Strangulated Hernia [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not i |
+| `hpi-frame-breast-lump-mobile` | dx-breast-cancer-listed | ios | quality | unverified | not in top 5 of ios.bayes: 1. Fibroadenoma / Benign Breast Lump \| 2. Incisional Hernia \| 3. Lymphadenopathy (Lymphoma / Metastatic / Reactive) \| 4. Femoral Hernia \| 5. Deep Vein Thrombosis; also in ios.triage#3 |
+| `hpi-frame-cough-haemoptysis-smoker` | flag-haemoptysis | ios | quality | unverified | no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage) |
+| `hpi-frame-rectal-bleeding-on-paper` | dx-haemorrhoids-top3 | ios | quality | unverified | not in top 3 of ios.bayes: 1. Anxiety Disorder \| 2. Medication Side Effect / Adverse Drug Reaction \| 3. Perianal Abscess \| 4. Femoral Hernia \| 5. Upper GI Bleeding (Peptic Ulcer) |
 | `ischaemic-colitis-left` | inv-colonoscopy-48h | ios | quality | known gap | no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi)] |
 | `ischaemic-colitis-left` | inv-stool-culture | ios | quality | known gap | no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 4 (ios.pipeline.decisions, ios.pipeline.voi)] |
 | `jaundice-mimic-acute-hepatitis-a` | flag-liver-failure-watch | ios | quality | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.pi |
@@ -10946,7 +11188,7 @@ Guidelines:
 | `pilonidal-abscess-acute` | mgmt-no-acute-excision | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "excision with limberg flap or karydakis procedure - best outcomes, low recurrence" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present i |
 | `ppu-elderly-steroids-masked` | score-rec-qsofa | ios | quality | known gap | qsofa not recommended; recommended: (none) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: (none)] |
 | `ppu-elderly-steroids-masked` | score-qsofa-autofill | ios | quality | known gap | expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for sepsis / deterioration) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for seps |
-| `ppu-perforated-peptic-ulcer` | flag-nsaid | ios | quality | known gap | no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): n |
+| `ppu-perforated-peptic-ulcer` | flag-nsaid | ios | quality | known gap | no red flag matched among 13 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): n |
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | ios | quality | known gap | boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, |
 | `reasoning-closure-gastritis-troponin` | alert-favours-acs | ios | critical | known gap | no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios] |
 | `reasoning-closure-gastroenteritis-dka` | alert-favours-dka | ios | critical | known gap | no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios] |
@@ -10988,7 +11230,7 @@ Guidelines:
 | `screen-post-hysterectomy-no-cervical-52` | mgmt-crc-screening-due | ios | quality | known gap | no management item matched among 7 (ios.pipeline.actions, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-prostate-58-shared-decision` | mgmt-shared-decision | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `sigmoid-volvulus-base` | mnm-volvulus | ios | quality | known gap | not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Acute Pancreatitis; also in ios.triage#4 [known gap: iOS CI 2026-09-25 (run 36169134350, database |
-| `sigmoid-volvulus-base` | mgmt-potassium | ios | quality | known gap | no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: Web: No potassium replacement despite K 3.2. \| iO |
+| `sigmoid-volvulus-base` | mgmt-potassium | ios | quality | known gap | no management item matched among 28 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: Web: No potassium replacement despite K 3.2. \| iO |
 | `stroke-acute-fast-positive` | mgmt-swallow-screen | ios | quality | known gap | no management item matched among 37 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode) |
 | `tia-transient-weakness-dysarthria` | mgmt-defer-elective-surgery | ios | quality | known gap | no management item matched among 35 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions) [known gap: Web: The pending hernia repair is not deferred (no TIA rule). \| iOS CI |
 | `trauma-blunt-polytrauma-class3-shock` | dx-abdominal-trauma-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Hypertensive Emergency \| 4. Bacterial Meningitis / Meningococcal Sepsis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): |

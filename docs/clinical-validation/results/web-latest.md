@@ -1,8 +1,8 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-26T04:35:25.980Z.
+Generated 2026-09-26T05:15:53.355Z.
 
-- Harness clinval-web/1; 441 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
+- Harness clinval-web/1; 454 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 441 | 3164 | 2992 | 78 | 94 | 0 | 0 | 76 | 0 | 0 |
+| web | 454 | 3190 | 3018 | 78 | 94 | 0 | 0 | 76 | 0 | 0 |
 
 ## Blocking failures
 
@@ -48,7 +48,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Renal Colic / Urolithiasis; 2. Acute Pyelonephritis / Upper Urinary Tract Infection; 3. Abdominal Aortic Aneurysm (Symptomatic / Ruptured)
 - differential web.symptomInference: 1. Renal colic / urolithiasis; 2. Renal cell carcinoma; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Bladder transitional cell carcinoma; 5. Prostate adenocarcinoma
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Renal cell carcinoma; 3. Pyelonephritis; 4. Vasovagal / reflex syncope; 5. Symptomatic / ruptured abdominal aortic aneurysm
@@ -96,7 +96,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Skin Abscess / Furuncle; 2. Cellulitis; 3. Perianal Abscess / Fistula
 - differential web.symptomInference: 1. Skin abscess / furuncle; 2. Pilonidal sinus / abscess; 3. Perianal abscess; 4. Varicocele; 5. Infective endocarditis
 - differential web.passive: 1. Skin abscess / furuncle; 2. Perianal abscess; 3. Pilonidal sinus / abscess; 4. Inguinal hernia (paediatric); 5. Febrile convulsion
@@ -135,7 +135,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Skin Abscess / Furuncle; 2. Cellulitis; 3. Epidermoid / Sebaceous Cyst
 - differential web.symptomInference: 1. Skin abscess / furuncle; 2. Hidradenitis suppurativa; 3. Pilonidal sinus / abscess; 4. Perianal abscess; 5. Melanoma / skin malignancy
 - differential web.passive: 1. Skin abscess / furuncle; 2. Hidradenitis suppurativa; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Melanoma / skin malignancy
@@ -178,7 +178,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Achalasia; 2. Oesophageal Carcinoma; 3. Oesophageal Stricture (Benign)
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. Colorectal carcinoma; 4. Gastric carcinoma; 5. GORD / acid reflux / oesophagitis
 - differential web.passive: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. GORD / acid reflux / oesophagitis; 4. Gastric carcinoma; 5. Colorectal carcinoma
@@ -220,7 +220,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Achalasia; 2. Oesophageal Carcinoma; 3. Oesophageal Stricture (Benign)
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. Gastric carcinoma; 4. GORD / acid reflux / oesophagitis; 5. Colorectal carcinoma
 - differential web.passive: 1. Oesophageal / gastric carcinoma; 2. GORD / acid reflux / oesophagitis; 3. Occult malignancy / systemic disease; 4. Gastric carcinoma; 5. Colorectal carcinoma
@@ -262,7 +262,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Diabetic Foot Infection / Osteomyelitis; 3. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA)
 - differential web.symptomInference: 1. Heart failure; 2. Acute respiratory distress syndrome (ARDS); 3. ST-elevation myocardial infarction (STEMI); 4. Cardiac tamponade; 5. Anaemia
 - differential web.passive: 1. Acute respiratory distress syndrome (ARDS); 2. Cardiac tamponade; 3. Anaemia; 4. ST-elevation myocardial infarction (STEMI); 5. Heart failure
@@ -307,7 +307,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Oesophageal Perforation (Boerhaave); 3. Pulmonary Embolism
 - differential web.symptomInference: 1. Acute coronary syndrome (ACS / NSTEMI / STEMI); 2. ST-elevation myocardial infarction (STEMI); 3. Cardiac tamponade; 4. Tension pneumothorax; 5. Pericarditis / myocarditis
 - differential web.passive: 1. Tension pneumothorax; 2. ST-elevation myocardial infarction (STEMI); 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Cardiac tamponade; 5. Pericarditis / myocarditis
@@ -350,7 +350,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 3. Umbilical / Paraumbilical Hernia
 - differential web.symptomInference: 1. ST-elevation myocardial infarction (STEMI); 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. GORD / acid reflux / oesophagitis; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Aortic dissection
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. GORD / acid reflux / oesophagitis; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Acute gastroenteritis
@@ -396,7 +396,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Incisional Hernia
 - differential web.symptomInference: 1. Varicocele; 2. Breast carcinoma; 3. Uterine fibroids; 4. Acute cholecystitis; 5. Colorectal carcinoma
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Varicocele; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -438,7 +438,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Atrial Fibrillation / Flutter; 3. Acute Heart Failure / Pulmonary Oedema
 - differential web.symptomInference: 1. Atrial fibrillation / flutter; 2. Anaemia; 3. Heart failure; 4. COPD / chronic bronchitis exacerbation; 5. ST-elevation myocardial infarction (STEMI)
 - differential web.passive: 1. Anaemia; 2. Atrial fibrillation / flutter; 3. Cardiac tamponade; 4. Heart failure; 5. Panic disorder
@@ -480,7 +480,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Anastomotic Leak; 3. Atrial Fibrillation / Flutter
 - differential web.symptomInference: 1. Panic disorder; 2. Atrial fibrillation / flutter; 3. Generalised anxiety disorder; 4. Anaemia; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.passive: 1. Panic disorder; 2. Generalised anxiety disorder; 3. Atrial fibrillation / flutter; 4. Anaemia; 5. BPPV / labyrinthitis / vestibular neuritis
@@ -524,7 +524,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Heart Failure / Pulmonary Oedema; 2. Atrial Fibrillation / Flutter; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Heart failure; 2. Nephrotic syndrome; 3. Cushing's syndrome; 4. COPD / chronic bronchitis exacerbation; 5. Hypothyroidism
 - differential web.passive: 1. Heart failure; 2. Nephrotic syndrome; 3. Cardiac tamponade; 4. Cushing's syndrome; 5. Anaemia
@@ -570,7 +570,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Heart Failure / Pulmonary Oedema; 2. Community-acquired Pneumonia (Adult / Child); 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
 - differential web.symptomInference: 1. Heart failure; 2. COPD / chronic bronchitis exacerbation; 3. Cardiac tamponade; 4. Community-acquired pneumonia; 5. Empyema thoracis
 - differential web.passive: 1. Heart failure; 2. Cardiac tamponade; 3. Community-acquired pneumonia; 4. COPD / chronic bronchitis exacerbation; 5. Acute respiratory distress syndrome (ARDS)
@@ -613,7 +613,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anaphylaxis; 2. Pulmonary Embolism; 3. Acute Asthma Exacerbation
 - differential web.symptomInference: 1. Anaphylaxis; 2. Asthma / reactive airways disease; 3. Tension pneumothorax; 4. COPD / chronic bronchitis exacerbation; 5. Systemic lupus erythematosus
 - differential web.passive: 1. Anaphylaxis; 2. Bronchiolitis (RSV); 3. Asthma / reactive airways disease; 4. Epiglottitis; 5. Croup / laryngotracheobronchitis
@@ -654,7 +654,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anaphylaxis; 2. Acute Asthma Exacerbation; 3. Pulmonary Embolism
 - differential web.symptomInference: 1. Anaphylaxis; 2. Epiglottitis; 3. Bronchiolitis (RSV); 4. Asthma / reactive airways disease; 5. Tension pneumothorax
 - differential web.passive: 1. Anaphylaxis; 2. Bronchiolitis (RSV); 3. Epiglottitis; 4. Asthma / reactive airways disease; 5. Croup / laryngotracheobronchitis
@@ -697,7 +697,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Asthma Exacerbation; 2. Anaphylaxis; 3. Community-acquired Pneumonia (Adult / Child)
 - differential web.symptomInference: 1. Asthma / reactive airways disease; 2. COPD / chronic bronchitis exacerbation; 3. Panic disorder; 4. Tension pneumothorax; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.passive: 1. Asthma / reactive airways disease; 2. Bronchiolitis (RSV); 3. COPD / chronic bronchitis exacerbation; 4. Panic disorder; 5. Tension pneumothorax
@@ -740,7 +740,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Asthma Exacerbation; 2. Community-acquired Pneumonia (Adult / Child); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Asthma / reactive airways disease; 2. Tension pneumothorax; 3. Acute respiratory distress syndrome (ARDS); 4. COPD / chronic bronchitis exacerbation; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.passive: 1. Bronchiolitis (RSV); 2. Asthma / reactive airways disease; 3. Acute respiratory distress syndrome (ARDS); 4. COPD / chronic bronchitis exacerbation; 5. Hypertensive emergency / hypertensive encephalopathy
@@ -781,7 +781,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Asthma Exacerbation; 2. Community-acquired Pneumonia (Adult / Child); 3. Anaphylaxis
 - differential web.symptomInference: 1. Asthma / reactive airways disease; 2. COVID-19 / viral respiratory illness; 3. COPD / chronic bronchitis exacerbation; 4. Panic disorder; 5. Upper respiratory tract infection (URTI)
 - differential web.passive: 1. Asthma / reactive airways disease; 2. Bronchiolitis (RSV); 3. Croup / laryngotracheobronchitis; 4. COVID-19 / viral respiratory illness; 5. COPD / chronic bronchitis exacerbation
@@ -822,7 +822,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Community-acquired Pneumonia (Adult / Child); 2. Liver Abscess; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute appendicitis; 4. Acute gastroenteritis; 5. UTI (paediatric)
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
@@ -879,7 +879,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Community-acquired Pneumonia (Adult / Child); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
 - differential web.symptomInference: 1. Lung abscess; 2. Community-acquired pneumonia; 3. Sepsis / systemic infection; 4. Meningitis / encephalitis; 5. Empyema thoracis
 - differential web.passive: 1. Community-acquired pneumonia; 2. Lung abscess; 3. Sepsis / systemic infection; 4. Meningitis / encephalitis; 5. Empyema thoracis
@@ -925,7 +925,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Community-acquired Pneumonia (Adult / Child); 3. Acute Heart Failure / Pulmonary Oedema
 - differential web.symptomInference: 1. Lung carcinoma; 2. COVID-19 / viral respiratory illness; 3. Asthma / reactive airways disease; 4. Heart failure; 5. COPD / chronic bronchitis exacerbation
 - differential web.passive: 1. COVID-19 / viral respiratory illness; 2. Asthma / reactive airways disease; 3. Croup / laryngotracheobronchitis; 4. Acute respiratory distress syndrome (ARDS); 5. Upper respiratory tract infection (URTI)
@@ -973,7 +973,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Community-acquired Pneumonia (Adult / Child); 2. Post-operative Pneumonia / Atelectasis; 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
 - differential web.symptomInference: 1. Community-acquired pneumonia; 2. Empyema thoracis; 3. Lung abscess; 4. Pericarditis / myocarditis; 5. Spontaneous pneumothorax
 - differential web.passive: 1. Community-acquired pneumonia; 2. Empyema thoracis; 3. Lung abscess; 4. Pericarditis / myocarditis; 5. Pulmonary tuberculosis
@@ -1018,7 +1018,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Cellulitis; 2. Necrotising Fasciitis (NSTI); 3. Perianal Abscess / Fistula
 - differential web.symptomInference: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Fournier's gangrene; 4. Pyelonephritis; 5. Sickle cell vaso-occlusive crisis
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Sickle cell vaso-occlusive crisis
@@ -1063,7 +1063,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Community-acquired Pneumonia (Adult / Child)
 - differential web.symptomInference: 1. COPD / chronic bronchitis exacerbation; 2. Asthma / reactive airways disease; 3. Community-acquired pneumonia; 4. Acute respiratory distress syndrome (ARDS); 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.passive: 1. COPD / chronic bronchitis exacerbation; 2. Bronchiolitis (RSV); 3. Asthma / reactive airways disease; 4. Community-acquired pneumonia; 5. Acute respiratory distress syndrome (ARDS)
@@ -1109,7 +1109,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); 2. Community-acquired Pneumonia (Adult / Child); 3. Acute Heart Failure / Pulmonary Oedema
 - differential web.symptomInference: 1. COPD / chronic bronchitis exacerbation; 2. Asthma / reactive airways disease; 3. Heart failure; 4. Community-acquired pneumonia; 5. Pulmonary tuberculosis
 - differential web.passive: 1. COPD / chronic bronchitis exacerbation; 2. Asthma / reactive airways disease; 3. Bronchiolitis (RSV); 4. Community-acquired pneumonia; 5. Lung abscess
@@ -1150,7 +1150,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Deep Vein Thrombosis; 2. Superficial Vein Thrombosis / Thrombophlebitis; 3. Cellulitis
 - differential web.symptomInference: 1. Cellulitis / soft tissue infection; 2. Deep vein thrombosis (DVT); 3. Necrotising fasciitis; 4. Fournier's gangrene; 5. Heart failure
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Deep vein thrombosis (DVT); 3. Necrotising fasciitis; 4. Sciatica / lumbar radiculopathy; 5. Acute compartment syndrome
@@ -1191,7 +1191,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Kidney Injury (AKI); 2. Acute Gastroenteritis / Infective Colitis; 3. Clostridioides difficile Colitis (C. diff infection)
 - differential web.symptomInference: 1. Acute gastroenteritis; 2. BPPV / labyrinthitis / vestibular neuritis; 3. Gallstone pancreatitis; 4. DKA / hyperglycaemic hyperosmolar state; 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Acute gastroenteritis; 2. Hypertrophic pyloric stenosis; 3. BPPV / labyrinthitis / vestibular neuritis; 4. DKA / hyperglycaemic hyperosmolar state; 5. Addisonian crisis / adrenal insufficiency
@@ -1241,7 +1241,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Hyperosmolar Hyperglycaemic State (HHS); 3. Acute Gastroenteritis / Infective Colitis
 - differential web.symptomInference: 1. Acute appendicitis; 2. Gallstone pancreatitis; 3. Acute cholecystitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute alcoholic pancreatitis; 5. Acute cholecystitis
@@ -1286,7 +1286,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hypertensive Emergency / Malignant Hypertension; 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Bacterial Meningitis / Meningococcal Disease
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Stroke / TIA; 3. Meningitis / encephalitis; 4. Migraine; 5. Malaria
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Stroke / TIA; 3. Meningitis / encephalitis; 4. Migraine; 5. Bacterial meningitis (paediatric)
@@ -1331,7 +1331,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pre-eclampsia / HELLP Syndrome / Eclampsia; 2. Acute Cholecystitis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Hypertensive emergency / hypertensive encephalopathy; 3. Gallstone pancreatitis; 4. Acute alcoholic pancreatitis; 5. Migraine
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Acute alcoholic pancreatitis; 3. Migraine; 4. Perforated peptic ulcer; 5. Bacterial meningitis (paediatric)
@@ -1372,7 +1372,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Sphincter of Oddi Dysfunction; 3. GORD / Reflux Oesophagitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -1414,7 +1414,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Acute Heart Failure / Pulmonary Oedema; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Tension pneumothorax; 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. Atrial fibrillation / flutter; 4. Vasovagal / reflex syncope; 5. Cardiac tamponade
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Cardiac tamponade; 3. Pulmonary embolism; 4. Tension pneumothorax; 5. Acute respiratory distress syndrome (ARDS)
@@ -1460,7 +1460,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Acute Heart Failure / Pulmonary Oedema; 3. Traumatic / Tension Pneumothorax
 - differential web.symptomInference: 1. Heart failure; 2. Tension pneumothorax; 3. Pulmonary embolism; 4. ST-elevation myocardial infarction (STEMI); 5. Acute coronary syndrome (ACS / NSTEMI / STEMI)
 - differential web.passive: 1. Pulmonary embolism; 2. Heart failure; 3. Vasovagal / reflex syncope; 4. Cardiac tamponade; 5. Tension pneumothorax
@@ -1503,7 +1503,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Deep Vein Thrombosis; 3. Community-acquired Pneumonia (Adult / Child)
 - differential web.symptomInference: 1. Tension pneumothorax; 2. Pulmonary embolism; 3. Spontaneous pneumothorax; 4. Heart failure; 5. Pleural effusion
 - differential web.passive: 1. Pulmonary embolism; 2. Tension pneumothorax; 3. Spontaneous pneumothorax; 4. Heart failure; 5. Pleural effusion
@@ -1552,7 +1552,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Post-operative Pneumonia / Atelectasis; 3. Community-acquired Pneumonia (Adult / Child)
 - differential web.symptomInference: 1. Rotator cuff tear / shoulder impingement; 2. Pleural effusion; 3. Tension pneumothorax; 4. COPD / chronic bronchitis exacerbation; 5. Spontaneous pneumothorax
 - differential web.passive: 1. Pleural effusion; 2. Tension pneumothorax; 3. Rotator cuff tear / shoulder impingement; 4. Spontaneous pneumothorax; 5. Pulmonary embolism
@@ -1598,7 +1598,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Community-acquired Pneumonia (Adult / Child); 3. Oesophageal Perforation (Boerhaave)
 - differential web.symptomInference: 1. Tension pneumothorax; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Empyema thoracis
 - differential web.passive: 1. Tension pneumothorax; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Empyema thoracis
@@ -1649,7 +1649,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Parastomal Hernia; 3. Acute Pyelonephritis / Upper Urinary Tract Infection
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Sepsis / systemic infection; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Stroke / TIA; 5. Acute gastroenteritis
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Sepsis / systemic infection; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Acute gastroenteritis; 5. Meningitis / encephalitis
@@ -1694,7 +1694,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Community-acquired Pneumonia (Adult / Child); 3. Acute Cholangitis
 - differential web.symptomInference: 1. Dengue fever; 2. Meningitis / encephalitis; 3. Malaria; 4. Leptospirosis; 5. Pyelonephritis
 - differential web.passive: 1. Dengue fever; 2. Meningitis / encephalitis; 3. Malaria; 4. Leptospirosis; 5. Pyelonephritis
@@ -1737,7 +1737,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Acute Cholangitis; 3. Acute Pyelonephritis / Upper Urinary Tract Infection
 - differential web.symptomInference: 1. Sepsis / systemic infection; 2. Malaria; 3. Pyelonephritis; 4. Infective endocarditis; 5. Systemic lupus erythematosus
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Pyelonephritis; 4. Infective endocarditis; 5. Necrotising fasciitis
@@ -1780,7 +1780,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Cardiac Syncope (Arrhythmia incl. Heart Block / Aortic Stenosis); 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Subarachnoid Haemorrhage (SAH)
 - differential web.symptomInference: 1. Heart failure; 2. Anaemia; 3. Vasovagal / reflex syncope; 4. Cardiac tamponade; 5. Atrial fibrillation / flutter
 - differential web.passive: 1. Anaemia; 2. Vasovagal / reflex syncope; 3. Cardiac tamponade; 4. Heart failure; 5. Acute respiratory distress syndrome (ARDS)
@@ -1819,7 +1819,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Cardiac Syncope (Arrhythmia incl. Heart Block / Aortic Stenosis); 3. Acute Aortic Dissection
 - differential web.symptomInference: 1. Acute coronary syndrome (ACS / NSTEMI / STEMI); 2. Vasovagal / reflex syncope; 3. Heart failure; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. COPD / chronic bronchitis exacerbation
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. Anaemia; 4. Cardiac tamponade; 5. Heart failure
@@ -1864,7 +1864,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Subarachnoid Haemorrhage (SAH); 2. Hypoglycaemia; 3. Seizure (First Seizure / Epilepsy)
 - differential web.symptomInference: 1. Vasovagal / reflex syncope; 2. Pulmonary embolism; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Acute coronary syndrome (ACS / NSTEMI / STEMI); 5. Atrial fibrillation / flutter
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Pulmonary embolism; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Acute coronary syndrome (ACS / NSTEMI / STEMI); 5. Atrial fibrillation / flutter
@@ -1905,7 +1905,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 2. Phaeochromocytoma / Paraganglioma; 3. Adrenal Incidentaloma
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Meningitis / encephalitis; 4. Dengue fever; 5. Malaria
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Meningitis / encephalitis; 4. Dengue fever; 5. Bacterial meningitis (paediatric)
@@ -1947,7 +1947,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Phaeochromocytoma / Paraganglioma; 2. Hyperthyroidism / Thyrotoxicosis (Graves, Toxic Nodule); 3. Crohn's Disease
 - differential web.symptomInference: 1. Phaeochromocytoma; 2. Hyperthyroidism / thyrotoxicosis; 3. Generalised anxiety disorder; 4. Occult malignancy / systemic disease; 5. Lymphoma (Hodgkin / non-Hodgkin)
 - differential web.passive: 1. Phaeochromocytoma; 2. Hyperthyroidism / thyrotoxicosis; 3. Generalised anxiety disorder; 4. Panic disorder; 5. Pulmonary tuberculosis
@@ -1994,7 +1994,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Retention (Acute / Chronic); 2. Acute Kidney Injury (AKI); 3. Benign Prostatic Hyperplasia (BPH)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Liver disease / hepatitis / cirrhosis; 4. Sigmoid volvulus; 5. Large bowel obstruction
 - differential web.passive: 1. Benign prostatic hyperplasia (BPH); 2. Liver disease / hepatitis / cirrhosis; 3. Hirschsprung's disease; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Sigmoid volvulus
@@ -2043,7 +2043,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Kidney Injury (AKI); 2. Acute Gastroenteritis / Infective Colitis; 3. Clostridioides difficile Colitis (C. diff infection)
 - differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute cholecystitis; 3. BPPV / labyrinthitis / vestibular neuritis; 4. DKA / hyperglycaemic hyperosmolar state; 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Acute gastroenteritis; 2. Hypertrophic pyloric stenosis; 3. BPPV / labyrinthitis / vestibular neuritis; 4. DKA / hyperglycaemic hyperosmolar state; 5. Addisonian crisis / adrenal insufficiency
@@ -2087,7 +2087,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Limb Ischaemia (Arterial Embolism / Thrombosis); 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Transient Ischaemic Attack (TIA)
 - differential web.symptomInference: 1. Acute limb ischaemia; 2. Peripheral arterial disease / limb ischaemia; 3. Stroke / TIA; 4. Sciatica / lumbar radiculopathy; 5. Acute compartment syndrome
 - differential web.passive: 1. Acute limb ischaemia; 2. Peripheral arterial disease / limb ischaemia; 3. Stroke / TIA; 4. Sciatica / lumbar radiculopathy; 5. Acute compartment syndrome
@@ -2131,7 +2131,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Peripheral Arterial Disease; 2. Arterial Ulcer; 3. Acute Limb Ischaemia (Arterial Embolism / Thrombosis)
 - differential web.symptomInference: 1. Peripheral arterial disease / limb ischaemia; 2. Acute limb ischaemia; 3. Peripheral neuropathy; 4. Benign prostatic hyperplasia (BPH); 5. Prostate adenocarcinoma
 - differential web.passive: 1. Peripheral arterial disease / limb ischaemia; 2. Acute limb ischaemia; 3. Peripheral neuropathy; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
@@ -2176,7 +2176,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Mesenteric Ischaemia; 2. Atrial Fibrillation / Flutter; 3. Acute Gastroenteritis / Infective Colitis
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Acute gastroenteritis; 3. Perforated peptic ulcer; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Acute appendicitis (paediatric); 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
@@ -2224,7 +2224,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Mesenteric Ischaemia; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Symptomatic / ruptured abdominal aortic aneurysm; 3. Perforated peptic ulcer; 4. Large bowel obstruction; 5. Acute appendicitis
 - differential web.passive: 1. Intussusception; 2. Adhesive small bowel obstruction; 3. Large bowel obstruction; 4. Malrotation / midgut volvulus; 5. Sigmoid volvulus
@@ -2269,7 +2269,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Gastroenteritis / Infective Colitis; 2. Acute Mesenteric Ischaemia; 3. Acute Appendicitis
 - differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute appendicitis; 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Acute cholecystitis
 - differential web.passive: 1. Acute gastroenteritis; 2. Acute appendicitis (paediatric); 3. Acute mesenteric ischaemia; 4. Chronic pancreatitis; 5. Inflammatory bowel disease (Crohn's / UC)
@@ -2314,7 +2314,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anal Cancer (Squamous Cell Carcinoma of the Anus); 2. Haemorrhoids; 3. Anal Fissure
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Squamous cell carcinoma of the anus; 4. Occult malignancy / systemic disease; 5. Haemorrhoids / anorectal disease
 - differential web.passive: 1. Squamous cell carcinoma of the anus; 2. Lower GI bleed / colorectal; 3. Haemorrhoids / anorectal disease; 4. Colorectal carcinoma; 5. HIV / AIDS presentation
@@ -2357,7 +2357,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anal Fissure; 2. Haemorrhoids; 3. Rectal Prolapse
 - differential web.symptomInference: 1. Anal fissure; 2. Lower GI bleed / colorectal; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Rectal prolapse
 - differential web.passive: 1. Anal fissure; 2. Haemorrhoids / anorectal disease; 3. Lower GI bleed / colorectal; 4. Large bowel obstruction; 5. Hirschsprung's disease
@@ -2403,7 +2403,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anal Cancer (Squamous Cell Carcinoma of the Anus); 2. Anal Fissure; 3. Ulcerative Colitis
 - differential web.symptomInference: 1. Haemorrhoids / anorectal disease; 2. Lower GI bleed / colorectal; 3. Anal fissure; 4. Fistula in ano; 5. Squamous cell carcinoma of the anus
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Lower GI bleed / colorectal; 3. Anal fissure; 4. Fistula in ano; 5. Squamous cell carcinoma of the anus
@@ -2441,7 +2441,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anal Fissure; 2. Anal Cancer (Squamous Cell Carcinoma of the Anus); 3. Haemorrhoids
 - differential web.symptomInference: 1. Haemorrhoids / anorectal disease; 2. Anal fissure; 3. Lower GI bleed / colorectal; 4. Colorectal carcinoma; 5. Inflammatory bowel disease (Crohn's / UC)
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Anal fissure; 3. Lower GI bleed / colorectal; 4. Meckel's diverticulum; 5. Intussusception
@@ -2486,7 +2486,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Aortic Dissection; 2. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Acute mesenteric ischaemia; 3. Gallstone pancreatitis; 4. Acute alcoholic pancreatitis; 5. Perforated peptic ulcer
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Chronic pancreatitis; 5. Vasovagal / reflex syncope
@@ -2528,7 +2528,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Aorto-enteric Fistula (after aortic graft); 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Oesophageal Variceal Haemorrhage (Portal Hypertension)
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Portal hypertension / oesophageal varices; 3. Fournier's gangrene; 4. Gastric carcinoma; 5. Peptic ulcer disease
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Upper GI haemorrhage; 3. Meckel's diverticulum; 4. Febrile convulsion; 5. Sepsis / systemic infection
@@ -2586,7 +2586,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Acute appendicitis; 2. Acute mesenteric ischaemia; 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Mesenteric adenitis
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Adhesive small bowel obstruction
@@ -2596,7 +2596,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=9
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, acute_onset, periumbilical_pain, rlq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, severe_pain, cough, guarding, rebound_tenderness, pain_migration, abdominal_tenderness, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, periumbilical_pain, rlq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, severe_pain, cough, guarding, rebound_tenderness, pain_migration, abdominal_tenderness, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_alvarado_high
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -2638,7 +2638,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Appendix Mass / Late Appendicitis
 - differential web.symptomInference: 1. Acute appendicitis; 2. Mesenteric adenitis; 3. Acute alcoholic pancreatitis; 4. Acute gastroenteritis; 5. Typhoid fever
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
@@ -2683,7 +2683,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Acute appendicitis; 2. Acute alcoholic pancreatitis; 3. Mesenteric adenitis; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
@@ -2745,7 +2745,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Acute Mesenteric Ischaemia; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Acute appendicitis; 2. Mesenteric adenitis; 3. Acute mesenteric ischaemia; 4. Acute alcoholic pancreatitis; 5. Acute gastroenteritis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
@@ -2755,7 +2755,7 @@ Guidelines:
 - recommended scores: alvarado, ranson, cha2ds2-vasc, news2, caprini, has-bled, asa, rcri, cfs
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=5
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, acute_onset, rlq_pain, suprapubic_pain, nausea_vomiting, anorexia, pain_worse_movement, guarding, abdominal_distension, known_af, known_hypertension, vascular_risk, anticoagulant_use, irregular_pulse, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, rlq_pain, suprapubic_pain, nausea_vomiting, anorexia, pain_worse_movement, guarding, abdominal_distension, known_af, known_hypertension, vascular_risk, anticoagulant_use, irregular_pulse, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_alvarado_mid
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -2796,7 +2796,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Acute appendicitis; 2. Perforated peptic ulcer; 3. Acute mesenteric ischaemia; 4. Malaria; 5. Mesenteric adenitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Malaria; 3. Acute gastroenteritis; 4. Typhoid fever; 5. Pyelonephritis
@@ -2840,7 +2840,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Acute Diverticulitis; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Acute appendicitis; 2. Mesenteric adenitis; 3. Hepatocellular carcinoma (HCC); 4. Diverticulitis; 5. Acute cholecystitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Typhoid fever; 5. Acute alcoholic pancreatitis
@@ -2895,7 +2895,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Appendix Mass / Late Appendicitis
 - differential web.symptomInference: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Mesenteric adenitis; 4. Acute mesenteric ischaemia; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Adhesive small bowel obstruction
@@ -2905,7 +2905,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=10
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, guarding, pain_migration, rebound_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, guarding, pain_migration, rebound_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_alvarado_high
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -2939,7 +2939,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Appendix Mass / Late Appendicitis; 3. Liver Abscess
 - differential web.symptomInference: 1. Acute appendicitis; 2. Mesenteric adenitis; 3. Hepatocellular carcinoma (HCC); 4. Acute cholecystitis; 5. Typhoid fever
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Wilms tumour / nephroblastoma; 3. Typhoid fever; 4. UTI (paediatric); 5. Hepatocellular carcinoma (HCC)
@@ -2996,7 +2996,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Acute appendicitis; 2. Acute gastroenteritis; 3. Acute alcoholic pancreatitis; 4. Adhesive small bowel obstruction; 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute alcoholic pancreatitis; 4. Adhesive small bowel obstruction; 5. Acute mesenteric ischaemia
@@ -3048,7 +3048,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Acute appendicitis; 2. Mesenteric adenitis; 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
@@ -3058,7 +3058,7 @@ Guidelines:
 - recommended scores: alvarado, ranson, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=6
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, nausea_vomiting, pain_worse_movement, cough, rebound_tenderness, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, nausea_vomiting, pain_worse_movement, cough, rebound_tenderness, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_alvarado_mid
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -3101,7 +3101,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Acute Cholecystitis; 3. Acute Pyelonephritis / Upper Urinary Tract Infection
 - differential web.symptomInference: 1. Acute appendicitis; 2. Mesenteric adenitis; 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
@@ -3111,7 +3111,7 @@ Guidelines:
 - recommended scores: alvarado, ranson, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=3
 - dx variant: (none) (no group)
-- note: PANE features applied: abdominal_pain, rlq_pain, suprapubic_pain, acute_onset, nausea_vomiting, pain_worse_movement, abdominal_tenderness, elevated_wbc, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, rlq_pain, suprapubic_pain, acute_onset, nausea_vomiting, pain_worse_movement, abdominal_tenderness, elevated_wbc, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_alvarado_low
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (leading differential); 0 stat test(s) held back
@@ -3150,7 +3150,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Biliary Colic / Symptomatic Cholelithiasis; 3. Acute Cholangitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -3197,7 +3197,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute mesenteric ischaemia; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
@@ -3237,7 +3237,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Hepatocellular carcinoma (HCC); 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
@@ -3285,7 +3285,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Hypoglycaemia; 3. Acute Aortic Dissection
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Gallstone pancreatitis
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Chronic pancreatitis; 5. Acute gastroenteritis
@@ -3330,7 +3330,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Perforation (Boerhaave); 2. Community-acquired Pneumonia (Adult / Child); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. ST-elevation myocardial infarction (STEMI); 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. Tension pneumothorax; 4. Cardiac tamponade; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Tension pneumothorax; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Cardiac tamponade; 5. Epiglottitis
@@ -3370,7 +3370,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Perforation (Boerhaave); 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Acute Aortic Dissection
 - differential web.symptomInference: 1. ST-elevation myocardial infarction (STEMI); 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. Tension pneumothorax; 4. Cardiac tamponade; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Tension pneumothorax; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Cardiac tamponade; 5. Epiglottitis
@@ -3408,7 +3408,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Perforation (Boerhaave); 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Pancreatitis
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute alcoholic pancreatitis; 3. Acute mesenteric ischaemia; 4. Perforated peptic ulcer; 5. Chronic pancreatitis
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -3449,7 +3449,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Breast Abscess; 2. Mastitis; 3. Skin Abscess / Furuncle
 - differential web.symptomInference: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Pyelonephritis; 4. Pelvic inflammatory disease (PID); 5. Systemic lupus erythematosus
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Febrile convulsion; 4. Sepsis / systemic infection; 5. Infective endocarditis
@@ -3492,7 +3492,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Breast Abscess; 2. Breast Carcinoma (Invasive Ductal / Lobular); 3. Mastitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Fibroadenoma / benign breast lump; 3. Uterine fibroids; 4. Acute cholecystitis; 5. Systemic lupus erythematosus
 - differential web.passive: 1. Breast carcinoma; 2. Fibroadenoma / benign breast lump; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -3529,7 +3529,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Tract Infection (Cystitis / UTI); 2. Acute Cholecystitis; 3. Acute Gastroenteritis / Infective Colitis
 - differential web.symptomInference: 1. Uterine fibroids; 2. Systemic lupus erythematosus; 3. Breast carcinoma; 4. Acute cholecystitis; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -3573,7 +3573,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Breast Carcinoma (Invasive Ductal / Lobular); 2. Phyllodes Tumour; 3. Fat Necrosis of Breast
 - differential web.symptomInference: 1. Testicular germ cell tumour; 2. Breast carcinoma; 3. Uterine fibroids; 4. Acute cholecystitis; 5. Systemic lupus erythematosus
 - differential web.passive: 1. Testicular germ cell tumour; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Peptic ulcer disease; 5. Reducible groin / abdominal hernia
@@ -3616,7 +3616,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Fibroadenoma; 2. Breast Carcinoma (Invasive Ductal / Lobular); 3. Phyllodes Tumour
 - differential web.symptomInference: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Uterine fibroids; 4. Systemic lupus erythematosus; 5. Acute cholecystitis
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -3665,7 +3665,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Breast Carcinoma (Invasive Ductal / Lobular); 2. Phyllodes Tumour; 3. Fibroadenoma
 - differential web.symptomInference: 1. Breast carcinoma; 2. Fibroadenoma / benign breast lump; 3. Uterine fibroids; 4. Acute cholecystitis; 5. Colorectal carcinoma
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -3709,7 +3709,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Breast Carcinoma (Invasive Ductal / Lobular); 2. Fibroadenoma; 3. Fat Necrosis of Breast
 - differential web.symptomInference: 1. Breast carcinoma; 2. Fibroadenoma / benign breast lump; 3. Uterine fibroids; 4. Systemic lupus erythematosus; 5. Acute cholecystitis
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -3756,7 +3756,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Fibroadenoma; 2. Phyllodes Tumour; 3. Breast Carcinoma (Invasive Ductal / Lobular)
 - differential web.symptomInference: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Systemic lupus erythematosus; 4. Acute cholecystitis; 5. Uterine fibroids
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -3799,7 +3799,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Breast Carcinoma (Invasive Ductal / Lobular); 2. Fat Necrosis of Breast; 3. Phyllodes Tumour
 - differential web.symptomInference: 1. Breast carcinoma; 2. Fibroadenoma / benign breast lump; 3. Benign prostatic hyperplasia (BPH); 4. Prostate adenocarcinoma; 5. Colorectal carcinoma
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -3842,7 +3842,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Gynaecomastia; 2. Fibroadenoma; 3. Fibrocystic Breast Disease / Cyclical Mastalgia
 - differential web.symptomInference: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Benign prostatic hyperplasia (BPH); 4. Prostate adenocarcinoma; 5. Colorectal carcinoma
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -3885,7 +3885,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Duct Ectasia / Intraductal Papilloma; 2. Breast Carcinoma (Invasive Ductal / Lobular); 3. Ductal Carcinoma In Situ (DCIS)
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Breast carcinoma; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Peptic ulcer disease; 5. Reducible groin / abdominal hernia
@@ -3925,7 +3925,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Fibrocystic Breast Disease / Cyclical Mastalgia; 2. Fibroadenoma; 3. Duct Ectasia / Intraductal Papilloma
 - differential web.symptomInference: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Uterine fibroids; 4. Acute cholecystitis; 5. Systemic lupus erythematosus
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -3975,7 +3975,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Minor / Moderate Thermal Burn (< 20 % TBSA); 2. Major Thermal Burn (≥ 20 % TBSA); 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Hidradenitis suppurativa; 2. Acute compartment syndrome; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
 - differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
@@ -4019,7 +4019,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Minor / Moderate Thermal Burn (< 20 % TBSA); 2. Electrical Burn / Electrocution Injury; 3. Cellulitis
 - differential web.symptomInference: 1. Hidradenitis suppurativa; 2. Acute compartment syndrome; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
 - differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
@@ -4067,7 +4067,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Minor / Moderate Thermal Burn (< 20 % TBSA); 2. Skin Abscess / Furuncle; 3. Cellulitis
 - differential web.symptomInference: 1. Acute / chronic sinusitis; 2. Hidradenitis suppurativa; 3. Acute compartment syndrome; 4. Melanoma / skin malignancy; 5. Eczema / psoriasis / inflammatory dermatosis
 - differential web.passive: 1. Acute / chronic sinusitis; 2. Acute compartment syndrome; 3. Hidradenitis suppurativa; 4. Melanoma / skin malignancy; 5. Eczema / psoriasis / inflammatory dermatosis
@@ -4114,7 +4114,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Minor / Moderate Thermal Burn (< 20 % TBSA); 2. Major Thermal Burn (≥ 20 % TBSA); 3. Pilonidal Disease
 - differential web.symptomInference: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
 - differential web.passive: 1. Acute compartment syndrome; 2. Hidradenitis suppurativa; 3. Melanoma / skin malignancy; 4. Eczema / psoriasis / inflammatory dermatosis; 5. Skin abscess / furuncle
@@ -4162,7 +4162,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Minor / Moderate Thermal Burn (< 20 % TBSA); 2. Major Thermal Burn (≥ 20 % TBSA); 3. Intussusception
 - differential web.symptomInference: 1. Intussusception; 2. Inguinal hernia (paediatric); 3. Bacterial meningitis (paediatric); 4. Acute compartment syndrome; 5. Hidradenitis suppurativa
 - differential web.passive: 1. Intussusception; 2. Acute compartment syndrome; 3. Hidradenitis suppurativa; 4. Malrotation / midgut volvulus; 5. Melanoma / skin malignancy
@@ -4207,7 +4207,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Minor / Moderate Thermal Burn (< 20 % TBSA); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Major Thermal Burn (≥ 20 % TBSA)
 - differential web.symptomInference: 1. Acute compartment syndrome; 2. Sciatica / lumbar radiculopathy; 3. Lumbar disc disease / sciatica; 4. Carpal tunnel syndrome; 5. Acute limb ischaemia
 - differential web.passive: 1. Acute compartment syndrome; 2. Sciatica / lumbar radiculopathy; 3. Lumbar disc disease / sciatica; 4. Acute limb ischaemia; 5. Carpal tunnel syndrome
@@ -4255,7 +4255,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Electrical Burn / Electrocution Injury; 2. Traumatic Brain Injury; 3. Seizure (First Seizure / Epilepsy)
 - differential web.symptomInference: 1. Acute compartment syndrome; 2. CBD stone / obstructive jaundice; 3. Sciatica / lumbar radiculopathy; 4. Lumbar disc disease / sciatica; 5. Sickle cell vaso-occlusive crisis
 - differential web.passive: 1. Acute compartment syndrome; 2. CBD stone / obstructive jaundice; 3. Sciatica / lumbar radiculopathy; 4. Osteomyelitis (paediatric); 5. Biliary atresia
@@ -4306,7 +4306,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Major Thermal Burn (≥ 20 % TBSA); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Community-acquired Pneumonia (Adult / Child)
 - differential web.symptomInference: 1. Laryngitis / vocal cord pathology; 2. Anaphylaxis; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Thyroid carcinoma; 5. Upper respiratory tract infection (URTI)
 - differential web.passive: 1. Croup / laryngotracheobronchitis; 2. Laryngitis / vocal cord pathology; 3. Epiglottitis; 4. Anaphylaxis; 5. Upper respiratory tract infection (URTI)
@@ -4348,7 +4348,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bowel Obstruction; 2. Sigmoid Volvulus; 3. Small Bowel Obstruction — Adhesions
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute appendicitis; 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
@@ -4391,7 +4391,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Cauda Equina Syndrome; 2. Metastatic Spinal Cord Compression / Spinal Metastases (MSCC); 3. Haemorrhoids
 - differential web.symptomInference: 1. Sciatica / lumbar radiculopathy; 2. Lumbar disc disease / sciatica; 3. Benign prostatic hyperplasia (BPH); 4. Osteoarthritis; 5. Carpal tunnel syndrome
 - differential web.passive: 1. Lumbar disc disease / sciatica; 2. Sciatica / lumbar radiculopathy; 3. Peripheral neuropathy; 4. Hirschsprung's disease; 5. Prostate adenocarcinoma
@@ -4431,7 +4431,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Cauda Equina Syndrome; 2. Urinary Retention (Acute / Chronic); 3. Metastatic Spinal Cord Compression / Spinal Metastases (MSCC)
 - differential web.symptomInference: 1. Lumbar disc disease / sciatica; 2. Sciatica / lumbar radiculopathy; 3. Benign prostatic hyperplasia (BPH); 4. Prostate adenocarcinoma; 5. Osteoarthritis
 - differential web.passive: 1. Lumbar disc disease / sciatica; 2. Sciatica / lumbar radiculopathy; 3. Osteoarthritis; 4. Benign prostatic hyperplasia (BPH); 5. Prostate adenocarcinoma
@@ -4474,7 +4474,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Perforation (Boerhaave); 2. Oesophageal Food Bolus Obstruction; 3. GORD / Reflux Oesophagitis
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. ST-elevation myocardial infarction (STEMI); 3. Thyroid carcinoma; 4. Acute coronary syndrome (ACS / NSTEMI / STEMI); 5. Laryngitis / vocal cord pathology
 - differential web.passive: 1. Epiglottitis; 2. ST-elevation myocardial infarction (STEMI); 3. Oesophageal / gastric carcinoma; 4. Thyroid carcinoma; 5. Acute coronary syndrome (ACS / NSTEMI / STEMI)
@@ -4518,7 +4518,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 2. Clostridioides difficile Colitis (C. diff infection); 3. Anastomotic Leak
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Acute gastroenteritis; 3. Diverticulitis; 4. Sigmoid volvulus; 5. Acute cholecystitis
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Sigmoid volvulus; 5. Schistosomiasis (S. mansoni)
@@ -4568,7 +4568,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Cellulitis; 2. Necrotising Fasciitis (NSTI); 3. Perianal Abscess / Fistula
 - differential web.symptomInference: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Fournier's gangrene; 4. Pyelonephritis; 5. Sickle cell vaso-occlusive crisis
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Sickle cell vaso-occlusive crisis
@@ -4627,7 +4627,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Cellulitis; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Necrotising Fasciitis (NSTI)
 - differential web.symptomInference: 1. Sepsis / systemic infection; 2. Fournier's gangrene; 3. Cellulitis / soft tissue infection; 4. Necrotising fasciitis; 5. Malaria
 - differential web.passive: 1. Sepsis / systemic infection; 2. Cellulitis / soft tissue infection; 3. Necrotising fasciitis; 4. Fournier's gangrene; 5. Malaria
@@ -4671,7 +4671,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Charcot Neuro-osteoarthropathy (Acute Charcot Foot); 2. Diabetic Foot Infection / Osteomyelitis; 3. Epidermoid / Sebaceous Cyst
 - differential web.symptomInference: 1. Cellulitis / soft tissue infection; 2. Gout / pseudogout; 3. Fournier's gangrene; 4. Peripheral neuropathy; 5. Rheumatoid arthritis
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Peripheral neuropathy; 3. Gout / pseudogout; 4. Rheumatoid arthritis; 5. Septic arthritis
@@ -4732,7 +4732,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholangitis; 2. Choledocholithiasis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Acute cholangitis; 2. CBD stone / obstructive jaundice; 3. Cholangiocarcinoma; 4. Liver disease / hepatitis / cirrhosis; 5. Pancreatic adenocarcinoma
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Biliary atresia; 3. Liver disease / hepatitis / cirrhosis; 4. Cholangiocarcinoma; 5. Pancreatic adenocarcinoma
@@ -4787,7 +4787,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Choledocholithiasis; 2. Acute Cholangitis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Acute cholangitis; 2. CBD stone / obstructive jaundice; 3. Liver disease / hepatitis / cirrhosis; 4. Cholangiocarcinoma; 5. Pancreatic adenocarcinoma
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Liver disease / hepatitis / cirrhosis; 3. Cholangiocarcinoma; 4. Biliary atresia; 5. Neonatal jaundice
@@ -4848,7 +4848,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Acute Cholangitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Acute cholangitis; 2. Sepsis / systemic infection; 3. CBD stone / obstructive jaundice; 4. Liver disease / hepatitis / cirrhosis; 5. Malaria
 - differential web.passive: 1. Acute cholangitis; 2. Sepsis / systemic infection; 3. Malaria; 4. Leptospirosis; 5. Liver disease / hepatitis / cirrhosis
@@ -4900,7 +4900,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholangitis; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Acute Cholecystitis
 - differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Leptospirosis; 3. Liver disease / hepatitis / cirrhosis; 4. Infective endocarditis; 5. Fournier's gangrene
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Leptospirosis; 3. Neonatal jaundice; 4. Febrile convulsion; 5. Sickle cell crisis
@@ -4910,7 +4910,7 @@ Guidelines:
 - recommended scores: tg18-cholangitis, tg18-cholecystitis, qsofa, asge-cbd, news2
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=3; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=3
 - dx variant: cholecystitis_grade3 (Acute Cholecystitis)
-- note: PANE features applied: fever, jaundice, abdominal_distension, ruq_pain, asplenia, previous_surgery, trauma_mechanism, mechanism_blunt, elevated_wbc, raised_crp, raised_lactate, us_gallstones, acute_onset, tachycardia, gcs_drop, confusion, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: fever, jaundice, abdominal_distension, ruq_pain, asplenia, previous_surgery, trauma_mechanism, mechanism_blunt, elevated_wbc, raised_crp, raised_lactate, us_gallstones, acute_onset, tachycardia, gcs_drop, confusion, recent_surgery, aortic_graft, stoma, rule_tg18_cholecystitis_definite
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
@@ -4955,7 +4955,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Liver Abscess
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute mesenteric ischaemia; 3. Acute appendicitis; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
@@ -4965,7 +4965,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, tg18-cholecystitis, ranson, qsofa, asge-cbd, news2, asa, stop-bang
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=1; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=1
 - dx variant: cholecystitis_grade1 (Acute Cholecystitis)
-- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, pain_worse_movement, postprandial_pain, fatty_food_trigger, pleuritic_chest_pain, severe_pain, murphy_sign, guarding, abdominal_tenderness, elevated_wbc, raised_crp, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, pain_worse_movement, postprandial_pain, fatty_food_trigger, pleuritic_chest_pain, severe_pain, murphy_sign, guarding, abdominal_tenderness, elevated_wbc, raised_crp, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_tg18_cholecystitis_definite
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
@@ -5011,7 +5011,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Acute Cholangitis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Gallstone pancreatitis; 3. Acute appendicitis; 4. Peptic ulcer disease; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Intussusception
@@ -5021,7 +5021,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholecystitis, ranson, asge-cbd, web:wagner, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=2
 - dx variant: cholecystitis_grade2 (Acute Cholecystitis)
-- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, epigastric_pain, nausea_vomiting, anorexia, postprandial_pain, known_diabetes, insulin_or_sulfonylurea, known_ckd, known_hypertension, vascular_risk, severe_pain, confusion, dehydration, murphy_sign, elevated_wbc, raised_crp, raised_urea, hyperglycaemia, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, epigastric_pain, nausea_vomiting, anorexia, postprandial_pain, known_diabetes, insulin_or_sulfonylurea, known_ckd, known_hypertension, vascular_risk, severe_pain, confusion, dehydration, murphy_sign, elevated_wbc, raised_crp, raised_urea, hyperglycaemia, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_tg18_cholecystitis_definite
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
@@ -5062,7 +5062,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Community-acquired Pneumonia (Adult / Child); 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis; 3. Diverticulitis; 4. Hepatocellular carcinoma (HCC); 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. UTI (paediatric); 4. Typhoid fever; 5. Mesenteric adenitis
@@ -5072,7 +5072,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, tg18-cholecystitis, ranson, qsofa, asge-cbd, news2, asa, rcri, cfs
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=2
 - dx variant: cholecystitis_grade2 (Acute Cholecystitis)
-- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, pleuritic_chest_pain, murphy_sign, wheeze, known_heart_disease, vascular_risk, known_copd, known_ckd, diuretic_use, antiplatelet_use, recent_antibiotics, previous_surgery, dyspnoea, reduced_breath_sounds, elevated_wbc, raised_crp, raised_creatinine, raised_urea, us_gallstones, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, pleuritic_chest_pain, murphy_sign, wheeze, known_heart_disease, vascular_risk, known_copd, known_ckd, diuretic_use, antiplatelet_use, recent_antibiotics, previous_surgery, dyspnoea, reduced_breath_sounds, elevated_wbc, raised_crp, raised_creatinine, raised_urea, us_gallstones, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_tg18_cholecystitis_definite
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
@@ -5113,7 +5113,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Acute Appendicitis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis; 3. Diverticulitis; 4. Acute alcoholic pancreatitis; 5. Hepatocellular carcinoma (HCC)
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Mesenteric adenitis; 4. Acute gastroenteritis; 5. Perforated peptic ulcer
@@ -5123,7 +5123,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholecystitis, ranson, asge-cbd, news2, caprini, asa, rcri
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=2
 - dx variant: cholecystitis_grade2 (Acute Cholecystitis)
-- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, pain_worse_movement, fatigue, murphy_sign, immunosuppression, known_hypertension, vascular_risk, steroid_use, previous_surgery, rlq_pain, elevated_wbc, raised_crp, raised_creatinine, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, pain_worse_movement, fatigue, murphy_sign, immunosuppression, known_hypertension, vascular_risk, steroid_use, previous_surgery, rlq_pain, elevated_wbc, raised_crp, raised_creatinine, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_tg18_cholecystitis_definite
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
@@ -5166,7 +5166,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis; 3. Acute mesenteric ischaemia; 4. Acute gastroenteritis; 5. Gallstone pancreatitis
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute mesenteric ischaemia
@@ -5176,7 +5176,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, tg18-cholecystitis, ranson, qsofa, asge-cbd, news2
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=1; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=2
 - dx variant: cholecystitis_grade1 (Acute Cholecystitis)
-- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, postprandial_pain, fatty_food_trigger, pleuritic_chest_pain, severe_pain, murphy_sign, pregnant, elevated_wbc, raised_crp, us_gallstones, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, postprandial_pain, fatty_food_trigger, pleuritic_chest_pain, severe_pain, murphy_sign, pregnant, elevated_wbc, raised_crp, us_gallstones, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_tg18_cholecystitis_definite
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
@@ -5217,7 +5217,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Liver Abscess; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis; 3. Acute mesenteric ischaemia; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute mesenteric ischaemia
@@ -5227,7 +5227,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, tg18-cholecystitis, ranson, qsofa, asge-cbd, web:wagner, news2, caprini, asa, rcri
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=2; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=2
 - dx variant: cholecystitis_grade2 (Acute Cholecystitis)
-- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, severe_pain, murphy_sign, guarding, known_diabetes, known_hypertension, vascular_risk, acei_arb_use, abdominal_mass, erythema_surrounding, previous_surgery, elevated_wbc, raised_crp, hyperglycaemia, us_gallstones, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, pain_worse_movement, pleuritic_chest_pain, severe_pain, murphy_sign, guarding, known_diabetes, known_hypertension, vascular_risk, acei_arb_use, abdominal_mass, erythema_surrounding, previous_surgery, elevated_wbc, raised_crp, hyperglycaemia, us_gallstones, tachycardia, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_tg18_cholecystitis_definite
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
@@ -5281,7 +5281,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Acute Cholecystitis; 3. Acute Cholangitis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute mesenteric ischaemia; 3. Acute appendicitis; 4. Diverticulitis; 5. Sepsis / systemic infection
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Sepsis / systemic infection; 4. Meningitis / encephalitis; 5. UTI (paediatric)
@@ -5291,7 +5291,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, tg18-cholecystitis, ranson, qsofa, gcs, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=3; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=3
 - dx variant: cholecystitis_grade3 (Acute Cholecystitis)
-- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, pain_worse_movement, severe_pain, confusion, murphy_sign, guarding, known_hypertension, vascular_risk, known_heart_disease, antiplatelet_use, acei_arb_use, gcs_drop, oliguria, elevated_wbc, raised_crp, raised_creatinine, raised_urea, thrombocytopenia, raised_lactate, us_gallstones, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, fever, nausea_vomiting, pain_worse_movement, severe_pain, confusion, murphy_sign, guarding, known_hypertension, vascular_risk, known_heart_disease, antiplatelet_use, acei_arb_use, gcs_drop, oliguria, elevated_wbc, raised_crp, raised_creatinine, raised_urea, thrombocytopenia, raised_lactate, us_gallstones, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_tg18_cholecystitis_definite
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
@@ -5330,7 +5330,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Community-acquired Pneumonia (Adult / Child); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
 - differential web.symptomInference: 1. Community-acquired pneumonia; 2. Empyema thoracis; 3. Acute cholecystitis; 4. Sepsis / systemic infection; 5. Infective endocarditis
 - differential web.passive: 1. Community-acquired pneumonia; 2. Empyema thoracis; 3. Sepsis / systemic infection; 4. Infective endocarditis; 5. Malaria
@@ -5379,7 +5379,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Choledocholithiasis; 2. Biliary Colic / Symptomatic Cholelithiasis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Liver disease / hepatitis / cirrhosis; 3. Acute cholangitis; 4. Cholangiocarcinoma; 5. Pancreatic adenocarcinoma
 - differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Cholangiocarcinoma; 3. CBD stone / obstructive jaundice; 4. Biliary atresia; 5. Pancreatic adenocarcinoma
@@ -5426,7 +5426,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Choledocholithiasis; 2. Acute Cholangitis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Acute cholangitis; 3. Cholangiocarcinoma; 4. Liver disease / hepatitis / cirrhosis; 5. Pancreatic adenocarcinoma
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Biliary atresia; 3. Liver disease / hepatitis / cirrhosis; 4. Cholangiocarcinoma; 5. Pancreatic adenocarcinoma
@@ -5475,7 +5475,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Choledocholithiasis; 2. Biliary Colic / Symptomatic Cholelithiasis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Liver disease / hepatitis / cirrhosis; 3. Cholangiocarcinoma; 4. Acute cholangitis; 5. Pancreatic adenocarcinoma
 - differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Cholangiocarcinoma; 3. CBD stone / obstructive jaundice; 4. Pancreatic adenocarcinoma; 5. Biliary atresia
@@ -5518,7 +5518,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Choledocholithiasis; 2. Biliary Colic / Symptomatic Cholelithiasis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute mesenteric ischaemia; 3. CBD stone / obstructive jaundice; 4. Adhesive small bowel obstruction; 5. Liver disease / hepatitis / cirrhosis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Liver disease / hepatitis / cirrhosis; 3. CBD stone / obstructive jaundice; 4. Acute gastroenteritis; 5. Acute mesenteric ischaemia
@@ -5561,7 +5561,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Gallstone pancreatitis; 3. Acute mesenteric ischaemia; 4. Acute alcoholic pancreatitis; 5. Chronic pancreatitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
@@ -5607,7 +5607,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Colorectal Cancer; 2. Rectal Carcinoma; 3. Ulcerative Colitis
 - differential web.symptomInference: 1. Colorectal carcinoma; 2. Lower GI bleed / colorectal; 3. Occult malignancy / systemic disease; 4. Squamous cell carcinoma of the anus; 5. Inflammatory bowel disease (Crohn's / UC)
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Lower GI bleed / colorectal; 3. Squamous cell carcinoma of the anus; 4. Colorectal carcinoma; 5. Occult malignancy / systemic disease
@@ -5650,7 +5650,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Colorectal Cancer; 3. GORD / Reflux Oesophagitis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Diverticulitis; 3. Colorectal carcinoma; 4. Peptic ulcer disease; 5. Irritable bowel syndrome (IBS)
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
@@ -5694,7 +5694,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Colorectal Cancer; 2. Gastric Carcinoma; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Heart failure; 2. Anaemia; 3. COPD / chronic bronchitis exacerbation; 4. Acute respiratory distress syndrome (ARDS); 5. Hypothyroidism
 - differential web.passive: 1. Anaemia; 2. Heart failure; 3. Acute respiratory distress syndrome (ARDS); 4. Cardiac tamponade; 5. Hypothyroidism
@@ -5732,7 +5732,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Gastroenteritis / Infective Colitis; 2. Renal Colic / Urolithiasis; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -5775,7 +5775,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ulcerative Colitis; 2. Colorectal Cancer; 3. Crohn's Disease
 - differential web.symptomInference: 1. Colorectal carcinoma; 2. Lower GI bleed / colorectal; 3. Diverticulitis; 4. Occult malignancy / systemic disease; 5. Squamous cell carcinoma of the anus
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Inflammatory bowel disease (Crohn's / UC); 4. Occult malignancy / systemic disease; 5. Intussusception
@@ -5818,7 +5818,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Rectal Carcinoma; 2. Rectal Prolapse; 3. Ulcerative Colitis
 - differential web.symptomInference: 1. Rectal prolapse; 2. Inflammatory bowel disease (Crohn's / UC); 3. Haemorrhoids / anorectal disease; 4. Anal fissure; 5. Benign prostatic hyperplasia (BPH)
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Rectal prolapse; 3. Haemorrhoids / anorectal disease; 4. Anal fissure; 5. Acute cholecystitis
@@ -5858,7 +5858,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Aortic Dissection; 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Reducible groin / abdominal hernia; 3. Gout / pseudogout; 4. Breast carcinoma; 5. Hepatocellular carcinoma (HCC)
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -5900,7 +5900,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ulcerative Colitis; 2. Crohn's Disease; 3. Rectal Carcinoma
 - differential web.symptomInference: 1. Colorectal carcinoma; 2. Lower GI bleed / colorectal; 3. Inflammatory bowel disease (Crohn's / UC); 4. Occult malignancy / systemic disease; 5. Squamous cell carcinoma of the anus
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Lower GI bleed / colorectal; 3. Squamous cell carcinoma of the anus; 4. Irritable bowel syndrome (IBS); 5. Colorectal carcinoma
@@ -5944,7 +5944,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Crohn's Disease; 3. Liver Abscess
 - differential web.symptomInference: 1. Acute appendicitis; 2. Acute mesenteric ischaemia; 3. HIV / AIDS presentation; 4. Mesenteric adenitis; 5. Acute gastroenteritis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Inflammatory bowel disease (Crohn's / UC); 4. HIV / AIDS presentation; 5. Typhoid fever
@@ -5989,7 +5989,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pilonidal Disease; 2. Perianal Abscess / Fistula; 3. Anal Fissure
 - differential web.symptomInference: 1. Perianal abscess; 2. Pilonidal sinus / abscess; 3. Fistula in ano; 4. Haemorrhoids / anorectal disease; 5. Fournier's gangrene
 - differential web.passive: 1. Perianal abscess; 2. Fistula in ano; 3. Haemorrhoids / anorectal disease; 4. Pilonidal sinus / abscess; 5. Fournier's gangrene
@@ -6026,7 +6026,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Appendix Mass / Late Appendicitis; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Breast carcinoma; 3. Acute cholecystitis; 4. Uterine fibroids; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6064,7 +6064,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6100,7 +6100,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6138,7 +6138,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6179,7 +6179,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Acute Cholangitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6218,7 +6218,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6256,7 +6256,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Acute Diverticulitis; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6295,7 +6295,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Umbilical / Paraumbilical Hernia
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6334,7 +6334,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6372,7 +6372,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Anastomotic Leak
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6410,7 +6410,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Community-acquired Pneumonia (Adult / Child); 3. Oesophageal Perforation (Boerhaave)
 - differential web.symptomInference: 1. Uterine fibroids; 2. Acute cholecystitis; 3. Systemic lupus erythematosus; 4. Breast carcinoma; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6420,7 +6420,7 @@ Guidelines:
 - recommended scores: heart, wells-pe, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: chest_pain, dyspnoea, pleuritic_chest_pain, recent_immobility, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: chest_pain, dyspnoea, pleuritic_chest_pain, recent_immobility, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_wells_pe_unlikely
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: pulmonary_embolism (leading differential); 5 stat test(s) held back
@@ -6446,7 +6446,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pyelonephritis / Upper Urinary Tract Infection; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis)
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6486,7 +6486,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Oesophageal Variceal Haemorrhage (Portal Hypertension); 3. Aorto-enteric Fistula (after aortic graft)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6523,7 +6523,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Mallory-Weiss Tear; 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Peptic Ulcer Disease
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6562,7 +6562,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Atrial Fibrillation / Flutter; 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Lower GI Haemorrhage (Diverticular / Angiodysplasia)
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6599,7 +6599,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Umbilical / Paraumbilical Hernia
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Reducible groin / abdominal hernia; 3. Gout / pseudogout; 4. Breast carcinoma; 5. Hepatocellular carcinoma (HCC)
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -6649,7 +6649,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Foot Infection / Osteomyelitis; 2. Charcot Neuro-osteoarthropathy (Acute Charcot Foot); 3. Cellulitis
 - differential web.symptomInference: 1. Diabetic foot infection / ischaemia; 2. Peripheral neuropathy; 3. Peripheral arterial disease / limb ischaemia; 4. Benign prostatic hyperplasia (BPH); 5. Prostate adenocarcinoma
 - differential web.passive: 1. Diabetic foot infection / ischaemia; 2. Peripheral neuropathy; 3. Peripheral arterial disease / limb ischaemia; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
@@ -6698,7 +6698,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Necrotising Fasciitis (NSTI); 2. Diabetic Foot Infection / Osteomyelitis; 3. Fournier's Gangrene (Perineal Necrotising Fasciitis)
 - differential web.symptomInference: 1. Sepsis / systemic infection; 2. Malaria; 3. Pyelonephritis; 4. Diabetic foot infection / ischaemia; 5. Infective endocarditis
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Diabetic foot infection / ischaemia; 4. Pyelonephritis; 5. Infective endocarditis
@@ -6747,7 +6747,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Peripheral Arterial Disease; 2. Arterial Ulcer; 3. Diabetic Foot Infection / Osteomyelitis
 - differential web.symptomInference: 1. Peripheral arterial disease / limb ischaemia; 2. Acute limb ischaemia; 3. Benign prostatic hyperplasia (BPH); 4. Prostate adenocarcinoma; 5. Colorectal carcinoma
 - differential web.passive: 1. Acute limb ischaemia; 2. Peripheral arterial disease / limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -6796,7 +6796,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Foot Infection / Osteomyelitis; 2. Charcot Neuro-osteoarthropathy (Acute Charcot Foot); 3. Arterial Ulcer
 - differential web.symptomInference: 1. Peripheral neuropathy; 2. Peripheral arterial disease / limb ischaemia; 3. Breast carcinoma; 4. Uterine fibroids; 5. Acute cholecystitis
 - differential web.passive: 1. Peripheral neuropathy; 2. Peripheral arterial disease / limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -6839,7 +6839,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Diverticulitis; 2. Acute Appendicitis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Diverticulitis; 2. Acute cholecystitis; 3. Acute appendicitis; 4. Acute gastroenteritis; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Mesenteric adenitis; 5. Perforated peptic ulcer
@@ -6884,7 +6884,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Diverticulitis; 2. Acute Appendicitis; 3. Liver Abscess
 - differential web.symptomInference: 1. Diverticulitis; 2. Acute appendicitis; 3. Acute cholecystitis; 4. Typhoid fever; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Typhoid fever; 3. UTI (paediatric); 4. Acute alcoholic pancreatitis; 5. Mesenteric adenitis
@@ -6929,7 +6929,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Hyperosmolar Hyperglycaemic State (HHS)
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Acute appendicitis; 3. Acute cholecystitis; 4. Perforated peptic ulcer; 5. Acute gastroenteritis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Sepsis / systemic infection; 5. Acute mesenteric ischaemia
@@ -6975,7 +6975,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hyperosmolar Hyperglycaemic State (HHS); 2. Acute Diverticulitis; 3. Acute Appendicitis
 - differential web.symptomInference: 1. Diverticulitis; 2. Acute cholecystitis; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Acute mesenteric ischaemia; 5. Primary hyperparathyroidism / hypercalcaemia
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Inflammatory bowel disease (Crohn's / UC); 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Sickle cell crisis
@@ -7023,7 +7023,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perforated Peptic Ulcer / Perforated Viscus; 2. Acute Appendicitis; 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Diverticulitis; 2. Acute appendicitis; 3. Acute mesenteric ischaemia; 4. Perforated peptic ulcer; 5. Acute cholecystitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
@@ -7074,7 +7074,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Anastomotic Leak; 3. Hyperosmolar Hyperglycaemic State (HHS)
 - differential web.symptomInference: 1. Acute alcoholic pancreatitis; 2. ST-elevation myocardial infarction (STEMI); 3. Acute gastroenteritis; 4. Gastric carcinoma; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. ST-elevation myocardial infarction (STEMI); 5. Adhesive small bowel obstruction
@@ -7124,7 +7124,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Hyperosmolar Hyperglycaemic State (HHS); 3. Oesophageal Perforation (Boerhaave)
 - differential web.symptomInference: 1. Acute appendicitis; 2. Perforated peptic ulcer; 3. Acute cholecystitis; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Acute appendicitis
@@ -7173,7 +7173,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Hyperosmolar Hyperglycaemic State (HHS); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Acute respiratory distress syndrome (ARDS); 4. ST-elevation myocardial infarction (STEMI); 5. Cardiac tamponade
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Acute respiratory distress syndrome (ARDS); 4. ST-elevation myocardial infarction (STEMI); 5. Cardiac tamponade
@@ -7218,7 +7218,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Deep Vein Thrombosis; 2. Cellulitis; 3. Pre-eclampsia / HELLP Syndrome / Eclampsia
 - differential web.symptomInference: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Lumbar disc disease / sciatica; 5. Heart failure
 - differential web.passive: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
@@ -7259,7 +7259,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Deep Vein Thrombosis; 2. Pulmonary Embolism; 3. Cellulitis
 - differential web.symptomInference: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Lumbar disc disease / sciatica; 5. Carpal tunnel syndrome
 - differential web.passive: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
@@ -7302,7 +7302,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Peptic Ulcer Disease; 2. GORD / Reflux Oesophagitis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
@@ -7345,7 +7345,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Carcinoma; 2. Oesophageal Stricture (Benign); 3. Achalasia
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. GORD / acid reflux / oesophagitis; 4. Gastric carcinoma; 5. Colorectal carcinoma
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Occult malignancy / systemic disease; 4. Gastric carcinoma; 5. Colorectal carcinoma
@@ -7381,7 +7381,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Carcinoma; 2. Oesophageal Stricture (Benign); 3. Achalasia
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. Gastric carcinoma; 4. Colorectal carcinoma; 5. GORD / acid reflux / oesophagitis
 - differential web.passive: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. GORD / acid reflux / oesophagitis; 4. Gastric carcinoma; 5. Colorectal carcinoma
@@ -7424,7 +7424,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Stricture (Benign); 2. Oesophageal Carcinoma; 3. GORD / Reflux Oesophagitis
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. GORD / acid reflux / oesophagitis; 3. Gastric carcinoma; 4. Thyroid carcinoma; 5. Occult malignancy / systemic disease
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Epiglottitis; 4. Thyroid carcinoma; 5. Occult malignancy / systemic disease
@@ -7473,7 +7473,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Oesophageal Stricture (Benign); 3. Hiatus Hernia
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. Thyroid carcinoma; 3. Occult malignancy / systemic disease; 4. Gastric carcinoma; 5. Pharyngitis / tonsillitis
 - differential web.passive: 1. Oesophageal / gastric carcinoma; 2. Epiglottitis; 3. Thyroid carcinoma; 4. Occult malignancy / systemic disease; 5. Gastric carcinoma
@@ -7525,7 +7525,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Epididymo-orchitis; 2. Acute Pyelonephritis / Upper Urinary Tract Infection; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. STI / urethritis / cervicitis; 2. Testicular torsion / epididymo-orchitis; 3. Urinary tract infection (UTI); 4. Fournier's gangrene; 5. Pyelonephritis
 - differential web.passive: 1. STI / urethritis / cervicitis; 2. Urinary tract infection (UTI); 3. UTI (paediatric); 4. Pyelonephritis; 5. Testicular torsion / epididymo-orchitis
@@ -7541,6 +7541,502 @@ Guidelines:
 - note: Seeded investigations: epididymo_orchitis (confirmed); 0 stat test(s) held back
 - note: Decision support: (no decision); factors (none)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Acute appendicitis with a high AIR score
+
+#### `exam-air-high-appendicitis` — AIR score 10 recorded; McBurney's point tenderness present
+
+19-year-old man, 20 hours of periumbilical pain moving to the right iliac fossa, vomiting; McBurney's point tender with guarding; AIR 10 recorded.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| appendicitis-top1 | mustRankTopK | critical | PASS |  |  |
+| air-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines on the diagnosis and treatment of acute appendicitis (2020 update) (2020), Clinical scores (AIR, AAS). World J Emerg Surg 2020;15:27 *(statement wording/numbering not yet verified against the source)*
+- **andersson-2008** — Andersson M, Andersson RE. The appendicitis inflammatory response score (2008), High probability 9-12. World J Surg 2008;32:1843-9 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Appendicitis; 2. Appendix Mass / Late Appendicitis; 3. Acute Gastroenteritis / Infective Colitis
+- differential web.symptomInference: 1. Acute alcoholic pancreatitis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Mesenteric adenitis; 5. Acute cholecystitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute alcoholic pancreatitis; 5. Acute cholecystitis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=30)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.6 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: alvarado, ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, anorexia, rlq_pain, periumbilical_pain, pain_migration, elevated_wbc, raised_crp, acute_onset, fever, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_mcburney, sign_guarding, rule_air_high
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (leading differential); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors (none)
+- note: matchPathways: Acute Appendicitis (5)
+
+</details>
+
+### Abdominal wall pain (anterior cutaneous nerve entrapment)
+
+#### `exam-carnett-abdominal-wall-pain` — Carnett's sign positive
+
+36-year-old woman with 8 months of well-localised right-sided abdominal pain at a fingertip-sized spot, normal bloods, previous laparoscopy; Carnett's sign positive.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| abdominal-wall-top3 | mustRankTopK | quality | PASS |  |  |
+| carnett-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **mcgee-2022** — McGee S. Evidence-Based Physical Diagnosis, 5th ed. (2022), Abdominal pain and tenderness; hernia; lymphadenopathy; liver. *(statement wording/numbering not yet verified against the source)*
+- **takada-2011** — Takada T et al. Carnett's sign in chronic abdominal pain (2011), Carnett's sign accuracy. J Gen Intern Med 2011 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Abdominal Wall Pain (e.g. Anterior Cutaneous Nerve Entrapment); 2. GORD / Reflux Oesophagitis; 3. Biliary Colic / Symptomatic Cholelithiasis
+- differential web.symptomInference: 1. Acute cholecystitis; 2. Peptic ulcer disease; 3. Irritable bowel syndrome (IBS); 4. Acute appendicitis; 5. Gallstone pancreatitis
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, previous_surgery, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_carnett, sign_rebound
+- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
+
+</details>
+
+### Decompensated cirrhosis with stigmata of chronic liver disease
+
+#### `exam-cld-stigmata-jaundice` — Spider naevi, palmar erythema and a fluid wave recorded
+
+58-year-old man who drinks heavily, 3 weeks of yellow eyes, a swelling abdomen and ankle swelling; spider naevi, palmar erythema and a fluid wave on examination.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| cirrhosis-top3 | mustRankTopK | critical | PASS |  |  |
+| spider-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **udell-2012** — Udell JA et al. Does this patient with liver disease have cirrhosis? (JAMA Rational Clinical Examination) (2012), Spider angiomata, palmar erythema, ascites. JAMA 2012;307:832-42 *(statement wording/numbering not yet verified against the source)*
+- **williams-simel-1992** — Williams JW, Simel DL. Does this patient have ascites? (1992), Fluid wave LR+ 6.0. JAMA 1992;267:2645-8 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Cirrhosis / Chronic Liver Disease (Decompensated); 2. Cholangiocarcinoma; 3. Acute Hepatitis
+- differential web.symptomInference: 1. Liver disease / hepatitis / cirrhosis; 2. CBD stone / obstructive jaundice; 3. Cholangiocarcinoma; 4. Pancreatic adenocarcinoma; 5. Acute cholangitis
+- differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Biliary atresia; 3. CBD stone / obstructive jaundice; 4. Neonatal jaundice; 5. Cholangiocarcinoma
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=70)
+- alarms: Emergency now [web.triage.emergency]; Jaundice [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; INR 1.7 — coagulopathy [web.clinicalPrompts.safety]; Albumin 26 g/L — hypoalbuminaemia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: asge-cbd, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: jaundice, abdominal_distension, dark_urine, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_spider_naevi, sign_palmar_erythema, sign_fluid_wave
+- note: AssessmentTab ManagementPanel protocol: (none) (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+- note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Pancreatic Mass / Cyst (17)
+
+</details>
+
+### Femoral hernia (lump below and lateral to the pubic tubercle)
+
+#### `exam-hernia-femoral-below-tubercle` — Groin lump below and lateral to the pubic tubercle
+
+74-year-old woman with a small, firm right groin lump for 3 months; the neck lies below the inguinal ligament and lateral to the pubic tubercle.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| femoral-top2 | mustRankTopK | critical | PASS |  |  |
+| tubercle-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge Group. International guidelines for groin hernia management (2018), Femoral hernia: diagnosis and prompt repair. Hernia 2018;22:1-165 *(statement wording/numbering not yet verified against the source)*
+- **mcgee-2022** — McGee S. Evidence-Based Physical Diagnosis, 5th ed. (2022), Abdominal pain and tenderness; hernia; lymphadenopathy; liver. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Femoral Hernia; 2. Inguinal Lymphadenopathy (Infection / Lymphoma / Metastasis); 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Varicocele; 2. Breast carcinoma; 3. Uterine fibroids; 4. Acute cholecystitis; 5. Colorectal carcinoma
+- differential web.passive: 1. Inguinal hernia (paediatric); 2. Varicocele; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
+- differential web.triageSurgical: 1. Inguinal hernia
+- emergency level: routine (acuity=routine, action=routine_booking, score=12)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: groin_swelling, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_below_lateral_tubercle
+- note: AssessmentTab ManagementPanel protocol: femoral_hernia (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: femoral_hernia (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
+- note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
+
+</details>
+
+### Uncomplicated inguinal hernia (cough impulse, reducible, above the tubercle)
+
+#### `exam-hernia-inguinal-cough-impulse` — Cough impulse, reducible, above and medial to the tubercle
+
+46-year-old man, 6 months of a left groin bulge on lifting; cough impulse, reduces completely, neck above and medial to the pubic tubercle.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| inguinal-top1 | mustRankTopK | critical | PASS |  |  |
+| cough-impulse-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge Group. International guidelines for groin hernia management (2018), Diagnosis by examination. Hernia 2018;22:1-165 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Inguinal Lymphadenopathy (Infection / Lymphoma / Metastasis)
+- differential web.symptomInference: 1. Varicocele; 2. Benign prostatic hyperplasia (BPH); 3. Reducible groin / abdominal hernia; 4. Gout / pseudogout; 5. Breast carcinoma
+- differential web.passive: 1. Inguinal hernia (paediatric); 2. Varicocele; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
+- differential web.triageSurgical: 1. Inguinal hernia
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: groin_swelling, worse_straining, hernia_swelling, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_cough_impulse, sign_reducible, sign_above_medial_tubercle
+- note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+- note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15)
+
+</details>
+
+### Incarcerated groin hernia (irreducible on examination)
+
+#### `exam-hernia-irreducible-incarcerated` — Hernia examined and does not reduce
+
+63-year-old man with a known right groin hernia that has been painful and stuck out for 8 hours, with vomiting; on examination it is tense, tender and does not reduce.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| incarcerated-top2 | mustRankTopK | critical | PASS |  |  |
+| emergency-or-urgent | emergencyLevel | critical | PASS |  |  |
+
+Guidelines:
+
+- **wses-2017** — WSES guidelines for emergency repair of complicated abdominal wall hernias (2017), Diagnosis of incarceration and strangulation. World J Emerg Surg 2017;12:37 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 2. Femoral Hernia; 3. Inguinal / Femoral Hernia
+- differential web.symptomInference: 1. Varicocele; 2. Testicular torsion / epididymo-orchitis; 3. Acute gastroenteritis; 4. Acute cholecystitis; 5. Oesophageal / gastric carcinoma
+- differential web.passive: 1. Inguinal hernia (paediatric); 2. Acute gastroenteritis; 3. Varicocele; 4. Hypertrophic pyloric stenosis; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: 1. Inguinal hernia
+- emergency level: urgent (acuity=priority, action=same_day_call, score=22)
+- alarms: Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: groin_swelling, groin_pain, nausea_vomiting, hernia_swelling, localised_pain, elevated_wbc, raised_lactate, acute_onset, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, hernia_irreducible
+- note: AssessmentTab ManagementPanel protocol: incarcerated_hernia (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: incarcerated_hernia (leading differential); 1 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors (none)
+- note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15)
+
+</details>
+
+### Acute cholecystitis with Murphy's sign absent (elderly, diabetic)
+
+#### `exam-murphy-negative-elderly-cholecystitis` — Murphy's sign examined and absent
+
+79-year-old man with diabetes, two days of vague right upper quadrant discomfort, vomiting and fever; Murphy's sign absent on examination. Cholecystitis stays in the differential (LR- 0.5 only halves the odds).
+
+Permutation of `cholecystitis-elderly-diabetic-atypical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| cholecystitis-still-top3 | mustRankTopK | critical | PASS |  |  |
+| murphy-absent-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **trowbridge-2003** — Trowbridge RL et al. Does this patient have acute cholecystitis? (JAMA Rational Clinical Examination) (2003), Murphy's sign LR+ 2.8, LR- 0.5. JAMA 2003;289:80-6 *(statement wording/numbering not yet verified against the source)*
+- **tg18-chole** — Tokyo Guidelines 2018: acute cholecystitis diagnostic criteria (2018), Diagnostic criteria (local signs: Murphy's sign). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Acute Cholangitis; 3. Liver Abscess
+- differential web.symptomInference: 1. Hepatocellular carcinoma (HCC); 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Malaria; 5. Lung abscess
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Malaria; 4. Bacterial meningitis (paediatric); 5. Acute alcoholic pancreatitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=79)
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.8 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 102 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, tg18-cholecystitis, qsofa, asge-cbd, web:wagner, news2, caprini, asa, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, ruq_pain, nausea_vomiting, fever, anorexia, known_diabetes, epigastric_pain, elevated_wbc, raised_crp, us_gallstones, acute_onset, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_murphy
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (leading differential); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision Acute calculous cholecystitis — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors age65to79, diabetes
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Acute cholecystitis (Murphy's sign present)
+
+#### `exam-murphy-positive-cholecystitis` — Murphy's sign recorded present on the Exam step
+
+41-year-old woman, 30 hours of constant right upper quadrant pain after a fatty meal, low-grade fever; Murphy's sign present on examination.
+
+Permutation of `cholecystitis-tg18-grade1`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| cholecystitis-top2 | mustRankTopK | critical | PASS |  |  |
+| murphy-lr-shown | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **trowbridge-2003** — Trowbridge RL et al. Does this patient have acute cholecystitis? (JAMA Rational Clinical Examination) (2003), Murphy's sign LR+ 2.8, LR- 0.5. JAMA 2003;289:80-6 *(statement wording/numbering not yet verified against the source)*
+- **tg18-chole** — Tokyo Guidelines 2018: acute cholecystitis diagnostic criteria (2018), Diagnostic criteria (local signs: Murphy's sign). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Liver Abscess; 3. Acute Cholangitis
+- differential web.symptomInference: 1. Acute gastroenteritis; 2. Pyelonephritis; 3. Acute alcoholic pancreatitis; 4. Adhesive small bowel obstruction; 5. Malaria
+- differential web.passive: 1. Acute gastroenteritis; 2. Acute appendicitis (paediatric); 3. Pyelonephritis; 4. Acute alcoholic pancreatitis; 5. Adhesive small bowel obstruction
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=55)
+- alarms: Emergency now [web.triage.emergency]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Fever 38.2°C + HR 104 bpm [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, tg18-cholecystitis, qsofa, news2, asge-cbd
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, ruq_pain, nausea_vomiting, fever, fatty_food_trigger, pleuritic_chest_pain, elevated_wbc, raised_crp, acute_onset, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_murphy, sign_rebound
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (leading differential); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision Acute calculous cholecystitis — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (early laparoscopic cholecystectomy).
+- note: Decision Acute calculous cholecystitis — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors (none)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5)
+
+</details>
+
+### Ankle inversion injury, Ottawa ankle rules negative
+
+#### `exam-ottawa-ankle-negative` — Ottawa ankle rules recorded negative
+
+27-year-old man twisted his right ankle playing football; can walk, no bony tenderness at the malleoli, fifth metatarsal or navicular; Ottawa rules negative.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| ottawa-post-test | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **bachmann-2003** — Bachmann LM et al. Accuracy of Ottawa ankle rules to exclude fractures of the ankle and mid-foot: systematic review (2003), Pooled sensitivity 97.6 %. BMJ 2003;326:417 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Traumatic Brain Injury; 2. Rib Fractures; 3. Blunt Abdominal Trauma
+- differential web.symptomInference: 1. Gout / pseudogout; 2. Achilles tendinopathy / rupture; 3. Osteoarthritis; 4. Benign prostatic hyperplasia (BPH); 5. Testicular germ cell tumour
+- differential web.passive: 1. Achilles tendinopathy / rupture; 2. Gout / pseudogout; 3. Osteoarthritis; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: trauma_mechanism, acute_onset, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+
+</details>
+
+### Gastroenteritis with dehydration in a toddler (prolonged capillary refill)
+
+#### `exam-paeds-dehydration-crt` — Prolonged capillary refill and reduced skin turgor recorded
+
+2-year-old with 2 days of vomiting and watery diarrhoea, fewer wet nappies; capillary refill prolonged and skin turgor reduced.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| gastroenteritis-top3 | mustRankTopK | critical | PASS |  |  |
+| crt-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **steiner-2004** — Steiner MJ et al. Is this child dehydrated? (JAMA Rational Clinical Examination) (2004), Prolonged capillary refill LR+ 4.1. JAMA 2004;291:2746-54 *(statement wording/numbering not yet verified against the source)*
+- **nice-cg84** — NICE CG84 Diarrhoea and vomiting caused by gastroenteritis in under 5s (2009), Clinical dehydration. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Intussusception; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Acute Gastroenteritis / Infective Colitis
+- differential web.symptomInference: 1. Acute gastroenteritis; 2. Hypertrophic pyloric stenosis; 3. Intussusception; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
+- differential web.passive: 1. Acute gastroenteritis; 2. Hypertrophic pyloric stenosis; 3. Intussusception; 4. Malrotation / midgut volvulus; 5. Acute appendicitis (paediatric)
+- differential web.triageSurgical: (empty)
+- emergency level: priority (acuity=review, action=priority_24_48h, score=15)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: qsofa, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: nausea_vomiting, diarrhoea, poor_feeding, fatigue, acute_onset, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_crt_child, sign_skin_turgor_child
+- note: AssessmentTab ManagementPanel protocol: intussusception (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: intussusception (leading differential); 1 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
+
+</details>
+
+### Pleuritic chest pain, low Wells and PERC negative
+
+#### `exam-perc-negative-low-wells` — Wells PE 0 and PERC 0 recorded
+
+31-year-old woman with sharp left chest pain on breathing after a viral illness; no risk factors; Wells PE 0 and PERC negative recorded.
+
+Permutation of `pe-perc-negative-low-risk`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| pe-not-leading | mustRankTopK | quality | PASS |  |  |
+| perc-lr | reasoningInclude | quality | PASS |  |  |
+| wells-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **kline-2004** — Kline JA et al. Clinical criteria to prevent unnecessary diagnostic testing in emergency department patients with suspected pulmonary embolism (2004), PERC rule. J Thromb Haemost 2004;2:1247-55 *(statement wording/numbering not yet verified against the source)*
+- **nice-ng158** — NICE NG158 Venous thromboembolic diseases (2020), Two-level Wells PE score. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Community-acquired Pneumonia (Adult / Child); 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Empyema thoracis; 5. Community-acquired pneumonia
+- differential web.passive: 1. Spontaneous pneumothorax; 2. Pulmonary embolism; 3. Empyema thoracis; 4. Community-acquired pneumonia; 5. Pericarditis / myocarditis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
+- alarms: Emergency now [web.triage.emergency]; Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: heart, wells-pe, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: chest_pain, pleuritic_chest_pain, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_wells_pe_unlikely, rule_perc_negative
+- note: AssessmentTab ManagementPanel protocol: pneumonia (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (leading differential); 0 stat test(s) held back
+- note: Decision Pulmonary embolism — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (therapeutic anticoagulation).
+- note: Decision Pulmonary embolism — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (systemic thrombolysis).
+- note: Decision support: pulmonary-embolism; factors (none)
+- note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
+
+</details>
+
+### Ureteric colic with a high STONE score
+
+#### `exam-stone-score-high-renal-colic` — STONE score 13 recorded
+
+38-year-old man with 3 hours of severe colicky right loin pain radiating to the groin, vomiting and haematuria on dipstick; STONE score 13 recorded.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| renal-colic-top1 | mustRankTopK | critical | PASS |  |  |
+| stone-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **moore-2014** — Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score (2014), High score 10-13: stone in about 89 %. BMJ 2014;348:g2191 *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Renal Colic / Urolithiasis; 2. Acute Pyelonephritis / Upper Urinary Tract Infection; 3. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis)
+- differential web.symptomInference: 1. Renal colic / urolithiasis; 2. Renal cell carcinoma; 3. Pyelonephritis; 4. Acute kidney injury; 5. Bladder transitional cell carcinoma
+- differential web.passive: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Renal cell carcinoma; 4. Acute kidney injury; 5. Acute gastroenteritis
+- differential web.triageSurgical: (empty)
+- emergency level: priority (acuity=review, action=priority_24_48h, score=15)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: loin_pain, nausea_vomiting, haematuria, renal_angle_tenderness, radiation_to_groin, colicky_pain, sudden_onset, restless_writhing, acute_onset, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_stone_high
+- note: AssessmentTab ManagementPanel protocol: renal_colic (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: renal_colic (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+
+</details>
+
+### Gastric carcinoma with a left supraclavicular node
+
+#### `exam-supraclavicular-node-gastric` — Hard left supraclavicular node recorded
+
+66-year-old man, 3 months of epigastric discomfort, early satiety and 8 kg weight loss; hard, fixed left supraclavicular node.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| gastric-top3 | mustRankTopK | critical | PASS |  |  |
+| node-lr | reasoningInclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **mcgee-2022** — McGee S. Evidence-Based Physical Diagnosis, 5th ed. (2022), Abdominal pain and tenderness; hernia; lymphadenopathy; liver. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng12** — NICE NG12 Suspected cancer: recognition and referral (2015), Upper GI: weight loss with upper abdominal pain, aged 55 and over. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Gastric Carcinoma; 2. Pancreatic Carcinoma; 3. Oesophageal Carcinoma
+- differential web.symptomInference: 1. Gastric carcinoma; 2. Pancreatic adenocarcinoma; 3. Occult malignancy / systemic disease; 4. Hepatocellular carcinoma (HCC); 5. Chronic pancreatitis
+- differential web.passive: 1. Gastric carcinoma; 2. Pancreatic adenocarcinoma; 3. Chronic pancreatitis; 4. Acute alcoholic pancreatitis; 5. HIV / AIDS presentation
+- differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: urgent (acuity=priority, action=same_day_call, score=62)
+- alarms: Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, web:gerdq, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: weight_loss, epigastric_pain, anorexia, abdominal_pain, postprandial_pain, early_satiety, anaemia, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma, sign_supraclavicular_node, sign_node_hard, sign_node_fixed
+- note: AssessmentTab ManagementPanel protocol: gastric_carcinoma (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: gastric_carcinoma (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
 
@@ -7565,7 +8061,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perianal Abscess / Fistula; 2. Pilonidal Disease; 3. Anal Cancer (Squamous Cell Carcinoma of the Anus)
 - differential web.symptomInference: 1. Haemorrhoids / anorectal disease; 2. Fistula in ano; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Hidradenitis suppurativa
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Fistula in ano; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Squamous cell carcinoma of the anus
@@ -7602,7 +8098,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perianal Abscess / Fistula; 2. Pilonidal Disease; 3. Anal Cancer (Squamous Cell Carcinoma of the Anus)
 - differential web.symptomInference: 1. Haemorrhoids / anorectal disease; 2. Fistula in ano; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Fournier's gangrene
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Fistula in ano; 3. Perianal abscess; 4. Pilonidal sinus / abscess; 5. Squamous cell carcinoma of the anus
@@ -7644,7 +8140,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Food Bolus Obstruction; 2. Oesophageal Perforation (Boerhaave); 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Thyroid carcinoma; 4. Occult malignancy / systemic disease; 5. Gastric carcinoma
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Epiglottitis; 4. Thyroid carcinoma; 5. Occult malignancy / systemic disease
@@ -7690,7 +8186,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Fournier's Gangrene (Perineal Necrotising Fasciitis); 2. Necrotising Fasciitis (NSTI); 3. Perianal Abscess / Fistula
 - differential web.symptomInference: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Cellulitis / soft tissue infection; 4. Necrotising fasciitis; 5. Testicular torsion / epididymo-orchitis
 - differential web.passive: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Cellulitis / soft tissue infection; 4. Necrotising fasciitis; 5. Malaria
@@ -7732,7 +8228,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Fournier's Gangrene (Perineal Necrotising Fasciitis); 2. Perianal Abscess / Fistula; 3. Necrotising Fasciitis (NSTI)
 - differential web.symptomInference: 1. Fournier's gangrene; 2. Perianal abscess; 3. Cellulitis / soft tissue infection; 4. Testicular torsion / epididymo-orchitis; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Fournier's gangrene; 2. Perianal abscess; 3. Cellulitis / soft tissue infection; 4. Testicular torsion / epididymo-orchitis; 5. Necrotising fasciitis
@@ -7774,7 +8270,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Gastric Outlet Obstruction; 2. Gastric Carcinoma; 3. Pancreatic Carcinoma
 - differential web.symptomInference: 1. Gastric carcinoma; 2. Occult malignancy / systemic disease; 3. Oesophageal / gastric carcinoma; 4. Colorectal carcinoma; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Gastric carcinoma; 2. Hypertrophic pyloric stenosis; 3. Chronic pancreatitis; 4. Acute alcoholic pancreatitis; 5. Pancreatic adenocarcinoma
@@ -7815,7 +8311,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Hiatus Hernia; 3. Peptic Ulcer Disease
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Benign prostatic hyperplasia (BPH); 3. Testicular germ cell tumour; 4. Varicocele; 5. Reducible groin / abdominal hernia
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Peptic ulcer disease; 5. Reducible groin / abdominal hernia
@@ -7855,7 +8351,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Hiatus Hernia; 3. Gastric Carcinoma
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Occult malignancy / systemic disease; 3. Gastric carcinoma; 4. Colorectal carcinoma; 5. Oesophageal / gastric carcinoma
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Gastric carcinoma; 3. HIV / AIDS presentation; 4. Occult malignancy / systemic disease; 5. Pancreatic adenocarcinoma
@@ -7895,7 +8391,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Femoral Hernia; 2. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 3. Femoral Artery Aneurysm / Pseudoaneurysm
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Peripheral arterial disease / limb ischaemia; 3. Varicocele; 4. Benign prostatic hyperplasia (BPH); 5. Prostate adenocarcinoma
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Peripheral arterial disease / limb ischaemia; 3. Inguinal hernia (paediatric); 4. Varicocele; 5. Acute cholecystitis
@@ -7936,7 +8432,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Femoral Hernia; 2. Inguinal Lymphadenopathy (Infection / Lymphoma / Metastasis); 3. Inguinal / Femoral Hernia
 - differential web.symptomInference: 1. Occult malignancy / systemic disease; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. HIV / AIDS presentation; 4. Pulmonary tuberculosis; 5. Colorectal carcinoma
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. HIV / AIDS presentation; 3. Pulmonary tuberculosis; 4. Cholangiocarcinoma; 5. Occult malignancy / systemic disease
@@ -7976,7 +8472,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Testicular Torsion; 2. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 3. Inguinal / Femoral Hernia
 - differential web.symptomInference: 1. Testicular torsion / epididymo-orchitis; 2. Inguinal hernia (paediatric); 3. Varicocele; 4. Acute appendicitis (paediatric); 5. Testicular germ cell tumour
 - differential web.passive: 1. Testicular torsion / epididymo-orchitis; 2. Varicocele; 3. Inguinal hernia (paediatric); 4. Acute gastroenteritis; 5. Hypertrophic pyloric stenosis
@@ -8017,7 +8513,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ovarian Torsion; 2. Ovarian Cyst (incl. Haemorrhagic / Ruptured Corpus Luteum); 3. Ectopic Pregnancy
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Acute appendicitis; 3. Ovarian torsion / ovarian cyst; 4. Perforated peptic ulcer; 5. Mesenteric adenitis
 - differential web.passive: 1. Ovarian torsion / ovarian cyst; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
@@ -8059,7 +8555,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ectopic Pregnancy; 2. Ovarian Cyst (incl. Haemorrhagic / Ruptured Corpus Luteum); 3. Ovarian Torsion
 - differential web.symptomInference: 1. Diverticulitis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute mesenteric ischaemia; 5. Ovarian torsion / ovarian cyst
 - differential web.passive: 1. Ovarian torsion / ovarian cyst; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
@@ -8105,7 +8601,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pelvic Inflammatory Disease (PID) / Tubo-ovarian Abscess; 2. Acute Appendicitis; 3. Ovarian Torsion
 - differential web.symptomInference: 1. Pelvic inflammatory disease (PID); 2. Malaria; 3. Pyelonephritis; 4. Ovarian torsion / ovarian cyst; 5. Sepsis / systemic infection
 - differential web.passive: 1. Pelvic inflammatory disease (PID); 2. Malaria; 3. Pyelonephritis; 4. Sepsis / systemic infection; 5. Ovarian torsion / ovarian cyst
@@ -8149,7 +8645,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pelvic Inflammatory Disease (PID) / Tubo-ovarian Abscess; 2. Ovarian Cyst (incl. Haemorrhagic / Ruptured Corpus Luteum); 3. Endometriosis
 - differential web.symptomInference: 1. Pelvic inflammatory disease (PID); 2. Endometriosis; 3. Ovarian torsion / ovarian cyst; 4. Cervical pathology / cervical cancer; 5. Ectopic pregnancy
 - differential web.passive: 1. Pelvic inflammatory disease (PID); 2. Endometriosis; 3. STI / urethritis / cervicitis; 4. Ovarian torsion / ovarian cyst; 5. Febrile convulsion
@@ -8196,7 +8692,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ectopic Pregnancy; 2. Ovarian Cyst (incl. Haemorrhagic / Ruptured Corpus Luteum); 3. Ovarian Torsion
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Acute cholecystitis; 3. Acute appendicitis; 4. Ovarian torsion / ovarian cyst; 5. Pelvic inflammatory disease (PID)
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Ovarian torsion / ovarian cyst; 3. Acute appendicitis (paediatric); 4. Pelvic inflammatory disease (PID); 5. Acute cholecystitis
@@ -8237,7 +8733,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Peptic Ulcer Disease; 2. GORD / Reflux Oesophagitis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
@@ -8276,7 +8772,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Peptic Ulcer Disease; 2. GORD / Reflux Oesophagitis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Irritable bowel syndrome (IBS); 3. Chronic pancreatitis; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
@@ -8321,7 +8817,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Retention (Acute / Chronic); 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Haematuria (Investigation)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Bladder transitional cell carcinoma; 3. Prostate adenocarcinoma; 4. Urinary tract infection (UTI); 5. Acute kidney injury
 - differential web.passive: 1. Urinary tract infection (UTI); 2. Bladder transitional cell carcinoma; 3. Acute kidney injury; 4. Prostate adenocarcinoma; 5. Renal colic / urolithiasis
@@ -8362,7 +8858,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bladder Carcinoma (Urothelial); 2. Haematuria (Investigation); 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
 - differential web.symptomInference: 1. Bladder transitional cell carcinoma; 2. Prostate adenocarcinoma; 3. Renal cell carcinoma; 4. Renal colic / urolithiasis; 5. ANCA-associated vasculitis
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Bladder transitional cell carcinoma; 3. Henoch-Schönlein purpura; 4. Urinary tract infection (UTI); 5. Renal cell carcinoma
@@ -8402,7 +8898,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anal Fissure; 2. Haemorrhoids; 3. Ulcerative Colitis
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Anal fissure; 4. Haemorrhoids / anorectal disease; 5. Rectal prolapse
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Meckel's diverticulum; 4. Intussusception; 5. Colorectal carcinoma
@@ -8447,7 +8943,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Rectal Prolapse; 2. Haemorrhoids; 3. Anal Cancer (Squamous Cell Carcinoma of the Anus)
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Squamous cell carcinoma of the anus; 3. Haemorrhoids / anorectal disease; 4. Colorectal carcinoma; 5. Perianal abscess
 - differential web.passive: 1. Squamous cell carcinoma of the anus; 2. Haemorrhoids / anorectal disease; 3. Lower GI bleed / colorectal; 4. Fistula in ano; 5. Perianal abscess
@@ -8485,7 +8981,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anal Fissure; 2. Haemorrhoids; 3. Perianal Abscess / Fistula
 - differential web.symptomInference: 1. Haemorrhoids / anorectal disease; 2. Squamous cell carcinoma of the anus; 3. Perianal abscess; 4. Lower GI bleed / colorectal; 5. Anal fissure
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Squamous cell carcinoma of the anus; 3. Perianal abscess; 4. Lower GI bleed / colorectal; 5. Anal fissure
@@ -8526,7 +9022,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Femoral Hernia; 2. Inguinal Lymphadenopathy (Infection / Lymphoma / Metastasis); 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Obstructed / strangulated hernia; 2. Reducible groin / abdominal hernia; 3. Varicocele; 4. Breast carcinoma; 5. Uterine fibroids
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Acute cholecystitis
@@ -8575,7 +9071,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 2. Obturator Hernia; 3. Bowel Obstruction
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Acute mesenteric ischaemia; 4. Acute appendicitis; 5. Large bowel obstruction
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Malrotation / midgut volvulus; 3. Sigmoid volvulus; 4. Large bowel obstruction; 5. Intussusception
@@ -8624,7 +9120,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 3. Femoral Hernia
 - differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Varicocele; 4. Testicular torsion / epididymo-orchitis; 5. Benign prostatic hyperplasia (BPH)
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Testicular torsion / epididymo-orchitis
@@ -8673,7 +9169,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 2. Femoral Hernia; 3. Obturator Hernia
 - differential web.symptomInference: 1. Obstructed / strangulated hernia; 2. Reducible groin / abdominal hernia; 3. Adhesive small bowel obstruction; 4. Sigmoid volvulus; 5. Large bowel obstruction
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Adhesive small bowel obstruction; 3. Obstructed / strangulated hernia; 4. Reducible groin / abdominal hernia; 5. Sigmoid volvulus
@@ -8720,7 +9216,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Incisional Hernia; 2. Inguinal / Femoral Hernia; 3. Femoral Hernia
 - differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Breast carcinoma; 4. Uterine fibroids; 5. Acute cholecystitis
 - differential web.passive: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Inguinal hernia (paediatric); 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
@@ -8762,7 +9258,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Umbilical / Paraumbilical Hernia
 - differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Varicocele; 4. Benign prostatic hyperplasia (BPH); 5. Colorectal carcinoma
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Acute cholecystitis
@@ -8805,7 +9301,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Varicocele; 4. Testicular torsion / epididymo-orchitis; 5. Breast carcinoma
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Testicular torsion / epididymo-orchitis
@@ -8849,7 +9345,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Obturator Hernia; 2. Bowel Obstruction; 3. Small Bowel Obstruction — Adhesions
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute mesenteric ischaemia; 5. Acute appendicitis
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
@@ -8891,7 +9387,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 2. Malrotation with Midgut Volvulus; 3. Intussusception
 - differential web.symptomInference: 1. Inguinal hernia (paediatric); 2. Obstructed / strangulated hernia; 3. Intussusception; 4. Malrotation / midgut volvulus; 5. Reducible groin / abdominal hernia
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Intussusception; 3. Malrotation / midgut volvulus; 4. Obstructed / strangulated hernia; 5. Hypertrophic pyloric stenosis
@@ -8930,7 +9426,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Inguinal Lymphadenopathy (Infection / Lymphoma / Metastasis)
 - differential web.symptomInference: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Testicular torsion / epididymo-orchitis; 4. Varicocele; 5. Testicular germ cell tumour
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Testicular torsion / epididymo-orchitis; 4. Varicocele; 5. Obstructed / strangulated hernia
@@ -8976,7 +9472,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Parastomal Hernia; 2. Incisional Hernia; 3. Inguinal / Femoral Hernia
 - differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Hepatocellular carcinoma (HCC); 3. Obstructed / strangulated hernia; 4. Renal cell carcinoma; 5. Gastrointestinal stromal tumour (GIST)
 - differential web.passive: 1. Reducible groin / abdominal hernia; 2. Wilms tumour / nephroblastoma; 3. Obstructed / strangulated hernia; 4. Inguinal hernia (paediatric); 5. Gastrointestinal stromal tumour (GIST)
@@ -9025,7 +9521,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 2. Necrotising Fasciitis (NSTI); 3. Diabetic Foot Infection / Osteomyelitis
 - differential web.symptomInference: 1. Obstructed / strangulated hernia; 2. Reducible groin / abdominal hernia; 3. Acute cholecystitis; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Obstructed / strangulated hernia; 2. Reducible groin / abdominal hernia; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -9064,7 +9560,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Umbilical / Paraumbilical Hernia; 2. Inguinal / Femoral Hernia; 3. Epigastric Hernia
 - differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Benign prostatic hyperplasia (BPH); 4. Testicular germ cell tumour; 5. Gout / pseudogout
 - differential web.passive: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Inguinal hernia (paediatric); 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
@@ -9108,8 +9604,8 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Oesophageal Variceal Haemorrhage (Portal Hypertension); 2. Umbilical / Paraumbilical Hernia; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Cirrhosis / Chronic Liver Disease (Decompensated); 2. Oesophageal Variceal Haemorrhage (Portal Hypertension); 3. Umbilical / Paraumbilical Hernia
 - differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Liver disease / hepatitis / cirrhosis; 3. Large bowel obstruction; 4. Obstructed / strangulated hernia; 5. Hepatocellular carcinoma (HCC)
 - differential web.passive: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Inguinal hernia (paediatric); 4. Liver disease / hepatitis / cirrhosis; 5. Hirschsprung's disease
 - differential web.triageSurgical: (empty)
@@ -9154,7 +9650,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hyperosmolar Hyperglycaemic State (HHS); 2. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Primary hyperparathyroidism / hypercalcaemia; 3. Urinary tract infection (UTI); 4. Addisonian crisis / adrenal insufficiency; 5. Benign prostatic hyperplasia (BPH)
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Primary hyperparathyroidism / hypercalcaemia; 3. Addisonian crisis / adrenal insufficiency; 4. Urinary tract infection (UTI); 5. Cushing's syndrome
@@ -9192,7 +9688,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Fibroadenoma; 2. Phyllodes Tumour; 3. Breast Carcinoma (Invasive Ductal / Lobular)
 - differential web.symptomInference: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Systemic lupus erythematosus; 4. Acute cholecystitis; 5. Uterine fibroids
 - differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -9233,7 +9729,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Peptic Ulcer Disease; 3. Lipoma
 - differential web.symptomInference: 1. Upper respiratory tract infection (URTI); 2. Asthma / reactive airways disease; 3. Lung carcinoma; 4. COPD / chronic bronchitis exacerbation; 5. Laryngitis / vocal cord pathology
 - differential web.passive: 1. Upper respiratory tract infection (URTI); 2. Asthma / reactive airways disease; 3. Croup / laryngotracheobronchitis; 4. Bronchiolitis (RSV); 5. Laryngitis / vocal cord pathology
@@ -9277,7 +9773,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Community-acquired Pneumonia (Adult / Child); 2. Oesophageal Carcinoma; 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
 - differential web.symptomInference: 1. Pulmonary tuberculosis; 2. Occult malignancy / systemic disease; 3. Lung carcinoma; 4. Colorectal carcinoma; 5. Oesophageal / gastric carcinoma
 - differential web.passive: 1. Pulmonary tuberculosis; 2. Lung carcinoma; 3. Lymphoma (Hodgkin / non-Hodgkin); 4. Lung abscess; 5. HIV / AIDS presentation
@@ -9313,7 +9809,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Heart Failure / Pulmonary Oedema; 2. Atrial Fibrillation / Flutter; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Heart failure; 2. Cardiac tamponade; 3. COPD / chronic bronchitis exacerbation; 4. Tension pneumothorax; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.passive: 1. Heart failure; 2. Cardiac tamponade; 3. Tension pneumothorax; 4. Acute respiratory distress syndrome (ARDS); 5. Bronchiolitis (RSV)
@@ -9351,7 +9847,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Varicocele; 4. Benign prostatic hyperplasia (BPH); 5. Inguinal hernia (paediatric)
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Acute cholecystitis
@@ -9390,7 +9886,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pancreatic Carcinoma; 2. Cholangiocarcinoma; 3. Biliary Stricture
 - differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Acute cholangitis; 5. Liver disease / hepatitis / cirrhosis
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Biliary atresia; 5. Liver disease / hepatitis / cirrhosis
@@ -9427,7 +9923,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anal Fissure; 2. Haemorrhoids; 3. Ulcerative Colitis
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Rectal prolapse
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Hirschsprung's disease
@@ -9472,7 +9968,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hypercalcaemia (Malignancy / Hyperparathyroidism); 2. Hyperosmolar Hyperglycaemic State (HHS); 3. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA)
 - differential web.symptomInference: 1. Primary hyperparathyroidism / hypercalcaemia; 2. DKA / hyperglycaemic hyperosmolar state; 3. Large bowel obstruction; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Primary hyperparathyroidism / hypercalcaemia; 3. Hirschsprung's disease; 4. Adhesive small bowel obstruction; 5. Hypertrophic pyloric stenosis
@@ -9516,7 +10012,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hypercalcaemia (Malignancy / Hyperparathyroidism); 2. Primary Hyperparathyroidism; 3. Metastatic Spinal Cord Compression / Spinal Metastases (MSCC)
 - differential web.symptomInference: 1. Primary hyperparathyroidism / hypercalcaemia; 2. Prostate adenocarcinoma; 3. Leukaemia / haematological malignancy; 4. Sickle cell vaso-occlusive crisis; 5. Sickle cell crisis
 - differential web.passive: 1. Primary hyperparathyroidism / hypercalcaemia; 2. Sickle cell vaso-occlusive crisis; 3. Sickle cell crisis; 4. Leukaemia / haematological malignancy; 5. Dengue fever
@@ -9564,7 +10060,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Kidney Injury (AKI); 2. Anastomotic Leak; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Anaemia; 2. Addisonian crisis / adrenal insufficiency; 3. Cushing's syndrome; 4. Hypothyroidism; 5. Primary hyperaldosteronism (Conn's syndrome)
 - differential web.passive: 1. Anaemia; 2. Addisonian crisis / adrenal insufficiency; 3. Cushing's syndrome; 4. Primary hyperaldosteronism (Conn's syndrome); 5. Sickle cell vaso-occlusive crisis
@@ -9609,7 +10105,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hyperkalaemia; 2. Acute Kidney Injury (AKI); 3. Hypoglycaemia
 - differential web.symptomInference: 1. Anaemia; 2. Atrial fibrillation / flutter; 3. Addisonian crisis / adrenal insufficiency; 4. Panic disorder; 5. Primary hyperaldosteronism (Conn's syndrome)
 - differential web.passive: 1. Anaemia; 2. Atrial fibrillation / flutter; 3. Addisonian crisis / adrenal insufficiency; 4. Panic disorder; 5. Primary hyperaldosteronism (Conn's syndrome)
@@ -9651,7 +10147,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hypoglycaemia; 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Transient Ischaemic Attack (TIA)
 - differential web.symptomInference: 1. Stroke / TIA; 2. Hypoglycaemia; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Sepsis / systemic infection; 5. Meningitis / encephalitis
 - differential web.passive: 1. Stroke / TIA; 2. Hypoglycaemia; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Sepsis / systemic infection; 5. Meningitis / encephalitis
@@ -9692,7 +10188,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hypoglycaemia; 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Hyperosmolar Hyperglycaemic State (HHS)
 - differential web.symptomInference: 1. Hypoglycaemia; 2. Stroke / TIA; 3. Sepsis / systemic infection; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Pulmonary tuberculosis
 - differential web.passive: 1. Hypoglycaemia; 2. Stroke / TIA; 3. Sepsis / systemic infection; 4. Malaria; 5. Hypertensive emergency / hypertensive encephalopathy
@@ -9735,7 +10231,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Traumatic Brain Injury; 2. Hyponatraemia; 3. Splenic Laceration
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Gastric carcinoma; 3. BPPV / labyrinthitis / vestibular neuritis; 4. Acute kidney injury; 5. Primary hyperparathyroidism / hypercalcaemia
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Acute appendicitis (paediatric); 3. BPPV / labyrinthitis / vestibular neuritis; 4. Acute kidney injury; 5. Acute alcoholic pancreatitis
@@ -9776,7 +10272,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Kidney Injury (AKI); 2. Hyperosmolar Hyperglycaemic State (HHS); 3. Clostridioides difficile Colitis (C. diff infection)
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Anaemia; 4. Inflammatory bowel disease (Crohn's / UC); 5. Addisonian crisis / adrenal insufficiency
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Anaemia; 4. Inflammatory bowel disease (Crohn's / UC); 5. Addisonian crisis / adrenal insufficiency
@@ -9818,7 +10314,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hyponatraemia; 2. Bacterial Meningitis / Meningococcal Disease; 3. Subarachnoid Haemorrhage (SAH)
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Epilepsy / seizure disorder; 3. Meningitis / encephalitis; 4. Migraine; 5. Malaria
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Epilepsy / seizure disorder; 3. Bacterial meningitis (paediatric); 4. Meningitis / encephalitis; 5. Migraine
@@ -9862,7 +10358,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Gastroenteritis / Infective Colitis; 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 3. Clostridioides difficile Colitis (C. diff infection)
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Inflammatory bowel disease (Crohn's / UC); 5. Perforated peptic ulcer
 - differential web.passive: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Acute appendicitis (paediatric); 4. Inflammatory bowel disease (Crohn's / UC); 5. Mesenteric adenitis
@@ -9905,7 +10401,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Colorectal Cancer; 3. Acute Heart Failure / Pulmonary Oedema
 - differential web.symptomInference: 1. Heart failure; 2. Anaemia; 3. Prostate adenocarcinoma; 4. COPD / chronic bronchitis exacerbation; 5. Acute respiratory distress syndrome (ARDS)
 - differential web.passive: 1. Anaemia; 2. Heart failure; 3. Acute respiratory distress syndrome (ARDS); 4. Cardiac tamponade; 5. Hypothyroidism
@@ -9946,7 +10442,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ischaemic Colitis; 2. Ulcerative Colitis; 3. Clostridioides difficile Colitis (C. diff infection)
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Diverticulitis; 3. Acute mesenteric ischaemia; 4. Colorectal carcinoma; 5. Inflammatory bowel disease (Crohn's / UC)
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Lower GI bleed / colorectal; 5. Intussusception
@@ -9987,7 +10483,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Mesenteric Ischaemia; 2. Acute Appendicitis; 3. Ischaemic Colitis
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Acute appendicitis; 3. Lower GI bleed / colorectal; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Perforated peptic ulcer
 - differential web.passive: 1. Intussusception; 2. Acute mesenteric ischaemia; 3. Meckel's diverticulum; 4. Lower GI bleed / colorectal; 5. Acute gastroenteritis
@@ -10036,7 +10532,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Hepatitis; 2. Acute Cholangitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Acute cholangitis; 2. CBD stone / obstructive jaundice; 3. Liver disease / hepatitis / cirrhosis; 4. Cholangiocarcinoma; 5. Leptospirosis
 - differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. CBD stone / obstructive jaundice; 3. Cholangiocarcinoma; 4. Leptospirosis; 5. Biliary atresia
@@ -10080,7 +10576,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sigmoid Volvulus; 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 3. Bowel Obstruction
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Large bowel obstruction; 4. Adhesive small bowel obstruction; 5. Diverticulitis
 - differential web.passive: 1. Large bowel obstruction; 2. Adhesive small bowel obstruction; 3. Sigmoid volvulus; 4. Intussusception; 5. Inflammatory bowel disease (Crohn's / UC)
@@ -10120,7 +10616,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 2. Acute Appendicitis; 3. Acute Mesenteric Ischaemia
 - differential web.symptomInference: 1. Acute appendicitis; 2. Adhesive small bowel obstruction; 3. Sigmoid volvulus; 4. Large bowel obstruction; 5. Acute cholecystitis
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Malaria; 5. Hirschsprung's disease
@@ -10161,7 +10657,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Obturator Hernia
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute appendicitis; 5. Acute cholecystitis
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
@@ -10208,7 +10704,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Colorectal Cancer; 2. Ulcerative Colitis; 3. Lower GI Haemorrhage (Diverticular / Angiodysplasia)
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Heart failure; 4. Anaemia; 5. Haemorrhoids / anorectal disease
 - differential web.passive: 1. Anaemia; 2. Lower GI bleed / colorectal; 3. Meckel's diverticulum; 4. Heart failure; 5. Haemorrhoids / anorectal disease
@@ -10257,7 +10753,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Lower GI Haemorrhage (Diverticular / Angiodysplasia); 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Acute Mesenteric Ischaemia
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Anal fissure; 4. Haemorrhoids / anorectal disease; 5. Squamous cell carcinoma of the anus
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Meckel's diverticulum; 4. Intussusception; 5. Colorectal carcinoma
@@ -10304,7 +10800,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Haemorrhoids; 2. Anal Fissure; 3. Rectal Prolapse
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Rectal prolapse
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Hirschsprung's disease
@@ -10346,7 +10842,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Lower GI Haemorrhage (Diverticular / Angiodysplasia); 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Haemorrhoids
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Anal fissure; 4. Haemorrhoids / anorectal disease; 5. Squamous cell carcinoma of the anus
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Meckel's diverticulum; 4. Intussusception; 5. Colorectal carcinoma
@@ -10396,7 +10892,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Lower GI Haemorrhage (Diverticular / Angiodysplasia); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Acute Mesenteric Ischaemia
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Anal fissure; 4. Haemorrhoids / anorectal disease; 5. Vasovagal / reflex syncope
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Vasovagal / reflex syncope; 4. Meckel's diverticulum; 5. Intussusception
@@ -10438,7 +10934,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Mesenteric Ischaemia; 2. Lower GI Haemorrhage (Diverticular / Angiodysplasia); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Haemorrhoids / anorectal disease; 4. BPPV / labyrinthitis / vestibular neuritis; 5. Rectal prolapse
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. BPPV / labyrinthitis / vestibular neuritis; 4. Meckel's diverticulum; 5. Intussusception
@@ -10483,7 +10979,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Liver Abscess; 2. Ulcerative Colitis; 3. Acute Appendicitis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis; 3. Typhoid fever; 4. Diverticulitis; 5. Infective endocarditis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. UTI (paediatric); 3. Typhoid fever; 4. Mesenteric adenitis; 5. Infective endocarditis
@@ -10532,7 +11028,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Acute Cholangitis; 3. Liver Abscess
 - differential web.symptomInference: 1. Acute cholangitis; 2. Sepsis / systemic infection; 3. Fournier's gangrene; 4. Malaria; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Leptospirosis; 4. Meningitis / encephalitis; 5. Pyelonephritis
@@ -10584,7 +11080,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Liver Abscess; 2. Community-acquired Pneumonia (Adult / Child); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Fournier's gangrene; 3. Infective endocarditis; 4. Acute appendicitis; 5. Sepsis / systemic infection
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Infective endocarditis; 4. Typhoid fever; 5. Fournier's gangrene
@@ -10630,7 +11126,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Mallory-Weiss Tear; 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Peptic Ulcer Disease
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Acute gastroenteritis; 3. Acute alcoholic pancreatitis; 4. Adhesive small bowel obstruction; 5. Gallstone pancreatitis
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute alcoholic pancreatitis; 5. Migraine
@@ -10676,7 +11172,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bacterial Meningitis / Meningococcal Disease; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Community-acquired Pneumonia (Adult / Child)
 - differential web.symptomInference: 1. Meningitis / encephalitis; 2. Hypertensive emergency / hypertensive encephalopathy; 3. Sepsis / systemic infection; 4. Dengue fever; 5. Malaria
 - differential web.passive: 1. Meningitis / encephalitis; 2. Bacterial meningitis (paediatric); 3. Hypertensive emergency / hypertensive encephalopathy; 4. Sepsis / systemic infection; 5. Dengue fever
@@ -10719,7 +11215,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bacterial Meningitis / Meningococcal Disease; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Subarachnoid Haemorrhage (SAH)
 - differential web.symptomInference: 1. Meningitis / encephalitis; 2. Migraine; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Dengue fever; 5. Malaria
 - differential web.passive: 1. Meningitis / encephalitis; 2. Bacterial meningitis (paediatric); 3. Migraine; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Dengue fever
@@ -10763,7 +11259,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Acute Cholecystitis; 3. Acute / Chronic Gastritis
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Gallstone pancreatitis; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. Gastric carcinoma
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Acute alcoholic pancreatitis; 3. Perforated peptic ulcer; 4. Chronic pancreatitis; 5. Acute gastroenteritis
@@ -10804,7 +11300,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 2. Renal Colic / Urolithiasis; 3. Acute Pyelonephritis / Upper Urinary Tract Infection
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Renal colic / urolithiasis; 3. Renal cell carcinoma; 4. Bladder transitional cell carcinoma; 5. Prostate adenocarcinoma
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Renal colic / urolithiasis; 3. Renal cell carcinoma; 4. Pyelonephritis; 5. Acute kidney injury
@@ -10846,7 +11342,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Hyperosmolar Hyperglycaemic State (HHS); 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Gallstone pancreatitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Perforated peptic ulcer
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
@@ -10888,7 +11384,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ectopic Pregnancy; 2. Acute Appendicitis; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Ectopic pregnancy; 2. Acute appendicitis; 3. Acute cholecystitis; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
 - differential web.passive: 1. Ectopic pregnancy; 2. Vasovagal / reflex syncope; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Peptic ulcer disease
@@ -10929,7 +11425,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ectopic Pregnancy; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Anastomotic Leak
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Perforated peptic ulcer; 3. Acute cholecystitis; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Vasovagal / reflex syncope
 - differential web.passive: 1. Vasovagal / reflex syncope; 2. Symptomatic / ruptured abdominal aortic aneurysm; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Peptic ulcer disease
@@ -10974,7 +11470,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Acute / Chronic Gastritis; 3. Hypoglycaemia
 - differential web.symptomInference: 1. Acute alcoholic pancreatitis; 2. Gallstone pancreatitis; 3. Perforated peptic ulcer; 4. Acute gastroenteritis; 5. Gastric carcinoma
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Malaria; 5. Chronic pancreatitis
@@ -11013,7 +11509,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Hypoglycaemia; 3. Hyperkalaemia
 - differential web.symptomInference: 1. Gastric carcinoma; 2. Acute alcoholic pancreatitis; 3. Perforated peptic ulcer; 4. Chronic pancreatitis; 5. GORD / acid reflux / oesophagitis
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Chronic pancreatitis; 4. GORD / acid reflux / oesophagitis; 5. Gastric carcinoma
@@ -11058,7 +11554,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 2. Acute Aortic Dissection; 3. Acute Mesenteric Ischaemia
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Acute mesenteric ischaemia; 3. Perforated peptic ulcer; 4. Gallstone pancreatitis; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Vasovagal / reflex syncope; 3. Aortic dissection; 4. Renal colic / urolithiasis; 5. Pyelonephritis
@@ -11096,7 +11592,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Testicular Torsion; 2. Acute Appendicitis; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Acute appendicitis; 3. Testicular torsion / epididymo-orchitis; 4. Acute appendicitis (paediatric); 5. Inguinal hernia (paediatric)
 - differential web.passive: 1. Testicular torsion / epididymo-orchitis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
@@ -11131,7 +11627,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Atrial Fibrillation / Flutter; 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Acute Mesenteric Ischaemia
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -11169,7 +11665,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Appendix Mass / Late Appendicitis; 3. Acute Gastroenteritis / Infective Colitis
 - differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Meckel's diverticulum; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Acute appendicitis
@@ -11210,7 +11706,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute alcoholic pancreatitis; 3. Acute mesenteric ischaemia; 4. Mesenteric adenitis; 5. Perforated peptic ulcer
 - differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
@@ -11245,7 +11741,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Colorectal Cancer; 2. Community-acquired Pneumonia (Adult / Child); 3. Hashimoto Thyroiditis / Hypothyroidism
 - differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Hypothyroidism; 3. Anaemia; 4. Lymphoma (Hodgkin / non-Hodgkin); 5. Rheumatoid arthritis
 - differential web.passive: 1. Anaemia; 2. Hypothyroidism; 3. Major depressive disorder; 4. COVID-19 / viral respiratory illness; 5. Addisonian crisis / adrenal insufficiency
@@ -11280,7 +11776,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anastomotic Leak; 2. Post-operative Intra-abdominal Collection / Abscess / Bile Leak; 3. Post-operative Pneumonia / Atelectasis
 - differential web.symptomInference: 1. Fournier's gangrene; 2. Infective endocarditis; 3. Empyema thoracis; 4. Sepsis / systemic infection; 5. Lung abscess
 - differential web.passive: 1. Febrile convulsion; 2. Sepsis / systemic infection; 3. Infective endocarditis; 4. Dengue fever; 5. Kawasaki disease
@@ -11315,7 +11811,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Aortic Dissection; 3. Haemorrhoids
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Sciatica / lumbar radiculopathy; 3. Testicular germ cell tumour; 4. Lumbar disc disease / sciatica; 5. Aortic dissection
 - differential web.passive: 1. Lumbar disc disease / sciatica; 2. Aortic dissection; 3. Sciatica / lumbar radiculopathy; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Osteoarthritis
@@ -11349,7 +11845,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Umbilical / Paraumbilical Hernia
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -11384,7 +11880,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Ectopic Pregnancy; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Adhesive small bowel obstruction; 4. Acute cholecystitis; 5. Perforated peptic ulcer
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
@@ -11429,7 +11925,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Metastatic Spinal Cord Compression / Spinal Metastases (MSCC); 2. GORD / Reflux Oesophagitis; 3. Hypercalcaemia (Malignancy / Hyperparathyroidism)
 - differential web.symptomInference: 1. Sickle cell vaso-occlusive crisis; 2. Sickle cell crisis; 3. Osteoarthritis; 4. Aortic dissection; 5. Dengue fever
 - differential web.passive: 1. Sickle cell vaso-occlusive crisis; 2. Sickle cell crisis; 3. Osteomyelitis (paediatric); 4. Dengue fever; 5. Osteomyelitis (adult)
@@ -11469,7 +11965,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Metastatic Spinal Cord Compression / Spinal Metastases (MSCC); 2. Cauda Equina Syndrome; 3. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Stroke / TIA; 3. Sciatica / lumbar radiculopathy; 4. Prostate adenocarcinoma; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Stroke / TIA; 2. Sciatica / lumbar radiculopathy; 3. Peripheral neuropathy; 4. Lumbar disc disease / sciatica; 5. Benign prostatic hyperplasia (BPH)
@@ -11512,7 +12008,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Peptic Ulcer Disease; 2. Acute / Chronic Gastritis; 3. GORD / Reflux Oesophagitis
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Acute alcoholic pancreatitis; 3. Gastric carcinoma; 4. Pancreatic adenocarcinoma; 5. Perforated peptic ulcer
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Chronic pancreatitis; 5. Pancreatic adenocarcinoma
@@ -11571,7 +12067,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Necrotising Fasciitis (NSTI); 2. Fournier's Gangrene (Perineal Necrotising Fasciitis); 3. Cellulitis
 - differential web.symptomInference: 1. Necrotising fasciitis; 2. Cellulitis / soft tissue infection; 3. Fournier's gangrene; 4. Sepsis / systemic infection; 5. Malaria
 - differential web.passive: 1. Necrotising fasciitis; 2. Cellulitis / soft tissue infection; 3. Fournier's gangrene; 4. Sepsis / systemic infection; 5. Malaria
@@ -11619,7 +12115,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Necrotising Fasciitis (NSTI); 2. Fournier's Gangrene (Perineal Necrotising Fasciitis); 3. Cellulitis
 - differential web.symptomInference: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Fournier's gangrene; 4. Pyelonephritis; 5. Sickle cell vaso-occlusive crisis
 - differential web.passive: 1. Cellulitis / soft tissue infection; 2. Necrotising fasciitis; 3. Osteomyelitis (paediatric); 4. Fournier's gangrene; 5. Sickle cell vaso-occlusive crisis
@@ -11668,7 +12164,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Fournier's Gangrene (Perineal Necrotising Fasciitis); 2. Necrotising Fasciitis (NSTI); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Testicular torsion / epididymo-orchitis; 4. Malaria; 5. Perianal abscess
 - differential web.passive: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Malaria; 4. Perianal abscess; 5. Meningitis / encephalitis
@@ -11716,7 +12212,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Necrotising Fasciitis (NSTI); 2. Anastomotic Leak; 3. Surgical Site Infection (SSI)
 - differential web.symptomInference: 1. Post-operative complication; 2. Acute cholecystitis; 3. Diabetic foot infection / ischaemia; 4. Acute cholangitis; 5. Diverticulitis
 - differential web.passive: 1. Post-operative complication; 2. Diabetic foot infection / ischaemia; 3. Acute cholangitis; 4. Malaria; 5. Osteomyelitis (adult)
@@ -11766,7 +12262,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Placental Abruption; 2. Splenic Laceration; 3. Blunt Abdominal Trauma
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Gallstone pancreatitis; 3. Perforated peptic ulcer; 4. Acute cholecystitis; 5. Ovarian torsion / ovarian cyst
 - differential web.passive: 1. Ovarian torsion / ovarian cyst; 2. Acute appendicitis (paediatric); 3. Pelvic inflammatory disease (PID); 4. Acute cholecystitis; 5. Peptic ulcer disease
@@ -11814,7 +12310,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 2. Acute Appendicitis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute appendicitis; 3. Acute alcoholic pancreatitis; 4. Acute gastroenteritis; 5. Typhoid fever
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
@@ -11824,7 +12320,7 @@ Guidelines:
 - recommended scores: alvarado, ranson, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=6
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, ruq_pain, loin_pain, acute_onset, fever, nausea_vomiting, anorexia, pain_worse_movement, guarding, previous_surgery, pregnant, elevated_wbc, raised_crp, hydronephrosis, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, ruq_pain, loin_pain, acute_onset, fever, nausea_vomiting, anorexia, pain_worse_movement, guarding, previous_surgery, pregnant, elevated_wbc, raised_crp, hydronephrosis, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_alvarado_mid
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -11860,7 +12356,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ectopic Pregnancy; 2. Ovarian Cyst (incl. Haemorrhagic / Ruptured Corpus Luteum); 3. Ovarian Torsion
 - differential web.symptomInference: 1. Diverticulitis; 2. Ectopic pregnancy; 3. Ovarian torsion / ovarian cyst; 4. Pelvic inflammatory disease (PID); 5. Endometriosis
 - differential web.passive: 1. Ectopic pregnancy; 2. Ovarian torsion / ovarian cyst; 3. Acute appendicitis (paediatric); 4. Pelvic inflammatory disease (PID); 5. Acute cholecystitis
@@ -11907,7 +12403,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pre-eclampsia / HELLP Syndrome / Eclampsia; 2. Acute Cholecystitis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Gallstone pancreatitis; 3. Acute alcoholic pancreatitis; 4. Hypertensive emergency / hypertensive encephalopathy; 5. Migraine
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Hypertensive emergency / hypertensive encephalopathy; 3. Migraine; 4. Perforated peptic ulcer; 5. Bacterial meningitis (paediatric)
@@ -11953,7 +12449,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Hyperemesis Gravidarum; 3. Ectopic Pregnancy
 - differential web.symptomInference: 1. Acute gastroenteritis; 2. Occult malignancy / systemic disease; 3. Gastric carcinoma; 4. Oesophageal / gastric carcinoma; 5. Colorectal carcinoma
 - differential web.passive: 1. Acute gastroenteritis; 2. Hypertrophic pyloric stenosis; 3. Gastric carcinoma; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -11996,7 +12492,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pre-eclampsia / HELLP Syndrome / Eclampsia; 2. Hypertensive Emergency / Malignant Hypertension; 3. Acute / Chronic Gastritis
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. GORD / acid reflux / oesophagitis
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. GORD / acid reflux / oesophagitis
@@ -12046,7 +12542,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk
 - differential web.symptomInference: 1. Acute appendicitis; 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Mesenteric adenitis; 5. Acute appendicitis (paediatric)
 - differential web.passive: 1. Acute gastroenteritis; 2. Acute appendicitis (paediatric); 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Mesenteric adenitis
@@ -12056,7 +12552,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=9
 - dx variant: appendicitis_abscess (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, acute_onset, fever, nausea_vomiting, diarrhoea, anorexia, pain_worse_movement, guarding, rebound_tenderness, mottled_skin, elevated_wbc, raised_crp, pelvic_free_fluid, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, acute_onset, fever, nausea_vomiting, diarrhoea, anorexia, pain_worse_movement, guarding, rebound_tenderness, mottled_skin, elevated_wbc, raised_crp, pelvic_free_fluid, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma, rule_alvarado_high
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -12096,7 +12592,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Hyperosmolar Hyperglycaemic State (HHS)
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute appendicitis; 3. Acute appendicitis (paediatric); 4. Perforated peptic ulcer; 5. Primary hyperparathyroidism / hypercalcaemia
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Primary hyperparathyroidism / hypercalcaemia; 5. Acute appendicitis (paediatric)
@@ -12139,7 +12635,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Intussusception; 3. Bacterial Meningitis / Meningococcal Disease
 - differential web.symptomInference: 1. UTI (paediatric); 2. Bronchiolitis (RSV); 3. Febrile convulsion; 4. Kawasaki disease; 5. Infective endocarditis
 - differential web.passive: 1. Infective endocarditis; 2. Dengue fever; 3. Bronchiolitis (RSV); 4. UTI (paediatric); 5. Malaria
@@ -12181,7 +12677,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. IgA Vasculitis (Henoch–Schönlein Purpura, HSP); 2. Intussusception; 3. Acute Appendicitis
 - differential web.symptomInference: 1. Henoch-Schönlein purpura; 2. Meckel's diverticulum; 3. Wilms tumour / nephroblastoma; 4. Lower GI bleed / colorectal; 5. Acute appendicitis (paediatric)
 - differential web.passive: 1. Henoch-Schönlein purpura; 2. Lower GI bleed / colorectal; 3. Intussusception; 4. Meckel's diverticulum; 5. Inflammatory bowel disease (Crohn's / UC)
@@ -12225,7 +12721,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Intussusception; 2. Malrotation with Midgut Volvulus; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Lower GI bleed / colorectal; 4. Hypertrophic pyloric stenosis; 5. Hirschsprung's disease
 - differential web.passive: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Hypertrophic pyloric stenosis; 4. Lower GI bleed / colorectal; 5. Hirschsprung's disease
@@ -12268,7 +12764,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Intussusception; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Bacterial Meningitis / Meningococcal Disease
 - differential web.symptomInference: 1. Hypertrophic pyloric stenosis; 2. Intussusception; 3. Malrotation / midgut volvulus; 4. Hirschsprung's disease; 5. Bronchiolitis (RSV)
 - differential web.passive: 1. Hypertrophic pyloric stenosis; 2. Addisonian crisis / adrenal insufficiency; 3. Intussusception; 4. Malrotation / midgut volvulus; 5. Acute gastroenteritis
@@ -12311,7 +12807,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Malrotation with Midgut Volvulus; 2. Intussusception; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Hypertrophic pyloric stenosis; 4. Hirschsprung's disease; 5. Bacterial meningitis (paediatric)
 - differential web.passive: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Hypertrophic pyloric stenosis; 4. Hirschsprung's disease; 5. Bacterial meningitis (paediatric)
@@ -12355,7 +12851,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Intussusception; 2. Malrotation with Midgut Volvulus; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Hypertrophic pyloric stenosis; 4. Hirschsprung's disease; 5. Bacterial meningitis (paediatric)
 - differential web.passive: 1. Malrotation / midgut volvulus; 2. Intussusception; 3. Hypertrophic pyloric stenosis; 4. Hirschsprung's disease; 5. Bacterial meningitis (paediatric)
@@ -12406,7 +12902,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Splenic Laceration; 2. Blunt Abdominal Trauma; 3. Acute Pancreatitis
 - differential web.symptomInference: 1. Malrotation / midgut volvulus; 2. Adhesive small bowel obstruction; 3. Intussusception; 4. Hirschsprung's disease; 5. Gallstone pancreatitis
 - differential web.passive: 1. Malrotation / midgut volvulus; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Acute cholecystitis
@@ -12451,7 +12947,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Infantile Hypertrophic Pyloric Stenosis; 2. Intussusception; 3. Malrotation with Midgut Volvulus
 - differential web.symptomInference: 1. Hypertrophic pyloric stenosis; 2. Hirschsprung's disease; 3. Neonatal jaundice; 4. Intussusception; 5. Malrotation / midgut volvulus
 - differential web.passive: 1. Hypertrophic pyloric stenosis; 2. Acute gastroenteritis; 3. Hirschsprung's disease; 4. DKA / hyperglycaemic hyperosmolar state; 5. Neonatal jaundice
@@ -12500,7 +12996,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Cholangiocarcinoma; 2. Pancreatic Carcinoma; 3. Biliary Stricture
 - differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Acute cholangitis; 5. Occult malignancy / systemic disease
 - differential web.passive: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Biliary atresia; 5. Liver disease / hepatitis / cirrhosis
@@ -12543,7 +13039,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pancreatic Carcinoma; 2. Cholangiocarcinoma; 3. Biliary Stricture
 - differential web.symptomInference: 1. Cholangiocarcinoma; 2. Pancreatic adenocarcinoma; 3. CBD stone / obstructive jaundice; 4. Occult malignancy / systemic disease; 5. Liver disease / hepatitis / cirrhosis
 - differential web.passive: 1. Cholangiocarcinoma; 2. Pancreatic adenocarcinoma; 3. Liver disease / hepatitis / cirrhosis; 4. Occult malignancy / systemic disease; 5. CBD stone / obstructive jaundice
@@ -12585,7 +13081,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pancreatic Carcinoma; 2. Gastric Carcinoma; 3. Gastric Outlet Obstruction
 - differential web.symptomInference: 1. Occult malignancy / systemic disease; 2. Pancreatic adenocarcinoma; 3. Gastric carcinoma; 4. Colorectal carcinoma; 5. Gallstone pancreatitis
 - differential web.passive: 1. Pancreatic adenocarcinoma; 2. Gastric carcinoma; 3. Chronic pancreatitis; 4. Occult malignancy / systemic disease; 5. Major depressive disorder
@@ -12641,7 +13137,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Oesophageal Perforation (Boerhaave); 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute alcoholic pancreatitis; 3. Acute mesenteric ischaemia; 4. Perforated peptic ulcer; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -12693,7 +13189,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Oesophageal Perforation (Boerhaave); 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute mesenteric ischaemia; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. Chronic pancreatitis
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -12754,7 +13250,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute mesenteric ischaemia; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. Acute cholecystitis
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -12812,7 +13308,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute mesenteric ischaemia; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -12863,7 +13359,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Acute Cholangitis
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute alcoholic pancreatitis; 3. Acute cholecystitis; 4. Pancreatic adenocarcinoma; 5. Perforated peptic ulcer
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Sickle cell vaso-occlusive crisis
@@ -12922,7 +13418,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute mesenteric ischaemia; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. Chronic pancreatitis
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -12980,7 +13476,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute alcoholic pancreatitis; 3. Perforated peptic ulcer; 4. Acute mesenteric ischaemia; 5. Chronic pancreatitis
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute appendicitis (paediatric)
@@ -13037,7 +13533,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholangitis; 2. Acute Pancreatitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Acute cholangitis; 2. Acute cholecystitis; 3. Gallstone pancreatitis; 4. CBD stone / obstructive jaundice; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Malaria; 4. Acute appendicitis (paediatric); 5. Acute gastroenteritis
@@ -13094,7 +13590,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Oesophageal Perforation (Boerhaave)
 - differential web.symptomInference: 1. Gallstone pancreatitis; 2. Acute mesenteric ischaemia; 3. Acute alcoholic pancreatitis; 4. Perforated peptic ulcer; 5. Chronic pancreatitis
 - differential web.passive: 1. Acute alcoholic pancreatitis; 2. Perforated peptic ulcer; 3. DKA / hyperglycaemic hyperosmolar state; 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
@@ -13141,7 +13637,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Oesophageal Perforation (Boerhaave)
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Gallstone pancreatitis; 3. Acute mesenteric ischaemia; 4. Acute alcoholic pancreatitis; 5. Perforated peptic ulcer
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Vasovagal / reflex syncope; 5. Chronic pancreatitis
@@ -13186,7 +13682,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hyperosmolar Hyperglycaemic State (HHS); 2. Hypercalcaemia (Malignancy / Hyperparathyroidism); 3. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA)
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Primary hyperparathyroidism / hypercalcaemia; 3. Adhesive small bowel obstruction; 4. Large bowel obstruction; 5. Sigmoid volvulus
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Adhesive small bowel obstruction; 3. Primary hyperparathyroidism / hypercalcaemia; 4. Large bowel obstruction; 5. Sigmoid volvulus
@@ -13228,7 +13724,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Primary Hyperparathyroidism; 2. Hypercalcaemia (Malignancy / Hyperparathyroidism); 3. Parathyroid Adenoma
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Major depressive disorder; 3. Primary hyperparathyroidism / hypercalcaemia; 4. Hypothyroidism; 5. Cushing's syndrome
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Major depressive disorder; 3. Primary hyperparathyroidism / hypercalcaemia; 4. Hypothyroidism; 5. Addisonian crisis / adrenal insufficiency
@@ -13267,7 +13763,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Community-acquired Pneumonia (Adult / Child); 2. Liver Abscess; 3. Pulmonary Embolism
 - differential web.symptomInference: 1. Spontaneous pneumothorax; 2. Pulmonary embolism; 3. Pleural effusion; 4. Asthma / reactive airways disease; 5. COVID-19 / viral respiratory illness
 - differential web.passive: 1. Croup / laryngotracheobronchitis; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Bronchiolitis (RSV)
@@ -13314,7 +13810,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Post-operative Pneumonia / Atelectasis; 3. Community-acquired Pneumonia (Adult / Child)
 - differential web.symptomInference: 1. Tension pneumothorax; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Empyema thoracis; 5. Pleural effusion
 - differential web.passive: 1. Tension pneumothorax; 2. Spontaneous pneumothorax; 3. Pulmonary embolism; 4. Pleural effusion; 5. Empyema thoracis
@@ -13363,7 +13859,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perianal Abscess / Fistula; 2. Pilonidal Disease; 3. Cellulitis
 - differential web.symptomInference: 1. Fournier's gangrene; 2. Perianal abscess; 3. Cellulitis / soft tissue infection; 4. Pilonidal sinus / abscess; 5. Squamous cell carcinoma of the anus
 - differential web.passive: 1. Perianal abscess; 2. Fournier's gangrene; 3. Cellulitis / soft tissue infection; 4. Necrotising fasciitis; 5. Pilonidal sinus / abscess
@@ -13411,7 +13907,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perianal Abscess / Fistula; 2. Pilonidal Disease; 3. Anal Fissure
 - differential web.symptomInference: 1. Perianal abscess; 2. Squamous cell carcinoma of the anus; 3. Haemorrhoids / anorectal disease; 4. Fistula in ano; 5. Fournier's gangrene
 - differential web.passive: 1. Perianal abscess; 2. Squamous cell carcinoma of the anus; 3. Haemorrhoids / anorectal disease; 4. Fistula in ano; 5. Pilonidal sinus / abscess
@@ -13449,7 +13945,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perianal Abscess / Fistula; 2. Pilonidal Disease; 3. Skin Abscess / Furuncle
 - differential web.symptomInference: 1. Perianal abscess; 2. Pilonidal sinus / abscess; 3. Squamous cell carcinoma of the anus; 4. Haemorrhoids / anorectal disease; 5. Fistula in ano
 - differential web.passive: 1. Perianal abscess; 2. Squamous cell carcinoma of the anus; 3. Haemorrhoids / anorectal disease; 4. Fistula in ano; 5. Pilonidal sinus / abscess
@@ -13494,7 +13990,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Incisional Hernia
 - differential web.symptomInference: 1. Varicocele; 2. Benign prostatic hyperplasia (BPH); 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Reducible groin / abdominal hernia
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Varicocele; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -13544,7 +14040,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Colorectal Cancer; 2. Ulcerative Colitis; 3. Ovarian Cyst (incl. Haemorrhagic / Ruptured Corpus Luteum)
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -13589,7 +14085,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Umbilical / Paraumbilical Hernia; 2. Epigastric Hernia; 3. Incisional Hernia
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -13633,7 +14129,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Atrial Fibrillation / Flutter; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -13679,7 +14175,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Incisional Hernia; 2. Inguinal / Femoral Hernia; 3. Umbilical / Paraumbilical Hernia
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -13727,7 +14223,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Anastomotic Leak; 3. Hyperosmolar Hyperglycaemic State (HHS)
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute mesenteric ischaemia; 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Gallstone pancreatitis
 - differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute alcoholic pancreatitis; 5. Mesenteric adenitis
@@ -13769,7 +14265,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Varicocele; 2. Benign prostatic hyperplasia (BPH); 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Reducible groin / abdominal hernia
 - differential web.passive: 1. Inguinal hernia (paediatric); 2. Varicocele; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -13813,7 +14309,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Appendix Mass / Late Appendicitis
 - differential web.symptomInference: 1. Acute alcoholic pancreatitis; 2. Acute gastroenteritis; 3. Typhoid fever; 4. Acute mesenteric ischaemia; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute alcoholic pancreatitis; 4. Acute gastroenteritis; 5. Acute mesenteric ischaemia
@@ -13858,7 +14354,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Atrial Fibrillation / Flutter; 3. Peripheral Arterial Disease
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -13901,7 +14397,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Acute / Chronic Gastritis; 3. Atrial Fibrillation / Flutter
 - differential web.symptomInference: 1. GORD / acid reflux / oesophagitis; 2. Gastric carcinoma; 3. Pancreatic adenocarcinoma; 4. Perforated peptic ulcer; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Chronic pancreatitis; 5. Pancreatic adenocarcinoma
@@ -13947,7 +14443,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Choledocholithiasis; 2. Acute Cholecystitis; 3. Acute Cholangitis
 - differential web.symptomInference: 1. Liver disease / hepatitis / cirrhosis; 2. Hepatocellular carcinoma (HCC); 3. Cholangiocarcinoma; 4. CBD stone / obstructive jaundice; 5. Pancreatic adenocarcinoma
 - differential web.passive: 1. Liver disease / hepatitis / cirrhosis; 2. Cholangiocarcinoma; 3. CBD stone / obstructive jaundice; 4. Hepatocellular carcinoma (HCC); 5. Neonatal jaundice
@@ -13993,7 +14489,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Acute Aortic Dissection; 3. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -14038,7 +14534,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Colorectal Cancer; 2. Ulcerative Colitis; 3. Rectal Carcinoma
 - differential web.symptomInference: 1. Prostate adenocarcinoma; 2. Hepatocellular carcinoma (HCC); 3. Heart failure; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Anaemia
 - differential web.passive: 1. Anaemia; 2. Hypothyroidism; 3. Major depressive disorder; 4. COVID-19 / viral respiratory illness; 5. Addisonian crisis / adrenal insufficiency
@@ -14095,7 +14591,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perforated Peptic Ulcer / Perforated Viscus; 2. Acute Appendicitis; 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Adhesive small bowel obstruction; 4. Acute cholecystitis; 5. Mesenteric adenitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
@@ -14146,7 +14642,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Kidney Injury (AKI); 2. Anastomotic Leak; 3. Hyperosmolar Hyperglycaemic State (HHS)
 - differential web.symptomInference: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Addisonian crisis / adrenal insufficiency; 4. Primary hyperparathyroidism / hypercalcaemia; 5. Cushing's syndrome
 - differential web.passive: 1. DKA / hyperglycaemic hyperosmolar state; 2. Acute gastroenteritis; 3. Hypertrophic pyloric stenosis; 4. Addisonian crisis / adrenal insufficiency; 5. Primary hyperparathyroidism / hypercalcaemia
@@ -14193,7 +14689,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anastomotic Leak; 2. Post-operative Intra-abdominal Collection / Abscess / Bile Leak; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Typhoid fever; 2. Fournier's gangrene; 3. Sepsis / systemic infection; 4. Malaria; 5. Infective endocarditis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Typhoid fever; 3. Sepsis / systemic infection; 4. Malaria; 5. Pyelonephritis
@@ -14238,7 +14734,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anastomotic Leak; 2. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 3. Acute Mesenteric Ischaemia
 - differential web.symptomInference: 1. Atrial fibrillation / flutter; 2. Adhesive small bowel obstruction; 3. Large bowel obstruction; 4. Sigmoid volvulus; 5. Hypertensive emergency / hypertensive encephalopathy
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Malrotation / midgut volvulus; 3. Hirschsprung's disease; 4. Large bowel obstruction; 5. Hypertensive emergency / hypertensive encephalopathy
@@ -14283,7 +14779,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Post-operative Pneumonia / Atelectasis; 2. Community-acquired Pneumonia (Adult / Child); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Stroke / TIA; 3. Sepsis / systemic infection; 4. Meningitis / encephalitis; 5. Hypoglycaemia
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Sepsis / systemic infection; 3. Meningitis / encephalitis; 4. Hypoglycaemia; 5. DKA / hyperglycaemic hyperosmolar state
@@ -14332,7 +14828,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Post-operative Pneumonia / Atelectasis; 2. Post-operative Intra-abdominal Collection / Abscess / Bile Leak; 3. Anastomotic Leak
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -14376,7 +14872,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Post-operative Ileus; 2. Sigmoid Volvulus; 3. Small Bowel Obstruction — Adhesions
 - differential web.symptomInference: 1. Large bowel obstruction; 2. Sigmoid volvulus; 3. Adhesive small bowel obstruction; 4. Liver disease / hepatitis / cirrhosis; 5. Acute cholecystitis
 - differential web.passive: 1. Hirschsprung's disease; 2. Adhesive small bowel obstruction; 3. Large bowel obstruction; 4. Sigmoid volvulus; 5. Malrotation / midgut volvulus
@@ -14421,7 +14917,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pulmonary Embolism; 2. Anastomotic Leak; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. ST-elevation myocardial infarction (STEMI); 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. Cardiac tamponade; 4. Tension pneumothorax; 5. Aortic dissection
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. Cardiac tamponade; 4. Tension pneumothorax; 5. Vasovagal / reflex syncope
@@ -14472,7 +14968,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Post-operative Pneumonia / Atelectasis; 2. Community-acquired Pneumonia (Adult / Child); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Community-acquired pneumonia; 2. Sepsis / systemic infection; 3. Empyema thoracis; 4. Acute respiratory distress syndrome (ARDS); 5. COPD / chronic bronchitis exacerbation
 - differential web.passive: 1. Community-acquired pneumonia; 2. Sepsis / systemic infection; 3. Acute respiratory distress syndrome (ARDS); 4. Empyema thoracis; 5. Epiglottitis
@@ -14520,7 +15016,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Surgical Site Infection (SSI); 2. Anastomotic Leak; 3. Wound Dehiscence / Burst Abdomen
 - differential web.symptomInference: 1. Fournier's gangrene; 2. Sepsis / systemic infection; 3. Malaria; 4. Infective endocarditis; 5. Typhoid fever
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Acute appendicitis (paediatric); 4. Typhoid fever; 5. Pyelonephritis
@@ -14567,7 +15063,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Surgical Site Infection (SSI); 2. Post-operative Haematoma (incl. Neck Haematoma after Thyroidectomy); 3. Wound Dehiscence / Burst Abdomen
 - differential web.symptomInference: 1. Post-operative complication; 2. Pilonidal sinus / abscess; 3. Osteomyelitis (adult); 4. Hidradenitis suppurativa; 5. Fistula in ano
 - differential web.passive: 1. Post-operative complication; 2. Osteomyelitis (adult); 3. Fistula in ano; 4. Diabetic foot infection / ischaemia; 5. Pilonidal sinus / abscess
@@ -14613,7 +15109,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Retention (Acute / Chronic); 2. Benign Prostatic Hyperplasia (BPH); 3. Early Incisional Hernia / Fascial Disruption
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Urinary tract infection (UTI); 4. Bladder transitional cell carcinoma; 5. Acute kidney injury
 - differential web.passive: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Urinary tract infection (UTI); 4. UTI (paediatric); 5. Acute kidney injury
@@ -14666,7 +15162,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Obturator Hernia
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Acute cholecystitis; 5. Acute gastroenteritis
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
@@ -14715,7 +15211,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Uterine fibroids; 2. Systemic lupus erythematosus; 3. Breast carcinoma; 4. Acute cholecystitis; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -14761,7 +15257,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Kidney Injury (AKI); 3. Hyperkalaemia
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -14802,7 +15298,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Biliary Stricture; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Uterine fibroids; 2. Systemic lupus erythematosus; 3. Breast carcinoma; 4. Acute cholecystitis; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -14842,7 +15338,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -14883,7 +15379,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Choledocholithiasis; 3. Sphincter of Oddi Dysfunction
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -14927,7 +15423,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Choledocholithiasis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Hepatocellular carcinoma (HCC); 2. Anaemia; 3. Lymphoma (Hodgkin / non-Hodgkin); 4. Renal cell carcinoma; 5. Leukaemia / haematological malignancy
 - differential web.passive: 1. Anaemia; 2. Hypothyroidism; 3. Major depressive disorder; 4. COVID-19 / viral respiratory illness; 5. Addisonian crisis / adrenal insufficiency
@@ -14974,7 +15470,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Heart Failure / Pulmonary Oedema; 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Acute Kidney Injury (AKI)
 - differential web.symptomInference: 1. Heart failure; 2. COPD / chronic bronchitis exacerbation; 3. Cardiac tamponade; 4. Lung carcinoma; 5. Anaemia
 - differential web.passive: 1. Heart failure; 2. Cardiac tamponade; 3. Anaemia; 4. COPD / chronic bronchitis exacerbation; 5. Acute respiratory distress syndrome (ARDS)
@@ -15018,7 +15514,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Choledocholithiasis; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15059,7 +15555,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Acute cholecystitis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute alcoholic pancreatitis; 5. Gallstone pancreatitis
 - differential web.passive: 1. Acute appendicitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Adhesive small bowel obstruction; 5. Acute alcoholic pancreatitis
@@ -15100,7 +15596,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Colorectal Cancer; 2. Ulcerative Colitis; 3. Rectal Carcinoma
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Squamous cell carcinoma of the anus; 4. Inflammatory bowel disease (Crohn's / UC); 5. Haemorrhoids / anorectal disease
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Inflammatory bowel disease (Crohn's / UC); 3. Haemorrhoids / anorectal disease; 4. Squamous cell carcinoma of the anus; 5. Meckel's diverticulum
@@ -15141,7 +15637,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Oesophageal Variceal Haemorrhage (Portal Hypertension); 3. Aorto-enteric Fistula (after aortic graft)
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Gastrointestinal stromal tumour (GIST); 3. Acute mesenteric ischaemia; 4. Diverticulitis; 5. Acute cholecystitis
 - differential web.passive: 1. Meckel's diverticulum; 2. Acute appendicitis (paediatric); 3. Gastrointestinal stromal tumour (GIST); 4. Acute cholecystitis; 5. Peptic ulcer disease
@@ -15187,7 +15683,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Carcinoma; 2. Oesophageal Stricture (Benign); 3. Achalasia
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. GORD / acid reflux / oesophagitis; 3. Gastric carcinoma; 4. Occult malignancy / systemic disease; 5. COPD / chronic bronchitis exacerbation
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Oesophageal / gastric carcinoma; 3. Upper respiratory tract infection (URTI); 4. Epiglottitis; 5. Thyroid carcinoma
@@ -15225,7 +15721,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pilonidal Disease; 2. Perianal Abscess / Fistula; 3. Skin Abscess / Furuncle
 - differential web.symptomInference: 1. Pilonidal sinus / abscess; 2. Perianal abscess; 3. Skin abscess / furuncle; 4. Hidradenitis suppurativa; 5. Haemorrhoids / anorectal disease
 - differential web.passive: 1. Perianal abscess; 2. Skin abscess / furuncle; 3. Pilonidal sinus / abscess; 4. Hidradenitis suppurativa; 5. Haemorrhoids / anorectal disease
@@ -15263,7 +15759,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Tract Infection (Cystitis / UTI); 2. Small Bowel Obstruction — Adhesions; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15316,7 +15812,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perforated Peptic Ulcer / Perforated Viscus; 2. Oesophageal Perforation (Boerhaave); 3. Acute Appendicitis
 - differential web.symptomInference: 1. Perforated peptic ulcer; 2. Acute mesenteric ischaemia; 3. Acute alcoholic pancreatitis; 4. Acute gastroenteritis; 5. Gallstone pancreatitis
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute gastroenteritis; 4. Acute appendicitis (paediatric); 5. Adhesive small bowel obstruction
@@ -15369,7 +15865,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perforated Peptic Ulcer / Perforated Viscus; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA)
 - differential web.symptomInference: 1. Peptic ulcer disease; 2. Gallstone pancreatitis; 3. Acute cholecystitis; 4. Perforated peptic ulcer; 5. Acute appendicitis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. DKA / hyperglycaemic hyperosmolar state; 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Typhoid fever
@@ -15419,7 +15915,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Perforated Peptic Ulcer / Perforated Viscus; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Anastomotic Leak
 - differential web.symptomInference: 1. Perforated peptic ulcer; 2. Acute mesenteric ischaemia; 3. Acute alcoholic pancreatitis; 4. Acute appendicitis; 5. Acute cholecystitis
 - differential web.passive: 1. Perforated peptic ulcer; 2. Acute alcoholic pancreatitis; 3. Acute appendicitis (paediatric); 4. Acute gastroenteritis; 5. Adhesive small bowel obstruction
@@ -15465,7 +15961,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pyelonephritis / Upper Urinary Tract Infection; 2. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Pyelonephritis; 2. Urinary tract infection (UTI); 3. Malaria; 4. Sepsis / systemic infection; 5. Renal colic / urolithiasis
 - differential web.passive: 1. Pyelonephritis; 2. Urinary tract infection (UTI); 3. UTI (paediatric); 4. Malaria; 5. Sepsis / systemic infection
@@ -15514,7 +16010,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pyelonephritis / Upper Urinary Tract Infection; 2. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Pyelonephritis; 2. Urinary tract infection (UTI); 3. Sepsis / systemic infection; 4. Malaria; 5. Infective endocarditis
 - differential web.passive: 1. Pyelonephritis; 2. Urinary tract infection (UTI); 3. Sepsis / systemic infection; 4. Malaria; 5. UTI (paediatric)
@@ -15559,7 +16055,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 2. Acute Aortic Dissection; 3. Oesophageal Perforation (Boerhaave)
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Aortic dissection; 3. Vasovagal / reflex syncope; 4. Acute mesenteric ischaemia; 5. Diverticulitis
 - differential web.passive: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Vasovagal / reflex syncope; 3. Aortic dissection; 4. Acute appendicitis (paediatric); 5. Sickle cell vaso-occlusive crisis
@@ -15596,7 +16092,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15632,7 +16128,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Acute Pancreatitis; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15668,7 +16164,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA); 2. Hyperosmolar Hyperglycaemic State (HHS); 3. Hyperemesis Gravidarum
 - differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Breast carcinoma; 3. Acute cholecystitis; 4. Uterine fibroids; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15705,7 +16201,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 3. Oesophageal Perforation (Boerhaave)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15740,7 +16236,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Acute / Chronic Gastritis; 3. Biliary Colic / Symptomatic Cholelithiasis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Reducible groin / abdominal hernia; 3. Gout / pseudogout; 4. Breast carcinoma; 5. Hepatocellular carcinoma (HCC)
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15778,7 +16274,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ectopic Pregnancy; 2. Acute Appendicitis; 3. Ovarian Torsion
 - differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Breast carcinoma; 3. Acute cholecystitis; 4. Uterine fibroids; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15813,7 +16309,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Aorto-enteric Fistula (after aortic graft); 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Oesophageal Variceal Haemorrhage (Portal Hypertension)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15848,7 +16344,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Renal Colic / Urolithiasis; 2. Adrenal Incidentaloma; 3. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis)
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15882,7 +16378,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Oesophageal Stricture (Benign); 2. Oesophageal Carcinoma; 3. Acute Asthma Exacerbation
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15917,8 +16413,8 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Acute Hepatitis; 2. Choledocholithiasis; 3. Acute Cholangitis
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Hepatitis; 2. Cirrhosis / Chronic Liver Disease (Decompensated); 3. Choledocholithiasis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
@@ -15952,7 +16448,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Phaeochromocytoma / Paraganglioma; 2. Hypoglycaemia; 3. Hyperthyroidism / Thyrotoxicosis (Graves, Toxic Nodule)
 - differential web.symptomInference: 1. Uterine fibroids; 2. Acute cholecystitis; 3. Systemic lupus erythematosus; 4. Breast carcinoma; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -15986,7 +16482,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Pancreatitis; 2. Biliary Colic / Symptomatic Cholelithiasis; 3. Sphincter of Oddi Dysfunction
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16036,7 +16532,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Haemorrhoids; 2. Rectal Prolapse; 3. Anal Fissure
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Rectal prolapse
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Hirschsprung's disease
@@ -16074,7 +16570,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Rectal Prolapse; 2. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 3. Haemorrhoids
 - differential web.symptomInference: 1. Haemorrhoids / anorectal disease; 2. Lower GI bleed / colorectal; 3. Rectal prolapse; 4. Anal fissure; 5. Colorectal carcinoma
 - differential web.passive: 1. Haemorrhoids / anorectal disease; 2. Anal fissure; 3. Lower GI bleed / colorectal; 4. Rectal prolapse; 5. Meckel's diverticulum
@@ -16122,7 +16618,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 2. Acute Pyelonephritis / Upper Urinary Tract Infection; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Acute cholecystitis; 4. Malaria; 5. Sepsis / systemic infection
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Malaria; 4. Sepsis / systemic infection; 5. Infective endocarditis
@@ -16170,7 +16666,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Renal Colic / Urolithiasis; 2. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 3. Acute Pyelonephritis / Upper Urinary Tract Infection
 - differential web.symptomInference: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Renal cell carcinoma; 4. Acute kidney injury; 5. Urinary tract infection (UTI)
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Renal cell carcinoma; 4. Acute kidney injury; 5. Acute gastroenteritis
@@ -16213,7 +16709,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Renal Colic / Urolithiasis; 2. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 3. Acute Kidney Injury (AKI)
 - differential web.symptomInference: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Acute kidney injury
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Acute gastroenteritis; 4. Acute kidney injury; 5. Adhesive small bowel obstruction
@@ -16255,7 +16751,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Renal Colic / Urolithiasis; 2. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 3. Acute Pyelonephritis / Upper Urinary Tract Infection
 - differential web.symptomInference: 1. Renal colic / urolithiasis; 2. Acute mesenteric ischaemia; 3. Diverticulitis; 4. Adhesive small bowel obstruction; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Acute appendicitis (paediatric); 5. Pyelonephritis
@@ -16295,7 +16791,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Subarachnoid Haemorrhage (SAH); 2. Early Incisional Hernia / Fascial Disruption; 3. Inguinal / Femoral Hernia
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Subarachnoid haemorrhage; 3. Migraine; 4. Meningitis / encephalitis; 5. Dengue fever
 - differential web.passive: 1. Subarachnoid haemorrhage; 2. Hypertensive emergency / hypertensive encephalopathy; 3. Migraine; 4. Meningitis / encephalitis; 5. Dengue fever
@@ -16338,7 +16834,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Subarachnoid Haemorrhage (SAH); 2. Bacterial Meningitis / Meningococcal Disease; 3. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event)
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Meningitis / encephalitis; 3. Subarachnoid haemorrhage; 4. Migraine; 5. Acute cholecystitis
 - differential web.passive: 1. Bacterial meningitis (paediatric); 2. Meningitis / encephalitis; 3. Subarachnoid haemorrhage; 4. Migraine; 5. Hypertensive emergency / hypertensive encephalopathy
@@ -16385,7 +16881,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Obturator Hernia
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute appendicitis; 5. Acute gastroenteritis
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Acute gastroenteritis
@@ -16425,7 +16921,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Obturator Hernia
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute appendicitis; 5. Acute cholecystitis
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
@@ -16465,7 +16961,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bowel Obstruction; 2. Small Bowel Obstruction — Adhesions; 3. Sigmoid Volvulus
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Occult malignancy / systemic disease; 5. Oesophageal / gastric carcinoma
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Malrotation / midgut volvulus; 3. Sigmoid volvulus; 4. Large bowel obstruction; 5. Wilms tumour / nephroblastoma
@@ -16508,7 +17004,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 2. Femoral Hernia; 3. Obturator Hernia
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute mesenteric ischaemia; 5. Obstructed / strangulated hernia
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
@@ -16559,7 +17055,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Acute appendicitis; 2. Adhesive small bowel obstruction; 3. Sigmoid volvulus; 4. Large bowel obstruction; 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Malaria; 5. Hirschsprung's disease
@@ -16607,7 +17103,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Bowel Obstruction; 2. Obturator Hernia; 3. Small Bowel Obstruction — Adhesions
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Sigmoid volvulus; 3. Large bowel obstruction; 4. Acute appendicitis; 5. Occult malignancy / systemic disease
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
@@ -16651,7 +17147,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Abdominal Aortic Aneurysm (Symptomatic / Ruptured); 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16693,7 +17189,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Tract Infection (Cystitis / UTI); 2. Acute Cholecystitis; 3. Acute Gastroenteritis / Infective Colitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16734,7 +17230,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Breast Abscess; 2. Mastitis; 3. Fibroadenoma
 - differential web.symptomInference: 1. Uterine fibroids; 2. Systemic lupus erythematosus; 3. Breast carcinoma; 4. Acute cholecystitis; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16775,7 +17271,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Urinary Tract Infection (Cystitis / UTI); 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Uterine fibroids; 2. Systemic lupus erythematosus; 3. Breast carcinoma; 4. Acute cholecystitis; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16815,7 +17311,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Gastroenteritis / Infective Colitis; 2. Acute Diverticulitis; 3. Anal Fissure
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16858,7 +17354,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Tract Infection (Cystitis / UTI); 2. Acute Cholecystitis; 3. Acute Gastroenteritis / Infective Colitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16901,7 +17397,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); 3. Acute Gastroenteritis / Infective Colitis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16940,7 +17436,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pre-eclampsia / HELLP Syndrome / Eclampsia; 2. Hyperemesis Gravidarum; 3. Placental Abruption
 - differential web.symptomInference: 1. Uterine fibroids; 2. Acute cholecystitis; 3. Systemic lupus erythematosus; 4. Breast carcinoma; 5. Endometriosis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -16982,7 +17478,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Gastroenteritis / Infective Colitis; 2. Renal Colic / Urolithiasis; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17021,7 +17517,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); 3. Acute Gastroenteritis / Infective Colitis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Reducible groin / abdominal hernia; 4. Gout / pseudogout; 5. Breast carcinoma
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17063,7 +17559,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pre-eclampsia / HELLP Syndrome / Eclampsia; 2. Hypertensive Emergency / Malignant Hypertension; 3. Umbilical / Paraumbilical Hernia
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Stroke / TIA; 4. Meningitis / encephalitis; 5. Dengue fever
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Stroke / TIA; 4. Meningitis / encephalitis; 5. Dengue fever
@@ -17106,7 +17602,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Acute Gastroenteritis / Infective Colitis; 3. Renal Colic / Urolithiasis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Reducible groin / abdominal hernia; 3. Gout / pseudogout; 4. Breast carcinoma; 5. Hepatocellular carcinoma (HCC)
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17150,7 +17646,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Diverticulitis; 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Small Bowel Obstruction — Adhesions
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17189,7 +17685,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Inguinal / Femoral Hernia; 2. GORD / Reflux Oesophagitis; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17228,7 +17724,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Transient Ischaemic Attack (TIA)
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17271,7 +17767,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Tract Infection (Cystitis / UTI); 2. Small Bowel Obstruction — Adhesions; 3. Acute Cholecystitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17314,7 +17810,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Surgical Site Infection (SSI); 2. Post-operative Seroma; 3. Wound Dehiscence / Burst Abdomen
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17354,7 +17850,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 2. Acute Gastroenteritis / Infective Colitis; 3. Inguinal / Femoral Hernia
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
@@ -17394,7 +17890,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hypoglycaemia; 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Diabetic Ketoacidosis (DKA, incl. Euglycaemic DKA)
 - differential web.symptomInference: 1. Acute compartment syndrome; 2. Benign prostatic hyperplasia (BPH); 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Reducible groin / abdominal hernia
 - differential web.passive: 1. Acute compartment syndrome; 2. Acute cholecystitis; 3. CBD stone / obstructive jaundice; 4. Peptic ulcer disease; 5. Reducible groin / abdominal hernia
@@ -17435,7 +17931,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Seizure (First Seizure / Epilepsy); 2. Subarachnoid Haemorrhage (SAH); 3. Hypoglycaemia
 - differential web.symptomInference: 1. Epilepsy / seizure disorder; 2. Hypertensive emergency / hypertensive encephalopathy; 3. Sepsis / systemic infection; 4. Meningitis / encephalitis; 5. Hypoglycaemia
 - differential web.passive: 1. Epilepsy / seizure disorder; 2. Febrile convulsion; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Sepsis / systemic infection; 5. Meningitis / encephalitis
@@ -17477,7 +17973,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Pre-eclampsia / HELLP Syndrome / Eclampsia; 2. Hypertensive Emergency / Malignant Hypertension; 3. Bacterial Meningitis / Meningococcal Disease
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Epilepsy / seizure disorder; 3. Migraine; 4. Meningitis / encephalitis; 5. Stroke / TIA
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Epilepsy / seizure disorder; 3. Migraine; 4. Meningitis / encephalitis; 5. Bacterial meningitis (paediatric)
@@ -17519,7 +18015,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sigmoid Volvulus; 2. Bowel Obstruction; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
 - differential web.symptomInference: 1. Adhesive small bowel obstruction; 2. Diverticulitis; 3. Sigmoid volvulus; 4. Large bowel obstruction; 5. Perforated peptic ulcer
 - differential web.passive: 1. Adhesive small bowel obstruction; 2. Large bowel obstruction; 3. Sigmoid volvulus; 4. Hirschsprung's disease; 5. Malrotation / midgut volvulus
@@ -17564,7 +18060,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Anastomotic Leak
 - differential web.symptomInference: 1. Diverticulitis; 2. Sigmoid volvulus; 3. Sepsis / systemic infection; 4. Adhesive small bowel obstruction; 5. Large bowel obstruction
 - differential web.passive: 1. Sepsis / systemic infection; 2. Sigmoid volvulus; 3. Adhesive small bowel obstruction; 4. Large bowel obstruction; 5. Typhoid fever
@@ -17610,7 +18106,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 2. Transient Ischaemic Attack (TIA); 3. Acute Limb Ischaemia (Arterial Embolism / Thrombosis)
 - differential web.symptomInference: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Benign prostatic hyperplasia (BPH); 5. Prostate adenocarcinoma
 - differential web.passive: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Hypertensive emergency / hypertensive encephalopathy; 4. Acute cholecystitis; 5. CBD stone / obstructive jaundice
@@ -17652,7 +18148,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 2. Transient Ischaemic Attack (TIA); 3. Acute Limb Ischaemia (Arterial Embolism / Thrombosis)
 - differential web.symptomInference: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Breast carcinoma; 4. Uterine fibroids; 5. Acute cholecystitis
 - differential web.passive: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -17693,7 +18189,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Superficial Vein Thrombosis / Thrombophlebitis; 2. Cellulitis; 3. Skin Abscess / Furuncle
 - differential web.symptomInference: 1. Sciatica / lumbar radiculopathy; 2. Systemic lupus erythematosus; 3. Urticaria / allergic reaction; 4. Cellulitis / soft tissue infection; 5. Acute compartment syndrome
 - differential web.passive: 1. Scarlet fever; 2. Urticaria / allergic reaction; 3. Sciatica / lumbar radiculopathy; 4. Cellulitis / soft tissue infection; 5. Acute compartment syndrome
@@ -17734,7 +18230,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Benign Thyroid Nodule / Goitre; 2. Hashimoto Thyroiditis / Hypothyroidism; 3. Thyroid Carcinoma (Differentiated)
 - differential web.symptomInference: 1. Thyroid carcinoma; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Pharyngitis / tonsillitis; 4. Breast carcinoma; 5. Uterine fibroids
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
@@ -17775,7 +18271,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Benign Thyroid Nodule / Goitre; 2. Hashimoto Thyroiditis / Hypothyroidism; 3. Thyroid Carcinoma (Differentiated)
 - differential web.symptomInference: 1. Thyroid carcinoma; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Pharyngitis / tonsillitis; 4. Breast carcinoma; 5. Uterine fibroids
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
@@ -17816,7 +18312,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Benign Thyroid Nodule / Goitre; 2. Hashimoto Thyroiditis / Hypothyroidism; 3. Thyroid Carcinoma (Differentiated)
 - differential web.symptomInference: 1. Thyroid carcinoma; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Pharyngitis / tonsillitis; 4. Breast carcinoma; 5. Uterine fibroids
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
@@ -17857,7 +18353,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Benign Thyroid Nodule / Goitre; 2. Hashimoto Thyroiditis / Hypothyroidism; 3. Thyroid Carcinoma (Differentiated)
 - differential web.symptomInference: 1. Thyroid carcinoma; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Pharyngitis / tonsillitis; 4. Breast carcinoma; 5. Uterine fibroids
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
@@ -17897,7 +18393,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Benign Thyroid Nodule / Goitre; 2. Hashimoto Thyroiditis / Hypothyroidism; 3. Thyroid Carcinoma (Differentiated)
 - differential web.symptomInference: 1. Thyroid carcinoma; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Pharyngitis / tonsillitis; 4. Breast carcinoma; 5. Uterine fibroids
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
@@ -17939,7 +18435,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Benign Thyroid Nodule / Goitre; 2. Hashimoto Thyroiditis / Hypothyroidism; 3. Thyroid Carcinoma (Differentiated)
 - differential web.symptomInference: 1. Thyroid carcinoma; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Pharyngitis / tonsillitis; 4. Breast carcinoma; 5. Uterine fibroids
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
@@ -17983,7 +18479,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Benign Thyroid Nodule / Goitre; 2. Hashimoto Thyroiditis / Hypothyroidism; 3. Thyroid Carcinoma (Differentiated)
 - differential web.symptomInference: 1. Thyroid carcinoma; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Pharyngitis / tonsillitis; 4. Breast carcinoma; 5. Uterine fibroids
 - differential web.passive: 1. Lymphoma (Hodgkin / non-Hodgkin); 2. Thyroid carcinoma; 3. Kawasaki disease; 4. Pharyngitis / tonsillitis; 5. Acute cholecystitis
@@ -18025,7 +18521,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Hyperthyroidism / Thyrotoxicosis (Graves, Toxic Nodule); 2. Benign Thyroid Nodule / Goitre; 3. Phaeochromocytoma / Paraganglioma
 - differential web.symptomInference: 1. Hyperthyroidism / thyrotoxicosis; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Phaeochromocytoma; 4. Thyroid carcinoma; 5. Pulmonary tuberculosis
 - differential web.passive: 1. Hyperthyroidism / thyrotoxicosis; 2. Lymphoma (Hodgkin / non-Hodgkin); 3. Phaeochromocytoma; 4. Pulmonary tuberculosis; 5. Atrial fibrillation / flutter
@@ -18065,7 +18561,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Post-operative Haematoma (incl. Neck Haematoma after Thyroidectomy); 2. Acute Gastroenteritis / Infective Colitis; 3. Post-operative Ileus
 - differential web.symptomInference: 1. Carpal tunnel syndrome; 2. Peripheral neuropathy; 3. Acute compartment syndrome; 4. Sciatica / lumbar radiculopathy; 5. Lumbar disc disease / sciatica
 - differential web.passive: 1. Peripheral neuropathy; 2. Acute compartment syndrome; 3. Carpal tunnel syndrome; 4. Sciatica / lumbar radiculopathy; 5. Lumbar disc disease / sciatica
@@ -18108,7 +18604,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Post-operative Haematoma (incl. Neck Haematoma after Thyroidectomy); 2. Anaplastic Thyroid Carcinoma / Thyroid Lymphoma; 3. Post-operative Pneumonia / Atelectasis
 - differential web.symptomInference: 1. Thyroid carcinoma; 2. COPD / chronic bronchitis exacerbation; 3. Tension pneumothorax; 4. Acute respiratory distress syndrome (ARDS); 5. Lymphoma (Hodgkin / non-Hodgkin)
 - differential web.passive: 1. Epiglottitis; 2. Croup / laryngotracheobronchitis; 3. Thyroid carcinoma; 4. Tension pneumothorax; 5. Acute respiratory distress syndrome (ARDS)
@@ -18152,7 +18648,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Anaplastic Thyroid Carcinoma / Thyroid Lymphoma; 2. Thyroid Carcinoma (Differentiated); 3. Oesophageal Carcinoma
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. Thyroid carcinoma; 3. Occult malignancy / systemic disease; 4. Gastric carcinoma; 5. Colorectal carcinoma
 - differential web.passive: 1. Epiglottitis; 2. Thyroid carcinoma; 3. Croup / laryngotracheobronchitis; 4. Oesophageal / gastric carcinoma; 5. Lung carcinoma
@@ -18192,7 +18688,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Thyroid Carcinoma (Differentiated); 2. Benign Thyroid Nodule / Goitre; 3. Anaplastic Thyroid Carcinoma / Thyroid Lymphoma
 - differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. Heart failure; 3. Thyroid carcinoma; 4. Cardiac tamponade; 5. COPD / chronic bronchitis exacerbation
 - differential web.passive: 1. Heart failure; 2. Epiglottitis; 3. Cardiac tamponade; 4. Thyroid carcinoma; 5. Tension pneumothorax
@@ -18234,7 +18730,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Transient Ischaemic Attack (TIA); 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Benign prostatic hyperplasia (BPH); 4. Prostate adenocarcinoma; 5. Colorectal carcinoma
 - differential web.passive: 1. Stroke / TIA; 2. Acute limb ischaemia; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
@@ -18279,7 +18775,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Testicular Torsion; 2. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 3. Epididymo-orchitis
 - differential web.symptomInference: 1. Testicular torsion / epididymo-orchitis; 2. Varicocele; 3. Acute gastroenteritis; 4. Testicular germ cell tumour; 5. Acute alcoholic pancreatitis
 - differential web.passive: 1. Testicular torsion / epididymo-orchitis; 2. Acute gastroenteritis; 3. Varicocele; 4. Inguinal hernia (paediatric); 5. Adhesive small bowel obstruction
@@ -18330,7 +18826,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Splenic Laceration; 2. Haemothorax; 3. Traumatic / Tension Pneumothorax
 - differential web.symptomInference: 1. ST-elevation myocardial infarction (STEMI); 2. Hypertensive emergency / hypertensive encephalopathy; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Epilepsy / seizure disorder; 5. Sickle cell vaso-occlusive crisis
 - differential web.passive: 1. ST-elevation myocardial infarction (STEMI); 2. Hypertensive emergency / hypertensive encephalopathy; 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Epilepsy / seizure disorder; 5. Sickle cell vaso-occlusive crisis
@@ -18374,7 +18870,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Traumatic / Tension Pneumothorax; 2. Haemothorax; 3. Rib Fractures
 - differential web.symptomInference: 1. Tension pneumothorax; 2. Acute coronary syndrome (ACS / NSTEMI / STEMI); 3. ST-elevation myocardial infarction (STEMI); 4. Spontaneous pneumothorax; 5. Empyema thoracis
 - differential web.passive: 1. Tension pneumothorax; 2. Pericarditis / myocarditis; 3. Empyema thoracis; 4. Spontaneous pneumothorax; 5. Acute coronary syndrome (ACS / NSTEMI / STEMI)
@@ -18420,7 +18916,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Traumatic Brain Injury; 2. Rib Fractures; 3. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event)
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Stroke / TIA; 4. Meningitis / encephalitis; 5. Dengue fever
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Meningitis / encephalitis; 4. Dengue fever; 5. Bacterial meningitis (paediatric)
@@ -18463,7 +18959,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Traumatic Brain Injury; 2. Subarachnoid Haemorrhage (SAH); 3. Bacterial Meningitis / Meningococcal Disease
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Meningitis / encephalitis; 3. Migraine; 4. Malaria; 5. DKA / hyperglycaemic hyperosmolar state
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Meningitis / encephalitis; 3. Migraine; 4. Bacterial meningitis (paediatric); 5. Malaria
@@ -18510,7 +19006,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Rib Fractures; 2. Traumatic Brain Injury; 3. Intussusception
 - differential web.symptomInference: 1. Intussusception; 2. Inguinal hernia (paediatric); 3. Malrotation / midgut volvulus; 4. Bacterial meningitis (paediatric); 5. Leukaemia / haematological malignancy
 - differential web.passive: 1. Intussusception; 2. Leukaemia / haematological malignancy; 3. Malrotation / midgut volvulus; 4. Inguinal hernia (paediatric); 5. Bacterial meningitis (paediatric)
@@ -18556,7 +19052,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Placental Abruption; 2. Pelvic Inflammatory Disease (PID) / Tubo-ovarian Abscess; 3. Ectopic Pregnancy
 - differential web.symptomInference: 1. Ectopic pregnancy; 2. Ovarian torsion / ovarian cyst; 3. Pelvic inflammatory disease (PID); 4. Endometriosis; 5. Acute cholecystitis
 - differential web.passive: 1. Ectopic pregnancy; 2. Ovarian torsion / ovarian cyst; 3. Acute appendicitis (paediatric); 4. Pelvic inflammatory disease (PID); 5. Acute cholecystitis
@@ -18598,7 +19094,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Splenic Laceration; 2. Blunt Abdominal Trauma; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Rotator cuff tear / shoulder impingement; 2. Symptomatic / ruptured abdominal aortic aneurysm; 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Acute appendicitis
 - differential web.passive: 1. Rotator cuff tear / shoulder impingement; 2. Acute appendicitis (paediatric); 3. Acute cholecystitis; 4. Peptic ulcer disease; 5. Acute appendicitis
@@ -18646,7 +19142,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Splenic Laceration; 2. Blunt Abdominal Trauma; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Rotator cuff tear / shoulder impingement; 2. BPPV / labyrinthitis / vestibular neuritis; 3. Symptomatic / ruptured abdominal aortic aneurysm; 4. Acute cholecystitis; 5. Peptic ulcer disease
 - differential web.passive: 1. Rotator cuff tear / shoulder impingement; 2. Acute appendicitis (paediatric); 3. BPPV / labyrinthitis / vestibular neuritis; 4. Acute cholecystitis; 5. Peptic ulcer disease
@@ -18690,7 +19186,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Penetrating Abdominal Trauma (Stab / Gunshot); 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Appendicitis
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
@@ -18733,7 +19229,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Acute Cholecystitis; 2. Penetrating Abdominal Trauma (Stab / Gunshot); 3. Liver Abscess
 - differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute cholecystitis; 3. Peptic ulcer disease; 4. Acute appendicitis; 5. Adhesive small bowel obstruction
@@ -18776,7 +19272,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Traumatic / Tension Pneumothorax; 2. Haemothorax; 3. Pulmonary Embolism
 - differential web.symptomInference: 1. Tension pneumothorax; 2. ST-elevation myocardial infarction (STEMI); 3. Acute coronary syndrome (ACS / NSTEMI / STEMI); 4. Cardiac tamponade; 5. Pericarditis / myocarditis
 - differential web.passive: 1. Spontaneous pneumothorax; 2. Tension pneumothorax; 3. ST-elevation myocardial infarction (STEMI); 4. Acute coronary syndrome (ACS / NSTEMI / STEMI); 5. Cardiac tamponade
@@ -18831,7 +19327,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ulcerative Colitis; 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 3. Clostridioides difficile Colitis (C. diff infection)
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Diverticulitis; 3. Irritable bowel syndrome (IBS); 4. Inflammatory bowel disease (Crohn's / UC); 5. Acute gastroenteritis
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Irritable bowel syndrome (IBS); 4. Acute mesenteric ischaemia; 5. Acute appendicitis (paediatric)
@@ -18876,7 +19372,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ulcerative Colitis; 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 3. Clostridioides difficile Colitis (C. diff infection)
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Diverticulitis; 3. Irritable bowel syndrome (IBS); 4. Inflammatory bowel disease (Crohn's / UC); 5. Acute gastroenteritis
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Irritable bowel syndrome (IBS); 4. Acute mesenteric ischaemia; 5. Acute appendicitis (paediatric)
@@ -18916,7 +19412,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 2. Clostridioides difficile Colitis (C. diff infection); 3. Ulcerative Colitis
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Inflammatory bowel disease (Crohn's / UC); 4. Acute gastroenteritis; 5. Acute mesenteric ischaemia
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Acute appendicitis (paediatric); 5. Schistosomiasis (S. mansoni)
@@ -18956,7 +19452,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Ulcerative Colitis; 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 3. Crohn's Disease
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Inflammatory bowel disease (Crohn's / UC); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Colorectal carcinoma
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Acute appendicitis (paediatric); 5. Schistosomiasis (S. mansoni)
@@ -19001,7 +19497,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk; 2. Clostridioides difficile Colitis (C. diff infection); 3. Ulcerative Colitis
 - differential web.symptomInference: 1. Acute mesenteric ischaemia; 2. Inflammatory bowel disease (Crohn's / UC); 3. Schistosomiasis (S. mansoni); 4. Acute gastroenteritis; 5. Perforated peptic ulcer
 - differential web.passive: 1. Inflammatory bowel disease (Crohn's / UC); 2. Schistosomiasis (S. mansoni); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Intussusception
@@ -19057,7 +19553,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Aorto-enteric Fistula (after aortic graft); 3. Oesophageal Variceal Haemorrhage (Portal Hypertension)
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Portal hypertension / oesophageal varices; 3. Gastric carcinoma; 4. Acute alcoholic pancreatitis; 5. GORD / acid reflux / oesophagitis
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Upper GI haemorrhage; 3. Meckel's diverticulum; 4. Gastric carcinoma; 5. GORD / acid reflux / oesophagitis
@@ -19106,7 +19602,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Aorto-enteric Fistula (after aortic graft); 3. Oesophageal Variceal Haemorrhage (Portal Hypertension)
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Heart failure; 3. Acute respiratory distress syndrome (ARDS); 4. Portal hypertension / oesophageal varices; 5. Cardiac tamponade
 - differential web.passive: 1. Meckel's diverticulum; 2. Acute respiratory distress syndrome (ARDS); 3. Portal hypertension / oesophageal varices; 4. Cardiac tamponade; 5. Upper GI haemorrhage
@@ -19157,7 +19653,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Aorto-enteric Fistula (after aortic graft); 3. Acute Heart Failure / Pulmonary Oedema
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Portal hypertension / oesophageal varices; 3. Prostate adenocarcinoma; 4. Gastric carcinoma; 5. Gastrointestinal stromal tumour (GIST)
 - differential web.passive: 1. Meckel's diverticulum; 2. Portal hypertension / oesophageal varices; 3. Upper GI haemorrhage; 4. Anaemia; 5. Gastrointestinal stromal tumour (GIST)
@@ -19204,7 +19700,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Peptic Ulcer Disease; 3. Aorto-enteric Fistula (after aortic graft)
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Portal hypertension / oesophageal varices; 3. BPPV / labyrinthitis / vestibular neuritis; 4. Gastric carcinoma; 5. GORD / acid reflux / oesophagitis
 - differential web.passive: 1. Upper GI haemorrhage; 2. Meckel's diverticulum; 3. Portal hypertension / oesophageal varices; 4. BPPV / labyrinthitis / vestibular neuritis; 5. Gastric carcinoma
@@ -19250,7 +19746,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Peptic Ulcer Disease; 2. Mallory-Weiss Tear; 3. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal)
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Acute alcoholic pancreatitis; 3. GORD / acid reflux / oesophagitis; 4. Perforated peptic ulcer; 5. Chronic pancreatitis
 - differential web.passive: 1. GORD / acid reflux / oesophagitis; 2. Perforated peptic ulcer; 3. Acute alcoholic pancreatitis; 4. Chronic pancreatitis; 5. Pancreatic adenocarcinoma
@@ -19302,7 +19798,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Oesophageal Variceal Haemorrhage (Portal Hypertension); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Portal hypertension / oesophageal varices; 3. Vasovagal / reflex syncope; 4. Gastric carcinoma; 5. Symptomatic / ruptured abdominal aortic aneurysm
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Upper GI haemorrhage; 3. Vasovagal / reflex syncope; 4. Meckel's diverticulum; 5. Gastrointestinal stromal tumour (GIST)
@@ -19352,7 +19848,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Oesophageal Variceal Haemorrhage (Portal Hypertension); 3. Aorto-enteric Fistula (after aortic graft)
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Portal hypertension / oesophageal varices; 3. BPPV / labyrinthitis / vestibular neuritis; 4. Gastric carcinoma; 5. Anaemia
 - differential web.passive: 1. Upper GI haemorrhage; 2. Meckel's diverticulum; 3. Portal hypertension / oesophageal varices; 4. BPPV / labyrinthitis / vestibular neuritis; 5. Anaemia
@@ -19400,7 +19896,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Aorto-enteric Fistula (after aortic graft); 3. Peptic Ulcer Disease
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Portal hypertension / oesophageal varices; 3. Gastric carcinoma; 4. Peptic ulcer disease; 5. Gastrointestinal stromal tumour (GIST)
 - differential web.passive: 1. Upper GI haemorrhage; 2. Meckel's diverticulum; 3. Portal hypertension / oesophageal varices; 4. Peptic ulcer disease; 5. Gastric carcinoma
@@ -19442,7 +19938,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Gastric Carcinoma; 2. Gastric Outlet Obstruction; 3. Pancreatic Carcinoma
 - differential web.symptomInference: 1. Gastric carcinoma; 2. Occult malignancy / systemic disease; 3. Colorectal carcinoma; 4. Pancreatic adenocarcinoma; 5. Oesophageal / gastric carcinoma
 - differential web.passive: 1. Gastric carcinoma; 2. Pancreatic adenocarcinoma; 3. Chronic pancreatitis; 4. Acute alcoholic pancreatitis; 5. HIV / AIDS presentation
@@ -19486,7 +19982,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Urinary Retention (Acute / Chronic); 2. Benign Prostatic Hyperplasia (BPH); 3. Acute Diverticulitis
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Urinary tract infection (UTI); 4. Bladder transitional cell carcinoma; 5. Acute kidney injury
 - differential web.passive: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Urinary tract infection (UTI); 4. UTI (paediatric); 5. Acute kidney injury
@@ -19535,7 +20031,7 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
 - differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Acute Pyelonephritis / Upper Urinary Tract Infection; 3. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis)
 - differential web.symptomInference: 1. Sepsis / systemic infection; 2. Fournier's gangrene; 3. Malaria; 4. Infective endocarditis; 5. Community-acquired pneumonia
 - differential web.passive: 1. Sepsis / systemic infection; 2. Malaria; 3. Infective endocarditis; 4. Fournier's gangrene; 5. Community-acquired pneumonia
@@ -19590,8 +20086,8 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Oesophageal Variceal Haemorrhage (Portal Hypertension); 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Aorto-enteric Fistula (after aortic graft)
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Oesophageal Variceal Haemorrhage (Portal Hypertension); 2. Cirrhosis / Chronic Liver Disease (Decompensated); 3. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal)
 - differential web.symptomInference: 1. Upper GI haemorrhage; 2. Portal hypertension / oesophageal varices; 3. Liver disease / hepatitis / cirrhosis; 4. CBD stone / obstructive jaundice; 5. Hepatocellular carcinoma (HCC)
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Liver disease / hepatitis / cirrhosis; 3. Biliary atresia; 4. Upper GI haemorrhage; 5. CBD stone / obstructive jaundice
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
@@ -19637,8 +20133,8 @@ Guidelines:
 
 <details><summary>web engine outputs</summary>
 
-- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Oesophageal Variceal Haemorrhage (Portal Hypertension); 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Aorto-enteric Fistula (after aortic graft)
+- engine: paneEngine=pane-engine (190 diseases, 497 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Oesophageal Variceal Haemorrhage (Portal Hypertension); 2. Cirrhosis / Chronic Liver Disease (Decompensated); 3. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal)
 - differential web.symptomInference: 1. Portal hypertension / oesophageal varices; 2. Upper GI haemorrhage; 3. Liver disease / hepatitis / cirrhosis; 4. Heart failure; 5. Nephrotic syndrome
 - differential web.passive: 1. Portal hypertension / oesophageal varices; 2. Heart failure; 3. Nephrotic syndrome; 4. Liver disease / hepatitis / cirrhosis; 5. Hirschsprung's disease
 - differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
