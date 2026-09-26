@@ -74,6 +74,13 @@ jobs:
       - name: Lint clinical guideline registry
         run: pnpm --filter @workspace/scripts run lint:guideline-registry
 
+      # Rebuilds the clinical sign-off catalogue (every change log's "Needs sign-off" list and
+      # SURGEON-DECISIONS A–G and I, hashed per item) and fails if the committed
+      # artifacts/dashboard/src/data/clinical-signoff-catalogue.json differs. Fix: run
+      # `pnpm --filter @workspace/scripts run signoff:catalogue` and commit the JSON.
+      - name: Lint clinical sign-off catalogue (stale vs the sign-off lists)
+        run: pnpm --filter @workspace/scripts run lint:signoff-catalogue
+
       - name: Build all packages
         env:
           VITE_SUPABASE_URL: https://placeholder.supabase.co
