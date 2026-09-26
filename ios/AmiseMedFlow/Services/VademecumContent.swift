@@ -54,6 +54,7 @@ enum VademecumContent {
         let defaultThresholds: Thresholds
         let cantMissThresholds: Thresholds
         let criteriaFloors: CriteriaFloors
+        let criteriaMinPosterior: Double
         let definitiveLR: Double
         let minLr: Double
         let maxLr: Double

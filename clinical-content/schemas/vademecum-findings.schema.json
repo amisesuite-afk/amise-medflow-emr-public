@@ -61,7 +61,7 @@
     },
     "criteriaFloors": {
       "type": "object", "additionalProperties": false, "required": ["definite", "suspected", "referral"],
-      "description": "Posterior floor when a criteria level of that grade is met (classification levels have none).",
+      "description": "Posterior floor when a criteria level of that grade is met (classification levels have none). The referral floor sets the test decision only (band), never the rank.",
       "properties": {
         "definite": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
         "suspected": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
@@ -71,7 +71,7 @@
     "policy": {
       "type": "object", "additionalProperties": false,
       "required": [
-        "levels", "priorTiers", "pregnancyPossibleMultiplier", "defaultThresholds", "cantMissThresholds", "criteriaFloors",
+        "levels", "priorTiers", "pregnancyPossibleMultiplier", "defaultThresholds", "cantMissThresholds", "criteriaFloors", "criteriaMinPosterior",
         "definitiveLR", "minLr", "maxLr", "conflictLowPosterior", "conflictHighPosterior", "criteriaBonus", "minInformationGain",
         "maxQuestions", "displaySlots", "cantMissSlots", "note"
       ],
@@ -82,6 +82,7 @@
         "defaultThresholds": { "$ref": "#/$defs/thresholds", "description": "Test / treat thresholds for a disease without a treatment-decisions.json decision." },
         "cantMissThresholds": { "$ref": "#/$defs/thresholds", "description": "The same for a can't-miss disease (a lower test threshold)." },
         "criteriaFloors": { "$ref": "#/$defs/criteriaFloors" },
+        "criteriaMinPosterior": { "type": "number", "minimum": 0, "exclusiveMaximum": 1, "description": "A definite / suspected floor applies only when the Bayesian posterior is at least this; below it the met criteria are reported as a conflict (a reading error or a finding that does not fit), and the rank is left to the evidence." },
         "definitiveLR": { "type": "number", "minimum": 1, "description": "Likelihood ratio given to a pathognomonic finding flagged definitive." },
         "minLr": { "type": "number", "exclusiveMinimum": 0, "description": "Floor of any single likelihood ratio (no finding zeroes a disease)." },
         "maxLr": { "type": "number", "minimum": 1, "description": "Ceiling of any single non-pathognomonic likelihood ratio." },

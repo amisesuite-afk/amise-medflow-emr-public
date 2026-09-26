@@ -5,8 +5,8 @@
  * their schemas and the Swift / TypeScript types; this FAILS (exit 1) when a reference is broken:
  * a finding, examination sign, decision-rule band, laboratory analyte, PANE id, iOS candidate,
  * decision or history frame that does not exist; a link under the wrong level; a referenced ratio
- * that does not apply to the disease; malformed criteria logic; a pathognomonic entry counted
- * twice; or content marked reviewed. Checks: vademecum.ts.
+ * that does not apply to the disease; malformed criteria logic; a pathognomonic entry with
+ * neither a ratio nor the definitive flag; or content marked reviewed. Checks: vademecum.ts.
  */
 
 import { join } from 'node:path';

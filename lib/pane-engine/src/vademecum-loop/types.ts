@@ -50,6 +50,7 @@ export interface VademecumPolicy {
   defaultThresholds: VThresholds;
   cantMissThresholds: VThresholds;
   criteriaFloors: VCriteriaFloors;
+  criteriaMinPosterior: number;
   definitiveLR: number;
   minLr: number;
   maxLr: number;

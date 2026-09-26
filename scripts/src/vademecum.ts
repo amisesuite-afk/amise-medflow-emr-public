@@ -14,7 +14,8 @@
  *     of its own and resolves for the disease (it is one of the sign's or rule's targets); an own
  *     link has at least one ratio; "absence meaningful" needs a negative ratio;
  *   - criteria logic is well formed (each operator has its fields, atLeast k ≤ items, rule bands
- *     exist); a pathognomonic entry is either definitive or has a ratio and is not also a link;
+ *     exist); a pathognomonic entry is either definitive or has a ratio (it may also be an ordinary
+ *     link of the disease's profile: the loop counts it once, at the larger of the two ratios);
  *     an exclusion names a finding or a sex; an incidental work-up names a classification criteria
  *     of the same disease and triggers that can start a case;
  *   - phase 1 is unreviewed: nothing is marked signed off and lastReviewed stays "unknown".
@@ -211,7 +212,6 @@ export function checkVademecum(files: VademecumFiles, repoRoot: string): { probl
         const pw = `${w} pathognomonic ${p.finding}`;
         if (!findings.has(p.finding)) problems.push(`${pw}: not in the finding dictionary`);
         if (p.definitive === !!p.lrPositive) problems.push(`${pw}: either definitive (no ratio) or a likelihood ratio`);
-        if (linkIds.has(p.finding)) problems.push(`${pw}: also an ordinary link (it would count twice)`);
         for (const r of p.requires ?? []) if (!findings.has(r)) problems.push(`${pw}: required finding "${r}" is not in the dictionary`);
       }
       for (const e of d.exclusions) {

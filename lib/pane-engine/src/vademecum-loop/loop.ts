@@ -21,8 +21,10 @@ import type { CriteriaGrade, VademecumLevel, VCriteriaLevel } from './types.js';
  *      question can move the leading or a can't-miss diagnosis across a test or treat threshold
  *      (thresholds from the decision layer, lib/pane-engine/src/decision).
  *
- * The hybrid layer: met diagnostic criteria set a posterior floor (definite / suspected / NG12
- * referral), a pathognomonic finding is a very strong likelihood ratio shown as a confirmatory
+ * The hybrid layer: met diagnostic criteria set a posterior floor (definite / suspected), when the
+ * Bayesian posterior is at least the plausibility gate (criteriaMinPosterior; below it the met
+ * criteria are a conflict: a reading error or a finding that does not fit); met referral criteria
+ * (NG12) set the test decision without moving the rank; a pathognomonic finding is a very strong likelihood ratio shown as a confirmatory
  * finding (never an automatic diagnosis), a hard exclusion drops the diagnosis with its reason
  * (the clinician can override), and a conflict between the criteria and the Bayesian posterior is
  * reported. `hybrid: false` runs the Bayesian layer alone (for the shadow comparison).
@@ -78,10 +80,15 @@ export interface DiseaseResult {
   urgency: string;
   /** Bayesian posterior over the candidates. */
   probability: number;
-  /** Floor from met criteria (0 when none, or in Bayesian-only mode). */
+  /**
+   * Floor from met definite / suspected criteria (0 when none, in Bayesian-only mode, or when the
+   * posterior is below the policy's criteriaMinPosterior: then the criteria are a conflict instead).
+   */
   floor: number;
   /** max(probability, floor): what ranks and stops. */
   effective: number;
+  /** Floor from met referral criteria (NG12): sets the test decision (band) only, never the rank. */
+  referralFloor: number;
   band: Band;
   thresholds: { test: number; treat: number; source: string };
   criteria: CriteriaStatus[];
@@ -205,13 +212,17 @@ export function scoreDisease(v: Vademecum, d: LoadedDisease, answers: Record<str
     contributions.push({ finding: findingId, label: findingLabel(v, findingId), factor, kind: 'rule' });
   }
 
-  // Pathognomonic (confirmatory or refuting) findings.
+  // Pathognomonic (confirmatory or refuting) findings. When the finding is also a link of the
+  // disease's profile, it counts once, at the stronger of the two ratios (a cited confirmatory
+  // ratio never weakens the profile's own).
   for (const pg of d.disease.pathognomonic) {
     if (answers[pg.finding] !== true) continue;
     if ((pg.requires ?? []).some(r => answers[r] !== true)) continue;
     let factor: number | null = null;
     if (hybrid) factor = pg.definitive ? v.policy.definitiveLR : pg.lrPositive?.point ?? null;
     else if (pg.lrPositive) factor = clampLr(v, pg.lrPositive.point);
+    const own = d.links.get(pg.finding)?.lrPositive;
+    if (own !== null && own !== undefined && (factor === null || (factor >= 1 && own > factor))) factor = factor === null ? clampLr(v, own) : Math.max(factor, clampLr(v, own));
     if (factor === null) continue;
     consumed.add(pg.finding);
     logW += Math.log(factor);
@@ -266,6 +277,11 @@ function floorFor(v: Vademecum, grade: CriteriaGrade): number {
   return grade === 'classification' ? 0 : v.policy.criteriaFloors[grade];
 }
 
+/** The rank floor that applies at this posterior (definite / suspected only; gated by criteriaMinPosterior). */
+function gatedFloor(v: Vademecum, diagnosticFloor: number, probability: number): number {
+  return probability >= v.policy.criteriaMinPosterior ? diagnosticFloor : 0;
+}
+
 function criteriaContext(v: Vademecum, input: LoopInput, answers: Record<string, boolean>): CriteriaContext {
   return { answers, patient: input.patient, externals: input.externals ?? {}, ruleBands: v.ruleBands, findings: v.findings };
 }
@@ -302,25 +318,31 @@ export function evaluate(v: Vademecum, candidateIds: readonly string[], input: L
       criteriaId: c.id, name: c.name, kind: c.kind, source: c.source, fromMemory: c.fromMemory,
       levels: c.levels.map(l => ({ id: l.id, label: l.label, grade: l.grade, status: evalCriteria(l.when, ctx) })),
     }));
-    let floor = 0;
+    let diagnosticFloor = 0;
+    let referralFloor = 0;
     const criteriaLabels: string[] = [];
     if (hybrid) {
       for (const c of criteria) {
         const met = c.levels.filter(l => l.status === true);
-        for (const l of met) floor = Math.max(floor, floorFor(v, l.grade));
+        for (const l of met) {
+          if (l.grade === 'referral') referralFloor = Math.max(referralFloor, floorFor(v, l.grade));
+          else diagnosticFloor = Math.max(diagnosticFloor, floorFor(v, l.grade));
+        }
         // The highest met level names it ("Meets TG18 definite criteria").
         const top = met.sort((a, b) => floorFor(v, b.grade) - floorFor(v, a.grade))[0];
         if (top) criteriaLabels.push(`Meets ${c.name}: ${top.label} (${c.source})`);
       }
     }
+    const floor = gatedFloor(v, diagnosticFloor, probability);
     const effective = Math.max(probability, floor);
-    const band = bandFor(effective, d.thresholds);
+    const band = bandFor(Math.max(effective, referralFloor), d.thresholds);
     if (hybrid) {
-      const metDiagnostic = criteria.some(c => c.levels.some(l => l.status === true && (l.grade === 'definite' || l.grade === 'suspected')));
+      const metDiagnostic = diagnosticFloor > 0;
       if (metDiagnostic && probability < v.policy.conflictLowPosterior) {
+        const gated = floor === 0 ? ' (floor not applied: below the plausibility gate)' : '';
         conflicts.push({
           diseaseId: d.disease.id, kind: 'criteria-met-low-posterior',
-          detail: `${d.disease.label}: ${criteriaLabels.join('; ')}, but the Bayesian posterior is ${(probability * 100).toFixed(0)}%.`,
+          detail: `${d.disease.label}: ${criteriaLabels.join('; ')}, but the Bayesian posterior is ${(probability * 100).toFixed(1)}%${gated}.`,
         });
       }
       const refuted = criteria.filter(c => c.kind === 'diagnostic' && c.levels.length > 0 && c.levels.every(l => l.status === false));
@@ -333,7 +355,7 @@ export function evaluate(v: Vademecum, candidateIds: readonly string[], input: L
     }
     return {
       id: d.disease.id, label: d.disease.label, icd10: d.disease.icd10, pane: d.disease.pane, area: d.area,
-      cantMiss: d.disease.cantMiss, urgency: d.disease.urgency, probability, floor, effective, band,
+      cantMiss: d.disease.cantMiss, urgency: d.disease.urgency, probability, floor, effective, referralFloor, band,
       thresholds: { ...d.thresholds, source: d.thresholdSource }, criteria, criteriaLabels,
       confirmatory: s.confirmatory, contributions: s.contributions,
     };
@@ -487,19 +509,31 @@ function entropy(ps: Iterable<number>): number {
  */
 interface Core {
   logW: Map<string, number>;
+  /** Definite / suspected floor before the plausibility gate. */
   floor: Map<string, number>;
+  /** Referral floor (band only). */
+  referral: Map<string, number>;
 }
 
 interface CoreView {
   probability: Map<string, number>;
   effective: Map<string, number>;
+  /** max(effective, referral floor): what the band reads. */
+  banded: Map<string, number>;
   leader: string | null;
 }
 
-function diseaseFloor(v: Vademecum, d: LoadedDisease, ctx: CriteriaContext): number {
-  let floor = 0;
-  for (const c of d.disease.criteria) for (const l of c.levels) if (evalCriteria(l.when, ctx) === true) floor = Math.max(floor, floorFor(v, l.grade));
-  return floor;
+function diseaseFloors(v: Vademecum, d: LoadedDisease, ctx: CriteriaContext): { diagnostic: number; referral: number } {
+  let diagnostic = 0;
+  let referral = 0;
+  for (const c of d.disease.criteria) {
+    for (const l of c.levels) {
+      if (l.grade === 'classification' || evalCriteria(l.when, ctx) !== true) continue;
+      if (l.grade === 'referral') referral = Math.max(referral, floorFor(v, l.grade));
+      else diagnostic = Math.max(diagnostic, floorFor(v, l.grade));
+    }
+  }
+  return { diagnostic, referral };
 }
 
 function coreEntry(v: Vademecum, d: LoadedDisease, input: LoopInput, answers: Record<string, boolean>, core: Core): void {
@@ -507,14 +541,17 @@ function coreEntry(v: Vademecum, d: LoadedDisease, input: LoopInput, answers: Re
   if (hybrid && excludedBy(v, d, answers, input.patient, new Set(input.overrides ?? []))) {
     core.logW.delete(d.disease.id);
     core.floor.delete(d.disease.id);
+    core.referral.delete(d.disease.id);
     return;
   }
   core.logW.set(d.disease.id, scoreDisease(v, d, answers, input.patient, hybrid).logW);
-  core.floor.set(d.disease.id, hybrid ? diseaseFloor(v, d, criteriaContext(v, input, answers)) : 0);
+  const floors = hybrid ? diseaseFloors(v, d, criteriaContext(v, input, answers)) : { diagnostic: 0, referral: 0 };
+  core.floor.set(d.disease.id, floors.diagnostic);
+  core.referral.set(d.disease.id, floors.referral);
 }
 
 function coreOf(v: Vademecum, candidates: readonly string[], input: LoopInput, answers: Record<string, boolean>): Core {
-  const core: Core = { logW: new Map(), floor: new Map() };
+  const core: Core = { logW: new Map(), floor: new Map(), referral: new Map() };
   for (const id of candidates) {
     const d = v.diseases.get(id);
     if (d && applies(d.disease, input.patient)) coreEntry(v, d, input, answers, core);
@@ -523,7 +560,7 @@ function coreOf(v: Vademecum, candidates: readonly string[], input: LoopInput, a
 }
 
 function coreWith(v: Vademecum, base: Core, candidates: readonly string[], input: LoopInput, answers: Record<string, boolean>, changed: readonly string[]): Core {
-  const core: Core = { logW: new Map(base.logW), floor: new Map(base.floor) };
+  const core: Core = { logW: new Map(base.logW), floor: new Map(base.floor), referral: new Map(base.referral) };
   const touched = new Set<string>();
   for (const f of changed) for (const id of v.reverse.get(f) ?? []) touched.add(id);
   const live = new Set(candidates);
@@ -534,22 +571,24 @@ function coreWith(v: Vademecum, base: Core, candidates: readonly string[], input
   return core;
 }
 
-function viewOf(core: Core): CoreView {
+function viewOf(v: Vademecum, core: Core): CoreView {
   const max = Math.max(...core.logW.values());
   let total = 0;
   const w = new Map<string, number>();
   for (const [id, l] of core.logW) { const x = Math.exp(l - max); w.set(id, x); total += x; }
   const probability = new Map<string, number>();
   const effective = new Map<string, number>();
+  const banded = new Map<string, number>();
   let leader: string | null = null;
   for (const [id, x] of w) {
     const p = x / (total || 1);
     probability.set(id, p);
-    const e = Math.max(p, core.floor.get(id) ?? 0);
+    const e = Math.max(p, gatedFloor(v, core.floor.get(id) ?? 0, p));
     effective.set(id, e);
+    banded.set(id, Math.max(e, core.referral.get(id) ?? 0));
     if (leader === null || e > effective.get(leader)! || (e === effective.get(leader)! && id < leader)) leader = id;
   }
-  return { probability, effective, leader };
+  return { probability, effective, banded, leader };
 }
 
 /** P(finding present | disease) for the predictive distribution: LR+ × the finding's base rate. */
@@ -557,7 +596,7 @@ function presentProbability(v: Vademecum, d: LoadedDisease, findingId: string): 
   const f = v.findings.get(findingId)!;
   const pg = d.disease.pathognomonic.find(p => p.finding === findingId);
   if (pg?.definitive) return 0.9;
-  const lr = pg?.lrPositive?.point ?? d.links.get(findingId)?.lrPositive ?? 1;
+  const lr = Math.max(pg?.lrPositive?.point ?? 0, d.links.get(findingId)?.lrPositive ?? 0) || 1;
   return Math.min(0.99, Math.max(0.001, lr * f.baseRate));
 }
 
@@ -568,11 +607,11 @@ function presentProbability(v: Vademecum, d: LoadedDisease, findingId: string): 
 function bandsChange(v: Vademecum, before: CoreView, after: CoreView): boolean {
   if (!before.leader) return false;
   const band = (view: CoreView, id: string): Band | null => {
-    const e = view.effective.get(id);
+    const e = view.banded.get(id);
     return e === undefined ? null : bandFor(e, v.diseases.get(id)!.thresholds);
   };
   if (after.leader && after.leader !== before.leader && band(after, after.leader) !== 'observe') return true;
-  for (const id of before.effective.keys()) {
+  for (const id of before.banded.keys()) {
     if (id !== before.leader && !v.diseases.get(id)!.disease.cantMiss) continue;
     if (band(before, id) !== band(after, id)) return true;
   }
@@ -655,7 +694,7 @@ interface GainContext {
 
 function gainContext(v: Vademecum, candidates: readonly string[], input: LoopInput, answers: Record<string, boolean>): GainContext {
   const core = coreOf(v, candidates, input, answers);
-  return { candidates, input, answers, core, view: viewOf(core) };
+  return { candidates, input, answers, core, view: viewOf(v, core) };
 }
 
 /** Expected information gain (nats) of one question over the candidates' Bayesian posterior. */
@@ -689,7 +728,7 @@ function questionGainIn(v: Vademecum, g: GainContext, q: { kind: 'finding' | 'ru
   let changesBand = false;
   for (const o of outcomes) {
     if (o.p <= 0) continue;
-    const after = viewOf(coreWith(v, g.core, g.candidates, g.input, o.answers, o.changed));
+    const after = viewOf(v, coreWith(v, g.core, g.candidates, g.input, o.answers, o.changed));
     expected += o.p * entropy(after.probability.values());
     if (!changesBand && bandsChange(v, g.view, after)) changesBand = true;
   }
