@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "id": "entry-pathology-adenoma-histology",
+  "condition": "Colorectal adenoma confirmed on histology",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "58-year-old man seen with the histology of an 18 mm polyp removed at colonoscopy for a positive FIT.",
+  "tags": [
+    "entry:pathology",
+    "vademecum-pilot"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Polyp histology result",
+    "hpi": "Colonoscopy for a positive FIT (FIT 32 µg Hb/g): one 18 mm pedunculated sigmoid polyp removed en bloc; rest of the colon normal to the caecum. No bleeding, no change in bowel habit, no weight loss.",
+    "socrates": {},
+    "symptoms": [],
+    "negatives": [
+      "rectal bleeding",
+      "change in bowel habit",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 72,
+        "systolicBp": 130,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.6,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Histology: sigmoid polyp",
+        "modality": "Other",
+        "region": "Colon",
+        "minutesAgo": 10080,
+        "result": "Tubulovillous adenoma with low-grade dysplasia, 18 mm, completely excised (margin clear). No invasive malignancy."
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker."
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "topk-adenoma",
+          "severity": "quality",
+          "match": [
+            "adenoma",
+            "polyp",
+            "icd:D12"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ],
+          "note": "The pathology is the diagnosis; the vademecum offers it to the outcomes loop as a final-diagnosis prompt (never written without the clinician).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web PANE (2026-09-26): no adenoma diagnosis in PANE and the histology report is not read; the vademecum shadow treats the histology as definitive and prompts a final diagnosis."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-2020-polyp",
+      "name": "BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines",
+      "year": 2020,
+      "section": "High-risk findings (≥ 2 premalignant polyps including ≥ 1 advanced, or ≥ 5 premalignant polyps): one-off surveillance colonoscopy at 3 years; otherwise no colonoscopic surveillance (return to screening). A single completely excised advanced adenoma is not high risk on its own.",
+      "citation": "Rutter MD et al. Gut 2020;69:201-23.",
+      "verified": false
+    }
+  ],
+  "rationale": "Entry point: pathology. Confirmation rather than hypothesis: the vademecum treats the histology as a definitive (pathognomonic) finding and prompts a final diagnosis for the outcomes loop.",
+  "authoring": {
+    "author": "Claude (vademecum phase 1, entry-point pilot)",
+    "date": "2026-09-26",
+    "notes": "Starts from a result (laboratory, imaging or pathology), not a complaint. Written for the vademecum shadow (clinval:web --engine vademecum); not verified on iOS; clinical sign-off pending (docs/clinical-validation/changes/vademecum-phase1.md)."
+  }
+}

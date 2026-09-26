@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "id": "entry-lab-raised-d-dimer",
+  "condition": "Pulmonary embolism presenting as a raised D-dimer",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "45-year-old woman recalled for a D-dimer of 1450 µg/L FEU taken for pleuritic chest pain after a long-haul flight.",
+  "tags": [
+    "entry:lab",
+    "vademecum-pilot"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 170,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "emergency",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Raised D-dimer",
+    "hpi": "Recalled after the out-of-hours doctor's blood test: D-dimer raised. Three days of sharp left-sided chest pain on breathing in and breathlessness on stairs, since a 10-hour flight. On the combined pill. No cough, no fever, no leg swelling noticed.",
+    "socrates": {},
+    "symptoms": [
+      "pleuritic chest pain",
+      "breathlessness"
+    ],
+    "negatives": [
+      "cough",
+      "fever",
+      "leg swelling"
+    ],
+    "exam": {
+      "general": "Mildly breathless. HR 106, BP 124/78, RR 22, SpO2 95% on air.",
+      "respiratory": "Chest clear.",
+      "cardiovascular": "Heart sounds normal.",
+      "msk": "Calves soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 106,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 22,
+        "temperatureC": 37.1,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "ddimer",
+        "name": "D-dimer",
+        "value": 1450,
+        "unit": "µg/L FEU",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "troponin",
+        "name": "Troponin",
+        "value": 8,
+        "unit": "ng/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 7.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 9,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Combined oral contraceptive pill"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Office manager. Non-smoker."
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "topk-pe",
+          "severity": "quality",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-pe",
+          "severity": "critical",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b"
+          ],
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng158",
+      "name": "NICE NG158 Venous thromboembolic diseases",
+      "year": 2020,
+      "section": "1.1: two-level PE Wells score; D-dimer when PE unlikely; CTPA when likely or D-dimer positive",
+      "citation": "NICE NG158 (2020, updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Entry point: a laboratory result. The D-dimer alone is non-specific; the loop goes back to the history (pleuritic pain, flight, oestrogen) and the examination (tachycardia, tachypnoea) and asks for the Wells score.",
+  "authoring": {
+    "author": "Claude (vademecum phase 1, entry-point pilot)",
+    "date": "2026-09-26",
+    "notes": "Starts from a result (laboratory, imaging or pathology), not a complaint. Written for the vademecum shadow (clinval:web --engine vademecum); not verified on iOS; clinical sign-off pending (docs/clinical-validation/changes/vademecum-phase1.md)."
+  }
+}

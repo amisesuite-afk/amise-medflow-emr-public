@@ -10,7 +10,8 @@
     "biliary",
     "outpatient",
     "incidental",
-    "over-treatment"
+    "over-treatment",
+    "entry:imaging"
   ],
   "inputs": {
     "patient": {

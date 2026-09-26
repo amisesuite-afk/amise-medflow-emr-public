@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "id": "entry-imaging-cxr-mass",
+  "condition": "Lung mass on a chest X-ray",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "64-year-old smoker whose pre-operative chest X-ray shows a spiculated right upper lobe mass.",
+  "tags": [
+    "entry:imaging",
+    "vademecum-pilot"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 64,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Chest X-ray shows a lung mass",
+    "hpi": "Pre-operative chest X-ray before an inguinal hernia repair. On questioning: cough for two months, one episode of blood-streaked sputum, 5 kg weight loss. No fever or night sweats.",
+    "socrates": {},
+    "symptoms": [
+      "cough",
+      "haemoptysis",
+      "weight loss"
+    ],
+    "negatives": [
+      "fever",
+      "night sweats"
+    ],
+    "exam": {
+      "general": "Well. Finger clubbing.",
+      "respiratory": "Reduced air entry right apex.",
+      "other": "Reducible right inguinal hernia."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 82,
+        "systolicBp": 142,
+        "diastolicBp": 86,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "calcium",
+        "name": "Calcium",
+        "value": 2.44,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Chest X-ray",
+        "modality": "XR",
+        "region": "Chest",
+        "minutesAgo": 2880,
+        "result": "3 cm spiculated mass in the right upper lobe. No effusion, no consolidation."
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker, 40 pack-years."
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "topk-lung-cancer",
+          "severity": "quality",
+          "match": [
+            "lung cancer",
+            "lung carcinoma",
+            "bronchial carcinoma",
+            "icd:C34"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web PANE (2026-09-26): reads the complaint and history only, not the chest X-ray report, and ranks the hernia booked for repair; the vademecum shadow starts from the X-ray finding (cxr_mass) instead."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-lung-cancer",
+          "severity": "critical",
+          "match": [
+            "lung cancer",
+            "lung carcinoma",
+            "bronchial carcinoma",
+            "icd:C34"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web PANE (2026-09-26): reads the complaint and history only, not the chest X-ray report, and ranks the hernia booked for repair; the vademecum shadow starts from the X-ray finding (cxr_mass) instead."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12-lung",
+      "name": "NICE NG12 Suspected cancer: recognition and referral — lung and pleural cancers",
+      "year": 2015,
+      "section": "1.1.1: suspected cancer pathway referral if chest X-ray findings suggest lung cancer or aged 40 and over with unexplained haemoptysis",
+      "citation": "NICE NG12 (2015, updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Entry point: an incidental imaging finding. NG12 referral criteria are met by the X-ray alone; the loop goes back to the history (haemoptysis, weight loss, smoking) and the examination (clubbing).",
+  "authoring": {
+    "author": "Claude (vademecum phase 1, entry-point pilot)",
+    "date": "2026-09-26",
+    "notes": "Starts from a result (laboratory, imaging or pathology), not a complaint. Written for the vademecum shadow (clinval:web --engine vademecum); not verified on iOS; clinical sign-off pending (docs/clinical-validation/changes/vademecum-phase1.md)."
+  }
+}
