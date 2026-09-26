@@ -616,6 +616,229 @@ const RELIEF_RULES: Rule[] = [
 const ANTACID = /\b(antacids?|gaviscon|omeprazole|lansoprazole|ppi|ranitidine|rennie)\b/;
 const NO_HELP = /\b(not|no|didn'?t|did not|doesn'?t|does not|nothing|without|never)\b[^.]{0,15}\b(help|helps|helped|relie\w*|benefit|effect|work\w*)\b|\bno (help|relief|benefit|effect)\b|\bunhelpful\b/;
 
+/** Answer keys whose text describes what changes a symptom, not a symptom of its own. */
+const TRIGGER_HEADS = new Set(['triggers', 'exacerbating', 'aggravating', 'relief', 'relieving']);
+
+/**
+ * History-frame answer keys (lib/triage-engine/src/history-frames: cough, breathlessness, lump,
+ * bleeding … frames, and the region-specific pain sites). Each rule maps a chip to an existing pane
+ * feature; a chip with no feature is record-only (history-frames/record-only.ts).
+ * lint:history-frames checks both directions.
+ *
+ * Answers under these keys get these rules plus the general vocabulary (TEXT_RULES); for a
+ * non-pain frame without the pain-only features (FRAME_PAIN_ONLY): "Nocturnal" cough is not
+ * nocturnal pain, "Episodic" breathlessness is not episodic pain.
+ */
+export const FRAME_KEY_RULES: Record<string, Rule[]> = {
+  // Pain — region sites that the generic SITE_RULES do not cover.
+  neck_site: [r(/./, 'neck_pain'), r(/\bthroat\b/, 'sore_throat'), r(/\bthyroid\b/, 'thyroid_swelling')],
+  back_site: [r(/./, 'back_pain')],
+  limb_site: [r(/./, 'limb_pain'), r(/\bfoot\b/, 'foot_problem')],
+  joint_site: [r(/./, 'joint_pain')],
+  genital_site: [r(/\b(testis|scrotum|bilateral)\b/, 'testicular_pain'), r(/\bgroin\b/, 'groin_pain')],
+  // Cough
+  cough_character: [r(/\bproductive\b/, 'productive_cough')],
+  sputum: [r(/./, 'productive_cough'), r(/\bpurulent\b|\bgreen\b|\byellow\b|\brusty\b|\bfoul\b/, 'purulent_sputum'),
+    r(/\bpink frothy\b/, 'pulmonary_oedema_cxr')],
+  haemoptysis: [],
+  cough_timing: [r(/\bprogressive\b/, 'progressive_course')],
+  cough_triggers: [r(/\bexercise\b/, 'exertional_symptoms'), r(/\blying flat\b/, 'worse_lying_flat')],
+  cough_relief: [r(/\bppi\b|\bantacid/, 'antacid_relief'), r(/\bace inhibitor\b/, 'acei_arb_use')],
+  cough_exposure: [r(/\bace inhibitor\b/, 'acei_arb_use'), r(/\bsmoker\b/, 'smoker')],
+  cough_assoc: [r(/\breflux\b/, 'heartburn')],
+  // Breathlessness
+  dyspnoea_exertion: [r(/\bmrc [1-5]\b/, 'exertional_symptoms'), r(/\bat rest\b/, 'speech_breathless')],
+  orthopnoea: [r(/./, 'orthopnoea')],
+  dyspnoea_timing: [r(/\bprogressive\b/, 'progressive_course')],
+  dyspnoea_assoc: [r(/\bcalf swelling\b/, 'unilateral_leg_swelling', 'leg_swelling')],
+  dyspnoea_triggers: [],
+  dyspnoea_relief: [],
+  dyspnoea_risk: [r(/\bsmoker\b/, 'smoker'), r(/\bsurgery or immobility\b/, 'recent_immobility', 'recent_surgery'),
+    r(/\blong-haul\b/, 'recent_immobility'), r(/\boestrogen\b/, 'oestrogen_use')],
+  // Lump / swelling
+  lump_site: [
+    r(/\binguinal\b/, 'groin_swelling', 'hernia_swelling'), r(/\bfemoral\b/, 'groin_swelling', 'below_inguinal_ligament', 'hernia_swelling'),
+    r(/\bumbilical\b|\bparaumbilical\b/, 'umbilical_swelling', 'hernia_swelling'),
+    r(/\bepigastric \/ linea alba\b/, 'epigastric_swelling', 'hernia_swelling'),
+    r(/\bincisional\b/, 'incisional_swelling', 'previous_surgery'), r(/\bparastomal\b/, 'parastomal_bulge', 'stoma'),
+    r(/\bscrotum\b|\btestis\b|\bepididymis\b|\bcord\b|\bhemiscrotum\b/, 'scrotal_swelling'),
+    r(/\bthyroid\b/, 'thyroid_swelling', 'neck_lump'), r(/\banterior triangle\b/, 'anterior_triangle_lump', 'neck_lump'),
+    r(/\bposterior triangle\b|\bsupraclavicular\b|\bsubmandibular\b|\bsubmental\b|\boccipital\b|\bmidline\b|\bdiffuse neck\b|\bneck\b/, 'neck_lump'),
+    r(/\bparotid\b/, 'parotid_swelling', 'neck_lump'),
+    r(/\b(ruq|epigastric|luq|right flank|periumbilical|left flank|rlq|suprapubic|llq)\b/, 'abdominal_mass'),
+    r(/\baxilla\b/, 'axillary_nodes'), r(/\bgroin\b/, 'groin_swelling'),
+    r(/\b(scalp|face|shoulder|back|chest wall|abdominal wall|arm|forearm|hand|thigh|lower leg|foot)\b/, 'soft_tissue_lump'),
+    r(/\bperianal\b/, 'perianal_swelling'),
+  ],
+  lump_size: [r(/\brapid growth\b/, 'rapid_growth'), r(/\bfluctuates\b/, 'hernia_compressible')],
+  lump_character: [r(/\bhard\b|\birregular\b|\bfixed\b/, 'deep_lump'), r(/\bfluctuant\b/, 'swelling_fluctuant_soft'),
+    r(/\bpulsatile\b/, 'pulsatile_mass'), r(/\bmatted\b/, 'cervical_nodes')],
+  lump_tenderness: [r(/\btender\b|\bpainful\b/, 'localised_pain')],
+  lump_skin: [r(/\bredness\b/, 'erythema_surrounding'), r(/\bpunctum\b/, 'punctum'), r(/\bulcerated\b/, 'skin_ulceration'),
+    r(/\bdischarging\b/, 'discharge_pus')],
+  lump_assoc: [r(/\bpain on straining\b/, 'worse_straining'), r(/\bchronic cough\b/, 'cough'),
+    r(/\blower urinary tract symptoms\b/, 'prostate_symptoms'), r(/\bheavy lifting\b/, 'worse_straining'),
+    r(/\babdominal pain\b/, 'abdominal_pain'), r(/\bear pain\b/, 'neck_pain'), r(/\brecent infection\b/, 'sore_throat')],
+  lump_systemic: [],
+  lump_movement: [r(/\bmoves on swallowing\b/, 'thyroid_swelling'), r(/\btongue protrusion\b/, 'neck_lump')],
+  lump_nodes: [r(/\bmultiple nodes\b/, 'cervical_nodes'), r(/\baxillary\b/, 'axillary_nodes'), r(/\binguinal\b/, 'inguinal_nodes')],
+  reducibility: [r(/\bcough impulse\b/, 'cough_impulse', 'hernia_swelling'), r(/^reducible$|\breduces on lying\b/, 'groin_lump_reducible', 'hernia_compressible'),
+    r(/\birreducible\b/, 'hernia_irreducible')],
+  transillumination: [r(/^transilluminates$/, 'swelling_fluctuant_soft'), r(/\bdoes not transilluminate\b|\bcannot get above\b/, 'testicular_mass'),
+    r(/\bcan get above\b|\bseparate from the testis\b|\bbag of worms\b/, 'scrotal_swelling')],
+  lump_depth: [r(/\bdeep to fascia\b|\bover 5 cm\b/, 'deep_lump'), r(/\bsubcutaneous\b/, 'soft_tissue_lump')],
+  swelling_site: [r(/\b(right|left) leg\b/, 'unilateral_leg_swelling', 'leg_swelling'), r(/\bbilateral legs\b/, 'bilateral_leg_oedema', 'leg_swelling'),
+    r(/\bankle only\b|\bto the knee\b|\bwhole leg\b/, 'leg_swelling')],
+  swelling_character: [r(/\bpitting\b/, 'leg_swelling'), r(/^tender$/, 'calf_tenderness'), r(/\bwarm\b|\bred\b/, 'erythema_surrounding')],
+  swelling_assoc: [r(/\bvisible varicosities\b/, 'varicosities'), r(/\bleg ulcer\b/, 'skin_ulceration')],
+  swelling_risk: [r(/\bsurgery or immobility\b|\blong-haul\b/, 'recent_immobility'), r(/\bactive cancer\b/, 'known_malignancy'),
+    r(/\boestrogen\b/, 'oestrogen_use')],
+  // Breast
+  breast_site: [r(/./, 'breast_lump'), r(/\baxilla\b/, 'axillary_nodes'), r(/^bilateral$/, 'bilateral_breast')],
+  breast_character: [r(/\bhard\b|\birregular\b|\bfixed to\b/, 'breast_lump_hard'), r(/\bmobile\b|\bsmooth\b|\brubbery\b/, 'breast_lump_mobile'),
+    r(/^tender$/, 'breast_pain'), r(/\bcystic\b|\bsoft\b|\bfirm\b|\bnon-tender\b/, 'breast_lump')],
+  breast_size: [r(/\brapid growth\b/, 'rapid_growth'), r(/\bcyclical\b/, 'cyclical_breast_pain')],
+  nipple_discharge: [r(/./, 'nipple_discharge'), r(/\bbloody\b|\bsingle duct\b/, 'bloody_nipple_discharge'), r(/\bmilky\b/, 'post_lactation'),
+    r(/\bpurulent\b/, 'breast_redness')],
+  breast_skin: [r(/\bdimpling\b|\btethering\b|\bpeau d'orange\b/, 'skin_dimpling'), r(/\bnipple inversion\b/, 'nipple_inversion'),
+    r(/\bredness\b/, 'breast_redness'), r(/\bnipple eczema\b|\bulceration\b/, 'skin_ulceration')],
+  breast_assoc: [r(/\baxillary lump\b/, 'axillary_nodes'), r(/\bbreast pain\b/, 'breast_pain'), r(/\bbreastfeeding\b/, 'post_lactation')],
+  breast_risk: [r(/\bprevious breast cancer\b/, 'known_malignancy'), r(/\bhrt \/ ocp\b/, 'oestrogen_use')],
+  // Bleeding
+  bleeding_site: [r(/\brectal\b/, 'pr_bleeding'), r(/\bvomit\b/, 'haematemesis'), r(/\burine\b/, 'haematuria'),
+    r(/\bheavy periods\b/, 'abnormal_uterine_bleeding'), r(/\bafter surgery\b/, 'recent_surgery')],
+  bleeding_colour: [r(/\bbright red\b|\bdark red\b|\bmaroon\b/, 'pr_bleeding'), r(/\bmelaena\b/, 'melaena')],
+  bleeding_relation: [r(/./, 'pr_bleeding'), r(/\bmixed with stool\b/, 'change_bowel_habit')],
+  bleeding_volume: [r(/\blarge with clots\b|\bmassive\b/, 'visible_blood_pr_large'), r(/\bmassive\b/, 'haemodynamic_instability')],
+  bleeding_assoc: [r(/\bmucus\b/, 'mucus_pr'), r(/\bpain on defaecation\b/, 'pain_on_defaecation'), r(/\banal pain\b/, 'anal_pain'),
+    r(/\bprotrusion\b/, 'prolapse_pr'), r(/\bclots\b/, 'visible_haematuria'), r(/\bmissed period\b/, 'missed_period')],
+  bleeding_drugs: [r(/\banticoagulant\b/, 'anticoagulant_use'), r(/\bantiplatelet\b/, 'antiplatelet_use'), r(/\bnsaids\b/, 'nsaid_use')],
+  bleeding_risk: [r(/\binflammatory bowel\b/, 'ulcerative_colitis_history'), r(/\balcohol\b/, 'alcohol_use'),
+    r(/\bliver disease\b/, 'known_liver_disease'), r(/\bsmoker\b/, 'smoker'), r(/\bcatheter\b/, 'recent_surgery')],
+  ugib_presentation: [r(/./, 'upper_gi_bleeding'), r(/\bhaematemesis\b|\bcoffee-ground\b/, 'haematemesis'), r(/\bmelaena\b/, 'melaena')],
+  haematuria_type: [r(/./, 'haematuria'), r(/\bvisible\b/, 'visible_haematuria')],
+  haematuria_stream: [r(/./, 'haematuria')],
+  haematuria_pain: [r(/\bpainless\b/, 'painless_haematuria'), r(/\bloin pain\b/, 'loin_pain'), r(/\bdysuria\b/, 'dysuria')],
+  pv_pattern: [r(/\bpostmenopausal\b/, 'postmenopausal_bleeding'), r(/\bpostcoital\b/, 'postcoital_bleeding'),
+    r(/\bintermenstrual\b|\bheavy menstrual\b/, 'abnormal_uterine_bleeding'), r(/\bin pregnancy\b/, 'pregnant')],
+  // Bowel habit
+  bowel_change: [r(/\blooser\b/, 'diarrhoea', 'change_bowel_habit'), r(/^constipation$/, 'constipation', 'change_bowel_habit'),
+    r(/\balternating\b/, 'change_bowel_habit'), r(/\babsolute constipation\b/, 'absolute_constipation')],
+  stool: [r(/\bwatery\b/, 'diarrhoea'), r(/\bblood mixed in\b/, 'pr_bleeding', 'bloody_diarrhoea'), r(/^mucus$/, 'mucus_pr'),
+    r(/\bpale greasy\b/, 'steatorrhoea'), r(/\bblack stools\b/, 'melaena'), r(/\bnocturnal diarrhoea\b/, 'diarrhoea')],
+  bowel_frequency: [r(/./, 'diarrhoea')],
+  bowel_assoc: [r(/\burgency\b/, 'tenesmus')],
+  bowel_context: [r(/\bsuspect food\b|\bsick contacts\b/, 'sick_contacts'), r(/\bhospital admission\b/, 'recent_hospitalisation'),
+    r(/\brecent antibiotics\b/, 'recent_antibiotics')],
+  // Dysphagia
+  dysphagia_type: [r(/./, 'dysphagia'), r(/^solids only$/, 'dysphagia_solids'), r(/\bsolids then liquids\b/, 'dysphagia_progressive', 'dysphagia_solids'),
+    r(/\bliquids more than solids\b|\bboth solids and liquids\b/, 'dysphagia_liquids')],
+  dysphagia_course: [r(/^progressive$/, 'dysphagia_progressive'), r(/./, 'dysphagia')],
+  dysphagia_level: [r(/./, 'dysphagia'), r(/\bchest\b/, 'chest_pain_oesophageal')],
+  dysphagia_assoc: [r(/\bfood bolus\b/, 'recurrent_bolus'), r(/\bvoice change\b/, 'hoarseness')],
+  dysphagia_relief: [r(/\bliquids only\b/, 'dysphagia_solids')],
+  // Jaundice
+  jaundice_pain: [r(/./, 'jaundice'), r(/^painless$/, 'painless_jaundice'), r(/\bruq\b/, 'ruq_pain'), r(/\bcolicky\b/, 'colicky_pain'),
+    r(/\bepigastric pain to the back\b/, 'epigastric_pain', 'radiation_to_back')],
+  jaundice_urine: [r(/\bpruritus\b/, 'pruritus'), r(/\bpale stools\b/, 'steatorrhoea')],
+  jaundice_assoc: [r(/\bdistension\b/, 'ascites')],
+  jaundice_history: [r(/\bknown gallstones\b/, 'us_gallstones'), r(/\bbiliary surgery or ercp\b/, 'previous_surgery'),
+    r(/\balcohol excess\b/, 'alcohol_use'), r(/\binjecting drug use\b/, 'injecting_drug_use'), r(/\bknown liver disease\b/, 'known_liver_disease')],
+  // Vomiting
+  vomit_content: [r(/./, 'nausea_vomiting'), r(/\bundigested food\b/, 'undigested_food_vomit'), r(/^bilious$/, 'bilious_vomiting'),
+    r(/\bfresh blood\b|\bcoffee-ground\b/, 'haematemesis', 'upper_gi_bleeding'), r(/\bfaeculent\b/, 'absolute_constipation')],
+  vomit_pattern: [r(/./, 'nausea_vomiting'), r(/\bprojectile\b/, 'projectile_vomiting'), r(/\beffortless\b/, 'vomiting_effortless')],
+  vomit_frequency: [r(/./, 'nausea_vomiting'), r(/\bmore than 5\b|\bunable to keep fluids\b/, 'dehydration')],
+  vomit_assoc: [r(/\bvertigo\b/, 'dizziness')],
+  vomit_context: [r(/\bpossible pregnancy\b/, 'missed_period'), r(/\bnew medication\b/, 'recent_antibiotics'), r(/\bdiabetes\b/, 'known_diabetes'),
+    r(/\brecent surgery\b/, 'recent_surgery', 'previous_surgery'), r(/\bsick contacts\b|\bsuspect food\b/, 'sick_contacts')],
+  // Fever
+  fever_pattern: [r(/./, 'fever')],
+  fever_temperature: [r(/\b(38|39)\b/, 'fever')],
+  fever_source: [r(/\bcough\b/, 'cough', 'productive_cough'), r(/\bfrequency\b/, 'frequency_urgency'),
+    r(/\bwound\b/, 'wound_erythema', 'wound_discharge')],
+  fever_exposure: [r(/\bflood water\b|\brat\b/, 'sick_contacts'), r(/\brecent surgery\b/, 'recent_surgery', 'previous_surgery'),
+    r(/\bline or catheter\b/, 'recent_hospitalisation'), r(/\bimmunosuppressed\b/, 'immunosuppression'), r(/\bsick contacts\b/, 'sick_contacts')],
+  // Urinary
+  luts_storage: [r(/\bfrequency\b|\burgency\b/, 'frequency_urgency'), r(/\bnocturia\b/, 'nocturia'), r(/\burge incontinence\b/, 'urinary_incontinence')],
+  luts_voiding: [r(/./, 'prostate_symptoms'), r(/\bincomplete emptying\b/, 'urinary_retention_symptoms')],
+  urinary_pain: [r(/\bsuprapubic\b/, 'suprapubic_pain')],
+  retention: [r(/\bunable to pass urine\b/, 'urinary_retention_symptoms'), r(/\boverflow\b/, 'overflow_incontinence', 'urinary_retention_symptoms')],
+  urinary_assoc: [r(/\bvisible haematuria\b/, 'visible_haematuria'), r(/\burethral discharge\b/, 'urethral_discharge')],
+  // Neurological
+  weakness_distribution: [r(/\bone side\b/, 'focal_weakness', 'limb_weakness', 'facial_weakness'), r(/\bone limb\b/, 'focal_weakness', 'limb_weakness'),
+    r(/\bboth legs\b/, 'bilateral_leg_symptoms', 'limb_weakness'), r(/\bproximal\b/, 'limb_weakness'), r(/\bgeneralised\b/, 'fatigue')],
+  weakness_course: [r(/\bresolved\b/, 'symptoms_resolved'), r(/\bprogressive\b/, 'progressive_course')],
+  neuro_assoc: [r(/\bfacial droop\b/, 'facial_weakness', 'focal_weakness'), r(/\bnumbness\b/, 'limb_numbness'), r(/\bunsteadiness\b/, 'gait_disturbance'),
+    r(/\burinary retention\b/, 'urinary_retention_symptoms'), r(/\bweakness\b/, 'limb_weakness'), r(/\bburning pain\b/, 'peripheral_neuropathy'),
+    r(/\bworse at night\b/, 'peripheral_neuropathy')],
+  numbness_distribution: [r(/./, 'limb_numbness'), r(/\bglove and stocking\b/, 'peripheral_neuropathy'), r(/\bsaddle\b/, 'saddle_anaesthesia'),
+    r(/\bone side of the body\b/, 'focal_weakness')],
+  numbness_risk: [r(/\bdiabetes\b/, 'known_diabetes'), r(/\balcohol\b/, 'alcohol_use'), r(/\bchemotherapy\b/, 'known_malignancy')],
+  dizziness_type: [r(/./, 'dizziness'), r(/\bunsteady\b/, 'ataxia', 'gait_disturbance')],
+  dizziness_duration: [r(/./, 'dizziness')],
+  dizziness_triggers: [r(/./, 'dizziness')],
+  dizziness_assoc: [r(/\bdiplopia\b/, 'visual_disturbance'), r(/\bdysarthria\b/, 'speech_disturbance'), r(/\blimb ataxia\b/, 'ataxia'),
+    r(/\bhearing loss\b|\btinnitus\b|\baural fullness\b/, 'dizziness')],
+  // Skin
+  skin_site: [r(/./, 'skin_lesion'), r(/\bsurgical wound\b/, 'recent_surgery'), r(/\b(toe|heel|sole|foot)\b/, 'foot_problem')],
+  lesion_change: [r(/./, 'skin_lesion_change')],
+  lesion_character: [r(/^pigmented$/, 'pigmented_lesion'), r(/\bulcerated\b/, 'ulcerated_lesion'), r(/\bbleeding\b/, 'skin_lesion_bleed'),
+    r(/\bitchy\b/, 'pruritus'), r(/./, 'skin_lesion')],
+  lesion_risk: [r(/\bimmunosuppressed\b/, 'immunosuppression'), r(/\bprevious skin cancer\b/, 'known_malignancy')],
+  lesion_assoc: [r(/\bregional lymphadenopathy\b/, 'lymph_node_skin_area')],
+  wound_appearance: [r(/\bwound erythema\b/, 'wound_erythema'), r(/\bspreading redness\b/, 'spreading_redness'), r(/\bwound swelling\b/, 'wound_swelling'),
+    r(/\bwarmth\b/, 'erythema_surrounding'), r(/\bserous discharge\b/, 'wound_discharge'), r(/\bpus discharge\b/, 'wound_discharge', 'discharge_pus'),
+    r(/\boffensive smell\b/, 'wound_discharge'), r(/\bwound opening\b/, 'wound_dehiscence_sign'), r(/\bnecrotic\b/, 'skin_necrosis'),
+    r(/\bexposed bone\b/, 'probe_to_bone')],
+  wound_pain: [r(/\bpain at site\b/, 'wound_pain'), r(/\bout of proportion\b/, 'pain_out_of_proportion')],
+  wound_assoc: [r(/\bfeeling unwell\b/, 'fatigue')],
+  wound_risk: [r(/\bdiabetes\b/, 'known_diabetes'), r(/\bsmoker\b/, 'smoker'), r(/\bsteroids\b/, 'steroid_use'),
+    r(/\bperipheral arterial disease\b/, 'absent_pulses', 'vascular_risk'), r(/\bvenous disease\b/, 'varicosities')],
+  rash_site: [r(/./, 'rash')],
+  rash_character: [r(/./, 'rash'), r(/\bnon-blanching purpura\b/, 'non_blanching_rash'), r(/\burticarial\b/, 'urticaria_angioedema'),
+    r(/\bblistering\b/, 'blistering')],
+  rash_assoc: [r(/^itch$/, 'pruritus'), r(/\bnew medication\b/, 'allergen_exposure'), r(/\brecent illness\b/, 'sick_contacts'),
+    r(/\bcontact exposure\b/, 'allergen_exposure')],
+  // Weight loss, fatigue
+  weight_amount: [r(/./, 'weight_loss')],
+  weight_intent: [r(/^unintentional$/, 'weight_loss')],
+  weight_appetite: [r(/\breduced appetite\b/, 'anorexia')],
+  weight_assoc: [r(/\bpolyuria\b/, 'polyuria_polydipsia')],
+  fatigue_pattern: [r(/./, 'fatigue')],
+  fatigue_assoc: [r(/\bpolyuria\b/, 'polyuria_polydipsia'), r(/\bwitnessed apnoea\b/, 'fatigue'), r(/\bheavy periods\b/, 'abnormal_uterine_bleeding')],
+  // Palpitations, syncope
+  palpitation_onset: [r(/./, 'palpitations')],
+  palpitation_rhythm: [r(/./, 'palpitations'), r(/^irregular$/, 'irregular_pulse')],
+  palpitation_duration: [r(/./, 'palpitations')],
+  palpitation_triggers: [r(/\bexertion\b/, 'exertional_symptoms'), r(/\bcaffeine or alcohol\b/, 'alcohol_use'), r(/./, 'palpitations')],
+  palpitation_relief: [r(/\bvagal\b/, 'paroxysmal_episodes'), r(/./, 'palpitations')],
+  palpitation_assoc: [r(/\bsweating\b/, 'diaphoresis'), r(/\banxiety\b/, 'anxiety_tremor')],
+  syncope_setting: [r(/./, 'syncope'), r(/\bon exertion\b/, 'exertional_symptoms'), r(/\bno trigger\b/, 'sudden_onset')],
+  syncope_prodrome: [r(/./, 'syncope'), r(/^no warning$/, 'sudden_onset')],
+  syncope_event: [r(/./, 'syncope'), r(/\bjerking\b/, 'seizure')],
+  syncope_recovery: [r(/./, 'syncope'), r(/\bprolonged confusion\b/, 'confusion')],
+  syncope_assoc: [r(/\bpalpitations\b/, 'palpitations')],
+  syncope_risk: [r(/\bknown heart disease\b/, 'known_heart_disease'), r(/\bsudden death\b/, 'known_heart_disease'),
+    r(/\bantihypertensives\b/, 'known_hypertension')],
+  // General symptom
+  course: [r(/\bprogressive\b/, 'progressive_course')],
+  general_severity: [],
+  general_triggers: [r(/\bexertion\b/, 'exertional_symptoms'), r(/\beating\b/, 'postprandial_pain'), r(/\bmovement\b/, 'pain_worse_movement')],
+  general_relief: [],
+  general_assoc: [r(/^pain$/, 'localised_pain')],
+};
+
+/** Pain-frame keys in FRAME_KEY_RULES (the full general vocabulary applies). */
+export const FRAME_PAIN_KEYS = new Set(['neck_site', 'back_site', 'limb_site', 'joint_site', 'genital_site']);
+
+/** Pain-specific features the general vocabulary must not give a non-pain history answer. */
+const FRAME_PAIN_ONLY = new Set(['episodic_pain', 'nocturnal_pain', 'postprandial_pain', 'colicky_pain', 'pain_worse_movement',
+  'severe_pain', 'localised_pain', 'pain_out_of_proportion']);
+const NON_PAIN_TEXT_RULES: Rule[] = TEXT_RULES
+  .map(rule => ({ ...rule, features: rule.features.filter(f => !FRAME_PAIN_ONLY.has(f)) }))
+  .filter(rule => rule.features.length > 0);
+
 const KEY_RULES: Record<string, Rule[]> = {
   site: SITE_RULES, location: SITE_RULES,
   radiation: RADIATION_RULES,
@@ -935,9 +1158,25 @@ export function extractFeaturesFromSocrates(
     if (!text) continue;
     const normKey = key.toLowerCase().replace(/[\s_-]+/g, '_').replace(/[^a-z_]/g, '');
     const head = normKey.split('_')[0];
+    const frameRules = FRAME_KEY_RULES[normKey];
+    if (frameRules) {
+      // A history-frame answer (cough, lump, bleeding … or a region-specific pain site).
+      applyRules(text, frameRules, out, cc);
+      applyRules(text, FRAME_PAIN_KEYS.has(normKey) ? TEXT_RULES : NON_PAIN_TEXT_RULES, out, cc);
+      continue;
+    }
     const rules = KEY_RULES[normKey] ?? KEY_RULES[head] ?? [];
     applyRules(text, rules, out, cc);
-    applyRules(text, TEXT_RULES, out, cc);
+    if (TRIGGER_HEADS.has(head)) {
+      // "Worse on coughing" is a manoeuvre that aggravates the pain, not a cough (history-by-complaint
+      // audit: the pain Aggravating chip "Coughing" used to add the cough feature).
+      const general: FeatureMap = {};
+      applyRules(text, TEXT_RULES, general, cc);
+      delete general.cough;
+      Object.assign(out, general);
+    } else {
+      applyRules(text, TEXT_RULES, out, cc);
+    }
     if (head === 'site' || head === 'location') {
       for (const s of SITE_PAIN_OR_LUMP) {
         if (recordHas(text, s.pattern)) for (const f of (isLump ? s.lump : s.pain)) out[f] = true;
