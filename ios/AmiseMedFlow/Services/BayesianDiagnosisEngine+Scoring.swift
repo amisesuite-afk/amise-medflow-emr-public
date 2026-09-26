@@ -7,16 +7,17 @@ extension BayesianDiagnosisEngine {
 
     // MARK: - Scoring
 
-    /// "a|b&c": true when any "|" alternative has all of its "&" terms affirmed at a word start.
+    /// "a|b&c": true when any "|" alternative has all of its "&" terms affirmed (termAffirmed:
+    /// word start; a short term as a whole word — BayesianDiagnosisEngine+FeatureTerms.swift).
     static func anyAlternative(_ spec: String, in source: NegationMatcher.Source) -> Bool {
-        alternatives(spec).contains { terms in terms.allSatisfy { source.contains($0, wordStart: true) } }
+        alternatives(spec).contains { terms in terms.allSatisfy { termAffirmed($0, in: source) } }
     }
 
     /// True when an alternative's terms are all mentioned but at least one is only ever negated.
     static func anyAlternativeDocumentedAbsent(_ spec: String, in source: NegationMatcher.Source) -> Bool {
         alternatives(spec).contains { terms in
-            terms.allSatisfy { !source.occurrences(of: $0, wordStart: true).isEmpty } &&
-                !terms.allSatisfy { source.contains($0, wordStart: true) }
+            terms.allSatisfy { !termOccurrences($0, in: source).isEmpty } &&
+                !terms.allSatisfy { termAffirmed($0, in: source) }
         }
     }
 
@@ -46,8 +47,8 @@ extension BayesianDiagnosisEngine {
     static func anyAlternative(_ spec: String, in text: FeatureText) -> Bool {
         alternatives(spec).contains { terms in
             terms.count == 1
-                ? text.whole.contains(terms[0], wordStart: true)
-                : text.sentences.contains { s in terms.allSatisfy { s.contains($0, wordStart: true) } }
+                ? termAffirmed(terms[0], in: text.whole)
+                : text.sentences.contains { s in terms.allSatisfy { termAffirmed($0, in: s) } }
         }
     }
 
@@ -57,7 +58,7 @@ extension BayesianDiagnosisEngine {
         guard !anyAlternative(spec, in: text) else { return false }
         return alternatives(spec).contains { terms in
             (terms.count == 1 ? [text.whole] : text.sentences).contains { s in
-                terms.allSatisfy { !s.occurrences(of: $0, wordStart: true).isEmpty }
+                terms.allSatisfy { !termOccurrences($0, in: s).isEmpty }
             }
         }
     }

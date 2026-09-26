@@ -1103,7 +1103,7 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "size", title: "Size change", question: "Has it changed in size?", icon: "arrow.up.left.and.arrow.down.right", multiSelect: false, key: "associations", options: [
                 HistoryOptionSpec(label: "Rapid growth", value: "Rapid growth", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Slow growth", value: "Slow growth", key: "associations", recordOnlyIOS: true, excludes: []),
-                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: false, excludes: []),
+                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: true, excludes: []),
                 HistoryOptionSpec(label: "Fluctuates in size", value: "Fluctuates in size", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Getting smaller", value: "Getting smaller", key: "associations", recordOnlyIOS: true, excludes: []),
             ]),
@@ -1211,7 +1211,7 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "size", title: "Size change", question: "Has it changed in size?", icon: "arrow.up.left.and.arrow.down.right", multiSelect: false, key: "associations", options: [
                 HistoryOptionSpec(label: "Rapid growth", value: "Rapid growth", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Slow growth", value: "Slow growth", key: "associations", recordOnlyIOS: true, excludes: []),
-                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: false, excludes: []),
+                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: true, excludes: []),
                 HistoryOptionSpec(label: "Fluctuates in size", value: "Fluctuates in size", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Getting smaller", value: "Getting smaller", key: "associations", recordOnlyIOS: true, excludes: []),
             ]),
@@ -1304,7 +1304,7 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "size", title: "Size change", question: "Has it changed in size?", icon: "arrow.up.left.and.arrow.down.right", multiSelect: false, key: "associations", options: [
                 HistoryOptionSpec(label: "Rapid growth", value: "Rapid growth", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Slow growth", value: "Slow growth", key: "associations", recordOnlyIOS: true, excludes: []),
-                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: false, excludes: []),
+                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: true, excludes: []),
                 HistoryOptionSpec(label: "Fluctuates in size", value: "Fluctuates in size", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Getting smaller", value: "Getting smaller", key: "associations", recordOnlyIOS: true, excludes: []),
             ]),
@@ -1398,7 +1398,7 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "size", title: "Size change", question: "Has it changed in size?", icon: "arrow.up.left.and.arrow.down.right", multiSelect: false, key: "associations", options: [
                 HistoryOptionSpec(label: "Rapid growth", value: "Rapid growth", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Slow growth", value: "Slow growth", key: "associations", recordOnlyIOS: true, excludes: []),
-                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: false, excludes: []),
+                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: true, excludes: []),
                 HistoryOptionSpec(label: "Fluctuates in size", value: "Fluctuates in size", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Getting smaller", value: "Getting smaller", key: "associations", recordOnlyIOS: true, excludes: []),
             ]),
@@ -1492,7 +1492,7 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "size", title: "Size change", question: "Has it changed in size?", icon: "arrow.up.left.and.arrow.down.right", multiSelect: false, key: "associations", options: [
                 HistoryOptionSpec(label: "Rapid growth", value: "Rapid growth", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Slow growth", value: "Slow growth", key: "associations", recordOnlyIOS: false, excludes: []),
-                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: false, excludes: []),
+                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: true, excludes: []),
                 HistoryOptionSpec(label: "Fluctuates in size", value: "Fluctuates in size", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Getting smaller", value: "Getting smaller", key: "associations", recordOnlyIOS: true, excludes: []),
             ]),
@@ -1646,7 +1646,7 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "size", title: "Size change", question: "Has it changed?", icon: "arrow.up.left.and.arrow.down.right", multiSelect: false, key: "associations", options: [
                 HistoryOptionSpec(label: "Rapid growth", value: "Rapid growth", key: "associations", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Slow growth", value: "Slow growth", key: "associations", recordOnlyIOS: true, excludes: []),
-                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: false, excludes: []),
+                HistoryOptionSpec(label: "Stable", value: "Stable", key: "associations", recordOnlyIOS: true, excludes: []),
                 HistoryOptionSpec(label: "Cyclical variation", value: "Cyclical variation", key: "associations", recordOnlyIOS: false, excludes: []),
             ]),
             HistoryDimensionSpec(id: "discharge", title: "Nipple discharge", question: "Any nipple discharge?", icon: "drop", multiSelect: true, key: "associations", options: [

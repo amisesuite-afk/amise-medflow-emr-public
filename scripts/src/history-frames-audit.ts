@@ -81,26 +81,32 @@ function wordStart(text: string, term: string): boolean {
 function affirmed(text: string, term: string): boolean {
   return !NEG.test(text) && text.includes(term);
 }
+let stemsCache: Set<string> | null = null;
+/** FeatureTerm.stems (BayesianDiagnosisEngine+FeatureTerms.swift): short terms matched at a word start. */
+export function featureTermStems(): Set<string> {
+  if (stemsCache) return stemsCache;
+  const src = readFileSync(join(ROOT, 'ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+FeatureTerms.swift'), 'utf8');
+  const m = /static let stems: Set<String> = \[([^\]]*)\]/.exec(src);
+  if (!m) throw new Error('BayesianDiagnosisEngine+FeatureTerms.swift: FeatureTerm.stems not found');
+  stemsCache = new Set([...m[1]!.matchAll(/"([^"]+)"/g)].map(x => x[1]!));
+  return stemsCache;
+}
 /**
- * A finding term of three letters or fewer that matches only inside a longer word ("sti" in
- * "stiffness" or "still"): the iOS engine counts it (word-start matching), the audit does not
- * credit it as a mapping and reports it (spuriousFindingHits).
+ * A database term in chip text, as BayesianDiagnosisEngine.termAffirmed matches it: at a word start,
+ * except that a term of four letters or digits or fewer (not a FeatureTerm stem) must be a whole
+ * word, with a plural "s"/"es" ("sti" is not in "still", "burn" not in "burning").
  */
-export const spuriousFindingHits: { chip: string; term: string; spec: string }[] = [];
-function shortTermInsideWord(text: string, term: string): boolean {
-  if (term.length > 3) return false;
-  return !new RegExp(`(^|[^a-z0-9])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^a-z0-9])`).test(text);
+function termAffirmed(text: string, term: string): boolean {
+  if (!/^[a-z0-9]{1,4}$/.test(term) || featureTermStems().has(term)) return wordStart(text, term);
+  if (NEG.test(text)) return false;
+  const esc = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const plural = !/[a-z]$/.test(term) ? '' : term.length <= 3 ? 's?' : '(s|es)?';
+  return new RegExp(`(^|[^a-z0-9])${esc}${plural}($|[^a-z0-9])`).test(text);
 }
 function anyAlternative(spec: string, text: string): boolean {
   return spec.toLowerCase().split('|').some(alt => {
     const terms = alt.split('&').filter(Boolean);
-    if (!terms.length || !terms.every(t => wordStart(text, t))) return false;
-    const spurious = terms.find(t => shortTermInsideWord(text, t));
-    if (spurious) {
-      spuriousFindingHits.push({ chip: text, term: spurious, spec });
-      return false;
-    }
-    return true;
+    return terms.length > 0 && terms.every(t => termAffirmed(text, t));
   });
 }
 const KEY_STOP = new Set(['pain', 'sign', 'test', 'with', 'type', 'form', 'and', 'the', 'for', 'from', 'that', 'this',
