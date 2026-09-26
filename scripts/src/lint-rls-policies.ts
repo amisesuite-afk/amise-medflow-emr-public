@@ -62,6 +62,17 @@ const REQUIRED_POLICIES: Record<string, string[]> = {
   appointment_requests: [
     'staff_all',
   ],
+  // Migration 94 (supabase-outcomes-calibration-migration.sql): nurse / doctor / admin only;
+  // front desk and portal patients have no policy. No UPDATE policy on snapshots (write-once).
+  prediction_snapshots: [
+    'clinicians_select_prediction_snapshots',
+    'clinicians_insert_prediction_snapshots',
+  ],
+  diagnosis_outcomes: [
+    'clinicians_select_diagnosis_outcomes',
+    'clinicians_insert_diagnosis_outcomes',
+    'clinicians_update_diagnosis_outcomes',
+  ],
 };
 
 const DIRECT_ENABLE_RE =

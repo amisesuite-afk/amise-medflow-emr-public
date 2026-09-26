@@ -472,3 +472,38 @@ are overridden here, so this step must stay after every step that creates those 
   outside the allow-list).
 - Independent of 87–92 and safe to apply on its own: it unblocks iOS cloud sync. When the app
   syncs a new column, add it to both `docs/sql/check-ios-columns.sql` and a new migration.
+
+### Migration 94 — `supabase-outcomes-calibration-migration.sql` (real-outcomes loop)
+
+- Two new tables for measuring the engines' accuracy on the practice's own patients
+  (`docs/clinical-validation/changes/outcomes-calibration.md`):
+  - `prediction_snapshots`: one row per completed encounter, written at completion. Coded data
+    only: top differential (disease ids, ICD-10, probabilities), triage level and scale, score
+    values, decision-layer bands, the feature ids the engine used, the working diagnosis
+    (disease id, ICD-10), the recorded ICD-10 codes, every model / rule version, and whether a
+    final diagnosis is expected (an operation or pathology). `encounter_ref` is
+    `web:<encounters.id>` or `ios:<Encounter.syncCode>` and unique: the first completion wins, so
+    a reopened and re-closed encounter keeps the prediction made before any later result.
+  - `diagnosis_outcomes`: the clinician-confirmed final diagnosis for an encounter (ICD-10, PANE
+    disease id where mappable), its source type (`histology`, `report_import`,
+    `operative_findings`, `operative_note`, `discharge_summary`, `follow_up`, `other`) and
+    date, what was done for each decision option, and an optional retrospective urgency. At most
+    one confirmed row per encounter (partial unique index). A BEFORE UPDATE trigger
+    (`enforce_diagnosis_outcome_update()`, errcode `42501`) makes every row immutable except
+    for retraction; a correction is "retract, then confirm a new row". `client_ref` (unique)
+    makes a retried insert idempotent.
+- RLS (Migration 89 model): nurse, doctor and admin may read and insert both tables and retract
+  an outcome. Front desk and portal patients match no policy. Grants: `authenticated` gets
+  SELECT/INSERT on snapshots (write-once) and SELECT/INSERT/UPDATE on outcomes (no DELETE on
+  either); `service_role` gets all four. CHECK constraints refuse free text in the code columns
+  (ICD-10 pattern, disease-id pattern, fixed value lists, JSON shapes and sizes).
+- `lint:rls-policies` requires the five policies. `scripts/src/outcomes-migration.test.ts`
+  checks the roles, write-once snapshots, immutability, one-confirmed-per-encounter and the
+  CHECKs on PGlite.
+- Independent of 87–93 and safe to apply on its own. Until it is applied:
+  - `POST /api/visit/complete` skips the snapshot (the encounter still closes) and says so in its
+    response (`snapshot: "unavailable"`);
+  - the dashboard's final-diagnosis panel and the admin calibration page show "available after
+    the database update"; nothing returns a 500;
+  - iOS keeps its snapshots and final diagnoses on the device (`Encounter.predictionSnapshotJson`
+    / `finalDiagnosisJson`), sync-ready, with no push yet.
