@@ -155,6 +155,18 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'ios/AmiseMedFlow/Services/WhatsMissing*.swift',
   'ios/AmiseMedFlow/Services/PatientScoreAutoPopulator+RecordFill.swift',
   'artifacts/dashboard/src/lib/whats-missing-web.ts',
+  // Evidence-based examination signs and decision-rule bands (evidence-exam) — web and iOS
+  'clinical-content/rules/exam-signs.json',
+  'clinical-content/rules/decision-rules.json',
+  'lib/pane-engine/src/evidence/*.ts',
+  'lib/pane-engine/src/evidence/*.json',
+  'ios/AmiseMedFlow/Resources/ExamSigns.json',
+  'ios/AmiseMedFlow/Resources/DecisionRules.json',
+  'ios/AmiseMedFlow/Services/ExamEvidenceCatalogue.swift',
+  'ios/AmiseMedFlow/Services/ExamSignRecord.swift',
+  'ios/AmiseMedFlow/Services/DecisionRuleEvidence.swift',
+  'artifacts/dashboard/src/lib/exam-evidence-features.ts',
+  'artifacts/dashboard/src/lib/decision-rule-scores.ts',
   // Dashboard
   'artifacts/dashboard/src/lib/drug-interactions.ts',
   'artifacts/dashboard/src/lib/drug-classes.ts',

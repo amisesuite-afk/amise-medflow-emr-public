@@ -107,7 +107,8 @@ enum ClinValIOSRunner {
         p.examNeuro = inp.exam?.neuro
         p.examMSK = inp.exam?.msk
         p.examSkin = inp.exam?.skin
-        p.examOther = inp.exam?.other
+        // Exam-step sign chips are "[sign]" lines in Other / additional findings (ExamSignRecord).
+        p.examOther = ExamSignRecord.merged(text: inp.exam?.other, states: inp.examSigns ?? [:])
 
         let comorbidities = inp.comorbidities ?? []
         p.pmhEntries = comorbidities.map { PMHEntry(condition: $0) }

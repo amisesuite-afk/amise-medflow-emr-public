@@ -388,7 +388,9 @@
       "ios": [
         "appendicitis",
         "perforated",
-        "perforation",
+        "ulcer perforation",
+        "bowel perforation",
+        "colonoscopic perforation",
         "diverticulitis",
         "anastomotic leak",
         "peritonitis",
@@ -451,7 +453,7 @@
         "aortic_aneurysm"
       ],
       "ios": [
-        "aortic aneurysm"
+        "abdominal aortic aneurysm"
       ]
     },
     "ascites": {
@@ -735,7 +737,17 @@
       "ios": [
         "lymphoma",
         "metastatic neck node",
-        "metasta"
+        "lymphadenopathy (lymphoma",
+        "gastric carcinoma",
+        "oesophageal / gastric",
+        "oesophageal carcinoma",
+        "pancreatic carcinoma",
+        "pancreatic ductal",
+        "breast carcinoma",
+        "invasive breast",
+        "thyroid carcinoma",
+        "melanoma",
+        "anal carcinoma"
       ]
     },
     "supraclavicular-malignancy": {
@@ -751,8 +763,8 @@
         "gastric carcinoma",
         "oesophageal / gastric",
         "pancreatic carcinoma",
-        "lymphoma",
-        "metasta"
+        "pancreatic ductal",
+        "lymphoma"
       ]
     }
   },

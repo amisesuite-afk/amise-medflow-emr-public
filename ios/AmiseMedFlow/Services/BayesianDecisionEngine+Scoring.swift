@@ -699,6 +699,12 @@ extension BayesianDecisionEngine {
                     triggered = BayesianDiagnosisEngine.postOpDayMatches(f.value, day: postOpDay)
                     sourceKey = "history"
 
+                case "sign", "rule":
+                    // DiagnosticDatabase.json 2.2.0 examination-sign and decision-rule features are
+                    // applied by the differential (BayesianDiagnosisEngine+Scoring.swift), not here;
+                    // without this case the free-text fallback below could read the key as a word.
+                    triggered = false
+
                 default:
                     // Pass 1: SOCRATES dict lookup — specialist early-form chips may store
                     // any custom DB key (e.g. lucid_interval, ecg, triad_nph) into

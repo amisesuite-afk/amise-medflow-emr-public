@@ -73,6 +73,15 @@ extension ConsultationView {
                 sectionHeader("Physical Examination", icon: "stethoscope",
                               filled: !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty)
             }
+
+            // Evidence-based high-yield signs and decision rules (evidence-exam): chips written as
+            // "[sign]" lines in Other / additional findings; nothing is pre-filled as normal.
+            ExamSignsSection(patient: patient,
+                             leadingDiagnoses: bayesianDx.prefix(3).map { $0.name },
+                             onChange: {
+                                 touch()
+                                 refreshBayesian()
+                             })
         }
     }
 

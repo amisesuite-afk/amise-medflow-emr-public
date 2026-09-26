@@ -98,7 +98,9 @@ extension BayesianDiagnosisEngine {
         socialText: String = "",
         bmi: Double? = nil,
         complaint: String = "",
-        hpi: String = ""
+        hpi: String = "",
+        examSigns: [String: String] = [:],
+        ruleBands: Set<String> = []
     ) -> [ScoredCandidate] {
         // Free text (exam, PMH, PSHx, social history, resulted reports) is matched negation-aware
         // through NegationMatcher: "Murphy's sign negative", "no guarding", "No crepitus",
@@ -162,6 +164,12 @@ extension BayesianDiagnosisEngine {
         }
 
         return candidates.map { c in
+            // Evidence-exam: while a decision rule's band fires for this candidate, the rule's
+            // component examination signs do not also count (DecisionRuleEvidence).
+            let firedRuleIDs = c.features
+                .filter { $0.key == "rule" && ruleBands.contains($0.value) }
+                .map { String($0.value.split(separator: ":").first ?? "") }
+            let groupedSigns = DecisionRuleEvidence.componentSigns(ofRules: firedRuleIDs)
             var logP = c.logPrior
             var evidence: [String] = []
             var evidenceSources: [String: [String]] = [:]
@@ -670,6 +678,21 @@ extension BayesianDiagnosisEngine {
                 case "age_over_50":
                     triggered = age >= 50
                     sourceKey = "demographics"
+
+                // ── Examination signs and decision rules (DiagnosticDatabase.json 2.2.0) ────
+                case "sign":
+                    // "<sign id>:present|absent": the Exam-step chip (ExamSignRecord), never free
+                    // text. An unrecorded sign was not examined and does not fire.
+                    let parts = f.value.split(separator: ":", maxSplits: 1).map(String.init)
+                    if parts.count == 2, examSigns[parts[0]] == parts[1], !groupedSigns.contains(parts[0]) {
+                        triggered = true
+                    }
+                    sourceKey = "exam"
+
+                case "rule":
+                    // "<rule id>:<band id>": the stored calculator result (DecisionRuleEvidence).
+                    triggered = ruleBands.contains(f.value)
+                    sourceKey = "score"
 
                 // ── Curated keys (DiagnosticDatabase.json 2.0.0 "coreConditions") ────────────
                 // Value: "|" separates alternatives, "&" joins terms that must all be present.

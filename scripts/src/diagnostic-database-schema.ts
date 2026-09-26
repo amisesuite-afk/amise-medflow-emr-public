@@ -50,6 +50,9 @@ export const CORE_FEATURE_KEYS = new Set([
   'complaint', 'finding', 'findingAbsent', 'notFinding', 'associations', 'site', 'character',
   'onset', 'radiation', 'timing', 'age_over', 'age_under', 'sex_male', 'sex_female', 'inv',
   'postOpDay',
+  // 2.2.0 (evidence-exam): examination signs and decision-rule bands, from
+  // clinical-content/rules/exam-signs.json and decision-rules.json (scripts/src/gen-exam-evidence-db.ts).
+  'sign', 'rule',
 ]);
 
 /** BayesianDiagnosisEngine.MaskingContext raw values (a negative feature's "maskedBy"). */

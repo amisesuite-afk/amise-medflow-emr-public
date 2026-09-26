@@ -168,8 +168,8 @@ struct DiagnosticReasoningSection: View {
                     .buttonStyle(.bordered)
                     .disabled(added.contains("dx:\(e.label)"))
             }
-            evidenceLine("For", e.forFindings.map(forText), forColor)
-            evidenceLine("Against", e.against.map(againstText), againstColor)
+            evidenceLine("For", e.forFindings.map { forText($0, hypothesis: e.label) }, forColor)
+            evidenceLine("Against", e.against.map { againstText($0, hypothesis: e.label) }, againstColor)
             evidenceLine("Expected, missing", e.missing.map(missingText), Color.secondary)
             evidenceLine("Doesn't fit", e.doesntFit.map(doesntFitText), fitColor)
         }
@@ -181,13 +181,19 @@ struct DiagnosticReasoningSection: View {
         return "\(rank). "
     }
 
-    private func forText(_ x: DiagnosticReasoning.EvidenceLine) -> String {
-        "\(x.label) (LR \(DiagnosticReasoning.formatLr(x.lr)))"
+    /// Examination signs and decision rules also show how far they moved the diagnosis
+    /// (DiagnosticReasoningAdapter+Evidence.swift).
+    private func moved(_ x: DiagnosticReasoning.EvidenceLine, hypothesis: String) -> String {
+        DiagnosticReasoningAdapter.evidenceMove(results: results, hypothesisLabel: hypothesis, finding: x.findingId) ?? ""
     }
 
-    private func againstText(_ x: DiagnosticReasoning.EvidenceLine) -> String {
+    private func forText(_ x: DiagnosticReasoning.EvidenceLine, hypothesis: String) -> String {
+        "\(x.label) (LR \(DiagnosticReasoning.formatLr(x.lr)))" + moved(x, hypothesis: hypothesis)
+    }
+
+    private func againstText(_ x: DiagnosticReasoning.EvidenceLine, hypothesis: String) -> String {
         let name = x.status == .absent ? "no " + DiagnosticReasoning.lowerFirst(x.label) : x.label
-        return "\(name) (LR \(DiagnosticReasoning.formatLr(x.lr)))"
+        return "\(name) (LR \(DiagnosticReasoning.formatLr(x.lr)))" + moved(x, hypothesis: hypothesis)
     }
 
     private func missingText(_ x: DiagnosticReasoning.EvidenceLine) -> String {

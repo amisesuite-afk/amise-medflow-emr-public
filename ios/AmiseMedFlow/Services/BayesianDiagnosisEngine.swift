@@ -2332,6 +2332,25 @@ enum BayesianDiagnosisEngine {
             enrichedSocrates["associations"] = assocSet
         }
 
+        // Evidence-exam (DiagnosticDatabase.json 2.2.0): the Exam-step sign chips (lines in
+        // examOther, ExamSignRecord) and the stored decision-rule results (DecisionRuleEvidence).
+        // The free text is scored without the lines of signs that carry their own likelihood
+        // ratios, so each sign counts once.
+        let examSignStates = ExamSignRecord.states(in: examOther)
+        let examOtherText = ExamSignRecord.strippingEngineSignLines(examOther ?? "")
+        var ruleValues: [String: Double] = [:]
+        if let v = alvaradoScore { ruleValues["alvarado"] = Double(v) }
+        if let v = airScore { ruleValues["air"] = Double(v) }
+        if let v = wellsPEScore { ruleValues["wells-pe"] = v }
+        if let v = percViolations { ruleValues["perc"] = Double(v) }
+        if let v = wellsDVTScore { ruleValues["wells-dvt"] = v }
+        if let v = heartScore { ruleValues["heart"] = Double(v) }
+        if let v = centorScore { ruleValues["centor"] = Double(v) }
+        if let v = lrinecScore { ruleValues["lrinec"] = Double(v) }
+        let ruleBands: Set<String> = DecisionRuleEvidence.replacesLegacyAdjustments
+            ? DecisionRuleEvidence.observedBands(ruleValues) : []
+        let legacyRules = !DecisionRuleEvidence.replacesLegacyAdjustments
+
         var scored = score(
             candidates: candidates,
             socrates: enrichedSocrates,
@@ -2344,7 +2363,7 @@ enum BayesianDiagnosisEngine {
             examNeuro: examNeuro ?? "",
             examMSK: examMSK ?? "",
             examSkin: examSkin ?? "",
-            examOther: examOther ?? "",
+            examOther: examOtherText,
             investigations: mergedInvestigations,
             age: ageYears,
             sex: sex,
@@ -2352,7 +2371,9 @@ enum BayesianDiagnosisEngine {
             socialText: socialHistoryText ?? "",
             bmi: bmi,
             complaint: baseCC,
-            hpi: hpi ?? ""
+            hpi: hpi ?? "",
+            examSigns: examSignStates,
+            ruleBands: ruleBands
         )
 
         // Evidence from resulted reports (DiagnosticDatabase.json 2.1.0): a curated diagnosis that
@@ -2381,7 +2402,7 @@ enum BayesianDiagnosisEngine {
                 examNeuro: examNeuro ?? "",
                 examMSK: examMSK ?? "",
                 examSkin: examSkin ?? "",
-                examOther: examOther ?? "",
+                examOther: examOtherText,
                 investigations: mergedInvestigations,
                 age: ageYears,
                 sex: sex,
@@ -2389,7 +2410,9 @@ enum BayesianDiagnosisEngine {
                 socialText: socialHistoryText ?? "",
                 bmi: bmi,
                 complaint: baseCC,
-                hpi: hpi ?? ""
+                hpi: hpi ?? "",
+                examSigns: examSignStates,
+                ruleBands: ruleBands
             ).filter(\.reportEvidence)
             scored.append(contentsOf: fromReports)
         }
@@ -2428,7 +2451,7 @@ enum BayesianDiagnosisEngine {
         // Alvarado score feedback: adjust appendicitis log-posterior based on
         // a computed Alvarado score (0–10) entered in the Clinical Scores tab.
         // This is the POC for clinical score → Bayesian engine integration.
-        if let alv = alvaradoScore {
+        if legacyRules, let alv = alvaradoScore {
             let adj: Int
             let label: String
             switch alv {
@@ -2540,7 +2563,7 @@ enum BayesianDiagnosisEngine {
         }
 
         // Wells DVT → DVT candidates
-        if let dvt = wellsDVTScore {
+        if legacyRules, let dvt = wellsDVTScore {
             let (adj, label): (Int, String) = dvt >= 3 ? (16, "Wells DVT \(Int(dvt)) — high probability (~53%)")
                                               : dvt >= 1 ? (8, "Wells DVT \(Int(dvt)) — moderate probability (~17%)")
                                               : (-6, "Wells DVT \(Int(dvt)) — low probability (~5%)")
@@ -2555,7 +2578,7 @@ enum BayesianDiagnosisEngine {
         }
 
         // Wells PE → PE candidates
-        if let pe = wellsPEScore {
+        if legacyRules, let pe = wellsPEScore {
             let (adj, label): (Int, String) = pe >= 7 ? (16, "Wells PE \(pe) — high probability (~41%)")
                                               : pe >= 5 ? (10, "Wells PE \(pe) — moderate probability (~16%)")
                                               : (-6, "Wells PE \(pe) — low probability (~3%)")
@@ -2585,7 +2608,7 @@ enum BayesianDiagnosisEngine {
         }
 
         // LRINEC → necrotising soft tissue infection candidates
-        if let lr = lrinecScore {
+        if legacyRules, let lr = lrinecScore {
             let (adj, label): (Int, String) = lr >= 8 ? (18, "LRINEC \(lr) — high risk necrotising fasciitis (PPV 93%)")
                                               : lr >= 6 ? (12, "LRINEC \(lr) — moderate risk (PPV 51%)")
                                               : (-4, "LRINEC \(lr) — low risk")
@@ -2984,7 +3007,7 @@ enum BayesianDiagnosisEngine {
         }
 
         // HEART: boosts ACS/cardiac chest pain candidates based on risk stratification
-        if let hs = heartScore, hs >= 4 {
+        if legacyRules, let hs = heartScore, hs >= 4 {
             let acstargets = ["acute coronary syndrome", "unstable angina", "myocardial infarction",
                                "nstemi", "stemi", "angina", "aortic dissection",
                                "pulmonary embolism", "myocarditis", "cardiac chest pain"]
@@ -3520,7 +3543,7 @@ enum BayesianDiagnosisEngine {
         }
 
         // AIR: boosts appendicitis and peritonitis diagnoses
-        if let air = airScore, air >= 5 {
+        if legacyRules, let air = airScore, air >= 5 {
             let airTargets = ["appendicitis", "acute appendicitis", "perforated appendicitis",
                               "appendicular abscess", "appendicular mass", "peritonitis"]
             let adj = air >= 9 ? 15 : 9
@@ -3535,7 +3558,7 @@ enum BayesianDiagnosisEngine {
         }
 
         // PERC: negative PERC (0 violations) suppresses PE in low-pretest context
-        if let pv = percViolations, pv == 0 {
+        if legacyRules, let pv = percViolations, pv == 0 {
             let peTargets = ["pulmonary embolism", "pe ", "venous thromboembolism", "dvt", "deep vein thrombosis"]
             for i in scored.indices {
                 let nameLow = scored[i].candidate.name.lowercased()
@@ -3768,7 +3791,7 @@ enum BayesianDiagnosisEngine {
         }
 
         // Centor/McIsaac boost: high score raises streptococcal pharyngitis / tonsillitis candidates
-        if let ct = centorScore, ct >= 3 {
+        if legacyRules, let ct = centorScore, ct >= 3 {
             let ctTargets = ["streptococcal", "strep", "pharyngitis", "tonsillitis", "tonsil", "peritonsillar"]
             let adj = ct >= 4 ? 9 : 6
             for i in scored.indices {

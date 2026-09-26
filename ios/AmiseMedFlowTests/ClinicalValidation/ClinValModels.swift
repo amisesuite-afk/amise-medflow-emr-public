@@ -191,6 +191,8 @@ struct ClinValInputs: Decodable {
     let nkda: Bool?
     let socialHistory: String?
     let scoreForms: [String: ClinValScoreForm]?
+    /// Exam-step sign chips (clinical-content/rules/exam-signs.json ids → "present" / "absent").
+    let examSigns: [String: String]?
     struct Orders: Decodable {
         let investigations: [String]?
         let prescriptions: [String]?
