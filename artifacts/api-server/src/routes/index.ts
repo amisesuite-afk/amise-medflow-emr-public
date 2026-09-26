@@ -45,6 +45,7 @@ import clinicalNotesRouter from "./clinical-notes";
 import patientsStaffRouter from "./patients-staff";
 import problemsRouter from "./problems";
 import notifyRouter from "./notify";
+import outcomesRouter from "./outcomes";
 
 const router: IRouter = Router();
 
@@ -94,5 +95,6 @@ router.use(clinicalNotesRouter);
 router.use(patientsStaffRouter);
 router.use(problemsRouter);
 router.use(notifyRouter);
+router.use(outcomesRouter);
 
 export default router;
