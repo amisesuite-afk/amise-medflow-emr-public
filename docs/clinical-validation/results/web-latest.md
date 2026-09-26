@@ -1,6 +1,6 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-26T05:15:53.355Z.
+Generated 2026-09-26T05:44:03.941Z.
 
 - Harness clinval-web/1; 454 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
@@ -6305,7 +6305,7 @@ Guidelines:
 - recommended scores: news2, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: groin_swelling, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
@@ -6609,7 +6609,7 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: groin_swelling, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
@@ -9226,7 +9226,7 @@ Guidelines:
 - recommended scores: web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: incisional_swelling, previous_surgery, chronic_course, episodic_pain, progressive_course, worse_straining, hernia_swelling, hernia_compressible, localised_pain, known_diabetes, known_copd, cough, cough_impulse, bowel_resection, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: incisional_swelling, previous_surgery, chronic_course, episodic_pain, progressive_course, worse_straining, hernia_swelling, hernia_compressible, localised_pain, known_diabetes, known_copd, cough_impulse, bowel_resection, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: incisional_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: incisional_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: incisional_hernia (confirmed); 0 stat test(s) held back
@@ -9268,7 +9268,7 @@ Guidelines:
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: hernia_reducible (Hernia)
-- note: PANE features applied: groin_swelling, chronic_course, episodic_pain, worse_straining, hernia_compressible, hernia_swelling, groin_lump_reducible, known_hypertension, vascular_risk, cough, cough_impulse, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, chronic_course, episodic_pain, worse_straining, hernia_compressible, hernia_swelling, groin_lump_reducible, known_hypertension, vascular_risk, cough_impulse, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
@@ -9311,7 +9311,7 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: groin_swelling, chronic_course, localised_pain, episodic_pain, worse_straining, hernia_swelling, groin_pain, hernia_compressible, groin_lump_reducible, previous_surgery, cough, change_bowel_habit, cough_impulse, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, chronic_course, localised_pain, episodic_pain, worse_straining, hernia_swelling, groin_pain, hernia_compressible, groin_lump_reducible, previous_surgery, change_bowel_habit, cough_impulse, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
@@ -9482,7 +9482,7 @@ Guidelines:
 - recommended scores: wells-dvt, news2, caprini, must, cfs, ecog
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: incisional_swelling, previous_surgery, chronic_course, episodic_pain, worse_straining, hernia_swelling, abdominal_mass, hernia_compressible, localised_pain, known_malignancy, lif_pain, colicky_pain, cough, cough_impulse, stoma, parastomal_bulge, trauma_mechanism, recent_surgery, aortic_graft
+- note: PANE features applied: incisional_swelling, previous_surgery, chronic_course, episodic_pain, worse_straining, hernia_swelling, abdominal_mass, hernia_compressible, localised_pain, known_malignancy, lif_pain, colicky_pain, cough_impulse, stoma, parastomal_bulge, trauma_mechanism, recent_surgery, aortic_graft
 - note: AssessmentTab ManagementPanel protocol: parastomal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: parastomal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: parastomal_hernia (confirmed); 0 stat test(s) held back
@@ -9570,7 +9570,7 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: hernia_reducible (Hernia)
-- note: PANE features applied: umbilical_swelling, chronic_course, localised_pain, episodic_pain, worse_straining, hernia_compressible, hernia_swelling, cough, cough_impulse, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: umbilical_swelling, chronic_course, localised_pain, episodic_pain, worse_straining, hernia_compressible, hernia_swelling, cough_impulse, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
@@ -9857,7 +9857,7 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: groin_swelling, hernia_swelling, chronic_course, localised_pain, cough_impulse, groin_lump_reducible, hernia_compressible, cough, worse_straining, soft_tissue_lump, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, hernia_swelling, chronic_course, localised_pain, cough_impulse, groin_lump_reducible, hernia_compressible, worse_straining, cough, soft_tissue_lump, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
@@ -11855,7 +11855,7 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: groin_swelling, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
@@ -11935,7 +11935,7 @@ Guidelines:
 - recommended scores: wells-dvt, ranson, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: back_pain, bone_pain, nocturnal_pain, known_malignancy, previous_surgery, cough, gait_disturbance, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: back_pain, bone_pain, nocturnal_pain, known_malignancy, previous_surgery, gait_disturbance, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: PlanTab protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: Seeded investigations: metastatic_spinal_cord_compression (confirmed); 0 stat test(s) held back
@@ -14000,7 +14000,7 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: groin_swelling, worse_straining, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, previous_surgery, previous_repair, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, worse_straining, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, previous_surgery, previous_repair, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
@@ -14275,7 +14275,7 @@ Guidelines:
 - recommended scores: web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: groin_swelling, known_diabetes, sglt2_inhibitor, insulin_or_sulfonylurea, vascular_risk, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, previous_surgery, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, known_diabetes, sglt2_inhibitor, insulin_or_sulfonylurea, vascular_risk, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, previous_surgery, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back

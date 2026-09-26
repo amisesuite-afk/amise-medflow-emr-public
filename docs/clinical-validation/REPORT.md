@@ -1,10 +1,10 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-26T05:17:42.837Z.
+Generated 2026-09-26T05:45:51.329Z.
 
 - iOS: 441 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-26T04:47:06Z).
 - iOS differential engine mode: database (BayesianDiagnosisEngine used DiagnosticDatabase.json).
-- Web: 454 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-26T05:15:53.355Z, clinval-web/1).
+- Web: 454 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-26T05:44:03.941Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;

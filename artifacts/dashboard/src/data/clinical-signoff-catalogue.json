@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "e07608dbe514f7b5",
+  "catalogueHash": "0da0da5de6a579bf",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -455,6 +455,26 @@
         "fix-web-triage#15",
         "fix-web-triage#16",
         "fix-web-triage#17"
+      ]
+    },
+    {
+      "id": "followups-history",
+      "title": "Change log — follow-ups to \"history by complaint\"",
+      "doc": "docs/clinical-validation/changes/followups-history.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "history-frames",
+        "pane-engine-disease-model",
+        "apcq-question-bank"
+      ],
+      "itemIds": [
+        "followups-history#1",
+        "followups-history#2",
+        "followups-history#3",
+        "followups-history#4",
+        "followups-history#5"
       ]
     },
     {
@@ -1023,6 +1043,11 @@
         "fix-ios-differential#12",
         "fix-ios-differential#13",
         "fix-ios-differential#14",
+        "followups-history#1",
+        "followups-history#2",
+        "followups-history#3",
+        "followups-history#4",
+        "followups-history#5",
         "ios-last-criticals#1",
         "ios-last-criticals#2",
         "ios-last-criticals#3",
@@ -1073,12 +1098,31 @@
       ]
     },
     {
+      "id": "ios-bayesian-input-mapping",
+      "title": "Chief-complaint questionnaire, chips and free-text parser that feed the Bayesian features",
+      "reviewPriority": "P2",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "itemIds": [
+        "followups-history#1",
+        "followups-history#2",
+        "followups-history#3",
+        "followups-history#4",
+        "followups-history#5"
+      ]
+    },
+    {
       "id": "history-frames",
       "title": "History frames: chief complaint (+ system) -> symptom type -> the history questions asked (SOCRATES for pain only; cough, dyspnoea, lump, bleeding, bowel, dysphagia, jaundice and other frames), their chip options and the chip -> engine-feature mapping",
       "reviewPriority": "P1",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
       "itemIds": [
+        "followups-history#1",
+        "followups-history#2",
+        "followups-history#3",
+        "followups-history#4",
+        "followups-history#5",
         "history-by-complaint#1",
         "history-by-complaint#2",
         "history-by-complaint#3",
@@ -1477,6 +1521,11 @@
         "fix-web-differential#9",
         "fix-web-differential#10",
         "fix-web-differential#11",
+        "followups-history#1",
+        "followups-history#2",
+        "followups-history#3",
+        "followups-history#4",
+        "followups-history#5",
         "history-by-complaint#1",
         "history-by-complaint#2",
         "history-by-complaint#3",
@@ -1756,6 +1805,20 @@
         "web-last-gaps#17",
         "web-last-gaps#18",
         "web-last-gaps#19"
+      ]
+    },
+    {
+      "id": "apcq-question-bank",
+      "title": "Adaptive pre-consultation questionnaire (APCQ): questions, red-flag options, urgency, specialty routing",
+      "reviewPriority": "P1",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "itemIds": [
+        "followups-history#1",
+        "followups-history#2",
+        "followups-history#3",
+        "followups-history#4",
+        "followups-history#5"
       ]
     },
     {
@@ -7607,6 +7670,96 @@
         "adaptive-triage",
         "emergency-recognition",
         "web-clinical-cds"
+      ]
+    },
+    {
+      "id": "followups-history#1",
+      "source": "followups-history",
+      "number": "1",
+      "group": null,
+      "title": "The cough classifier's clause rules and vectors (what counts as the symptom, the factor, the sign)",
+      "text": "The cough classifier's clause rules and vectors (what counts as the symptom, the factor, the sign).",
+      "hash": "b12dad3410560753",
+      "doc": "docs/clinical-validation/changes/followups-history.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "history-frames",
+        "pane-engine-disease-model",
+        "apcq-question-bank"
+      ]
+    },
+    {
+      "id": "followups-history#2",
+      "source": "followups-history",
+      "number": "2",
+      "group": null,
+      "title": "The short-term rule and the stem list (which 4-letter terms keep prefix matching). \"fit\" is not a",
+      "text": "The short-term rule and the stem list (which 4-letter terms keep prefix matching). \"fit\" is not a\nstem, so \"fitting\" no longer matches the pre-eclampsia \"fit\" term (the seizure features list\n\"fitting\" themselves).",
+      "hash": "5f02a166ebaf18b9",
+      "doc": "docs/clinical-validation/changes/followups-history.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "history-frames",
+        "pane-engine-disease-model",
+        "apcq-question-bank"
+      ]
+    },
+    {
+      "id": "followups-history#3",
+      "source": "followups-history",
+      "number": "3",
+      "group": null,
+      "title": "Reading early-form and parser chips under exam / pmh / inv as record findings, and history",
+      "text": "Reading early-form and parser chips under `exam` / `pmh` / `inv` as record findings, and history\nrisk chips as past and social history.",
+      "hash": "3e2884428c964b66",
+      "doc": "docs/clinical-validation/changes/followups-history.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "history-frames",
+        "pane-engine-disease-model",
+        "apcq-question-bank"
+      ]
+    },
+    {
+      "id": "followups-history#4",
+      "source": "followups-history",
+      "number": "4",
+      "group": null,
+      "title": "The patient lump questions (wording and which answers are stored as which chip), including that",
+      "text": "The patient lump questions (wording and which answers are stored as which chip), including that\n\"It gets bigger when I cough or strain\" is stored as \"Cough impulse\".",
+      "hash": "4197b57f3e851578",
+      "doc": "docs/clinical-validation/changes/followups-history.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "history-frames",
+        "pane-engine-disease-model",
+        "apcq-question-bank"
+      ]
+    },
+    {
+      "id": "followups-history#5",
+      "source": "followups-history",
+      "number": "5",
+      "group": null,
+      "title": "The APCQ lump question set and its location follow-ups",
+      "text": "The APCQ lump question set and its location follow-ups.",
+      "hash": "686987e121a8a776",
+      "doc": "docs/clinical-validation/changes/followups-history.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "history-frames",
+        "pane-engine-disease-model",
+        "apcq-question-bank"
       ]
     },
     {
