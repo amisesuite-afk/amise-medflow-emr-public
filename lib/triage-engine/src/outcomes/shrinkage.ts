@@ -71,6 +71,8 @@ export interface PriorProposal {
   proposedPrior: number;
   priorInterval: Interval;
   proposedTier: string | null;
+  /** The proposed prior lies beyond the tier scale (more than 1.5× the highest or below the lowest ÷ 1.5). */
+  beyondTiers: 'above' | 'below' | null;
 }
 
 export interface LikelihoodProposal {
@@ -110,6 +112,14 @@ function nearestTier(value: number, tiers: Record<string, number> | undefined): 
   return best;
 }
 
+function beyond(value: number, tiers: Record<string, number> | undefined): 'above' | 'below' | null {
+  const vals = Object.values(tiers ?? {}).filter(v => v > 0);
+  if (!vals.length) return null;
+  if (value > Math.max(...vals) * 1.5) return 'above';
+  if (value < Math.min(...vals) / 1.5) return 'below';
+  return null;
+}
+
 function finalDiseaseId(c: OutcomeCase, model: ShrinkageModel): string | null {
   const id = c.outcome.finalDiseaseId ?? model.diseaseForIcd?.(c.outcome.finalIcd10) ?? null;
   return id && id in model.priors ? id : null;
@@ -118,7 +128,11 @@ function finalDiseaseId(c: OutcomeCase, model: ShrinkageModel): string | null {
 export function proposeAdjustments(
   cases: OutcomeCase[], model: ShrinkageModel, opts: Partial<ShrinkageOptions> & { now: Date },
 ): ProposalSet {
-  const o: ShrinkageOptions = { ...DEFAULT_SHRINKAGE_OPTIONS, ...opts };
+  const o: ShrinkageOptions = { ...DEFAULT_SHRINKAGE_OPTIONS };
+  for (const k of Object.keys(DEFAULT_SHRINKAGE_OPTIONS) as (keyof ShrinkageOptions)[]) {
+    const v = opts[k];
+    if (typeof v === 'number' && Number.isFinite(v)) o[k] = v;
+  }
   const usable = cases
     .map(c => ({ c, d: finalDiseaseId(c, model) }))
     .filter((x): x is { c: OutcomeCase; d: string } => x.d !== null);
@@ -150,6 +164,7 @@ export function proposeAdjustments(
         proposedPrior: round(proposedPrior, 6),
         priorInterval: { low: round(ci.low * sumPrior, 6), high: round(ci.high * sumPrior, 6) },
         proposedTier,
+        beyondTiers: beyond(proposedPrior, model.tiers),
       });
     }
   }
@@ -217,7 +232,7 @@ export function proposalsMarkdown(p: ProposalSet): string {
     out.push('```diff');
     for (const x of p.priors) {
       out.push(`- ${x.diseaseId}.prior = ${x.currentPrior}${x.currentTier ? ` (${x.currentTier})` : ''}   share ${x.currentShare}`);
-      out.push(`+ ${x.diseaseId}.prior = ${x.proposedPrior}${x.proposedTier ? ` (${x.proposedTier})` : ''}   share ${x.proposedShare} [95% CrI ${x.shareInterval.low}–${x.shareInterval.high}]; observed ${x.cases}/${x.totalCases} = ${x.observedShare}`);
+      out.push(`+ ${x.diseaseId}.prior = ${x.proposedPrior}${x.proposedTier ? ` (${x.proposedTier})` : ''}   share ${x.proposedShare} [95% CrI ${x.shareInterval.low}–${x.shareInterval.high}]; observed ${x.cases}/${x.totalCases} = ${x.observedShare}${x.beyondTiers ? `; ${x.beyondTiers} the tier scale — check the sample (verification bias) before any change` : ''}`);
     }
     out.push('```');
   }

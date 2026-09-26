@@ -62,3 +62,6 @@ Thumbs.db
 artifacts/front-desk/.next/
 e2e/shots/
 ios/Configuration.xcconfig
+
+# Outcomes calibration script output (derived from patient data; never commit)
+outcomes-calibration-out/

@@ -18,6 +18,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "clinval:web": "tsx ./src/clinval/run-web.ts",
     "clinval:report": "tsx ./src/clinval/report.ts",
+    "outcomes:calibration": "tsx ./src/outcomes-calibration.ts",
     "test": "vitest run",
     "gen:decision-vectors": "tsx ./src/gen-decision-vectors.ts"
   },
