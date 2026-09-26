@@ -132,6 +132,13 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/pane-engine/src/management/types.ts',
   'lib/pane-engine/src/management/planSafety.ts',
   'artifacts/dashboard/src/lib/plan-builder.ts',
+  // Decision support (score / result actions, treatment thresholds) — web and iOS twins
+  'lib/pane-engine/src/decision/*.ts',
+  'lib/pane-engine/src/decision/treatment-decisions.json',
+  'ios/AmiseMedFlow/Resources/TreatmentDecisions.json',
+  'ios/AmiseMedFlow/Services/TreatmentDecisionContent.swift',
+  'ios/AmiseMedFlow/Services/DecisionSupportPatient.swift',
+  'artifacts/dashboard/src/lib/decision-support.ts',
   // Dashboard
   'artifacts/dashboard/src/lib/drug-interactions.ts',
   'artifacts/dashboard/src/lib/drug-classes.ts',

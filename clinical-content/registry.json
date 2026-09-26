@@ -841,6 +841,31 @@
       ]
     },
     {
+      "id": "treatment-decision-support",
+      "title": "Decision support: score → guideline action, result → action, and treatment thresholds (Pauker–Kassirer observe / test / treat) personalised to the patient",
+      "platforms": ["web", "ios"],
+      "kind": "decision-support-rules",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/pane-engine/src/decision/treatment-decisions.json", "type": "json-key", "key": "version" },
+      "files": ["lib/pane-engine/src/decision/treatment-decisions.json", "lib/pane-engine/src/decision/*.ts", "ios/AmiseMedFlow/Resources/TreatmentDecisions.json", "ios/AmiseMedFlow/Services/TreatmentDecisionContent.swift", "ios/AmiseMedFlow/Services/BayesianDecisionEngine+Treatment*.swift", "ios/AmiseMedFlow/Services/DecisionSupportPatient.swift", "artifacts/dashboard/src/lib/decision-support.ts"],
+      "tests": ["lib/pane-engine/src/__tests__/decision.test.ts", "artifacts/dashboard/src/lib/__tests__/decision-support.test.ts", "scripts/src/decision-content-parity.test.ts", "ios/AmiseMedFlowTests/TreatmentDecisionTests.swift", "ios/AmiseMedFlowTests/DecisionSupport/decision-vectors.json"],
+      "ciChecks": ["pane-engine vitest (shared vectors, threshold arithmetic, content hygiene: every source cited, ranges ordered, no fixed doses)", "scripts vitest decision-content-parity (web and iOS JSON byte-identical; vectors current; Swift structs name every key)", "dashboard vitest (plan-safety filter as the final hard filter)", "ios-build-check.yml unit tests (TreatmentDecisionTests: the same vectors)", "clinval:web (web.decisions expectations; 16 decision-* vignettes)"],
+      "guidelines": [
+        { "name": "Per number (sources map in the content file; every entry fromMemory: true)", "version": "per source", "section": "NICE CG141 / NG89 / NG158 / NG138 / NG24 / NG128 / CG103; ESGE 2021; International consensus 2019; Rockall 1996; Alvarado 1986; AIR 2008; WSES 2020 (appendicitis, diverticulitis); CODA 2020; APPAC 2015; TG18; CHOCOLATE 2018; DIABOLO 2017; AVOD 2012; DINAMO 2021; ESC 2019 PE; PEITHO 2014; PIOPED II; Christopher 2006; ACCP 2012 / 2022; BRIDGE 2015; PAUSE 2019; ACC/AHA 2020; SSC 2021; Sepsis-3; HerniaSurge 2018; PONCHO 2015; Atlanta 2012; WATERFALL 2022; IAP/APA 2013; BISAP 2008; Glasgow-Imrie 1984; Ranson 1974; NELA; RCS 2018; CPOC 2021; ELF 2021; LRINEC 2004; WSES/SIS-E 2018; HAS-BLED 2010; ESC 2020 AF; ESC 2023 ACS; UKKA 2023; TRICC 1999; Villanueva 2013; Blumenthal 2018; Rockwood 2005; RCP NEWS2 2017; ESC/ESAIC 2022; CCS 2017; Lee 1999; Lim 2003", "citation": "See docs/clinical-validation/changes/bayes-treatment.md (Needs sign-off)" }
+      ],
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Written from memory (every source fromMemory: true); effect sizes marked evidence 'estimate' are the author's estimates from the cited trials. Exercised by the shared vectors and clinval:web; not a clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-10-31",
+      "changeAuthority": "Any repository committer. Web ships on dashboard deploy; iOS with an app release. Change the JSON in both places (parity test) and regenerate the vectors (gen:decision-vectors).",
+      "notes": "Clinician-facing suggestions on the Plan step (web DecisionSupportPanel, also compact in the ManagementPanel; iOS DecisionSupportSection). Nothing is added, ordered or prescribed without a tap. The plan-safety filters (planSafety / PlanSafetyFilter) are applied to every line and stay the final hard filter; an option they withhold is 'not for this patient'. A confirmed diagnosis wins over other engine differentials (managementPanelSource rule). Never patient-facing (hazard H-10).",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Created: 21 score action sets, 8 result rules, 11 decisions (appendicitis, cholecystitis, diverticulitis, upper GI bleeding, pulmonary embolism, VTE prophylaxis, sepsis antibiotic timing, inguinal hernia, gallstone pancreatitis, emergency laparotomy, peri-procedural bridging) with 18 options, 28 global and 15 decision-specific modifiers, 74 sources. See docs/clinical-validation/changes/bayes-treatment.md." }
+      ]
+    },
+    {
       "id": "dx-variants",
       "title": "Sub-diagnosis variants and the management phases each may show",
       "platforms": ["web"],
