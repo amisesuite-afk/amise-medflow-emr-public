@@ -7,7 +7,7 @@
 //
 // Each engine decodes its file once with its own Codable structs (for example
 // `ZebraCheck.RuleFile`, `SupplementCatalogue.Content`, `LifestylePractices.Content`,
-// `ExamEvidenceCatalogue.SignsFile` / `.RulesFile`) through
+// `ExamEvidenceCatalogue.SignsFile` / `.RulesFile`, `DiagnosticReasoningRules.RuleFile`) through
 // `load(_:_:)`. A missing file or a decode failure never crashes and never guesses: the engine
 // gets nil and shows nothing (no zebra, no supplement prompt, no lifestyle prompt), the failure is
 // written to the unified log, and Settings → Diagnostics lists every file with its version or
@@ -34,6 +34,7 @@ enum SharedClinicalContent {
         case lifestylePractices = "lifestyle-practices"
         case examSigns = "exam-signs"
         case decisionRules = "decision-rules"
+        case diagnosticReasoningRules = "diagnostic-reasoning-rules"
 
         /// Row title in Settings → Diagnostics.
         var title: String {
@@ -43,6 +44,7 @@ enum SharedClinicalContent {
             case .lifestylePractices:  return "Lifestyle practices"
             case .examSigns:           return "Examination signs"
             case .decisionRules:       return "Decision rules"
+            case .diagnosticReasoningRules: return "Diagnostic reasoning rules"
             }
         }
     }
@@ -125,6 +127,8 @@ enum SharedClinicalContent {
             failure = errorText(decode(ExamEvidenceCatalogue.SignsFile.self, file, bundle: bundle))
         case .decisionRules:
             failure = errorText(decode(ExamEvidenceCatalogue.RulesFile.self, file, bundle: bundle))
+        case .diagnosticReasoningRules:
+            failure = errorText(decode(DiagnosticReasoningRules.RuleFile.self, file, bundle: bundle))
         }
         let fileURL = url(for: file, bundle: bundle)
         let stamp = fileURL

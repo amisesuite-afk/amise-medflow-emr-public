@@ -74,6 +74,17 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     swift: { files: ['ios/AmiseMedFlow/Services/LifestylePractices.swift'], root: 'LifestylePractices.Content', ignore: HEADER_IGNORE },
     ts: { files: ['lib/triage-engine/src/lifestyle-practices.ts'], root: 'LifestyleContent', ignore: ['/$schema', '/$comment'] },
   },
+  // Diagnostic-reasoning rules. iOS compiles the core `thresholds` into DiagnosticReasoningCore.swift
+  // (pinned to this file by diagnostic-reasoning-parity.test.ts) and matches coexisting states by
+  // name (`nameTerms`), not by PANE id.
+  {
+    name: 'diagnostic-reasoning-rules',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/DiagnosticReasoningRules.swift'], root: 'DiagnosticReasoningRules.RuleFile', ignore: [
+      ...HEADER_IGNORE, '/thresholds', '/coexisting/paneIds',
+    ] },
+    ts: { files: ['lib/triage-engine/src/diagnostic-reasoning/reasoning-rules.ts'], root: 'ReasoningRuleFile', ignore: ['/$schema', '/$comment'] },
+  },
   // Evidence-exam catalogues. iOS ignores the review header and prose (shown on the web and in the
   // change log), the PANE target ids (`pane`), `alsoTargets` / `supersedes` / `twins` (web mapper
   // only: on iOS the secondary targets and superseded twins are already in DiagnosticDatabase.json,

@@ -6,11 +6,13 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
-  classifyProbeCost, derivedLabTerms, diagnosticTimeOut, discriminatorWhy, expectedInformationGain, explain, fmtPct,
-  formatLr, longitudinalPatterns, matchZebras, postTest, prematureClosureAlerts, rankDiscriminators, unexplainedFindings,
+  adapterClosureAlerts, classifyProbeCost, competesForEvidence, derivedLabTerms, diagnosticTimeOut, discriminatorWhy,
+  expectedInformationGain, explain, fmtPct, formatLr, labelFullyNamed, labelMatchScore, longitudinalPatterns, matchZebras,
+  postTest, prematureClosureAlerts, rankDiscriminators, resolveWorkingIndex, sameFamily, unexplainedFindings,
 } from '@workspace/triage-engine/diagnostic-reasoning';
 import type {
-  LabValue, LongitudinalInput, PostTestLine, ProbeCandidate, ProbeKind, ReasoningInput, TimeOutInput,
+  DiagnosisNode, LabValue, LongitudinalInput, PostTestLine, ProbeCandidate, ProbeKind, ReasoningInput, TimeOutInput,
+  WorkingCandidate,
 } from '@workspace/triage-engine/diagnostic-reasoning';
 import { DISEASES, featureLikelihood, informationGain, initPaneState } from '@workspace/pane-engine';
 
@@ -31,6 +33,14 @@ interface Vectors {
   zebras: { text: string; expected: { id: string; matched: string[] }[] }[];
   derivedLabTerms: { labs: LabValue[]; expected: string[] }[];
   longitudinal: { input: LongitudinalInput; expected: ReturnType<typeof longitudinalPatterns> }[];
+  families: { a: DiagnosisNode; b: DiagnosisNode; expected: boolean }[];
+  labelMatch: { label: string; text: string; score: number | null; fullyNamed: boolean }[];
+  resolveWorking: { nodes: WorkingCandidate[]; label: string; icd: string | null; expected: number | null }[];
+  competes: { name: string; input: ReasoningInput; leaderId: string; workingId: string; groups: Record<string, string> | null; expected: boolean }[];
+  adapterClosure: {
+    name: string; input: ReasoningInput; workingId: string | null; workingText: string; familyIds: string[]; news2Series: number[];
+    groups: Record<string, string> | null; expected: { key: string; kind: string; text: string }[];
+  }[];
 }
 
 const V = JSON.parse(readFileSync(VECTORS_PATH, 'utf8')) as Vectors;
@@ -97,6 +107,29 @@ describe('diagnostic reasoning core — shared vectors', () => {
         expect(t.to).toBeCloseTo(c.expected.trends[i].to, 6);
       });
     }
+  });
+
+  it('diagnosis families and working-diagnosis label matching (shared adapter rules)', () => {
+    for (const c of V.families) expect(`${c.a.label} ~ ${c.b.label}: ${sameFamily(c.a, c.b)}`).toBe(`${c.a.label} ~ ${c.b.label}: ${c.expected}`);
+    for (const c of V.labelMatch) {
+      const s = labelMatchScore(c.label, c.text);
+      expect(Number.isFinite(s) ? s : null).toBe(c.score);
+      expect(labelFullyNamed(c.label, c.text)).toBe(c.fullyNamed);
+    }
+    for (const c of V.resolveWorking) expect(resolveWorkingIndex(c.nodes, c.label, c.icd)).toBe(c.expected);
+  });
+
+  it.each(V.competes.map(c => [c.name, c] as const))('two conditions: %s', (_n, c) => {
+    const group = c.groups ? (id: string) => c.groups![id] ?? id : undefined;
+    expect(competesForEvidence(c.input, c.leaderId, c.workingId, group)).toBe(c.expected);
+  });
+
+  it.each(V.adapterClosure.map(c => [c.name, c] as const))('adapter closure rules: %s', (_n, c) => {
+    const got = adapterClosureAlerts(c.input, {
+      workingId: c.workingId, workingText: c.workingText, familyIds: new Set(c.familyIds), news2Series: c.news2Series,
+      evidenceGroup: c.groups ? (id: string) => c.groups![id] ?? id : undefined,
+    }).map(a => ({ key: a.key, kind: a.kind, text: a.text }));
+    expect(got).toEqual(c.expected);
   });
 
   it('the core information gain equals pane-engine informationGain on the same diseases', () => {

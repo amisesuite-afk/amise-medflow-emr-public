@@ -89,7 +89,8 @@
         "ios/AmiseMedFlow/Services/BayesianDecisionEngine*.swift",
         "ios/AmiseMedFlow/Services/BayesianFeatureNetwork.swift"
       ],
-      "tests": ["ios/AmiseMedFlowTests/BayesianDifferentialDatabaseTests.swift", "ios/AmiseMedFlowTests/FeatureTermMatchingTests.swift"],
+      "tests": ["ios/AmiseMedFlowTests/BayesianDifferentialDatabaseTests.swift", "ios/AmiseMedFlowTests/FeatureTermMatchingTests.swift",
+        "ios/AmiseMedFlowTests/RecordClauseTests.swift", "ios/AmiseMedFlowTests/DiagnosticReasoningTests.swift"],
       "ciChecks": [],
       "guidelines": [],
       "citationStatus": "none",
@@ -102,6 +103,7 @@
       "notes": "Hand-set constants: confirmed-diagnosis boost (+20), about 30 score-driven adjustments (the NEWS2 one by urgency tier: news2FullShareUrgency), confidence bands on logGap (25 / 15 / 7), pathognomonic threshold logLR ≥ 18, CPT discounting in BayesianFeatureNetwork, \"do not miss\" places (ranks 4-5 for urgency ≥ 2), candidate cap 60, age-banded vital-sign limits (APLS 7th edition) and numeric laboratory chip thresholds (BayesianDiagnosisEngine+Routing.swift). Routing reads the chief complaint only. BayesianDecisionEngine+Database/Scoring/... duplicate the BayesianDiagnosisEngine extensions.",
       "changelog": [
         { "version": "unversioned", "date": "2026-09-26", "change": "Database terms (complaint / finding / findingAbsent / notFinding): a term of four letters or digits or fewer is a whole word (\"sti\" not in \"still\", \"stab\" not in \"stabbing\", \"lip\" not in \"lipase\"), FeatureTerm.stems excepted; a cough term follows CoughMention (a Coughing chip under Aggravating is not a cough). Database content unchanged. Simulator over 441 vignettes: 0 pass -> fail. docs/clinical-validation/changes/followups-history.md." },
+        { "version": "unversioned", "date": "2026-09-26", "change": "Database terms read clause-aware (RecordClauses): an item of a negated list is negated (\"never had pain, jaundice or fever\", \"negative for blood, leucocytes and nitrites\"), and a relative's condition, a lay or referrer's guess and a query (\"referred as ?appendicitis\") are not findings. Curated features keep their stated likelihoodRatio (Candidate.Feature, FiredFeature.statedLR) and the first result carries every other scored candidate (DiagnosisResult.rankedBelow), both read by the diagnostic-reasoning layer only. No database weight changed; fewer features fire on text that is not about the patient. Simulator over 454 vignettes: 1 differential expectation pass -> fail (appendicitis-pregnant-t2 mnm-pyelonephritis, quality: it passed only because \"negative for blood, leucocytes and nitrites\" was read as leucocytes). docs/clinical-validation/changes/diagnostic-reasoning.md (iOS parity)." },
         { "version": "unversioned", "date": "2026-09-25", "change": "Routing from the complaint only (negation-aware, word-start); topResults softmax divides by 5 (logs are round(ln × 5)); urgency × 8 boost removed in favour of two \"do not miss\" places; curated presentations first, applicability filter, age-banded vital chips, numeric lab chips, HPI and PSHx read by curated features, \"a&b\" terms within one sentence, inv keys need every significant token. See docs/clinical-validation/changes/fix-ios-differential.md." },
         { "version": "unversioned", "date": "2026-09-25", "change": "Sepsis and qSOFA decisions: IV antibiotics \"if suspected infection\"; lactate fluid line goal-directed; the strangulated-hernia decision reads \"emergency surgical review\" (repair only if strangulation is confirmed). Decisions pass through PlanSafetyFilter in ClinicalPipelineOrchestrator." },
         { "version": "unversioned", "date": "2026-09-25", "change": "NEWS2 adjustment follows the candidate's urgency tier (critical full, emergency half) instead of a fixed name list; curated \"postOpDay\" feature key (post-operative day read from the record) and \"maskedBy\" masking contexts (elderly, immunosuppressed, diabetes, female) for negative features (BayesianDiagnosisEngine+Context.swift); a curated diagnosis whose strong feature (logLR >= 12) is in a resulted report or evidence chip joins the list; \"glucose not low\" and \"lrinec 6 or more\" (LRINEC from the results on file, ClinicalScoringEngine.lrinec) lab chips. See docs/clinical-validation/changes/ios-last-criticals.md." }
@@ -175,9 +177,11 @@
         "ios/AmiseMedFlow/Services/ClinicalTextParser.swift",
         "ios/AmiseMedFlow/Views/Consultation/ConsultationViewChipData.swift",
         "ios/AmiseMedFlow/Views/Consultation/ConsultationViewEarlyForms.swift",
-        "ios/AmiseMedFlow/Services/CoughMention.swift"
+        "ios/AmiseMedFlow/Services/CoughMention.swift",
+        "ios/AmiseMedFlow/Services/RecordClauses.swift"
       ],
-      "tests": ["ios/AmiseMedFlowTests/CoughMentionTests.swift", "ios/AmiseMedFlowTests/Resources/CoughMentionVectors.json"],
+      "tests": ["ios/AmiseMedFlowTests/CoughMentionTests.swift", "ios/AmiseMedFlowTests/Resources/CoughMentionVectors.json",
+        "ios/AmiseMedFlowTests/RecordClauseTests.swift", "ios/AmiseMedFlowTests/Resources/RecordClauseVectors.json"],
       "ciChecks": [],
       "guidelines": [],
       "citationStatus": "none",
@@ -192,7 +196,8 @@
         { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalTextParser: \"rest\" matches whole words only (not inside \"arrest\"); a written temperature counts as fever only at >=38.0 C (or when described as raised); recordedTemperatures() added." },
         { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalTextParser: \"free intraperitoneal gas / air\" and \"extraluminal gas / air\" raise the pneumoperitoneum alarm and feature." },
         { "version": "unversioned", "date": "2026-09-26", "change": "The HPI builder's SOCRATES chips are replaced by the complaint's history frame (history-frames rule set); EncounterDetailSheet now renders stored history answers (lowercase keys); pre-consult associated-symptom chips follow the complaint." },
-        { "version": "unversioned", "date": "2026-09-26", "change": "ClinicalTextParser: a typed cough is the symptom (associations \"Cough\"), \"worse on / aggravated by coughing\" the aggravating factor (exacerbating \"Coughing\"), \"cough impulse\" neither (CoughMention, twin of the web cough-mention.ts). Early-form chips under exam / pmh / pshx / social / inv reach those record features (history-frames 1.1.0). The patient questionnaire asks lump questions for a lump or hernia (history-frames symptom type). docs/clinical-validation/changes/followups-history.md." }
+        { "version": "unversioned", "date": "2026-09-26", "change": "ClinicalTextParser: a typed cough is the symptom (associations \"Cough\"), \"worse on / aggravated by coughing\" the aggravating factor (exacerbating \"Coughing\"), \"cough impulse\" neither (CoughMention, twin of the web cough-mention.ts). Early-form chips under exam / pmh / pshx / social / inv reach those record features (history-frames 1.1.0). The patient questionnaire asks lump questions for a lump or hernia (history-frames symptom type). docs/clinical-validation/changes/followups-history.md." },
+        { "version": "unversioned", "date": "2026-09-26", "change": "Clause-aware reading (RecordClauses.swift, twin of lib/triage-engine/src/record-clauses.ts, shared RecordClauseVectors.json). ClinicalTextParser: a relieving factor counts only in a clause that does not say it failed (\"Took antacids with no relief\", \"Gaviscon did not help\": the web mapper's NO_HELP pattern); \"at rest\" and \"rest pain\" are not relief by rest; no bare \"acid\" for burning pain (\"antacids\"). reasoning-closure-gastritis-troponin lost its false PUD evidence (Antacids, Burning) and stable-angina evidence (Rest). docs/clinical-validation/changes/diagnostic-reasoning.md (iOS parity)." }
       ]
     },
     {
@@ -756,6 +761,7 @@
         "lib/pane-engine/src/constants.ts",
         "artifacts/dashboard/src/lib/socrates-to-features.ts",
         "artifacts/dashboard/src/lib/record-text-match.ts",
+        "lib/triage-engine/src/record-clauses.ts",
         "lib/triage-engine/src/cough-mention.ts"
       ],
       "tests": [
@@ -767,6 +773,7 @@
         "artifacts/dashboard/src/lib/__tests__/socrates-to-features.test.ts",
         "artifacts/dashboard/src/lib/__tests__/pane-mapping-negation.test.ts",
         "artifacts/dashboard/src/lib/__tests__/pane-mapper-false-positives.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/record-clauses.test.ts",
         "scripts/src/clinval/pane-neutrality.test.ts"
       ],
       "ciChecks": ["lint:dx-phases (disease ids)", "pane-engine vitest (model integrity, neutrality)", "scripts vitest (clinval PANE top-3 floors per category)"],
@@ -1777,31 +1784,42 @@
     },
     {
       "id": "diagnostic-reasoning-rules",
-      "title": "Diagnostic reasoning — for/against thresholds, best-next-discriminator cost tiers, premature-closure guard, diagnostic time-out, longitudinal patterns",
+      "title": "Diagnostic reasoning — shared web + iOS rules: for/against thresholds, best-next-discriminator cost tiers, premature-closure guard and its adapter filters (diagnosis families, working-diagnosis label matching, two conditions, already named, contradiction LR <= 0.2), coexisting states, diagnostic time-out, longitudinal patterns",
       "platforms": [
         "web",
         "ios"
       ],
       "kind": "decision-support-rules",
-      "contentVersion": "1.0.0",
-      "versionStamp": { "file": "lib/triage-engine/src/diagnostic-reasoning/core.ts", "type": "regex", "pattern": "DIAGNOSTIC_REASONING_VERSION\\s*=\\s*'([^']+)'" },
+      "contentVersion": "1.1.0",
+      "versionStamp": { "file": "clinical-content/rules/diagnostic-reasoning-rules.json", "type": "json-key", "key": "version" },
       "files": [
+        "clinical-content/rules/diagnostic-reasoning-rules.json",
+        "clinical-content/schemas/diagnostic-reasoning-rules.schema.json",
+        "lib/triage-engine/src/diagnostic-reasoning/reasoning-rules.ts",
         "lib/triage-engine/src/diagnostic-reasoning/core.ts",
+        "lib/triage-engine/src/diagnostic-reasoning/families.ts",
+        "lib/triage-engine/src/diagnostic-reasoning/adapter-rules.ts",
         "lib/triage-engine/src/diagnostic-reasoning/longitudinal.ts",
         "lib/triage-engine/src/diagnostic-reasoning/index.ts",
         "ios/AmiseMedFlow/Services/DiagnosticReasoningCore.swift",
+        "ios/AmiseMedFlow/Services/DiagnosticReasoningRules.swift",
         "ios/AmiseMedFlow/Services/DiagnosticReasoningAdapter.swift",
         "ios/AmiseMedFlow/Services/LongitudinalPatterns.swift"
       ],
       "tests": [
         "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-core.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-web-rules.test.ts",
         "ios/AmiseMedFlowTests/DiagnosticReasoningTests.swift",
-        "scripts/src/diagnostic-reasoning-parity.test.ts"
+        "ios/AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json",
+        "ios/AmiseMedFlowTests/SharedClinicalContentTests.swift",
+        "scripts/src/diagnostic-reasoning-parity.test.ts",
+        "scripts/src/shared-content.test.ts"
       ],
       "ciChecks": [
-        "dashboard vitest and iOS unit tests on the same vectors (ios/AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json)",
-        "scripts vitest (diagnostic-reasoning-parity: thresholds, cost terms, checklist)",
-        "clinval:web (reasoning-* vignettes)"
+        "lint:shared-content (clinical-content/rules/diagnostic-reasoning-rules.json is the single source for web and iOS)",
+        "dashboard vitest and iOS unit tests on the same vectors (ios/AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json: core, families, label matching, working-diagnosis resolution, two conditions, adapter closure alerts)",
+        "scripts vitest (diagnostic-reasoning-parity: the Swift-compiled thresholds equal the rules file; cost terms, checklist)",
+        "clinval:web (reasoning-* vignettes); iOS CI clinval (ios.reasoning)"
       ],
       "guidelines": [
         { "name": "Cognitive errors and premature closure", "version": "2003", "section": "Cognitive forcing strategies", "citation": "Croskerry P. Acad Med 2003;78:775-780" },
@@ -1809,26 +1827,29 @@
         { "name": "Cognitive interventions to reduce diagnostic error", "version": "2012", "section": "Diagnostic time-out", "citation": "Graber ML et al. BMJ Qual Saf 2012;21:535-557" },
         { "name": "National Early Warning Score 2", "version": "2017", "section": "Clinical response (5 or more: urgent)", "citation": "Royal College of Physicians, London" },
         { "name": "KDIGO acute kidney injury", "version": "2012", "section": "Definition (creatinine rise 26.5 µmol/L or 1.5 x baseline)", "citation": "Kidney Int Suppl 2012;2:1-138" },
-        { "name": "NICE NG12 suspected cancer; MUST", "version": "2015 (2021); 2003", "section": "Unexplained weight loss (> 5 % in 3-6 months)", "citation": "NICE NG12; BAPEN MUST" }
+        { "name": "NICE NG12 suspected cancer; MUST", "version": "2015 (2021); 2003", "section": "Unexplained weight loss (> 5 % in 3-6 months)", "citation": "NICE NG12; BAPEN MUST" },
+        { "name": "Users' guides to the medical literature: diagnostic tests (likelihood ratios)", "version": "1994", "section": "LR 0.1-0.2 moderate, < 0.1 large evidence against", "citation": "Jaeschke R, Guyatt GH, Sackett DL. JAMA 1994;271:703-707" },
+        { "name": "ICD-10 (WHO) / ICD-10-CM", "version": "2019 / 2025", "section": "Categories (3 characters) and injury blocks (S2x thorax, S3x abdomen)", "citation": "World Health Organization; CMS/NCHS" }
       ],
       "citationStatus": "file-header",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
-      "reviewEvidence": "None. Thresholds tuned on the 397 clinval vignettes to limit alert fatigue (alerts 77/397, time-outs 103/397 with correct confirmed diagnoses); no clinical review.",
+      "reviewEvidence": "None. Thresholds tuned on the 397 clinval vignettes to limit alert fatigue (web: alerts 77 -> 30, time-outs 103 -> 48; iOS simulator: alerts 7 -> 5, time-outs 202 -> 2, with correct confirmed diagnoses); no clinical review.",
       "reviewPriority": "P1",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer (no CODEOWNERS). Web live on deploy; iOS with an app release.",
-      "notes": "Shared core (web + iOS twins). The web PANE adapter and its own rules are the diagnostic-reasoning-web entry. Deterministic; reads the engines' own evidence (PANE feature likelihoods / DiagnosticDatabase logLR and citations); adds nothing to the record without a tap. Web can't-miss and coexisting disease lists, the PANE module sources and the time-out filters are in artifacts/dashboard/src/lib/diagnostic-reasoning.ts; iOS uses the database urgency (>= 2) and a 5 % background rate for P(finding | diagnosis) in the information gain.",
+      "notes": "One shared rule set for web and iOS: the core (twins with shared vectors; its thresholds live in clinical-content/rules/diagnostic-reasoning-rules.json, compiled into DiagnosticReasoningCore.swift and pinned by diagnostic-reasoning-parity.test.ts) and the adapter rules both platforms apply (families.ts / adapter-rules.ts, twin DiagnosticReasoningRules.swift, vocabulary and thresholds in the same JSON). Deterministic; reads the engines' own evidence (PANE feature likelihoods / DiagnosticDatabase likelihood ratios and citations); adds nothing to the record without a tap. The platforms differ only in how they read their engine's evidence: web (diagnostic-reasoning-web) derives LRs from PANE likelihoods and background rates, uses a can't-miss list of PANE ids and counts specific findings (background rate <= 5 %) for the time-out; iOS (DiagnosticReasoningAdapter.swift) uses the database's stated likelihood ratio (else exp(logLR / 5)), cardinal = stored weight >= 8, can't-miss = urgency >= 2, a 5 % background rate for P(finding | diagnosis), one finding per evidence label, the candidates' presenting-complaint features as one evidence group, the working diagnosis looked up among every scored candidate (not only the five shown), coexisting states by name, and history / score findings as context for the time-out.",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "First version: for / against / missing / doesn't fit (LR >= 1.5 / <= 0.67; cardinal = P >= 0.6 and LR >= 2 on web, logLR >= 8 on iOS), best next discriminator (information gain, cost tiers ask/bedside 1, lab 0.85, imaging 0.6, advanced 0.35 and only with a can't-miss diagnosis), premature-closure alerts (contradicting finding LR <= 0.33; leader >= 50 % and 5x the working diagnosis with a driving finding of LR ratio >= 10; NEWS2 rise >= 2 to >= 5), diagnostic time-out (>= 3 unexplained specific findings; repeat visit for the same complaint without a firm diagnosis), longitudinal patterns (3+ visits, KDIGO creatinine rise, Hb fall >= 20 g/L, weight loss >= 5 % in 6 months)." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "First version: for / against / missing / doesn't fit (LR >= 1.5 / <= 0.67; cardinal = P >= 0.6 and LR >= 2 on web, logLR >= 8 on iOS), best next discriminator (information gain, cost tiers ask/bedside 1, lab 0.85, imaging 0.6, advanced 0.35 and only with a can't-miss diagnosis), premature-closure alerts (contradicting finding LR <= 0.33; leader >= 50 % and 5x the working diagnosis with a driving finding of LR ratio >= 10; NEWS2 rise >= 2 to >= 5), diagnostic time-out (>= 3 unexplained specific findings; repeat visit for the same complaint without a firm diagnosis), longitudinal patterns (3+ visits, KDIGO creatinine rise, Hb fall >= 20 g/L, weight loss >= 5 % in 6 months)." },
+        { "version": "1.1.0", "date": "2026-09-26", "change": "One shared rule set: the thresholds and the web precision-pass rules (diagnosis families, working-diagnosis label matching, two conditions, already named, a single contradicting finding alerts at LR <= 0.2, coexisting states) moved into clinical-content/rules/diagnostic-reasoning-rules.json and lib/triage-engine (families.ts, adapter-rules.ts) and were ported to iOS (DiagnosticReasoningRules.swift) with shared vectors. No threshold changed; web behaviour identical (clinval:web unchanged). iOS adapter: stated likelihood ratios (a stored 2 is LR 1.5, not 1.49), the working diagnosis found among every scored candidate, one finding per evidence label, presenting-complaint features as one evidence group, coexisting states explain time-out findings, history and score findings are context. iOS simulator over the 397 original vignettes: alerts 7 -> 5, time-outs 202 -> 2; reasoning-closure-gastroenteritis-dka now alerts on iOS. docs/clinical-validation/changes/diagnostic-reasoning.md (iOS parity)." }
       ]
     },
     {
       "id": "diagnostic-reasoning-web",
-      "title": "Diagnostic reasoning — web PANE adapter rules: working-diagnosis resolution, diagnosis families, two-conditions and already-named rules, web contradiction threshold, time-out coexisting states, can't-miss and coexisting lists",
+      "title": "Diagnostic reasoning — web PANE adapter: evidence from PANE (LRs from feature likelihoods and background rates, cardinal findings), can't-miss list, PANE module sources, time-out filters; applies the shared adapter rules of diagnostic-reasoning-rules",
       "platforms": ["web"],
       "kind": "decision-support-rules",
-      "contentVersion": "1.1.0",
+      "contentVersion": "1.2.0",
       "versionStamp": { "file": "artifacts/dashboard/src/lib/diagnostic-reasoning.ts", "type": "regex", "pattern": "DIAGNOSTIC_REASONING_WEB_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "artifacts/dashboard/src/lib/diagnostic-reasoning.ts",
@@ -1849,11 +1870,12 @@
       "reviewEvidence": "None. Tuned on the 397 clinval vignettes whose confirmed diagnoses are correct: 'doesn't fit' alerts 77 -> 30, time-outs 103 -> 49; the 12 reasoning vignettes unchanged (the 4 closure vignettes still alert). No clinical review.",
       "reviewPriority": "P1",
       "nextReviewDue": "2026-12-31",
-      "changeAuthority": "Any repository committer. Ships on dashboard deploy. iOS twin rules not ported (DiagnosticReasoningAdapter.swift unchanged).",
-      "notes": "Web only. The shared core (diagnostic-reasoning-rules) and iOS are unchanged, so the iOS card still uses the core rules: contradicting finding LR <= 0.33, no families, no two-conditions rule. Porting these to DiagnosticReasoningAdapter.swift is a follow-up.",
+      "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
+      "notes": "Web only: how the web reads PANE's evidence. The rules both platforms apply (diagnosis families, working-diagnosis label matching, two conditions, already named, contradiction LR <= 0.2, coexisting states) are diagnostic-reasoning-rules 1.1.0 (clinical-content/rules/diagnostic-reasoning-rules.json); iOS applies the same rules (DiagnosticReasoningRules.swift).",
       "changelog": [
         { "version": "1.0.0", "date": "2026-09-25", "change": "First version (part of diagnostic-reasoning-rules 1.0.0): PANE LRs, cardinal P >= 0.6 and LR >= 2, can't-miss list (50 PANE diseases), coexisting states (sepsis, AKI, hyperkalaemia, hypercalcaemia, hyponatraemia, hypoglycaemia), time-out filters (no history items; background rate <= 5 %), working diagnosis by disease id then ICD-10 (exact, then category)." },
-        { "version": "1.1.0", "date": "2026-09-26", "change": "Precision pass against alert fatigue. Diagnosis families (diagnosis-families.ts, from PANE ids, labels and ICD-10): same ICD-10 category and head noun; injuries of one body region (S2x, S3x); complication or grade modifier (incarcerated, strangulated, perforated, gangrene, necrotising, infected, obstructed, toxic, major, minor, late, early) with a shared head noun in the same ICD-10 chapter or named in the parenthesis. Family members are compatible: never the leader of 'the record favours X', and a finding that favours one does not alert. Working node matched by label when it beats the ICD-10 match by 2 (words found minus missing; 1 word needs an ICD match, else 2; acute/chronic contradict). 'The record favours X' only when X shares evidence (LR >= 1.5 in both) with a working diagnosis that has support of its own (LR >= 2), and X is not already named in the working diagnosis. A single contradicting finding alerts at LR <= 0.2 (core 0.33). Time-out: findings explained by a coexisting state are explained. Alerts 77 -> 30 / 397, time-outs 103 -> 49 / 397." }
+        { "version": "1.1.0", "date": "2026-09-26", "change": "Precision pass against alert fatigue. Diagnosis families (diagnosis-families.ts, from PANE ids, labels and ICD-10): same ICD-10 category and head noun; injuries of one body region (S2x, S3x); complication or grade modifier (incarcerated, strangulated, perforated, gangrene, necrotising, infected, obstructed, toxic, major, minor, late, early) with a shared head noun in the same ICD-10 chapter or named in the parenthesis. Family members are compatible: never the leader of 'the record favours X', and a finding that favours one does not alert. Working node matched by label when it beats the ICD-10 match by 2 (words found minus missing; 1 word needs an ICD match, else 2; acute/chronic contradict). 'The record favours X' only when X shares evidence (LR >= 1.5 in both) with a working diagnosis that has support of its own (LR >= 2), and X is not already named in the working diagnosis. A single contradicting finding alerts at LR <= 0.2 (core 0.33). Time-out: findings explained by a coexisting state are explained. Alerts 77 -> 30 / 397, time-outs 103 -> 49 / 397." },
+        { "version": "1.2.0", "date": "2026-09-26", "change": "The shared rules (diagnosis families, working-diagnosis label matching, two conditions, already named, contradiction LR <= 0.2, coexisting PANE ids) moved to diagnostic-reasoning-rules 1.1.0 (clinical-content/rules/diagnostic-reasoning-rules.json, lib/triage-engine families.ts and adapter-rules.ts) so iOS runs the same rules and vectors. Web behaviour unchanged: clinval:web identical (alerts 30, time-outs 48 of the 397 original vignettes)." }
       ]
     },
     {

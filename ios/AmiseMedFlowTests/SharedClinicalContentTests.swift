@@ -40,6 +40,10 @@ final class SharedClinicalContentTests: XCTestCase {
 
         XCTAssertNotNil(LifestylePractices.content)
         XCTAssertNotEqual(LifestylePractices.version, "unavailable")
+
+        XCTAssertNotNil(DiagnosticReasoningRules.ruleFile)
+        XCTAssertEqual(DiagnosticReasoningRules.ruleFile?.version, DiagnosticReasoning.version)
+        XCTAssertNotNil(DiagnosticReasoning.contradictionMaxLr)
     }
 
     /// The lifestyle labels are keyed by the stored values: every enum case has exactly one label.

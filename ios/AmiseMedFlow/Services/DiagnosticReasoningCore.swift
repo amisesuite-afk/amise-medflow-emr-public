@@ -20,7 +20,7 @@ import Foundation
 
 enum DiagnosticReasoning {
 
-    static let version = "1.0.0"
+    static let version = "1.1.0"
 
     enum Thresholds {
         static let supportLr = 1.5

@@ -24,40 +24,21 @@
  *  - diagnosticTimeOut(): a gentle checklist when the case is complex.
  *
  * Everything is a suggestion for the clinician; nothing is added to the record by this module.
- * Thresholds and wording are registered (clinical-content/registry.json,
+ * Thresholds are data (clinical-content/rules/diagnostic-reasoning-rules.json, read by
+ * reasoning-rules.ts); thresholds and wording are registered (clinical-content/registry.json,
  * `diagnostic-reasoning-rules`) and await the surgeon's sign-off.
  */
 
-export const DIAGNOSTIC_REASONING_VERSION = '1.0.0';
+import { REASONING_RULES } from './reasoning-rules';
+import type { ReasoningThresholds } from './reasoning-rules';
 
-export const REASONING_THRESHOLDS = {
-  /** A present finding with LR ≥ this supports the hypothesis. */
-  supportLr: 1.5,
-  /** A present (or documented-absent) finding with LR ≤ this argues against it. */
-  againstLr: 0.67,
-  /** A finding "favours" another hypothesis when its LR there is ≥ this. */
-  favourLr: 2,
-  /** A hypothesis with no supporting finding of LR ≥ this is shown as "low evidence". */
-  lowEvidenceLr: 2,
-  /** Premature-closure alert: a finding against the working diagnosis with LR ≤ this. */
-  strongContradictionLr: 0.33,
-  /** Premature-closure alert: the finding that drives the leader has an LR ratio ≥ this (leader / working). */
-  strongFavourLr: 10,
-  /** Premature-closure alert: the leader is at least this many times more probable… */
-  lessLikelyRatio: 5,
-  /** …and at least this probable. */
-  lessLikelyMinLeader: 0.5,
-  /** NEWS2 rise (latest minus the lowest earlier reading) that raises an alert… */
-  news2RiseMin: 2,
-  /** …when the latest NEWS2 is at least this (RCP NEWS2: 5 = urgent ward-based response). */
-  news2AlertMin: 5,
-  /** Diagnostic time-out: this many recorded findings unexplained by the leading diagnoses. */
-  unexplainedTimeOut: 3,
-  /** Expected information gain (nats) below which a probe is not offered. */
-  minGain: 0.01,
-  /** At most this many premature-closure alerts. */
-  maxClosureAlerts: 4,
-} as const;
+/**
+ * The thresholds (clinical-content/rules/diagnostic-reasoning-rules.json `thresholds`; iOS compiles
+ * the same values into DiagnosticReasoningCore.swift, pinned by diagnostic-reasoning-parity.test.ts):
+ * support LR ≥ 1.5, against LR ≤ 0.67, favours LR ≥ 2, low evidence, the premature-closure
+ * triggers, NEWS2 rise, time-out count, minimum information gain and the alert cap.
+ */
+export const REASONING_THRESHOLDS: Readonly<ReasoningThresholds> = REASONING_RULES.thresholds;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

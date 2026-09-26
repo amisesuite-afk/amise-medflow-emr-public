@@ -7,21 +7,43 @@
  * the vectors cannot cover exhaustively: the thresholds, the probe-cost term lists, the time-out
  * checklist, the longitudinal thresholds and the other-specimen terms, read from the Swift source.
  * The zebra rule set is no longer twinned: both platforms read clinical-content/rules/zebra-rules.json
- * (lint:shared-content, shared-content.test.ts).
+ * (lint:shared-content, shared-content.test.ts); the adapter rules (families, label matching,
+ * closure filters, coexisting states) are read from clinical-content/rules/diagnostic-reasoning-rules.json
+ * by both, whose `thresholds` iOS compiles in (pinned here). The clause-aware record reading
+ * (record-clauses.ts ↔ RecordClauses.swift) is pinned here by its word lists and patterns and by
+ * the shared RecordClauseVectors.json.
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  LONGITUDINAL_THRESHOLDS, OTHER_SPECIMEN_TERMS, PROBE_COST_TERMS, PROBE_COST_WEIGHT, REASONING_THRESHOLDS,
+  LONGITUDINAL_THRESHOLDS, OTHER_SPECIMEN_TERMS, PROBE_COST_TERMS, PROBE_COST_WEIGHT, REASONING_RULES, REASONING_THRESHOLDS,
   TIME_OUT_CHECKLIST, DIAGNOSTIC_REASONING_VERSION,
 } from '../../lib/triage-engine/src/diagnostic-reasoning/index';
+import {
+  AND_LIST_CUES, ATTRIBUTED_PATTERN, FAMILY_CONTRAST_PATTERN, FAMILY_HISTORY_PATTERN, LIST_BREAKERS, LIST_CUES, LIST_CUE_FILLERS,
+  LIST_PSEUDO_NEXT, MAX_LIST_ITEMS, MAX_LIST_ITEM_WORDS, NO_HELP_RE, QUERY_BEFORE_PATTERN, QUERY_LOOKBACK,
+} from '../../lib/triage-engine/src/record-clauses';
 import { REPO_ROOT } from './clinval/load';
 
 const read = (p: string) => readFileSync(join(REPO_ROOT, p), 'utf8');
 const CORE = read('ios/AmiseMedFlow/Services/DiagnosticReasoningCore.swift');
 const ZEBRA = read('ios/AmiseMedFlow/Services/ZebraCheck.swift');
 const LONG = read('ios/AmiseMedFlow/Services/LongitudinalPatterns.swift');
+const CLAUSES = read('ios/AmiseMedFlow/Services/RecordClauses.swift');
+const ADAPTER = read('ios/AmiseMedFlow/Services/DiagnosticReasoningAdapter.swift');
+
+function swiftStringList(src: string, name: string): string[] {
+  const m = new RegExp(`static let ${name}(?:: \\[String\\])? = \\[([\\s\\S]*?)\\]\\n`).exec(src);
+  if (!m) throw new Error(`static let ${name} not found`);
+  return stringsIn(m[1]);
+}
+
+function swiftRawString(src: string, name: string): string {
+  const m = new RegExp(`static let ${name} = #"(.*)"#\\n`).exec(src);
+  if (!m) throw new Error(`static let ${name} = #"…"# not found`);
+  return m[1];
+}
 
 function swiftNumber(src: string, name: string): number {
   const m = new RegExp(`static let ${name}\\s*=\\s*(-?[\\d.]+)`).exec(src);
@@ -58,6 +80,28 @@ describe('diagnostic reasoning parity (web ↔ iOS)', () => {
       const m = new RegExp(`case \\.${cost}: return ([\\d.]+)`).exec(CORE);
       expect(Number(m?.[1]), cost).toBe(weight);
     }
+  });
+
+  it('the core thresholds are the shared rules file (clinical-content/rules/diagnostic-reasoning-rules.json)', () => {
+    expect(REASONING_THRESHOLDS).toBe(REASONING_RULES.thresholds);
+    expect(DIAGNOSTIC_REASONING_VERSION).toBe(REASONING_RULES.version);
+    expect(swiftStringList(ADAPTER, 'fallbackCoexistingTerms')).toEqual(REASONING_RULES.coexisting.nameTerms);
+  });
+
+  it('clause-aware record reading: word lists and patterns match (record-clauses.ts ↔ RecordClauses.swift)', () => {
+    expect(swiftStringList(CLAUSES, 'listCues')).toEqual(LIST_CUES);
+    expect(swiftStringList(CLAUSES, 'andListCues')).toEqual(AND_LIST_CUES);
+    expect(swiftStringList(CLAUSES, 'listPseudoNext')).toEqual(LIST_PSEUDO_NEXT);
+    expect(swiftStringList(CLAUSES, 'listBreakers')).toEqual(LIST_BREAKERS);
+    expect(swiftStringList(CLAUSES, 'listCueFillers')).toEqual(LIST_CUE_FILLERS);
+    expect(swiftNumber(CLAUSES, 'maxListItemWords')).toBe(MAX_LIST_ITEM_WORDS);
+    expect(swiftNumber(CLAUSES, 'maxListItems')).toBe(MAX_LIST_ITEMS);
+    expect(swiftNumber(CLAUSES, 'queryLookback')).toBe(QUERY_LOOKBACK);
+    expect(swiftRawString(CLAUSES, 'familyHistoryPattern')).toBe(FAMILY_HISTORY_PATTERN);
+    expect(swiftRawString(CLAUSES, 'familyContrastPattern')).toBe(FAMILY_CONTRAST_PATTERN);
+    expect(swiftRawString(CLAUSES, 'attributedPattern')).toBe(ATTRIBUTED_PATTERN);
+    expect(swiftRawString(CLAUSES, 'queryBeforePattern')).toBe(QUERY_BEFORE_PATTERN);
+    expect(swiftRawString(CLAUSES, 'noHelpPattern')).toBe(NO_HELP_RE.source);
   });
 
   it('time-out checklist and other-specimen terms match', () => {
