@@ -5,6 +5,9 @@
  * platforms read: the web imports the JSON (resolveJsonModule), iOS bundles the folder as a
  * folder reference ("rules", ios/project.yml) and decodes it with Codable structs
  * (SharedClinicalContent.swift). Each file has a JSON Schema, clinical-content/schemas/<name>.schema.json.
+ * The disease-centred vademecum (phase 1, shadow) follows the same pattern in
+ * clinical-content/vademecum/<name>.json (folder reference "vademecum"); its area files share one
+ * schema (vademecum-area), so an entry can name its schema.
  *
  * This module holds the checks run by `lint:shared-content` (lint-shared-content.ts) and unit-tested
  * in shared-content.test.ts:
@@ -27,12 +30,20 @@ import Ajv2020 from 'ajv/dist/2020';
 // ── Configuration ────────────────────────────────────────────────────────────────────────────
 
 export const RULES_DIR = 'clinical-content/rules';
+export const VADEMECUM_DIR = 'clinical-content/vademecum';
 export const SCHEMAS_DIR = 'clinical-content/schemas';
 export const REGISTRY_FILE = 'clinical-content/registry.json';
 export const IOS_LOADER = 'ios/AmiseMedFlow/Services/SharedClinicalContent.swift';
 export const IOS_PROJECT = 'ios/project.yml';
 /** The folder reference in ios/project.yml (relative to ios/) and its name in the app bundle. */
 export const IOS_FOLDER_PATH = '../clinical-content/rules';
+
+/** Content folders: where the files are, their iOS folder reference, and the key prefix used here. */
+export const CONTENT_DIRS = [
+  { key: 'rules', dir: RULES_DIR, iosFolder: IOS_FOLDER_PATH, prefix: '' },
+  { key: 'vademecum', dir: VADEMECUM_DIR, iosFolder: '../clinical-content/vademecum', prefix: 'vademecum/' },
+] as const;
+export type ContentDirKey = (typeof CONTENT_DIRS)[number]['key'];
 
 /** How one platform reads one rules file: a root type, the source files its types live in. */
 export interface TypeMapping {
@@ -45,8 +56,12 @@ export interface TypeMapping {
 }
 
 export interface SharedContentFile {
-  /** File name without ".json" (clinical-content/rules/<name>.json). */
+  /** File name without ".json" (clinical-content/<dir>/<name>.json). */
   name: string;
+  /** Content folder (default 'rules'). */
+  dir?: ContentDirKey;
+  /** Schema name (clinical-content/schemas/<schema>.schema.json) when it is not the file name. */
+  schema?: string;
   /** JSON pointers (into the data) of arrays of regular expressions (ICU and JavaScript). */
   regexLists: string[];
   swift: TypeMapping;
@@ -107,7 +122,31 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     ] },
     ts: { files: ['lib/pane-engine/src/evidence/types.ts'], root: 'DecisionRulesContent', ignore: ['/$schema', '/$comment'] },
   },
+  // Disease-centred vademecum, phase 1 (shadow; docs/VADEMECUM-PLAN.md). The web loop
+  // (lib/pane-engine/src/vademecum-loop) reads every field; iOS only decodes the files in phase 1
+  // and skips the review header and prose.
+  {
+    name: 'findings', dir: 'vademecum', schema: 'vademecum-findings',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/VademecumContent.swift'], root: 'VademecumContent.FindingsFile', ignore: [
+      ...HEADER_IGNORE, '/title', '/updated', '/lastReviewed', '/reviewer', '/reference',
+    ] },
+    ts: { files: ['lib/pane-engine/src/vademecum-loop/types.ts'], root: 'VademecumFindingsFile', ignore: ['/$schema', '/$comment'] },
+  },
+  ...(['abdominal-pain', 'cough-breathlessness'] as const).map((name): SharedContentFile => ({
+    name, dir: 'vademecum', schema: 'vademecum-area',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/VademecumContent.swift'], root: 'VademecumContent.AreaFile', ignore: [
+      ...HEADER_IGNORE, '/title', '/updated', '/lastReviewed', '/reviewer',
+    ] },
+    ts: { files: ['lib/pane-engine/src/vademecum-loop/types.ts'], root: 'VademecumAreaFile', ignore: ['/$schema', '/$comment'] },
+  })),
 ];
+
+/** Key of a configured file in the problem list and `checked` ("zebra-rules", "vademecum/findings"). */
+export function contentKey(f: { name: string; dir?: ContentDirKey }): string {
+  return `${CONTENT_DIRS.find(d => d.key === (f.dir ?? 'rules'))!.prefix}${f.name}`;
+}
 
 /** Platform copies replaced by a shared file: they must not come back. */
 export const RETIRED_COPIES = [
@@ -474,6 +513,8 @@ export function compareSwift(root: Schema, types: SwiftTypes, rootType: string, 
 export function compareTs(root: Schema, types: TsTypes, rootType: string, ignore: string[], node: unknown = root): string[] {
   const problems: string[] = [];
   const ignored = new Set(ignore);
+  // A recursive interface (a criteria tree) is checked once on each path.
+  const visiting = new Set<string>();
 
   const checkFields = (where: string, fields: Field[], n: unknown, pointer: string) => {
     compareFields(root, where, fields, n, ignored, pointer, (w, t, opt, prop, out) => check(w, t, opt, prop, out, `${pointer}/${w.split('.').pop()}`), problems);
@@ -487,7 +528,7 @@ export function compareTs(root: Schema, types: TsTypes, rootType: string, ignore
     if (types_.has('null') && !hasNull) out.push(`${where}: the schema allows null but the TypeScript type ${type} does not`);
     if (hasNull && !types_.has('null')) out.push(`${where}: TypeScript ${type} allows null but the schema does not`);
     const nonNull = new Set([...types_].filter(t => t !== 'null'));
-    if (rest.length > 1 && rest.every(p => /^'[^']*'$/.test(p))) {
+    if (rest.length >= 1 && rest.every(p => /^'[^']*'$/.test(p))) {
       const vals = enumValues(root, n)?.filter(v => v !== null).map(String);
       const a = rest.map(p => p.slice(1, -1)).sort().join(', ');
       if (!vals || [...vals].sort().join(', ') !== a) out.push(`${where}: TypeScript literals [${a}] differ from the schema enum [${(vals ?? []).sort().join(', ')}]`);
@@ -526,7 +567,10 @@ export function compareTs(root: Schema, types: TsTypes, rootType: string, ignore
     const fields = types.interfaces.get(t);
     if (!fields) { out.push(`${where}: TypeScript type ${t} not found`); return; }
     if (!within(nonNull, ['object'])) { out.push(`${where}: TypeScript ${t} but the schema says ${[...types_].join('|')}`); return; }
+    if (visiting.has(t)) return;
+    visiting.add(t);
     checkFields(where, fields, n, pointer);
+    visiting.delete(t);
   };
 
   const fields = types.interfaces.get(rootType);
@@ -556,11 +600,27 @@ export function checkSharedContent(repoRoot: string): { problems: string[]; chec
   const read = (p: string) => readFileSync(join(repoRoot, p), 'utf8');
   const exists = (p: string) => existsSync(join(repoRoot, p));
 
-  const rules = exists(RULES_DIR) ? readdirSync(join(repoRoot, RULES_DIR)).filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)).sort() : [];
+  // Every content file, keyed "<prefix><name>" (a rules file keeps its bare name).
+  const files: { key: string; name: string; dir: (typeof CONTENT_DIRS)[number] }[] = [];
+  for (const d of CONTENT_DIRS) {
+    if (!exists(d.dir)) continue;
+    for (const f of readdirSync(join(repoRoot, d.dir)).filter(x => x.endsWith('.json'))) {
+      files.push({ key: `${d.prefix}${f.slice(0, -5)}`, name: f.slice(0, -5), dir: d });
+    }
+  }
+  files.sort((a, b) => a.key.localeCompare(b.key));
+  const rules = files.map(f => f.key);
+  const configured = new Map(SHARED_CONTENT.map(c => [contentKey(c), c]));
+  const schemaOf = (f: { key: string; name: string }) => configured.get(f.key)?.schema ?? f.name;
   const schemas = exists(SCHEMAS_DIR) ? readdirSync(join(repoRoot, SCHEMAS_DIR)).filter(f => f.endsWith('.schema.json')).map(f => f.slice(0, -12)).sort() : [];
-  for (const s of schemas) if (!rules.includes(s)) problems.push(`${SCHEMAS_DIR}/${s}.schema.json has no rules file ${RULES_DIR}/${s}.json`);
-  const configured = new Map(SHARED_CONTENT.map(c => [c.name, c]));
-  for (const name of configured.keys()) if (!rules.includes(name)) problems.push(`${RULES_DIR}/${name}.json is missing (listed in SHARED_CONTENT)`);
+  const usedSchemas = new Set(files.map(schemaOf));
+  for (const s of schemas) {
+    if (!usedSchemas.has(s)) problems.push(`${SCHEMAS_DIR}/${s}.schema.json has no content file (${RULES_DIR}/${s}.json, or a SHARED_CONTENT entry naming the schema)`);
+  }
+  for (const [key, c] of configured) {
+    const d = CONTENT_DIRS.find(x => x.key === (c.dir ?? 'rules'))!;
+    if (!rules.includes(key)) problems.push(`${d.dir}/${c.name}.json is missing (listed in SHARED_CONTENT)`);
+  }
 
   let registry: RegistryEntry[] = [];
   try {
@@ -572,19 +632,24 @@ export function checkSharedContent(repoRoot: string): { problems: string[]; chec
   const loader = exists(IOS_LOADER) ? read(IOS_LOADER) : '';
   if (!loader) problems.push(`${IOS_LOADER} is missing`);
   const project = exists(IOS_PROJECT) ? read(IOS_PROJECT) : '';
-  const folderRef = new RegExp(`-\\s*path:\\s*${IOS_FOLDER_PATH.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}\\s*\\n\\s*type:\\s*folder\\s*\\n\\s*buildPhase:\\s*resources`);
-  if (!folderRef.test(project)) {
-    problems.push(`${IOS_PROJECT}: the app target must bundle "${IOS_FOLDER_PATH}" as a folder reference (type: folder, buildPhase: resources)`);
+  for (const d of CONTENT_DIRS) {
+    if (d.key !== 'rules' && !files.some(f => f.dir.key === d.key)) continue;
+    const folderRef = new RegExp(`-\\s*path:\\s*${d.iosFolder.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}\\s*\\n\\s*type:\\s*folder\\s*\\n\\s*buildPhase:\\s*resources`);
+    if (!folderRef.test(project)) {
+      problems.push(`${IOS_PROJECT}: the app target must bundle "${d.iosFolder}" as a folder reference (type: folder, buildPhase: resources)`);
+    }
   }
 
   for (const retired of RETIRED_COPIES) {
     if (exists(retired)) problems.push(`${retired} is a retired platform copy: delete it (the shared file is the only source)`);
   }
 
-  for (const name of rules) {
-    const file = `${RULES_DIR}/${name}.json`;
-    const schemaFile = `${SCHEMAS_DIR}/${name}.schema.json`;
-    if (!schemas.includes(name)) { problems.push(`${file} has no schema ${schemaFile}`); continue; }
+  for (const content of files) {
+    const { name, key } = content;
+    const schemaName = schemaOf(content);
+    const file = `${content.dir.dir}/${name}.json`;
+    const schemaFile = `${SCHEMAS_DIR}/${schemaName}.schema.json`;
+    if (!schemas.includes(schemaName)) { problems.push(`${file} has no schema ${schemaFile}`); continue; }
     let data: Record<string, unknown>;
     let schema: Schema;
     try { data = JSON.parse(read(file)) as Record<string, unknown>; } catch (e) { problems.push(`${file}: not valid JSON (${(e as Error).message})`); continue; }
@@ -602,7 +667,7 @@ export function checkSharedContent(repoRoot: string): { problems: string[]; chec
       problems.push(`${schemaFile}: not a usable JSON Schema (${(e as Error).message})`);
       continue;
     }
-    if (data.$schema !== `../schemas/${name}.schema.json`) problems.push(`${file}: "$schema" must be "../schemas/${name}.schema.json"`);
+    if (data.$schema !== `../schemas/${schemaName}.schema.json`) problems.push(`${file}: "$schema" must be "../schemas/${schemaName}.schema.json"`);
 
     // 2. Registry: the id names an entry that lists the file and stamps its version from it.
     const entry = registry.find(r => r.id === data.id);
@@ -621,7 +686,7 @@ export function checkSharedContent(repoRoot: string): { problems: string[]; chec
       problems.push(`${IOS_LOADER}: SharedClinicalContent.File has no case for "${name}" (Settings → Diagnostics would not show it)`);
     }
 
-    const cfg = configured.get(name);
+    const cfg = configured.get(key);
     if (!cfg) { problems.push(`${file}: not listed in SHARED_CONTENT (scripts/src/shared-content.ts): add how each platform reads it`); continue; }
 
     // 4. Regular expressions compile.

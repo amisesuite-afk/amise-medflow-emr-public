@@ -22,6 +22,7 @@
     "signoff:catalogue": "tsx ./src/signoff-catalogue.ts",
     "signoff:apply": "tsx ./src/signoff-apply.ts",
     "lint:shared-content": "tsx ./src/lint-shared-content.ts",
+    "lint:vademecum": "tsx ./src/lint-vademecum.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "clinval:web": "tsx ./src/clinval/run-web.ts",
     "clinval:report": "tsx ./src/clinval/report.ts",

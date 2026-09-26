@@ -20,7 +20,7 @@ import { checkSharedContent } from './shared-content';
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
 
 const { problems, checked } = checkSharedContent(REPO_ROOT);
-console.log(`Shared clinical content: ${checked.length} rule file(s) in clinical-content/rules (${checked.join(', ')}).`);
+console.log(`Shared clinical content: ${checked.length} file(s) in clinical-content/rules and clinical-content/vademecum (${checked.join(', ')}).`);
 if (problems.length) {
   console.error(`\nFAILED: ${problems.length} problem(s):`);
   for (const p of problems) console.error(`  - ${p}`);

@@ -166,6 +166,12 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'artifacts/dashboard/src/lib/exam-evidence-features.ts',
   'artifacts/dashboard/src/lib/exam-frames.ts',
   'artifacts/dashboard/src/lib/decision-rule-scores.ts',
+  // Disease-centred vademecum, phase 1 (shadow) — web loop, iOS decode only
+  'clinical-content/vademecum/findings.json',
+  'clinical-content/vademecum/abdominal-pain.json',
+  'clinical-content/vademecum/cough-breathlessness.json',
+  'lib/pane-engine/src/vademecum-loop/*.ts',
+  'ios/AmiseMedFlow/Services/VademecumContent.swift',
   // Dashboard
   'artifacts/dashboard/src/lib/drug-interactions.ts',
   'artifacts/dashboard/src/lib/drug-classes.ts',

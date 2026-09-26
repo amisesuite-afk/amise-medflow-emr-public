@@ -2042,6 +2042,221 @@
         {"version": "1.0.0", "date": "2026-09-26", "change": "First version (evidence-exam), with the web calculators for AIR, PERC, Ottawa ankle / knee, Canadian CT head, NEXUS, Canadian C-spine, Centor/McIsaac, STONE, LRINEC, San Francisco syncope rule and the Canadian syncope risk score. See docs/clinical-validation/changes/evidence-exam.md."},
         {"version": "1.1.0", "date": "2026-09-26", "change": "ios-outcomes-calculators: iOS calculators linked (ios.param / ios.activeScore) for STONE, Ottawa ankle and knee, Canadian CT head, NEXUS, Canadian C-spine, San Francisco syncope rule and the Canadian syncope risk score; STONE target iOS name fragments added (ureteric colic, renal colic, ureteric calculus); Canadian CT head iOS fragments narrowed to subdural, extradural, cerebral contusion (head injury and traumatic brain matched concussion / mild traumatic brain injury, which a negative rule must not push down). Bands, likelihood ratios and risks unchanged. See docs/clinical-validation/changes/ios-outcomes-calculators.md."}
       ]
+    },
+    {
+      "id": "vademecum-findings",
+      "title": "Disease-centred vademecum (phase 1, shadow): canonical finding dictionary and the hypothetico-deductive loop policy (thresholds, criteria floors, likelihood-ratio clamp)",
+      "platforms": [
+        "web",
+        "ios"
+      ],
+      "kind": "bayesian-model-data",
+      "contentVersion": "0.1.0",
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewPriority": "P2",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer. Edit the shared file (and its schema and the Swift / TypeScript types for a new field: lint:shared-content), keep every reference valid (lint:vademecum), bump the version with a changelog entry. Phase 1 is shadow only: nothing in production reads it, so a change reaches no patient; iOS bundles and decodes it only.",
+      "versionStamp": {
+        "file": "clinical-content/vademecum/findings.json",
+        "type": "json-key",
+        "key": "version"
+      },
+      "files": [
+        "clinical-content/vademecum/findings.json",
+        "clinical-content/schemas/vademecum-findings.schema.json",
+        "lib/pane-engine/src/vademecum-loop/*.ts",
+        "ios/AmiseMedFlow/Services/VademecumContent.swift"
+      ],
+      "tests": [
+        "lib/pane-engine/src/__tests__/vademecum-loop.test.ts",
+        "scripts/src/vademecum-content.test.ts",
+        "ios/AmiseMedFlowTests/VademecumContentTests.swift"
+      ],
+      "ciChecks": [
+        "lint:shared-content (JSON Schema; Swift and TypeScript types; bundled for iOS)",
+        "lint:vademecum (every finding, examination sign, decision rule, decision, history frame and PANE id referenced exists; LR ranges bracket the point; criteria logic well formed; nothing marked signed off)",
+        "pane-engine vitest (vademecum loop)",
+        "clinval:web --engine vademecum (shadow comparison, not a CI gate)"
+      ],
+      "guidelines": [
+        {
+          "name": "PANE model feature list and backgrounds",
+          "version": "1.1.1",
+          "section": "lib/pane-engine vademecum features",
+          "citation": "Finding ids, labels and questions seeded from the PANE features; baseRate = prior-weighted rate among the pilot candidates"
+        },
+        {
+          "name": "Pauker SG, Kassirer JP. The threshold approach to clinical decision making",
+          "version": "N Engl J Med 1980;302:1109-17",
+          "section": "Test / treat thresholds",
+          "citation": "Thresholds from lib/pane-engine/src/decision (treatment-decisions.json) where a disease names a decision"
+        }
+      ],
+      "reviewEvidence": "None. Policy numbers are engineering defaults; findings seeded from the PANE and iOS engines and new findings written from memory. Sign-off list: docs/clinical-validation/changes/vademecum-phase1.md.",
+      "notes": "Phase 1 SHADOW. 514 findings (history, exam, score, investigation) with dimension, chip, synonyms, background rate, correlation group, entry-point capability, PANE feature id, examination-sign or decision-rule reference, laboratory spec (read through @workspace/triage-engine/reference-ranges) and demographic spec. Plan: docs/VADEMECUM-PLAN.md; report: docs/clinical-validation/VADEMECUM-PHASE1.md.",
+      "changelog": [
+        {
+          "version": "0.1.0",
+          "date": "2026-09-26",
+          "change": "Created (phase 1 pilot, shadow): findings of the abdominal pain and cough / breathlessness areas, loop policy. Not clinically reviewed."
+        }
+      ]
+    },
+    {
+      "id": "vademecum-abdominal-pain",
+      "title": "Disease-centred vademecum (phase 1, shadow): acute and chronic abdominal pain — diseases with findings by level and likelihood ratios, diagnostic criteria, pathognomonic findings, exclusions and incidental work-up",
+      "platforms": [
+        "web",
+        "ios"
+      ],
+      "kind": "bayesian-model-data",
+      "contentVersion": "0.1.0",
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-10-31",
+      "changeAuthority": "Any repository committer. Edit the shared file (and its schema and the Swift / TypeScript types for a new field: lint:shared-content), keep every reference valid (lint:vademecum), bump the version with a changelog entry. Phase 1 is shadow only: nothing in production reads it, so a change reaches no patient; iOS bundles and decodes it only.",
+      "versionStamp": {
+        "file": "clinical-content/vademecum/abdominal-pain.json",
+        "type": "json-key",
+        "key": "version"
+      },
+      "files": [
+        "clinical-content/vademecum/abdominal-pain.json",
+        "clinical-content/schemas/vademecum-area.schema.json"
+      ],
+      "tests": [
+        "lib/pane-engine/src/__tests__/vademecum-loop.test.ts",
+        "scripts/src/vademecum-content.test.ts",
+        "ios/AmiseMedFlowTests/VademecumContentTests.swift"
+      ],
+      "ciChecks": [
+        "lint:shared-content (JSON Schema; Swift and TypeScript types; bundled for iOS)",
+        "lint:vademecum (every finding, examination sign, decision rule, decision, history frame and PANE id referenced exists; LR ranges bracket the point; criteria logic well formed; nothing marked signed off)",
+        "pane-engine vitest (vademecum loop)",
+        "clinval:web --engine vademecum (shadow comparison, not a CI gate)"
+      ],
+      "guidelines": [
+        {
+          "name": "Tokyo Guidelines 2018 (acute cholangitis, acute cholecystitis)",
+          "version": "2018",
+          "section": "Diagnostic criteria",
+          "citation": "Kiriyama S et al.; Yokoe M et al. J Hepatobiliary Pancreat Sci 2018;25"
+        },
+        {
+          "name": "Revised Atlanta classification of acute pancreatitis",
+          "version": "2012",
+          "section": "Diagnosis (2 of 3)",
+          "citation": "Banks PA et al. Gut 2013;62:102-11"
+        },
+        {
+          "name": "JBDS-IP DKA; Sepsis-3",
+          "version": "2023; 2016",
+          "section": "Diagnostic criteria",
+          "citation": "JBDS-IP 2023; Singer M et al. JAMA 2016"
+        },
+        {
+          "name": "NICE NG12 Suspected cancer",
+          "version": "2015 (2023)",
+          "section": "Colorectal, oesophago-gastric, pancreatic",
+          "citation": "Referral criteria (external evaluator: lib/triage-engine cancer-screening)"
+        },
+        {
+          "name": "Rome IV",
+          "version": "2016",
+          "section": "IBS; functional dyspepsia",
+          "citation": "Lacy BE et al.; Stanghellini V et al. Gastroenterology 2016;150"
+        },
+        {
+          "name": "Incidental findings",
+          "version": "ESE/ENSAT 2023; Bosniak 2019; BSG/ACPGBI/PHE 2020; NICE CG188",
+          "section": "Adrenal incidentaloma, cystic renal mass, adenoma surveillance, asymptomatic gallstones",
+          "citation": "Fassnacht M et al. Eur J Endocrinol 2023; Silverman SG et al. Radiology 2019; Rutter MD et al. Gut 2020"
+        }
+      ],
+      "reviewEvidence": "None. Seeded from PANE (1.1.1) sensitivities and iOS DiagnosticDatabase.json 2.2.0 likelihood ratios (each value records its seed and the original numbers) and new content from memory. Sign-off list: docs/clinical-validation/changes/vademecum-phase1.md.",
+      "notes": "Phase 1 SHADOW. Every diagnosis reachable for an abdominal-pain complaint in PANE or the iOS abdominal presentation, the medical mimics and can't-miss conditions of both engines, and the incidental-finding entry points of the area (adrenal, renal cyst, gallstones, adenoma).",
+      "changelog": [
+        {
+          "version": "0.1.0",
+          "date": "2026-09-26",
+          "change": "Created (phase 1 pilot, shadow). Not clinically reviewed."
+        }
+      ]
+    },
+    {
+      "id": "vademecum-cough-breathlessness",
+      "title": "Disease-centred vademecum (phase 1, shadow): cough and breathlessness — acute and chronic causes with findings by level, criteria, pathognomonic findings, exclusions and incidental work-up",
+      "platforms": [
+        "web",
+        "ios"
+      ],
+      "kind": "bayesian-model-data",
+      "contentVersion": "0.1.0",
+      "citationStatus": "per-rule",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-10-31",
+      "changeAuthority": "Any repository committer. Edit the shared file (and its schema and the Swift / TypeScript types for a new field: lint:shared-content), keep every reference valid (lint:vademecum), bump the version with a changelog entry. Phase 1 is shadow only: nothing in production reads it, so a change reaches no patient; iOS bundles and decodes it only.",
+      "versionStamp": {
+        "file": "clinical-content/vademecum/cough-breathlessness.json",
+        "type": "json-key",
+        "key": "version"
+      },
+      "files": [
+        "clinical-content/vademecum/cough-breathlessness.json",
+        "clinical-content/schemas/vademecum-area.schema.json"
+      ],
+      "tests": [
+        "lib/pane-engine/src/__tests__/vademecum-loop.test.ts",
+        "scripts/src/vademecum-content.test.ts",
+        "ios/AmiseMedFlowTests/VademecumContentTests.swift"
+      ],
+      "ciChecks": [
+        "lint:shared-content (JSON Schema; Swift and TypeScript types; bundled for iOS)",
+        "lint:vademecum (every finding, examination sign, decision rule, decision, history frame and PANE id referenced exists; LR ranges bracket the point; criteria logic well formed; nothing marked signed off)",
+        "pane-engine vitest (vademecum loop)",
+        "clinval:web --engine vademecum (shadow comparison, not a CI gate)"
+      ],
+      "guidelines": [
+        {
+          "name": "ERS chronic cough; ACCP cough; BTS cough",
+          "version": "2020; 2006; 2006",
+          "section": "Chronic cough causes",
+          "citation": "Morice AH et al. Eur Respir J 2020; Irwin RS et al. Chest 2006; Morice AH et al. Thorax 2006"
+        },
+        {
+          "name": "GINA; GOLD; BTS bronchiectasis; NICE NG33 TB; NICE NG12 lung",
+          "version": "2024; 2025; 2019; 2016 (2024); 2015 (2023)",
+          "section": "Diagnosis",
+          "citation": "Per disease in the file"
+        },
+        {
+          "name": "ESC acute PE; ESC heart failure; Framingham; BTS pleural; BTS CAP",
+          "version": "2019; 2021; 1971; 2023; 2009",
+          "section": "Diagnosis",
+          "citation": "Per disease in the file"
+        },
+        {
+          "name": "Incidental findings",
+          "version": "BTS 2015 / Fleischner 2017; ACR TI-RADS 2017; Bethesda 2023",
+          "section": "Pulmonary nodule; incidental thyroid nodule",
+          "citation": "Callister MEJ et al. Thorax 2015; Tessler FN et al. JACR 2017"
+        }
+      ],
+      "reviewEvidence": "None. Seeded from PANE and iOS where they had the disease; the chronic-cough causes (ACE-inhibitor cough, asthma, upper-airway cough, COPD, bronchiectasis, TB, lung cancer) and acute bronchitis / post-infectious cough are new content from memory. Sign-off list: docs/clinical-validation/changes/vademecum-phase1.md.",
+      "notes": "Phase 1 SHADOW. Adds the chronic-cough causes neither engine had (history-by-complaint finding 9).",
+      "changelog": [
+        {
+          "version": "0.1.0",
+          "date": "2026-09-26",
+          "change": "Created (phase 1 pilot, shadow). Not clinically reviewed."
+        }
+      ]
     }
   ],
   "excluded": [

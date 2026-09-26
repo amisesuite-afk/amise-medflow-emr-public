@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise-medflow.local/clinical-content/vademecum-findings.schema.json",
+  "title": "Vademecum finding dictionary and loop policy",
+  "description": "clinical-content/vademecum/findings.json: the canonical findings (history, examination, score and investigation items) that the disease-centred vademecum areas (clinical-content/vademecum/<area>.json) reuse across diseases, plus the policy of the hypothetico-deductive loop (lib/pane-engine/src/vademecum-loop). Phase 1: shadow only, nothing in production reads it. Read by the web loop and decoded on iOS (VademecumContent.swift through SharedClinicalContent). Checked by lint:shared-content (schema, Swift and TypeScript types) and lint:vademecum (references). Design: docs/VADEMECUM-PLAN.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "title", "updated", "lastReviewed", "reviewer", "status", "reference", "policy", "dimensions", "findings"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "vademecum-findings" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "title": { "type": "string" },
+    "updated": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "lastReviewed": { "type": "string", "description": "\"unknown\" until a named clinician reviews the content (never a date without that review)." },
+    "reviewer": { "type": "string" },
+    "status": { "enum": ["shadow", "live"], "description": "shadow: run beside the production engines for comparison only (phase 1)." },
+    "reference": { "type": "string" },
+    "policy": { "$ref": "#/$defs/policy" },
+    "dimensions": {
+      "type": "object",
+      "description": "The question asked for each dimension (the generated history questions group a candidate set's chips by dimension).",
+      "propertyNames": { "$ref": "#/$defs/dimension" },
+      "additionalProperties": {
+        "type": "object", "additionalProperties": false, "required": ["question", "order"],
+        "properties": {
+          "question": { "type": "string" },
+          "order": { "type": "integer", "minimum": 0, "description": "Position in the SOCRATES / history order (lower first)." }
+        }
+      }
+    },
+    "findings": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/finding" } }
+  },
+  "$defs": {
+    "level": { "enum": ["history", "exam", "score", "investigation"] },
+    "dimension": {
+      "enum": [
+        "site", "onset", "character", "radiation", "associated", "timing", "aggravating", "relieving", "severity", "course",
+        "sputum", "risk-factor", "pmh", "surgical-history", "medication", "exposure", "context", "demographic",
+        "sign", "vital", "lab", "imaging", "endoscopy", "ecg", "pathology", "physiology", "test", "score"
+      ]
+    },
+    "priorTiers": {
+      "type": "object", "additionalProperties": false, "required": ["common", "frequent", "uncommon", "rare", "veryRare"],
+      "description": "Relative base rates (lib/pane-engine/src/vademecum/priors.ts PRIOR_TIER, the existing scheme).",
+      "properties": {
+        "common": { "type": "number", "exclusiveMinimum": 0 },
+        "frequent": { "type": "number", "exclusiveMinimum": 0 },
+        "uncommon": { "type": "number", "exclusiveMinimum": 0 },
+        "rare": { "type": "number", "exclusiveMinimum": 0 },
+        "veryRare": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "thresholds": {
+      "type": "object", "additionalProperties": false, "required": ["test", "treat"],
+      "properties": {
+        "test": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
+        "treat": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 }
+      }
+    },
+    "criteriaFloors": {
+      "type": "object", "additionalProperties": false, "required": ["definite", "suspected", "referral"],
+      "description": "Posterior floor when a criteria level of that grade is met (classification levels have none).",
+      "properties": {
+        "definite": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
+        "suspected": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
+        "referral": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 }
+      }
+    },
+    "policy": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "levels", "priorTiers", "pregnancyPossibleMultiplier", "defaultThresholds", "cantMissThresholds", "criteriaFloors",
+        "definitiveLR", "minLr", "maxLr", "conflictLowPosterior", "conflictHighPosterior", "criteriaBonus", "minInformationGain",
+        "maxQuestions", "displaySlots", "cantMissSlots", "note"
+      ],
+      "properties": {
+        "levels": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/level" }, "description": "The order the loop works through: history, exam, score, investigation." },
+        "priorTiers": { "$ref": "#/$defs/priorTiers" },
+        "pregnancyPossibleMultiplier": { "type": "number", "exclusiveMinimum": 0, "description": "Prior multiplier for pregnancy-only diseases when pregnancy is marked possible (PANE PREGNANCY_POSSIBLE_MULTIPLIER)." },
+        "defaultThresholds": { "$ref": "#/$defs/thresholds", "description": "Test / treat thresholds for a disease without a treatment-decisions.json decision." },
+        "cantMissThresholds": { "$ref": "#/$defs/thresholds", "description": "The same for a can't-miss disease (a lower test threshold)." },
+        "criteriaFloors": { "$ref": "#/$defs/criteriaFloors" },
+        "definitiveLR": { "type": "number", "minimum": 1, "description": "Likelihood ratio given to a pathognomonic finding flagged definitive." },
+        "minLr": { "type": "number", "exclusiveMinimum": 0, "description": "Floor of any single likelihood ratio (no finding zeroes a disease)." },
+        "maxLr": { "type": "number", "minimum": 1, "description": "Ceiling of any single non-pathognomonic likelihood ratio." },
+        "conflictLowPosterior": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "Criteria met but the Bayesian posterior is below this: conflict record." },
+        "conflictHighPosterior": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "Bayesian posterior at or above this but the diagnostic criteria are refuted: conflict record." },
+        "criteriaBonus": { "type": "number", "minimum": 0, "description": "Added to a question's information gain (nats), times the candidate's probability, when its answer would complete or refute a criteria level of a leading candidate." },
+        "minInformationGain": { "type": "number", "minimum": 0, "description": "Below this expected gain (nats) a question is not worth asking at this level." },
+        "maxQuestions": { "type": "integer", "minimum": 1 },
+        "displaySlots": { "type": "integer", "minimum": 1, "description": "Diagnoses shown." },
+        "cantMissSlots": { "type": "integer", "minimum": 0, "description": "Of those, the last places held for the most probable can't-miss diagnoses not already shown." },
+        "note": { "type": "string" }
+      }
+    },
+    "labSpec": {
+      "type": "object", "additionalProperties": false, "required": ["analyte", "direction"],
+      "description": "A laboratory finding read from a structured result (lab feed, report import): the catalogue saved name (lib/triage-engine/src/report-import/catalog.ts), flagged with @workspace/triage-engine/reference-ranges.",
+      "properties": {
+        "analyte": { "type": "string" },
+        "direction": { "enum": ["high", "low"] },
+        "multipleOfUln": { "type": "number", "exclusiveMinimum": 0, "description": "At least this multiple of the upper limit of normal (practice range, else the default)." },
+        "above": { "type": "number", "description": "Absolute threshold in the catalogue app unit (value ≥ above)." },
+        "below": { "type": "number", "description": "Absolute threshold in the catalogue app unit (value < below)." }
+      }
+    },
+    "demographicSpec": {
+      "type": "object", "additionalProperties": false,
+      "description": "Answered automatically from the patient's age and sex; never asked.",
+      "properties": {
+        "ageMin": { "type": "number", "minimum": 0 },
+        "ageMax": { "type": "number", "minimum": 0 },
+        "sex": { "enum": ["male", "female"] }
+      }
+    },
+    "ruleBandRef": {
+      "type": "object", "additionalProperties": false, "required": ["rule", "band"],
+      "description": "A band of a clinical-content/rules/decision-rules.json rule (referenced, not duplicated).",
+      "properties": { "rule": { "type": "string" }, "band": { "type": "string" } }
+    },
+    "finding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "synonyms", "level", "dimension", "baseRate", "entryPoint"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_-]+)*$" },
+        "label": { "type": "string", "description": "Required unless the finding references an examination sign or a decision-rule band (their names are in those files)." },
+        "chip": { "type": "string", "description": "Short chip wording in the generated question (defaults to the label)." },
+        "synonyms": { "type": "array", "items": { "type": "string", "minLength": 2 }, "description": "Lower-case words or phrases that record the finding in free text (matched negation-aware at word starts)." },
+        "level": { "$ref": "#/$defs/level" },
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "question": { "type": "string" },
+        "baseRate": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "How often the finding is present among patients presenting in the pilot areas without a disease that lists it (predictive probability for the information gain)." },
+        "group": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Correlated findings (e.g. the inflammatory markers): within a disease, only the strongest positive and the strongest negative likelihood ratio of a group count." },
+        "pane": { "type": "string", "pattern": "^[a-z0-9_]+$", "description": "The PANE feature id (lib/pane-engine) that records the same finding." },
+        "examSign": { "type": "string", "description": "clinical-content/rules/exam-signs.json sign id (its likelihood ratios are used, not duplicated)." },
+        "decisionRule": { "$ref": "#/$defs/ruleBandRef" },
+        "lab": { "$ref": "#/$defs/labSpec" },
+        "demographic": { "$ref": "#/$defs/demographicSpec" },
+        "entryPoint": {
+          "type": ["string", "null"],
+          "enum": ["symptom", "sign", "lab", "imaging", "pathology", "score", null],
+          "description": "The kind of entry point this finding can be: a case may start from it (the candidate set is seeded from the reverse index). null: it cannot seed a differential on its own."
+        },
+        "note": { "type": "string" }
+      },
+      "allOf": [
+        { "if": { "not": { "anyOf": [{ "required": ["examSign"] }, { "required": ["decisionRule"] }] } }, "then": { "required": ["label"] } }
+      ]
+    }
+  }
+}
