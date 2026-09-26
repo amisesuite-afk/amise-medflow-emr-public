@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise.local/clinical-content/schemas/lifestyle-practices.schema.json",
+  "title": "Lifestyle practices (lifestyle-practices)",
+  "description": "Labels of the stored lifestyle values, thresholds, negation-aware match terms and regex patterns, prompt and plan-line wording, evidence grades and sources. Read by lib/triage-engine/src/lifestyle-practices.ts (web) and LifestylePractices.swift (iOS, LifestylePractices.Content). Which finding raises which prompt or suggestion is code. Clinician-facing only; no text may tell anyone to take, hold, stop or adjust a named medicine (hazard H-10).",
+  "type": "object",
+  "required": ["id", "version", "thresholds", "labels", "patterns", "terms", "promptText", "promptSources", "sources", "planLines", "suggestions", "reasons"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "lifestyle-practices" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "thresholds": {
+      "type": "object",
+      "required": ["olderAdultAge", "shortSleepHours", "obesityBMI"],
+      "additionalProperties": false,
+      "properties": {
+        "olderAdultAge": { "type": "integer", "minimum": 0, "description": "Age (years) at or above which tai chi is suggested." },
+        "shortSleepHours": { "type": "number", "minimum": 0, "maximum": 24, "description": "Usual sleep below this (hours) counts as short sleep." },
+        "obesityBMI": { "type": "number", "minimum": 0, "description": "BMI at or above which obesity is recorded." }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "description": "Display label of each stored value, in display order. The keys are the stored values (patients.pathway_data_json 'lifestyle'); they must match the TypeScript value lists and the Swift enum raw values.",
+      "required": ["fasting", "fastingStatus", "therapies"],
+      "additionalProperties": false,
+      "properties": {
+        "fasting": { "$ref": "#/$defs/labelMap" },
+        "fastingStatus": { "$ref": "#/$defs/labelMap" },
+        "therapies": { "$ref": "#/$defs/labelMap" }
+      }
+    },
+    "patterns": {
+      "type": "object",
+      "description": "Regular expressions, case-insensitive, valid in both ICU (NSRegularExpression) and JavaScript.",
+      "required": ["diabetes", "insulin", "sulfonylurea", "depression"],
+      "additionalProperties": false,
+      "properties": {
+        "diabetes": { "$ref": "#/$defs/list" },
+        "insulin": { "$ref": "#/$defs/list" },
+        "sulfonylurea": { "$ref": "#/$defs/list" },
+        "depression": { "$ref": "#/$defs/list" }
+      }
+    },
+    "terms": {
+      "type": "object",
+      "description": "Whole-word, negation-aware match terms (lowercase).",
+      "required": ["falls", "backPain", "neckPain", "osteoarthritis", "headache", "anxiety", "obesity", "hypertension", "lipid", "cardiovascular", "cupping", "detox", "ivDrip"],
+      "additionalProperties": false,
+      "properties": {
+        "falls": { "$ref": "#/$defs/termList" },
+        "backPain": { "$ref": "#/$defs/termList" },
+        "neckPain": { "$ref": "#/$defs/termList" },
+        "osteoarthritis": { "$ref": "#/$defs/termList" },
+        "headache": { "$ref": "#/$defs/termList" },
+        "anxiety": { "$ref": "#/$defs/termList" },
+        "obesity": { "$ref": "#/$defs/termList" },
+        "hypertension": { "$ref": "#/$defs/termList" },
+        "lipid": { "$ref": "#/$defs/termList" },
+        "cardiovascular": { "$ref": "#/$defs/termList" },
+        "cupping": { "$ref": "#/$defs/termList", "description": "Matched in the 'other therapies' free text." },
+        "detox": { "$ref": "#/$defs/termList", "description": "Matched in the 'other therapies' free text." },
+        "ivDrip": { "$ref": "#/$defs/termList", "description": "Matched in the 'other therapies' free text." }
+      }
+    },
+    "promptText": {
+      "type": "object",
+      "required": ["fastingInsulin", "fastingDiabetes", "fastingPeriop", "nightShiftSleep"],
+      "additionalProperties": false,
+      "properties": {
+        "fastingInsulin": { "$ref": "#/$defs/text" },
+        "fastingDiabetes": { "$ref": "#/$defs/text" },
+        "fastingPeriop": { "$ref": "#/$defs/text" },
+        "nightShiftSleep": { "$ref": "#/$defs/text" }
+      }
+    },
+    "promptSources": {
+      "type": "object",
+      "required": ["idfDar", "briefingFasting", "briefingSleep"],
+      "additionalProperties": false,
+      "properties": {
+        "idfDar": { "$ref": "#/$defs/text" },
+        "briefingFasting": { "$ref": "#/$defs/text" },
+        "briefingSleep": { "$ref": "#/$defs/text" }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "required": ["taiChi", "yoga", "mbct", "slowBreathing", "acupuncture", "timeRestricted", "cuppingDetox", "ivDrips"],
+      "additionalProperties": false,
+      "properties": {
+        "taiChi": { "$ref": "#/$defs/text" },
+        "yoga": { "$ref": "#/$defs/text" },
+        "mbct": { "$ref": "#/$defs/text" },
+        "slowBreathing": { "$ref": "#/$defs/text" },
+        "acupuncture": { "$ref": "#/$defs/text" },
+        "timeRestricted": { "$ref": "#/$defs/text" },
+        "cuppingDetox": { "$ref": "#/$defs/text" },
+        "ivDrips": { "$ref": "#/$defs/text" }
+      }
+    },
+    "planLines": {
+      "type": "object",
+      "description": "The line added to the plan when the clinician taps a suggestion.",
+      "required": ["taiChi", "yoga", "mbct", "slowBreathing", "acupuncture", "timeRestricted", "timeRestrictedDiabetesNote", "cupping", "detox", "ivDrips"],
+      "additionalProperties": false,
+      "properties": {
+        "taiChi": { "$ref": "#/$defs/text" },
+        "yoga": { "$ref": "#/$defs/text" },
+        "mbct": { "$ref": "#/$defs/text" },
+        "slowBreathing": { "$ref": "#/$defs/text" },
+        "acupuncture": { "$ref": "#/$defs/text" },
+        "timeRestricted": { "$ref": "#/$defs/text" },
+        "timeRestrictedDiabetesNote": { "$ref": "#/$defs/text" },
+        "cupping": { "$ref": "#/$defs/text" },
+        "detox": { "$ref": "#/$defs/text" },
+        "ivDrips": { "$ref": "#/$defs/text" }
+      }
+    },
+    "suggestions": {
+      "type": "object",
+      "description": "Display name and evidence grade of each suggestion, by suggestion id.",
+      "required": ["tai-chi", "yoga", "mbct", "slow-breathing", "acupuncture", "time-restricted-eating", "counsel-cupping", "counsel-detox", "counsel-iv-drips"],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z]+(-[a-z]+)*$": { "$ref": "#/$defs/suggestion" }
+      }
+    },
+    "reasons": {
+      "type": "object",
+      "description": "Why a suggestion is shown. Age and BMI reasons are formatted in code ('Age 70 (≥ 65)', 'BMI 32 (≥ 30)').",
+      "required": ["fallsOrFrailty", "postOperativeRehabilitation", "backPain", "depression", "anxiety", "anxietyProcedure", "chronicPain", "obesity", "cupping", "detox", "ivDrips"],
+      "additionalProperties": false,
+      "properties": {
+        "fallsOrFrailty": { "$ref": "#/$defs/text" },
+        "postOperativeRehabilitation": { "$ref": "#/$defs/text" },
+        "backPain": { "$ref": "#/$defs/text" },
+        "depression": { "$ref": "#/$defs/text" },
+        "anxiety": { "$ref": "#/$defs/text" },
+        "anxietyProcedure": { "$ref": "#/$defs/text" },
+        "chronicPain": { "$ref": "#/$defs/text" },
+        "obesity": { "$ref": "#/$defs/text" },
+        "cupping": { "$ref": "#/$defs/text" },
+        "detox": { "$ref": "#/$defs/text" },
+        "ivDrips": { "$ref": "#/$defs/text" }
+      }
+    }
+  },
+  "$defs": {
+    "text": { "type": "string", "minLength": 1 },
+    "list": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "termList": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1, "pattern": "^[^A-Z]*$" } },
+    "labelMap": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "patternProperties": { "^[a-z]+(_[a-z]+)*$": { "type": "string", "minLength": 1 } }
+    },
+    "suggestion": {
+      "type": "object",
+      "required": ["practice", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "practice": { "$ref": "#/$defs/text" },
+        "evidence": { "enum": ["Works", "Modest", "Mixed", "No benefit shown"], "description": "Grade from the briefing's verdict table (§8) and §6." }
+      }
+    }
+  }
+}

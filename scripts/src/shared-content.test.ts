@@ -6,6 +6,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import * as lifestyle from '../../lib/triage-engine/src/lifestyle-practices';
 import { ZEBRA_RULES, ZEBRA_RULES_VERSION } from '../../lib/triage-engine/src/diagnostic-reasoning/zebra-rules';
 import {
   HERBAL_PREOP_PATIENT_TEXT, SUPPLEMENT_CATALOGUE_VERSION, SUPPLEMENT_ITEMS, SUPPLEMENT_PROMPTS, SUPPLEMENT_TRIGGER_TERMS,
@@ -19,7 +20,7 @@ describe('shared clinical content library', () => {
   it('passes lint:shared-content', () => {
     const { problems, checked } = checkSharedContent(REPO_ROOT);
     expect(problems).toEqual([]);
-    expect(checked).toEqual(['supplement-catalogue', 'zebra-rules']);
+    expect(checked).toEqual(['lifestyle-practices', 'supplement-catalogue', 'zebra-rules']);
   });
 
   it('the web modules read the shared files', () => {
@@ -35,6 +36,30 @@ describe('shared clinical content library', () => {
     expect(SUPPLEMENT_PROMPTS).toEqual(supplements.prompts);
     expect(SUPPLEMENT_TRIGGER_TERMS).toEqual(supplements.triggerTerms);
     expect(HERBAL_PREOP_PATIENT_TEXT).toBe(supplements.text.herbalPreOpPatientText);
+
+    const life = readJson('clinical-content/rules/lifestyle-practices.json') as {
+      version: string; planLines: unknown; promptText: unknown; sources: unknown;
+      thresholds: { olderAdultAge: number; shortSleepHours: number; obesityBMI: number };
+    };
+    expect(lifestyle.LIFESTYLE_PRACTICES_VERSION).toBe(life.version);
+    expect(lifestyle.PLAN_LINES).toEqual(life.planLines);
+    expect(lifestyle.PROMPT_TEXT).toEqual(life.promptText);
+    expect(lifestyle.SOURCES).toEqual(life.sources);
+    expect([lifestyle.OLDER_ADULT_AGE, lifestyle.SHORT_SLEEP_HOURS, lifestyle.OBESITY_BMI])
+      .toEqual([life.thresholds.olderAdultAge, life.thresholds.shortSleepHours, life.thresholds.obesityBMI]);
+  });
+
+  it('lifestyle labels are keyed by the stored values, in display order', () => {
+    expect(Object.keys(lifestyle.FASTING_LABELS)).toEqual([...lifestyle.FASTING_PRACTICES]);
+    expect(Object.keys(lifestyle.FASTING_STATUS_LABELS)).toEqual([...lifestyle.FASTING_STATUSES]);
+    expect(Object.keys(lifestyle.THERAPY_LABELS)).toEqual([...lifestyle.COMPLEMENTARY_THERAPIES]);
+  });
+
+  it('the iOS Swift enums use the same stored values as the web', () => {
+    const swift = parseSwift([readFileSync(join(REPO_ROOT, 'ios/AmiseMedFlow/Services/LifestylePractices.swift'), 'utf8')]);
+    expect(swift.stringEnums.get('Fasting')).toEqual([...lifestyle.FASTING_PRACTICES]);
+    expect(swift.stringEnums.get('FastStatus')).toEqual([...lifestyle.FASTING_STATUSES]);
+    expect(swift.stringEnums.get('Therapy')).toEqual([...lifestyle.COMPLEMENTARY_THERAPIES]);
   });
 });
 

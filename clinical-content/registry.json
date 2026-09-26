@@ -1180,11 +1180,13 @@
       "kind": "decision-support",
       "contentVersion": "0.1.0",
       "versionStamp": {
-        "file": "lib/triage-engine/src/lifestyle-practices.ts",
-        "type": "regex",
-        "pattern": "LIFESTYLE_PRACTICES_VERSION\\s*=\\s*'([^']+)'"
+        "file": "clinical-content/rules/lifestyle-practices.json",
+        "type": "json-key",
+        "key": "version"
       },
       "files": [
+        "clinical-content/rules/lifestyle-practices.json",
+        "clinical-content/schemas/lifestyle-practices.schema.json",
         "lib/triage-engine/src/lifestyle-practices.ts",
         "lib/triage-engine/src/lifestyle-questions.ts",
         "ios/AmiseMedFlow/Services/LifestylePractices.swift",
@@ -1197,9 +1199,12 @@
         "artifacts/dashboard/src/lib/__tests__/lifestyle-context-web.test.ts",
         "ios/AmiseMedFlowTests/LifestylePracticesTests.swift",
         "ios/AmiseMedFlowTests/LifestyleQuestionsTests.swift",
-        "artifacts/dashboard/src/lib/__tests__/lifestyle-questions-ios-parity.test.ts"
+        "artifacts/dashboard/src/lib/__tests__/lifestyle-questions-ios-parity.test.ts",
+        "ios/AmiseMedFlowTests/SharedClinicalContentTests.swift",
+        "scripts/src/shared-content.test.ts"
       ],
       "ciChecks": [
+        "lint:shared-content",
         "dashboard vitest (shared vectors, H-10 wording check, APCQ placement)",
         "ios-build-check.yml unit tests"
       ],

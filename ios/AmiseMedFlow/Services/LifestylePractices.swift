@@ -6,12 +6,20 @@
 // (habits and rituals), §6 (hands-on and device therapies), §8 (verdict table) and the matching
 // §10 references. Clinical content only; none of this is shown to patients.
 //
-// iOS twin of lib/triage-engine/src/lifestyle-practices.ts.
-// DRIFT NOTE: the value lists, labels, matcher terms, thresholds (age ≥ 65, sleep < 6 h,
-// BMI ≥ 30) and every prompt / plan-line string must stay identical to the TS file. The test
-// vectors in AmiseMedFlowTests/LifestylePracticesTests.swift are ported one for one from
-// artifacts/dashboard/src/lib/__tests__/lifestyle-practices.test.ts — change both files and both
-// test files in the same PR, and bump `version` with the registry entry `lifestyle-practices`.
+// iOS twin of lib/triage-engine/src/lifestyle-practices.ts. The content lives once, as data:
+// clinical-content/rules/lifestyle-practices.json (labels, thresholds, matcher terms and regex
+// patterns, every prompt / plan-line / source / practice / evidence-grade / reason string), the
+// same file the web reads, bundled as the "rules" folder and loaded by SharedClinicalContent.
+// Change the JSON, not a platform copy; lint:shared-content checks the Codable structs below
+// against clinical-content/schemas/lifestyle-practices.schema.json.
+// DRIFT NOTE: the rule logic (which finding raises which prompt or suggestion) and the stored
+// value lists (enum raw values; lint:shared-content does not check the label keys, the web test
+// does) stay mirrored in code. The test vectors in AmiseMedFlowTests/LifestylePracticesTests.swift
+// are ported one for one from artifacts/dashboard/src/lib/__tests__/lifestyle-practices.test.ts —
+// change both files and both test files in the same PR, and bump the JSON `version` with the
+// registry entry `lifestyle-practices`.
+// When the file is missing or does not decode, no prompt or suggestion is shown, labels read as
+// their stored values, and Settings → Diagnostics says why.
 //
 // Safety rules (CLAUDE.md, hazard H-10, "Central diagnosis radiation"):
 //   - Deterministic. Nothing here writes to the record: prompts are dismissible and a plan line is
@@ -36,29 +44,16 @@ struct LifestyleHistory: Codable, Equatable {
         case timeRestricted = "time_restricted"
         case other
 
-        var label: String {
-            switch self {
-            case .notFasting:     return "None"
-            case .ramadan:        return "Ramadan"
-            case .orthodoxLent:   return "Orthodox or Lent fasting"
-            case .danielFast:     return "Daniel Fast"
-            case .timeRestricted: return "Time-restricted eating / intermittent fasting"
-            case .other:          return "Other"
-            }
-        }
+        /// Shared label (lifestyle-practices.json `labels.fasting`), else the stored value.
+        var label: String { LifestylePractices.content?.labels.fasting[rawValue] ?? rawValue }
     }
 
     enum FastStatus: String, Codable, CaseIterable {
         case current, planned
         case notCurrently = "not_currently"
 
-        var label: String {
-            switch self {
-            case .current:      return "Currently fasting"
-            case .planned:      return "Fast planned"
-            case .notCurrently: return "Not currently fasting"
-            }
-        }
+        /// Shared label (lifestyle-practices.json `labels.fastingStatus`), else the stored value.
+        var label: String { LifestylePractices.content?.labels.fastingStatus[rawValue] ?? rawValue }
     }
 
     enum Therapy: String, Codable, CaseIterable {
@@ -70,19 +65,8 @@ struct LifestyleHistory: Codable, Equatable {
         case ivVitaminDrips = "iv_vitamin_drips"
         case other
 
-        var label: String {
-            switch self {
-            case .acupuncture:    return "Acupuncture"
-            case .cupping:        return "Cupping"
-            case .yoga:           return "Yoga"
-            case .taiChi:         return "Tai chi"
-            case .mindfulness:    return "Mindfulness / meditation"
-            case .slowBreathing:  return "Slow-breathing practice"
-            case .detoxCleanse:   return "Detox or cleanse programmes"
-            case .ivVitaminDrips: return "IV vitamin drips"
-            case .other:          return "Other"
-            }
-        }
+        /// Shared label (lifestyle-practices.json `labels.therapies`), else the stored value.
+        var label: String { LifestylePractices.content?.labels.therapies[rawValue] ?? rawValue }
     }
 
     /// Empty = not recorded. `.notFasting` is exclusive (the clinician recorded "does not fast").
@@ -212,13 +196,130 @@ struct LifestyleHistory: Codable, Equatable {
 
 enum LifestylePractices {
 
-    /// Bump with any rule or wording change; mirrored in clinical-content/registry.json.
-    static let version = "0.1.0"
+    // MARK: Shared content (clinical-content/rules/lifestyle-practices.json)
+
+    struct Thresholds: Codable {
+        let olderAdultAge: Int
+        let shortSleepHours: Double
+        let obesityBMI: Double
+    }
+
+    /// Display label by stored value (the enum raw values).
+    struct Labels: Codable {
+        let fasting: [String: String]
+        let fastingStatus: [String: String]
+        let therapies: [String: String]
+    }
+
+    /// Regular expressions, shared verbatim with the web (ICU / JavaScript).
+    struct Patterns: Codable {
+        let diabetes: [String]
+        let insulin: [String]
+        let sulfonylurea: [String]
+        let depression: [String]
+    }
+
+    /// Whole-word, negation-aware match terms.
+    struct Terms: Codable {
+        let falls: [String]
+        let backPain: [String]
+        let neckPain: [String]
+        let osteoarthritis: [String]
+        let headache: [String]
+        let anxiety: [String]
+        let obesity: [String]
+        let hypertension: [String]
+        let lipid: [String]
+        let cardiovascular: [String]
+        let cupping: [String]
+        let detox: [String]
+        let ivDrip: [String]
+    }
+
+    struct PromptTexts: Codable {
+        let fastingInsulin: String
+        let fastingDiabetes: String
+        let fastingPeriop: String
+        let nightShiftSleep: String
+    }
+
+    struct PromptSourceTexts: Codable {
+        let idfDar: String
+        let briefingFasting: String
+        let briefingSleep: String
+    }
+
+    struct SourceTexts: Codable {
+        let taiChi: String
+        let yoga: String
+        let mbct: String
+        let slowBreathing: String
+        let acupuncture: String
+        let timeRestricted: String
+        let cuppingDetox: String
+        let ivDrips: String
+    }
+
+    struct PlanLineTexts: Codable {
+        let taiChi: String
+        let yoga: String
+        let mbct: String
+        let slowBreathing: String
+        let acupuncture: String
+        let timeRestricted: String
+        let timeRestrictedDiabetesNote: String
+        let cupping: String
+        let detox: String
+        let ivDrips: String
+    }
+
+    /// Display name and evidence grade of a suggestion (by suggestion id).
+    struct SuggestionText: Codable {
+        let practice: String
+        let evidence: EvidenceGrade
+    }
+
+    /// Why a suggestion is shown (the age and BMI reasons are formatted in code).
+    struct Reasons: Codable {
+        let fallsOrFrailty: String
+        let postOperativeRehabilitation: String
+        let backPain: String
+        let depression: String
+        let anxiety: String
+        let anxietyProcedure: String
+        let chronicPain: String
+        let obesity: String
+        let cupping: String
+        let detox: String
+        let ivDrips: String
+    }
+
+    /// The whole file (lint:shared-content checks these fields against the schema).
+    struct Content: Codable {
+        let version: String
+        let thresholds: Thresholds
+        let labels: Labels
+        let patterns: Patterns
+        let terms: Terms
+        let promptText: PromptTexts
+        let promptSources: PromptSourceTexts
+        let sources: SourceTexts
+        let planLines: PlanLineTexts
+        let suggestions: [String: SuggestionText]
+        let reasons: Reasons
+    }
+
+    /// nil when the file is missing or does not decode: then no prompt or suggestion is shown.
+    static let content: Content? = SharedClinicalContent.load(Content.self, .lifestylePractices)
+
+    /// The JSON `version`; bump with any rule or wording change, with the registry entry.
+    static var version: String { content?.version ?? "unavailable" }
 
     /// Thresholds — listed for surgeon sign-off (docs/clinical-validation/changes/lifestyle-practices.md).
-    static let olderAdultAge = 65
-    static let shortSleepHours = 6.0
-    static let obesityBMI = 30.0
+    /// Without the file nothing is evaluated, so the fallbacks never apply.
+    static var olderAdultAge: Int { content?.thresholds.olderAdultAge ?? Int.max }
+    static var shortSleepHours: Double { content?.thresholds.shortSleepHours ?? 0 }
+    static var obesityBMI: Double { content?.thresholds.obesityBMI ?? Double.greatestFiniteMagnitude }
 
     struct Context {
         var lifestyle: LifestyleHistory
@@ -237,47 +338,21 @@ enum LifestylePractices {
         var procedureBooked: Bool
     }
 
-    // Regex sources are shared verbatim with the TS file (ICU / JS).
-    static let diabetesPatterns = [
-        #"(?<!pre[- ])\bdiabet(?:es|ic)\b(?!\s+insipidus)"#,
-        #"\bt[12]\s?dm\b"#,
-        #"\bn?iddm\b"#,
-        #"\btype\s*(?:1|2|i|ii)\s*dm\b"#,
-    ]
-    static let insulinPatterns = [
-        #"\binsulins?\b(?!\s+resist)"#,
-        #"\b(?:glargine|detemir|degludec|lispro|glulisine|lantus|levemir|tresiba|toujeo|novorapid|humalog|apidra|humulin|novomix|mixtard|actrapid|insulatard|basaglar|fiasp)\b"#,
-        #"\binsulin\s+aspart\b"#,
-    ]
-    static let sulfonylureaPatterns = [
-        #"\b(?:gliclazide|glibenclamide|glyburide|glimepiride|glipizide|tolbutamide|chlorpropamide|diamicron|amaryl|daonil)\b"#,
-        #"\bsulph?onylureas?\b"#,
-        #"\bsulfonylureas?\b"#,
-    ]
-    static let fallsTerms = [
-        "falls", "recurrent fall", "mechanical fall", "fall risk", "history of fall", "fear of falling",
-        "frailty", "frail", "unsteady", "poor balance", "balance problem", "balance impairment",
-    ]
-    static let backPainTerms = ["low back pain", "lower back pain", "back pain", "backache", "lumbago", "lumbar pain"]
-    static let neckPainTerms = ["neck pain", "cervical spondylosis"]
-    static let osteoarthritisTerms = ["osteoarthritis", "osteoarthrosis", "degenerative joint disease"]
-    static let headacheTerms = ["chronic headache", "migraine", "tension headache", "tension-type headache"]
-    static let depressionPatterns = [
-        #"(?<!\bst[- ])(?<!respiratory )(?<!segment )\bdepressi(?:on|ve)\b"#,
-        #"\bmdd\b"#,
-    ]
-    static let anxietyTerms = ["anxiety", "anxious", "panic attack", "panic disorder"]
-    static let obesityTerms = ["obesity", "obese"]
-    static let hypertensionTerms = ["hypertension", "hypertensive", "high blood pressure", "htn"]
-    static let lipidTerms = [
-        "dyslipidaemia", "dyslipidemia", "hypercholesterolaemia", "hypercholesterolemia",
-        "hyperlipidaemia", "hyperlipidemia", "high cholesterol",
-    ]
-    static let cardiovascularTerms = [
-        "ischaemic heart disease", "ischemic heart disease", "ihd", "coronary artery disease",
-        "coronary heart disease", "angina", "myocardial infarction", "heart attack", "heart failure",
-        "stroke", "metabolic syndrome", "peripheral arterial disease", "peripheral vascular disease",
-    ]
+    // Regex sources are shared verbatim with the web (ICU / JS); terms are whole-word.
+    static var diabetesPatterns: [String] { content?.patterns.diabetes ?? [] }
+    static var insulinPatterns: [String] { content?.patterns.insulin ?? [] }
+    static var sulfonylureaPatterns: [String] { content?.patterns.sulfonylurea ?? [] }
+    static var fallsTerms: [String] { content?.terms.falls ?? [] }
+    static var backPainTerms: [String] { content?.terms.backPain ?? [] }
+    static var neckPainTerms: [String] { content?.terms.neckPain ?? [] }
+    static var osteoarthritisTerms: [String] { content?.terms.osteoarthritis ?? [] }
+    static var headacheTerms: [String] { content?.terms.headache ?? [] }
+    static var depressionPatterns: [String] { content?.patterns.depression ?? [] }
+    static var anxietyTerms: [String] { content?.terms.anxiety ?? [] }
+    static var obesityTerms: [String] { content?.terms.obesity ?? [] }
+    static var hypertensionTerms: [String] { content?.terms.hypertension ?? [] }
+    static var lipidTerms: [String] { content?.terms.lipid ?? [] }
+    static var cardiovascularTerms: [String] { content?.terms.cardiovascular ?? [] }
 
     private static func anyPattern(_ text: String, _ patterns: [String]) -> Bool {
         guard !text.isEmpty else { return false }
@@ -332,20 +407,21 @@ enum LifestylePractices {
         let source: String
     }
 
-    static let idfDarSource =
-        "IDF-DAR Diabetes and Ramadan: Practical Guidelines 2021 (cited in the practice evidence briefing, Sept 2026, §4)"
-    static let briefingFastingSource = "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 — Ramadan and Orthodox fasting"
-    static let briefingSleepSource = "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 and §8 — sleep, circadian timing and protected rest"
+    static var idfDarSource: String { content?.promptSources.idfDar ?? "" }
+    static var briefingFastingSource: String { content?.promptSources.briefingFasting ?? "" }
+    static var briefingSleepSource: String { content?.promptSources.briefingSleep ?? "" }
 
+    /// JSON `promptText`.
     enum PromptText {
-        static let fastingInsulin = "Fasting with insulin/sulfonylurea: risk of hypoglycaemia and dehydration — pre-fast risk stratification and medication review recommended (IDF-DAR 2021)."
-        static let fastingDiabetes = "Fasting with diabetes: risk of hypoglycaemia and dehydration — pre-fast risk stratification recommended (IDF-DAR 2021)."
-        static let fastingPeriop = "Religious fast overlaps the pre-operative fast — check hydration and glucose plan."
-        static let nightShiftSleep = "Night-shift work / short sleep is associated with metabolic, cardiovascular and mood disorders."
+        static var fastingInsulin: String { LifestylePractices.content?.promptText.fastingInsulin ?? "" }
+        static var fastingDiabetes: String { LifestylePractices.content?.promptText.fastingDiabetes ?? "" }
+        static var fastingPeriop: String { LifestylePractices.content?.promptText.fastingPeriop ?? "" }
+        static var nightShiftSleep: String { LifestylePractices.content?.promptText.nightShiftSleep ?? "" }
     }
 
     /// Clinician-facing prompts, most serious first. Dismissible; they change nothing by themselves.
     static func safetyPrompts(_ ctx: Context) -> [Prompt] {
+        guard content != nil else { return [] }
         let h = ctx.lifestyle
         let f = findings(ctx)
         var out: [Prompt] = []
@@ -368,7 +444,7 @@ enum LifestylePractices {
     // MARK: Non-drug plan suggestions
 
     /// Grade labels from the briefing's verdict table (§8) and §6.
-    enum EvidenceGrade: String {
+    enum EvidenceGrade: String, Codable {
         case works = "Works"
         case modest = "Modest"
         case mixed = "Mixed"
@@ -391,79 +467,86 @@ enum LifestylePractices {
         let alreadyUsed: Bool
     }
 
+    /// JSON `sources`.
     enum Sources {
-        static let taiChi = "Huang ZG et al. Tai Chi for fall prevention and balance improvement in older adults: systematic review and meta-analysis of RCTs. Front Public Health 2023 (24 RCTs; falls RR 0.76)."
-        static let yoga = "Saper RB et al. Yoga, physical therapy, or education for chronic low back pain: a randomized noninferiority trial. Ann Intern Med 2017;167:85-94."
-        static let mbct = "Kuyken W et al. Efficacy of MBCT in prevention of depressive relapse: an individual patient data meta-analysis. JAMA Psychiatry 2016;73:565-74 (relapse HR 0.69)."
-        static let slowBreathing = "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 and §8 — slow breathing (no primary reference listed)."
-        static let acupuncture = "Vickers AJ et al. Acupuncture for chronic pain: individual patient data meta-analysis. Arch Intern Med 2012; update J Pain 2018."
-        static let timeRestricted = "Liu D et al. Calorie restriction with or without time-restricted eating in weight loss. N Engl J Med 2022;386:1495-1504."
-        static let cuppingDetox = "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §6 and §8 — cupping, detox teas, colon cleanses (no benefit)."
-        static let ivDrips = "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §6 — \"biohacking\" add-ons: IV vitamin drips (mixed)."
+        static var taiChi: String { LifestylePractices.content?.sources.taiChi ?? "" }
+        static var yoga: String { LifestylePractices.content?.sources.yoga ?? "" }
+        static var mbct: String { LifestylePractices.content?.sources.mbct ?? "" }
+        static var slowBreathing: String { LifestylePractices.content?.sources.slowBreathing ?? "" }
+        static var acupuncture: String { LifestylePractices.content?.sources.acupuncture ?? "" }
+        static var timeRestricted: String { LifestylePractices.content?.sources.timeRestricted ?? "" }
+        static var cuppingDetox: String { LifestylePractices.content?.sources.cuppingDetox ?? "" }
+        static var ivDrips: String { LifestylePractices.content?.sources.ivDrips ?? "" }
     }
 
+    /// JSON `planLines`.
     enum PlanLines {
-        static let taiChi = "Non-drug: tai chi programme for balance and falls prevention (evidence: works — 24 RCTs, falls RR 0.76; Huang ZG et al. 2023)."
-        static let yoga = "Non-drug: structured yoga programme for chronic non-specific low back pain (evidence: works — non-inferior to physical therapy; Saper RB et al., Ann Intern Med 2017)."
-        static let mbct = "Referral option: mindfulness-based cognitive therapy (MBCT) for relapse prevention in recurrent depression (evidence: works — HR 0.69; Kuyken W et al., JAMA Psychiatry 2016)."
-        static let slowBreathing = "Non-drug: slow breathing (about 6 breaths a minute) for short-term anxiety relief, e.g. before the procedure — not a treatment for high blood pressure (evidence: modest)."
-        static let acupuncture = "Referral option: acupuncture for chronic pain (evidence: modest — small margin over sham; Vickers AJ et al., Arch Intern Med 2012)."
-        static let timeRestricted = "Non-drug: time-restricted eating as an adherence strategy for weight management — weight loss similar to calorie restriction (evidence: modest; Liu D et al., NEJM 2022)."
-        static let timeRestrictedDiabetesNote = "Diabetes on insulin/sulfonylurea: hypoglycaemia risk during fasting windows — pre-fast risk stratification and medication review recommended before starting (IDF-DAR 2021)."
-        static let cupping = "Discussed cupping: no reliable evidence of benefit beyond placebo."
-        static let detox = "Discussed detox teas / colon cleanses: no reliable evidence of benefit; risks of dehydration, electrolyte disturbance and laxative dependence."
-        static let ivDrips = "Discussed IV vitamin drips: little outcome evidence outside a specific medical indication; risks of infection and fluid overload."
+        static var taiChi: String { LifestylePractices.content?.planLines.taiChi ?? "" }
+        static var yoga: String { LifestylePractices.content?.planLines.yoga ?? "" }
+        static var mbct: String { LifestylePractices.content?.planLines.mbct ?? "" }
+        static var slowBreathing: String { LifestylePractices.content?.planLines.slowBreathing ?? "" }
+        static var acupuncture: String { LifestylePractices.content?.planLines.acupuncture ?? "" }
+        static var timeRestricted: String { LifestylePractices.content?.planLines.timeRestricted ?? "" }
+        static var timeRestrictedDiabetesNote: String { LifestylePractices.content?.planLines.timeRestrictedDiabetesNote ?? "" }
+        static var cupping: String { LifestylePractices.content?.planLines.cupping ?? "" }
+        static var detox: String { LifestylePractices.content?.planLines.detox ?? "" }
+        static var ivDrips: String { LifestylePractices.content?.planLines.ivDrips ?? "" }
     }
 
-    static let cuppingText = ["cupping", "hijama"]
-    static let detoxText = ["detox", "cleanse", "colon cleanse", "colonic", "colonic irrigation"]
-    static let ivDripText = ["iv drip", "iv vitamin", "vitamin drip", "drip therapy", "nad drip", "myers cocktail"]
+    static var cuppingText: [String] { content?.terms.cupping ?? [] }
+    static var detoxText: [String] { content?.terms.detox ?? [] }
+    static var ivDripText: [String] { content?.terms.ivDrip ?? [] }
 
     /// "31.3" / "32" (same output as the web `String(Math.round(bmi * 10) / 10)`).
     static func formatBMI(_ bmi: Double) -> String {
         String(format: "%g", (bmi * 10).rounded() / 10)
     }
 
+    /// A suggestion with its shared display name and evidence grade (JSON `suggestions`); nil when
+    /// the file has no entry for the id (the schema requires every id, so this does not happen).
+    private static func suggestion(_ id: String, _ kind: SuggestionKind, reason: String, planLine: String,
+                                   source: String, alreadyUsed: Bool) -> Suggestion? {
+        guard let text = content?.suggestions[id] else { return nil }
+        return Suggestion(id: id, kind: kind, practice: text.practice, evidence: text.evidence, reason: reason,
+                          planLine: planLine, source: source, alreadyUsed: alreadyUsed)
+    }
+
     /// Evidence-graded non-drug suggestions, in a fixed order. Nothing is added to the plan until
     /// the clinician taps a suggestion.
     static func planSuggestions(_ ctx: Context) -> [Suggestion] {
+        guard let reasonText = content?.reasons else { return [] }
         let h = ctx.lifestyle
         let f = findings(ctx)
         var out: [Suggestion] = []
         func uses(_ t: LifestyleHistory.Therapy) -> Bool { h.therapies.contains(t) }
+        func add(_ s: Suggestion?) { if let s { out.append(s) } }
         let otherText = h.therapiesOther
 
         if f.olderAdult || f.fallsOrFrailty {
             var reasons: [String] = []
             if f.olderAdult, let age = ctx.ageYears { reasons.append("Age \(age) (≥ \(olderAdultAge))") }
-            if f.fallsOrFrailty { reasons.append("falls or frailty recorded") }
-            if f.olderAdult && ctx.procedureBooked { reasons.append("post-operative rehabilitation") }
-            out.append(Suggestion(id: "tai-chi", kind: .suggestion, practice: "Tai chi", evidence: .works,
-                                  reason: reasons.joined(separator: "; "), planLine: PlanLines.taiChi,
-                                  source: Sources.taiChi, alreadyUsed: uses(.taiChi)))
+            if f.fallsOrFrailty { reasons.append(reasonText.fallsOrFrailty) }
+            if f.olderAdult && ctx.procedureBooked { reasons.append(reasonText.postOperativeRehabilitation) }
+            add(suggestion("tai-chi", .suggestion, reason: reasons.joined(separator: "; "), planLine: PlanLines.taiChi,
+                           source: Sources.taiChi, alreadyUsed: uses(.taiChi)))
         }
         if f.backPain {
-            out.append(Suggestion(id: "yoga", kind: .suggestion, practice: "Yoga", evidence: .works,
-                                  reason: "Low back pain recorded (evidence is for chronic non-specific low back pain)",
-                                  planLine: PlanLines.yoga, source: Sources.yoga, alreadyUsed: uses(.yoga)))
+            add(suggestion("yoga", .suggestion, reason: reasonText.backPain, planLine: PlanLines.yoga,
+                           source: Sources.yoga, alreadyUsed: uses(.yoga)))
         }
         if f.depression {
-            out.append(Suggestion(id: "mbct", kind: .suggestion, practice: "Mindfulness-based cognitive therapy (MBCT)",
-                                  evidence: .works,
-                                  reason: "Depression recorded (evidence is for relapse prevention in recurrent depression)",
-                                  planLine: PlanLines.mbct, source: Sources.mbct, alreadyUsed: uses(.mindfulness)))
+            add(suggestion("mbct", .suggestion, reason: reasonText.depression, planLine: PlanLines.mbct,
+                           source: Sources.mbct, alreadyUsed: uses(.mindfulness)))
         }
         if f.anxiety {
-            out.append(Suggestion(id: "slow-breathing", kind: .suggestion, practice: "Slow breathing (about 6 breaths a minute)",
-                                  evidence: .modest,
-                                  reason: ctx.procedureBooked ? "Anxiety recorded; procedure booked" : "Anxiety recorded",
-                                  planLine: PlanLines.slowBreathing, source: Sources.slowBreathing,
-                                  alreadyUsed: uses(.slowBreathing)))
+            add(suggestion("slow-breathing", .suggestion,
+                           reason: ctx.procedureBooked ? reasonText.anxietyProcedure : reasonText.anxiety,
+                           planLine: PlanLines.slowBreathing, source: Sources.slowBreathing,
+                           alreadyUsed: uses(.slowBreathing)))
         }
         if f.chronicPain {
-            out.append(Suggestion(id: "acupuncture", kind: .suggestion, practice: "Acupuncture", evidence: .modest,
-                                  reason: "Back or neck pain, osteoarthritis or chronic headache recorded (evidence is for chronic pain)",
-                                  planLine: PlanLines.acupuncture, source: Sources.acupuncture, alreadyUsed: uses(.acupuncture)))
+            add(suggestion("acupuncture", .suggestion, reason: reasonText.chronicPain, planLine: PlanLines.acupuncture,
+                           source: Sources.acupuncture, alreadyUsed: uses(.acupuncture)))
         }
         if f.obesity {
             let withNote = f.diabetes && f.insulinOrSulfonylurea
@@ -471,30 +554,26 @@ enum LifestylePractices {
             if let bmi = ctx.bmi, bmi >= obesityBMI {
                 reason = "BMI \(formatBMI(bmi)) (≥ \(Int(obesityBMI)))"
             } else {
-                reason = "Obesity recorded"
+                reason = reasonText.obesity
             }
-            out.append(Suggestion(id: "time-restricted-eating", kind: .suggestion, practice: "Time-restricted eating",
-                                  evidence: .modest, reason: reason,
-                                  planLine: withNote ? "\(PlanLines.timeRestricted) \(PlanLines.timeRestrictedDiabetesNote)" : PlanLines.timeRestricted,
-                                  source: withNote ? "\(Sources.timeRestricted) \(idfDarSource)" : Sources.timeRestricted,
-                                  alreadyUsed: h.fasting.contains(.timeRestricted)))
+            add(suggestion("time-restricted-eating", .suggestion, reason: reason,
+                           planLine: withNote ? "\(PlanLines.timeRestricted) \(PlanLines.timeRestrictedDiabetesNote)" : PlanLines.timeRestricted,
+                           source: withNote ? "\(Sources.timeRestricted) \(idfDarSource)" : Sources.timeRestricted,
+                           alreadyUsed: h.fasting.contains(.timeRestricted)))
         }
 
         // "No benefit shown" information: only when the patient's record lists the practice.
         if uses(.cupping) || anyTerm(otherText, cuppingText) {
-            out.append(Suggestion(id: "counsel-cupping", kind: .counsel, practice: "Cupping", evidence: .noBenefit,
-                                  reason: "Cupping recorded", planLine: PlanLines.cupping,
-                                  source: Sources.cuppingDetox, alreadyUsed: true))
+            add(suggestion("counsel-cupping", .counsel, reason: reasonText.cupping, planLine: PlanLines.cupping,
+                           source: Sources.cuppingDetox, alreadyUsed: true))
         }
         if h.usesDetoxOrCleanse || anyTerm(otherText, detoxText) {
-            out.append(Suggestion(id: "counsel-detox", kind: .counsel, practice: "Detox teas and colon cleanses",
-                                  evidence: .noBenefit, reason: "Detox or cleanse programme recorded",
-                                  planLine: PlanLines.detox, source: Sources.cuppingDetox, alreadyUsed: true))
+            add(suggestion("counsel-detox", .counsel, reason: reasonText.detox, planLine: PlanLines.detox,
+                           source: Sources.cuppingDetox, alreadyUsed: true))
         }
         if h.usesIvVitaminDrips || anyTerm(otherText, ivDripText) {
-            out.append(Suggestion(id: "counsel-iv-drips", kind: .counsel, practice: "IV vitamin drips", evidence: .mixed,
-                                  reason: "IV vitamin drips recorded", planLine: PlanLines.ivDrips,
-                                  source: Sources.ivDrips, alreadyUsed: true))
+            add(suggestion("counsel-iv-drips", .counsel, reason: reasonText.ivDrips, planLine: PlanLines.ivDrips,
+                           source: Sources.ivDrips, alreadyUsed: true))
         }
         return out
     }

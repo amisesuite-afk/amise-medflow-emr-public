@@ -37,6 +37,29 @@ final class SharedClinicalContentTests: XCTestCase {
         XCTAssertFalse(SupplementCatalogue.prompts.isEmpty)
         XCTAssertFalse(SupplementCatalogue.triggerTerms.isEmpty)
         XCTAssertNotEqual(SupplementCatalogue.catalogueVersion, "unavailable")
+
+        XCTAssertNotNil(LifestylePractices.content)
+        XCTAssertNotEqual(LifestylePractices.version, "unavailable")
+    }
+
+    /// The lifestyle labels are keyed by the stored values: every enum case has exactly one label.
+    func testLifestyleLabelKeysAreTheStoredValues() throws {
+        let labels = try XCTUnwrap(LifestylePractices.content?.labels)
+        XCTAssertEqual(Set(labels.fasting.keys), Set(LifestyleHistory.Fasting.allCases.map(\.rawValue)))
+        XCTAssertEqual(Set(labels.fastingStatus.keys), Set(LifestyleHistory.FastStatus.allCases.map(\.rawValue)))
+        XCTAssertEqual(Set(labels.therapies.keys), Set(LifestyleHistory.Therapy.allCases.map(\.rawValue)))
+        for f in LifestyleHistory.Fasting.allCases { XCTAssertNotEqual(f.label, f.rawValue, f.rawValue) }
+        for s in LifestyleHistory.FastStatus.allCases { XCTAssertNotEqual(s.label, s.rawValue, s.rawValue) }
+        for t in LifestyleHistory.Therapy.allCases { XCTAssertNotEqual(t.label, t.rawValue, t.rawValue) }
+    }
+
+    /// Every suggestion id the rules raise has a display name and grade in the file.
+    func testLifestyleSuggestionTextsCoverEveryId() throws {
+        let suggestions = try XCTUnwrap(LifestylePractices.content?.suggestions)
+        for id in ["tai-chi", "yoga", "mbct", "slow-breathing", "acupuncture", "time-restricted-eating",
+                   "counsel-cupping", "counsel-detox", "counsel-iv-drips"] {
+            XCTAssertNotNil(suggestions[id], id)
+        }
     }
 
     func testAMissingFileIsReportedNotGuessed() {

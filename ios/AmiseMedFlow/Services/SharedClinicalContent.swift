@@ -30,12 +30,14 @@ enum SharedClinicalContent {
     enum File: String, CaseIterable {
         case zebraRules = "zebra-rules"
         case supplementCatalogue = "supplement-catalogue"
+        case lifestylePractices = "lifestyle-practices"
 
         /// Row title in Settings → Diagnostics.
         var title: String {
             switch self {
             case .zebraRules:          return "Zebra rules"
             case .supplementCatalogue: return "Supplement catalogue"
+            case .lifestylePractices:  return "Lifestyle practices"
             }
         }
     }
@@ -112,6 +114,8 @@ enum SharedClinicalContent {
             failure = errorText(decode(ZebraCheck.RuleFile.self, file, bundle: bundle))
         case .supplementCatalogue:
             failure = errorText(decode(SupplementCatalogue.Content.self, file, bundle: bundle))
+        case .lifestylePractices:
+            failure = errorText(decode(LifestylePractices.Content.self, file, bundle: bundle))
         }
         let fileURL = url(for: file, bundle: bundle)
         let stamp = fileURL

@@ -68,6 +68,12 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     swift: { files: ['ios/AmiseMedFlow/Services/SupplementCatalogue.swift'], root: 'SupplementCatalogue.Content', ignore: HEADER_IGNORE },
     ts: { files: ['artifacts/dashboard/src/lib/supplement-catalogue.ts'], root: 'SupplementCatalogueContent', ignore: ['/$schema', '/$comment'] },
   },
+  {
+    name: 'lifestyle-practices',
+    regexLists: ['/patterns/diabetes', '/patterns/insulin', '/patterns/sulfonylurea', '/patterns/depression'],
+    swift: { files: ['ios/AmiseMedFlow/Services/LifestylePractices.swift'], root: 'LifestylePractices.Content', ignore: HEADER_IGNORE },
+    ts: { files: ['lib/triage-engine/src/lifestyle-practices.ts'], root: 'LifestyleContent', ignore: ['/$schema', '/$comment'] },
+  },
 ];
 
 /** Platform copies replaced by a shared file: they must not come back. */

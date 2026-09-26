@@ -6,13 +6,18 @@
 // (habits and rituals), §6 (hands-on and device therapies), §8 (verdict table) and the matching
 // §10 references. Clinical content only; none of this is shown to patients.
 //
-// Web twin of ios/AmiseMedFlow/Services/LifestylePractices.swift.
-// DRIFT NOTE: the value lists, labels, matcher terms, thresholds (age ≥ 65, sleep < 6 h,
-// BMI ≥ 30) and every prompt / plan-line string must stay identical to the Swift file. The test
-// vectors in artifacts/dashboard/src/lib/__tests__/lifestyle-practices.test.ts are ported one for
-// one in ios/AmiseMedFlowTests/LifestylePracticesTests.swift — change both files and both test
-// files in the same PR, and bump LIFESTYLE_PRACTICES_VERSION with the registry entry
-// `lifestyle-practices` (clinical-content/registry.json).
+// Web twin of ios/AmiseMedFlow/Services/LifestylePractices.swift. The content lives once, as
+// data: clinical-content/rules/lifestyle-practices.json (schema
+// clinical-content/schemas/lifestyle-practices.schema.json) holds the labels, thresholds (age ≥ 65,
+// sleep < 6 h, BMI ≥ 30), matcher terms and regex patterns, and every prompt, plan-line, source,
+// practice, evidence-grade and reason string. iOS reads the same file. Change the JSON, not a
+// platform copy; `lint:shared-content` validates it and checks these types and the Swift Codable
+// structs against the schema. The rule logic below (which finding raises which prompt or
+// suggestion) is mirrored in the Swift file: the test vectors in
+// artifacts/dashboard/src/lib/__tests__/lifestyle-practices.test.ts are ported one for one in
+// ios/AmiseMedFlowTests/LifestylePracticesTests.swift — change both files and both test files in
+// the same PR, and bump the JSON `version` with the registry entry `lifestyle-practices`
+// (clinical-content/registry.json).
 //
 // Safety rules (CLAUDE.md, hazard H-10, "Central diagnosis radiation"):
 //   - Deterministic. Nothing here writes to the record: prompts are dismissible and a plan line
@@ -23,10 +28,95 @@
 //
 // Pure: no I/O, no React.
 
+import rawLifestylePractices from '../../../clinical-content/rules/lifestyle-practices.json';
 import { containsAnyAffirmed, joinClauses, testAffirmed } from './negation';
 
-/** Bump with any rule or wording change; mirrored in clinical-content/registry.json. */
-export const LIFESTYLE_PRACTICES_VERSION = '0.1.0';
+// ── Shared content (clinical-content/rules/lifestyle-practices.json) ─────────────────────────
+
+/** Grade labels from the briefing's verdict table (§8) and §6. */
+export type EvidenceGrade = 'Works' | 'Modest' | 'Mixed' | 'No benefit shown';
+
+export interface LifestyleThresholds { olderAdultAge: number; shortSleepHours: number; obesityBMI: number }
+export interface LifestyleLabels {
+  fasting: Record<string, string>;
+  fastingStatus: Record<string, string>;
+  therapies: Record<string, string>;
+}
+export interface LifestylePatterns { diabetes: string[]; insulin: string[]; sulfonylurea: string[]; depression: string[] }
+export interface LifestyleTerms {
+  falls: string[];
+  backPain: string[];
+  neckPain: string[];
+  osteoarthritis: string[];
+  headache: string[];
+  anxiety: string[];
+  obesity: string[];
+  hypertension: string[];
+  lipid: string[];
+  cardiovascular: string[];
+  cupping: string[];
+  detox: string[];
+  ivDrip: string[];
+}
+export interface LifestylePromptTexts { fastingInsulin: string; fastingDiabetes: string; fastingPeriop: string; nightShiftSleep: string }
+export interface LifestylePromptSources { idfDar: string; briefingFasting: string; briefingSleep: string }
+export interface LifestyleSources {
+  taiChi: string;
+  yoga: string;
+  mbct: string;
+  slowBreathing: string;
+  acupuncture: string;
+  timeRestricted: string;
+  cuppingDetox: string;
+  ivDrips: string;
+}
+export interface LifestylePlanLines {
+  taiChi: string;
+  yoga: string;
+  mbct: string;
+  slowBreathing: string;
+  acupuncture: string;
+  timeRestricted: string;
+  timeRestrictedDiabetesNote: string;
+  cupping: string;
+  detox: string;
+  ivDrips: string;
+}
+export interface LifestyleSuggestionText { practice: string; evidence: EvidenceGrade }
+export interface LifestyleReasons {
+  fallsOrFrailty: string;
+  postOperativeRehabilitation: string;
+  backPain: string;
+  depression: string;
+  anxiety: string;
+  anxietyProcedure: string;
+  chronicPain: string;
+  obesity: string;
+  cupping: string;
+  detox: string;
+  ivDrips: string;
+}
+
+/** clinical-content/rules/lifestyle-practices.json (checked against its schema by lint:shared-content). */
+export interface LifestyleContent {
+  id: string;
+  version: string;
+  thresholds: LifestyleThresholds;
+  labels: LifestyleLabels;
+  patterns: LifestylePatterns;
+  terms: LifestyleTerms;
+  promptText: LifestylePromptTexts;
+  promptSources: LifestylePromptSources;
+  sources: LifestyleSources;
+  planLines: LifestylePlanLines;
+  suggestions: Record<string, LifestyleSuggestionText>;
+  reasons: LifestyleReasons;
+}
+
+const CONTENT = rawLifestylePractices as unknown as LifestyleContent;
+
+/** The JSON `version`; bump with any rule or wording change, with the registry entry. */
+export const LIFESTYLE_PRACTICES_VERSION: string = CONTENT.version;
 
 // ── Stored record ────────────────────────────────────────────────────────────────────────────
 // Stored as the `lifestyle` key of patients.pathway_data_json on both platforms (iOS PathwayData
@@ -37,23 +127,14 @@ export const FASTING_PRACTICES = [
 ] as const;
 export type FastingPractice = typeof FASTING_PRACTICES[number];
 
-export const FASTING_LABELS: Record<FastingPractice, string> = {
-  none: 'None',
-  ramadan: 'Ramadan',
-  orthodox_lent: 'Orthodox or Lent fasting',
-  daniel_fast: 'Daniel Fast',
-  time_restricted: 'Time-restricted eating / intermittent fasting',
-  other: 'Other',
-};
+/** Display labels (JSON `labels.fasting`; its keys are FASTING_PRACTICES, in order — tested). */
+export const FASTING_LABELS = CONTENT.labels.fasting as Record<FastingPractice, string>;
 
 export const FASTING_STATUSES = ['current', 'planned', 'not_currently'] as const;
 export type FastingStatus = typeof FASTING_STATUSES[number];
 
-export const FASTING_STATUS_LABELS: Record<FastingStatus, string> = {
-  current: 'Currently fasting',
-  planned: 'Fast planned',
-  not_currently: 'Not currently fasting',
-};
+/** Display labels (JSON `labels.fastingStatus`; keys are FASTING_STATUSES, in order — tested). */
+export const FASTING_STATUS_LABELS = CONTENT.labels.fastingStatus as Record<FastingStatus, string>;
 
 export const COMPLEMENTARY_THERAPIES = [
   'acupuncture', 'cupping', 'yoga', 'tai_chi', 'mindfulness', 'slow_breathing',
@@ -61,17 +142,8 @@ export const COMPLEMENTARY_THERAPIES = [
 ] as const;
 export type ComplementaryTherapy = typeof COMPLEMENTARY_THERAPIES[number];
 
-export const THERAPY_LABELS: Record<ComplementaryTherapy, string> = {
-  acupuncture: 'Acupuncture',
-  cupping: 'Cupping',
-  yoga: 'Yoga',
-  tai_chi: 'Tai chi',
-  mindfulness: 'Mindfulness / meditation',
-  slow_breathing: 'Slow-breathing practice',
-  detox_cleanse: 'Detox or cleanse programmes',
-  iv_vitamin_drips: 'IV vitamin drips',
-  other: 'Other',
-};
+/** Display labels (JSON `labels.therapies`; keys are COMPLEMENTARY_THERAPIES, in order — tested). */
+export const THERAPY_LABELS = CONTENT.labels.therapies as Record<ComplementaryTherapy, string>;
 
 export interface LifestyleHistory {
   /** Empty = not recorded. 'none' is exclusive (the clinician recorded "does not fast"). */
@@ -258,54 +330,27 @@ export interface LifestyleContext {
   procedureBooked: boolean;
 }
 
-/** Thresholds — listed for surgeon sign-off (docs/clinical-validation/changes/lifestyle-practices.md). */
-export const OLDER_ADULT_AGE = 65;
-export const SHORT_SLEEP_HOURS = 6;
-export const OBESITY_BMI = 30;
+/** Thresholds (JSON `thresholds`) — listed for surgeon sign-off (docs/clinical-validation/changes/lifestyle-practices.md). */
+export const OLDER_ADULT_AGE: number = CONTENT.thresholds.olderAdultAge;
+export const SHORT_SLEEP_HOURS: number = CONTENT.thresholds.shortSleepHours;
+export const OBESITY_BMI: number = CONTENT.thresholds.obesityBMI;
 
-// Terms. Regex source strings are shared verbatim with Swift (NSRegularExpression, ICU).
-const DIABETES_PATTERNS = [
-  String.raw`(?<!pre[- ])\bdiabet(?:es|ic)\b(?!\s+insipidus)`,
-  String.raw`\bt[12]\s?dm\b`,
-  String.raw`\bn?iddm\b`,
-  String.raw`\btype\s*(?:1|2|i|ii)\s*dm\b`,
-];
-const INSULIN_PATTERNS = [
-  String.raw`\binsulins?\b(?!\s+resist)`,
-  String.raw`\b(?:glargine|detemir|degludec|lispro|glulisine|lantus|levemir|tresiba|toujeo|novorapid|humalog|apidra|humulin|novomix|mixtard|actrapid|insulatard|basaglar|fiasp)\b`,
-  String.raw`\binsulin\s+aspart\b`,
-];
-const SULFONYLUREA_PATTERNS = [
-  String.raw`\b(?:gliclazide|glibenclamide|glyburide|glimepiride|glipizide|tolbutamide|chlorpropamide|diamicron|amaryl|daonil)\b`,
-  String.raw`\bsulph?onylureas?\b`,
-  String.raw`\bsulfonylureas?\b`,
-];
-const FALLS_TERMS = [
-  'falls', 'recurrent fall', 'mechanical fall', 'fall risk', 'history of fall', 'fear of falling',
-  'frailty', 'frail', 'unsteady', 'poor balance', 'balance problem', 'balance impairment',
-];
-const BACK_PAIN_TERMS = [
-  'low back pain', 'lower back pain', 'back pain', 'backache', 'lumbago', 'lumbar pain',
-];
-const NECK_PAIN_TERMS = ['neck pain', 'cervical spondylosis'];
-const OSTEOARTHRITIS_TERMS = ['osteoarthritis', 'osteoarthrosis', 'degenerative joint disease'];
-const HEADACHE_TERMS = ['chronic headache', 'migraine', 'tension headache', 'tension-type headache'];
-const DEPRESSION_PATTERNS = [
-  String.raw`(?<!\bst[- ])(?<!respiratory )(?<!segment )\bdepressi(?:on|ve)\b`,
-  String.raw`\bmdd\b`,
-];
-const ANXIETY_TERMS = ['anxiety', 'anxious', 'panic attack', 'panic disorder'];
-const OBESITY_TERMS = ['obesity', 'obese'];
-const HYPERTENSION_TERMS = ['hypertension', 'hypertensive', 'high blood pressure', 'htn'];
-const LIPID_TERMS = [
-  'dyslipidaemia', 'dyslipidemia', 'hypercholesterolaemia', 'hypercholesterolemia',
-  'hyperlipidaemia', 'hyperlipidemia', 'high cholesterol',
-];
-const CARDIOVASCULAR_TERMS = [
-  'ischaemic heart disease', 'ischemic heart disease', 'ihd', 'coronary artery disease',
-  'coronary heart disease', 'angina', 'myocardial infarction', 'heart attack', 'heart failure',
-  'stroke', 'metabolic syndrome', 'peripheral arterial disease', 'peripheral vascular disease',
-];
+// Terms (JSON `terms`, `patterns`). Regex source strings are shared verbatim with Swift
+// (NSRegularExpression, ICU), so they must be valid in both engines.
+const DIABETES_PATTERNS = CONTENT.patterns.diabetes;
+const INSULIN_PATTERNS = CONTENT.patterns.insulin;
+const SULFONYLUREA_PATTERNS = CONTENT.patterns.sulfonylurea;
+const FALLS_TERMS = CONTENT.terms.falls;
+const BACK_PAIN_TERMS = CONTENT.terms.backPain;
+const NECK_PAIN_TERMS = CONTENT.terms.neckPain;
+const OSTEOARTHRITIS_TERMS = CONTENT.terms.osteoarthritis;
+const HEADACHE_TERMS = CONTENT.terms.headache;
+const DEPRESSION_PATTERNS = CONTENT.patterns.depression;
+const ANXIETY_TERMS = CONTENT.terms.anxiety;
+const OBESITY_TERMS = CONTENT.terms.obesity;
+const HYPERTENSION_TERMS = CONTENT.terms.hypertension;
+const LIPID_TERMS = CONTENT.terms.lipid;
+const CARDIOVASCULAR_TERMS = CONTENT.terms.cardiovascular;
 
 function anyPattern(text: string, patterns: readonly string[]): boolean {
   if (!text) return false;
@@ -367,17 +412,13 @@ export interface LifestylePrompt {
   source: string;
 }
 
-export const IDF_DAR_SOURCE =
-  'IDF-DAR Diabetes and Ramadan: Practical Guidelines 2021 (cited in the practice evidence briefing, Sept 2026, §4)';
-const BRIEFING_FASTING_SOURCE = 'Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 — Ramadan and Orthodox fasting';
-const BRIEFING_SLEEP_SOURCE = 'Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 and §8 — sleep, circadian timing and protected rest';
+/** JSON `promptSources.idfDar`. */
+export const IDF_DAR_SOURCE: string = CONTENT.promptSources.idfDar;
+const BRIEFING_FASTING_SOURCE = CONTENT.promptSources.briefingFasting;
+const BRIEFING_SLEEP_SOURCE = CONTENT.promptSources.briefingSleep;
 
-export const PROMPT_TEXT = {
-  fastingInsulin: 'Fasting with insulin/sulfonylurea: risk of hypoglycaemia and dehydration — pre-fast risk stratification and medication review recommended (IDF-DAR 2021).',
-  fastingDiabetes: 'Fasting with diabetes: risk of hypoglycaemia and dehydration — pre-fast risk stratification recommended (IDF-DAR 2021).',
-  fastingPeriop: 'Religious fast overlaps the pre-operative fast — check hydration and glucose plan.',
-  nightShiftSleep: 'Night-shift work / short sleep is associated with metabolic, cardiovascular and mood disorders.',
-} as const;
+/** JSON `promptText`. */
+export const PROMPT_TEXT: Readonly<LifestylePromptTexts> = CONTENT.promptText;
 
 /**
  * Clinician-facing prompts, most serious first. Each is dismissible in the UI and changes
@@ -406,9 +447,6 @@ export function lifestyleSafetyPrompts(ctx: LifestyleContext): LifestylePrompt[]
 
 // ── Non-drug plan suggestions ────────────────────────────────────────────────────────────────
 
-/** Grade labels from the briefing's verdict table (§8) and §6. */
-export type EvidenceGrade = 'Works' | 'Modest' | 'Mixed' | 'No benefit shown';
-
 export type LifestyleSuggestionKind = 'suggestion' | 'counsel';
 
 export interface LifestyleSuggestion {
@@ -425,33 +463,25 @@ export interface LifestyleSuggestion {
   alreadyUsed: boolean;
 }
 
-export const SOURCES = {
-  taiChi: 'Huang ZG et al. Tai Chi for fall prevention and balance improvement in older adults: systematic review and meta-analysis of RCTs. Front Public Health 2023 (24 RCTs; falls RR 0.76).',
-  yoga: 'Saper RB et al. Yoga, physical therapy, or education for chronic low back pain: a randomized noninferiority trial. Ann Intern Med 2017;167:85-94.',
-  mbct: 'Kuyken W et al. Efficacy of MBCT in prevention of depressive relapse: an individual patient data meta-analysis. JAMA Psychiatry 2016;73:565-74 (relapse HR 0.69).',
-  slowBreathing: 'Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 and §8 — slow breathing (no primary reference listed).',
-  acupuncture: 'Vickers AJ et al. Acupuncture for chronic pain: individual patient data meta-analysis. Arch Intern Med 2012; update J Pain 2018.',
-  timeRestricted: 'Liu D et al. Calorie restriction with or without time-restricted eating in weight loss. N Engl J Med 2022;386:1495-1504.',
-  cuppingDetox: 'Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §6 and §8 — cupping, detox teas, colon cleanses (no benefit).',
-  ivDrips: 'Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §6 — "biohacking" add-ons: IV vitamin drips (mixed).',
-} as const;
+/** JSON `sources`. */
+export const SOURCES: Readonly<LifestyleSources> = CONTENT.sources;
 
-export const PLAN_LINES = {
-  taiChi: 'Non-drug: tai chi programme for balance and falls prevention (evidence: works — 24 RCTs, falls RR 0.76; Huang ZG et al. 2023).',
-  yoga: 'Non-drug: structured yoga programme for chronic non-specific low back pain (evidence: works — non-inferior to physical therapy; Saper RB et al., Ann Intern Med 2017).',
-  mbct: 'Referral option: mindfulness-based cognitive therapy (MBCT) for relapse prevention in recurrent depression (evidence: works — HR 0.69; Kuyken W et al., JAMA Psychiatry 2016).',
-  slowBreathing: 'Non-drug: slow breathing (about 6 breaths a minute) for short-term anxiety relief, e.g. before the procedure — not a treatment for high blood pressure (evidence: modest).',
-  acupuncture: 'Referral option: acupuncture for chronic pain (evidence: modest — small margin over sham; Vickers AJ et al., Arch Intern Med 2012).',
-  timeRestricted: 'Non-drug: time-restricted eating as an adherence strategy for weight management — weight loss similar to calorie restriction (evidence: modest; Liu D et al., NEJM 2022).',
-  timeRestrictedDiabetesNote: 'Diabetes on insulin/sulfonylurea: hypoglycaemia risk during fasting windows — pre-fast risk stratification and medication review recommended before starting (IDF-DAR 2021).',
-  cupping: 'Discussed cupping: no reliable evidence of benefit beyond placebo.',
-  detox: 'Discussed detox teas / colon cleanses: no reliable evidence of benefit; risks of dehydration, electrolyte disturbance and laxative dependence.',
-  ivDrips: 'Discussed IV vitamin drips: little outcome evidence outside a specific medical indication; risks of infection and fluid overload.',
-} as const;
+/** JSON `planLines`. */
+export const PLAN_LINES: Readonly<LifestylePlanLines> = CONTENT.planLines;
 
-const CUPPING_TEXT = ['cupping', 'hijama'];
-const DETOX_TEXT = ['detox', 'cleanse', 'colon cleanse', 'colonic', 'colonic irrigation'];
-const IV_DRIP_TEXT = ['iv drip', 'iv vitamin', 'vitamin drip', 'drip therapy', 'nad drip', 'myers cocktail'];
+const REASONS = CONTENT.reasons;
+const CUPPING_TEXT = CONTENT.terms.cupping;
+const DETOX_TEXT = CONTENT.terms.detox;
+const IV_DRIP_TEXT = CONTENT.terms.ivDrip;
+
+/** A suggestion's display name and evidence grade (JSON `suggestions`) with its patient-specific fields. */
+function suggestion(
+  id: string, kind: LifestyleSuggestionKind, reason: string, planLine: string, source: string, alreadyUsed: boolean,
+): LifestyleSuggestion {
+  const text = CONTENT.suggestions[id];
+  if (!text) throw new Error(`lifestyle-practices.json: no suggestions["${id}"]`);
+  return { id, kind, practice: text.practice, evidence: text.evidence, reason, planLine, source, alreadyUsed };
+}
 
 /**
  * Evidence-graded non-drug suggestions for this patient, in a fixed order. Nothing is added to
@@ -467,71 +497,42 @@ export function lifestylePlanSuggestions(ctx: LifestyleContext): LifestyleSugges
   if (f.olderAdult || f.fallsOrFrailty) {
     const reasons: string[] = [];
     if (f.olderAdult) reasons.push(`Age ${ctx.ageYears} (≥ ${OLDER_ADULT_AGE})`);
-    if (f.fallsOrFrailty) reasons.push('falls or frailty recorded');
-    if (f.olderAdult && ctx.procedureBooked) reasons.push('post-operative rehabilitation');
-    out.push({
-      id: 'tai-chi', kind: 'suggestion', practice: 'Tai chi', evidence: 'Works',
-      reason: reasons.join('; '), planLine: PLAN_LINES.taiChi, source: SOURCES.taiChi,
-      alreadyUsed: uses('tai_chi'),
-    });
+    if (f.fallsOrFrailty) reasons.push(REASONS.fallsOrFrailty);
+    if (f.olderAdult && ctx.procedureBooked) reasons.push(REASONS.postOperativeRehabilitation);
+    out.push(suggestion('tai-chi', 'suggestion', reasons.join('; '), PLAN_LINES.taiChi, SOURCES.taiChi, uses('tai_chi')));
   }
   if (f.backPain) {
-    out.push({
-      id: 'yoga', kind: 'suggestion', practice: 'Yoga', evidence: 'Works',
-      reason: 'Low back pain recorded (evidence is for chronic non-specific low back pain)',
-      planLine: PLAN_LINES.yoga, source: SOURCES.yoga, alreadyUsed: uses('yoga'),
-    });
+    out.push(suggestion('yoga', 'suggestion', REASONS.backPain, PLAN_LINES.yoga, SOURCES.yoga, uses('yoga')));
   }
   if (f.depression) {
-    out.push({
-      id: 'mbct', kind: 'suggestion', practice: 'Mindfulness-based cognitive therapy (MBCT)', evidence: 'Works',
-      reason: 'Depression recorded (evidence is for relapse prevention in recurrent depression)',
-      planLine: PLAN_LINES.mbct, source: SOURCES.mbct, alreadyUsed: uses('mindfulness'),
-    });
+    out.push(suggestion('mbct', 'suggestion', REASONS.depression, PLAN_LINES.mbct, SOURCES.mbct, uses('mindfulness')));
   }
   if (f.anxiety) {
-    out.push({
-      id: 'slow-breathing', kind: 'suggestion', practice: 'Slow breathing (about 6 breaths a minute)', evidence: 'Modest',
-      reason: ctx.procedureBooked ? 'Anxiety recorded; procedure booked' : 'Anxiety recorded',
-      planLine: PLAN_LINES.slowBreathing, source: SOURCES.slowBreathing, alreadyUsed: uses('slow_breathing'),
-    });
+    out.push(suggestion('slow-breathing', 'suggestion', ctx.procedureBooked ? REASONS.anxietyProcedure : REASONS.anxiety,
+      PLAN_LINES.slowBreathing, SOURCES.slowBreathing, uses('slow_breathing')));
   }
   if (f.chronicPain) {
-    out.push({
-      id: 'acupuncture', kind: 'suggestion', practice: 'Acupuncture', evidence: 'Modest',
-      reason: 'Back or neck pain, osteoarthritis or chronic headache recorded (evidence is for chronic pain)',
-      planLine: PLAN_LINES.acupuncture, source: SOURCES.acupuncture, alreadyUsed: uses('acupuncture'),
-    });
+    out.push(suggestion('acupuncture', 'suggestion', REASONS.chronicPain, PLAN_LINES.acupuncture, SOURCES.acupuncture,
+      uses('acupuncture')));
   }
   if (f.obesity) {
     const withNote = f.diabetes && f.insulinOrSulfonylurea;
-    out.push({
-      id: 'time-restricted-eating', kind: 'suggestion', practice: 'Time-restricted eating', evidence: 'Modest',
-      reason: ctx.bmi !== null && ctx.bmi >= OBESITY_BMI ? `BMI ${Math.round(ctx.bmi * 10) / 10} (≥ ${OBESITY_BMI})` : 'Obesity recorded',
-      planLine: withNote ? `${PLAN_LINES.timeRestricted} ${PLAN_LINES.timeRestrictedDiabetesNote}` : PLAN_LINES.timeRestricted,
-      source: withNote ? `${SOURCES.timeRestricted} ${IDF_DAR_SOURCE}` : SOURCES.timeRestricted,
-      alreadyUsed: h.fasting.includes('time_restricted'),
-    });
+    out.push(suggestion('time-restricted-eating', 'suggestion',
+      ctx.bmi !== null && ctx.bmi >= OBESITY_BMI ? `BMI ${Math.round(ctx.bmi * 10) / 10} (≥ ${OBESITY_BMI})` : REASONS.obesity,
+      withNote ? `${PLAN_LINES.timeRestricted} ${PLAN_LINES.timeRestrictedDiabetesNote}` : PLAN_LINES.timeRestricted,
+      withNote ? `${SOURCES.timeRestricted} ${IDF_DAR_SOURCE}` : SOURCES.timeRestricted,
+      h.fasting.includes('time_restricted')));
   }
 
   // "No benefit shown" information: only when the patient's record lists the practice.
   if (uses('cupping') || anyTerm(otherText, CUPPING_TEXT)) {
-    out.push({
-      id: 'counsel-cupping', kind: 'counsel', practice: 'Cupping', evidence: 'No benefit shown',
-      reason: 'Cupping recorded', planLine: PLAN_LINES.cupping, source: SOURCES.cuppingDetox, alreadyUsed: true,
-    });
+    out.push(suggestion('counsel-cupping', 'counsel', REASONS.cupping, PLAN_LINES.cupping, SOURCES.cuppingDetox, true));
   }
   if (usesDetoxOrCleanse(h) || anyTerm(otherText, DETOX_TEXT)) {
-    out.push({
-      id: 'counsel-detox', kind: 'counsel', practice: 'Detox teas and colon cleanses', evidence: 'No benefit shown',
-      reason: 'Detox or cleanse programme recorded', planLine: PLAN_LINES.detox, source: SOURCES.cuppingDetox, alreadyUsed: true,
-    });
+    out.push(suggestion('counsel-detox', 'counsel', REASONS.detox, PLAN_LINES.detox, SOURCES.cuppingDetox, true));
   }
   if (usesIvVitaminDrips(h) || anyTerm(otherText, IV_DRIP_TEXT)) {
-    out.push({
-      id: 'counsel-iv-drips', kind: 'counsel', practice: 'IV vitamin drips', evidence: 'Mixed',
-      reason: 'IV vitamin drips recorded', planLine: PLAN_LINES.ivDrips, source: SOURCES.ivDrips, alreadyUsed: true,
-    });
+    out.push(suggestion('counsel-iv-drips', 'counsel', REASONS.ivDrips, PLAN_LINES.ivDrips, SOURCES.ivDrips, true));
   }
   return out;
 }
