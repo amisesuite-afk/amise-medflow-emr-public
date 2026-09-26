@@ -71,7 +71,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'ios/AmiseMedFlow/Services/ClinicalScoringEngine*.swift',
   'ios/AmiseMedFlow/Services/PatientScoreAutoPopulator*.swift',
   'ios/AmiseMedFlow/Services/NEWS2Chart.swift',
-  'ios/AmiseMedFlow/Services/ConsultPathway.swift',
+  'ios/AmiseMedFlow/Services/ConsultPathway*.swift',
   'ios/AmiseMedFlow/Services/VisitRiskAssessment.swift',
   'ios/AmiseMedFlow/Views/Consultation/PathwayData.swift',
   'ios/AmiseMedFlow/Services/SuspectedCancerScreening*.swift',
