@@ -67,6 +67,12 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'ios/AmiseMedFlow/Services/ClinicalTextParser.swift',
   'ios/AmiseMedFlow/Views/Consultation/ConsultationViewChipData.swift',
   'ios/AmiseMedFlow/Views/Consultation/ConsultationViewEarlyForms.swift',
+  // History frames (complaint -> history questions; web + iOS twins)
+  'lib/triage-engine/src/history-frames/*.ts',
+  'ios/AmiseMedFlow/Services/HistoryFrames.swift',
+  'ios/AmiseMedFlow/Services/HistoryFrameData.swift',
+  'ios/AmiseMedFlow/Views/Consultation/ConsultationView+HistoryFrame.swift',
+  'artifacts/dashboard/src/lib/hpi-fields.ts',
   // iOS — scores, NEWS2, pathways, risk, screening
   'ios/AmiseMedFlow/Services/ClinicalScoringEngine*.swift',
   'ios/AmiseMedFlow/Services/PatientScoreAutoPopulator*.swift',

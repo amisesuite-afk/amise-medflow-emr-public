@@ -183,7 +183,54 @@
       "notes": "A chip or parsed phrase only fires a feature when its text matches the feature value by substring; a feature key the engine does not recognise never fires (6,136 distinct keys in the database).",
       "changelog": [
         { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalTextParser: \"rest\" matches whole words only (not inside \"arrest\"); a written temperature counts as fever only at >=38.0 C (or when described as raised); recordedTemperatures() added." },
-        { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalTextParser: \"free intraperitoneal gas / air\" and \"extraluminal gas / air\" raise the pneumoperitoneum alarm and feature." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalTextParser: \"free intraperitoneal gas / air\" and \"extraluminal gas / air\" raise the pneumoperitoneum alarm and feature." },
+        { "version": "unversioned", "date": "2026-09-26", "change": "The HPI builder's SOCRATES chips are replaced by the complaint's history frame (history-frames rule set); EncounterDetailSheet now renders stored history answers (lowercase keys); pre-consult associated-symptom chips follow the complaint." }
+      ]
+    },
+    {
+      "id": "history-frames",
+      "title": "History frames: chief complaint (+ system) -> symptom type -> the history questions asked (SOCRATES for pain only; cough, dyspnoea, lump, bleeding, bowel, dysphagia, jaundice and other frames), their chip options and the chip -> engine-feature mapping",
+      "platforms": ["web", "ios"],
+      "kind": "mapping",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/triage-engine/src/history-frames/frames.ts", "type": "regex", "pattern": "HISTORY_FRAMES_VERSION\\s*=\\s*'([^']+)'" },
+      "files": [
+        "lib/triage-engine/src/history-frames/*.ts",
+        "ios/AmiseMedFlow/Services/HistoryFrames.swift",
+        "ios/AmiseMedFlow/Services/HistoryFrameData.swift",
+        "ios/AmiseMedFlow/Views/Consultation/ConsultationView+HistoryFrame.swift",
+        "artifacts/dashboard/src/lib/hpi-fields.ts"
+      ],
+      "tests": [
+        "scripts/src/history-frames.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/hpi-fields.test.ts",
+        "ios/AmiseMedFlowTests/HistoryFrameTests.swift",
+        "ios/AmiseMedFlowTests/Resources/HistoryFrameVectors.json"
+      ],
+      "ciChecks": [
+        "lint:history-frames (shared complaint -> frame vectors; frame structure: radiation for pain only, sites in the frame's region, no duplicate or contradictory chips; every chip maps to an engine feature on each platform or is listed as record only; generated Swift twin current)",
+        "scripts vitest history-frames",
+        "dashboard vitest hpi-fields (no abdominal sites or radiation outside an abdominal / pain complaint, across every template and SmartSymptomPicker symptom)",
+        "ios-build-check.yml unit tests (HistoryFrameTests: the same vectors)",
+        "clinval:web (8 hpi-frame-* vignettes)"
+      ],
+      "guidelines": [
+        { "name": "BTS guidelines for the management of cough in adults", "version": "2006", "section": "Duration bands (acute < 3 weeks, subacute 3-8 weeks, chronic > 8 weeks); ACE inhibitor cough", "citation": "Morice AH et al. Thorax 2006;61 Suppl 1:i1-24." },
+        { "name": "ERS guidelines on the diagnosis and treatment of chronic cough in adults and children", "version": "2020", "section": "Chronic cough assessment", "citation": "Morice AH et al. Eur Respir J 2020;55:1901136." },
+        { "name": "MRC dyspnoea scale", "version": "1959 (as used by NICE NG115)", "section": "Grades 1-5", "citation": "Fletcher CM et al. BMJ 1959;2:257-66; NICE NG115 (2018, updated 2019)." },
+        { "name": "NICE NG12 Suspected cancer: recognition and referral", "version": "2015 (updated 2023)", "section": "Symptom prompts (haemoptysis, dysphagia, rectal bleeding, breast lump, weight loss)", "citation": "National Institute for Health and Care Excellence. NG12." },
+        { "name": "Macleod's Clinical Examination (history-taking frameworks)", "version": "14th ed. 2018", "section": "SOCRATES; lump and swelling history", "citation": "Innes JA et al. Macleod's Clinical Examination. Elsevier 2018." }
+      ],
+      "citationStatus": "file-header",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "Engineering only: lint:history-frames audit over a 1,650-chip corpus, 452 shared complaint vectors, clinval:web 0 blocking and 0 pass -> fail. No clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-10-31",
+      "changeAuthority": "Any repository committer. Change frames.ts / classify.ts, run gen:history-frames (Swift twin, record-only table) and lint:history-frames in the same PR; ships with a dashboard deploy and an iOS app release.",
+      "notes": "Chips feed the existing engines only (iOS DiagnosticDatabase features by substring / finding match; web PANE features via socrates-to-features.ts FRAME_KEY_RULES); no weight changed. Chips with no engine feature are listed as record only (lib/triage-engine/src/history-frames/record-only.ts). Renamed chips keep aliases so stored answers still render. Sign-off list: docs/clinical-validation/changes/history-by-complaint.md.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-26", "change": "First version: 41 frames across 21 symptom types and a deterministic classifier; the web and iOS history builders follow the complaint (SOCRATES only for pain). Owner report: a cough complaint showed abdominal sites." }
       ]
     },
     {
@@ -682,7 +729,7 @@
       "title": "Web Bayesian differential (pane-engine): diseases, priors, feature likelihoods, prior modifiers, applicability, stopping rules; PANE feature mapper",
       "platforms": ["web"],
       "kind": "bayesian-model-data",
-      "contentVersion": "1.0.1",
+      "contentVersion": "1.0.2",
       "versionStamp": { "file": "lib/pane-engine/src/constants.ts", "type": "regex", "pattern": "PANE_MODEL_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "lib/pane-engine/src/vademecum/specialties/*.ts",
@@ -729,10 +776,11 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "Model 1.0.1 (mapper precision; the disease model is 1.0.0): 187 diseases plus _other_, 426 features (surgical, medical, obstetric, paediatric, neurological, vascular), prior tiers (vademecum/priors.ts), unmodelled findings scored at the finding's background rate (engine/likelihood.ts; was a flat 0.30), bounded sex likelihood ratios and age/sex/pregnancy applicability (engine/modifiers.ts), feature mapper reads chips, vitals, history, results and free text (socrates-to-features.ts). Stops at posterior 0.85 or 8 questions.",
+      "notes": "Model 1.0.2 (mapper changes; the disease model is 1.0.0): 187 diseases plus _other_, 426 features (surgical, medical, obstetric, paediatric, neurological, vascular), prior tiers (vademecum/priors.ts), unmodelled findings scored at the finding's background rate (engine/likelihood.ts; was a flat 0.30), bounded sex likelihood ratios and age/sex/pregnancy applicability (engine/modifiers.ts), feature mapper reads chips, vitals, history, results and free text (socrates-to-features.ts). Stops at posterior 0.85 or 8 questions.",
       "changelog": [
         { "version": "1.0.0", "date": "2026-09-25", "change": "Condition-neutral model (clinval C6): neutral background rates for unmodelled findings instead of 0.30; frequency-tier priors with no specialty boost (cholecystitis 0.15 → 0.015, GORD 0.12 → 0.03, PUD 0.10 → 0.015 …); sex modifiers bounded as likelihood ratios (inguinal hernia ×5/×0.3 → ×1.8/×0.2; gynaecological ×2.5 and breast ×1.8 boosts removed); applicability (sex, age, pregnancy); 58 new nodes (ACS, dissection, heart failure, AF, cardiac syncope, hypertensive emergency, pneumonia, asthma, COPD, sepsis, anaphylaxis, gastroenteritis, C. difficile, AKI, hyperkalaemia, hypercalcaemia, hyponatraemia, DKA, HHS, hypoglycaemia, phaeochromocytoma, stroke, TIA, SAH, meningitis, seizure, cauda equina, MSCC, pre-eclampsia/HELLP, abruption, hyperemesis, intussusception, pyloric stenosis, malrotation, HSP, mesenteric ischaemia, limb ischaemia, aorto-enteric fistula, femoral aneurysm, superficial thrombophlebitis, pyelonephritis, infected obstructed kidney, biliary colic, variceal bleed, perforated ulcer, food bolus, lower GI bleed, anal cancer, Fournier's, sigmoid volvulus, toxic megacolon, incarcerated hernia, post-operative collection and pneumonia, DFI, Charcot, inguinal nodes, anaplastic thyroid); feature mapper reads the whole consultation record. Versioned from unversioned." },
-        { "version": "1.0.1", "date": "2026-09-26", "change": "Feature mapper precision (no disease, prior or likelihood changed). Every rule goes through record-text-match.ts: negated lists get a window per item (\"never had pain, jaundice or fever\"; \"denies A, B and C\"), family history is never the patient, symptoms and signs are not read from a sentence dated years back, a repaired or planned-for-repair condition or a lay guess, a [^.]{0,N} gap cannot cross a negation cue (\"DRE: no mass\"), requires-context must be affirmed. Pattern fixes: flame haemorrhages, restless + disorientated, rheumatoid arthritis, abscess drainage, defaecation as a syncope trigger, pale stools, calf pain on walking, pulse-oximetry, fistula cord, flatus incontinence and faecal urgency, rash on both legs, breast 'central' and 'diffuse neck' sites, RIF scar, distended neck veins, 'not passed urine' (oliguria), neuropathic pain; adrenal mass read from imaging. Clinval web: no expectation changed status. See docs/clinical-validation/changes/diagnostic-reasoning.md (precision pass)." }
+        { "version": "1.0.1", "date": "2026-09-26", "change": "Feature mapper precision (no disease, prior or likelihood changed). Every rule goes through record-text-match.ts: negated lists get a window per item (\"never had pain, jaundice or fever\"; \"denies A, B and C\"), family history is never the patient, symptoms and signs are not read from a sentence dated years back, a repaired or planned-for-repair condition or a lay guess, a [^.]{0,N} gap cannot cross a negation cue (\"DRE: no mass\"), requires-context must be affirmed. Pattern fixes: flame haemorrhages, restless + disorientated, rheumatoid arthritis, abscess drainage, defaecation as a syncope trigger, pale stools, calf pain on walking, pulse-oximetry, fistula cord, flatus incontinence and faecal urgency, rash on both legs, breast 'central' and 'diffuse neck' sites, RIF scar, distended neck veins, 'not passed urine' (oliguria), neuropathic pain; adrenal mass read from imaging. Clinval web: no expectation changed status. See docs/clinical-validation/changes/diagnostic-reasoning.md (precision pass)." },
+        { "version": "1.0.2", "date": "2026-09-26", "change": "Feature mapper reads the history frames (no disease, prior or likelihood changed): every frame answer key maps to an existing PANE feature (socrates-to-features.ts FRAME_KEY_RULES; e.g. sputum, haemoptysis, orthopnoea, MRC grade, lump consistency, cough impulse); pain-only features (episodic, nocturnal, post-prandial, colicky pain, worse on movement, severe, localised) come only from pain answers; 'Coughing' as an aggravating factor no longer sets the cough feature. Clinval web: 0 blocking, no expectation went pass -> fail. See docs/clinical-validation/changes/history-by-complaint.md." }
       ]
     },
     {
