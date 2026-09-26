@@ -335,7 +335,7 @@
         "socrates": {
           "type": "object",
           "additionalProperties": false,
-          "description": "Chip selections using the iOS SOCRATES chip labels (ConsultationViewSOCRATES.swift).",
+          "description": "iOS history chips: the value each chip stores, per key (HistoryFrameData.swift; for SOCRATES chips the label itself). lint:history-frames checks every value. Keys outside these nine (a cough or lump frame question stored under another key, e.g. history) go in platform.ios.socratesSelections.",
           "properties": {
             "onset": { "type": "array", "items": { "type": "string" } },
             "site": { "type": "array", "items": { "type": "string" } },

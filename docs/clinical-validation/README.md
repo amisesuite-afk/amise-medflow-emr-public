@@ -173,8 +173,14 @@ the two modes are not comparable, so re-triage every iOS differential flag on th
    - The CC is the patient's complaint ("Right lower abdominal pain"), never the diagnosis. The
      same applies to `platform.web.ccTemplate`: pick a symptom template (e.g. "Acute abdominal
      pain"), not a diagnosis-named one, or you are testing string matching, not inference.
-   - iOS SOCRATES values must be real chip labels from `ConsultationView`'s SOCRATES options,
-     web symptom details must be real SmartSymptomPicker option labels; otherwise they are ignored.
+   - iOS SOCRATES values must be real chip values from the history frames (`HistoryFrameData.swift`,
+     generated from `lib/triage-engine/src/history-frames`: the value a chip stores, which for a
+     SOCRATES chip is its label; a few chips store an engine value, e.g. "Started after an ACE
+     inhibitor" stores `timing: After starting ACEi`), web symptom details must be real
+     SmartSymptomPicker option labels; otherwise they are ignored. `lint:history-frames` checks both
+     (a renamed chip keeps its old label as an alias). For a non-pain complaint on the web, put the
+     frame's answers in `platform.web.socratesAnswers` under the frame's web keys (`cough_character`,
+     `sputum`, `lump_site` …; `lint:history-frames -- --chips` lists them).
    - Put findings in the HPI/exam text as well as in chips: the iOS text parser and web
      prompts read text.
    - Record negatives carefully. Neither platform handles negation well; that is worth testing.

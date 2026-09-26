@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "id": "hpi-frame-dyspnoea-orthopnoea",
+  "condition": "Chronic heart failure",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "74-year-old man with hypertension and a previous MI: 3 months of progressive exertional breathlessness (MRC 3), orthopnoea on 3 pillows, PND and ankle swelling.",
+  "tags": [
+    "history-frame",
+    "dyspnoea",
+    "heart-failure",
+    "orthopnoea"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Shortness of breath",
+    "hpi": "Three months of breathlessness, getting worse: now walks slower than his wife on the level and stops for breath. Needs 3 pillows to sleep and wakes breathless at night twice a week. Both ankles swollen by the evening. No chest pain, no cough, no haemoptysis, no fever.",
+    "symptoms": [
+      "shortness of breath",
+      "orthopnoea",
+      "ankle oedema"
+    ],
+    "negatives": [
+      "chest pain",
+      "cough",
+      "haemoptysis",
+      "fever"
+    ],
+    "exam": {
+      "general": "Comfortable at rest.",
+      "cardiovascular": "Irregular pulse? No — regular. JVP raised 4 cm. Pitting oedema to mid-shin bilaterally.",
+      "respiratory": "Bibasal fine crackles."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 92,
+        "systolicBp": 148,
+        "diastolicBp": 86,
+        "respiratoryRate": 20,
+        "temperatureC": 36.7,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Ischaemic heart disease"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "IHD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker (stopped 10 years ago). Lives with his wife.",
+    "confirmedDiagnosis": {
+      "name": "Chronic heart failure",
+      "icd10": "I50.9",
+      "paneDiseaseId": "acute_heart_failure",
+      "assessmentText": "Progressive exertional breathlessness with orthopnoea, PND and oedema: heart failure. NT-proBNP and echocardiography."
+    },
+    "platform": {
+      "ios": {
+        "specialtyHint": "Cardiovascular",
+        "socratesSelections": {
+          "onset": [
+            "Gradual over weeks to months"
+          ],
+          "exacerbating": [
+            "Exertion — MRC 3 slower than peers on the level"
+          ],
+          "associations": [
+            "Orthopnoea",
+            "Paroxysmal nocturnal dyspnoea",
+            "Needs 3 pillows to sleep",
+            "Ankle swelling / pitting oedema"
+          ],
+          "timing": [
+            "Progressive"
+          ]
+        }
+      },
+      "web": {
+        "ccTemplate": "Shortness of breath",
+        "symptoms": [
+          "shortness of breath",
+          "orthopnoea",
+          "ankle oedema"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Gradual",
+            "Worsening on exertion",
+            "Oedema",
+            "Nocturnal"
+          ]
+        },
+        "socratesAnswers": {
+          "onset": "Gradual over weeks to months",
+          "dyspnoea_exertion": "MRC 3 — slower than peers on the level",
+          "orthopnoea": "Orthopnoea, Paroxysmal nocturnal dyspnoea, Needs 3 pillows to sleep",
+          "dyspnoea_timing": "Progressive",
+          "dyspnoea_assoc": "Ankle swelling / pitting oedema"
+        },
+        "durationDays": 90
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-heart-failure-top3",
+          "severity": "critical",
+          "match": [
+            "heart failure",
+            "pulmonary oedema",
+            "icd:I50"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng106"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "note": "Breathlessness frame: MRC grade → exertion, orthopnoea / PND, ankle oedema."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng106",
+      "name": "NICE NG106 — Chronic heart failure in adults: diagnosis and management",
+      "year": 2018,
+      "section": "1.2 Diagnosis: measure NT-proBNP in suspected heart failure; transthoracic echocardiography",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG106. London: NICE; 2018.",
+      "verified": false
+    },
+    {
+      "id": "mrc-dyspnoea",
+      "name": "MRC dyspnoea scale",
+      "year": 1959,
+      "section": "Grades 1–5",
+      "citation": "Fletcher CM, et al. BMJ 1959;2:257–66.",
+      "verified": false
+    }
+  ],
+  "rationale": "The breathlessness frame asks the exercise tolerance (MRC grade), orthopnoea / PND and oedema — the history that separates heart failure from lung disease. Both engines should rank heart failure.",
+  "authoring": {
+    "author": "Claude (history-by-complaint)",
+    "date": "2026-09-26",
+    "notes": "History-frame permutation: the HPI chips are the frame's (HistoryFrameData.swift / history-frames). Expectations need surgeon sign-off (reviewedBy). Citations not yet checked against the source (verified: false)."
+  }
+}

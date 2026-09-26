@@ -2842,7 +2842,7 @@ extension HistoryFrameData {
             HistoryVariantRuleSpec(variant: "neck", keywords: ["neck", "throat", "ear", "ears", "jaw", "tooth", "teeth", "dental", "thyroid"]),
             HistoryVariantRuleSpec(variant: "back", keywords: ["back", "lumbar", "sciatica", "spine", "spinal", "thoracic", "coccyx"]),
             HistoryVariantRuleSpec(variant: "breast", keywords: ["breast*", "mastalgia", "nipple*", "axilla*"]),
-            HistoryVariantRuleSpec(variant: "perineal", keywords: ["anal", "anus", "perianal", "perine*", "rectal", "rectum", "bottom", "haemorrhoid*", "hemorrhoid*", "piles", "fissure*", "fistula", "pilonidal", "vulv*", "vagin*", "dyspareunia"]),
+            HistoryVariantRuleSpec(variant: "perineal", keywords: ["anal", "anus", "perianal", "perine*", "rectal", "rectum", "bottom", "back passage", "haemorrhoid*", "hemorrhoid*", "piles", "fissure*", "fistula", "pilonidal", "vulv*", "vagin*", "dyspareunia"]),
             HistoryVariantRuleSpec(variant: "genital", keywords: ["testic*", "testis", "testes", "scrot*", "penile", "penis"]),
             HistoryVariantRuleSpec(variant: "joint", keywords: ["joint*", "knee*", "hip", "hips", "shoulder*", "ankle*", "wrist*", "elbow*", "gout", "arthr*", "stiffness"]),
             HistoryVariantRuleSpec(variant: "limb", keywords: ["leg", "legs", "calf", "calves", "thigh*", "shin*", "foot", "feet", "toe", "toes", "arm", "arms", "forearm*", "hand", "hands", "finger*", "limb*", "claudication", "peripheral arterial", "buttock*", "heel*", "rest pain", "bone", "bones", "muscle*", "extremit*", "cold foot", "cold leg"]),
@@ -2857,7 +2857,7 @@ extension HistoryFrameData {
         ]),
         HistoryVariantSetSpec(type: "bleeding", fallback: "general", rules: [
             HistoryVariantRuleSpec(variant: "upper_gi", keywords: ["haematemesis", "hematemesis", "melaena", "melena", "black stool*", "tarry*", "coffee ground*", "coffee-ground*", "upper gi", "vomit*"]),
-            HistoryVariantRuleSpec(variant: "rectal", keywords: ["rectal", "rectum", "pr", "per rectum", "bottom", "anal", "anus", "haematochezia", "hematochezia", "piles", "haemorrhoid*", "hemorrhoid*", "lower gi", "stool*", "bowel*"]),
+            HistoryVariantRuleSpec(variant: "rectal", keywords: ["rectal", "rectum", "pr", "per rectum", "bottom", "anal", "anus", "haematochezia", "hematochezia", "piles", "haemorrhoid*", "hemorrhoid*", "lower gi", "stool*", "bowel*", "back passage", "toilet paper", "wiping"]),
             HistoryVariantRuleSpec(variant: "urinary", keywords: ["haematuria", "hematuria", "urin*", "bladder"]),
             HistoryVariantRuleSpec(variant: "vaginal", keywords: ["vagin*", "pv", "per vaginam", "postmenopausal", "intermenstrual", "postcoital", "post-coital", "post-menopausal", "inter-menstrual", "menorrhagia", "heavy period*", "uterine", "womb", "period*"]),
         ]),

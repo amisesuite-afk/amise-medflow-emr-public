@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "id": "hpi-frame-cough-chronic-acei",
+  "condition": "ACE-inhibitor cough",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "58-year-old woman, non-smoker: 10 weeks of dry, tickly nocturnal cough that began a few weeks after ramipril was started. No haemoptysis, fever or weight loss. The HPI step offers the cough history, not abdominal SOCRATES.",
+  "tags": [
+    "history-frame",
+    "cough",
+    "chronic-cough",
+    "ace-inhibitor"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 162,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Cough",
+    "hpi": "Ten weeks of a dry, tickly cough, worse at night, which began a few weeks after ramipril was started for hypertension. No sputum, no haemoptysis, no fever, no breathlessness, no wheeze, no weight loss. No heartburn. Never smoked.",
+    "symptoms": [
+      "dry cough"
+    ],
+    "negatives": [
+      "haemoptysis",
+      "fever",
+      "weight loss",
+      "breathlessness",
+      "wheeze"
+    ],
+    "exam": {
+      "general": "Well. Not breathless.",
+      "respiratory": "Chest clear. No wheeze, no crackles."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 76,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Never smoked. Office manager.",
+    "confirmedDiagnosis": {
+      "name": "ACE-inhibitor induced cough",
+      "icd10": "R05",
+      "assessmentText": "Chronic dry cough starting after ramipril; no red flags. Probable ACE-inhibitor cough."
+    },
+    "platform": {
+      "ios": {
+        "specialtyHint": "Respiratory",
+        "socratesSelections": {
+          "timing": [
+            ">3 weeks — chronic over 8 weeks",
+            "Nocturnal",
+            "After starting ACEi"
+          ],
+          "character": [
+            "Dry cough"
+          ]
+        }
+      },
+      "web": {
+        "ccTemplate": "Cough",
+        "symptoms": [
+          "cough",
+          "dry cough"
+        ],
+        "symptomDetails": {},
+        "socratesAnswers": {
+          "duration": "Chronic over 8 weeks",
+          "cough_character": "Dry cough",
+          "cough_timing": "Nocturnal",
+          "cough_exposure": "Started after an ACE inhibitor"
+        },
+        "durationDays": 70
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-acei-cough-top3-ios",
+          "severity": "critical",
+          "source": "ios.bayes",
+          "match": [
+            "ace inhibitor cough",
+            "ace-inhibitor",
+            "acei"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ers-cough-2020"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "note": "Cough history chips: timing \">3 weeks\", \"After starting ACEi\", character \"Dry\" (DiagnosticDatabase cough pool)."
+        },
+        {
+          "id": "dx-acei-cough-top3-web",
+          "severity": "quality",
+          "match": [
+            "ace inhibitor",
+            "ace-inhibitor",
+            "acei"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ers-cough-2020"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "pane-engine models no ACE-inhibitor cough (or any chronic-cough cause): the cough frame answers reach acei_arb_use, cough and chronic_course, and PANE ranks GORD / peptic ulcer / lipoma. Needs a pane cough module (sign-off list, history-by-complaint.md)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ers-cough-2020",
+      "name": "ERS guidelines on the diagnosis and treatment of chronic cough in adults and children",
+      "year": 2020,
+      "section": "Chronic cough > 8 weeks; ACE-inhibitor cough: stop the ACE inhibitor (resolves within weeks)",
+      "citation": "Morice AH, et al. Eur Respir J 2020;55:1901136.",
+      "verified": false
+    },
+    {
+      "id": "bts-cough-2006",
+      "name": "BTS guidelines: Recommendations for the management of cough in adults",
+      "year": 2006,
+      "section": "Duration bands: acute < 3 weeks, subacute 3–8 weeks, chronic > 8 weeks",
+      "citation": "Morice AH, et al. Thorax 2006;61 Suppl 1:i1–24.",
+      "verified": false
+    }
+  ],
+  "rationale": "The cough frame records duration (BTS/ERS bands), character and the ACE-inhibitor exposure; on iOS these chips reach the cough pool features (\">3 weeks\", \"After starting ACEi\", \"Dry\"). The web pane engine models no ACE-inhibitor cough, so the web side only checks that the frame answers reach acei_arb_use (history-frames test).",
+  "authoring": {
+    "author": "Claude (history-by-complaint)",
+    "date": "2026-09-26",
+    "notes": "History-frame permutation: the HPI chips are the frame's (HistoryFrameData.swift / history-frames). Expectations need surgeon sign-off (reviewedBy). Citations not yet checked against the source (verified: false)."
+  }
+}

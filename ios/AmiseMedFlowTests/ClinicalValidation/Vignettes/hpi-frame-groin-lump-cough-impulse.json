@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "id": "hpi-frame-groin-lump-cough-impulse",
+  "condition": "Inguinal hernia",
+  "category": "hernia",
+  "permutationOf": "hernia-inguinal-elective-minimal-symptoms",
+  "permutationLabel": "Typed complaint, lump frame with reducibility",
+  "summary": "45-year-old man: 4 months of a lump in the right groin that goes back on lying down, with a cough impulse; aches after heavy lifting.",
+  "tags": [
+    "history-frame",
+    "hernia",
+    "lump"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the right groin",
+    "hpi": "Four months of a soft lump in the right groin, bigger when standing and after heavy lifting at work, gone when lying down. He can push it back. A cough makes it bulge. Aches at the end of the day. Never painful or stuck. No vomiting, bowels normal.",
+    "symptoms": [
+      "groin swelling"
+    ],
+    "negatives": [
+      "vomiting",
+      "constipation",
+      "irreducible"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender.",
+      "other": "Right groin: reducible swelling above and medial to the pubic tubercle with a cough impulse. Testes normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 70,
+        "systolicBp": 126,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Warehouse worker (heavy lifting). Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Right inguinal hernia",
+      "icd10": "K40.9",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Reducible right inguinal hernia with cough impulse."
+    },
+    "platform": {
+      "ios": {
+        "specialtyHint": "General & GI Surgery",
+        "socratesSelections": {
+          "site": [
+            "Right inguinal"
+          ],
+          "onset": [
+            "Months"
+          ],
+          "character": [
+            "Soft",
+            "Painful at times"
+          ],
+          "associations": [
+            "Cough impulse",
+            "Reducible",
+            "Reduces on lying down",
+            "Pain on straining",
+            "Heavy lifting"
+          ]
+        }
+      },
+      "web": {
+        "ccTemplate": "Lump in the right groin",
+        "symptoms": [
+          "groin swelling",
+          "hernia"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Right groin",
+            "Easily reducible"
+          ]
+        },
+        "socratesAnswers": {
+          "lump_site": "Right inguinal",
+          "onset": "Months",
+          "lump_character": "Soft",
+          "lump_tenderness": "Painful at times",
+          "reducibility": "Cough impulse, Reducible, Reduces on lying down",
+          "lump_assoc": "Pain on straining, Heavy lifting"
+        },
+        "durationDays": 120
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-inguinal-hernia-top1",
+          "severity": "critical",
+          "match": [
+            "inguinal",
+            "groin hernia"
+          ],
+          "k": 1,
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "note": "Lump frame: site right inguinal, cough impulse, reducible (web: groin_swelling, cough_impulse, groin_lump_reducible)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "herniasurge-2018"
+        ],
+        "note": "Reducible, non-tender hernia: elective."
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "herniasurge-2018",
+      "name": "International guidelines for groin hernia management (HerniaSurge)",
+      "year": 2018,
+      "section": "Diagnosis is clinical; reducible hernia with a cough impulse; elective repair",
+      "citation": "HerniaSurge Group. Hernia 2018;22:1–165.",
+      "verified": false
+    }
+  ],
+  "rationale": "The lump frame asks reducibility and cough impulse — not radiation or 'what is it like'. A typed complaint without a template now gets that frame on both platforms.",
+  "authoring": {
+    "author": "Claude (history-by-complaint)",
+    "date": "2026-09-26",
+    "notes": "History-frame permutation: the HPI chips are the frame's (HistoryFrameData.swift / history-frames). Expectations need surgeon sign-off (reviewedBy). Citations not yet checked against the source (verified: false)."
+  }
+}

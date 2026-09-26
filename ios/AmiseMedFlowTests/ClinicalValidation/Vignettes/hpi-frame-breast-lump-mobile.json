@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "id": "hpi-frame-breast-lump-mobile",
+  "condition": "Fibroadenoma (breast lump under 30)",
+  "category": "breast-endocrine",
+  "permutationOf": "breast-lump-under-30",
+  "permutationLabel": "Typed complaint, breast frame",
+  "summary": "26-year-old woman: 2 months of a smooth, mobile, non-tender lump in the upper outer right breast; no nipple or skin change.",
+  "tags": [
+    "history-frame",
+    "breast",
+    "breast-lump"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 26,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 164,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in my right breast",
+    "hpi": "Found a lump in the upper outer right breast two months ago. Smooth, moves under the fingers, not painful, not changed in size or with her periods. No nipple discharge or skin change. No family history of breast cancer.",
+    "symptoms": [
+      "breast lump"
+    ],
+    "negatives": [
+      "nipple discharge",
+      "skin change",
+      "axillary lump"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Right breast upper outer quadrant: 2 cm smooth, rubbery, highly mobile, non-tender lump. No skin tethering. Axillae clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 72,
+        "systolicBp": 112,
+        "diastolicBp": 70,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Probable fibroadenoma",
+      "icd10": "D24.1",
+      "paneDiseaseId": "fibroadenoma",
+      "assessmentText": "Smooth mobile breast lump aged 26: probable fibroadenoma; triple assessment."
+    },
+    "platform": {
+      "ios": {
+        "specialtyHint": "General & GI Surgery",
+        "socratesSelections": {
+          "site": [
+            "Upper outer — right"
+          ],
+          "onset": [
+            "Months"
+          ],
+          "character": [
+            "Smooth",
+            "Mobile",
+            "Non-tender"
+          ],
+          "associations": [
+            "Stable"
+          ]
+        }
+      },
+      "web": {
+        "ccTemplate": "Lump in my right breast",
+        "symptoms": [
+          "breast lump"
+        ],
+        "symptomDetails": {
+          "breast lump": [
+            "Right",
+            "Mobile",
+            "Non-tender",
+            "Months"
+          ]
+        },
+        "socratesAnswers": {
+          "breast_site": "Upper outer — right",
+          "onset": "Months",
+          "breast_character": "Smooth, Mobile, Non-tender",
+          "breast_size": "Stable"
+        },
+        "durationDays": 60
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-fibroadenoma-top3",
+          "severity": "quality",
+          "match": [
+            "fibroadenoma"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "note": "Breast frame: smooth, mobile, non-tender lump (web breast_lump, breast_lump_mobile)."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "dx-breast-cancer-listed",
+          "severity": "quality",
+          "match": [
+            "breast carcinoma",
+            "breast cancer",
+            "icd:C50"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "note": "Triple assessment still applies."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "The breast frame asks site, the lump's character, nipple and skin change — not radiation. A smooth mobile lump at 26 is most likely a fibroadenoma; breast cancer stays on the list.",
+  "authoring": {
+    "author": "Claude (history-by-complaint)",
+    "date": "2026-09-26",
+    "notes": "History-frame permutation: the HPI chips are the frame's (HistoryFrameData.swift / history-frames). Expectations need surgeon sign-off (reviewedBy). Citations not yet checked against the source (verified: false)."
+  }
+}
