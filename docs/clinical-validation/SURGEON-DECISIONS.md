@@ -273,3 +273,18 @@ necrotising-fasciitis alarm on iOS) and "Heartburn" opening the Burns pathway on
      operation or pathology.
 - **Always:** a proposal is applied only through a content-change PR with a version bump, a
   vignette A/B run and your signature on each line (`docs/CLINICAL-CONTENT-UPGRADES.md` §4.6.1).
+
+### I3. No probability is shown as certain — DECIDED 2026-09-26
+
+- **Owner:** practice owner (Dr Dawit Daniel Kabiye), 2026-09-26: "Medicine is probabilistic
+  condition, no 100 percent."
+- **Decision:** every engine probability shown to a clinician reads "<1%" instead of "0%" and
+  ">99%" instead of "100%". The highest iOS confidence level reads "Very high", not "Certain".
+  Nothing is labelled definite by an engine; confirmation stays with the clinician (criteria,
+  histology, imaging and the final diagnosis are recorded by a person).
+- **Where:** web `artifacts/dashboard/src/lib/probability-text.ts` (PANE differential, ambient
+  consultation, outcomes snapshot and final-diagnosis panel); iOS `ProbabilityText.swift` (CC,
+  history and plan differentials, encounter detail, final-diagnosis section, pipeline and auto-action
+  text) and `BayesianDiagnosisEngine.DiagnosisResult.Confidence.label`. The diagnostic-reasoning panel
+  already followed the same rule (`fmtPct`). Tests: `probability-text.test.ts` and
+  `ProbabilityTextTests.swift` (same cases). Display only: no weight, threshold or stored value changed.

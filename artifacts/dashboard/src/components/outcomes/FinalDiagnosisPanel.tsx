@@ -14,6 +14,7 @@ import {
 import type { OutcomeData, StoredOutcome, StoredSnapshot } from '@/lib/outcomes-db';
 import { paneIdForIcd, paneLabel, searchFinalDiagnoses } from '@/lib/outcomes-model';
 import type { DiagnosisOption } from '@/lib/outcomes-model';
+import { probabilityText } from '@/lib/probability-text';
 
 const card: CSSProperties = { background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '12px 14px', margin: '10px 14px' };
 const small: CSSProperties = { fontSize: 12, color: '#64748b' };
@@ -117,7 +118,7 @@ function EncounterRow({ snapshot: s, outcome, due, open, onOpen, onChanged, user
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'baseline' }}>
         <span style={{ fontSize: 12.5, fontWeight: 700, color: '#334155' }}>{stLuciaDay(s.completedAt)}</span>
         <span style={small}>
-          Engines: {leader ? `${dxText(leader.diseaseId, leader.icd10)}${leader.probability !== null ? ` ${Math.round(leader.probability * 100)}%` : ''}` : '—'}
+          Engines: {leader ? `${dxText(leader.diseaseId, leader.icd10)}${leader.probability !== null ? ` ${probabilityText(leader.probability)}` : ''}` : '—'}
           {s.workingIcd10 || s.workingDiseaseId ? ` · Working: ${dxText(s.workingDiseaseId, s.workingIcd10)}` : ''}
         </span>
         {outcome ? (

@@ -147,7 +147,7 @@ extension ConsultationView {
                             .fill(bayesColor(dx.confidence))
                             .frame(width: max(4, CGFloat(dx.probability) / 100 * 60), height: 6)
                     }
-                    Text("\(dx.probability)%")
+                    Text(ProbabilityText.percent(dx.probability))
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(bayesColor(dx.confidence))
                         .frame(width: 34, alignment: .trailing)

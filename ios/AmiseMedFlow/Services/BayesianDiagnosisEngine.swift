@@ -48,7 +48,7 @@ enum BayesianDiagnosisEngine {
 
             var label: String {
                 switch self {
-                case .certain:  "Certain"
+                case .certain:  "Very high"
                 case .high:     "High"
                 case .moderate: "Moderate"
                 case .low:      "Low"

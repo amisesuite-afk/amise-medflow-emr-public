@@ -42,7 +42,7 @@ extension ClinicalPipelineOrchestrator {
 
     /// Hypothesis probability formatted as percent string
     func probabilityString(for hypothesis: DiagnosisHypothesis) -> String {
-        "\(Int((hypothesis.probability * 100).rounded()))%"
+        ProbabilityText.fraction(hypothesis.probability)
     }
 }
 

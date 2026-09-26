@@ -99,6 +99,8 @@ describe('signoff:apply refuses partial approvals', () => {
 });
 
 describe('signoff:apply writes the registry fields', () => {
+  // The next free section-I number in the live decisions file (I1, I2, … already taken).
+  const nextI = Math.max(0, ...[...decisionsText.matchAll(/^### I(\d+)\./gm)].map(m => Number(m[1]))) + 1;
   const records = [...rsItems.map(id => rec(id)), rec(rsItems[6], 'approved_with_amendment', {
     reviewerName: 'Dr A Colleague', reviewerRole: 'admin', decidedAt: '2026-10-03T02:30:00Z',
   })];
@@ -115,7 +117,7 @@ describe('signoff:apply writes the registry fields', () => {
     expect(e.nextReviewDue).toBe('2027-10-02');
     expect(e.reviewer).toBe('Dr Dawit Daniel Kabiye (doctor); Dr A Colleague (admin)');
     expect(e.reviewEvidence).toMatch(new RegExp(`all ${rsItems.length} linked sign-off items approved \\(1 with an amendment\\), from bayes-treatment`));
-    expect(e.reviewEvidence).toMatch(/bundle sha256:[0-9a-f]{16}; recorded in docs\/clinical-validation\/SURGEON-DECISIONS\.md I3\./);
+    expect(e.reviewEvidence).toMatch(new RegExp(`bundle sha256:[0-9a-f]{16}; recorded in docs/clinical-validation/SURGEON-DECISIONS\\.md I${nextI}\\.`));
     // Nothing else changed: same object once the four fields and "updated" are put back.
     const b = before.ruleSets.find((x: { id: string }) => x.id === RS);
     for (const k of ['lastReviewed', 'reviewer', 'reviewEvidence', 'nextReviewDue']) e[k] = b[k];
@@ -129,7 +131,7 @@ describe('signoff:apply writes the registry fields', () => {
   it('appends a dated, marked section-I record that the catalogue parser skips', () => {
     if (!r.ok) throw new Error('refused');
     expect(r.decisionsText.startsWith(decisionsText.trimEnd())).toBe(true);
-    expect(r.section).toMatch(/^### I3\. Clinical sign-off: treatment-decision-support — APPROVED 2026-10-02$/m);
+    expect(r.section).toMatch(new RegExp(`^### I${nextI}\\. Clinical sign-off: treatment-decision-support — APPROVED 2026-10-02$`, 'm'));
     expect(r.section).toContain('<!-- signoff:applied -->');
     expect(r.section).toContain(`\`${rsItems[6]}\``);
     expect(r.section).toContain('Amendment: Use the practice laboratory ranges');

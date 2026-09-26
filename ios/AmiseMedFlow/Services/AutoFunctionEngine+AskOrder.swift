@@ -158,7 +158,7 @@ extension AutoFunctionEngine {
 
         // SOAP note always available
         if let lead {
-            actions.append(AutoAction(function: .document, title: "Draft: SOAP Note", detail: "Working diagnosis: \(lead.name) (P=\(Int(lead.probability * 100))%) — auto-populate from collected history and exam.", urgency: .elective, targetSection: .documents, payload: .documentTemplate(type: .soapNote)))
+            actions.append(AutoAction(function: .document, title: "Draft: SOAP Note", detail: "Working diagnosis: \(lead.name) (P=\(ProbabilityText.fraction(lead.probability))) — auto-populate from collected history and exam.", urgency: .elective, targetSection: .documents, payload: .documentTemplate(type: .soapNote)))
         }
 
         return actions

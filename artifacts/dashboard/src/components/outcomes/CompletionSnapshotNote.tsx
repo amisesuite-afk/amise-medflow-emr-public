@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { DISEASES } from '@workspace/pane-engine';
 import { useAppContext } from '@/context/AppContext';
 import { completionSnapshotFromApp } from '@/lib/outcomes-completion';
+import { probabilityText } from '@/lib/probability-text';
 
 const LABELS = new Map(DISEASES.map(d => [d.id, d.label]));
 
@@ -18,7 +19,7 @@ export default function CompletionSnapshotNote() {
   );
   if (!snap) return null;
   const leaders = snap.topDifferential.slice(0, 3)
-    .map(d => `${(d.diseaseId && LABELS.get(d.diseaseId)) || d.icd10 || d.diseaseId}${d.probability !== null ? ` ${Math.round(d.probability * 100)}%` : ''}`);
+    .map(d => `${(d.diseaseId && LABELS.get(d.diseaseId)) || d.icd10 || d.diseaseId}${d.probability !== null ? ` ${probabilityText(d.probability)}` : ''}`);
   const working = snap.workingIcd10 ?? snap.recordedIcd10[0] ?? null;
   return (
     <div data-testid="signoff-outcome-snapshot"

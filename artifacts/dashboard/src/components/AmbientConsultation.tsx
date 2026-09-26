@@ -19,6 +19,7 @@ import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import { extractFeaturesFromTranscript, detectPathognomonic, type PathognomicMatch } from '@/lib/transcript-dx-mapper';
 import { computeReminders } from '@/lib/safety-engine';
 import type { RadiologyRequest } from '@/pages/tabs/RadiologyTab';
+import { probabilityText } from '@/lib/probability-text';
 // ── Web Speech API ─────────────────────────────────────────────────────────────
 const SR_CLASS = (typeof window !== 'undefined')
   ? (window.SpeechRecognition ?? window.webkitSpeechRecognition)
@@ -1021,8 +1022,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     // Ranked differentials go in ctx.differentials (their own section in the printed note)
     if (!ctx.differentials?.trim() && top3.length > 0) {
       const diffLines = top3.map((rd, i) => {
-        const pct = Math.round(rd.probability * 100);
-        return `  ${i + 1}. ${rd.disease.label}${pct > 0 ? ` (${pct}% pre-test probability)` : ''}`;
+        return `  ${i + 1}. ${rd.disease.label}${rd.probability > 0 ? ` (${probabilityText(rd.probability)} pre-test probability)` : ''}`;
       }).join('\n');
       ctx.setDifferentials(diffLines);
     }
@@ -1406,7 +1406,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     </span>
                   </div>
                   <span style={{ fontSize: 11, fontWeight: 700, minWidth: 34, color: 'var(--muted)', textAlign: 'right' }}>
-                    {Math.round(r.probability * 100)}%
+                    {probabilityText(r.probability)}
                   </span>
                 </div>
               ))}
@@ -1804,7 +1804,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                               </span>
                               <span style={{ position: 'absolute', right: 9, top: 0, bottom: 0, display: 'flex', alignItems: 'center',
                                 fontSize: 11, fontWeight: 700, color: r.probability > 0.4 ? 'rgba(255,255,255,0.85)' : 'var(--muted)' }}>
-                                {Math.round(r.probability * 100)}%
+                                {probabilityText(r.probability)}
                               </span>
                             </button>
                             <button type="button" onClick={() => setWorkingDxId(isSelected ? null : r.disease.id)}

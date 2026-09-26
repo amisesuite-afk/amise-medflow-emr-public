@@ -161,7 +161,7 @@ extension ConsultationView {
                                     .font(.caption.weight(i == 0 ? .semibold : .regular))
                                     .foregroundStyle(i == 0 ? .primary : .secondary)
                                 Spacer()
-                                Text("\(dx.probability)%")
+                                Text(ProbabilityText.percent(dx.probability))
                                     .font(.caption2.weight(.medium).monospacedDigit())
                                     .foregroundStyle(i == 0 ? AMColor.accent : .secondary)
                                 if patient.workingDiagnosis != dx.name {

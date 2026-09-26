@@ -2,6 +2,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import IcdCodeBadge from '@/components/IcdCode';
 import { useAppContext } from '@/context/AppContext';
 import { usePane } from '@/hooks/usePane';
+import { probabilityText } from '@/lib/probability-text';
 
 interface Props {
   onAddDifferential: (name: string) => void;
@@ -20,7 +21,7 @@ function ProbBar({ value }: { value: number }) {
         }} />
       </div>
       <span style={{ fontSize: 11, fontWeight: 700, color, width: 30, textAlign: 'right', flexShrink: 0 }}>
-        {pct}%
+        {probabilityText(value)}
       </span>
     </div>
   );
@@ -173,7 +174,7 @@ export default function PaneDifferential({ onAddDifferential, onExportDifferenti
               </div>
               <div style={{ fontSize: 11, color: '#4d7c0f' }}>
                 Leading: <strong>{top[0]?.disease.label}</strong>
-                {top[0] && ` (${Math.round(top[0].probability * 100)}%)`}
+                {top[0] && ` (${probabilityText(top[0].probability)})`}
                 {' '}— click the name above to add to differentials
               </div>
             </div>

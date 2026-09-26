@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "5e3728e56bfbd675",
+  "catalogueHash": "0c874a197d0cd421",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -119,7 +119,8 @@
         "surgeon-decisions#I2.3",
         "surgeon-decisions#I2.4",
         "surgeon-decisions#I2.5",
-        "surgeon-decisions#I2.6"
+        "surgeon-decisions#I2.6",
+        "surgeon-decisions#I3"
       ]
     },
     {
@@ -4327,6 +4328,18 @@
       "hash": "c33e732b4edaf517",
       "doc": "docs/clinical-validation/SURGEON-DECISIONS.md",
       "anchor": "i2-real-outcomes-loop-governance--item-approved-2026-09-26-defaults-below-await-confirmation",
+      "ruleSetIds": []
+    },
+    {
+      "id": "surgeon-decisions#I3",
+      "source": "surgeon-decisions",
+      "number": "I3",
+      "group": "I3. No probability is shown as certain — DECIDED 2026-09-26",
+      "title": "No probability is shown as certain — DECIDED 2026-09-26",
+      "text": "- **Owner:** practice owner (Dr Dawit Daniel Kabiye), 2026-09-26: \"Medicine is probabilistic\n  condition, no 100 percent.\"\n- **Decision:** every engine probability shown to a clinician reads \"<1%\" instead of \"0%\" and\n  \">99%\" instead of \"100%\". The highest iOS confidence level reads \"Very high\", not \"Certain\".\n  Nothing is labelled definite by an engine; confirmation stays with the clinician (criteria,\n  histology, imaging and the final diagnosis are recorded by a person).\n- **Where:** web `artifacts/dashboard/src/lib/probability-text.ts` (PANE differential, ambient\n  consultation, outcomes snapshot and final-diagnosis panel); iOS `ProbabilityText.swift` (CC,\n  history and plan differentials, encounter detail, final-diagnosis section, pipeline and auto-action\n  text) and `BayesianDiagnosisEngine.DiagnosisResult.Confidence.label`. The diagnostic-reasoning panel\n  already followed the same rule (`fmtPct`). Tests: `probability-text.test.ts` and\n  `ProbabilityTextTests.swift` (same cases). Display only: no weight, threshold or stored value changed.",
+      "hash": "dbda433ad5e203b8",
+      "doc": "docs/clinical-validation/SURGEON-DECISIONS.md",
+      "anchor": "i3-no-probability-is-shown-as-certain--decided-2026-09-26",
       "ruleSetIds": []
     },
     {

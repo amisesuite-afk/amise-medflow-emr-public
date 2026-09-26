@@ -24,8 +24,7 @@ struct EncounterFinalDiagnosisSection: View {
     private func leaderText(_ entry: OutcomeDifferentialEntry) -> String {
         let code = entry.icd10 ?? "—"
         guard let p = entry.probability else { return code }
-        let percent = Int((p * 100).rounded())
-        return "\(code) · \(percent)%"
+        return "\(code) · \(ProbabilityText.fraction(p))"
     }
 
     var body: some View {

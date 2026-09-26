@@ -292,7 +292,7 @@ struct EncounterDetailSheet: View {
                         Text(entry.name)
                             .font(.subheadline)
                         Spacer()
-                        Text("\(entry.probability)%")
+                        Text(ProbabilityText.percent(entry.probability))
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(probabilityColor(entry.probability))
                         Text(entry.confidence)

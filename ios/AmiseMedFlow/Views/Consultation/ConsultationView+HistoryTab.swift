@@ -186,7 +186,7 @@ struct BayesianDxRow: View {
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(result.probability)%")
+                    Text(ProbabilityText.percent(result.probability))
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(barColor)
                     Text(result.confidence.label)
