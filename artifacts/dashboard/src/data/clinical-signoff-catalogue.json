@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "cd5c60dfc1820882",
+  "catalogueHash": "7fa0a1acfa1a84cc",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -563,6 +563,20 @@
         "outcomes-calibration#6",
         "outcomes-calibration#7",
         "outcomes-calibration#8"
+      ]
+    },
+    {
+      "id": "signoff-tool",
+      "title": "Change log — `signoff-tool` (in-app clinical sign-off: catalogue, register, apply)",
+      "doc": "docs/clinical-validation/changes/signoff-tool.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [],
+      "itemIds": [
+        "signoff-tool#1",
+        "signoff-tool#2",
+        "signoff-tool#3",
+        "signoff-tool#4",
+        "signoff-tool#5"
       ]
     },
     {
@@ -7233,6 +7247,66 @@
       "text": "**iOS push:** confirm iOS stays local for now, or ask for the push loop as a follow-up (needs\ndevice testing).",
       "hash": "670779e4c916f8a9",
       "doc": "docs/clinical-validation/changes/outcomes-calibration.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "signoff-tool#1",
+      "source": "signoff-tool",
+      "number": "1",
+      "group": null,
+      "title": "Who may sign",
+      "text": "**Who may sign.** Doctor and admin accounts may record decisions (the database refuses\neveryone else); nurses may read them. An admin account is not necessarily a clinician: should\nadmins be able to approve clinical content, or doctors only? (Relates to D6: who signs off\nclinical content.)",
+      "hash": "a72af2f50f53fb6d",
+      "doc": "docs/clinical-validation/changes/signoff-tool.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "signoff-tool#2",
+      "source": "signoff-tool",
+      "number": "2",
+      "group": null,
+      "title": "What counts as reviewed",
+      "text": "**What counts as reviewed.** A rule set is written into the registry only when every item\nlinked to it is approved or approved with an amendment; pending, rejected, **deferred** and\nchanged items all hold it back. Confirm that a deferral should block, and that an amended\napproval counts as approved (the amendment is recorded in section I and still needs a content\nchange to implement it).",
+      "hash": "f1201533c04fe68e",
+      "doc": "docs/clinical-validation/changes/signoff-tool.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "signoff-tool#3",
+      "source": "signoff-tool",
+      "number": "3",
+      "group": null,
+      "title": "Links between items and rule sets",
+      "text": "**Links between items and rule sets** as listed above, including the whole of SURGEON-DECISIONS\nA counting towards `ios-diagnosis-radiation-engine` (its registry entry cites \"SURGEON-DECISIONS\nA\"), so that rule set needs 87 approvals.",
+      "hash": "54f9d86eff56a9a3",
+      "doc": "docs/clinical-validation/changes/signoff-tool.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "signoff-tool#4",
+      "source": "signoff-tool",
+      "number": "4",
+      "group": null,
+      "title": "Review interval",
+      "text": "**Review interval.** `nextReviewDue` is set to 12 months after the last decision (the\nregistry's default), for every rule set.",
+      "hash": "cdc53fa2ce43a868",
+      "doc": "docs/clinical-validation/changes/signoff-tool.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "signoff-tool#5",
+      "source": "signoff-tool",
+      "number": "5",
+      "group": null,
+      "title": "Attestation wording",
+      "text": "**Attestation wording:** \"I have reviewed this item against the cited source.\"",
+      "hash": "783798b217a8a95c",
+      "doc": "docs/clinical-validation/changes/signoff-tool.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": []
     },

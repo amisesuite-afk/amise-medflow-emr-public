@@ -3,7 +3,7 @@
 Done so far on the live database (Amise-frontdesk, production): Migration 92 (`patients.visit_type`)
 and Migration 93 (iOS sync columns), both on 2026-09-25.
 
-Still to apply: Migrations 87, 88, 90, 91 (safe, additive) and 89 (staff-only access; needs checks
+Still to apply: Migrations 87, 88, 90, 91, 94, 95 (safe, additive) and 89 (staff-only access; needs checks
 first and should go with the deploy to `main`).
 
 How to run one file, every time:
@@ -35,6 +35,7 @@ Expect 7 rows. If fewer, send the screenshot before running 87 (88, 90 and 91 ca
 | 3 | 90 Deferred references | A portal policy that already exists on production; a no-op there. Run it for completeness. | [supabase-deferred-forward-refs-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-deferred-forward-refs-migration.sql) |
 | 4 | 91 Web vitals NEWS2 fields | `avpu` and `on_supplemental_o2` on the web `vitals` table, so web NEWS2 is complete. | [supabase-web-vitals-news2-fields-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-web-vitals-news2-fields-migration.sql) |
 | 5 | 94 Outcomes and calibration | Two new tables, `prediction_snapshots` and `diagnosis_outcomes` (nurse, doctor and admin only; front desk and portal see nothing), so completed visits keep what the engines predicted and the final diagnosis can be recorded later. Until it runs, visits still close normally and the screens say the feature waits for this update. | [supabase-outcomes-calibration-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-outcomes-calibration-migration.sql) |
+| 6 | 95 Clinical sign-off | One new table, `clinical_signoffs` (doctor and admin record decisions in their own name; nurses can read them; front desk and portal see nothing; decisions can never be changed or deleted, only followed by a new one), so the Insights → Clinical sign-off page can record your approvals. Until it runs, the page shows the items read-only. | [supabase-clinical-signoffs-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-clinical-signoffs-migration.sql) |
 
 After Part 1, on the iPhone: Settings → Sync Now. Nothing else changes for users.
 
@@ -42,6 +43,13 @@ After 94: close one test encounter on the web, then check a row appears:
 
 ```sql
 select encounter_id, created_at from prediction_snapshots order by created_at desc limit 1;
+```
+
+After 95: open Insights → Clinical sign-off. The note "Recording decisions becomes available after the
+database update" should be gone. Optionally, this should return one row with `rls_enabled = true`:
+
+```sql
+select relname, relrowsecurity as rls_enabled from pg_class where relname = 'clinical_signoffs';
 ```
 
 ## Part 2 — Migration 89, staff-only access (on deploy day)

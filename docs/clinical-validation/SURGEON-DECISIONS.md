@@ -153,6 +153,9 @@ contacts); tetanus-prone wound; post-splenectomy vaccination; post-operative del
 
 Each merged fix keeps its full list under "Needs sign-off" in its change log. Nothing listed there is treated as
 approved. Reply with the file and item numbers you approve (for example "fix-web-triage 1–6 approved; 7 no").
+Or record each decision in the app: **Insights → Clinical sign-off** (doctor / admin, after Migration 95) lists every
+item below and in sections A–G and I, with approve / amend / reject / defer and an attestation; approved rule sets reach
+`clinical-content/registry.json` through `signoff:apply` ([signoff-tool](changes/signoff-tool.md)).
 
 | Change log | Area | What needs your decision |
 |---|---|---|
@@ -176,6 +179,7 @@ approved. Reply with the file and item numbers you approve (for example "fix-web
 | [whats-missing](changes/whats-missing.md#needs-sign-off) | "What's missing" strip and score auto-fill (web + iOS) | Safety order (weight → allergy → pregnancy → renal → anticoagulant → supplements), probe values, NEWS2 rule, pregnancy 12–55 and weight < 16 scopes, renally-cleared drug list, auto-fill thresholds, all wording |
 | [bayes-treatment](changes/bayes-treatment.md#needs-sign-off) | Score → action, result → posterior shift, personalised treat / test / observe decisions (web + iOS) | Every effect size and harm (74 sources, all written from memory), 43 patient modifiers and 4 hard exclusions, risk bands, lab upper limits (need the practice's own ranges), confirmed-diagnosis ≥ 95% rule |
 | [outcomes-calibration](changes/outcomes-calibration.md#needs-sign-off) | Real-outcomes loop: prediction snapshots, final diagnosis, calibration report and proposals (Migration 94) | Retention, proposal minimum counts (10 prior / 20 LR), admin-only report and export, 14-day reminder, whether iOS should push outcomes (see also I2) |
+| [signoff-tool](changes/signoff-tool.md#needs-sign-off) | In-app clinical sign-off (Migration 95) | Who may sign (doctor and admin, or doctors only), deferred items blocking a rule set, amended approvals counting as approved, the item-to-rule-set links, 12-month review interval, attestation wording (5 items) |
 
 Decided so far:
 

@@ -254,6 +254,66 @@ expedited. Never skip the regression suite.
 | Sign-off | Surgeon as clinical owner; CSO once appointed; pharmacist for medicines |
 | Release note and hazard IDs | Engineering, reviewed by the CSO |
 
+### 3.4 In-app sign-off: from approval to the registry (built 2026-09-26)
+
+Step 4 of the workflow ("clinical safety review") now has a screen, a database record and a
+script. Change log: `docs/clinical-validation/changes/signoff-tool.md`.
+
+```
+change log "Needs sign-off" lists + SURGEON-DECISIONS A–G, I
+        │  signoff:catalogue (CI: lint:signoff-catalogue fails when stale)
+        ▼
+artifacts/dashboard/src/data/clinical-signoff-catalogue.json   item id <slug>#<n>, wording hash, rule sets
+        │
+        ▼
+Insights → Clinical sign-off (doctor / admin) ── approve / amend / reject / defer + attestation
+        │  append-only rows in clinical_signoffs (Migration 95) + audit_log 'clinical_signoff'
+        ▼
+"Export approved decisions" → clinical-signoff-<date>.json + .md
+        │  developer: pnpm --filter @workspace/scripts run signoff:apply <bundle.json>
+        ▼
+registry.json lastReviewed / reviewer / reviewEvidence / nextReviewDue
++ SURGEON-DECISIONS section I record + clinical-content/signoffs/ copy  → commit, PR, review
+```
+
+1. **Keep the lists current.** Whoever adds or edits a "Needs sign-off" item runs
+   `pnpm --filter @workspace/scripts run signoff:catalogue` and commits the JSON with the doc
+   edit (CI fails otherwise). Editing an item's wording changes its hash: any earlier decision on
+   it then shows "changed since approval" and must be made again. Renumbering an item changes its
+   id, which loses its history, so append new items rather than renumbering.
+2. **Review in the app.** The reviewer (doctor or admin, named) records a decision per item with
+   the attestation "I have reviewed this item against the cited source". Decisions are never
+   edited or deleted; a correction is a new decision, and the latest one counts.
+3. **Export.** When one or more rule sets show complete ("n/n approved"), the reviewer presses
+   **Export approved decisions** and hands the `.json` to a developer. The bundle carries every
+   decision, not just approvals, so the script can see what is still open.
+4. **Apply.** The developer runs
+   `pnpm --filter @workspace/scripts run signoff:apply <bundle.json>` (`--dry-run` to preview,
+   `--rule-set <id>` to name the rule sets and fail if any is incomplete). The script re-reads the
+   docs, so it judges each item by its **current** wording, and:
+   - for each rule set whose linked items are all approved or approved with an amendment, sets
+     `lastReviewed` (date of the last decision, America/St_Lucia), `reviewer` ("Name (role)" for
+     each reviewer), `reviewEvidence` (item counts, amendments, source change logs, bundle hash,
+     the section-I record) and `nextReviewDue` (`lastReviewed` + `reviewPolicy.defaultIntervalMonths`)
+     in `clinical-content/registry.json`, editing those fields in place;
+   - appends one dated subsection to SURGEON-DECISIONS section I listing every item's decision,
+     reviewer, date, wording hash and any amendment (marked `<!-- signoff:applied -->`; the
+     catalogue never treats it as a new item);
+   - copies the bundle to `clinical-content/signoffs/signoff-<date>-<hash>.json` and `.md`, and
+     rebuilds the catalogue (the registry review fields are part of it).
+   It **refuses and writes nothing** when a named rule set has any pending, rejected, deferred or
+   changed-since-approval item, when no rule set is complete, or when the same bundle was applied
+   before. Items linked to no rule set (for example `outcomes-calibration`) are recorded in
+   section I once all of that change log's unlinked items are approved; the registry is not
+   touched for them.
+5. **Commit.** The developer runs `lint:guideline-registry` and `lint:signoff-catalogue`, reviews
+   the diff and opens the PR. **The app never edits the repository**, and nothing here changes a
+   clinical value: an amended approval is a decision to change the content, implemented by its own
+   content-change PR (§3), after which the edited item comes back for approval.
+
+This is the only route by which `lastReviewed` gets a date: never set it by hand without a
+recorded review and a named reviewer.
+
 ## 4. (d) Bayesian engine upgrades
 
 ### 4.0 Phase 1 correctness fixes (before anything below)
@@ -469,7 +529,7 @@ or an M&M case to the exact content that was on screen.
 | Phase | Scope | Status |
 |---|---|---|
 | 0. Foundations | Inventory; registry + CI lint; version stamp on `DiagnosticDatabase.json`; Settings → Diagnostics shows the version and whether the engine loaded it | **Done in this change** |
-| 1. Correctness | C-1 to C-5 (decode, units, priors, LR recomputation), each A/B'd on the vignette suite and signed off. Fix C-9 (deterministic dosing lookup). Differential disclaimer and bands (L1, L2). `CODEOWNERS` from the registry. Sign-off records. Restrict `clinical_guidelines` writes | Next |
+| 1. Correctness | C-1 to C-5 (decode, units, priors, LR recomputation), each A/B'd on the vignette suite and signed off. Fix C-9 (deterministic dosing lookup). Differential disclaimer and bands (L1, L2). `CODEOWNERS` from the registry. Sign-off records. Restrict `clinical_guidelines` writes | Next. Sign-off records built 2026-09-26 (§3.4: in-app review, Migration 95, `signoff:apply`) |
 | 2. Packs | Pack manifest and `content:diff`; `citations.json`; the LR schema (4.1); interactions as one shared data pack; formulary and dosing data out of components | |
 | 3. Calibration and explanation | Calibration metrics in the harness (4.2); the contribution waterfall (4.3); three-state findings (4.4); setting priors (4.5); provenance footnotes and content versions recorded with outputs (§5) | |
 | 4. Optional | Signed remote packs (2.4 B) once the preconditions hold; local-learning proposals (4.6) once there are enough audited outcomes | Outcomes capture, calibration report and proposal tooling built 2026-09-26 (§4.6.1); needs Migration 94 applied and enough confirmed cases before any proposal |
